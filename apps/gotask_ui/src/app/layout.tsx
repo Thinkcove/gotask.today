@@ -16,7 +16,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body style={{ overflow: "hidden" }}>
         <CssBaseline />
 
         {/* Fixed Header */}
@@ -36,8 +36,7 @@ export default async function RootLayout({
             <Box
               sx={{
                 flexGrow: 1,
-                overflow: "auto",
-                paddingTop: "64px", // Adjust based on actual header height
+                paddingTop: "70px",
               }}
             >
               <SWRProvider>{children}</SWRProvider>

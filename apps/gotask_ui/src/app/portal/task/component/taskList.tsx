@@ -53,13 +53,22 @@ const TaskList: React.FC = () => {
       <TaskToggle view={view} setView={setView} />
       <StatusIndicator />
 
-      <Grid container spacing={3} sx={{ p: 2 }}>
-        {tasks.map((group: any) => (
-          <Grid item xs={12} sm={6} md={4} key={group._id}>
-            <TaskCard view={view} group={group} />
-          </Grid>
-        ))}
-      </Grid>
+      {/* Scrollable Grid Container */}
+      <Box
+        sx={{
+          overflowY: "auto",
+          maxHeight: "calc(100vh - 250px)",
+          mb: 24,
+        }}
+      >
+        <Grid container spacing={3} sx={{ p: 2 }}>
+          {tasks.map((group: any) => (
+            <Grid item xs={12} sm={6} md={4} key={group._id}>
+              <TaskCard view={view} group={group} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
       <Box position="fixed" bottom={16} right={12}>
         <Tooltip title="Create New Task" arrow>
@@ -69,7 +78,7 @@ const TaskList: React.FC = () => {
               backgroundColor: "#741B92",
               "&:hover": { backgroundColor: "#5E1374" },
             }}
-            onClick={() => router.push("/portal/task/createTask")} // Navigate on click
+            onClick={() => router.push("/portal/task/createTask")}
           >
             <AddIcon />
           </Fab>

@@ -92,4 +92,14 @@ export class TaskService {
       return acc;
     }, defaultStatuses);
   }
+
+  // Get a task by ID
+  static async getTaskById(id: string): Promise<ITask | null> {
+    return await Task.findOne({ id });
+  }
+
+  // Update task details
+  static async updateTask(id: string, updateData: Partial<ITask>): Promise<ITask | null> {
+    return await Task.findOneAndUpdate({ id }, updateData, { new: true });
+  }
 }

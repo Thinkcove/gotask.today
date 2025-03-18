@@ -2,6 +2,7 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 import { TaskService } from "./taskService";
 import { errorResponse, successResponse } from "../../helpers/responseHelper";
 import RequestHelper from "../../helpers/requestHelper";
+import { ITask } from "../../domain/interface/task";
 
 // Create a Task
 export const createTask = async (request: Request, h: ResponseToolkit) => {
@@ -57,5 +58,30 @@ export const getTaskCountByStatus = async (_request: Request, h: ResponseToolkit
     return successResponse(h, taskCounts);
   } catch (error) {
     return errorResponse(h, "Failed to retrieve task count by status", 500);
+  }
+};
+
+// Get a Task by id
+export const getTaskById = async (request: Request, h: ResponseToolkit) => {
+  try {
+    const { id } = request.params;
+    const task = await TaskService.getTaskById(id);
+    if (!task) return errorResponse(h, "Task not found", 404);
+    return successResponse(h, task);
+  } catch (error) {
+    return errorResponse(h, "Failed to retrieve Task");
+  }
+};
+
+// Update Task Details
+export const updateTask = async (request: Request, h: ResponseToolkit) => {
+  try {
+    const { id } = request.params;
+    const updatedData = request.payload as Partial<ITask>;
+    const updatedTask = await TaskService.updateTask(id, updatedData);
+    if (!updatedTask) return errorResponse(h, "Task not found", 404);
+    return successResponse(h, updatedTask);
+  } catch (error) {
+    return errorResponse(h, "Failed to update Task details");
   }
 };

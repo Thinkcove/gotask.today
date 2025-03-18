@@ -17,6 +17,7 @@ const StatusIndicator: React.FC = () => {
       alignItems="center"
       gap={2}
       p={2}
+      flexWrap="wrap"
     >
       {statuses.map((status, index) => (
         <React.Fragment key={status.label}>

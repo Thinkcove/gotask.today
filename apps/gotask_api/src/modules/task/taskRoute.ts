@@ -5,6 +5,8 @@ import {
   getTaskByUser,
   getTaskByProject,
   getTaskCountByStatus,
+  getTaskById,
+  updateTask,
 } from "./taskController";
 import { HTTP_METHODS } from "../../constants/httpMethods";
 import { API_PATHS } from "../../constants/apiPaths";
@@ -35,6 +37,16 @@ export const taskRoutes = (server: Server) => {
       method: HTTP_METHODS.GET,
       path: API_PATHS.GET_TASK_COUNT_BY_STATUS,
       handler: getTaskCountByStatus,
+    },
+    {
+      method: HTTP_METHODS.GET,
+      path: API_PATHS.GET_TASK_BY_ID,
+      handler: getTaskById,
+    },
+    {
+      method: HTTP_METHODS.PUT,
+      path: API_PATHS.UPDATE_TASK,
+      handler: updateTask,
     },
   ]);
 };

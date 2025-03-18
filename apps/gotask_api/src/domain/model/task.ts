@@ -1,11 +1,13 @@
 import mongoose, { Schema } from "mongoose";
 import { TASK_STATUS, TASK_SEVERITY } from "../../constants/taskConstant";
 import { ITask } from "../interface/task";
+import { v4 as uuidv4 } from "uuid";
 
 const TaskSchema = new Schema<ITask>(
   {
+    id: { type: String, default: uuidv4, unique: true }, // Auto-generated UUID
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String },
     status: {
       type: String,
       enum: Object.values(TASK_STATUS),

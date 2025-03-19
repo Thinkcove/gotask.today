@@ -71,11 +71,13 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label="Status * :"
             type="select"
-            options={Object.values(TASK_STATUS)}
+            options={Object.values(TASK_STATUS).map((s) => s.toUpperCase())}
             required
             placeholder="Select Status Type"
-            value={formData.status}
-            onChange={(value) => handleInputChange("status", String(value))}
+            value={formData.status.toUpperCase()}
+            onChange={(value) =>
+              handleInputChange("status", String(value).toLowerCase())
+            }
             error={errors.status}
             disabled={isReadOnly("status")}
           />
@@ -84,10 +86,13 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label="Severity * :"
             type="select"
-            options={Object.values(TASK_SEVERITY)}
+            options={Object.values(TASK_SEVERITY).map((s) => s.toUpperCase())}
             placeholder="Select Severity Type"
-            value={formData.severity}
-            onChange={(value) => handleInputChange("severity", String(value))}
+            value={formData.severity.toUpperCase()}
+            onChange={(value) =>
+              handleInputChange("severity", String(value).toLowerCase())
+            }
+            error={errors.severity}
             disabled={isReadOnly("severity")}
           />
         </Grid>

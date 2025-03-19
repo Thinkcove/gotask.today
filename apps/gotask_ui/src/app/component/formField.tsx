@@ -39,7 +39,7 @@ const FormField: React.FC<FormFieldProps> = ({
     <FormControl fullWidth margin="normal" error={!!error}>
       {type === "text" && (
         <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
+          <Typography variant="h6" sx={{ mb: 1.5 }}>
             {label}
           </Typography>
           <TextField
@@ -53,9 +53,14 @@ const FormField: React.FC<FormFieldProps> = ({
             onChange={(e) => onChange(e.target.value)}
             InputProps={{
               sx: {
+                height: "30px",
+                "& .MuiInputBase-input": {
+                  transform: "translateY(-3px)",
+                },
                 "& .MuiInputBase-input::placeholder": {
                   color: "#9C8585",
                   opacity: 1,
+                  transform: "translateY(-3px)",
                 },
               },
             }}
@@ -104,7 +109,7 @@ const FormField: React.FC<FormFieldProps> = ({
       )}
 
       {type === "date" && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3, display: "flex", flexDirection: "column" }}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
             {label}
           </Typography>

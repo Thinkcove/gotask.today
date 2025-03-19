@@ -1,8 +1,8 @@
 export const statuses = [
   { label: "To Do", color: "#B1AAAA" },
   { label: "In Progress", color: "#F29807" },
-  { label: "Need Info", color: "#9C27B0" },
-  { label: "Hold", color: "#CD1922" },
+  { label: "Need Info", color: "#939FCF" },
+  { label: "Hold", color: "#E2A3D5" },
   { label: "Completed", color: "#4CAF50" },
 ];
 
@@ -13,9 +13,9 @@ export const getStatusColor = (status: string) => {
     case "in-progress":
       return "#F29807";
     case "need-info":
-      return "#9C27B0";
+      return "#939FCF";
     case "hold":
-      return "#CD1922";
+      return "#E2A3D5";
     case "completed":
       return "#4CAF50";
     default:

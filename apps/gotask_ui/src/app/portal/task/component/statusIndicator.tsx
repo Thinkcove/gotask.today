@@ -24,8 +24,8 @@ const StatusIndicator: React.FC = () => {
           <Box display="flex" alignItems="center" gap={1}>
             <Box
               sx={{
-                width: 10,
-                height: 10,
+                width: 15,
+                height: 15,
                 borderRadius: "50%",
                 backgroundColor: status.color,
               }}

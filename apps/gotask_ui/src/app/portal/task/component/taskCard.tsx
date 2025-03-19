@@ -1,18 +1,22 @@
 import React from "react";
-import { Typography, Paper, Box, Divider } from "@mui/material";
+import { Typography, Paper, Box, Divider, Chip } from "@mui/material";
 import { getStatusColor } from "@/app/common/constants/task";
+import { formatDate } from "@/app/common/utils/common";
 
-const TaskCard: React.FC<{ view: "projects" | "users"; group: any }> = ({
-  view,
-  group,
-}) => {
+interface TaskCardProps {
+  view: "projects" | "users";
+  group: any;
+  onTaskClick: (task: any) => void; // Callback function
+}
+
+const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick }) => {
   return (
     <Paper
-      elevation={3}
+      elevation={2}
       sx={{
         p: 2,
         borderRadius: 3,
-        border: "1px solid #741B92",
+        borderLeft: "5px solid #741B92",
         transition: "0.3s",
         "&:hover": { boxShadow: "0px 4px 10px rgba(156, 32, 240, 0.6)" },
         height: 220,
@@ -21,49 +25,63 @@ const TaskCard: React.FC<{ view: "projects" | "users"; group: any }> = ({
         justifyContent: "space-between",
       }}
     >
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
-        {group._id}
-      </Typography>
-      <Typography variant="body2" color="textSecondary">
-        Total Tasks: {group.total_count}
-      </Typography>
-      <Divider sx={{ my: 2 }} />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h6" fontWeight="bold">
+          {group._id}
+        </Typography>
+        <Chip
+          label={`Total Tasks: ${group.total_count}`}
+          size="small"
+          sx={{ backgroundColor: "#741B92", color: "white" }}
+        />
+      </Box>
 
-      <Box sx={{ flexGrow: 1, maxHeight: 140, overflowY: "auto", pr: 1 }}>
+      <Divider sx={{ my: 1 }} />
+
+      <Box sx={{ flexGrow: 1, overflowY: "auto", pr: 1 }}>
         {group.tasks.length > 0 ? (
           group.tasks.map((task: any) => (
             <Box
               key={task._id}
               sx={{
                 display: "flex",
-                alignItems: "flex-start", // Align items at the start
+                alignItems: "center",
                 gap: 1,
                 mb: 1,
+                p: 1,
+                backgroundColor: "white",
+                borderRadius: 2,
+                transition:
+                  "background-color 0.3s ease-in-out, border-left-color 0.3s ease-in-out",
+                "&:hover": {
+                  backgroundColor: getStatusColor(task.status),
+                },
+                cursor: "pointer",
+                borderLeft: `5px solid ${getStatusColor(task.status)}`,
               }}
+              onClick={() => onTaskClick(task.id)}
             >
-              {/* Status Indicator - Aligned to the Task Title */}
               <Box
                 sx={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: "50%",
-                  backgroundColor: getStatusColor(task.status),
-                  mt: "4px", // Moves it slightly down to align with the title
-                  flexShrink: 0,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
                 }}
-              />
-
-              {/* Task Title & Description */}
-              <Box>
-                <Typography
-                  variant="subtitle2"
-                  fontWeight="bold"
-                  sx={{ display: "block" }}
-                >
+              >
+                {/* Task Title & Due Date */}
+                <Typography variant="subtitle2" fontWeight="bold">
                   {task.title}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {task.description}
+
+                <Typography variant="subtitle2" fontWeight="bold">
+                  {formatDate(task.due_date)}
                 </Typography>
               </Box>
             </Box>

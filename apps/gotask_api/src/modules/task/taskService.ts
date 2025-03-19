@@ -18,15 +18,36 @@ export class TaskService {
   static async getTaskByProject(page: number, pageSize: number) {
     const skip = (page - 1) * pageSize;
 
-    const aggregationPipeline = [
+    const aggregationPipeline: any[] = [
+      { $sort: { updatedAt: -1 } }, // Step 1: Sort tasks by most recent first
       {
         $group: {
           _id: "$project_name",
-          tasks: { $push: "$$ROOT" },
+          tasks: { $push: "$$ROOT" }, // Step 2: Push all tasks into the project
           total_count: { $sum: 1 },
+          latestTaskUpdatedAt: { $max: "$updatedAt" }, // Step 3: Store the most recent task's timestamp
         },
       },
-      { $skip: skip },
+      {
+        $sort: { latestTaskUpdatedAt: -1 }, // Step 4: Sort projects by the latest task's creation date
+      },
+      {
+        $project: {
+          _id: 1,
+          total_count: 1,
+          latestTaskUpdatedAt: 1, // Keep this for debugging
+          tasks: {
+            $slice: [
+              {
+                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } }, // Step 5: Ensure tasks inside each project are sorted
+              },
+              0,
+              pageSize,
+            ],
+          },
+        },
+      },
+      { $skip: skip }, // Step 6: Paginate projects
       { $limit: pageSize },
     ];
 
@@ -45,15 +66,34 @@ export class TaskService {
   static async getTaskByUser(page: number, pageSize: number) {
     const skip = (page - 1) * pageSize;
 
-    const aggregationPipeline = [
+    const aggregationPipeline: any[] = [
+      { $sort: { updatedAt: -1 } }, // Step 1: Sort tasks globally by most recent
       {
         $group: {
           _id: "$assigned_to",
-          tasks: { $push: "$$ROOT" },
+          tasks: { $push: "$$ROOT" }, // Step 2: Push all tasks assigned to the user
           total_count: { $sum: 1 },
+          latestTaskUpdatedAt: { $max: "$updatedAt" }, // Step 3: Store the most recent task’s timestamp
         },
       },
-      { $skip: skip },
+      { $sort: { latestTaskUpdatedAt: -1 } }, // Step 4: Sort users by their most recent task
+      {
+        $project: {
+          _id: 1,
+          total_count: 1,
+          latestTaskUpdatedAt: 1, // Optional: Keep this for debugging
+          tasks: {
+            $slice: [
+              {
+                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } }, // Step 5: Ensure tasks inside each user group are sorted
+              },
+              0,
+              pageSize,
+            ],
+          },
+        },
+      },
+      { $skip: skip }, // Step 6: Paginate user groups
       { $limit: pageSize },
     ];
 

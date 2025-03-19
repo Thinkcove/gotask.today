@@ -82,20 +82,27 @@ export const fetchAllProjects = () => {
 
 //createTask
 export const createTask = async (formData: any) => {
-  try {
-    const response = await fetch(`${env.API_BASE_URL}/createTask`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to create task");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
+  const response = await fetch(`${env.API_BASE_URL}/createTask`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to create task");
   }
+  return response.json();
+};
+
+export const updateTask = async (taskId: string, updatedFields: object) => {
+  const response = await fetch(`${env.API_BASE_URL}/updateTask/${taskId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedFields),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to update task");
+  }
+  return response.json();
 };

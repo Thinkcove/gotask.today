@@ -8,15 +8,20 @@ interface TaskInputProps {
   formData: any;
   handleInputChange: (name: string, value: string) => void;
   errors: { [key: string]: string };
+  readOnlyFields?: string[];
 }
 
 const TaskInput: React.FC<TaskInputProps> = ({
   formData,
   handleInputChange,
   errors,
+  readOnlyFields = [],
 }) => {
   const { getAllUsers } = fetchAllUsers();
   const { getAllProjects } = fetchAllProjects();
+
+  // Helper function to determine if a field should be read-only
+  const isReadOnly = (field: string) => readOnlyFields.includes(field);
   return (
     <>
       <Grid item xs={12} sm={6}>
@@ -28,6 +33,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
           value={formData.title}
           onChange={(value) => handleInputChange("title", String(value))}
           error={errors.title}
+          disabled={isReadOnly("title")}
         />
       </Grid>
       <Grid container spacing={2}>
@@ -43,6 +49,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
               handleInputChange("assigned_to", String(value))
             }
             error={errors.assigned_to}
+            disabled={isReadOnly("assigned_to")}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -57,6 +64,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
               handleInputChange("project_name", String(value))
             }
             error={errors.project_name}
+            disabled={isReadOnly("project_name")}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -69,6 +77,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             value={formData.status}
             onChange={(value) => handleInputChange("status", String(value))}
             error={errors.status}
+            disabled={isReadOnly("status")}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -79,6 +88,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             placeholder="Select Severity Type"
             value={formData.severity}
             onChange={(value) => handleInputChange("severity", String(value))}
+            disabled={isReadOnly("severity")}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -88,7 +98,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             placeholder="Select Created Date"
             value={
               formData.created_on || new Date().toISOString().split("T")[0]
-            } // Default to current date if empty
+            }
             onChange={(value) =>
               handleInputChange(
                 "created_on",
@@ -97,6 +107,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
                   : String(value)
               )
             }
+            disabled={isReadOnly("created_on")}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -104,7 +115,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             label="Due Date * :"
             type="date"
             placeholder="Select Due Date"
-            value={formData.due_date || new Date().toISOString().split("T")[0]} // Default to current date if empty
+            value={formData.due_date || new Date().toISOString().split("T")[0]}
             onChange={(value) =>
               handleInputChange(
                 "due_date",
@@ -113,6 +124,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
                   : String(value)
               )
             }
+            disabled={isReadOnly("due_date")}
           />
         </Grid>
 
@@ -125,6 +137,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             onChange={(value) =>
               handleInputChange("description", String(value))
             }
+            disabled={isReadOnly("description")}
           />
         </Grid>
       </Grid>

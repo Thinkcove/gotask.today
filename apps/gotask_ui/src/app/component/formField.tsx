@@ -21,6 +21,7 @@ interface FormFieldProps {
   value: string | number | Date;
   onChange: (value: string | number | Date) => void;
   error?: string;
+  disabled?: boolean;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -32,6 +33,7 @@ const FormField: React.FC<FormFieldProps> = ({
   error,
   value,
   onChange,
+  disabled = false,
 }) => {
   return (
     <FormControl fullWidth margin="normal" error={!!error}>
@@ -47,6 +49,7 @@ const FormField: React.FC<FormFieldProps> = ({
             error={!!error}
             fullWidth
             value={value}
+            disabled={disabled}
             onChange={(e) => onChange(e.target.value)}
             InputProps={{
               sx: {
@@ -73,6 +76,7 @@ const FormField: React.FC<FormFieldProps> = ({
             variant="standard"
             fullWidth
             error={!!error}
+            disabled={disabled}
             renderValue={(selected) => {
               if (!selected) {
                 return (
@@ -109,6 +113,7 @@ const FormField: React.FC<FormFieldProps> = ({
             onChange={(date) =>
               onChange(date ? date.toISOString().split("T")[0] : "")
             }
+            disabled={disabled}
             dateFormat="MM/dd/yyyy"
             customInput={
               <TextField

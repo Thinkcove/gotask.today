@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import {
   CircularProgress,
@@ -34,6 +32,15 @@ const TaskList: React.FC = () => {
   const isError = view === "projects" ? isErrorProjects : isErrorUsers;
   const tasks = view === "projects" ? tasksByProjects : tasksByUsers;
 
+  // Handle task click
+  const handleTaskClick = (id: any) => {
+    try {
+      router.push(`/portal/task/editTask/${id}`);
+    } catch (error) {
+      console.error("Error fetching task:", error);
+    }
+  };
+
   if (isLoading)
     return (
       <Box display="flex" justifyContent="center" mt={4}>
@@ -64,7 +71,11 @@ const TaskList: React.FC = () => {
         <Grid container spacing={3} sx={{ p: 2 }}>
           {tasks.map((group: any) => (
             <Grid item xs={12} sm={6} md={4} key={group._id}>
-              <TaskCard view={view} group={group} />
+              <TaskCard
+                view={view}
+                group={group}
+                onTaskClick={handleTaskClick}
+              />
             </Grid>
           ))}
         </Grid>

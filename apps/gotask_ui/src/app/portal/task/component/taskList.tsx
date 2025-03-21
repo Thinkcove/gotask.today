@@ -21,12 +21,12 @@ const TaskList: React.FC = () => {
     tasksByProjects,
     isLoading: isLoadingProjects,
     isError: isErrorProjects,
-  } = useProjectGroupTask(1, 10);
+  } = useProjectGroupTask(1, 10, 1, 10);
   const {
     tasksByUsers,
     isLoading: isLoadingUsers,
     isError: isErrorUsers,
-  } = useUserGroupTask(1, 10);
+  } = useUserGroupTask(1, 10, 1, 10);
 
   const isLoading = view === "projects" ? isLoadingProjects : isLoadingUsers;
   const isError = view === "projects" ? isErrorProjects : isErrorUsers;
@@ -70,7 +70,7 @@ const TaskList: React.FC = () => {
       >
         <Grid container spacing={3} sx={{ p: 2 }}>
           {tasks.map((group: any) => (
-            <Grid item xs={12} sm={6} md={4} key={group._id}>
+            <Grid item xs={12} sm={6} md={4} key={group.id}>
               <TaskCard
                 view={view}
                 group={group}

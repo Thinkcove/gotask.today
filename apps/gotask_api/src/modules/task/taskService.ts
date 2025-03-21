@@ -1,11 +1,24 @@
 import { TASK_STATUS } from "../../constants/taskConstant";
 import { ITask } from "../../domain/interface/task";
+import { Project } from "../../domain/model/project";
 import { Task } from "../../domain/model/task";
+import { User } from "../../domain/model/user";
 
 export class TaskService {
   // Create a new task
-  static async createTask(taskData: ITask): Promise<ITask> {
-    const newTask = new Task(taskData);
+  static async createTask(taskData: Partial<ITask>): Promise<ITask> {
+    // Fetch user and project details
+    const user = await User.findOne({ id: taskData.user_id });
+    const project = await Project.findOne({ id: taskData.project_id });
+    if (!user || !project) {
+      throw new Error("Invalid user_id or project_id");
+    }
+    // Assign user_name and project_name
+    const newTask = new Task({
+      ...taskData,
+      user_name: user.name,
+      project_name: project.name,
+    });
     return await newTask.save();
   }
 
@@ -15,44 +28,64 @@ export class TaskService {
   }
 
   // Group tasks by project with pagination
-  static async getTaskByProject(page: number, pageSize: number) {
+  static async getTaskByProject(
+    page: number,
+    pageSize: number,
+    taskPage: number,
+    taskPageSize: number,
+    search_vals?: any[][],
+    search_vars?: string[][],
+  ) {
     const skip = (page - 1) * pageSize;
+    const taskSkip = (taskPage - 1) * taskPageSize;
+    // Construct filter object dynamically
+    let filter: any = {};
+    if (search_vars && search_vals) {
+      search_vars.forEach((vars, index) => {
+        vars.forEach((field, fieldIndex) => {
+          const fieldName = field === "id" ? "project_id" : field;
+          filter[fieldName] = search_vals[index][fieldIndex];
+        });
+      });
+    }
 
     const aggregationPipeline: any[] = [
-      { $sort: { updatedAt: -1 } }, // Step 1: Sort tasks by most recent first
+      { $match: filter }, // Step 1: Filter projects correctly
+      { $sort: { updatedAt: -1 } }, // Step 2: Sort tasks by most recent first
       {
         $group: {
-          _id: "$project_name",
-          tasks: { $push: "$$ROOT" }, // Step 2: Push all tasks into the project
+          _id: { id: "$project_id", project_name: "$project_name" }, // Group by project_id and project_name
+          tasks: { $push: "$$ROOT" },
           total_count: { $sum: 1 },
-          latestTaskUpdatedAt: { $max: "$updatedAt" }, // Step 3: Store the most recent task's timestamp
+          latestTaskUpdatedAt: { $max: "$updatedAt" },
         },
       },
-      {
-        $sort: { latestTaskUpdatedAt: -1 }, // Step 4: Sort projects by the latest task's creation date
-      },
+      { $sort: { latestTaskUpdatedAt: -1 } }, // Step 3: Sort projects by latest task's update time
       {
         $project: {
-          _id: 1,
+          _id: 0,
+          id: "$_id.id",
+          project_name: "$_id.project_name",
           total_count: 1,
-          latestTaskUpdatedAt: 1, // Keep this for debugging
+          latestTaskUpdatedAt: 1,
+          task_total_pages: { $ceil: { $divide: ["$total_count", taskPageSize] } },
           tasks: {
             $slice: [
               {
-                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } }, // Step 5: Ensure tasks inside each project are sorted
+                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } },
               },
-              0,
-              pageSize,
+              taskSkip,
+              taskPageSize,
             ],
           },
         },
       },
-      { $skip: skip }, // Step 6: Paginate projects
+      { $skip: skip }, // Step 4: Paginate projects
       { $limit: pageSize },
     ];
 
     const taskGroups = await Task.aggregate(aggregationPipeline);
-    const totalProjects = await Task.distinct("project_name").then((res) => res.length);
+    const totalProjects = await Task.distinct("project_name", filter).then((res) => res.length);
 
     return {
       taskbyprojects: taskGroups,
@@ -63,14 +96,20 @@ export class TaskService {
   }
 
   // Group tasks by user with pagination
-  static async getTaskByUser(page: number, pageSize: number) {
+  static async getTaskByUser(
+    page: number,
+    pageSize: number,
+    taskPage: number,
+    taskPageSize: number,
+  ) {
     const skip = (page - 1) * pageSize;
+    const taskSkip = (taskPage - 1) * taskPageSize;
 
     const aggregationPipeline: any[] = [
       { $sort: { updatedAt: -1 } }, // Step 1: Sort tasks globally by most recent
       {
         $group: {
-          _id: "$assigned_to",
+          _id: { id: "$user_id", user_name: "$user_name" }, // Group by project_id and project_name
           tasks: { $push: "$$ROOT" }, // Step 2: Push all tasks assigned to the user
           total_count: { $sum: 1 },
           latestTaskUpdatedAt: { $max: "$updatedAt" }, // Step 3: Store the most recent task’s timestamp
@@ -79,15 +118,18 @@ export class TaskService {
       { $sort: { latestTaskUpdatedAt: -1 } }, // Step 4: Sort users by their most recent task
       {
         $project: {
-          _id: 1,
+          _id: 0,
+          id: "$_id.id",
+          user_name: "$_id.user_name",
           total_count: 1,
           latestTaskUpdatedAt: 1, // Optional: Keep this for debugging
+          task_total_pages: { $ceil: { $divide: ["$total_count", taskPageSize] } }, // Calculate total pages for tasks
           tasks: {
             $slice: [
               {
                 $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } }, // Step 5: Ensure tasks inside each user group are sorted
               },
-              0,
+              taskSkip,
               pageSize,
             ],
           },

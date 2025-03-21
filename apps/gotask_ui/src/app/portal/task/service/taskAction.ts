@@ -3,15 +3,30 @@ import env from "@/app/common/env";
 import { getData, postData } from "@/app/common/utils/apiData";
 
 //fetch taskbyproject-grouping
-const fetchProjectTasks = async (page: number, pageSize: number) => {
-  const payload = { page, page_size: pageSize };
+const fetchProjectTasks = async (
+  page: number,
+  pageSize: number,
+  taskPage: number,
+  taskPageSize: number
+) => {
+  const payload = {
+    page,
+    page_size: pageSize,
+    task_page: taskPage,
+    task_page_size: taskPageSize,
+  };
   return postData(`${env.API_BASE_URL}/tasks/grouped-by-project`, payload);
 };
 
-export const useProjectGroupTask = (page: number = 1, pageSize: number = 2) => {
+export const useProjectGroupTask = (
+  page: number,
+  pageSize: number,
+  taskPage: number,
+  taskPageSize: number
+) => {
   const { data, error, mutate, isValidating } = useSWR(
-    [`fetch-project-tasks`, page, pageSize],
-    () => fetchProjectTasks(page, pageSize),
+    [`fetch-project-tasks`, page, pageSize, taskPage, taskPageSize],
+    () => fetchProjectTasks(page, pageSize, taskPage, taskPageSize),
     { revalidateOnFocus: false }
   );
 
@@ -25,15 +40,30 @@ export const useProjectGroupTask = (page: number = 1, pageSize: number = 2) => {
 };
 
 //fetch taskbyuser-grouping
-const fetchUserTasks = async (page: number, pageSize: number) => {
-  const payload = { page, page_size: pageSize };
+const fetchUserTasks = async (
+  page: number,
+  pageSize: number,
+  taskPage: number,
+  taskPageSize: number
+) => {
+  const payload = {
+    page,
+    page_size: pageSize,
+    task_page: taskPage,
+    task_page_size: taskPageSize,
+  };
   return postData(`${env.API_BASE_URL}/tasks/grouped-by-user`, payload); // ✅ Corrected endpoint
 };
 
-export const useUserGroupTask = (page: number = 1, pageSize: number = 2) => {
+export const useUserGroupTask = (
+  page: number,
+  pageSize: number,
+  taskPage: number,
+  taskPageSize: number
+) => {
   const { data, error, mutate, isValidating } = useSWR(
     [`fetch-user-tasks`, page, pageSize],
-    () => fetchUserTasks(page, pageSize),
+    () => fetchUserTasks(page, pageSize, taskPage, taskPageSize),
     { revalidateOnFocus: false }
   );
 
@@ -61,7 +91,11 @@ export const fetchAllUsers = () => {
     revalidateOnFocus: false,
   });
   return {
-    getAllUsers: data?.data?.map((user: { name: string }) => user.name) || [],
+    getAllUsers:
+      data?.data?.map((user: { name: string; id: string }) => ({
+        name: user.name,
+        id: user.id,
+      })) || [],
   };
 };
 
@@ -76,7 +110,10 @@ export const fetchAllProjects = () => {
   });
   return {
     getAllProjects:
-      data?.data?.map((project: { name: string }) => project.name) || [],
+      data?.data?.map((project: { name: string; id: string }) => ({
+        name: project.name,
+        id: project.id,
+      })) || [],
   };
 };
 

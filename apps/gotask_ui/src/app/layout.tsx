@@ -16,7 +16,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ overflow: "hidden" }}>
+      <body style={{ overflow: "hidden", backgroundColor: "#E1D7E0" }}>
         <CssBaseline />
 
         {/* Fixed Header */}

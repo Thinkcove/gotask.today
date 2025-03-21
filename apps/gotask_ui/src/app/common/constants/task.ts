@@ -23,6 +23,19 @@ export const getStatusColor = (status: string) => {
   }
 };
 
+export const getSeverityColor = (severity: string) => {
+  switch (severity) {
+    case "high":
+      return "#D32F2F"; // Red
+    case "medium":
+      return "#FFA000"; // Orange
+    case "low":
+      return "#388E3C"; // Green
+    default:
+      return "#757575"; // Grey
+  }
+};
+
 export const TASK_STATUS = {
   TO_DO: "to-do",
   IN_PROGRESS: "in-progress",

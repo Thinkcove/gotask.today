@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography, Paper } from "@mui/material";
 import TaskInput from "@/app/portal/task/component/taskInput";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
@@ -24,8 +24,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
     description: "",
     status: TASK_STATUS.TO_DO,
     severity: TASK_SEVERITY.LOW,
-    assigned_to: "",
-    project_name: "",
+    user_id: "",
+    project_id: "",
     created_on: "",
     due_date: "",
   });
@@ -37,8 +37,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
         description: data.description || "",
         status: data.status || TASK_STATUS.TO_DO,
         severity: data.severity || TASK_SEVERITY.LOW,
-        assigned_to: data.assigned_to || "",
-        project_name: data.project_name || "",
+        user_id: data.user_id || "",
+        project_id: data.project_id || "",
         created_on: data.created_on ? data.created_on.split("T")[0] : "",
         due_date: data.due_date ? data.due_date.split("T")[0] : "",
       });
@@ -93,10 +93,9 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
     <>
       <Box
         sx={{
-          p: 5,
           position: "sticky",
           top: 0,
-          backgroundColor: "white",
+          p: 4,
           zIndex: 1000,
         }}
       >
@@ -105,19 +104,30 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            width: "100%",
           }}
         >
-          <Typography variant="h4" sx={{ color: "#741B92" }}>
-            Edit Task:
+          {/* Title with Gradient Effect */}
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold", color: "#741B92" }}
+          >
+            Edit Task
           </Typography>
+
+          {/* Buttons with Soft Hover Effects */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Button
               variant="outlined"
               sx={{
-                borderRadius: "54px",
+                borderRadius: "30px",
                 color: "black",
-                border: "2px solid #741B92",
+                border: "2px solid  #741B92",
+                px: 2,
                 textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                },
               }}
               onClick={() => router.back()}
             >
@@ -126,14 +136,19 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
             <Button
               variant="contained"
               sx={{
-                borderRadius: "54px",
-                backgroundColor: "#741B92",
+                borderRadius: "30px",
+                backgroundColor: " #741B92",
                 color: "white",
+                px: 2,
                 textTransform: "none",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "rgb(202, 187, 201) 100%)",
+                },
               }}
               onClick={handleSubmit}
             >
-              Save Changes
+              Save
             </Button>
           </Box>
         </Box>
@@ -152,12 +167,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
           formData={formData}
           handleInputChange={handleInputChange}
           errors={{}}
-          readOnlyFields={[
-            "title",
-            "assigned_to",
-            "project_name",
-            "created_on",
-          ]}
+          readOnlyFields={["title", "user_id", "project_id", "created_on"]}
         />
       </Box>
 

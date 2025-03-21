@@ -20,8 +20,8 @@ const CreateTask: React.FC = () => {
     description: "",
     status: TASK_STATUS.TO_DO,
     severity: TASK_SEVERITY.LOW,
-    assigned_to: "",
-    project_name: "",
+    user_id: "",
+    project_id: "",
     created_on: new Date().toISOString().split("T")[0], // Set default date
     due_date: new Date().toISOString().split("T")[0], // Set default date
   });
@@ -40,10 +40,8 @@ const CreateTask: React.FC = () => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.title) newErrors.title = "Task Title is required";
-    if (!formData.assigned_to)
-      newErrors.assigned_to = "Assignee Name is required";
-    if (!formData.project_name)
-      newErrors.project_name = "Project Name is required";
+    if (!formData.user_id) newErrors.user_id = "Assignee Name is required";
+    if (!formData.project_id) newErrors.project_id = "Project Name is required";
     if (!formData.status) newErrors.status = "Status is required";
     if (!formData.severity) newErrors.severity = "Severity is required";
 
@@ -75,14 +73,12 @@ const CreateTask: React.FC = () => {
 
   return (
     <>
-      {/* Fixed Header */}
       <Box
         sx={{
-          p: 5,
           position: "sticky",
           top: 0,
-          backgroundColor: "white",
-          zIndex: 1000, // Ensures it stays on top
+          p: 4,
+          zIndex: 1000,
         }}
       >
         <Box
@@ -93,19 +89,27 @@ const CreateTask: React.FC = () => {
             width: "100%",
           }}
         >
-          <Typography variant="h4" sx={{ color: "#741B92" }}>
-            Create Task :
+          {/* Title with Gradient Effect */}
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold", color: "#741B92" }}
+          >
+            Create New Task
           </Typography>
 
+          {/* Buttons with Soft Hover Effects */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Button
               variant="outlined"
               sx={{
-                borderRadius: "54px",
-                backgroundColor: "white",
+                borderRadius: "30px",
                 color: "black",
-                border: "2px solid #741B92",
+                border: "2px solid  #741B92",
+                px: 2,
                 textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                },
               }}
               onClick={() => router.back()}
             >
@@ -114,10 +118,15 @@ const CreateTask: React.FC = () => {
             <Button
               variant="contained"
               sx={{
-                borderRadius: "54px",
-                backgroundColor: "#741B92",
+                borderRadius: "30px",
+                backgroundColor: " #741B92",
                 color: "white",
+                px: 2,
                 textTransform: "none",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "rgb(202, 187, 201) 100%)",
+                },
               }}
               onClick={handleSubmit}
             >

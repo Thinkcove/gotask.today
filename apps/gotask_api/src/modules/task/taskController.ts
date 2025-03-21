@@ -32,8 +32,16 @@ export const getAllTasks = async (_request: Request, h: ResponseToolkit) => {
 // Get tasks grouped by project with pagination
 export const getTaskByProject = async (request: Request, h: ResponseToolkit) => {
   try {
-    const { page, page_size } = request.payload as any;
-    const result = await TaskService.getTaskByProject(Number(page), Number(page_size));
+    const { page, page_size, task_page, task_page_size, search_vals, search_vars } =
+      request.payload as any;
+    const result = await TaskService.getTaskByProject(
+      Number(page),
+      Number(page_size),
+      Number(task_page),
+      Number(task_page_size),
+      search_vals,
+      search_vars,
+    );
     return successResponse(h, result);
   } catch (error) {
     return errorResponse(h, "Failed to retrieve tasks by project", 500);
@@ -43,8 +51,13 @@ export const getTaskByProject = async (request: Request, h: ResponseToolkit) => 
 // Get tasks grouped by user with pagination
 export const getTaskByUser = async (request: Request, h: ResponseToolkit) => {
   try {
-    const { page, page_size } = request.payload as any;
-    const result = await TaskService.getTaskByUser(Number(page), Number(page_size));
+    const { page, page_size, task_page, task_page_size } = request.payload as any;
+    const result = await TaskService.getTaskByUser(
+      Number(page),
+      Number(page_size),
+      Number(task_page),
+      Number(task_page_size),
+    );
     return successResponse(h, result);
   } catch (error) {
     return errorResponse(h, "Failed to retrieve tasks by user", 500);

@@ -24,7 +24,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
   return (
     <>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} mb={2}>
         <FormField
           label="Task Title * :"
           type="text"
@@ -44,12 +44,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
             options={getAllUsers}
             required
             placeholder="Select Assignee Name"
-            value={formData.assigned_to}
-            onChange={(value) =>
-              handleInputChange("assigned_to", String(value))
-            }
-            error={errors.assigned_to}
-            disabled={isReadOnly("assigned_to")}
+            value={formData.user_id}
+            onChange={(value) => handleInputChange("user_id", String(value))}
+            error={errors.user_id}
+            disabled={isReadOnly("user_id")}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -59,12 +57,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
             options={getAllProjects}
             required
             placeholder="Select Project Name"
-            value={formData.project_name}
-            onChange={(value) =>
-              handleInputChange("project_name", String(value))
-            }
-            error={errors.project_name}
-            disabled={isReadOnly("project_name")}
+            value={formData.project_id}
+            onChange={(value) => handleInputChange("project_id", String(value))}
+            error={errors.project_id}
+            disabled={isReadOnly("project_id")}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -143,6 +139,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
               handleInputChange("description", String(value))
             }
             disabled={isReadOnly("description")}
+            multiline
+            height={120}
           />
         </Grid>
       </Grid>

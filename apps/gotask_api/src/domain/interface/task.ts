@@ -6,7 +6,9 @@ export interface ITask extends Document {
   description: string;
   status: string;
   severity: string;
-  assigned_to: string;
+  user_id: string;
+  user_name: string;
+  project_id: string;
   project_name: string;
   due_date: Date;
   created_on: Date;

@@ -19,8 +19,10 @@ const TaskSchema = new Schema<ITask>(
       enum: Object.values(TASK_SEVERITY),
       required: true,
     },
-    assigned_to: { type: String, required: true }, // User's name
-    project_name: { type: String, required: true }, // Project name
+    user_id: { type: String, required: true },
+    user_name: { type: String },
+    project_id: { type: String, required: true },
+    project_name: { type: String },
     due_date: { type: Date, required: true },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },

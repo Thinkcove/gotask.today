@@ -8,20 +8,29 @@ import {
   Box,
   Typography,
   FormHelperText,
+  InputAdornment,
 } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { ArrowDropDown, CalendarMonth, Edit } from "@mui/icons-material";
+
+interface SelectOption {
+  name: string;
+  id: string;
+}
 
 interface FormFieldProps {
   label: string;
   type: "text" | "select" | "date";
   required?: boolean;
   placeholder?: string;
-  options?: string[]; // Only for select type
+  options?: SelectOption[] | string[];
   value: string | number | Date;
   onChange: (value: string | number | Date) => void;
   error?: string;
   disabled?: boolean;
+  multiline?: boolean;
+  height?: number;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -34,46 +43,56 @@ const FormField: React.FC<FormFieldProps> = ({
   value,
   onChange,
   disabled = false,
+  multiline = false,
+  height,
 }) => {
   return (
     <FormControl fullWidth margin="normal" error={!!error}>
-      {type === "text" && (
-        <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 1.5 }}>
-            {label}
-          </Typography>
+      <Box
+        sx={{
+          p: 2,
+          borderRadius: 2,
+          backgroundColor: "#F9F9F9",
+          border: "1px solid #DADADA",
+          boxShadow: "2px 4px 10px rgba(0,0,0,0.05)",
+          transition: "0.3s",
+          "&:focus-within": { borderColor: "#741B92", backgroundColor: "#fff" },
+        }}
+      >
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+          {label}
+        </Typography>
+
+        {type === "text" && (
           <TextField
             variant="standard"
             required={required}
             placeholder={placeholder}
             error={!!error}
             fullWidth
+            multiline={multiline}
             value={value}
             disabled={disabled}
+            sx={{
+              "& .MuiInputBase-input::placeholder": {
+                color: "#9C8585",
+                opacity: 1, // Ensures full opacity
+              },
+              ...(multiline && { height: height || 100, overflowY: "auto" }),
+            }}
             onChange={(e) => onChange(e.target.value)}
             InputProps={{
-              sx: {
-                height: "30px",
-                "& .MuiInputBase-input": {
-                  transform: "translateY(-3px)",
-                },
-                "& .MuiInputBase-input::placeholder": {
-                  color: "#9C8585",
-                  opacity: 1,
-                  transform: "translateY(-3px)",
-                },
-              },
+              disableUnderline: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Edit sx={{ color: "#9C8585" }} />
+                </InputAdornment>
+              ),
             }}
           />
-          {error && <FormHelperText>{error}</FormHelperText>}
-        </Box>
-      )}
+        )}
 
-      {type === "select" && (
-        <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
-            {label}
-          </Typography>
+        {type === "select" && (
           <Select
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -82,37 +101,33 @@ const FormField: React.FC<FormFieldProps> = ({
             fullWidth
             error={!!error}
             disabled={disabled}
-            renderValue={(selected) => {
-              if (!selected) {
-                return (
-                  <Typography sx={{ color: "#9C8585", opacity: 1 }}>
-                    {placeholder}
-                  </Typography>
-                );
-              }
-              return typeof selected === "string"
-                ? selected
-                : selected.toString();
+            disableUnderline
+            IconComponent={ArrowDropDown}
+            sx={{
+              "& .MuiSelect-select": {
+                color: value ? "inherit" : "#9C8585", // Apply color only when placeholder is visible
+                opacity: 1,
+              },
             }}
           >
-            <MenuItem value="" disabled sx={{ color: "#9C8585", opacity: 1 }}>
+            <MenuItem value="" disabled>
               {placeholder}
             </MenuItem>
-            {options?.map((option, index) => (
-              <MenuItem key={index} value={option}>
-                {option}
-              </MenuItem>
-            ))}
+            {options?.map((option, index) =>
+              typeof option === "string" ? (
+                <MenuItem key={index} value={option}>
+                  {option}
+                </MenuItem>
+              ) : (
+                <MenuItem key={index} value={option.id}>
+                  {option.name}
+                </MenuItem>
+              )
+            )}
           </Select>
-          {error && <FormHelperText>{error}</FormHelperText>}
-        </Box>
-      )}
+        )}
 
-      {type === "date" && (
-        <Box sx={{ p: 3, display: "flex", flexDirection: "column" }}>
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
-            {label}
-          </Typography>
+        {type === "date" && (
           <DatePicker
             selected={value ? new Date(value) : null}
             onChange={(date) =>
@@ -126,12 +141,20 @@ const FormField: React.FC<FormFieldProps> = ({
                 fullWidth
                 placeholder={placeholder}
                 error={!!error}
+                InputProps={{
+                  disableUnderline: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CalendarMonth sx={{ color: "#9C8585" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
             }
           />
-          {error && <FormHelperText>{error}</FormHelperText>}
-        </Box>
-      )}
+        )}
+      </Box>
+      {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>
   );
 };

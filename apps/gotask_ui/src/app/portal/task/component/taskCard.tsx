@@ -1,7 +1,16 @@
 import React from "react";
-import { Typography, Paper, Box, Divider, Chip } from "@mui/material";
+import {
+  Typography,
+  Paper,
+  Box,
+  Divider,
+  Avatar,
+  Tooltip,
+} from "@mui/material";
 import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
+import { CalendarMonth, ReadMoreTwoTone } from "@mui/icons-material";
+import { TimelineDot } from "@mui/lab";
 
 interface TaskCardProps {
   view: "projects" | "users";
@@ -16,10 +25,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick }) => {
       sx={{
         p: 2,
         borderRadius: 3,
-        borderLeft: "5px solid #741B92",
         transition: "0.3s",
         "&:hover": { boxShadow: "0px 4px 10px rgba(156, 32, 240, 0.6)" },
-        height: 220,
+        height: 350,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -32,60 +40,114 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick }) => {
           alignItems: "center",
         }}
       >
-        <Typography variant="h6" fontWeight="bold">
-          {group._id}
+        <Typography variant="h6">
+          {view === "projects" ? group.project_name : group.user_name}
         </Typography>
-        <Chip
-          label={`Total Tasks: ${group.total_count}`}
-          size="small"
-          sx={{ backgroundColor: "#741B92", color: "white" }}
-        />
+        {/* View More replacing the Total Tasks Chip */}
+        {group.tasks.length > 3 && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              "&:hover": { textDecoration: "underline" },
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              sx={{
+                cursor: "pointer",
+                color: "#741B92",
+              }}
+              fontWeight="bold"
+              // onClick={() => onViewMore(group.id)}
+            >
+              View {group.tasks.length - 3} more
+            </Typography>
+            <ReadMoreTwoTone
+              sx={{
+                color: "#741B92",
+              }}
+            />
+          </Box>
+        )}
       </Box>
 
       <Divider sx={{ my: 1 }} />
 
       <Box sx={{ flexGrow: 1, overflowY: "auto", pr: 1 }}>
         {group.tasks.length > 0 ? (
-          group.tasks.map((task: any) => (
-            <Box
-              key={task._id}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                mb: 1,
-                p: 1,
-                backgroundColor: "white",
-                borderRadius: 2,
-                transition:
-                  "background-color 0.3s ease-in-out, border-left-color 0.3s ease-in-out",
-                "&:hover": {
-                  backgroundColor: getStatusColor(task.status),
-                },
-                cursor: "pointer",
-                borderLeft: `5px solid ${getStatusColor(task.status)}`,
-              }}
-              onClick={() => onTaskClick(task.id)}
-            >
+          <>
+            {group.tasks.slice(0, 3).map((task: any) => (
               <Box
+                key={task.id}
                 sx={{
+                  gap: 1,
+                  mb: 1,
+                  backgroundColor: "white",
+                  borderRadius: 2,
+                  cursor: "pointer",
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: "100%",
+                  flexDirection: "column",
                 }}
+                onClick={() => onTaskClick(task.id)}
               >
-                {/* Task Title & Due Date */}
-                <Typography variant="subtitle2" fontWeight="bold">
-                  {task.title}
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <TimelineDot
+                    sx={{
+                      border: "1px solid white",
+                      backgroundColor: getStatusColor(task.status),
+                      margin: 0,
+                    }}
+                  >
+                    <CalendarMonth sx={{ height: 16, width: 16 }} />
+                  </TimelineDot>
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight="semibold">
+                      {formatDate(task.due_date)}
+                    </Typography>
+                  </Box>
+                </Box>
 
-                <Typography variant="subtitle2" fontWeight="bold">
-                  {formatDate(task.due_date)}
-                </Typography>
+                {/* Dotted Line Below Calendar Icon */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 3.5 }}>
+                  <Box
+                    sx={{
+                      height: 40,
+                      borderLeft: "2px solid grey",
+                      marginLeft: "13px",
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "100%",
+                      backgroundColor: "#F9F9F9",
+                      transition:
+                        "background-color 0.3s ease-in-out, border-left-color 0.3s ease-in-out",
+                      "&:hover": {
+                        backgroundColor: getStatusColor(task.status),
+                      },
+                      borderRadius: 2,
+                      cursor: "pointer",
+                      padding: 1,
+                      boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <Typography variant="subtitle2">{task.title}</Typography>
+                    {view === "projects" && (
+                      <Tooltip title={task.user_name} arrow>
+                        <Avatar sx={{ height: 24, width: 24, fontSize: 12 }}>
+                          {task.user_name.charAt(0).toUpperCase()}
+                        </Avatar>
+                      </Tooltip>
+                    )}
+                  </Box>
+                </Box>
               </Box>
-            </Box>
-          ))
+            ))}
+          </>
         ) : (
           <Typography variant="body2" color="textSecondary" align="center">
             No tasks available

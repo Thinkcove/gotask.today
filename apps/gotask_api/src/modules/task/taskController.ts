@@ -2,7 +2,7 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 import { TaskService } from "./taskService";
 import { errorResponse, successResponse } from "../../helpers/responseHelper";
 import RequestHelper from "../../helpers/requestHelper";
-import { ITask } from "../../domain/interface/task";
+import { ITask } from "../../domain/model/task";
 
 // Create a Task
 export const createTask = async (request: Request, h: ResponseToolkit) => {
@@ -51,12 +51,15 @@ export const getTaskByProject = async (request: Request, h: ResponseToolkit) => 
 // Get tasks grouped by user with pagination
 export const getTaskByUser = async (request: Request, h: ResponseToolkit) => {
   try {
-    const { page, page_size, task_page, task_page_size } = request.payload as any;
+    const { page, page_size, task_page, task_page_size, search_vals, search_vars } =
+      request.payload as any;
     const result = await TaskService.getTaskByUser(
       Number(page),
       Number(page_size),
       Number(task_page),
       Number(task_page_size),
+      search_vals,
+      search_vars,
     );
     return successResponse(h, result);
   } catch (error) {
@@ -95,6 +98,6 @@ export const updateTask = async (request: Request, h: ResponseToolkit) => {
     if (!updatedTask) return errorResponse(h, "Task not found", 404);
     return successResponse(h, updatedTask);
   } catch (error) {
-    return errorResponse(h, "Failed to update Task details");
+    return errorResponse(h, "Failed to update Task details", 500);
   }
 };

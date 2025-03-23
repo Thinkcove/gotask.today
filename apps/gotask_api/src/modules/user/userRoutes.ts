@@ -1,7 +1,7 @@
 import { Server } from "@hapi/hapi";
 import { HTTP_METHODS, HttpMethod } from "../../constants/httpMethods";
 import { API_PATHS } from "../../constants/apiPaths";
-import { createUser, getAllUsers, getUserById, updateUser } from "./userController";
+import { createUser, getAllUsers, getUserById, loginUser, updateUser } from "./userController";
 
 export const userRoutes = (server: Server) => {
   server.route([
@@ -24,6 +24,11 @@ export const userRoutes = (server: Server) => {
       method: HTTP_METHODS.PUT as HttpMethod,
       path: API_PATHS.UPDATE_USER,
       handler: updateUser,
+    },
+    {
+      method: HTTP_METHODS.POST as HttpMethod,
+      path: API_PATHS.LOGIN,
+      handler: loginUser,
     },
   ]);
 };

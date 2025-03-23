@@ -1,5 +1,4 @@
-import { IProject } from "../../domain/interface/project";
-import { Project } from "../../domain/model/project";
+import { IProject, Project } from "../../domain/model/project";
 
 export class ProjectService {
   // Create a new project

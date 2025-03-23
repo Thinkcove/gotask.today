@@ -3,30 +3,42 @@ import env from "@/app/common/env";
 import { getData, postData } from "@/app/common/utils/apiData";
 
 //fetch taskbyproject-grouping
-const fetchProjectTasks = async (
-  page: number,
-  pageSize: number,
-  taskPage: number,
-  taskPageSize: number
-) => {
-  const payload = {
-    page,
-    page_size: pageSize,
-    task_page: taskPage,
-    task_page_size: taskPageSize,
-  };
-  return postData(`${env.API_BASE_URL}/tasks/grouped-by-project`, payload);
-};
-
 export const useProjectGroupTask = (
   page: number,
   pageSize: number,
   taskPage: number,
-  taskPageSize: number
+  taskPageSize: number,
+  search_vals?: string[][],
+  search_vars?: string[][]
 ) => {
+  const fetchProjectTasks = async () => {
+    const payload: any = {
+      page,
+      page_size: pageSize,
+      task_page: taskPage,
+      task_page_size: taskPageSize,
+    };
+
+    // Add search parameters only if provided
+    if (search_vals && search_vars) {
+      payload.search_vals = search_vals;
+      payload.search_vars = search_vars;
+    }
+
+    return postData(`${env.API_BASE_URL}/tasks/grouped-by-project`, payload);
+  };
+
   const { data, error, mutate, isValidating } = useSWR(
-    [`fetch-project-tasks`, page, pageSize, taskPage, taskPageSize],
-    () => fetchProjectTasks(page, pageSize, taskPage, taskPageSize),
+    [
+      `fetch-project-tasks`,
+      page,
+      pageSize,
+      taskPage,
+      taskPageSize,
+      search_vals,
+      search_vars,
+    ],
+    fetchProjectTasks,
     { revalidateOnFocus: false }
   );
 
@@ -40,30 +52,42 @@ export const useProjectGroupTask = (
 };
 
 //fetch taskbyuser-grouping
-const fetchUserTasks = async (
-  page: number,
-  pageSize: number,
-  taskPage: number,
-  taskPageSize: number
-) => {
-  const payload = {
-    page,
-    page_size: pageSize,
-    task_page: taskPage,
-    task_page_size: taskPageSize,
-  };
-  return postData(`${env.API_BASE_URL}/tasks/grouped-by-user`, payload); // ✅ Corrected endpoint
-};
 
 export const useUserGroupTask = (
   page: number,
   pageSize: number,
   taskPage: number,
-  taskPageSize: number
+  taskPageSize: number,
+  search_vals?: string[][],
+  search_vars?: string[][]
 ) => {
+  const fetchUserTasks = async () => {
+    const payload: any = {
+      page,
+      page_size: pageSize,
+      task_page: taskPage,
+      task_page_size: taskPageSize,
+    };
+
+    // Add search parameters only if provided
+    if (search_vals && search_vars) {
+      payload.search_vals = search_vals;
+      payload.search_vars = search_vars;
+    }
+
+    return postData(`${env.API_BASE_URL}/tasks/grouped-by-user`, payload);
+  };
   const { data, error, mutate, isValidating } = useSWR(
-    [`fetch-user-tasks`, page, pageSize],
-    () => fetchUserTasks(page, pageSize, taskPage, taskPageSize),
+    [
+      `fetch-user-tasks`,
+      page,
+      pageSize,
+      taskPage,
+      taskPageSize,
+      search_vals,
+      search_vars,
+    ],
+    fetchUserTasks,
     { revalidateOnFocus: false }
   );
 

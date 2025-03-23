@@ -1,5 +1,4 @@
-import { IUser } from "../../domain/interface/user";
-import { User } from "../../domain/model/user";
+import { IUser, User } from "../../domain/model/user";
 
 export class UserService {
   // Create a new user
@@ -21,5 +20,10 @@ export class UserService {
   // Update user details
   static async updateUser(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
     return await User.findOneAndUpdate({ id }, updateData, { new: true });
+  }
+
+  // Find user by email (for login)
+  static async getUserByEmail(user_id: string): Promise<IUser | null> {
+    return await User.findOne({ user_id });
   }
 }

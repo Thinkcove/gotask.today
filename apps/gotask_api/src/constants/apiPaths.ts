@@ -17,4 +17,7 @@ export const API_PATHS = {
   GET_USERS: "/getAllUsers",
   GET_USER_BY_ID: "/getUserById/{id}",
   UPDATE_USER: "/updateUser/{id}",
+
+  //loginRoute
+  LOGIN: "/user/login",
 };

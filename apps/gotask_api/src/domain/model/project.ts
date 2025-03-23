@@ -1,7 +1,14 @@
+import { Document } from "mongoose";
 import mongoose, { Schema } from "mongoose";
-import { IProject } from "../interface/project";
 import { PROJECT_STATUS } from "../../constants/projectConstant";
 import { v4 as uuidv4 } from "uuid";
+
+export interface IProject extends Document {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+}
 
 const ProjectSchema = new Schema<IProject>(
   {

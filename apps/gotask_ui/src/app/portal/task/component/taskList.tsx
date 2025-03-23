@@ -11,11 +11,18 @@ import AddIcon from "@mui/icons-material/Add";
 import { useProjectGroupTask, useUserGroupTask } from "../service/taskAction";
 import TaskToggle from "./taskToggle";
 import StatusIndicator from "./statusIndicator";
-import TaskCard from "./taskCard";
 import { useRouter } from "next/navigation";
+import TaskCard from "./taskCard";
+import ViewMoreList from "./viewMoreList";
 
 const TaskList: React.FC = () => {
   const [view, setView] = useState<"projects" | "users">("projects");
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+  const [searchParams, setSearchParams] = useState<{
+    search_vals?: string[][];
+    search_vars?: string[][];
+  }>({});
+
   const router = useRouter();
   const {
     tasksByProjects,
@@ -32,13 +39,45 @@ const TaskList: React.FC = () => {
   const isError = view === "projects" ? isErrorProjects : isErrorUsers;
   const tasks = view === "projects" ? tasksByProjects : tasksByUsers;
 
-  // Handle task click
+  const { tasksByProjects: projectTasks, isLoading: projectIsLoading } =
+    view === "projects"
+      ? useProjectGroupTask(
+          1,
+          10,
+          1,
+          10,
+          searchParams.search_vals,
+          searchParams.search_vars
+        )
+      : { tasksByProjects: [], isLoading: false };
+
+  const { tasksByUsers: userTasks, isLoading: userIsLoading } =
+    view === "users"
+      ? useUserGroupTask(
+          1,
+          10,
+          1,
+          10,
+          searchParams.search_vals,
+          searchParams.search_vars
+        )
+      : { tasksByUsers: [], isLoading: false };
+
   const handleTaskClick = (id: any) => {
-    try {
-      router.push(`/portal/task/editTask/${id}`);
-    } catch (error) {
-      console.error("Error fetching task:", error);
-    }
+    router.push(`/portal/task/editTask/${id}`);
+  };
+
+  const handleViewMore = (id: number) => {
+    setSelectedGroupId(id);
+    setSearchParams({
+      search_vals: [[id.toString()]],
+      search_vars: [["id"]],
+    });
+  };
+
+  const handleCloseDrawer = () => {
+    setSelectedGroupId(null);
+    setSearchParams({});
   };
 
   if (isLoading)
@@ -60,14 +99,7 @@ const TaskList: React.FC = () => {
       <TaskToggle view={view} setView={setView} />
       <StatusIndicator />
 
-      {/* Scrollable Grid Container */}
-      <Box
-        sx={{
-          overflowY: "auto",
-          maxHeight: "calc(100vh - 250px)",
-          mb: 24,
-        }}
-      >
+      <Box sx={{ overflowY: "auto", maxHeight: "calc(100vh - 250px)", mb: 24 }}>
         <Grid container spacing={3} sx={{ p: 2 }}>
           {tasks.map((group: any) => (
             <Grid item xs={12} sm={6} md={4} key={group.id}>
@@ -75,6 +107,7 @@ const TaskList: React.FC = () => {
                 view={view}
                 group={group}
                 onTaskClick={handleTaskClick}
+                onViewMore={handleViewMore}
               />
             </Grid>
           ))}
@@ -95,6 +128,17 @@ const TaskList: React.FC = () => {
           </Fab>
         </Tooltip>
       </Box>
+
+      {/* Drawer Component */}
+      <ViewMoreList
+        open={Boolean(selectedGroupId)}
+        selectedGroupId={selectedGroupId}
+        drawerTasks={view === "projects" ? projectTasks : userTasks}
+        isLoadingDrawer={view === "projects" ? projectIsLoading : userIsLoading}
+        onClose={handleCloseDrawer}
+        onTaskClick={handleTaskClick}
+        view={view}
+      />
     </Box>
   );
 };

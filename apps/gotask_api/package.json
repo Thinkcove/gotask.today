@@ -13,12 +13,20 @@
   "description": "",
   "dependencies": {
     "@hapi/hapi": "^21.4.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
+    "bcrypt": "^5.1.1",
+    "blipp": "^4.0.2",
     "dotenv": "^16.4.7",
+    "hapi-auth-bearer-token": "^8.0.0",
+    "hapi-swagger": "^17.3.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/hapi__hapi": "^20.0.13",
+    "@types/hapi-auth-bearer-token": "^6.1.8",
     "@types/node": "^22.13.10",
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",

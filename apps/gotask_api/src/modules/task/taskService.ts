@@ -1,8 +1,11 @@
+import mongoose from "mongoose";
 import { TASK_STATUS } from "../../constants/taskConstant";
-import { ITask } from "../../domain/interface/task";
+import { generateHistoryEntry } from "../../constants/utils.ts/taskHistory";
 import { Project } from "../../domain/model/project";
-import { Task } from "../../domain/model/task";
+import { ITask, Task } from "../../domain/model/task";
 import { User } from "../../domain/model/user";
+import { v4 as uuidv4 } from "uuid";
+import { ITaskHistory, TaskHistorySchema } from "../../domain/model/taskHistory";
 
 export class TaskService {
   // Create a new task
@@ -101,12 +104,26 @@ export class TaskService {
     pageSize: number,
     taskPage: number,
     taskPageSize: number,
+    search_vals?: any[][],
+    search_vars?: string[][],
   ) {
     const skip = (page - 1) * pageSize;
     const taskSkip = (taskPage - 1) * taskPageSize;
+    // Construct filter object dynamically
+
+    let filter: any = {};
+    if (search_vars && search_vals) {
+      search_vars.forEach((vars, index) => {
+        vars.forEach((field, fieldIndex) => {
+          const fieldName = field === "id" ? "user_id" : field;
+          filter[fieldName] = search_vals[index][fieldIndex];
+        });
+      });
+    }
 
     const aggregationPipeline: any[] = [
-      { $sort: { updatedAt: -1 } }, // Step 1: Sort tasks globally by most recent
+      { $match: filter }, // Step 1: Filter projects correctly
+      { $sort: { updatedAt: -1 } }, // Step 2: Sort tasks globally by most recent
       {
         $group: {
           _id: { id: "$user_id", user_name: "$user_name" }, // Group by project_id and project_name
@@ -130,7 +147,7 @@ export class TaskService {
                 $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } }, // Step 5: Ensure tasks inside each user group are sorted
               },
               taskSkip,
-              pageSize,
+              taskPageSize,
             ],
           },
         },
@@ -140,7 +157,7 @@ export class TaskService {
     ];
 
     const taskGroups = await Task.aggregate(aggregationPipeline);
-    const totalUsers = await Task.distinct("assigned_to").then((res) => res.length);
+    const totalUsers = await Task.distinct("user_name", filter).then((res) => res.length);
 
     return {
       taskbyusers: taskGroups,
@@ -182,6 +199,32 @@ export class TaskService {
 
   // Update task details
   static async updateTask(id: string, updateData: Partial<ITask>): Promise<ITask | null> {
-    return await Task.findOneAndUpdate({ id }, updateData, { new: true });
+    try {
+      const existingTask = await Task.findOne({ id });
+      if (!existingTask) return null;
+      const { user_id, user_name } = updateData;
+      const historyEntry = generateHistoryEntry(existingTask, updateData);
+      if (!existingTask.history) {
+        existingTask.history = [];
+      }
+      if (historyEntry) {
+        const historyItem = new (mongoose.model<ITaskHistory>("TaskHistory", TaskHistorySchema))({
+          id: uuidv4(),
+          task_id: id,
+          user_id,
+          user_name,
+          formatted_history: historyEntry,
+          created_date: new Date(),
+        });
+        existingTask.history.unshift(historyItem);
+      }
+      // Update the task with new data
+      Object.assign(existingTask, updateData);
+      await existingTask.save();
+      return existingTask;
+    } catch (error) {
+      console.error("Task update failed:", error);
+      throw new Error("Failed to update Task details");
+    }
   }
 }

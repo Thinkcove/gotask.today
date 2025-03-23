@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import { TASK_STATUS } from "../../constants/taskConstant";
 import { generateHistoryEntry } from "../../constants/utils.ts/taskHistory";
 import { Project } from "../../domain/model/project";
-import { ITask, Task } from "../../domain/model/task";
+import { ITask, Task } from "../../domain/model/task/task";
 import { User } from "../../domain/model/user";
 import { v4 as uuidv4 } from "uuid";
-import { ITaskHistory, TaskHistorySchema } from "../../domain/model/taskHistory";
+import { ITaskHistory, TaskHistorySchema } from "../../domain/model/task/taskHistory";
 
 export class TaskService {
   // Create a new task

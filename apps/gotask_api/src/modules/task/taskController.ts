@@ -2,7 +2,7 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 import { TaskService } from "./taskService";
 import { errorResponse, successResponse } from "../../helpers/responseHelper";
 import RequestHelper from "../../helpers/requestHelper";
-import { ITask } from "../../domain/model/task";
+import { ITask } from "../../domain/model/task/task";
 
 // Create a Task
 export const createTask = async (request: Request, h: ResponseToolkit) => {

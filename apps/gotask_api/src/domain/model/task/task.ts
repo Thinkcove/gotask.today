@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { ITaskComment, TaskCommentSchema } from "./taskComment";
 import { ITaskHistory, TaskHistorySchema } from "./taskHistory";
-import { TASK_SEVERITY, TASK_STATUS } from "../../constants/taskConstant";
+import { TASK_SEVERITY, TASK_STATUS } from "../../../constants/taskConstant";
 
 export interface ITask extends Document {
   id: string;

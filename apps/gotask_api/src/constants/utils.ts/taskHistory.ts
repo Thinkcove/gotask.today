@@ -1,4 +1,4 @@
-import { ITask } from "../../domain/model/task";
+import { ITask } from "../../domain/model/task/task";
 
 export const generateHistoryEntry = (
   existingTask: ITask,

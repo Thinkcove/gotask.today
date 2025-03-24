@@ -1,10 +1,11 @@
+"use client";
 import React, { useState } from "react";
 import { AppBar, Box, Typography, Avatar } from "@mui/material";
-import { useAuth } from "@/app/provider/authProvider";
+import { useUser } from "@/app/userContext";
 import UserMenu from "./userMenu";
 
 const Header = () => {
-  const { user, logout } = useAuth();
+  const { user, logout } = useUser();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -38,7 +39,6 @@ const Header = () => {
           <Typography
             variant="h6"
             fontWeight="bold"
-            gutterBottom
             sx={{ color: "white", mb: 0 }}
           >
             Go Task Today

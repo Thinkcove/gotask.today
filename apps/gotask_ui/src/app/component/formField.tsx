@@ -31,6 +31,7 @@ interface FormFieldProps {
   disabled?: boolean;
   multiline?: boolean;
   height?: number;
+  onFocus?: () => void;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -45,6 +46,7 @@ const FormField: React.FC<FormFieldProps> = ({
   disabled = false,
   multiline = false,
   height,
+  onFocus,
 }) => {
   return (
     <FormControl fullWidth margin="normal" error={!!error}>
@@ -73,6 +75,7 @@ const FormField: React.FC<FormFieldProps> = ({
             multiline={multiline}
             value={value}
             disabled={disabled}
+            onFocus={onFocus}
             sx={{
               "& .MuiInputBase-input::placeholder": {
                 color: "#9C8585",

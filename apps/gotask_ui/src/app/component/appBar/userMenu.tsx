@@ -7,6 +7,7 @@ interface UserMenuProps {
   handleClose: () => void;
   handleLogout: () => void;
   user: {
+    id?: string;
     name?: string;
     role?: string;
     status?: boolean;

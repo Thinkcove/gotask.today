@@ -7,6 +7,8 @@ export const API_PATHS = {
   GET_TASK_BY_PROJECT: "/tasks/grouped-by-project",
   GET_TASK_BY_USER: "/tasks/grouped-by-user",
   GET_TASK_COUNT_BY_STATUS: "/tasks/status-count",
+  CREATE_COMMENT: "/task/createComment",
+  UPDATE_COMMENT: "/task/updateComment/{id}",
 
   //projectRoutes
   CREATE_PROJECT: "/createProject",

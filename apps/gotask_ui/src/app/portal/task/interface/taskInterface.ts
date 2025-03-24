@@ -14,6 +14,7 @@ export interface ITask {
   updated_on: string;
   due_date: string;
   history: ITaskHistory[];
+  comment: ITaskComment[];
 }
 
 export interface ITaskHistory {
@@ -23,4 +24,14 @@ export interface ITaskHistory {
   task_id: string;
   user_id: string;
   user_name: string;
+}
+
+export interface ITaskComment {
+  id: string;
+  task_id: string;
+  user_id: string;
+  user_name: string;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
 }

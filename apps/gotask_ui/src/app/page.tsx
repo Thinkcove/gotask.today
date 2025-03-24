@@ -1,6 +1,8 @@
-"use client";
-import Loginpage from "./login/page";
+import React from "react";
+import Login from "./login/page";
 
-export default function Home() {
-  return <Loginpage />;
-}
+const page = () => {
+  return <Login />;
+};
+
+export default page;

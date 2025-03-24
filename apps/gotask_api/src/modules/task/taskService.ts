@@ -6,6 +6,7 @@ import { ITask, Task } from "../../domain/model/task/task";
 import { User } from "../../domain/model/user";
 import { v4 as uuidv4 } from "uuid";
 import { ITaskHistory, TaskHistorySchema } from "../../domain/model/task/taskHistory";
+import { ITaskComment, TaskComment } from "../../domain/model/task/taskComment";
 
 export class TaskService {
   // Create a new task
@@ -226,5 +227,35 @@ export class TaskService {
       console.error("Task update failed:", error);
       throw new Error("Failed to update Task details");
     }
+  }
+
+  // Create a new comment
+  static async createComment(commentData: any) {
+    const { task_id, user_id, comment, user_name } = commentData;
+    const task = await Task.findOne({ id: task_id });
+    if (!task) throw new Error("Task not found");
+    const newComment = new TaskComment({ task_id: task_id, user_id: user_id, comment, user_name });
+    await newComment.save();
+    task.comment.unshift(newComment);
+    await task.save();
+    return newComment;
+  }
+
+  //update comment field
+  static async updateComment(
+    id: string,
+    newCommentText: Partial<ITaskComment>,
+  ): Promise<ITaskComment | null> {
+    // Step 1: Update the comment in TaskComment collection
+    const updatedComment = await TaskComment.findOneAndUpdate({ id }, newCommentText, {
+      new: true,
+    });
+    if (!updatedComment) return null;
+    // Step 2: Update the embedded comment inside the Task collection
+    await Task.updateOne(
+      { "comment.id": id }, // Find the task that contains this comment ID
+      { $set: { "comment.$.comment": newCommentText.comment } }, // Update comment text
+    );
+    return updatedComment;
   }
 }

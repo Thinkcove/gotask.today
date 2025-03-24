@@ -154,6 +154,7 @@ export const createTask = async (formData: any) => {
   return response.json();
 };
 
+//update a task
 export const updateTask = async (taskId: string, updatedFields: object) => {
   const response = await fetch(`${env.API_BASE_URL}/updateTask/${taskId}`, {
     method: "PUT",
@@ -164,6 +165,19 @@ export const updateTask = async (taskId: string, updatedFields: object) => {
   });
   if (!response.ok) {
     throw new Error("Failed to update task");
+  }
+  return response.json();
+};
+
+//create comment
+export const createComment = async (formData: any) => {
+  const response = await fetch(`${env.API_BASE_URL}/task/createComment`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to create comment");
   }
   return response.json();
 };

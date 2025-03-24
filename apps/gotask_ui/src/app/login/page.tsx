@@ -1,13 +1,9 @@
 "use client";
 import React from "react";
-import dynamic from "next/dynamic";
+import LoginForm from "./loginForm";
 
-const Login = dynamic(() => import("../login/loginForm"), {
-  ssr: false,
-});
-
-const Loginpage = () => {
-  return <Login />;
+const Login = () => {
+  return <LoginForm />;
 };
 
-export default Loginpage;
+export default Login;

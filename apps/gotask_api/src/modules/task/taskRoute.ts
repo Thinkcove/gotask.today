@@ -7,6 +7,8 @@ import {
   getTaskCountByStatus,
   getTaskById,
   updateTask,
+  createComment,
+  updateComment,
 } from "./taskController";
 import { HTTP_METHODS } from "../../constants/httpMethods";
 import { API_PATHS } from "../../constants/apiPaths";
@@ -47,6 +49,16 @@ export const taskRoutes = (server: Server) => {
       method: HTTP_METHODS.PUT,
       path: API_PATHS.UPDATE_TASK,
       handler: updateTask,
+    },
+    {
+      method: HTTP_METHODS.POST,
+      path: API_PATHS.CREATE_COMMENT,
+      handler: createComment,
+    },
+    {
+      method: HTTP_METHODS.PUT,
+      path: API_PATHS.UPDATE_COMMENT,
+      handler: updateComment,
     },
   ]);
 };

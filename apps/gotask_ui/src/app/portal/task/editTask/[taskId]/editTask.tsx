@@ -5,19 +5,21 @@ import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import { updateTask } from "../../service/taskAction";
+import { createComment, updateTask } from "../../service/taskAction";
 import { History } from "@mui/icons-material";
 import { ITask } from "../../interface/taskInterface";
 import HistoryDrawer from "../../component/taskHistory";
-import { useAuth } from "@/app/provider/authProvider";
+import TaskComments from "../../component/taskComments";
+import { useUser } from "@/app/userContext";
 
 interface EditTaskProps {
   data: ITask;
+  mutate: any;
 }
 
-const EditTask: React.FC<EditTaskProps> = ({ data }) => {
+const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useUser();
   const [openDrawer, setOpenDrawer] = useState(false); // Drawer state
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -43,7 +45,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
   const handleSubmit = async () => {
     try {
       const updatedFields: Record<string, string | number> = {};
-      // Normalize the due_date format for comparison
       const formattedDueDate = data.due_date ? data.due_date.split("T")[0] : "";
       if (formData.status !== data.status) {
         updatedFields.status = formData.status;
@@ -55,7 +56,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
         if (user?.name) updatedFields.user_name = user.name;
         if (user?.id) updatedFields.user_id = user.id;
       }
-      // Only update due_date if it's actually different
       if (formData.due_date !== formattedDueDate) {
         updatedFields.due_date = formData.due_date;
         if (user?.name) updatedFields.user_name = user.name;
@@ -78,6 +78,19 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
         severity: SNACKBAR_SEVERITY.ERROR,
       });
     }
+  };
+
+  // Handle comment submission
+  const submitComment = async (commentText: string) => {
+    if (!commentText.trim()) return;
+    const commentData = {
+      task_id: data.id, // Ensure `data.id` exists
+      user_id: user?.id, // Ensure `user` is available
+      user_name: user?.name,
+      comment: commentText,
+    };
+    await createComment(commentData);
+    mutate();
   };
 
   return (
@@ -140,12 +153,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
           </Box>
         </Box>
 
-        {/* Show History Button - Only If There is History */}
         {data.history && data.history.length > 0 && (
           <Box
             sx={{
               textDecoration: "underline",
-
               marginTop: 2,
               display: "flex",
               gap: 1,
@@ -177,6 +188,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
           errors={{}}
           readOnlyFields={["title", "user_id", "project_id", "created_on"]}
         />
+        <TaskComments comments={data.comment || []} onSave={submitComment} />
       </Box>
 
       <CustomSnackbar
@@ -185,8 +197,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data }) => {
         severity={snackbar.severity}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       />
-
-      {/* History Drawer Component */}
       <HistoryDrawer
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}

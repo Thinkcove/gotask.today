@@ -3,6 +3,7 @@ import { TaskService } from "./taskService";
 import { errorResponse, successResponse } from "../../helpers/responseHelper";
 import RequestHelper from "../../helpers/requestHelper";
 import { ITask } from "../../domain/model/task/task";
+import { ITaskComment } from "../../domain/model/task/taskComment";
 
 // Create a Task
 export const createTask = async (request: Request, h: ResponseToolkit) => {
@@ -99,5 +100,39 @@ export const updateTask = async (request: Request, h: ResponseToolkit) => {
     return successResponse(h, updatedTask);
   } catch (error) {
     return errorResponse(h, "Failed to update Task details", 500);
+  }
+};
+
+//Create a comment
+export const createComment = async (request: Request, h: ResponseToolkit) => {
+  try {
+    const requestHelper = new RequestHelper(request);
+    const commentData = requestHelper.getPayload();
+    if (!commentData) {
+      return errorResponse(h, "Missing required fields", 400);
+    }
+    const newComment = await TaskService.createComment(commentData);
+    return successResponse(h, newComment, 201);
+  } catch (error) {
+    return errorResponse(h, "Failed to create comment", 500);
+  }
+};
+
+//update a comment
+export const updateComment = async (request: Request, h: ResponseToolkit) => {
+  try {
+    const { id } = request.params; // Get ID from URL
+    const updatedData = request.payload as Partial<ITaskComment>;
+    if (!updatedData) {
+      return errorResponse(h, "Missing required fields", 400);
+    }
+    const updatedComment = await TaskService.updateComment(id, updatedData);
+    if (!updatedComment) {
+      return errorResponse(h, "Comment not found", 404);
+    }
+    return successResponse(h, updatedComment, 200);
+  } catch (error) {
+    console.error("Error updating comment:", error);
+    return errorResponse(h, "Failed to update comment", 500);
   }
 };

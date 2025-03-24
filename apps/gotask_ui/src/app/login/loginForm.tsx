@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Typography, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
@@ -9,12 +8,11 @@ import {
   StyledButton,
   StyledTextField,
 } from "./style";
-import { useAuth } from "../provider/authProvider";
+import { useUser } from "../userContext";
 import env from "../common/env";
 
-const Login = () => {
-  const router = useRouter();
-  const { login } = useAuth();
+const LoginForm = () => {
+  const { setUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true); // Toggle password visibility
@@ -48,8 +46,14 @@ const Login = () => {
     setLoading(true);
     const response = await loginUser(email, password);
     if (response.success) {
-      login(response.data.user);
-      router.push("/portal/task"); // Route after delay
+      const { token, user } = response.data;
+      // Store in localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      // Update global state
+      setUser({ ...user, token });
+      // Redirect to dashboard
+      window.location.href = "/portal/task";
     } else {
       setError(response.error);
     }
@@ -113,4 +117,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginForm;

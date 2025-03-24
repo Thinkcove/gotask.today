@@ -1,42 +1,23 @@
 "use client";
-import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "./provider/authProvider";
+
+import { ReactNode } from "react";
+import { Box, Container } from "@mui/material";
 import Header from "./component/appBar/header";
+import { useUser } from "./userContext";
 
-const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, loading } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    if (!loading) {
-      if (!isAuthenticated) {
-        router.replace("/login"); // Redirect logged-out users to login
-      }
-      // Only redirect to /portal/task if no last visited route exists
-      else {
-        const lastVisitedRoute = localStorage.getItem("lastVisitedRoute");
-        if (!lastVisitedRoute || lastVisitedRoute === "/login") {
-          router.replace("/portal/task");
-        }
-      }
-    }
-  }, [isAuthenticated, loading, router]);
-
-  if (loading) return null; // Prevent flickering
-
-  // Hide header on login page
-  if (pathname === "/login") {
-    return <>{children}</>;
-  }
-
+export default function AuthenticatedLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { user } = useUser();
   return (
-    <>
-      {isAuthenticated && <Header />}
-      {children}
-    </>
-  );
-};
+    <Box>
+      {/* Use Header instead of AppBar */}
+      {user && <Header />}
 
-export default AuthenticatedLayout;
+      {/* Main Content */}
+      <Box sx={{ flexGrow: 1 }}>{children}</Box>
+    </Box>
+  );
+}

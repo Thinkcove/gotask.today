@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Grid } from "@mui/material";
 import FormField from "../../../component/formField";
 import { TASK_SEVERITY, TASK_STATUS } from "../../../common/constants/task";
@@ -23,22 +23,24 @@ const TaskInput: React.FC<TaskInputProps> = ({
 }) => {
   const { getAllUsers } = fetchAllUsers();
   const { getAllProjects } = fetchAllProjects();
-  const [userProjects, setUserProjects] =
-    useState<{ id: string; name: string }[]>(getAllProjects);
+  // Get projects based on the assigned user
+  const userProjects = formData.projects || getAllProjects || [];
+  // Find the selected project
+  const selectedProject = userProjects.find(
+    (p: any) => p.id === formData.project_id
+  ) || {
+    id: formData.project_id,
+    name: formData.project_name,
+  };
   // Helper function to determine if a field should be read-only
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
-  // Function to handle Assignee change and fetch projects
+  // Handle Assignee change and fetch projects
   const handleAssigneeChange = async (userId: string) => {
     handleInputChange("user_id", userId);
 
-    try {
-      const projects = await getProjectIdsAndNames(userId);
-      setUserProjects(projects);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-      setUserProjects([]); // Reset if there's an error
-    }
+    const projects = await getProjectIdsAndNames(userId);
+    handleInputChange("projects", projects); // Store projects in formData
   };
   return (
     <>
@@ -75,7 +77,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             options={userProjects}
             required
             placeholder="Select Project Name"
-            value={formData.project_id}
+            value={selectedProject.id}
             onChange={(value) => handleInputChange("project_id", String(value))}
             error={errors.project_id}
             disabled={isReadOnly("project_id")}

@@ -108,10 +108,10 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
               <CardContent sx={{ pb: "10px !important" }}>
                 <Stack direction="row" alignItems="center" spacing={2} mb={1}>
                   <Avatar sx={{ bgcolor: "#741B92", height: 32, width: 32 }}>
-                    {item.user_name?.charAt(0)}
+                    {item.loginuser_name?.charAt(0)}
                   </Avatar>
                   <Typography variant="subtitle1" fontWeight="bold">
-                    {item.user_name}
+                    {item.loginuser_name}
                   </Typography>
                 </Stack>
 

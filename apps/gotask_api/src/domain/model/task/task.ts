@@ -18,8 +18,10 @@ export interface ITask extends Document {
   due_date: Date;
   created_on: Date;
   updated_on: Date;
-  comment: ITaskComment[];
-  history: ITaskHistory[];
+  loginuser_id?: string;
+  loginuser_name?: string;
+  comment?: ITaskComment[];
+  history?: ITaskHistory[];
 }
 const TaskSchema = new Schema<ITask>(
   {
@@ -44,8 +46,8 @@ const TaskSchema = new Schema<ITask>(
     due_date: { type: Date, required: true },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
-    comment: [TaskCommentSchema],
-    history: [TaskHistorySchema],
+    comment: { type: [TaskCommentSchema] },
+    history: { type: [TaskHistorySchema] },
   },
   { timestamps: true },
 );

@@ -13,6 +13,8 @@ export const API_PATHS = {
   //projectRoutes
   CREATE_PROJECT: "/createProject",
   GET_PROJECTS: "/getAllProjects",
+  ASSIGN_USER_TO_PROJECT: "/usertoProject",
+  GET_PROJECT_BY_USERID: "/getProjectbyUserId/{user_id}",
 
   //userRoutes
   CREATE_USER: "/createUser",

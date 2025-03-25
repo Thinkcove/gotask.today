@@ -12,7 +12,7 @@ export interface ITaskComment extends Document {
 
 export const TaskCommentSchema = new Schema<ITaskComment>(
   {
-    id: { type: String, default: uuidv4, unique: true },
+    id: { type: String, default: uuidv4 },
     task_id: { type: String, required: true },
     user_id: { type: String, required: true },
     user_name: { type: String },

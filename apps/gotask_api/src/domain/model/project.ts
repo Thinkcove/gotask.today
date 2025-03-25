@@ -8,6 +8,7 @@ export interface IProject extends Document {
   name: string;
   description: string;
   status: string;
+  user_id?: string[];
 }
 
 const ProjectSchema = new Schema<IProject>(
@@ -21,6 +22,7 @@ const ProjectSchema = new Schema<IProject>(
       default: PROJECT_STATUS.TO_DO,
       required: true,
     },
+    user_id: [{ type: String }],
   },
   { timestamps: true },
 );

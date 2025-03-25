@@ -48,23 +48,24 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       const formattedDueDate = data.due_date ? data.due_date.split("T")[0] : "";
       if (formData.status !== data.status) {
         updatedFields.status = formData.status;
-        if (user?.name) updatedFields.user_name = user.name;
-        if (user?.id) updatedFields.user_id = user.id;
+        if (user?.name) updatedFields.loginuser_name = user.name;
+        if (user?.id) updatedFields.loginuser_id = user.id;
       }
       if (formData.severity !== data.severity) {
         updatedFields.severity = formData.severity;
-        if (user?.name) updatedFields.user_name = user.name;
-        if (user?.id) updatedFields.user_id = user.id;
+        if (user?.name) updatedFields.loginuser_name = user.name;
+        if (user?.id) updatedFields.loginuser_id = user.id;
       }
       if (formData.due_date !== formattedDueDate) {
         updatedFields.due_date = formData.due_date;
-        if (user?.name) updatedFields.user_name = user.name;
-        if (user?.id) updatedFields.user_id = user.id;
+        if (user?.name) updatedFields.loginuser_name = user.name;
+        if (user?.id) updatedFields.loginuser_id = user.id;
       }
       if (formData.description !== data.description) {
         updatedFields.description = formData.description;
       }
       await updateTask(data.id, updatedFields);
+      mutate();
       setSnackbar({
         open: true,
         message: "Task updated successfully!",

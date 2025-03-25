@@ -22,8 +22,8 @@ export interface ITaskHistory {
   formatted_history: string;
   id: string;
   task_id: string;
-  user_id: string;
-  user_name: string;
+  loginuser_id: string;
+  loginuser_name: string;
 }
 
 export interface ITaskComment {

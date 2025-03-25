@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import FormField from "../../../component/formField";
 import { TASK_SEVERITY, TASK_STATUS } from "../../../common/constants/task";
-import { fetchAllProjects, fetchAllUsers } from "../service/taskAction";
+import {
+  fetchAllProjects,
+  fetchAllUsers,
+  getProjectIdsAndNames,
+} from "../service/taskAction";
 
 interface TaskInputProps {
   formData: any;
@@ -19,9 +23,23 @@ const TaskInput: React.FC<TaskInputProps> = ({
 }) => {
   const { getAllUsers } = fetchAllUsers();
   const { getAllProjects } = fetchAllProjects();
-
+  const [userProjects, setUserProjects] =
+    useState<{ id: string; name: string }[]>(getAllProjects);
   // Helper function to determine if a field should be read-only
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
+
+  // Function to handle Assignee change and fetch projects
+  const handleAssigneeChange = async (userId: string) => {
+    handleInputChange("user_id", userId);
+
+    try {
+      const projects = await getProjectIdsAndNames(userId);
+      setUserProjects(projects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      setUserProjects([]); // Reset if there's an error
+    }
+  };
   return (
     <>
       <Grid item xs={12} sm={6} mb={2}>
@@ -45,7 +63,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             required
             placeholder="Select Assignee Name"
             value={formData.user_id}
-            onChange={(value) => handleInputChange("user_id", String(value))}
+            onChange={(value) => handleAssigneeChange(String(value))}
             error={errors.user_id}
             disabled={isReadOnly("user_id")}
           />
@@ -54,7 +72,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label="Project Name * :"
             type="select"
-            options={getAllProjects}
+            options={userProjects}
             required
             placeholder="Select Project Name"
             value={formData.project_id}

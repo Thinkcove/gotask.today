@@ -181,3 +181,22 @@ export const createComment = async (formData: any) => {
   }
   return response.json();
 };
+
+// Get project IDs and names by user ID
+export const getProjectIdsAndNames = async (userId: string) => {
+  const response = await fetch(
+    `${env.API_BASE_URL}/getProjectbyUserId/${userId}`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch projects");
+  }
+  const data = await response.json();
+  // Extract only id and name
+  return data.success
+    ? data.data.map((project: any) => ({ id: project.id, name: project.name }))
+    : [];
+};

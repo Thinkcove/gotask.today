@@ -203,7 +203,7 @@ export class TaskService {
     try {
       const existingTask = await Task.findOne({ id });
       if (!existingTask) return null;
-      const { user_id, user_name } = updateData;
+      const { loginuser_id, loginuser_name } = updateData;
       const historyEntry = generateHistoryEntry(existingTask, updateData);
       if (!existingTask.history) {
         existingTask.history = [];
@@ -212,8 +212,8 @@ export class TaskService {
         const historyItem = new (mongoose.model<ITaskHistory>("TaskHistory", TaskHistorySchema))({
           id: uuidv4(),
           task_id: id,
-          user_id,
-          user_name,
+          loginuser_id,
+          loginuser_name,
           formatted_history: historyEntry,
           created_date: new Date(),
         });
@@ -236,6 +236,10 @@ export class TaskService {
     if (!task) throw new Error("Task not found");
     const newComment = new TaskComment({ task_id: task_id, user_id: user_id, comment, user_name });
     await newComment.save();
+    // Ensure task.comment is initialized
+    if (!task.comment) {
+      task.comment = [];
+    }
     task.comment.unshift(newComment);
     await task.save();
     return newComment;

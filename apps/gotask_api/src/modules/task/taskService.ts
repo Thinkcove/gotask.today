@@ -230,7 +230,7 @@ export class TaskService {
   }
 
   // Create a new comment
-  static async createComment(commentData: any) {
+  static async createComment(commentData: ITaskComment) {
     const { task_id, user_id, comment, user_name } = commentData;
     const task = await Task.findOne({ id: task_id });
     if (!task) throw new Error("Task not found");

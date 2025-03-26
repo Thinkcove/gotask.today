@@ -3,7 +3,7 @@ export const statuses = [
   { label: "In Progress", color: "#F29807" },
   { label: "Need Info", color: "#939FCF" },
   { label: "Hold", color: "#E2A3D5" },
-  { label: "Completed", color: "#4CAF50" },
+  { label: "Completed", color: "#4CAF50" }
 ];
 
 export const getStatusColor = (status: string) => {
@@ -41,12 +41,12 @@ export const TASK_STATUS = {
   IN_PROGRESS: "in-progress",
   NEED_INFO: "need-info",
   HOLD: "hold",
-  COMPLETED: "completed",
+  COMPLETED: "completed"
 };
 
 export const TASK_SEVERITY = {
   LOW: "low",
   MEDIUM: "medium",
   HIGH: "high",
-  CRITICAL: "critical",
+  CRITICAL: "critical"
 };

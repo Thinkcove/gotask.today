@@ -4,20 +4,16 @@ import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
 import { ReadMoreTwoTone } from "@mui/icons-material";
 import TaskItem from "./taskItem";
+import { IGroup, ITask } from "../interface/taskInterface";
 
 interface TaskCardProps {
   view: "projects" | "users";
-  group: any;
-  onTaskClick: (task: any) => void;
-  onViewMore: (id: any) => void;
+  group: IGroup;
+  onTaskClick: (id: string) => void;
+  onViewMore: (id: string) => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({
-  view,
-  group,
-  onTaskClick,
-  onViewMore,
-}) => {
+const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMore }) => {
   return (
     <Paper
       elevation={2}
@@ -29,14 +25,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
         height: 350,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
+        justifyContent: "space-between"
       }}
     >
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: "center"
         }}
       >
         <Typography variant="h6">
@@ -49,15 +45,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
               display: "flex",
               alignItems: "center",
               "&:hover": { textDecoration: "underline" },
-              cursor: "pointer",
+              cursor: "pointer"
             }}
             onClick={() => onViewMore(group.id)}
           >
-            <Typography
-              variant="subtitle1"
-              sx={{ color: "#741B92" }}
-              fontWeight="bold"
-            >
+            <Typography variant="subtitle1" sx={{ color: "#741B92" }} fontWeight="bold">
               View {group.tasks.length - 3} more
             </Typography>
             <ReadMoreTwoTone sx={{ color: "#741B92" }} />
@@ -70,7 +62,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
       <Box sx={{ flexGrow: 1, overflowY: "auto", pr: 1 }}>
         {group.tasks.length > 0 ? (
           <>
-            {group.tasks.slice(0, 3).map((task: any) => (
+            {group.tasks.slice(0, 3).map((task: ITask) => (
               <TaskItem
                 key={task.id}
                 task={task}

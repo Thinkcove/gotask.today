@@ -23,5 +23,5 @@ export const API_PATHS = {
   UPDATE_USER: "/updateUser/{id}",
 
   //loginRoute
-  LOGIN: "/user/login",
+  LOGIN: "/user/login"
 };

@@ -20,11 +20,11 @@ const ProjectSchema = new Schema<IProject>(
       type: String,
       enum: Object.values(PROJECT_STATUS),
       default: PROJECT_STATUS.TO_DO,
-      required: true,
+      required: true
     },
-    user_id: [{ type: String }],
+    user_id: [{ type: String }]
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 export const Project = mongoose.model<IProject>("Project", ProjectSchema);

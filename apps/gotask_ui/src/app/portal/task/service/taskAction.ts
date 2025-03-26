@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import env from "@/app/common/env";
 import { getData, postData } from "@/app/common/utils/apiData";
+import { IFormField, ITaskComment, Project, ProjectTaskPayload } from "../interface/taskInterface";
 
 //fetch taskbyproject-grouping
 export const useProjectGroupTask = (
@@ -12,11 +13,11 @@ export const useProjectGroupTask = (
   search_vars?: string[][]
 ) => {
   const fetchProjectTasks = async () => {
-    const payload: any = {
+    const payload: ProjectTaskPayload = {
       page,
       page_size: pageSize,
       task_page: taskPage,
-      task_page_size: taskPageSize,
+      task_page_size: taskPageSize
     };
 
     // Add search parameters only if provided
@@ -29,15 +30,7 @@ export const useProjectGroupTask = (
   };
 
   const { data, error, mutate, isValidating } = useSWR(
-    [
-      `fetch-project-tasks`,
-      page,
-      pageSize,
-      taskPage,
-      taskPageSize,
-      search_vals,
-      search_vars,
-    ],
+    [`fetch-project-tasks`, page, pageSize, taskPage, taskPageSize, search_vals, search_vars],
     fetchProjectTasks,
     { revalidateOnFocus: false }
   );
@@ -47,7 +40,7 @@ export const useProjectGroupTask = (
     isLoading: !data && !error,
     isError: !!error,
     mutate,
-    isValidating,
+    isValidating
   };
 };
 
@@ -62,11 +55,11 @@ export const useUserGroupTask = (
   search_vars?: string[][]
 ) => {
   const fetchUserTasks = async () => {
-    const payload: any = {
+    const payload: ProjectTaskPayload = {
       page,
       page_size: pageSize,
       task_page: taskPage,
-      task_page_size: taskPageSize,
+      task_page_size: taskPageSize
     };
 
     // Add search parameters only if provided
@@ -78,15 +71,7 @@ export const useUserGroupTask = (
     return postData(`${env.API_BASE_URL}/tasks/grouped-by-user`, payload);
   };
   const { data, error, mutate, isValidating } = useSWR(
-    [
-      `fetch-user-tasks`,
-      page,
-      pageSize,
-      taskPage,
-      taskPageSize,
-      search_vals,
-      search_vars,
-    ],
+    [`fetch-user-tasks`, page, pageSize, taskPage, taskPageSize, search_vals, search_vars],
     fetchUserTasks,
     { revalidateOnFocus: false }
   );
@@ -96,7 +81,7 @@ export const useUserGroupTask = (
     isLoading: !data && !error,
     isError: !!error,
     mutate,
-    isValidating,
+    isValidating
   };
 };
 
@@ -112,14 +97,14 @@ const fetchUser = async () => {
 
 export const fetchAllUsers = () => {
   const { data } = useSWR([`fetchuser`], () => fetchUser(), {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
   return {
     getAllUsers:
       data?.data?.map((user: { name: string; id: string }) => ({
         name: user.name,
-        id: user.id,
-      })) || [],
+        id: user.id
+      })) || []
   };
 };
 
@@ -130,23 +115,23 @@ const fetchProject = async () => {
 
 export const fetchAllProjects = () => {
   const { data } = useSWR([`fetchproject`], () => fetchProject(), {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
   return {
     getAllProjects:
       data?.data?.map((project: { name: string; id: string }) => ({
         name: project.name,
-        id: project.id,
-      })) || [],
+        id: project.id
+      })) || []
   };
 };
 
 //createTask
-export const createTask = async (formData: any) => {
+export const createTask = async (formData: IFormField) => {
   const response = await fetch(`${env.API_BASE_URL}/createTask`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
+    body: JSON.stringify(formData)
   });
   if (!response.ok) {
     throw new Error("Failed to create task");
@@ -159,9 +144,9 @@ export const updateTask = async (taskId: string, updatedFields: object) => {
   const response = await fetch(`${env.API_BASE_URL}/updateTask/${taskId}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     },
-    body: JSON.stringify(updatedFields),
+    body: JSON.stringify(updatedFields)
   });
   if (!response.ok) {
     throw new Error("Failed to update task");
@@ -170,11 +155,11 @@ export const updateTask = async (taskId: string, updatedFields: object) => {
 };
 
 //create comment
-export const createComment = async (formData: any) => {
+export const createComment = async (formData: ITaskComment) => {
   const response = await fetch(`${env.API_BASE_URL}/task/createComment`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
+    body: JSON.stringify(formData)
   });
   if (!response.ok) {
     throw new Error("Failed to create comment");
@@ -184,19 +169,16 @@ export const createComment = async (formData: any) => {
 
 // Get project IDs and names by user ID
 export const getProjectIdsAndNames = async (userId: string) => {
-  const response = await fetch(
-    `${env.API_BASE_URL}/getProjectbyUserId/${userId}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    }
-  );
+  const response = await fetch(`${env.API_BASE_URL}/getProjectbyUserId/${userId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  });
   if (!response.ok) {
     throw new Error("Failed to fetch projects");
   }
   const data = await response.json();
   // Extract only id and name
   return data.success
-    ? data.data.map((project: any) => ({ id: project.id, name: project.name }))
+    ? data.data.map((project: Project) => ({ id: project.id, name: project.name }))
     : [];
 };

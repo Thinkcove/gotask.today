@@ -15,9 +15,9 @@ const init = async () => {
       cors: {
         origin: ["*"], // Allow all origins
         headers: ["Accept", "Content-Type", "Authorization"], // Allowed headers
-        credentials: true, // Allow credentials (e.g., cookies, authorization)
-      },
-    },
+        credentials: true // Allow credentials (e.g., cookies, authorization)
+      }
+    }
   });
 
   // Register routes

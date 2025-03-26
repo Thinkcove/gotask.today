@@ -69,8 +69,8 @@ export const loginUser = async (request: Request, h: ResponseToolkit) => {
       { id: user.id, user_id: user.user_id, role: user.role },
       process.env.AUTH_KEY as string,
       {
-        expiresIn: "1h",
-      },
+        expiresIn: "1h"
+      }
     );
     return successResponse(h, { token, user }, 200);
   } catch (error) {

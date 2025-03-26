@@ -3,12 +3,12 @@ export const TASK_STATUS = {
   IN_PROGRESS: "in-progress",
   NEED_INFO: "need-info",
   HOLD: "hold",
-  COMPLETED: "completed",
+  COMPLETED: "completed"
 };
 
 export const TASK_SEVERITY = {
   LOW: "low",
   MEDIUM: "medium",
   HIGH: "high",
-  CRITICAL: "critical",
+  CRITICAL: "critical"
 };

@@ -7,7 +7,7 @@ export const successResponse = (h: ResponseToolkit, data: any, statusCode = 200)
 export const errorResponse = (
   h: ResponseToolkit,
   message = "Something went wrong",
-  statusCode = 500,
+  statusCode = 500
 ) => {
   return h.response({ success: false, error: message }).code(statusCode);
 };

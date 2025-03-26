@@ -16,9 +16,9 @@ export const TaskCommentSchema = new Schema<ITaskComment>(
     task_id: { type: String, required: true },
     user_id: { type: String, required: true },
     user_name: { type: String },
-    comment: { type: String },
+    comment: { type: String }
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 export const TaskComment = mongoose.model<ITaskComment>("TaskComment", TaskCommentSchema);

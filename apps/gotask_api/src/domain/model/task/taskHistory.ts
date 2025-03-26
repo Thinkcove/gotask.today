@@ -17,7 +17,7 @@ export const TaskHistorySchema = new Schema<ITaskHistory>({
   loginuser_id: { type: String, required: true },
   loginuser_name: { type: String },
   formatted_history: { type: String, required: true },
-  created_date: { type: Date, default: Date.now },
+  created_date: { type: Date, default: Date.now }
 });
 
 export const TaskHistory = mongoose.model<ITaskHistory>("TaskHistory", TaskHistorySchema);

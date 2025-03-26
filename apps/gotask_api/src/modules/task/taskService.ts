@@ -21,7 +21,7 @@ export class TaskService {
     const newTask = new Task({
       ...taskData,
       user_name: user.name,
-      project_name: project.name,
+      project_name: project.name
     });
     return await newTask.save();
   }
@@ -38,7 +38,7 @@ export class TaskService {
     taskPage: number,
     taskPageSize: number,
     search_vals?: any[][],
-    search_vars?: string[][],
+    search_vars?: string[][]
   ) {
     const skip = (page - 1) * pageSize;
     const taskSkip = (taskPage - 1) * taskPageSize;
@@ -61,8 +61,8 @@ export class TaskService {
           _id: { id: "$project_id", project_name: "$project_name" }, // Group by project_id and project_name
           tasks: { $push: "$$ROOT" },
           total_count: { $sum: 1 },
-          latestTaskUpdatedAt: { $max: "$updatedAt" },
-        },
+          latestTaskUpdatedAt: { $max: "$updatedAt" }
+        }
       },
       { $sort: { latestTaskUpdatedAt: -1 } }, // Step 3: Sort projects by latest task's update time
       {
@@ -76,16 +76,16 @@ export class TaskService {
           tasks: {
             $slice: [
               {
-                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } },
+                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } }
               },
               taskSkip,
-              taskPageSize,
-            ],
-          },
-        },
+              taskPageSize
+            ]
+          }
+        }
       },
       { $skip: skip }, // Step 4: Paginate projects
-      { $limit: pageSize },
+      { $limit: pageSize }
     ];
 
     const taskGroups = await Task.aggregate(aggregationPipeline);
@@ -95,7 +95,7 @@ export class TaskService {
       taskbyprojects: taskGroups,
       total_count: totalProjects,
       total_pages: Math.ceil(totalProjects / pageSize),
-      current_page: page,
+      current_page: page
     };
   }
 
@@ -106,7 +106,7 @@ export class TaskService {
     taskPage: number,
     taskPageSize: number,
     search_vals?: any[][],
-    search_vars?: string[][],
+    search_vars?: string[][]
   ) {
     const skip = (page - 1) * pageSize;
     const taskSkip = (taskPage - 1) * taskPageSize;
@@ -130,8 +130,8 @@ export class TaskService {
           _id: { id: "$user_id", user_name: "$user_name" }, // Group by project_id and project_name
           tasks: { $push: "$$ROOT" }, // Step 2: Push all tasks assigned to the user
           total_count: { $sum: 1 },
-          latestTaskUpdatedAt: { $max: "$updatedAt" }, // Step 3: Store the most recent task’s timestamp
-        },
+          latestTaskUpdatedAt: { $max: "$updatedAt" } // Step 3: Store the most recent task’s timestamp
+        }
       },
       { $sort: { latestTaskUpdatedAt: -1 } }, // Step 4: Sort users by their most recent task
       {
@@ -145,16 +145,16 @@ export class TaskService {
           tasks: {
             $slice: [
               {
-                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } }, // Step 5: Ensure tasks inside each user group are sorted
+                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } } // Step 5: Ensure tasks inside each user group are sorted
               },
               taskSkip,
-              taskPageSize,
-            ],
-          },
-        },
+              taskPageSize
+            ]
+          }
+        }
       },
       { $skip: skip }, // Step 6: Paginate user groups
-      { $limit: pageSize },
+      { $limit: pageSize }
     ];
 
     const taskGroups = await Task.aggregate(aggregationPipeline);
@@ -164,7 +164,7 @@ export class TaskService {
       taskbyusers: taskGroups,
       total_count: totalUsers,
       total_pages: Math.ceil(totalUsers / pageSize),
-      current_page: page,
+      current_page: page
     };
   }
 
@@ -174,9 +174,9 @@ export class TaskService {
       {
         $group: {
           _id: "$status",
-          count: { $sum: 1 },
-        },
-      },
+          count: { $sum: 1 }
+        }
+      }
     ]);
 
     const defaultStatuses: Record<string, number> = Object.values(TASK_STATUS).reduce(
@@ -184,7 +184,7 @@ export class TaskService {
         acc[status] = 0;
         return acc;
       },
-      {},
+      {}
     );
 
     return taskCounts.reduce((acc: Record<string, number>, item) => {
@@ -215,7 +215,7 @@ export class TaskService {
           loginuser_id,
           loginuser_name,
           formatted_history: historyEntry,
-          created_date: new Date(),
+          created_date: new Date()
         });
         existingTask.history.unshift(historyItem);
       }
@@ -248,17 +248,17 @@ export class TaskService {
   //update comment field
   static async updateComment(
     id: string,
-    newCommentText: Partial<ITaskComment>,
+    newCommentText: Partial<ITaskComment>
   ): Promise<ITaskComment | null> {
     // Step 1: Update the comment in TaskComment collection
     const updatedComment = await TaskComment.findOneAndUpdate({ id }, newCommentText, {
-      new: true,
+      new: true
     });
     if (!updatedComment) return null;
     // Step 2: Update the embedded comment inside the Task collection
     await Task.updateOne(
       { "comment.id": id }, // Find the task that contains this comment ID
-      { $set: { "comment.$.comment": newCommentText.comment } }, // Update comment text
+      { $set: { "comment.$.comment": newCommentText.comment } } // Update comment text
     );
     return updatedComment;
   }

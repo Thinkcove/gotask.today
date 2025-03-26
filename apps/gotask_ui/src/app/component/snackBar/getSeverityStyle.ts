@@ -6,34 +6,34 @@ import { ISeverityProps, ISeverityStyles } from "./snackBarInterface";
 
 const getErrorStyles = (): ISeverityStyles => ({
   bgColor: "#F24646",
-  icon: ErrorOutlineOutlinedIcon,
+  icon: ErrorOutlineOutlinedIcon
 });
 
 const getWarningStyles = (): ISeverityStyles => ({
   bgColor: "#FFA629",
-  icon: WarningAmberOutlinedIcon,
+  icon: WarningAmberOutlinedIcon
 });
 
 const getSuccessStyles = (): ISeverityStyles => ({
   bgColor: "#05BE4F",
-  icon: CheckCircleOutlinedIcon,
+  icon: CheckCircleOutlinedIcon
 });
 
 const getInfoStyles = (): ISeverityStyles => ({
   bgColor: "#009DFF",
-  icon: InfoOutlinedIcon,
+  icon: InfoOutlinedIcon
 });
 
 const getDefaultStyles = (): ISeverityStyles => ({
   bgColor: "",
-  icon: () => null,
+  icon: () => null
 });
 
 export const getSeverityStyles = ({
   error,
   warning,
   success,
-  info,
+  info
 }: ISeverityProps): ISeverityStyles => {
   if (error) return getErrorStyles();
   if (warning) return getWarningStyles();

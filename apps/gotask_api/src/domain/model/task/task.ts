@@ -32,12 +32,12 @@ const TaskSchema = new Schema<ITask>(
       type: String,
       enum: Object.values(TASK_STATUS),
       default: TASK_STATUS.TO_DO,
-      required: true,
+      required: true
     },
     severity: {
       type: String,
       enum: Object.values(TASK_SEVERITY),
-      required: true,
+      required: true
     },
     user_id: { type: String, required: true },
     user_name: { type: String },
@@ -47,9 +47,9 @@ const TaskSchema = new Schema<ITask>(
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
     comment: { type: [TaskCommentSchema] },
-    history: { type: [TaskHistorySchema] },
+    history: { type: [TaskHistorySchema] }
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 export const Task = mongoose.model<ITask>("Task", TaskSchema);

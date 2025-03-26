@@ -5,7 +5,7 @@ import {
   assignUserToProject,
   createProject,
   getAllProjects,
-  getProjectsByUserId,
+  getProjectsByUserId
 } from "./projectController";
 
 export const projectRoutes = (server: Server) => {
@@ -13,22 +13,22 @@ export const projectRoutes = (server: Server) => {
     {
       method: HTTP_METHODS.POST as HttpMethod,
       path: API_PATHS.CREATE_PROJECT,
-      handler: createProject,
+      handler: createProject
     },
     {
       method: HTTP_METHODS.GET as HttpMethod,
       path: API_PATHS.GET_PROJECTS,
-      handler: getAllProjects,
+      handler: getAllProjects
     },
     {
       method: HTTP_METHODS.POST,
       path: API_PATHS.ASSIGN_USER_TO_PROJECT,
-      handler: assignUserToProject,
+      handler: assignUserToProject
     },
     {
       method: HTTP_METHODS.GET,
       path: API_PATHS.GET_PROJECT_BY_USERID,
-      handler: getProjectsByUserId,
-    },
+      handler: getProjectsByUserId
+    }
   ]);
 };

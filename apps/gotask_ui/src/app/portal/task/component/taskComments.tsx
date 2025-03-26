@@ -2,16 +2,10 @@ import React, { useState } from "react";
 import { Box, Button, Avatar, Typography } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
-
-interface Comment {
-  id: string;
-  user_name: string;
-  comment: string;
-  createdAt: string;
-}
+import { ITaskComment } from "../interface/taskInterface";
 
 interface TaskCommentsProps {
-  comments: Comment[];
+  comments: ITaskComment[];
   onSave: (comment: string) => void;
 }
 
@@ -58,7 +52,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
               border: "2px solid #741B92",
               px: 2,
               textTransform: "none",
-              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" },
+              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
             }}
             onClick={() => {
               setNewComment("");
@@ -88,16 +82,14 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
               pr={2}
               my={1}
             >
-              <Avatar sx={{ backgroundColor: "#741B92" }}>
-                {comment.user_name.charAt(0)}
-              </Avatar>
+              <Avatar sx={{ backgroundColor: "#741B92" }}>{comment.user_name.charAt(0)}</Avatar>
               <Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <Typography variant="subtitle1" fontWeight="bold">
                     {comment.user_name} -
                   </Typography>
                   <Typography variant="subtitle2">
-                    {new Date(comment.createdAt).toLocaleString()}
+                    {new Date(comment.createdAt ?? new Date().toISOString()).toLocaleString()}
                   </Typography>
                 </Box>
                 <Typography variant="body2">{comment.comment}</Typography>

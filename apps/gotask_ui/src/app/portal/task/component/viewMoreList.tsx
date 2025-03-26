@@ -1,20 +1,15 @@
 import React from "react";
-import {
-  Box,
-  Drawer,
-  CircularProgress,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Box, Drawer, CircularProgress, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import TaskItem from "./taskItem";
 import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
+import { IGroup, ITask } from "../interface/taskInterface";
 
 interface ViewMoreListProps {
   open: boolean;
-  selectedGroupId: number | null;
-  drawerTasks: any[];
+  selectedGroupId: string;
+  drawerTasks: IGroup[];
   isLoadingDrawer: boolean;
   onClose: () => void;
   onTaskClick: (id: string) => void;
@@ -28,7 +23,7 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
   isLoadingDrawer,
   onClose,
   onTaskClick,
-  view,
+  view
 }) => {
   return (
     <Drawer anchor="right" open={open} onClose={() => {}}>
@@ -38,7 +33,7 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
             <CircularProgress />
           </Box>
         ) : (
-          drawerTasks.map((group: any) =>
+          drawerTasks.map((group: IGroup) =>
             group.id === selectedGroupId ? (
               <Box key={group.id}>
                 <Box
@@ -48,22 +43,17 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
                     justifyContent: "space-between",
                     zIndex: 1100,
                     backgroundColor: "#741B92",
-                    p: 2,
+                    p: 2
                   }}
                 >
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    fontWeight="bold"
-                    sx={{ color: "white" }}
-                  >
+                  <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ color: "white" }}>
                     {view === "projects" ? group.project_name : group.user_name}
                   </Typography>
                   <IconButton onClick={onClose} sx={{ color: "white", p: 0 }}>
                     <CloseIcon />
                   </IconButton>
                 </Box>
-                {group.tasks.map((task: any) => (
+                {group.tasks.map((task: ITask) => (
                   <Box key={task.id} sx={{ px: 2, pt: 2 }}>
                     <TaskItem
                       key={task.id}

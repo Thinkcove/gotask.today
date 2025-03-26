@@ -7,14 +7,15 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { createComment, updateTask } from "../../service/taskAction";
 import { History } from "@mui/icons-material";
-import { ITask } from "../../interface/taskInterface";
+import { IFormField, ITask, ITaskComment } from "../../interface/taskInterface";
 import HistoryDrawer from "../../component/taskHistory";
 import TaskComments from "../../component/taskComments";
 import { useUser } from "@/app/userContext";
+import { KeyedMutator } from "swr";
 
 interface EditTaskProps {
   data: ITask;
-  mutate: any;
+  mutate: KeyedMutator<ITask>;
 }
 
 const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
@@ -24,18 +25,20 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
-    severity: SNACKBAR_SEVERITY.INFO,
+    severity: SNACKBAR_SEVERITY.INFO
   });
 
-  const [formData, setFormData] = useState(() => ({
+  const [formData, setFormData] = useState<IFormField>(() => ({
     title: data?.title || "",
     description: data?.description || "",
     status: data?.status || TASK_STATUS.TO_DO,
     severity: data?.severity || TASK_SEVERITY.LOW,
     user_id: data?.user_id || "",
+    user_name: data?.user_name || "",
     project_id: data?.project_id || "",
+    project_name: data?.project_name || "",
     created_on: data?.created_on ? data.created_on.split("T")[0] : "",
-    due_date: data?.due_date ? data.due_date.split("T")[0] : "",
+    due_date: data?.due_date ? data.due_date.split("T")[0] : ""
   }));
 
   const handleInputChange = (name: string, value: string) => {
@@ -69,14 +72,15 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       setSnackbar({
         open: true,
         message: "Task updated successfully!",
-        severity: SNACKBAR_SEVERITY.SUCCESS,
+        severity: SNACKBAR_SEVERITY.SUCCESS
       });
       setTimeout(() => router.back(), 2000);
     } catch (error) {
+      console.error("Error while updating task:", error);
       setSnackbar({
         open: true,
         message: "Error updating task",
-        severity: SNACKBAR_SEVERITY.ERROR,
+        severity: SNACKBAR_SEVERITY.ERROR
       });
     }
   };
@@ -84,11 +88,11 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   // Handle comment submission
   const submitComment = async (commentText: string) => {
     if (!commentText.trim()) return;
-    const commentData = {
-      task_id: data.id, // Ensure `data.id` exists
-      user_id: user?.id, // Ensure `user` is available
-      user_name: user?.name,
-      comment: commentText,
+    const commentData: ITaskComment = {
+      task_id: data.id,
+      user_id: user?.id || "",
+      user_name: user?.name || "",
+      comment: commentText
     };
     await createComment(commentData);
     mutate();
@@ -103,7 +107,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           p: 4,
           zIndex: 1000,
           flexDirection: "column",
-          gap: 2,
+          gap: 2
         }}
       >
         <Box
@@ -112,13 +116,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
-            marginBottom: 2,
+            marginBottom: 2
           }}
         >
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: "bold", color: "#741B92" }}
-          >
+          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
             Edit Task
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -130,7 +131,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                 border: "2px solid #741B92",
                 px: 2,
                 textTransform: "none",
-                "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" },
+                "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
               }}
               onClick={() => router.back()}
             >
@@ -145,7 +146,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                 px: 2,
                 textTransform: "none",
                 fontWeight: "bold",
-                "&:hover": { backgroundColor: "rgb(202, 187, 201) 100%)" },
+                "&:hover": { backgroundColor: "rgb(202, 187, 201) 100%)" }
               }}
               onClick={handleSubmit}
             >
@@ -161,13 +162,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
               marginTop: 2,
               display: "flex",
               gap: 1,
-              color: "#741B92",
+              color: "#741B92"
             }}
           >
-            <Typography
-              onClick={() => setOpenDrawer(true)}
-              sx={{ cursor: "pointer" }}
-            >
+            <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
               Show History
             </Typography>
             <History />
@@ -180,7 +178,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           px: 2,
           py: 2,
           maxHeight: "calc(100vh - 200px)",
-          overflowY: "auto",
+          overflowY: "auto"
         }}
       >
         <TaskInput

@@ -41,7 +41,7 @@ export const getTaskByProject = async (request: Request, h: ResponseToolkit) => 
       Number(task_page),
       Number(task_page_size),
       search_vals,
-      search_vars,
+      search_vars
     );
     return successResponse(h, result);
   } catch (error) {
@@ -60,7 +60,7 @@ export const getTaskByUser = async (request: Request, h: ResponseToolkit) => {
       Number(task_page),
       Number(task_page_size),
       search_vals,
-      search_vars,
+      search_vars
     );
     return successResponse(h, result);
   } catch (error) {

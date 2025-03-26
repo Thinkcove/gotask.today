@@ -19,9 +19,9 @@ const UserSchema = new Schema<IUser>(
     password: { type: String, required: true },
     user_id: { type: String, required: true, unique: true }, // Email as unique ID
     status: { type: Boolean, default: true }, // Default: Active
-    role: { type: String, required: true },
+    role: { type: String, required: true }
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 // Hash password before saving

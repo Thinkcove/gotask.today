@@ -23,6 +23,23 @@ export const getStatusColor = (status: string) => {
   }
 };
 
+export const getProgressValue = (status: string) => {
+  switch (status) {
+    case "to-do":
+      return 0;
+    case "in-progress":
+      return 33;
+    case "need-info":
+      return 66;
+    case "hold":
+      return 50;
+    case "completed":
+      return 100;
+    default:
+      return 0;
+  }
+};
+
 export const getSeverityColor = (severity: string) => {
   switch (severity) {
     case "high":

@@ -1,6 +1,6 @@
-import { Box, Typography, Tooltip, Avatar } from "@mui/material";
-import TimelineDot from "@mui/lab/TimelineDot";
+import { Box, Typography, Tooltip, Avatar, LinearProgress } from "@mui/material";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
+import { getProgressValue } from "@/app/common/constants/task";
 
 interface Task {
   id: string;
@@ -23,7 +23,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onTaskClick,
   view,
   getStatusColor,
-  formatDate,
+  formatDate
 }) => {
   return (
     <Box
@@ -34,19 +34,23 @@ const TaskItem: React.FC<TaskItemProps> = ({
         backgroundColor: "white",
         borderRadius: 2,
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "column"
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <TimelineDot
+        <Avatar
           sx={{
             border: "1px solid white",
             backgroundColor: getStatusColor(task.status),
-            margin: 0,
+            width: 24,
+            height: 24,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
           }}
         >
           <CalendarMonth sx={{ height: 16, width: 16 }} />
-        </TimelineDot>
+        </Avatar>
         <Box>
           <Typography variant="subtitle2" fontWeight="semibold">
             {formatDate(task.due_date)}
@@ -54,12 +58,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
         </Box>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 3.5 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         <Box
           sx={{
             height: 40,
             borderLeft: "2px solid grey",
-            marginLeft: "13px",
+            marginLeft: "13px"
           }}
         />
         <Box
@@ -69,25 +73,53 @@ const TaskItem: React.FC<TaskItemProps> = ({
             alignItems: "center",
             width: "100%",
             backgroundColor: "#F9F9F9",
-            transition:
-              "background-color 0.3s ease-in-out, border-left-color 0.3s ease-in-out",
-            "&:hover": {
-              backgroundColor: getStatusColor(task.status),
-            },
             borderRadius: 2,
             cursor: "pointer",
             padding: 1,
-            boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)"
           }}
           onClick={() => onTaskClick(task.id)}
         >
-          <Typography variant="subtitle2">{task.title}</Typography>
-          {view === "projects" && (
-            <Tooltip title={task.user_name} arrow>
-              <Avatar sx={{ height: 24, width: 24, fontSize: 12 }}>
-                {task.user_name.charAt(0).toUpperCase()}
-              </Avatar>
+          <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
+            <Tooltip title={task.title} arrow>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  textTransform: "capitalize",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: 300,
+                  display: "block"
+                }}
+              >
+                {task.title}
+              </Typography>
             </Tooltip>
+            <LinearProgress
+              variant="determinate"
+              value={getProgressValue(task.status)}
+              sx={{
+                height: 6,
+                borderRadius: 3,
+                mt: 1,
+                backgroundColor: "#e0e0e0",
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor: getStatusColor(task.status)
+                }
+              }}
+            />
+          </Box>
+          {view === "projects" && (
+            <Box
+              sx={{ width: "10%", display: "flex", justifyContent: "center", alignItems: "center" }}
+            >
+              <Tooltip title={task.user_name} arrow>
+                <Avatar sx={{ height: 24, width: 24, fontSize: 12 }}>
+                  {task.user_name.charAt(0).toUpperCase()}
+                </Avatar>
+              </Tooltip>
+            </Box>
           )}
         </Box>
       </Box>

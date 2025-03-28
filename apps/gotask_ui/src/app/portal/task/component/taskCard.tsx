@@ -22,7 +22,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
         borderRadius: 3,
         transition: "0.3s",
         "&:hover": { boxShadow: "0px 4px 10px rgba(156, 32, 240, 0.6)" },
-        height: 350,
+        height: 360,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between"
@@ -35,7 +35,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
           alignItems: "center"
         }}
       >
-        <Typography variant="h6">
+        <Typography variant="h6" sx={{ textTransform: "capitalize" }}>
           {view === "projects" ? group.project_name : group.user_name}
         </Typography>
 

@@ -1,8 +1,8 @@
 import Hapi from "@hapi/hapi";
-import { connectDB } from "./config/database";
-import { taskRoutes } from "./modules/task/taskRoute";
-import { projectRoutes } from "./modules/project/projectRoute";
-import { userRoutes } from "./modules/user/userRoutes";
+import connectDB from "./src/config/database";
+import { taskRoutes } from "./src/modules/task/taskRoute";
+import { projectRoutes } from "./src/modules/project/projectRoute";
+import { userRoutes } from "./src/modules/user/userRoutes";
 import dotenv from "dotenv";
 
 dotenv.config();

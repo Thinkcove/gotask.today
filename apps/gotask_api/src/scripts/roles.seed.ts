@@ -10,7 +10,7 @@ const roles = [
 
 const seedRoles = async () => {
   try {
-    await mongoose.connect("mongodb+srv://rizwana:rizwana%40123@cluster0.tb7eb.mongodb.net/");
+    await mongoose.connect("");
 
     for (const role of roles) {
       const exists = await Role.findOne({ name: role.name });

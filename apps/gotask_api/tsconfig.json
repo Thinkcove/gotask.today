@@ -5,6 +5,7 @@
     "outDir": "./lib",
     "rootDir": "./",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
   }
 }

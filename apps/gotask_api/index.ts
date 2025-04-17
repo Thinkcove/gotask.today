@@ -4,6 +4,10 @@ import { taskRoutes } from "./src/modules/task/taskRoute";
 import { projectRoutes } from "./src/modules/project/projectRoute";
 import { userRoutes } from "./src/modules/user/userRoutes";
 import dotenv from "dotenv";
+import { access } from "fs";
+import { accessRoutes } from "./src/modules/access/accessRoutes";
+import { roleRoutes } from "./src/modules/role/roleRoutes";
+
 
 dotenv.config();
 const init = async () => {
@@ -24,6 +28,9 @@ const init = async () => {
   taskRoutes(server);
   projectRoutes(server);
   userRoutes(server);
+  accessRoutes(server);
+  roleRoutes(server);
+ 
 
   await server.start();
 };

@@ -1,30 +1,46 @@
-import { Document } from "mongoose";
-import mongoose, { Schema } from "mongoose";
+import { Document, Schema, model, Types } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 
+// User interface
 export interface IUser extends Document {
   id: string;
   name: string;
   password: string;
-  user_id: string; // Email ID
-  status: boolean; // true = active, false = inactive/blocked
+  user_id: string; // email
+  status: boolean;
   role: string;
+  organization?: Types.ObjectId;
+  projects?: Types.ObjectId[];
 }
 
+// User schema
 const UserSchema = new Schema<IUser>(
   {
-    id: { type: String, default: uuidv4, unique: true }, // Auto-generated UUID
+    id: { type: String, default: uuidv4, unique: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
-    user_id: { type: String, required: true, unique: true }, // Email as unique ID
-    status: { type: Boolean, default: true }, // Default: Active
-    role: { type: String, required: true }
+    user_id: { type: String, required: true, unique: true }, // Email
+    status: { type: Boolean, default: true },
+    role: { type: String, required: true, ref: "Role" },
+
+    // 🏢 Organization Reference (Optional)
+    organization: {
+      type: Schema.Types.ObjectId,
+      ref: "Organization",
+      default: null
+    },
+
+    // 📁 Projects Reference (Optional array)
+    projects: [{
+      type: Schema.Types.ObjectId,
+      ref: "Project"
+    }]
   },
   { timestamps: true }
 );
 
-// Hash password before saving
+// Password hash hook
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
@@ -32,4 +48,5 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-export const User = mongoose.model<IUser>("User", UserSchema);
+// Export model
+export const User = model<IUser>("User", UserSchema);

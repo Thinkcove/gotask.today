@@ -1,0 +1,17 @@
+{
+    "accesses": [
+      {
+        "access": "User Management",
+        "actions": ["CREATE", "READ", "UPDATE", "DELETE"]
+      },
+      {
+        "access": "Task Management",
+        "actions": ["CREATE", "READ", "UPDATE", "DELETE"]
+      },
+      {
+        "access": "Project Management",
+        "actions": ["CREATE", "READ", "UPDATE", "DELETE"]
+      }
+    ]
+  }
+  

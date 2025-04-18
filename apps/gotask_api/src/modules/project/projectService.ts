@@ -1,38 +1,121 @@
-import { IProject, Project } from "../../domain/model/project";
-import { User } from "../../domain/model/user";
+import ProjectMessages from "../../constants/apiMessages/projectMessage";
+import {
+  createNewProject,
+  findAllProjects,
+  findByProjectId,
+  findByUserId,
+  findUsersByIds,
+  saveProject
+} from "../../domain/interface/project/projectInterface";
+import { IProject } from "../../domain/model/project/project";
 
-export class ProjectService {
-  // Create a new project
-  static async createProject(projectData: IProject): Promise<IProject> {
-    const newProject = new Project(projectData);
-    return await newProject.save();
-  }
-
-  // Get all projects
-  static async getAllProjects(): Promise<IProject[]> {
-    return await Project.find(); // Fetches all projects
-  }
-
-  // Assign User to Project
-  static async assignUsersToProject(user_id: string[], project_id: string): Promise<IProject> {
-    const users = await User.find({ id: { $in: user_id } });
-    const project = await Project.findOne({ id: project_id });
-    if (!users.length || !project) {
-      throw new Error("Invalid user_ids or project_id");
+//Create a new project
+const createProject = async (
+  projectData: IProject
+): Promise<{ success: boolean; data?: any; message?: string }> => {
+  try {
+    if (!projectData) {
+      return {
+        success: false,
+        message: ProjectMessages.CREATE.REQUIRED
+      };
     }
-    // Ensure `user_ids` is an array before pushing new users
-    if (!Array.isArray(project.user_id)) {
-      project.user_id = [];
-    }
-    // Add only unique users
-    const uniqueUsers = [...new Set([...project.user_id, ...users.map((u) => u.id)])];
-    project.user_id = uniqueUsers;
-    await project.save();
-    return project;
-  }
 
-  // Get Projects by User ID
-  static async getProjectsByUserId(user_id: string): Promise<IProject[]> {
-    return await Project.find({ user_id });
+    const createProject = await createNewProject(projectData);
+    return {
+      success: true,
+      data: createProject
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.CREATE.FAILED
+    };
   }
-}
+};
+
+const getAllProjects = async (): Promise<{
+  success: boolean;
+  data?: IProject[];
+  message?: string;
+}> => {
+  try {
+    const projects = await findAllProjects();
+    return {
+      success: true,
+      data: projects
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.FETCH.FAILED_ALL
+    };
+  }
+};
+
+const assignUsersToProject = async (
+  userIds: string[],
+  projectId: string
+): Promise<{ success: boolean; data?: IProject; message?: string }> => {
+  try {
+    if (!Array.isArray(userIds) || userIds.length === 0 || !projectId) {
+      return {
+        success: false,
+        message: ProjectMessages.ASSIGN.INVALID_INPUT
+      };
+    }
+    const users = await findUsersByIds(userIds);
+    if (!users.length) {
+      return {
+        success: false,
+        message: ProjectMessages.ASSIGN.NO_USERS_FOUND
+      };
+    }
+    const project = await findByProjectId(projectId);
+    if (!project) {
+      return {
+        success: false,
+        message: ProjectMessages.ASSIGN.PROJECT_NOT_FOUND
+      };
+    }
+    project.user_id = Array.isArray(project.user_id) ? project.user_id : [];
+    const existingUserIds = new Set(project.user_id);
+    users.forEach((user: any) => existingUserIds.add(user.id));
+    project.user_id = Array.from(existingUserIds);
+    const updatedProject = await saveProject(project);
+    return {
+      success: true,
+      data: updatedProject
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.ASSIGN.FAILED
+    };
+  }
+};
+
+const getProjectsByUserId = async (
+  userId: string
+): Promise<{ success: boolean; data?: IProject[]; message?: string }> => {
+  try {
+    if (!userId) {
+      return {
+        success: false,
+        message: ProjectMessages.USER.REQUIRED
+      };
+    }
+    const projects = await findByUserId(userId);
+    return {
+      success: true,
+      data: projects
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.FETCH.FAILED_BY_USER
+    };
+  }
+};
+
+export { createProject, getAllProjects, assignUsersToProject, getProjectsByUserId };

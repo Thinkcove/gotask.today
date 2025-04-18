@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
@@ -9,7 +9,8 @@ export interface IRole extends Document {
   id: string;
   name: string; // e.g. Admin, Manager, Associate
   priority: number; // Lower = higher authority
-  access: IAccess[]; // References to Access model
+  access: Types.ObjectId[] | IAccess[];
+  // References to Access model
 }
 
 const RoleSchema = new Schema<IRole>(

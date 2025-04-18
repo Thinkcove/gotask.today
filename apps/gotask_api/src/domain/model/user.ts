@@ -9,7 +9,7 @@ export interface IUser extends Document {
   password: string;
   user_id: string; // email
   status: boolean;
-  role: string;
+  role: Types.ObjectId; // Now referencing Role model
   organization?: Types.ObjectId;
   projects?: Types.ObjectId[];
 }
@@ -20,22 +20,26 @@ const UserSchema = new Schema<IUser>(
     id: { type: String, default: uuidv4, unique: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
-    user_id: { type: String, required: true, unique: true }, // Email
+    user_id: { type: String, required: true, unique: true },
     status: { type: Boolean, default: true },
-    role: { type: String, required: true, ref: "Role" },
 
-    // 🏢 Organization Reference (Optional)
+    // Reference to Role
+    role: { type: Schema.Types.ObjectId, ref: "Role", required: true },
+
+    // Optional organization
     organization: {
       type: Schema.Types.ObjectId,
       ref: "Organization",
-      default: null
+      default: null,
     },
 
-    // 📁 Projects Reference (Optional array)
-    projects: [{
-      type: Schema.Types.ObjectId,
-      ref: "Project"
-    }]
+    // Optional projects
+    projects: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Project",
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -48,5 +52,4 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-// Export model
 export const User = model<IUser>("User", UserSchema);

@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "app": {
+    "port": "4000",
+    "host": "0.0.0.0",
+    "name": "GoTask-API",
+    "logLevel": "debug",
+    "domains": {
+      "allowed": ["*"]
+    }
+  }
+}

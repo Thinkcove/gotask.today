@@ -1,5 +1,6 @@
 import { IProject, Project } from "../../domain/model/project";
 import { User } from "../../domain/model/user";
+import { Organization } from "../../domain/model/organization";
 
 export class ProjectService {
   // Create a new project
@@ -27,6 +28,19 @@ export class ProjectService {
     // Add only unique users
     const uniqueUsers = [...new Set([...project.user_id, ...users.map((u) => u.id)])];
     project.user_id = uniqueUsers;
+    await project.save();
+    return project;
+  }
+
+  static async assignProjectToOrganization(project_id: string, organization_id: string): Promise<IProject> {
+    const project = await Project.findOne({ id: project_id });
+    const organization = await Organization.findOne({ id: organization_id });
+  
+    if (!project || !organization) {
+      throw new Error("Invalid project_id or organization_id");
+    }
+  
+    project.organization_id = organization.id;
     await project.save();
     return project;
   }

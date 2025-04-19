@@ -88,7 +88,10 @@ const getTasksByProject = async (
   taskPage: number,
   taskPageSize: number,
   search_vals?: any[][],
-  search_vars?: string[][]
+  search_vars?: string[][],
+  min_date?: string,
+  max_date?: string,
+  date_var?: string
 ): Promise<{
   success: boolean;
   data?: any;
@@ -99,7 +102,13 @@ const getTasksByProject = async (
     const taskSkip = (taskPage - 1) * taskPageSize;
 
     let filter: any = {};
-    if (search_vars && search_vals) {
+
+    // Type guard to ensure search arrays are valid
+    const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
+      Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
+
+    // Text search filter
+    if (isValidSearch(search_vars) && isValidSearch(search_vals)) {
       const orConditions: any[] = [];
       for (let i = 0; i < search_vars.length; i++) {
         const field = search_vars[i][0];
@@ -108,6 +117,24 @@ const getTasksByProject = async (
         orConditions.push({ [fieldName]: { $regex: new RegExp(value, "i") } });
       }
       filter = orConditions.length === 1 ? orConditions[0] : { $or: orConditions };
+    }
+
+    // Date range filter
+    if (date_var && min_date && max_date) {
+      const dateFilter = {
+        [date_var]: {
+          $gte: new Date(min_date),
+          $lte: new Date(max_date)
+        }
+      };
+
+      if (Object.keys(filter).length > 0) {
+        filter = {
+          $or: [filter, dateFilter]
+        };
+      } else {
+        filter = dateFilter;
+      }
     }
 
     const aggregationPipeline: any[] = [
@@ -172,7 +199,10 @@ const getTasksByUser = async (
   taskPage: number,
   taskPageSize: number,
   search_vals?: any[][],
-  search_vars?: string[][]
+  search_vars?: string[][],
+  min_date?: string,
+  max_date?: string,
+  date_var?: string
 ): Promise<{
   success: boolean;
   data?: any;
@@ -184,15 +214,39 @@ const getTasksByUser = async (
 
     // Build filter
     let filter: any = {};
-    if (search_vars && search_vals) {
+
+    // Type guard to ensure search arrays are valid
+    const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
+      Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
+
+    // Text search filter
+    if (isValidSearch(search_vars) && isValidSearch(search_vals)) {
       const orConditions: any[] = [];
       for (let i = 0; i < search_vars.length; i++) {
         const field = search_vars[i][0];
         const value = search_vals[i][0];
-        const fieldName = field === "id" ? "user_id" : field;
+        const fieldName = field === "id" ? "project_id" : field;
         orConditions.push({ [fieldName]: { $regex: new RegExp(value, "i") } });
       }
       filter = orConditions.length === 1 ? orConditions[0] : { $or: orConditions };
+    }
+
+    // Date range filter
+    if (date_var && min_date && max_date) {
+      const dateFilter = {
+        [date_var]: {
+          $gte: new Date(min_date),
+          $lte: new Date(max_date)
+        }
+      };
+
+      if (Object.keys(filter).length > 0) {
+        filter = {
+          $or: [filter, dateFilter]
+        };
+      } else {
+        filter = dateFilter;
+      }
     }
 
     // Build aggregation pipeline

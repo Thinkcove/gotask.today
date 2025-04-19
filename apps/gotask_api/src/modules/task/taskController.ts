@@ -51,8 +51,17 @@ class TaskController extends BaseController {
   // Get Tasks by Project
   async getTaskByProject(requestHelper: RequestHelper, handler: any) {
     try {
-      const { page, page_size, task_page, task_page_size, search_vals, search_vars } =
-        requestHelper.getPayload();
+      const {
+        page,
+        page_size,
+        task_page,
+        task_page_size,
+        search_vals,
+        search_vars,
+        min_date,
+        max_date,
+        date_var
+      } = requestHelper.getPayload();
 
       const result = await getTasksByProject(
         Number(page),
@@ -60,7 +69,10 @@ class TaskController extends BaseController {
         Number(task_page),
         Number(task_page_size),
         search_vals,
-        search_vars
+        search_vars,
+        min_date,
+        max_date,
+        date_var
       );
 
       return this.sendResponse(handler, result);
@@ -72,8 +84,17 @@ class TaskController extends BaseController {
   // Get Tasks by User
   async getTaskByUser(requestHelper: RequestHelper, handler: any) {
     try {
-      const { page, page_size, task_page, task_page_size, search_vals, search_vars } =
-        requestHelper.getPayload();
+      const {
+        page,
+        page_size,
+        task_page,
+        task_page_size,
+        search_vals,
+        search_vars,
+        min_date,
+        max_date,
+        date_var
+      } = requestHelper.getPayload();
 
       const result = await getTasksByUser(
         Number(page),
@@ -81,7 +102,10 @@ class TaskController extends BaseController {
         Number(task_page),
         Number(task_page_size),
         search_vals,
-        search_vars
+        search_vars,
+        min_date,
+        max_date,
+        date_var
       );
 
       return this.sendResponse(handler, result);

@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 import mongoose, { Schema } from "mongoose";
-import { PROJECT_STATUS } from "../../constants/projectConstant";
+import { PROJECT_STATUS } from "../../../constants/projectConstant";
 import { v4 as uuidv4 } from "uuid";
 
 export interface IProject extends Document {

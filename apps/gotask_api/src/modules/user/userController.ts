@@ -1,79 +1,104 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
-import { UserService } from "./userService";
-import { errorResponse, successResponse } from "../../helpers/responseHelper";
-import { IUser } from "../../domain/model/user";
-import jwt from "jsonwebtoken";
+import RequestHelper from "../../helpers/requestHelper";
+import BaseController from "../../common/baseController";
 import { comparePassword } from "../../constants/utils.ts/common";
+import jwt from "jsonwebtoken";
+import { createUser, getAllUsers, getUserByEmail, getUserById, updateUser } from "./userService";
 
-// Create a new User
-export const createUser = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const userData = request.payload as any;
-    if (!userData.name || !userData.user_id || !userData.role) {
-      return errorResponse(h, "Missing required fields", 400);
-    }
-    const newUser = await UserService.createUser(userData);
-    return successResponse(h, newUser, 201);
-  } catch (error) {
-    return errorResponse(h, "Failed to create user");
-  }
-};
+class UserController extends BaseController {
+  // Create a new user
+  async createUser(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userData = requestHelper.getPayload();
+      const { name, user_id, role } = userData;
 
-// Get All Users
-export const getAllUsers = async (_request: Request, h: ResponseToolkit) => {
-  try {
-    const users = await UserService.getAllUsers();
-    return successResponse(h, users);
-  } catch (error) {
-    return errorResponse(h, "Failed to retrieve users");
-  }
-};
-
-// Get a User by id
-export const getUserById = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const { id } = request.params;
-    const user = await UserService.getUserById(id);
-    if (!user) return errorResponse(h, "User not found", 404);
-    return successResponse(h, user);
-  } catch (error) {
-    return errorResponse(h, "Failed to retrieve user");
-  }
-};
-
-// Update User details by id
-export const updateUser = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const { id } = request.params; // Extract ID from the route
-    const updatedData = request.payload as Partial<IUser>; // Allow updating any field
-    const updatedUser = await UserService.updateUser(id, updatedData);
-    if (!updatedUser) return errorResponse(h, "User not found", 404);
-    return successResponse(h, updatedUser);
-  } catch (error) {
-    return errorResponse(h, "Failed to update user details");
-  }
-};
-
-// Login API
-export const loginUser = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const { user_id, password } = request.payload as { user_id: string; password: string };
-    // Fetch user by email
-    const user = await UserService.getUserByEmail(user_id);
-    if (!user) return errorResponse(h, "User not found", 404);
-    // Compare passwords using the separate function
-    const isMatch = await comparePassword(password, user.password);
-    if (!isMatch) return errorResponse(h, "Invalid credentials", 401);
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user.id, user_id: user.user_id, role: user.role },
-      process.env.AUTH_KEY as string,
-      {
-        expiresIn: "1h"
+      if (!name || !user_id || !role) {
+        throw new Error("Missing required fields");
       }
-    );
-    return successResponse(h, { token, user }, 200);
-  } catch (error) {
-    return errorResponse(h, "Failed to login");
+
+      const newUser = await createUser(userData);
+      return this.sendResponse(handler, newUser);
+    } catch (error) {
+      return this.replyError(error);
+    }
   }
-};
+
+  // Get all users
+  async getAllUsers(_requestHelper: RequestHelper, handler: any) {
+    try {
+      const users = await getAllUsers();
+      return this.sendResponse(handler, users);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Get user by ID
+  async getUserById(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const user = await getUserById(id);
+      if (!user) throw new Error("User not found");
+      return this.sendResponse(handler, user);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Update user
+  async updateUser(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const updatedData = requestHelper.getPayload();
+      const updatedUser = await updateUser(id, updatedData);
+
+      if (!updatedUser) throw new Error("User not found");
+      return this.sendResponse(handler, updatedUser);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Login user
+  async loginUser(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { user_id, password } = requestHelper.getPayload();
+
+      const { success, data: user, message } = await getUserByEmail(user_id);
+      if (!success || !user) {
+        return this.sendResponse(handler, {
+          success: false,
+          error: message || "User not found"
+        });
+      }
+
+      const isMatch = await comparePassword(password, user.password);
+      if (!isMatch) {
+        return this.sendResponse(handler, {
+          success: false,
+          error: "Invalid credentials"
+        });
+      }
+
+      const token = jwt.sign(
+        { id: user.id, user_id: user.user_id, role: user.role },
+        process.env.AUTH_KEY as string,
+        { expiresIn: "1h" }
+      );
+
+      return this.sendResponse(handler, {
+        success: true,
+        data: {
+          token,
+          user
+        }
+      });
+    } catch (error: any) {
+      return this.sendResponse(handler, {
+        success: false,
+        error: error.message || "Failed to login"
+      });
+    }
+  }
+}
+
+export default UserController;

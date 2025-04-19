@@ -1,58 +1,66 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
 import RequestHelper from "../../helpers/requestHelper";
-import { errorResponse, successResponse } from "../../helpers/responseHelper";
-import { ProjectService } from "./projectService";
+import BaseController from "../../common/baseController";
+import {
+  assignUsersToProject,
+  createProject,
+  getAllProjects,
+  getProjectsByUserId
+} from "./projectService";
 
-// Create a Project
-export const createProject = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const requestHelper = new RequestHelper(request);
-    const projectData = requestHelper.getPayload();
-    if (!projectData) {
-      return errorResponse(h, "Missing required fields", 400);
+class ProjectController extends BaseController {
+  // Create a new project
+  async createProject(requestHelper: RequestHelper, handler: any) {
+    try {
+      const projectData = requestHelper.getPayload();
+      if (!projectData) {
+        throw new Error("Missing required fields");
+      }
+      const newProject = await createProject(projectData);
+      return this.sendResponse(handler, newProject);
+    } catch (error) {
+      return this.replyError(error);
     }
-    const newProject = await ProjectService.createProject(projectData);
-    return successResponse(h, newProject, 200);
-  } catch (error) {
-    return errorResponse(h, "Failed to create project");
   }
-};
 
-// Get All Projects
-export const getAllProjects = async (_request: Request, h: ResponseToolkit) => {
-  try {
-    const projects = await ProjectService.getAllProjects();
-    return successResponse(h, projects);
-  } catch (error) {
-    return errorResponse(h, "Failed to retrieve projects");
-  }
-};
-
-// Assign User to Project
-export const assignUserToProject = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const requestHelper = new RequestHelper(request);
-    const { user_id, project_id } = requestHelper.getPayload(); // Accept multiple users
-    if (!user_id || !Array.isArray(user_id) || !project_id) {
-      return errorResponse(h, "Invalid payload. 'user_ids' must be an array.", 400);
+  // Get all projects
+  async getAllProjects(_requestHelper: RequestHelper, handler: any) {
+    try {
+      const projects = await getAllProjects();
+      return this.sendResponse(handler, projects);
+    } catch (error) {
+      return this.replyError(error);
     }
-    const result = await ProjectService.assignUsersToProject(user_id, project_id);
-    return successResponse(h, result, 200);
-  } catch (error: any) {
-    return errorResponse(h, error.message, 500);
   }
-};
 
-// Get Projects by User ID
-export const getProjectsByUserId = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const user_id = request.params.user_id;
-    if (!user_id) {
-      return errorResponse(h, "User ID is required", 400);
+  // Assign users to a project
+  async assignUserToProject(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { user_id, project_id } = requestHelper.getPayload();
+      if (!user_id || !Array.isArray(user_id) || !project_id) {
+        throw new Error(
+          "Invalid payload. 'user_id' must be an array and 'project_id' is required."
+        );
+      }
+      const result = await assignUsersToProject(user_id, project_id);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
     }
-    const projects = await ProjectService.getProjectsByUserId(user_id);
-    return successResponse(h, projects, 200);
-  } catch (error) {
-    return errorResponse(h, "Failed to retrieve projects for user", 500);
   }
-};
+
+  // Get projects by user ID
+  async getProjectsByUserId(requestHelper: RequestHelper, handler: any) {
+    try {
+      const user_id = requestHelper.getParam("user_id");
+      if (!user_id) {
+        throw new Error("User ID is required");
+      }
+      const projects = await getProjectsByUserId(user_id);
+      return this.sendResponse(handler, projects);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+}
+
+export default ProjectController;

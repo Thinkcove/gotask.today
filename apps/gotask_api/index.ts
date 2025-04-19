@@ -1,13 +1,10 @@
 import Hapi from "@hapi/hapi";
 import connectDB from "./src/config/database";
-import { taskRoutes } from "./src/modules/task/taskRoute";
-import { projectRoutes } from "./src/modules/project/projectRoute";
-import { userRoutes } from "./src/modules/user/userRoutes";
 import dotenv from "dotenv";
-import { access } from "fs";
 import { accessRoutes } from "./src/modules/access/accessRoutes";
 import { roleRoutes } from "./src/modules/role/roleRoutes";
 
+import routes from "./src/routes/route";
 
 dotenv.config();
 const init = async () => {
@@ -25,13 +22,12 @@ const init = async () => {
   });
 
   // Register routes
-  taskRoutes(server);
-  projectRoutes(server);
-  userRoutes(server);
+  
   accessRoutes(server);
   roleRoutes(server);
  
 
+  server.route(routes);
   await server.start();
 };
 

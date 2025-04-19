@@ -7,8 +7,8 @@ class RequestHelper {
     this.request = request;
   }
 
-  getParam<T = any>(key: string): T | undefined {
-    return this.request.params?.[key] as T;
+  getParam(key: string): any {
+    return this.request.params[key];
   }
 
   getAllParams(): Record<string, any> {

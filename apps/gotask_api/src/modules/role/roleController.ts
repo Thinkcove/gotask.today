@@ -1,66 +1,42 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
-import { Role } from "../../domain/model/role";
-import { RoleAccess } from "../../domain/model/roleAccess";
-import { Access } from "../../domain/model/access";
+import RequestHelper from "../../helpers/requestHelper";
+import BaseController from "../../common/baseController";
+import { createRoleService, getAllRolesService } from "./roleService";
 
-// Define a type for the request payload
-interface CreateRolePayload {
-  name: string;
-  priority: number;
-  accessIds?: string[]; // Optional array of Access IDs
+class RoleController extends BaseController {
+  // Create Role
+  async createRole(requestHelper: RequestHelper, handler: any) {
+    try {
+      const roleData = requestHelper.getPayload();
+
+      // Basic validation (optional here if you’re already using Joi at route-level)
+      if (!roleData.name || roleData.priority === undefined) {
+        return this.replyError(new Error("Name and Priority fields are required"));
+      }
+
+      const result = await createRoleService(roleData);
+      if (!result.success) {
+        return this.replyError(new Error(result.message || "Failed to create role"));
+      }
+
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Get All Roles
+  async getAllRoles(_requestHelper: RequestHelper, handler: any) {
+    try {
+      const result = await getAllRolesService();
+      if (!result.success) {
+        return this.replyError(new Error(result.message || "Failed to fetch roles"));
+      }
+
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
-
-// Create a new role
-export const createRole = async (req: Request, h: ResponseToolkit) => {
-  try {
-    const { name, priority, accessIds = [] }: CreateRolePayload = req.payload as CreateRolePayload;
-
-    // Check for duplicate role
-    const exists = await Role.findOne({ name });
-    if (exists) {
-      return h.response({ message: "Role already exists" }).code(409);
-    }
-
-    // Create the new role
-    const role = new Role({ name, priority });
-    await role.save();
-
-    // Link role to access rights if any are provided
-    const linkedAccesses = [];
-
-    for (const accessId of accessIds) {
-      const accessExists = await Access.findOne({ id: accessId });
-      if (accessExists) {
-        const roleAccess = new RoleAccess({
-          role_id: role.id,
-          access_id: accessId
-        });
-        await roleAccess.save();
-        linkedAccesses.push(roleAccess);
-      }
-    }
-
-    return h.response({
-      message: "Role created successfully",
-      role,
-      linkedAccesses
-    }).code(201);
-
-  } catch (err) {
-    console.error("Error creating role:", err);
-    return h.response({ error: "Failed to create role" }).code(500);
-  }
-};
-
-
-// Get all roles
-export const getAllRoles = async (_req: Request, h: ResponseToolkit) => {
-  try {
-    const roles = await Role.find().sort({ priority: 1 }); // Sort by priority, lower number = higher authority
-    return h.response(roles).code(200);
-  } catch (err) {
-    console.error("Error fetching roles:", err);
-    return h.response({ error: "Failed to fetch roles" }).code(500);
-  }
-};
+export default RoleController;

@@ -1,78 +1,93 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
-import { AccessService } from "./accessService";
-import { errorResponse, successResponse } from "../../helpers/responseHelper";
+import RequestHelper from "../../helpers/requestHelper";
+import BaseController from "../../common/baseController";
 import { IAccess } from "../../domain/model/access";
+import { 
+  createAccess, 
+  getAllAccesses, 
+  getAccessById, 
+  updateAccess, 
+  deleteAccessById 
+} from "../access/accessService";
 
-// Create Access
-export const createAccess = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const accessData = request.payload as any;
-    if (!accessData.name || !accessData.application) {
-      return errorResponse(h, "Name and Application fields are required", 400);
+class AccessController extends BaseController {
+  // Create Access
+  async createAccess(requestHelper: RequestHelper, handler: any) {
+    try {
+      const accessData = requestHelper.getPayload();
+      if (!accessData.name || !accessData.application) {
+        return this.replyError(new Error("Name and Application fields are required"));
+      }
+
+      const newAccess = await createAccess(accessData);
+      if (!newAccess.success) {
+        return this.replyError(new Error(newAccess.message || "Failed to create access"));
+      }
+      
+      return this.sendResponse(handler, newAccess.data,); // Status code 201 for creation
+    } catch (error) {
+      return this.replyError(error);
     }
-
-    const newAccess = await AccessService.createAccess(accessData);
-    return successResponse(h, newAccess, 201);
-  } catch (error) {
-    console.error("Error creating access:", error);
-    return errorResponse(h, "Failed to create access", 500);
   }
-};
 
-// Get All Accesses
-export const getAllAccesses = async (_request: Request, h: ResponseToolkit) => {
-  try {
-    const accesses = await AccessService.getAllAccesses();
-    return successResponse(h, accesses);
-  } catch (error) {
-    return errorResponse(h, "Failed to retrieve accesses", 500);
-  }
-};
-
-// Get Access by ID
-export const getAccessById = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const { id } = request.params;
-    const access = await AccessService.getAccessById(id);
-    if (!access) {
-      return errorResponse(h, "Access not found", 404);
+  // Get All Accesses
+  async getAllAccesses(_requestHelper: RequestHelper, handler: any) {
+    try {
+      const result = await getAllAccesses();
+      if (!result.success) {
+        return this.replyError(new Error(result.message || "Failed to fetch accesses"));
+      }
+      
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
     }
-    return successResponse(h, access);
-  } catch (error) {
-    return errorResponse(h, "Failed to retrieve access", 500);
   }
-};
 
-// Update Access by ID
-export const updateAccess = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const { id } = request.params;
-    const payload = request.payload as Partial<IAccess>;
-
-    const updatedAccess = await AccessService.updateAccessById(id, payload);
-    if (!updatedAccess) {
-      return errorResponse(h, "Access not found", 404);
+  // Get Access by ID
+  async getAccessById(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const result = await getAccessById(id);
+      if (!result.success) {
+        return this.replyError(new Error(result.message || "Access not found"));
+      }
+      
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
     }
-
-    return successResponse(h, updatedAccess, 200);
-  } catch (error) {
-    console.error("Error updating access:", error);
-    return errorResponse(h, "Failed to update access", 500);
   }
-};
 
-// Delete Access by ID
-export const deleteAccess = async (request: Request, h: ResponseToolkit) => {
-  try {
-    const { id } = request.params;
-    const deleted = await AccessService.deleteAccessById(id);
-    if (!deleted) {
-      return errorResponse(h, "Access not found", 404);
+  // Update Access
+  async updateAccess(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const payload = requestHelper.getPayload() as Partial<IAccess>;
+      const result = await updateAccess(id, payload);
+      if (!result.success) {
+        return this.replyError(new Error(result.message || "Failed to update access"));
+      }
+      
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
     }
-
-    return successResponse(h, { message: "Access deleted successfully" }, 200);
-  } catch (error) {
-    console.error("Error deleting access:", error);
-    return errorResponse(h, "Failed to delete access", 500);
   }
-};
+
+  // Delete Access
+  async deleteAccess(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const result = await deleteAccessById(id);
+      if (!result.success) {
+        return this.replyError(new Error(result.message || "Failed to delete access"));
+      }
+
+      return this.sendResponse(handler, { message: "Access deleted successfully" });
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+}
+
+export default AccessController;

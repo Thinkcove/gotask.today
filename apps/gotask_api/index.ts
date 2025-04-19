@@ -1,8 +1,6 @@
 import Hapi from "@hapi/hapi";
 import connectDB from "./src/config/database";
 import dotenv from "dotenv";
-import { accessRoutes } from "./src/modules/access/accessRoutes";
-import { roleRoutes } from "./src/modules/role/roleRoutes";
 
 import routes from "./src/routes/route";
 
@@ -21,10 +19,6 @@ const init = async () => {
     }
   });
 
-  // Register routes
-  
-  accessRoutes(server);
-  roleRoutes(server);
  
 
   server.route(routes);

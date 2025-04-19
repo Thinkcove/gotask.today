@@ -5,6 +5,10 @@ import { ITaskComment, TaskCommentSchema } from "./taskComment";
 import { ITaskHistory, TaskHistorySchema } from "./taskHistory";
 import { TASK_SEVERITY, TASK_STATUS } from "../../../constants/taskConstant";
 
+export interface ITimeSpentEntry {
+  date: string;
+  time_logged: string; // e.g., "1d2h"
+}
 export interface ITask extends Document {
   id: string;
   title: string;
@@ -22,7 +26,19 @@ export interface ITask extends Document {
   loginuser_name?: string;
   comment?: ITaskComment[];
   history?: ITaskHistory[];
+  estimated_time: string;
+  time_spent: ITimeSpentEntry[];
+  time_spent_total: string;
+  remaining_time: string;
 }
+// Time Spent Entry Schema
+const TimeSpentEntrySchema = new Schema<ITimeSpentEntry>(
+  {
+    date: { type: String, required: true },
+    time_logged: { type: String, required: true }
+  },
+  { _id: false }
+);
 const TaskSchema = new Schema<ITask>(
   {
     id: { type: String, default: uuidv4, unique: true },
@@ -46,6 +62,11 @@ const TaskSchema = new Schema<ITask>(
     due_date: { type: Date, required: true },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
+    // Time tracking fields
+    estimated_time: { type: String, default: null },
+    time_spent: { type: [TimeSpentEntrySchema], default: [] },
+    time_spent_total: { type: String, default: "0d0h" },
+    remaining_time: { type: String, default: null },
     comment: { type: [TaskCommentSchema] },
     history: { type: [TaskHistorySchema] }
   },

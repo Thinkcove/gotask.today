@@ -8,7 +8,10 @@ import {
   getTaskById,
   updateTask,
   createComment,
-  updateComment
+  updateComment,
+  addTimeSpent,
+  updateEstimatedTime,
+  getTimeTrackingSummary
 } from "./taskController";
 import { HTTP_METHODS } from "../../constants/httpMethods";
 import { API_PATHS } from "../../constants/apiPaths";
@@ -59,6 +62,22 @@ export const taskRoutes = (server: Server) => {
       method: HTTP_METHODS.PUT,
       path: API_PATHS.UPDATE_COMMENT,
       handler: updateComment
+    },
+
+    {
+      method: HTTP_METHODS.POST,
+      path: API_PATHS.ADD_TIME_SPENT,
+      handler: addTimeSpent
+    },
+    {
+      method: HTTP_METHODS.PUT,
+      path: API_PATHS.UPDATE_ESTIMATED_TIME,
+      handler: updateEstimatedTime
+    },
+    {
+      method: HTTP_METHODS.GET,
+      path: API_PATHS.GET_TIME_TRACKING_SUMMARY,
+      handler: getTimeTrackingSummary
     }
   ]);
 };

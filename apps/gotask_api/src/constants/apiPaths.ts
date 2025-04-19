@@ -23,5 +23,10 @@ export const API_PATHS = {
   UPDATE_USER: "/updateUser/{id}",
 
   //loginRoute
-  LOGIN: "/user/login"
+  LOGIN: "/user/login",
+
+  // Add these new paths
+  ADD_TIME_SPENT: "/tasklog/{id}", 
+  UPDATE_ESTIMATED_TIME: "/tasks/{id}/update-estimated-time", 
+  GET_TIME_TRACKING_SUMMARY: "/tasks/{id}" 
 };

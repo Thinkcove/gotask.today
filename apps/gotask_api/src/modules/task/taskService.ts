@@ -6,22 +6,40 @@ import { ITask, Task } from "../../domain/model/task/task";
 import { User } from "../../domain/model/user";
 import { v4 as uuidv4 } from "uuid";
 import { ITaskHistory, TaskHistorySchema } from "../../domain/model/task/taskHistory";
+// import { TimeUtil } from "../../constants/utils.ts/timeUtils";
+// taskService.ts
+import { TimeUtil } from "../../constants/utils.ts/timeUtils";
+import { ITimeSpentEntry } from "../../domain/model/task/task";
+
 import { ITaskComment, TaskComment } from "../../domain/model/task/taskComment";
 
 export class TaskService {
-  // Create a new task
   static async createTask(taskData: Partial<ITask>): Promise<ITask> {
-    // Fetch user and project details
     const user = await User.findOne({ id: taskData.user_id });
     const project = await Project.findOne({ id: taskData.project_id });
     if (!user || !project) {
       throw new Error("Invalid user_id or project_id");
     }
-    // Assign user_name and project_name
+
+    const createdOn = new Date(taskData.created_on!);
+    const dueDate = new Date(taskData.due_date!);
+
+    if (isNaN(createdOn.getTime()) || isNaN(dueDate.getTime())) {
+      throw new Error("Invalid created_on or due_date");
+    }
+
+    const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
+    const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+
+    // Inclusive: count both start and end dates
+    let daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
+    let estimatedTime = daysDiff > 0 ? `${daysDiff}d0h` : "1d0h"; // fallback
+
     const newTask = new Task({
       ...taskData,
       user_name: user.name,
-      project_name: project.name
+      project_name: project.name,
+      estimated_time: estimatedTime
     });
     return await newTask.save();
   }
@@ -261,5 +279,95 @@ export class TaskService {
       { $set: { "comment.$.comment": newCommentText.comment } } // Update comment text
     );
     return updatedComment;
+  }
+
+  // Add time spent to a task
+  static async addTimeSpent(
+    id: string,
+    timeEntries: ITimeSpentEntry | ITimeSpentEntry[]
+  ): Promise<ITask | null> {
+    try {
+      const task = await Task.findOne({ id });
+      if (!task) return null;
+
+      if (!Array.isArray(timeEntries)) {
+        timeEntries = [timeEntries];
+      }
+
+      if (!task.time_spent) {
+        task.time_spent = [];
+      }
+
+      for (const entry of timeEntries) {
+        // Validate time format
+        if (!TimeUtil.isValidTimeFormat(entry.time_logged)) {
+          throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
+        }
+
+        task.time_spent.push(entry);
+      }
+
+      // Calculate total time spent
+      const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);
+      task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
+
+      // Calculate remaining time
+      task.remaining_time = TimeUtil.calculateRemainingTime(
+        task.estimated_time,
+        task.time_spent_total
+      );
+
+      await task.save();
+      return task;
+    } catch (error) {
+      console.error("Failed to add time spent:", error);
+      throw new Error("Failed to add time spent to the task");
+    }
+  }
+
+  // Update estimated time for a task
+  static async updateEstimatedTime(id: string, estimatedTime: string): Promise<ITask | null> {
+    try {
+      console.log("Finding task with ID:", id);
+      const task = await Task.findOne({ id });
+      if (!task) return null;
+      console.log("Task not found for ID:", id);
+
+      // Validate time format
+      if (!TimeUtil.isValidTimeFormat(estimatedTime)) {
+        console.log("Invalid estimated time format:", estimatedTime);
+        throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
+      }
+
+      task.estimated_time = estimatedTime;
+      console.log("Updated estimated time:", estimatedTime);
+
+      // Recalculate remaining time
+      task.remaining_time = TimeUtil.calculateRemainingTime(
+        task.estimated_time,
+        task.time_spent_total
+      );
+      console.log("Recalculated remaining time:", task.remaining_time);
+
+      await task.save();
+      console.log("Task saved after updating estimated time!");
+      return task;
+    } catch (error) {
+      console.error("Failed to update estimated time:", error);
+      throw new Error("Failed to update estimated time for the task");
+    }
+  }
+  static async getTimeTrackingSummary(taskId: string) {
+    console.log("Fetching time tracking summary for task ID:", taskId);
+    const task = await Task.findById(taskId);
+    if (!task) return null;
+    console.log("Task not found for ID:", taskId);
+
+    return {
+      estimated_time: task.estimated_time,
+      time_spent_total: task.time_spent_total,
+      remaining_time: task.remaining_time,
+      time_spent: task.time_spent // array of entries like [{ date, time_logged }]
+    };
   }
 }

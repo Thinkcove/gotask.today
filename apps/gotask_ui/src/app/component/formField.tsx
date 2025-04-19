@@ -8,13 +8,13 @@ import {
   Box,
   Typography,
   FormHelperText,
-  InputAdornment,
+  InputAdornment
 } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ArrowDropDown, CalendarMonth, Edit } from "@mui/icons-material";
 
-interface SelectOption {
+export interface SelectOption {
   name: string;
   id: string;
 }
@@ -46,7 +46,7 @@ const FormField: React.FC<FormFieldProps> = ({
   disabled = false,
   multiline = false,
   height,
-  onFocus,
+  onFocus
 }) => {
   return (
     <FormControl fullWidth margin="normal" error={!!error}>
@@ -54,11 +54,11 @@ const FormField: React.FC<FormFieldProps> = ({
         sx={{
           p: 2,
           borderRadius: 2,
-          backgroundColor: "#F9F9F9",
+          background: "linear-gradient(45deg, rgb(235, 211, 243), rgb(229, 223, 230))",
           border: "1px solid #DADADA",
           boxShadow: "2px 4px 10px rgba(0,0,0,0.05)",
           transition: "0.3s",
-          "&:focus-within": { borderColor: "#741B92", backgroundColor: "#fff" },
+          "&:focus-within": { borderColor: "#741B92", backgroundColor: "#fff" }
         }}
       >
         <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
@@ -79,9 +79,9 @@ const FormField: React.FC<FormFieldProps> = ({
             sx={{
               "& .MuiInputBase-input::placeholder": {
                 color: "#9C8585",
-                opacity: 1, // Ensures full opacity
+                opacity: 1 // Ensures full opacity
               },
-              ...(multiline && { height: height || 100, overflowY: "auto" }),
+              ...(multiline && { height: height || 100, overflowY: "auto" })
             }}
             onChange={(e) => onChange(e.target.value)}
             InputProps={{
@@ -90,7 +90,7 @@ const FormField: React.FC<FormFieldProps> = ({
                 <InputAdornment position="start">
                   <Edit sx={{ color: "#9C8585" }} />
                 </InputAdornment>
-              ),
+              )
             }}
           />
         )}
@@ -109,8 +109,8 @@ const FormField: React.FC<FormFieldProps> = ({
             sx={{
               "& .MuiSelect-select": {
                 color: value ? "inherit" : "#9C8585", // Apply color only when placeholder is visible
-                opacity: 1,
-              },
+                opacity: 1
+              }
             }}
           >
             <MenuItem value="" disabled>
@@ -133,9 +133,7 @@ const FormField: React.FC<FormFieldProps> = ({
         {type === "date" && (
           <DatePicker
             selected={value ? new Date(value) : null}
-            onChange={(date) =>
-              onChange(date ? date.toISOString().split("T")[0] : "")
-            }
+            onChange={(date) => onChange(date ? date.toISOString().split("T")[0] : "")}
             disabled={disabled}
             dateFormat="MM/dd/yyyy"
             customInput={
@@ -150,7 +148,7 @@ const FormField: React.FC<FormFieldProps> = ({
                     <InputAdornment position="start">
                       <CalendarMonth sx={{ color: "#9C8585" }} />
                     </InputAdornment>
-                  ),
+                  )
                 }}
               />
             }

@@ -1,10 +1,10 @@
 import React from "react";
 import { Box, Drawer, CircularProgress, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import TaskItem from "./taskItem";
+import TaskItem from "../taskLayout/taskItem";
 import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
-import { IGroup, ITask } from "../interface/taskInterface";
+import { IGroup, ITask } from "../../interface/taskInterface";
 
 interface ViewMoreListProps {
   open: boolean;
@@ -27,7 +27,15 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
 }) => {
   return (
     <Drawer anchor="right" open={open} onClose={() => {}}>
-      <Box sx={{ width: 550 }}>
+      <Box
+        sx={{
+          width: { xs: "100%", sm: "100%", md: "900px" },
+          maxWidth: 450,
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh"
+        }}
+      >
         {isLoadingDrawer ? (
           <Box display="flex" justifyContent="center" mt={2}>
             <CircularProgress />
@@ -35,36 +43,40 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
         ) : (
           drawerTasks.map((group: IGroup) =>
             group.id === selectedGroupId ? (
-              <Box key={group.id}>
+              <Box key={group.id} sx={{ flex: 1 }}>
                 <Box
                   sx={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 1100,
+                    backgroundColor: "white",
+                    p: 2,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
-                    zIndex: 1100,
-                    backgroundColor: "#741B92",
-                    p: 2
+                    justifyContent: "space-between"
                   }}
                 >
-                  <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ color: "white" }}>
+                  <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ color: "#741B92" }}>
                     {view === "projects" ? group.project_name : group.user_name}
                   </Typography>
-                  <IconButton onClick={onClose} sx={{ color: "white", p: 0 }}>
+                  <IconButton onClick={onClose} sx={{ color: "black", p: 0 }}>
                     <CloseIcon />
                   </IconButton>
                 </Box>
-                {group.tasks.map((task: ITask) => (
-                  <Box key={task.id} sx={{ px: 2, pt: 2 }}>
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onTaskClick={onTaskClick}
-                      view={view}
-                      getStatusColor={getStatusColor}
-                      formatDate={formatDate}
-                    />
-                  </Box>
-                ))}
+                <Box sx={{ overflowY: "auto", maxHeight: "calc(100vh - 100px)" }}>
+                  {group.tasks.map((task: ITask) => (
+                    <Box key={task.id} sx={{ px: 1 }}>
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        onTaskClick={onTaskClick}
+                        view={view}
+                        getStatusColor={getStatusColor}
+                        formatDate={formatDate}
+                      />
+                    </Box>
+                  ))}
+                </Box>
               </Box>
             ) : null
           )

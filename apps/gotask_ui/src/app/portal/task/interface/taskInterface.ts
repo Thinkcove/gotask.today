@@ -57,16 +57,36 @@ export interface ITaskComment {
   updatedAt?: string;
 }
 
-export type ProjectTaskPayload = {
-  page: number;
-  page_size: number;
-  task_page: number;
-  task_page_size: number;
+export type TaskPayload = {
+  page?: number;
+  page_size?: number;
+  task_page?: number;
+  task_page_size?: number;
   search_vals?: string[][];
   search_vars?: string[][];
+  min_date?: string;
+  max_date?: string;
+  date_var?: string;
 };
 
 export type Project = {
   id: string;
   name: string;
+};
+
+export type TaskFilterType = {
+  min_date?: string;
+  max_date?: string;
+  date_var?: string;
+  search_vals?: string[][];
+  search_vars?: string[][];
+};
+
+export type FilterValues = {
+  severity: string[];
+  status: string[];
+  dateFrom: string;
+  dateTo: string;
+  projects: string[];
+  users: string[];
 };

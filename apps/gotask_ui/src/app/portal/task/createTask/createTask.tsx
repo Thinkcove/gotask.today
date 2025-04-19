@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
-import TaskInput from "@/app/portal/task/component/taskInput";
+import TaskInput from "@/app/portal/task/createTask/taskInput";
 import { createTask } from "../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
@@ -79,7 +79,8 @@ const CreateTask: React.FC = () => {
         sx={{
           position: "sticky",
           top: 0,
-          p: 4,
+          px: 2,
+          py: 2,
           zIndex: 1000
         }}
       >
@@ -93,7 +94,7 @@ const CreateTask: React.FC = () => {
         >
           {/* Title with Gradient Effect */}
           <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            Create New Task
+            Create Task
           </Typography>
 
           {/* Buttons with Soft Hover Effects */}
@@ -139,8 +140,8 @@ const CreateTask: React.FC = () => {
       <Box
         sx={{
           px: 2,
-          py: 2,
-          maxHeight: "calc(100vh - 200px)", // Adjust height dynamically
+          pb: 2,
+          maxHeight: "calc(100vh - 150px)", // Adjust height dynamically
           overflowY: "auto" // Enables vertical scrolling
         }}
       >

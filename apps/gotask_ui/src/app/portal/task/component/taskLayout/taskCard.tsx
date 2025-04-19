@@ -4,7 +4,7 @@ import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
 import { ReadMoreTwoTone } from "@mui/icons-material";
 import TaskItem from "./taskItem";
-import { IGroup, ITask } from "../interface/taskInterface";
+import { IGroup, ITask } from "../../interface/taskInterface";
 
 interface TaskCardProps {
   view: "projects" | "users";
@@ -30,9 +30,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
     >
       <Box
         sx={{
+          px: 2,
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center"
+          alignItems: "center",
+          background: "linear-gradient(45deg, rgb(194, 158, 206), rgb(229, 223, 230))",
+          borderRadius: "6px"
         }}
       >
         <Typography variant="h6" sx={{ textTransform: "capitalize" }}>

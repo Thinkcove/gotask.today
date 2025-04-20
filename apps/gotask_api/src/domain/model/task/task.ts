@@ -4,11 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 import { ITaskComment, TaskCommentSchema } from "./taskComment";
 import { ITaskHistory, TaskHistorySchema } from "./taskHistory";
 import { TASK_SEVERITY, TASK_STATUS } from "../../../constants/taskConstant";
+import { ITimeSpentEntry, TimeSpentEntrySchema } from "./timespent";
 
-export interface ITimeSpentEntry {
-  date: string;
-  time_logged: string; // e.g., "1d2h"
-}
 export interface ITask extends Document {
   id: string;
   title: string;
@@ -31,14 +28,6 @@ export interface ITask extends Document {
   time_spent_total: string;
   remaining_time: string;
 }
-// Time Spent Entry Schema
-const TimeSpentEntrySchema = new Schema<ITimeSpentEntry>(
-  {
-    date: { type: String, required: true },
-    time_logged: { type: String, required: true }
-  },
-  { _id: false }
-);
 const TaskSchema = new Schema<ITask>(
   {
     id: { type: String, default: uuidv4, unique: true },

@@ -12,6 +12,7 @@ import SearchBar from "@/app/component/searchBar/searchBar";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import NoTasksImage from "@assets/placeholderImages/notask.svg";
+import TaskErrorImage from "@assets/placeholderImages/taskerror.svg";
 import TaskFilterControls from "../taskFilter/taskFilterControls";
 
 const TaskList: React.FC = () => {
@@ -152,9 +153,11 @@ const TaskList: React.FC = () => {
 
   if (isError) {
     return (
-      <Typography color="error" align="center" mt={4}>
-        Failed to fetch tasks
-      </Typography>
+      <Grid container spacing={3} sx={{ p: 2, mb: 8 }}>
+        <Grid item xs={12}>
+          <EmptyState imageSrc={TaskErrorImage} message={"Failed to Fetch the Task"} />
+        </Grid>
+      </Grid>
     );
   }
 
@@ -180,31 +183,35 @@ const TaskList: React.FC = () => {
   return (
     <Box>
       {/* Top Bar */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 2,
-          px: 2,
-          py: 1,
-          flexWrap: "nowrap"
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <SearchBar value={searchText} onChange={handleSearchChange} />
-        </Box>
+      {!isLoading && !isError && (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            px: 2,
+            py: 1,
+            flexWrap: "nowrap"
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <SearchBar value={searchText} onChange={handleSearchChange} />
+          </Box>
 
-        <TaskToggle view={view} setView={setView} />
-      </Box>
+          <TaskToggle view={view} setView={setView} />
+        </Box>
+      )}
 
       {/* Filter Buttons */}
-      <TaskFilterControls
-        activeFilterCount={activeFilterCount}
-        isFiltered={isFiltered()}
-        onClearAll={handleClearAll}
-        onOpenFilter={() => setFilterDrawerOpen(true)}
-      />
+      {!isLoading && !isError && (
+        <TaskFilterControls
+          activeFilterCount={activeFilterCount}
+          isFiltered={isFiltered()}
+          onClearAll={handleClearAll}
+          onOpenFilter={() => setFilterDrawerOpen(true)}
+        />
+      )}
 
       {/* Task Grid */}
       <Box

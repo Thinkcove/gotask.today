@@ -1,4 +1,7 @@
 import ProjectMessages from "../../constants/apiMessages/projectMessage";
+import { IProject, Project } from "../../domain/model/project/project";
+import { User } from "../../domain/model/user/user";
+import { Organization } from "../../domain/model/organization";
 import {
   createNewProject,
   findAllProjects,
@@ -7,9 +10,8 @@ import {
   findUsersByIds,
   saveProject
 } from "../../domain/interface/project/projectInterface";
-import { IProject } from "../../domain/model/project/project";
 
-//Create a new project
+// Create a new project
 const createProject = async (
   projectData: IProject
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
@@ -34,6 +36,7 @@ const createProject = async (
   }
 };
 
+// Get all projects
 const getAllProjects = async (): Promise<{
   success: boolean;
   data?: IProject[];
@@ -53,6 +56,7 @@ const getAllProjects = async (): Promise<{
   }
 };
 
+// Assign users to a project
 const assignUsersToProject = async (
   userIds: string[],
   projectId: string
@@ -64,6 +68,7 @@ const assignUsersToProject = async (
         message: ProjectMessages.ASSIGN.INVALID_INPUT
       };
     }
+
     const users = await findUsersByIds(userIds);
     if (!users.length) {
       return {
@@ -71,6 +76,7 @@ const assignUsersToProject = async (
         message: ProjectMessages.ASSIGN.NO_USERS_FOUND
       };
     }
+
     const project = await findByProjectId(projectId);
     if (!project) {
       return {
@@ -78,10 +84,12 @@ const assignUsersToProject = async (
         message: ProjectMessages.ASSIGN.PROJECT_NOT_FOUND
       };
     }
+
     project.user_id = Array.isArray(project.user_id) ? project.user_id : [];
     const existingUserIds = new Set(project.user_id);
     users.forEach((user: any) => existingUserIds.add(user.id));
     project.user_id = Array.from(existingUserIds);
+
     const updatedProject = await saveProject(project);
     return {
       success: true,
@@ -95,6 +103,7 @@ const assignUsersToProject = async (
   }
 };
 
+// Get projects by user ID
 const getProjectsByUserId = async (
   userId: string
 ): Promise<{ success: boolean; data?: IProject[]; message?: string }> => {
@@ -105,6 +114,7 @@ const getProjectsByUserId = async (
         message: ProjectMessages.USER.REQUIRED
       };
     }
+
     const projects = await findByUserId(userId);
     return {
       success: true,
@@ -118,4 +128,31 @@ const getProjectsByUserId = async (
   }
 };
 
-export { createProject, getAllProjects, assignUsersToProject, getProjectsByUserId };
+// Assign project to an organization
+const assignProjectToOrganization = async (
+  project_id: string,
+  organization_id: string
+): Promise<IProject> => {
+  try {
+    const project = await Project.findOne({ id: project_id });
+    const organization = await Organization.findOne({ id: organization_id });
+
+    if (!project || !organization) {
+      throw new Error("Invalid project_id or organization_id");
+    }
+
+    project.organization_id = organization.id;
+    await project.save();
+    return project;
+  } catch (error: any) {
+    throw new Error(error.message || "Failed to assign project to organization");
+  }
+};
+
+export {
+  createProject,
+  getAllProjects,
+  assignUsersToProject,
+  getProjectsByUserId,
+  assignProjectToOrganization
+};

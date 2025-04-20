@@ -24,5 +24,15 @@ export const API_PATHS = {
   UPDATE_USER: "/updateUser/{id}",
 
   //loginRoute
-  LOGIN: "/user/login"
+  LOGIN: "/user/login",
+
+  //accessroutes
+  CREATE_ACCESS: "/access/create", // Path for creating access
+  GET_ACCESSES: "/access", // Path for getting all access configurations
+  GET_ACCESS_BY_ID: "/access/{id}", // Path for getting access by ID
+  UPDATE_ACCESS: "/access/{id}",
+  DELETE_ACCESS: "/access/{id}",
+
+  CREATE_ROLE: "/roles",  // POST path for creating a role
+  GET_ALL_ROLES: "/roles",  // GET path for fetching all roles
 };

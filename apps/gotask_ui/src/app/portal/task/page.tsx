@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import TaskList from "./component/taskList";
+import TaskList from "./component/taskList/taskList";
 
 const page = () => {
   return <TaskList />;

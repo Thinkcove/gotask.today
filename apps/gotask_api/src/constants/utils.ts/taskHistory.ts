@@ -5,7 +5,7 @@ export const generateHistoryEntry = (
   updatedData: Partial<ITask>
 ): string | null => {
   const { due_date, status, severity } = updatedData;
-  let historyEntries: string[] = [];
+  const historyEntries: string[] = [];
 
   if (due_date && new Date(due_date).getTime() !== existingTask.due_date.getTime()) {
     historyEntries.push(

@@ -1,88 +1,155 @@
-import mongoose from "mongoose";
-import { TASK_STATUS } from "../../constants/taskConstant";
-import { generateHistoryEntry } from "../../constants/utils.ts/taskHistory";
-import { Project } from "../../domain/model/project";
-import { ITask, Task } from "../../domain/model/task/task";
-import { User } from "../../domain/model/user";
-import { v4 as uuidv4 } from "uuid";
-import { ITaskHistory, TaskHistorySchema } from "../../domain/model/task/taskHistory";
-// import { TimeUtil } from "../../constants/utils.ts/timeUtils";
-// taskService.ts
-import { TimeUtil } from "../../constants/utils.ts/timeUtils";
-import { ITimeSpentEntry } from "../../domain/model/task/task";
+import TaskMessages from "../../constants/apiMessages/taskMessage";
+import {
+  addTimeSpentToTask,
+  createCommentInTask,
+  createNewTask,
+  deleteByTaskId,
+  findAllTasks,
+  findTaskById,
+  findTaskCountByStatus,
+  findTasksByProject,
+  findTasksByUser,
+  updateATask,
+  updateCommentInTask
+} from "../../domain/interface/task/taskInterface";
+import { ITask, ITimeSpentEntry, Task } from "../../domain/model/task/task";
+import { ITaskComment } from "../../domain/model/task/taskComment";
 
-import { ITaskComment, TaskComment } from "../../domain/model/task/taskComment";
-
-export class TaskService {
-  static async createTask(taskData: Partial<ITask>): Promise<ITask> {
-    const user = await User.findOne({ id: taskData.user_id });
-    const project = await Project.findOne({ id: taskData.project_id });
-    if (!user || !project) {
-      throw new Error("Invalid user_id or project_id");
+// Create a new task
+const createTask = async (
+  taskData: Partial<ITask>
+): Promise<{ success: boolean; data?: ITask; message?: string }> => {
+  try {
+    if (!taskData) {
+      return {
+        success: false,
+        message: TaskMessages.CREATE.REQUIRED
+      };
     }
+    const newTask = await createNewTask(taskData);
+    return {
+      success: true,
+      data: newTask
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.CREATE.FAILED
+    };
+  }
+};
 
-    const createdOn = new Date(taskData.created_on!);
-    const dueDate = new Date(taskData.due_date!);
+// Get all tasks
+const getAllTasks = async (): Promise<{
+  success: boolean;
+  data?: ITask[];
+  message?: string;
+}> => {
+  try {
+    const tasks = await findAllTasks();
+    return {
+      success: true,
+      data: tasks
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.FETCH.FAILED_ALL
+    };
+  }
+};
 
-    if (isNaN(createdOn.getTime()) || isNaN(dueDate.getTime())) {
-      throw new Error("Invalid created_on or due_date");
+const deleteTaskById = async (
+  id: string
+): Promise<{ success: boolean; data?: ITask | null; message?: string }> => {
+  try {
+    const deletedTask = await deleteByTaskId(id);
+    if (!deletedTask) {
+      return {
+        success: false,
+        message: TaskMessages.DELETE.NOT_FOUND
+      };
     }
-
-    const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
-    const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-
-    // Inclusive: count both start and end dates
-    let daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
-    let estimatedTime = daysDiff > 0 ? `${daysDiff}d0h` : "1d0h"; // fallback
-
-    const newTask = new Task({
-      ...taskData,
-      user_name: user.name,
-      project_name: project.name,
-      estimated_time: estimatedTime
-    });
-    return await newTask.save();
+    return {
+      success: true,
+      message: TaskMessages.DELETE.SUCCESS
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.DELETE.FAILED
+    };
   }
+};
 
-  // Get all tasks
-  static async getAllTasks(): Promise<ITask[]> {
-    return await Task.find();
-  }
-
-  // Group tasks by project with pagination
-  static async getTaskByProject(
-    page: number,
-    pageSize: number,
-    taskPage: number,
-    taskPageSize: number,
-    search_vals?: any[][],
-    search_vars?: string[][]
-  ) {
+// Get tasks by project with pagination
+const getTasksByProject = async (
+  page: number,
+  pageSize: number,
+  taskPage: number,
+  taskPageSize: number,
+  search_vals?: any[][],
+  search_vars?: string[][],
+  min_date?: string,
+  max_date?: string,
+  date_var?: string
+): Promise<{
+  success: boolean;
+  data?: any;
+  message?: string;
+}> => {
+  try {
     const skip = (page - 1) * pageSize;
     const taskSkip = (taskPage - 1) * taskPageSize;
-    // Construct filter object dynamically
+
     let filter: any = {};
-    if (search_vars && search_vals) {
-      search_vars.forEach((vars, index) => {
-        vars.forEach((field, fieldIndex) => {
-          const fieldName = field === "id" ? "project_id" : field;
-          filter[fieldName] = search_vals[index][fieldIndex];
-        });
-      });
+
+    // Type guard to ensure search arrays are valid
+    const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
+      Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
+
+    // Text search filter
+    if (isValidSearch(search_vars) && isValidSearch(search_vals)) {
+      const orConditions: any[] = [];
+      for (let i = 0; i < search_vars.length; i++) {
+        const field = search_vars[i][0];
+        const value = search_vals[i][0];
+        const fieldName = field === "id" ? "project_id" : field;
+        orConditions.push({ [fieldName]: { $regex: new RegExp(value, "i") } });
+      }
+      filter = orConditions.length === 1 ? orConditions[0] : { $or: orConditions };
+    }
+
+    // Date range filter
+    if (date_var && min_date && max_date) {
+      const dateFilter = {
+        [date_var]: {
+          $gte: new Date(min_date),
+          $lte: new Date(max_date)
+        }
+      };
+
+      if (Object.keys(filter).length > 0) {
+        filter = {
+          $or: [filter, dateFilter]
+        };
+      } else {
+        filter = dateFilter;
+      }
     }
 
     const aggregationPipeline: any[] = [
-      { $match: filter }, // Step 1: Filter projects correctly
-      { $sort: { updatedAt: -1 } }, // Step 2: Sort tasks by most recent first
+      { $match: filter },
+      { $sort: { updatedAt: -1 } },
       {
         $group: {
-          _id: { id: "$project_id", project_name: "$project_name" }, // Group by project_id and project_name
+          _id: { id: "$project_id", project_name: "$project_name" },
           tasks: { $push: "$$ROOT" },
           total_count: { $sum: 1 },
           latestTaskUpdatedAt: { $max: "$updatedAt" }
         }
       },
-      { $sort: { latestTaskUpdatedAt: -1 } }, // Step 3: Sort projects by latest task's update time
+      { $sort: { latestTaskUpdatedAt: -1 } },
       {
         $project: {
           _id: 0,
@@ -93,281 +160,303 @@ export class TaskService {
           task_total_pages: { $ceil: { $divide: ["$total_count", taskPageSize] } },
           tasks: {
             $slice: [
-              {
-                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } }
-              },
+              { $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } } },
               taskSkip,
               taskPageSize
             ]
           }
         }
       },
-      { $skip: skip }, // Step 4: Paginate projects
+      { $skip: skip },
       { $limit: pageSize }
     ];
 
-    const taskGroups = await Task.aggregate(aggregationPipeline);
+    const taskGroups = await findTasksByProject(aggregationPipeline);
+
+    // Calculate total project count based on filter
     const totalProjects = await Task.distinct("project_name", filter).then((res) => res.length);
 
     return {
-      taskbyprojects: taskGroups,
-      total_count: totalProjects,
-      total_pages: Math.ceil(totalProjects / pageSize),
-      current_page: page
+      success: true,
+      data: {
+        taskbyprojects: taskGroups,
+        total_count: totalProjects,
+        total_pages: Math.ceil(totalProjects / pageSize),
+        current_page: page
+      }
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.FETCH.FAILED_BY_PROJECT
     };
   }
+};
 
-  // Group tasks by user with pagination
-  static async getTaskByUser(
-    page: number,
-    pageSize: number,
-    taskPage: number,
-    taskPageSize: number,
-    search_vals?: any[][],
-    search_vars?: string[][]
-  ) {
+// Get tasks by user with pagination
+const getTasksByUser = async (
+  page: number,
+  pageSize: number,
+  taskPage: number,
+  taskPageSize: number,
+  search_vals?: any[][],
+  search_vars?: string[][],
+  min_date?: string,
+  max_date?: string,
+  date_var?: string
+): Promise<{
+  success: boolean;
+  data?: any;
+  message?: string;
+}> => {
+  try {
     const skip = (page - 1) * pageSize;
     const taskSkip = (taskPage - 1) * taskPageSize;
-    // Construct filter object dynamically
 
+    // Build filter
     let filter: any = {};
-    if (search_vars && search_vals) {
-      search_vars.forEach((vars, index) => {
-        vars.forEach((field, fieldIndex) => {
-          const fieldName = field === "id" ? "user_id" : field;
-          filter[fieldName] = search_vals[index][fieldIndex];
-        });
-      });
+
+    // Type guard to ensure search arrays are valid
+    const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
+      Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
+
+    // Text search filter
+    if (isValidSearch(search_vars) && isValidSearch(search_vals)) {
+      const orConditions: any[] = [];
+      for (let i = 0; i < search_vars.length; i++) {
+        const field = search_vars[i][0];
+        const value = search_vals[i][0];
+        const fieldName = field === "id" ? "project_id" : field;
+        orConditions.push({ [fieldName]: { $regex: new RegExp(value, "i") } });
+      }
+      filter = orConditions.length === 1 ? orConditions[0] : { $or: orConditions };
     }
 
+    // Date range filter
+    if (date_var && min_date && max_date) {
+      const dateFilter = {
+        [date_var]: {
+          $gte: new Date(min_date),
+          $lte: new Date(max_date)
+        }
+      };
+
+      if (Object.keys(filter).length > 0) {
+        filter = {
+          $or: [filter, dateFilter]
+        };
+      } else {
+        filter = dateFilter;
+      }
+    }
+
+    // Build aggregation pipeline
     const aggregationPipeline: any[] = [
-      { $match: filter }, // Step 1: Filter projects correctly
-      { $sort: { updatedAt: -1 } }, // Step 2: Sort tasks globally by most recent
+      { $match: filter },
+      { $sort: { updatedAt: -1 } },
       {
         $group: {
-          _id: { id: "$user_id", user_name: "$user_name" }, // Group by project_id and project_name
-          tasks: { $push: "$$ROOT" }, // Step 2: Push all tasks assigned to the user
+          _id: { id: "$user_id", user_name: "$user_name" },
+          tasks: { $push: "$$ROOT" },
           total_count: { $sum: 1 },
-          latestTaskUpdatedAt: { $max: "$updatedAt" } // Step 3: Store the most recent task’s timestamp
+          latestTaskUpdatedAt: { $max: "$updatedAt" }
         }
       },
-      { $sort: { latestTaskUpdatedAt: -1 } }, // Step 4: Sort users by their most recent task
+      { $sort: { latestTaskUpdatedAt: -1 } },
       {
         $project: {
           _id: 0,
           id: "$_id.id",
           user_name: "$_id.user_name",
           total_count: 1,
-          latestTaskUpdatedAt: 1, // Optional: Keep this for debugging
-          task_total_pages: { $ceil: { $divide: ["$total_count", taskPageSize] } }, // Calculate total pages for tasks
+          latestTaskUpdatedAt: 1,
+          task_total_pages: { $ceil: { $divide: ["$total_count", taskPageSize] } },
           tasks: {
             $slice: [
-              {
-                $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } } // Step 5: Ensure tasks inside each user group are sorted
-              },
+              { $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } } },
               taskSkip,
               taskPageSize
             ]
           }
         }
       },
-      { $skip: skip }, // Step 6: Paginate user groups
+      { $skip: skip },
       { $limit: pageSize }
     ];
 
-    const taskGroups = await Task.aggregate(aggregationPipeline);
+    const taskGroups = await findTasksByUser(aggregationPipeline);
+
     const totalUsers = await Task.distinct("user_name", filter).then((res) => res.length);
 
     return {
-      taskbyusers: taskGroups,
-      total_count: totalUsers,
-      total_pages: Math.ceil(totalUsers / pageSize),
-      current_page: page
+      success: true,
+      data: {
+        taskbyusers: taskGroups,
+        total_count: totalUsers,
+        total_pages: Math.ceil(totalUsers / pageSize),
+        current_page: page
+      }
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.FETCH.FAILED_BY_USER
     };
   }
+};
 
-  // Get task count grouped by status
-  static async getTaskCountByStatus() {
-    const taskCounts = await Task.aggregate([
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 }
-        }
-      }
-    ]);
-
-    const defaultStatuses: Record<string, number> = Object.values(TASK_STATUS).reduce(
-      (acc: Record<string, number>, status: string) => {
-        acc[status] = 0;
-        return acc;
-      },
-      {}
-    );
-
-    return taskCounts.reduce((acc: Record<string, number>, item) => {
-      acc[item._id] = item.count;
-      return acc;
-    }, defaultStatuses);
+// Get task count grouped by status
+const getTaskCountByStatus = async (): Promise<{
+  success: boolean;
+  data?: Record<string, number>;
+  message?: string;
+}> => {
+  try {
+    const taskCounts = await findTaskCountByStatus();
+    return {
+      success: true,
+      data: taskCounts
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.FETCH.FAILED_COUNTS
+    };
   }
+};
 
-  // Get a task by ID
-  static async getTaskById(id: string): Promise<ITask | null> {
-    return await Task.findOne({ id });
-  }
-
-  // Update task details
-  static async updateTask(id: string, updateData: Partial<ITask>): Promise<ITask | null> {
-    try {
-      const existingTask = await Task.findOne({ id });
-      if (!existingTask) return null;
-      const { loginuser_id, loginuser_name } = updateData;
-      const historyEntry = generateHistoryEntry(existingTask, updateData);
-      if (!existingTask.history) {
-        existingTask.history = [];
-      }
-      if (historyEntry) {
-        const historyItem = new (mongoose.model<ITaskHistory>("TaskHistory", TaskHistorySchema))({
-          id: uuidv4(),
-          task_id: id,
-          loginuser_id,
-          loginuser_name,
-          formatted_history: historyEntry,
-          created_date: new Date()
-        });
-        existingTask.history.unshift(historyItem);
-      }
-      // Update the task with new data
-      Object.assign(existingTask, updateData);
-      await existingTask.save();
-      return existingTask;
-    } catch (error) {
-      console.error("Task update failed:", error);
-      throw new Error("Failed to update Task details");
+// Get a task by ID
+const getTaskById = async (
+  id: string
+): Promise<{ success: boolean; data?: ITask | null; message?: string }> => {
+  try {
+    const task = await findTaskById(id);
+    if (!task) {
+      return {
+        success: false,
+        message: TaskMessages.FETCH.NOT_FOUND
+      };
     }
+    return {
+      success: true,
+      data: task
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.FETCH.FAILED_BY_ID
+    };
   }
+};
 
-  // Create a new comment
-  static async createComment(commentData: ITaskComment) {
-    const { task_id, user_id, comment, user_name } = commentData;
-    const task = await Task.findOne({ id: task_id });
-    if (!task) throw new Error("Task not found");
-    const newComment = new TaskComment({ task_id: task_id, user_id: user_id, comment, user_name });
-    await newComment.save();
-    // Ensure task.comment is initialized
-    if (!task.comment) {
-      task.comment = [];
+// Update task details
+const updateTask = async (
+  id: string,
+  updateData: Partial<ITask>
+): Promise<{ success: boolean; data?: ITask | null; message?: string }> => {
+  try {
+    const updatedTask = await updateATask(id, updateData);
+    if (!updatedTask) {
+      return {
+        success: false,
+        message: TaskMessages.UPDATE.NOT_FOUND
+      };
     }
-    task.comment.unshift(newComment);
-    await task.save();
-    return newComment;
+    return {
+      success: true,
+      data: updatedTask
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.UPDATE.FAILED
+    };
   }
+};
 
-  //update comment field
-  static async updateComment(
-    id: string,
-    newCommentText: Partial<ITaskComment>
-  ): Promise<ITaskComment | null> {
-    // Step 1: Update the comment in TaskComment collection
-    const updatedComment = await TaskComment.findOneAndUpdate({ id }, newCommentText, {
-      new: true
-    });
-    if (!updatedComment) return null;
-    // Step 2: Update the embedded comment inside the Task collection
-    await Task.updateOne(
-      { "comment.id": id }, // Find the task that contains this comment ID
-      { $set: { "comment.$.comment": newCommentText.comment } } // Update comment text
-    );
-    return updatedComment;
+// Create a new comment for a task
+const createComment = async (
+  commentData: ITaskComment
+): Promise<{ success: boolean; data?: ITaskComment; message?: string }> => {
+  try {
+    const newComment = await createCommentInTask(commentData);
+    return {
+      success: true,
+      data: newComment
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.COMMENT.CREATE_FAILED
+    };
   }
+};
 
-  // Add time spent to a task
-  static async addTimeSpent(
-    id: string,
-    timeEntries: ITimeSpentEntry | ITimeSpentEntry[]
-  ): Promise<ITask | null> {
-    try {
-      const task = await Task.findOne({ id });
-      if (!task) return null;
-
-      if (!Array.isArray(timeEntries)) {
-        timeEntries = [timeEntries];
-      }
-
-      if (!task.time_spent) {
-        task.time_spent = [];
-      }
-
-      for (const entry of timeEntries) {
-        // Validate time format
-        if (!TimeUtil.isValidTimeFormat(entry.time_logged)) {
-          throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
-        }
-
-        task.time_spent.push(entry);
-      }
-
-      // Calculate total time spent
-      const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);
-      task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
-
-      // Calculate remaining time
-      task.remaining_time = TimeUtil.calculateRemainingTime(
-        task.estimated_time,
-        task.time_spent_total
-      );
-
-      await task.save();
-      return task;
-    } catch (error) {
-      console.error("Failed to add time spent:", error);
-      throw new Error("Failed to add time spent to the task");
+// Update a comment for a task
+const updateComment = async (
+  id: string,
+  newCommentText: Partial<ITaskComment>
+): Promise<{ success: boolean; data?: ITaskComment | null; message?: string }> => {
+  try {
+    const updatedComment = await updateCommentInTask(id, newCommentText);
+    if (!updatedComment) {
+      return {
+        success: false,
+        message: TaskMessages.COMMENT.NOT_FOUND
+      };
     }
+    return {
+      success: true,
+      data: updatedComment
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.COMMENT.UPDATE_FAILED
+    };
   }
+};
 
-  // Update estimated time for a task
-  static async updateEstimatedTime(id: string, estimatedTime: string): Promise<ITask | null> {
-    try {
-      console.log("Finding task with ID:", id);
-      const task = await Task.findOne({ id });
-      if (!task) return null;
-      console.log("Task not found for ID:", id);
+//add time spent
+const addTimeSpent = async (
+  id: string,
+  timeEntries: ITimeSpentEntry | ITimeSpentEntry[]
+): Promise<{ success: boolean; data?: Partial<ITask>; message?: string }> => {
+  console.log("timeEntries in service", timeEntries);
 
-      // Validate time format
-      if (!TimeUtil.isValidTimeFormat(estimatedTime)) {
-        console.log("Invalid estimated time format:", estimatedTime);
-        throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
-      }
+  try {
+    const entriesArray = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
 
-      task.estimated_time = estimatedTime;
-      console.log("Updated estimated time:", estimatedTime);
+    const updatedTask = await addTimeSpentToTask(id, entriesArray); // <-- Pass only array
 
-      // Recalculate remaining time
-      task.remaining_time = TimeUtil.calculateRemainingTime(
-        task.estimated_time,
-        task.time_spent_total
-      );
-      console.log("Recalculated remaining time:", task.remaining_time);
-
-      await task.save();
-      console.log("Task saved after updating estimated time!");
-      return task;
-    } catch (error) {
-      console.error("Failed to update estimated time:", error);
-      throw new Error("Failed to update estimated time for the task");
+    if (!updatedTask) {
+      return { success: false, message: TaskMessages.TIME_SPENT.NOT_FOUND };
     }
-  }
-  static async getTimeTrackingSummary(taskId: string) {
-    console.log("Fetching time tracking summary for task ID:", taskId);
-    const task = await Task.findById(taskId);
-    if (!task) return null;
-    console.log("Task not found for ID:", taskId);
 
     return {
-      estimated_time: task.estimated_time,
-      time_spent_total: task.time_spent_total,
-      remaining_time: task.remaining_time,
-      time_spent: task.time_spent // array of entries like [{ date, time_logged }]
+      success: true,
+      data: {
+        time_spent: updatedTask.time_spent,
+        estimated_time: updatedTask.estimated_time,
+        remaining_time: updatedTask.remaining_time,
+        time_spent_total: updatedTask.time_spent_total
+      }
     };
+  } catch (error: any) {
+    return { success: false, message: error.message || TaskMessages.TIME_SPENT.ADD_FAILED };
   }
-}
+};
+
+export {
+  createTask,
+  deleteTaskById,
+  getAllTasks,
+  getTasksByProject,
+  getTasksByUser,
+  getTaskCountByStatus,
+  getTaskById,
+  updateTask,
+  createComment,
+  updateComment,
+  addTimeSpent
+};

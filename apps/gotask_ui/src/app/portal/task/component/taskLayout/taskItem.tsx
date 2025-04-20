@@ -1,6 +1,5 @@
-import { Box, Typography, Tooltip, Avatar, LinearProgress } from "@mui/material";
+import { Box, Typography, Tooltip, Avatar } from "@mui/material";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
-import { getProgressValue } from "@/app/common/constants/task";
 
 interface Task {
   id: string;
@@ -29,8 +28,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
     <Box
       key={task.id}
       sx={{
-        gap: 1,
         mb: 1,
+        p: 1,
         backgroundColor: "white",
         borderRadius: 2,
         display: "flex",
@@ -41,7 +40,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         <Avatar
           sx={{
             border: "1px solid white",
-            backgroundColor: getStatusColor(task.status),
+            backgroundColor: "#741B92",
             width: 24,
             height: 24,
             display: "flex",
@@ -51,9 +50,19 @@ const TaskItem: React.FC<TaskItemProps> = ({
         >
           <CalendarMonth sx={{ height: 16, width: 16 }} />
         </Avatar>
-        <Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%"
+          }}
+        >
           <Typography variant="subtitle2" fontWeight="semibold">
             {formatDate(task.due_date)}
+          </Typography>
+          <Typography sx={{ color: getStatusColor(task.status), fontSize: "0.7rem" }}>
+            {task.status.replace(/-/g, " ").toUpperCase()}
           </Typography>
         </Box>
       </Box>
@@ -63,7 +72,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
           sx={{
             height: 40,
             borderLeft: "2px solid grey",
-            marginLeft: "13px"
+            marginLeft: "11px",
+            mt: 0.5
           }}
         />
         <Box
@@ -96,7 +106,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 {task.title}
               </Typography>
             </Tooltip>
-            <LinearProgress
+            {/* <LinearProgress
               variant="determinate"
               value={getProgressValue(task.status)}
               sx={{
@@ -108,7 +118,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   backgroundColor: getStatusColor(task.status)
                 }
               }}
-            />
+            /> */}
           </Box>
           {view === "projects" && (
             <Box

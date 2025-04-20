@@ -10,7 +10,7 @@ import {
   List,
   ListItem,
   Divider,
-  Paper,
+  Paper
 } from "@mui/material";
 import { ITaskHistory } from "../interface/taskInterface";
 import { InfoOutlined } from "@mui/icons-material";
@@ -21,19 +21,16 @@ interface HistoryDrawerProps {
   history: ITaskHistory[];
 }
 
-const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
-  open,
-  onClose,
-  history,
-}) => {
+const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history }) => {
   return (
     <Drawer anchor="right" open={open} onClose={onClose}>
       <Box
         sx={{
-          width: 400,
+          width: { xs: "100%", sm: "100%", md: "400px" },
+          maxWidth: "clamp(20rem, 90vw, 100rem)",
           display: "flex",
           flexDirection: "column",
-          height: "100vh",
+          height: "100vh"
         }}
       >
         {/* Fixed Header */}
@@ -43,13 +40,10 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
             bgcolor: "white",
             position: "sticky",
             top: 0,
-            zIndex: 1000,
+            zIndex: 1000
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: "bold", color: "#741B92" }}
-          >
+          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#741B92" }}>
             Task History
           </Typography>
 
@@ -67,7 +61,7 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
                 alignItems: "center", // Centers items vertically
                 backgroundColor: "#E1D7E0",
                 borderRadius: 1.5,
-                gap: 1,
+                gap: 1
               }}
             >
               <InfoOutlined
@@ -75,7 +69,7 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
                   height: 14,
                   width: 14,
                   display: "flex",
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               />
               <Typography
@@ -83,7 +77,7 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
                 sx={{
                   fontWeight: "bold",
                   display: "flex",
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               >
                 Log of who performed the updates in the task
@@ -102,7 +96,7 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
                 boxShadow: 2,
                 borderRadius: 2,
                 transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                "&:hover": { boxShadow: 3 },
+                "&:hover": { boxShadow: 3 }
               }}
             >
               <CardContent sx={{ pb: "10px !important" }}>
@@ -122,9 +116,7 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
                     .filter((entry) => entry.trim() !== "")
                     .map((sentence, i) => (
                       <ListItem key={i} sx={{ display: "list-item", pl: 1 }}>
-                        <Typography variant="body2">
-                          {sentence.trim()}.
-                        </Typography>
+                        <Typography variant="body2">{sentence.trim()}.</Typography>
                       </ListItem>
                     ))}
                 </List>

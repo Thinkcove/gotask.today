@@ -1,6 +1,7 @@
 export const API_PATHS = {
   //taskRoutes
   CREATE_TASK: "/createTask",
+  DELETE_TASK: "/deleteTask",
   GET_TASKS: "/getAllTasks",
   GET_TASK_BY_ID: "/getTaskById/{id}",
   UPDATE_TASK: "/updateTask/{id}",
@@ -25,8 +26,18 @@ export const API_PATHS = {
   //loginRoute
   LOGIN: "/user/login",
 
-  // Add these new paths
-  ADD_TIME_SPENT: "/tasklog/{id}", 
-  UPDATE_ESTIMATED_TIME: "/tasks/{id}/update-estimated-time", 
-  GET_TIME_TRACKING_SUMMARY: "/tasks/{id}" 
+  //accessroutes
+  CREATE_ACCESS: "/access/create", // Path for creating access
+  GET_ACCESSES: "/access", // Path for getting all access configurations
+  GET_ACCESS_BY_ID: "/access/{id}", // Path for getting access by ID
+  UPDATE_ACCESS: "/access/{id}",
+  DELETE_ACCESS: "/access/{id}",
+
+  CREATE_ROLE: "/roles", // POST path for creating a role
+  GET_ALL_ROLES: "/roles", // GET path for fetching all roles
+
+  //timelogRoutess
+  ADD_TIME_SPENT: "/tasklog/{id}",
+  UPDATE_ESTIMATED_TIME: "/updatetimelog/{id}",
+  GET_TIME_TRACKING_SUMMARY: "/timeSummary/{id}"
 };

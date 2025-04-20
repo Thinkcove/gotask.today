@@ -1,36 +1,53 @@
 import useSWR from "swr";
 import env from "@/app/common/env";
 import { getData, postData } from "@/app/common/utils/apiData";
-import { IFormField, ITaskComment, Project, ProjectTaskPayload } from "../interface/taskInterface";
+import { IFormField, ITaskComment, Project, TaskPayload } from "../interface/taskInterface";
 
-//fetch taskbyproject-grouping
+// Modify both hooks with an optional dateRange parameter
 export const useProjectGroupTask = (
   page: number,
   pageSize: number,
   taskPage: number,
   taskPageSize: number,
   search_vals?: string[][],
-  search_vars?: string[][]
+  search_vars?: string[][],
+  min_date?: string,
+  max_date?: string,
+  date_var?: string
 ) => {
   const fetchProjectTasks = async () => {
-    const payload: ProjectTaskPayload = {
+    const payload: TaskPayload = {
       page,
       page_size: pageSize,
       task_page: taskPage,
       task_page_size: taskPageSize
     };
 
-    // Add search parameters only if provided
     if (search_vals && search_vars) {
       payload.search_vals = search_vals;
       payload.search_vars = search_vars;
+    }
+
+    if (min_date && max_date) {
+      payload.min_date = min_date;
+      payload.max_date = max_date;
+      payload.date_var = date_var ?? "due_date";
     }
 
     return postData(`${env.API_BASE_URL}/tasks/grouped-by-project`, payload);
   };
 
   const { data, error, mutate, isValidating } = useSWR(
-    [`fetch-project-tasks`, page, pageSize, taskPage, taskPageSize, search_vals, search_vars],
+    [
+      `fetch-project-tasks`,
+      page,
+      pageSize,
+      taskPage,
+      taskPageSize,
+      search_vals,
+      search_vars,
+      date_var
+    ],
     fetchProjectTasks,
     { revalidateOnFocus: false }
   );
@@ -44,34 +61,51 @@ export const useProjectGroupTask = (
   };
 };
 
-//fetch taskbyuser-grouping
-
+// Same for useUserGroupTask
 export const useUserGroupTask = (
   page: number,
   pageSize: number,
   taskPage: number,
   taskPageSize: number,
   search_vals?: string[][],
-  search_vars?: string[][]
+  search_vars?: string[][],
+  min_date?: string,
+  max_date?: string,
+  date_var?: string
 ) => {
   const fetchUserTasks = async () => {
-    const payload: ProjectTaskPayload = {
+    const payload: TaskPayload = {
       page,
       page_size: pageSize,
       task_page: taskPage,
       task_page_size: taskPageSize
     };
 
-    // Add search parameters only if provided
     if (search_vals && search_vars) {
       payload.search_vals = search_vals;
       payload.search_vars = search_vars;
     }
 
+    if (min_date && max_date) {
+      payload.min_date = min_date;
+      payload.max_date = max_date;
+      payload.date_var = date_var ?? "due_date";
+    }
+
     return postData(`${env.API_BASE_URL}/tasks/grouped-by-user`, payload);
   };
+
   const { data, error, mutate, isValidating } = useSWR(
-    [`fetch-user-tasks`, page, pageSize, taskPage, taskPageSize, search_vals, search_vars],
+    [
+      `fetch-user-tasks`,
+      page,
+      pageSize,
+      taskPage,
+      taskPageSize,
+      search_vals,
+      search_vars,
+      date_var
+    ],
     fetchUserTasks,
     { revalidateOnFocus: false }
   );

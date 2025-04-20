@@ -7,19 +7,15 @@ import AuthenticatedLayout from "./authenticatedLayout";
 
 export const metadata: Metadata = {
   title: "Go Task Today",
-  description: "Seamless Workflow Management",
+  description: "Seamless Workflow Management"
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ overflow: "hidden", backgroundColor: "#E1D7E0" }}>
-        <CssBaseline />
+      <body style={{ overflow: "hidden" }}>
         <UserProvider>
+          <CssBaseline />
           <AppRouterCacheProvider options={{ enableCssLayer: true }}>
             <SWRProvider>
               <AuthenticatedLayout>{children}</AuthenticatedLayout>

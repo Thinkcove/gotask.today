@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
-import TaskInput from "@/app/portal/task/component/taskInput";
+import TaskInput from "@/app/portal/task/createTask/taskInput";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -8,8 +8,8 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { createComment, updateTask } from "../../service/taskAction";
 import { History } from "@mui/icons-material";
 import { IFormField, ITask, ITaskComment } from "../../interface/taskInterface";
-import HistoryDrawer from "../../component/taskHistory";
-import TaskComments from "../../component/taskComments";
+import HistoryDrawer from "../taskHistory";
+import TaskComments from "../taskComments";
 import { useUser } from "@/app/userContext";
 import { KeyedMutator } from "swr";
 
@@ -104,7 +104,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         sx={{
           position: "sticky",
           top: 0,
-          p: 4,
+          px: 4,
+          py: 2,
           zIndex: 1000,
           flexDirection: "column",
           gap: 2
@@ -115,8 +116,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            width: "100%",
-            marginBottom: 2
+            width: "100%"
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
@@ -159,7 +159,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           <Box
             sx={{
               textDecoration: "underline",
-              marginTop: 2,
               display: "flex",
               gap: 1,
               color: "#741B92"
@@ -176,7 +175,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       <Box
         sx={{
           px: 2,
-          py: 2,
+          pb: 2,
           maxHeight: "calc(100vh - 200px)",
           overflowY: "auto"
         }}

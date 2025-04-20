@@ -8,16 +8,11 @@ interface TaskToggleProps {
 
 const TaskToggle: React.FC<TaskToggleProps> = ({ view, setView }) => {
   return (
-    <Box
-      display="flex"
-      justifyContent="space-between"
-      alignItems="center"
-      p={2}
-    >
+    <Box display="flex" justifyContent="space-between" alignItems="center">
       <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
-        <Box display="flex" alignItems="center" gap={1}>
+        <Box display="flex" alignItems="center" gap={0.5}>
           <Typography fontWeight="bold" color="#333">
-            {view === "projects" ? "Project View" : "Assignee View"}
+            {view === "projects" ? "Projects" : "Assignees"}
           </Typography>
           <Switch
             checked={view === "users"}
@@ -27,8 +22,8 @@ const TaskToggle: React.FC<TaskToggleProps> = ({ view, setView }) => {
               "& .MuiSwitch-switchBase.Mui-checked": { color: "#741B92" },
               "& .MuiSwitch-track": { backgroundColor: "#B1AAAA", opacity: 1 },
               "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                backgroundColor: "#741B92",
-              },
+                backgroundColor: "#741B92"
+              }
             }}
           />
         </Box>

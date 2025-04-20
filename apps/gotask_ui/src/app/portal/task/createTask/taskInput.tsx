@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid } from "@mui/material";
 import FormField from "../../../component/formField";
-import { TASK_SEVERITY, TASK_STATUS } from "../../../common/constants/task";
+import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
 import { fetchAllProjects, fetchAllUsers, getProjectIdsAndNames } from "../service/taskAction";
 import { IFormField, Project } from "../interface/taskInterface";
 
@@ -37,6 +37,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
     const projects = await getProjectIdsAndNames(userId);
     handleInputChange("projects", projects); // Store projects in formData
   };
+  const currentStatus = formData.status;
+  const allowedStatuses = TASK_WORKFLOW[currentStatus] || [];
+
+  // Make sure the current value is included in the options
+  const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
   return (
     <>
       <Grid item xs={12} sm={6} mb={2}>
@@ -75,17 +80,17 @@ const TaskInput: React.FC<TaskInputProps> = ({
             value={selectedProject.id}
             onChange={(value) => handleInputChange("project_id", String(value))}
             error={errors.project_id}
-            disabled={isReadOnly("project_id")}
+            disabled={isReadOnly("project_id") || !formData.user_id}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormField
             label="Status * :"
             type="select"
-            options={Object.values(TASK_STATUS).map((s) => s.toUpperCase())}
+            options={uniqueStatuses.map((s) => s.toUpperCase())}
             required
             placeholder="Select Status Type"
-            value={formData.status.toUpperCase()}
+            value={currentStatus.toUpperCase()}
             onChange={(value) => handleInputChange("status", String(value).toLowerCase())}
             error={errors.status}
             disabled={isReadOnly("status")}

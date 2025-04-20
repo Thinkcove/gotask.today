@@ -17,8 +17,8 @@ AccessRoutes.push({
     accessController.createAccess(new RequestHelper(request), handler),
   config: {
     notes: "Create a new access entry",
-    tags,
-  },
+    tags
+  }
 });
 
 // Route: Get All Accesses
@@ -29,8 +29,8 @@ AccessRoutes.push({
     accessController.getAllAccesses(new RequestHelper(request), handler),
   config: {
     notes: "Get all access records",
-    tags,
-  },
+    tags
+  }
 });
 
 // Route: Get Access by ID
@@ -41,8 +41,8 @@ AccessRoutes.push({
     accessController.getAccessById(new RequestHelper(request), handler),
   config: {
     notes: "Get access by ID",
-    tags,
-  },
+    tags
+  }
 });
 
 // Route: Update Access
@@ -53,8 +53,8 @@ AccessRoutes.push({
     accessController.updateAccess(new RequestHelper(request), handler),
   config: {
     notes: "Update access by ID",
-    tags,
-  },
+    tags
+  }
 });
 
 // Route: Delete Access
@@ -65,8 +65,8 @@ AccessRoutes.push({
     accessController.deleteAccess(new RequestHelper(request), handler),
   config: {
     notes: "Delete access by ID",
-    tags,
-  },
+    tags
+  }
 });
 
 // Export AccessRoutes as default export

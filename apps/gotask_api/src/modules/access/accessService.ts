@@ -17,7 +17,7 @@ const createAccess = async (
 
     const newAccess = await new Access({
       name: accessData.name,
-      application: accessData.application,
+      application: accessData.application
     }).save();
 
     return {
@@ -84,7 +84,7 @@ const updateAccess = async (
   try {
     const updatedAccess = await Access.findOneAndUpdate({ id }, updateData, {
       new: true,
-      runValidators: true,
+      runValidators: true
     });
 
     if (!updatedAccess) {

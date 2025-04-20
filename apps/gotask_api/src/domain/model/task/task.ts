@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ITaskComment, TaskCommentSchema } from "./taskComment";
 import { ITaskHistory, TaskHistorySchema } from "./taskHistory";
 import { TASK_SEVERITY, TASK_STATUS } from "../../../constants/taskConstant";
+import { ITimeSpentEntry, TimeSpentEntrySchema } from "./timespent";
 
 export interface ITask extends Document {
   id: string;
@@ -22,6 +23,10 @@ export interface ITask extends Document {
   loginuser_name?: string;
   comment?: ITaskComment[];
   history?: ITaskHistory[];
+  estimated_time: string;
+  time_spent: ITimeSpentEntry[];
+  time_spent_total: string;
+  remaining_time: string;
 }
 const TaskSchema = new Schema<ITask>(
   {
@@ -46,6 +51,11 @@ const TaskSchema = new Schema<ITask>(
     due_date: { type: Date, required: true },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
+    // Time tracking fields
+    estimated_time: { type: String, default: null },
+    time_spent: { type: [TimeSpentEntrySchema], default: [] },
+    time_spent_total: { type: String, default: "0d0h" },
+    remaining_time: { type: String, default: null },
     comment: { type: [TaskCommentSchema] },
     history: { type: [TaskHistorySchema] }
   },

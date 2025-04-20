@@ -1,5 +1,6 @@
 import TaskMessages from "../../constants/apiMessages/taskMessage";
 import {
+  addTimeSpentToTask,
   createCommentInTask,
   createNewTask,
   deleteByTaskId,
@@ -11,7 +12,7 @@ import {
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
-import { ITask, Task } from "../../domain/model/task/task";
+import { ITask, ITimeSpentEntry, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 
 // Create a new task
@@ -416,6 +417,36 @@ const updateComment = async (
   }
 };
 
+//add time spent
+const addTimeSpent = async (
+  id: string,
+  timeEntries: ITimeSpentEntry | ITimeSpentEntry[]
+): Promise<{ success: boolean; data?: Partial<ITask>; message?: string }> => {
+  console.log("timeEntries in service", timeEntries);
+
+  try {
+    const entriesArray = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
+
+    const updatedTask = await addTimeSpentToTask(id, entriesArray); // <-- Pass only array
+
+    if (!updatedTask) {
+      return { success: false, message: TaskMessages.TIME_SPENT.NOT_FOUND };
+    }
+
+    return {
+      success: true,
+      data: {
+        time_spent: updatedTask.time_spent,
+        estimated_time: updatedTask.estimated_time,
+        remaining_time: updatedTask.remaining_time,
+        time_spent_total: updatedTask.time_spent_total
+      }
+    };
+  } catch (error: any) {
+    return { success: false, message: error.message || TaskMessages.TIME_SPENT.ADD_FAILED };
+  }
+};
+
 export {
   createTask,
   deleteTaskById,
@@ -426,5 +457,6 @@ export {
   getTaskById,
   updateTask,
   createComment,
-  updateComment
+  updateComment,
+  addTimeSpent
 };

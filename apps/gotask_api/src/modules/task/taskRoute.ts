@@ -129,4 +129,16 @@ TaskRoutes.push({
   }
 });
 
+// Route: Add Time Spent
+TaskRoutes.push({
+  path: API_PATHS.ADD_TIME_SPENT,
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    taskController.addTimeSpent(new RequestHelper(request), handler),
+  config: {
+    notes: "Add time spent on a task",
+    tags
+  }
+});
+
 export default TaskRoutes;

@@ -33,6 +33,11 @@ export const API_PATHS = {
   UPDATE_ACCESS: "/access/{id}",
   DELETE_ACCESS: "/access/{id}",
 
-  CREATE_ROLE: "/roles",  // POST path for creating a role
-  GET_ALL_ROLES: "/roles",  // GET path for fetching all roles
+  CREATE_ROLE: "/roles", // POST path for creating a role
+  GET_ALL_ROLES: "/roles", // GET path for fetching all roles
+
+  //timelogRoutess
+  ADD_TIME_SPENT: "/tasklog/{id}",
+  UPDATE_ESTIMATED_TIME: "/updatetimelog/{id}",
+  GET_TIME_TRACKING_SUMMARY: "/timeSummary/{id}"
 };

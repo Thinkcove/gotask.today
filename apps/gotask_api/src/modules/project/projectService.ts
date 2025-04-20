@@ -1,6 +1,5 @@
 import ProjectMessages from "../../constants/apiMessages/projectMessage";
 import { IProject, Project } from "../../domain/model/project/project";
-import { User } from "../../domain/model/user/user";
 import { Organization } from "../../domain/model/organization";
 import {
   createNewProject,

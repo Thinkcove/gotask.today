@@ -19,7 +19,7 @@ const RoleSchema = new Schema<IRole>(
     name: { type: String, required: true, unique: true },
     priority: { type: Number, required: true },
     access: [
-      { 
+      {
         type: Schema.Types.ObjectId, // Reference to Access collection
         ref: "Access",
         required: true

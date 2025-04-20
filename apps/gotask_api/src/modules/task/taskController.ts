@@ -1,8 +1,9 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { ITask } from "../../domain/model/task/task";
+import { ITask, ITimeSpentEntry } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import {
+  addTimeSpent,
   createComment,
   createTask,
   deleteTaskById,
@@ -165,6 +166,20 @@ class TaskController extends BaseController {
       const updateData = requestHelper.getPayload() as Partial<ITaskComment>;
       const updatedComment = await updateComment(id, updateData);
       return this.sendResponse(handler, updatedComment);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
+
+  // Add Time Spent to Task
+  async addTimeSpent(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      console.log("task id", id);
+      const timeEntries = requestHelper.getPayload() as ITimeSpentEntry | ITimeSpentEntry[];
+      console.log("timeEntries", timeEntries);
+      const result = await addTimeSpent(id, timeEntries);
+      return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error, handler);
     }

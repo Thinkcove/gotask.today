@@ -216,3 +216,23 @@ export const getProjectIdsAndNames = async (userId: string) => {
     ? data.data.map((project: Project) => ({ id: project.id, name: project.name }))
     : [];
 };
+
+export const logTaskTime = async (
+  taskId: string,
+  timeLogs: { date: string; time_logged: string }[]
+) => {
+  const response = await fetch(`${env.API_BASE_URL}/tasklog/${taskId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(timeLogs)
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to log task time");
+  }
+
+  const result = await response.json();
+  return result;
+};

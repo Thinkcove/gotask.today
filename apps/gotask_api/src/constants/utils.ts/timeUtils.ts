@@ -1,4 +1,4 @@
-import { ITimeSpentEntry } from "../../domain/model/task/task";
+import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 
 const parseTimeString = (timeString: string): number => {
   if (!timeString) return 0;

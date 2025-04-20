@@ -1,6 +1,6 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { ITask, ITimeSpentEntry } from "../../domain/model/task/task";
+import { ITask } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import {
   addTimeSpent,
@@ -15,6 +15,7 @@ import {
   updateComment,
   updateTask
 } from "./taskService";
+import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 
 class TaskController extends BaseController {
   // Create Task

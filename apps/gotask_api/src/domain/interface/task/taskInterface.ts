@@ -3,12 +3,13 @@ import { v4 as uuidv4 } from "uuid";
 import { TASK_STATUS } from "../../../constants/taskConstant";
 import { generateHistoryEntry } from "../../../constants/utils.ts/taskHistory";
 import { Project } from "../../model/project/project";
-import { ITask, ITimeSpentEntry, Task } from "../../model/task/task";
+import { ITask, Task } from "../../model/task/task";
 import { ITaskComment, TaskComment } from "../../model/task/taskComment";
 import { User } from "../../model/user/user";
 import { ITaskHistory, TaskHistorySchema } from "../../model/task/taskHistory";
 import logger from "../../../common/logger";
 import { TimeUtil } from "../../../constants/utils.ts/timeUtils";
+import { ITimeSpentEntry } from "../../model/task/timespent";
 
 // Create a new task
 const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {

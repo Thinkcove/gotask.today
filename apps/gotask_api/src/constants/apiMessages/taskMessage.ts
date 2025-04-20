@@ -24,6 +24,10 @@ const TaskMessages = {
     CREATE_FAILED: "Failed to create comment",
     UPDATE_FAILED: "Failed to update comment",
     NOT_FOUND: "Comment not found"
+  },
+  TIME_SPENT: {
+    NOT_FOUND: "Task not found",
+    ADD_FAILED: "Failed to add time track"
   }
 };
 

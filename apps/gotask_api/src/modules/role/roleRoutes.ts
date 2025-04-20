@@ -21,12 +21,12 @@ RoleRoutes.push({
       payload: Joi.object({
         name: Joi.string().required(),
         priority: Joi.number().required(),
-        accessIds: Joi.array().items(Joi.string()).optional(), // Optional array of access IDs
-      }),
+        accessIds: Joi.array().items(Joi.string()).optional() // Optional array of access IDs
+      })
     },
     notes: "Create a new role",
-    tags,
-  },
+    tags
+  }
 });
 
 // Route: Get All Roles
@@ -37,8 +37,8 @@ RoleRoutes.push({
     roleController.getAllRoles(new RequestHelper(request), h),
   options: {
     notes: "Get all roles",
-    tags,
-  },
+    tags
+  }
 });
 
 export default RoleRoutes;

@@ -16,19 +16,19 @@ const AccessSchema = new Schema<IAccess>(
     id: {
       type: String,
       default: uuidv4,
-      unique: true,
+      unique: true
     },
     name: {
       type: String,
       required: true,
-      unique: true,
+      unique: true
     },
     application: [
       {
         access: { type: String, required: true },
-        actions: [{ type: String, required: true }],
-      },
-    ],
+        actions: [{ type: String, required: true }]
+      }
+    ]
   },
   { timestamps: true }
 );

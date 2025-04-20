@@ -1,12 +1,12 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
 import { IAccess } from "../../domain/model/access";
-import { 
-  createAccess, 
-  getAllAccesses, 
-  getAccessById, 
-  updateAccess, 
-  deleteAccessById 
+import {
+  createAccess,
+  getAllAccesses,
+  getAccessById,
+  updateAccess,
+  deleteAccessById
 } from "../access/accessService";
 
 class AccessController extends BaseController {
@@ -22,8 +22,8 @@ class AccessController extends BaseController {
       if (!newAccess.success) {
         return this.replyError(new Error(newAccess.message || "Failed to create access"));
       }
-      
-      return this.sendResponse(handler, newAccess.data,); // Status code 201 for creation
+
+      return this.sendResponse(handler, newAccess.data); // Status code 201 for creation
     } catch (error) {
       return this.replyError(error);
     }
@@ -36,7 +36,7 @@ class AccessController extends BaseController {
       if (!result.success) {
         return this.replyError(new Error(result.message || "Failed to fetch accesses"));
       }
-      
+
       return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);
@@ -51,7 +51,7 @@ class AccessController extends BaseController {
       if (!result.success) {
         return this.replyError(new Error(result.message || "Access not found"));
       }
-      
+
       return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);
@@ -67,7 +67,7 @@ class AccessController extends BaseController {
       if (!result.success) {
         return this.replyError(new Error(result.message || "Failed to update access"));
       }
-      
+
       return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);

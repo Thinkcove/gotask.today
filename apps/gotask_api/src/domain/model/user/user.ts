@@ -30,16 +30,16 @@ const UserSchema = new Schema<IUser>(
     organization: {
       type: Schema.Types.ObjectId,
       ref: "Organization",
-      default: null,
+      default: null
     },
 
     // Optional projects
     projects: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Project",
-      },
-    ],
+        ref: "Project"
+      }
+    ]
   },
   { timestamps: true }
 );

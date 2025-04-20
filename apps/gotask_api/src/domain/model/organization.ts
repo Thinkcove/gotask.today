@@ -35,13 +35,9 @@ const OrganizationSchema = new Schema<IOrganization>(
 // Ensure `id` is always included when converting to JSON
 OrganizationSchema.set("toJSON", {
   transform: function (doc, ret) {
-    ret.id = ret.id;
     delete ret._id;
     delete ret.__v;
   }
 });
 
-export const Organization = mongoose.model<IOrganization>(
-  "Organization",
-  OrganizationSchema
-);
+export const Organization = mongoose.model<IOrganization>("Organization", OrganizationSchema);

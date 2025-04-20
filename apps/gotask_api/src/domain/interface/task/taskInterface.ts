@@ -8,6 +8,8 @@ import { ITaskComment, TaskComment } from "../../model/task/taskComment";
 import { User } from "../../model/user/user";
 import { ITaskHistory, TaskHistorySchema } from "../../model/task/taskHistory";
 import logger from "../../../common/logger";
+import { TimeUtil } from "../../../constants/utils.ts/timeUtils";
+import { ITimeSpentEntry } from "../../model/task/timespent";
 
 // Create a new task
 const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
@@ -16,11 +18,23 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
   if (!user || !project) {
     throw new Error("Invalid user_id or project_id");
   }
+
+  const createdOn = new Date(taskData.created_on!);
+  const dueDate = new Date(taskData.due_date!);
+
+  const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
+  const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+
+  // Inclusive: count both start and end dates
+  const daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
+  const estimatedTime = daysDiff > 0 ? `${daysDiff}d0h` : "1d0h";
+
   // Assign user_name and project_name
   const newTask = new Task({
     ...taskData,
     user_name: user.name,
-    project_name: project.name
+    project_name: project.name,
+    estimated_time: estimatedTime
   });
   return await newTask.save();
 };
@@ -152,6 +166,42 @@ const updateCommentInTask = async (
   return updatedComment;
 };
 
+//add time spent to  stask
+const addTimeSpentToTask = async (
+  id: string,
+  timeEntries: ITimeSpentEntry[]
+): Promise<ITask | null> => {
+  const task = await Task.findOne({ id });
+  if (!task) return null;
+
+  if (!task.time_spent) task.time_spent = [];
+
+  const entries = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
+
+  for (const entry of entries) {
+    // Check if time_logged is in H:MM format
+    if (/^\d+:\d{2}$/.test(entry.time_logged)) {
+      // Convert "H:MM" to hours as number
+      const totalHours = TimeUtil.parseHourMinuteString(entry.time_logged);
+      // Convert hours to "XdYh" format
+      entry.time_logged = TimeUtil.formatHoursToTimeString(totalHours);
+    }
+
+    if (!TimeUtil.isValidTimeFormat(entry.time_logged)) {
+      throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
+    }
+
+    task.time_spent.push(entry);
+  }
+
+  const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);
+  task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
+  task.remaining_time = TimeUtil.calculateRemainingTime(task.estimated_time, task.time_spent_total);
+
+  await task.save();
+  return task;
+};
+
 export {
   createNewTask,
   deleteByTaskId,
@@ -162,5 +212,6 @@ export {
   findTaskCountByStatus,
   updateATask,
   createCommentInTask,
-  updateCommentInTask
+  updateCommentInTask,
+  addTimeSpentToTask
 };

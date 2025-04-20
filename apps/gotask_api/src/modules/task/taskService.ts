@@ -12,8 +12,9 @@ import {
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
-import { ITask, ITimeSpentEntry, Task } from "../../domain/model/task/task";
+import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
+import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 
 // Create a new task
 const createTask = async (

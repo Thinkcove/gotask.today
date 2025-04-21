@@ -36,6 +36,14 @@ export interface ITask {
   due_date: string;
   history: ITaskHistory[];
   comment: ITaskComment[];
+  estimated_time?: string;
+  time_spent?: {
+    date: string;
+    time_logged: string;
+  }[];
+  time_spent_total?: string;
+  remaining_time?: string;
+  time_entries?: Array<{ date: string; hours: number }>;
 }
 
 export interface ITaskHistory {

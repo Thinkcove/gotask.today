@@ -18,7 +18,7 @@ class RoleController extends BaseController {
         return this.replyError(new Error(result.message || "Failed to create role"));
       }
 
-      return this.sendResponse(handler, result.data);
+      return this.sendResponse(handler, result.data); // Return HTTP 201 for created resource
     } catch (error) {
       return this.replyError(error);
     }
@@ -38,5 +38,6 @@ class RoleController extends BaseController {
     }
   }
 }
+
 
 export default RoleController;

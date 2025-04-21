@@ -4,11 +4,12 @@ import {
   findAllUsers,
   findUserByEmail,
   findUserById,
-  updateUserById
+  updateUserById,
 } from "../../domain/interface/user/userInterface";
 import { IUser } from "../../domain/model/user/user";
+import { Role } from "../../domain/model/role";
 
-// Create a new user
+// CREATE USER
 const createUser = async (
   userData: IUser
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
@@ -16,23 +17,41 @@ const createUser = async (
     if (!userData) {
       return {
         success: false,
-        message: UserMessages.CREATE.REQUIRED
+        message: UserMessages.CREATE.REQUIRED,
       };
     }
+
+    // 🆕 Step 1: Resolve role name to ID
+    if (typeof userData.role === "string") {
+      const roleDoc = await Role.findOne({ name: userData.role });
+      if (!roleDoc) {
+        return {
+          success: false,
+          message: `Role "${userData.role}" not found`,
+        };
+      }
+      userData.role = roleDoc._id as any;
+    }
+
+    // Step 2: Create the user
     const newUser = await createNewUser(userData);
+
+    // 🆕 Step 3: Populate role (name only)
+    const populatedUser = await newUser.populate("role", "name");
+
     return {
       success: true,
-      data: newUser
+      data: populatedUser,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || UserMessages.CREATE.FAILED
+      message: error.message || UserMessages.CREATE.FAILED,
     };
   }
 };
 
-// Get all users
+// GET ALL USERS
 const getAllUsers = async (): Promise<{
   success: boolean;
   data?: IUser[];
@@ -42,17 +61,17 @@ const getAllUsers = async (): Promise<{
     const users = await findAllUsers();
     return {
       success: true,
-      data: users
+      data: users,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || UserMessages.FETCH.FAILED_ALL
+      message: error.message || UserMessages.FETCH.FAILED_ALL,
     };
   }
 };
 
-// Get user by ID
+// GET USER BY ID
 const getUserById = async (
   id: string
 ): Promise<{ success: boolean; data?: IUser | null; message?: string }> => {
@@ -61,22 +80,22 @@ const getUserById = async (
     if (!user) {
       return {
         success: false,
-        message: UserMessages.FETCH.NOT_FOUND
+        message: UserMessages.FETCH.NOT_FOUND,
       };
     }
     return {
       success: true,
-      data: user
+      data: user,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || UserMessages.FETCH.FAILED_BY_ID
+      message: error.message || UserMessages.FETCH.FAILED_BY_ID,
     };
   }
 };
 
-// Update user
+// UPDATE USER
 const updateUser = async (
   id: string,
   updateData: Partial<IUser>
@@ -86,41 +105,43 @@ const updateUser = async (
     if (!updatedUser) {
       return {
         success: false,
-        message: UserMessages.FETCH.NOT_FOUND
+        message: UserMessages.FETCH.NOT_FOUND,
       };
     }
     return {
       success: true,
-      data: updatedUser
+      data: updatedUser,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || UserMessages.UPDATE.FAILED
+      message: error.message || UserMessages.UPDATE.FAILED,
     };
   }
 };
 
-// Find user by user_id (email)
+// ✅ GET USER BY EMAIL — FIXED: no .populate() here, it's already done in findUserByEmail
 const getUserByEmail = async (
   user_id: string
 ): Promise<{ success: boolean; data?: IUser | null; message?: string }> => {
   try {
-    const user = await findUserByEmail(user_id);
+    const user = await findUserByEmail(user_id); // Already populated in interface
+
     if (!user) {
       return {
         success: false,
-        message: UserMessages.FETCH.NOT_FOUND
+        message: UserMessages.FETCH.NOT_FOUND,
       };
     }
+
     return {
       success: true,
-      data: user
+      data: user,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || UserMessages.FETCH.FAILED_BY_ID
+      message: error.message || UserMessages.FETCH.FAILED_BY_ID,
     };
   }
 };

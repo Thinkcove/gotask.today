@@ -58,47 +58,67 @@ class UserController extends BaseController {
     }
   }
 
-  // Login user
-  async loginUser(requestHelper: RequestHelper, handler: any) {
-    try {
-      const { user_id, password } = requestHelper.getPayload();
+// Login user
+// Login user
+async loginUser(requestHelper: RequestHelper, handler: any) {
+  try {
+    const { user_id, password } = requestHelper.getPayload();
 
-      const { success, data: user, message } = await getUserByEmail(user_id);
-      if (!success || !user) {
-        return this.sendResponse(handler, {
-          success: false,
-          error: message || "User not found"
-        });
-      }
-
-      const isMatch = await comparePassword(password, user.password);
-      if (!isMatch) {
-        return this.sendResponse(handler, {
-          success: false,
-          error: "Invalid credentials"
-        });
-      }
-
-      const token = jwt.sign(
-        { id: user.id, user_id: user.user_id, role: user.role },
-        process.env.AUTH_KEY as string,
-        { expiresIn: "1h" }
-      );
-
-      return this.sendResponse(handler, {
-        success: true,
-        data: {
-          token,
-          user
-        }
-      });
-    } catch (error: any) {
+    const { success, data: user, message } = await getUserByEmail(user_id);
+    if (!success || !user) {
       return this.sendResponse(handler, {
         success: false,
-        error: error.message || "Failed to login"
+        error: message || "User not found"
       });
     }
+
+    const isMatch = await comparePassword(password, user.password);
+    if (!isMatch) {
+      return this.sendResponse(handler, {
+        success: false,
+        error: "Invalid credentials"
+      });
+    }
+
+    // Step 1: Ensure that the user role includes access details
+    await user.populate({
+      path: "role",
+      populate: {
+        path: "access", // Populate the access array
+        model: "Access" // Ensure it's referring to the correct Access model
+      }
+    });
+
+    const token = jwt.sign(
+      { id: user.id, user_id: user.user_id, role: user.role },
+      process.env.AUTH_KEY as string,
+      { expiresIn: "1h" }
+    );
+
+    // Sanitize the user data to remove the password
+    const sanitizedUser = {
+      ...user.toObject?.(), // safely convert Mongoose doc to plain object
+      password: undefined // remove password field
+    };
+
+    // Step 2: Return the role with access details inside the user data
+    return this.sendResponse(handler, {
+      success: true,
+      data: {
+        token,
+        user: sanitizedUser // Send sanitized user without password, including role with access
+      }
+    });
+  } catch (error: any) {
+    return this.sendResponse(handler, {
+      success: false,
+      error: error.message || "Failed to login"
+    });
   }
+}
+
+
+
 }
 
 export default UserController;

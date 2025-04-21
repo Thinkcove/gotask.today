@@ -1,5 +1,4 @@
-import { Document, Types } from "mongoose";
-import mongoose, { Schema } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { IAccess } from "./access"; // Correct import of IAccess
 
@@ -7,7 +6,7 @@ export interface IRole extends Document {
   id: string;
   name: string; // e.g. Admin, Manager, Associate
   priority: number; // Lower = higher authority
-  access: Types.ObjectId[]; // Reference to Access model (using ObjectId directly)
+  access: string[]; // UUIDs for Access model
 }
 
 // Defining the schema for Role
@@ -18,8 +17,7 @@ const RoleSchema = new Schema<IRole>(
     priority: { type: Number, required: true },
     access: [
       {
-        type: Schema.Types.ObjectId, // Direct reference to Access collection using ObjectId
-        ref: "Access",               // Ensure that the relationship is populated when querying
+        type: String, // Storing UUIDs as strings for the access field
         required: true
       }
     ]
@@ -28,4 +26,4 @@ const RoleSchema = new Schema<IRole>(
 );
 
 // Create the Role model based on the schema
-export const Role = mongoose.model<IRole>("Role", RoleSchema);
+export const Role = model<IRole>("Role", RoleSchema);

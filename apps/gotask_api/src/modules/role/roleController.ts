@@ -39,5 +39,4 @@ class RoleController extends BaseController {
   }
 }
 
-
 export default RoleController;

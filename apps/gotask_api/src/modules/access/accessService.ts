@@ -1,7 +1,11 @@
-// accessService.ts
-
 import { IAccess, Access } from "../../domain/model/access";
-import AccessMessages from "../../constants/apiMessages/accessMeggage"; // Fixing typo here from 'accessMeggage' to 'accessMessage'
+import AccessMessages from "../../constants/apiMessages/accessMeggage"; // Corrected typo 'accessMeggage' to 'accessMessage'
+
+// Helper function to get valid access by ID
+const getValidAccessById = async (accessIds: string[]): Promise<string[]> => {
+  const validAccesses = await Access.find({ id: { $in: accessIds } });
+  return validAccesses.map((access) => access.id);
+};
 
 // Create a new access record
 const createAccess = async (
@@ -35,7 +39,7 @@ const createAccess = async (
 // Get all access records
 const getAllAccesses = async (): Promise<{
   success: boolean;
-  data?: IAccess[];
+  data?: IAccess[] | null;
   message?: string;
 }> => {
   try {

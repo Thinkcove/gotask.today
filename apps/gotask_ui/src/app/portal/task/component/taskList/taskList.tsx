@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { CircularProgress, Typography, Grid, Box, Tooltip, Fab } from "@mui/material";
+import { CircularProgress, Grid, Box, Tooltip, Fab } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useProjectGroupTask, useUserGroupTask } from "../../service/taskAction";
 import TaskToggle from "../taskLayout/taskToggle";
@@ -12,6 +12,7 @@ import SearchBar from "@/app/component/searchBar/searchBar";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import NoTasksImage from "@assets/placeholderImages/notask.svg";
+import TaskErrorImage from "@assets/placeholderImages/taskerror.svg";
 import TaskFilterControls from "../taskFilter/taskFilterControls";
 
 const TaskList: React.FC = () => {
@@ -43,6 +44,8 @@ const TaskList: React.FC = () => {
   const [minDate, setMinDate] = useState<string | undefined>();
   const [maxDate, setMaxDate] = useState<string | undefined>();
   const [dateVar, setDateVar] = useState<string>("due_date");
+  const [moreDays, setMoreDays] = useState<string | undefined>();
+  const [lessDays, setLessDays] = useState<string | undefined>();
   const fetchTasks = () => {
     const { search_vals, search_vars } = searchParams;
     if (view === "projects") {
@@ -55,7 +58,9 @@ const TaskList: React.FC = () => {
         search_vars,
         minDate,
         maxDate,
-        dateVar // pass here
+        dateVar,
+        moreDays,
+        lessDays
       );
       return { tasks: tasksByProjects, ...rest };
     } else {
@@ -68,7 +73,9 @@ const TaskList: React.FC = () => {
         search_vars,
         minDate,
         maxDate,
-        dateVar // and here
+        dateVar,
+        moreDays,
+        lessDays
       );
       return { tasks: tasksByUsers, ...rest };
     }
@@ -135,6 +142,8 @@ const TaskList: React.FC = () => {
     setMinDate(undefined);
     setMaxDate(undefined);
     setDateVar("due_date");
+    setMoreDays(undefined);
+    setLessDays(undefined);
     const newParams = searchText.trim()
       ? { search_vals: [[searchText]], search_vars: [["title"]] }
       : {};
@@ -146,20 +155,30 @@ const TaskList: React.FC = () => {
   const isSearched = searchText.trim() !== "";
   const activeFilterCount =
     (filtersOnly.search_vals ?? []).filter((arr) => arr.length > 0).length +
-    (minDate && maxDate ? 1 : 0);
+    (minDate && maxDate ? 1 : 0) +
+    (moreDays ? 1 : 0) +
+    (lessDays ? 1 : 0);
+
   const isFiltered = () =>
-    (filtersOnly.search_vals ?? []).some((arr) => arr.length > 0) || (!!minDate && !!maxDate);
+    (filtersOnly.search_vals ?? []).some((arr) => arr.length > 0) ||
+    (!!minDate && !!maxDate) ||
+    !!moreDays ||
+    !!lessDays;
 
   if (isError) {
     return (
-      <Typography color="error" align="center" mt={4}>
-        Failed to fetch tasks
-      </Typography>
+      <Grid container spacing={3} sx={{ p: 2, mb: 8 }}>
+        <Grid item xs={12}>
+          <EmptyState imageSrc={TaskErrorImage} message={"Failed to Fetch the Task"} />
+        </Grid>
+      </Grid>
     );
   }
 
   const handleApplyTaskFilters = (filters: TaskFilterType) => {
     setFiltersOnly(filters);
+    setMoreDays(filters.more_variation || undefined);
+    setLessDays(filters.less_variation || undefined);
     // Capture and apply date range if provided
     setMinDate(filters.min_date || undefined);
     setMaxDate(filters.max_date || undefined);
@@ -180,31 +199,35 @@ const TaskList: React.FC = () => {
   return (
     <Box>
       {/* Top Bar */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 2,
-          px: 2,
-          py: 1,
-          flexWrap: "nowrap"
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <SearchBar value={searchText} onChange={handleSearchChange} />
-        </Box>
+      {!isLoading && !isError && (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            px: 2,
+            py: 1,
+            flexWrap: "nowrap"
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <SearchBar value={searchText} onChange={handleSearchChange} />
+          </Box>
 
-        <TaskToggle view={view} setView={setView} />
-      </Box>
+          <TaskToggle view={view} setView={setView} />
+        </Box>
+      )}
 
       {/* Filter Buttons */}
-      <TaskFilterControls
-        activeFilterCount={activeFilterCount}
-        isFiltered={isFiltered()}
-        onClearAll={handleClearAll}
-        onOpenFilter={() => setFilterDrawerOpen(true)}
-      />
+      {!isLoading && !isError && (
+        <TaskFilterControls
+          activeFilterCount={activeFilterCount}
+          isFiltered={isFiltered()}
+          onClearAll={handleClearAll}
+          onOpenFilter={() => setFilterDrawerOpen(true)}
+        />
+      )}
 
       {/* Task Grid */}
       <Box

@@ -176,19 +176,16 @@ const addTimeSpentToTask = async (
 
   if (!task.time_spent) task.time_spent = [];
 
-  const entries = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
-
-  for (const entry of entries) {
-    // Check if time_logged is in H:MM format
+  for (const entry of timeEntries) {
+    // Support "HH:MM" format input
     if (/^\d+:\d{2}$/.test(entry.time_logged)) {
-      // Convert "H:MM" to hours as number
-      const totalHours = TimeUtil.parseHourMinuteString(entry.time_logged);
-      // Convert hours to "XdYh" format
-      entry.time_logged = TimeUtil.formatHoursToTimeString(totalHours);
+      const hours = TimeUtil.parseHourMinuteString(entry.time_logged);
+
+      entry.time_logged = TimeUtil.formatHoursToTimeString(hours);
     }
 
     if (!TimeUtil.isValidTimeFormat(entry.time_logged)) {
-      throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
+      throw new Error("Invalid time format. Use '2d4h', '3d', or '6h'");
     }
 
     task.time_spent.push(entry);
@@ -197,6 +194,7 @@ const addTimeSpentToTask = async (
   const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);
   task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
   task.remaining_time = TimeUtil.calculateRemainingTime(task.estimated_time, task.time_spent_total);
+  task.variation = TimeUtil.calculateVariation(task.estimated_time, task.time_spent_total);
 
   await task.save();
   return task;

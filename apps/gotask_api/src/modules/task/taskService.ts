@@ -1,4 +1,5 @@
 import TaskMessages from "../../constants/apiMessages/taskMessage";
+import { TimeUtil } from "../../constants/utils.ts/timeUtils";
 import {
   addTimeSpentToTask,
   createCommentInTask,
@@ -12,7 +13,7 @@ import {
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
-import { ITask, Task } from "../../domain/model/task/task";
+import { ITask } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 
@@ -93,7 +94,9 @@ const getTasksByProject = async (
   search_vars?: string[][],
   min_date?: string,
   max_date?: string,
-  date_var?: string
+  date_var?: string,
+  more_variation?: string,
+  less_variation?: string
 ): Promise<{
   success: boolean;
   data?: any;
@@ -103,44 +106,36 @@ const getTasksByProject = async (
     const skip = (page - 1) * pageSize;
     const taskSkip = (taskPage - 1) * taskPageSize;
 
-    let filter: any = {};
-
-    // Type guard to ensure search arrays are valid
     const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
       Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
 
-    // Text search filter
+    const orConditions: any[] = [];
+
+    //  Text Search
     if (isValidSearch(search_vars) && isValidSearch(search_vals)) {
-      const orConditions: any[] = [];
       for (let i = 0; i < search_vars.length; i++) {
         const field = search_vars[i][0];
         const value = search_vals[i][0];
         const fieldName = field === "id" ? "project_id" : field;
         orConditions.push({ [fieldName]: { $regex: new RegExp(value, "i") } });
       }
-      filter = orConditions.length === 1 ? orConditions[0] : { $or: orConditions };
     }
 
-    // Date range filter
+    //  Date Range (converted to OR logic)
     if (date_var && min_date && max_date) {
-      const dateFilter = {
+      orConditions.push({
         [date_var]: {
           $gte: new Date(min_date),
           $lte: new Date(max_date)
         }
-      };
-
-      if (Object.keys(filter).length > 0) {
-        filter = {
-          $or: [filter, dateFilter]
-        };
-      } else {
-        filter = dateFilter;
-      }
+      });
     }
 
+    // Main filter
+    const matchFilter: any = orConditions.length > 0 ? { $or: orConditions } : {};
+
     const aggregationPipeline: any[] = [
-      { $match: filter },
+      { $match: matchFilter },
       { $sort: { updatedAt: -1 } },
       {
         $group: {
@@ -158,29 +153,67 @@ const getTasksByProject = async (
           project_name: "$_id.project_name",
           total_count: 1,
           latestTaskUpdatedAt: 1,
-          task_total_pages: { $ceil: { $divide: ["$total_count", taskPageSize] } },
           tasks: {
-            $slice: [
-              { $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } } },
-              taskSkip,
-              taskPageSize
-            ]
+            $slice: [{ $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } } }, 0, 1000]
           }
         }
-      },
-      { $skip: skip },
-      { $limit: pageSize }
+      }
     ];
 
-    const taskGroups = await findTasksByProject(aggregationPipeline);
+    let taskGroups = await findTasksByProject(aggregationPipeline);
 
-    // Calculate total project count based on filter
-    const totalProjects = await Task.distinct("project_name", filter).then((res) => res.length);
+    const matchesLessVariation = (variation: string, target: string) => {
+      return TimeUtil.parseTimeString(variation) <= TimeUtil.parseTimeString(target);
+    };
+
+    const matchesMoreVariation = (variation: string, target: string) => {
+      return TimeUtil.parseTimeString(variation) >= TimeUtil.parseTimeString(target);
+    };
+
+    if (less_variation || more_variation) {
+      const filterByVariation = (task: any) => {
+        const variation = task.variation;
+        if (!variation) return false;
+        if (less_variation && matchesLessVariation(variation, less_variation)) return true;
+        if (more_variation && matchesMoreVariation(variation, more_variation)) return true;
+        return false;
+      };
+
+      //  Merge OR logic (add variation-matching tasks)
+      taskGroups = taskGroups
+        .map((group: any) => {
+          const allTasks = group.tasks;
+          const matchedTasks = allTasks.filter(filterByVariation);
+          const mergedTasks = [
+            ...new Map([...group.tasks, ...matchedTasks].map((t) => [t.id, t])).values()
+          ]; // remove duplicates
+
+          return {
+            ...group,
+            tasks: mergedTasks,
+            total_count: mergedTasks.length,
+            task_total_pages: Math.ceil(mergedTasks.length / taskPageSize)
+          };
+        })
+        .filter((g: any) => g.tasks.length > 0);
+    }
+
+    //  Paginate final results
+    const totalProjects = taskGroups.length;
+    const paginatedProjects = taskGroups.slice(skip, skip + pageSize);
+    const finalProjects = paginatedProjects.map((project: any) => {
+      const slicedTasks = project.tasks.slice(taskSkip, taskSkip + taskPageSize);
+      return {
+        ...project,
+        tasks: slicedTasks,
+        task_total_pages: Math.ceil(project.total_count / taskPageSize)
+      };
+    });
 
     return {
       success: true,
       data: {
-        taskbyprojects: taskGroups,
+        taskbyprojects: finalProjects,
         total_count: totalProjects,
         total_pages: Math.ceil(totalProjects / pageSize),
         current_page: page
@@ -204,7 +237,9 @@ const getTasksByUser = async (
   search_vars?: string[][],
   min_date?: string,
   max_date?: string,
-  date_var?: string
+  date_var?: string,
+  more_variation?: string,
+  less_variation?: string
 ): Promise<{
   success: boolean;
   data?: any;
@@ -214,46 +249,36 @@ const getTasksByUser = async (
     const skip = (page - 1) * pageSize;
     const taskSkip = (taskPage - 1) * taskPageSize;
 
-    // Build filter
-    let filter: any = {};
-
-    // Type guard to ensure search arrays are valid
     const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
       Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
 
-    // Text search filter
+    const orConditions: any[] = [];
+
+    //  Text Search
     if (isValidSearch(search_vars) && isValidSearch(search_vals)) {
-      const orConditions: any[] = [];
       for (let i = 0; i < search_vars.length; i++) {
         const field = search_vars[i][0];
         const value = search_vals[i][0];
         const fieldName = field === "id" ? "project_id" : field;
         orConditions.push({ [fieldName]: { $regex: new RegExp(value, "i") } });
       }
-      filter = orConditions.length === 1 ? orConditions[0] : { $or: orConditions };
     }
 
-    // Date range filter
+    //  Date Range (converted to OR logic)
     if (date_var && min_date && max_date) {
-      const dateFilter = {
+      orConditions.push({
         [date_var]: {
           $gte: new Date(min_date),
           $lte: new Date(max_date)
         }
-      };
-
-      if (Object.keys(filter).length > 0) {
-        filter = {
-          $or: [filter, dateFilter]
-        };
-      } else {
-        filter = dateFilter;
-      }
+      });
     }
 
-    // Build aggregation pipeline
+    // Main filter
+    const matchFilter: any = orConditions.length > 0 ? { $or: orConditions } : {};
+
     const aggregationPipeline: any[] = [
-      { $match: filter },
+      { $match: matchFilter },
       { $sort: { updatedAt: -1 } },
       {
         $group: {
@@ -271,28 +296,71 @@ const getTasksByUser = async (
           user_name: "$_id.user_name",
           total_count: 1,
           latestTaskUpdatedAt: 1,
-          task_total_pages: { $ceil: { $divide: ["$total_count", taskPageSize] } },
           tasks: {
             $slice: [
               { $sortArray: { input: "$tasks", sortBy: { updatedAt: -1 } } },
-              taskSkip,
-              taskPageSize
+              0,
+              1000 // Temporarily get all tasks for manual filtering
             ]
           }
         }
-      },
-      { $skip: skip },
-      { $limit: pageSize }
+      }
     ];
 
-    const taskGroups = await findTasksByUser(aggregationPipeline);
+    let taskGroups = await findTasksByUser(aggregationPipeline);
 
-    const totalUsers = await Task.distinct("user_name", filter).then((res) => res.length);
+    const matchesLessVariation = (variation: string, target: string) => {
+      return TimeUtil.parseTimeString(variation) <= TimeUtil.parseTimeString(target);
+    };
+
+    const matchesMoreVariation = (variation: string, target: string) => {
+      return TimeUtil.parseTimeString(variation) >= TimeUtil.parseTimeString(target);
+    };
+
+    if (less_variation || more_variation) {
+      const filterByVariation = (task: any) => {
+        const variation = task.variation;
+        if (!variation) return false;
+        if (less_variation && matchesLessVariation(variation, less_variation)) return true;
+        if (more_variation && matchesMoreVariation(variation, more_variation)) return true;
+        return false;
+      };
+
+      //  Merge OR logic (add variation-matching tasks)
+      taskGroups = taskGroups
+        .map((group: any) => {
+          const allTasks = group.tasks;
+          const matchedTasks = allTasks.filter(filterByVariation);
+          const mergedTasks = [
+            ...new Map([...group.tasks, ...matchedTasks].map((t) => [t.id, t])).values()
+          ]; // remove duplicates
+
+          return {
+            ...group,
+            tasks: mergedTasks,
+            total_count: mergedTasks.length,
+            task_total_pages: Math.ceil(mergedTasks.length / taskPageSize)
+          };
+        })
+        .filter((g: any) => g.tasks.length > 0);
+    }
+
+    // Paginate final results
+    const totalUsers = taskGroups.length;
+    const paginatedUsers = taskGroups.slice(skip, skip + pageSize);
+    const finalUsers = paginatedUsers.map((project: any) => {
+      const slicedTasks = project.tasks.slice(taskSkip, taskSkip + taskPageSize);
+      return {
+        ...project,
+        tasks: slicedTasks,
+        task_total_pages: Math.ceil(project.total_count / taskPageSize)
+      };
+    });
 
     return {
       success: true,
       data: {
-        taskbyusers: taskGroups,
+        taskbyusers: finalUsers,
         total_count: totalUsers,
         total_pages: Math.ceil(totalUsers / pageSize),
         current_page: page

@@ -13,7 +13,9 @@ export const useProjectGroupTask = (
   search_vars?: string[][],
   min_date?: string,
   max_date?: string,
-  date_var?: string
+  date_var?: string,
+  more_variation?: string,
+  less_variation?: string
 ) => {
   const fetchProjectTasks = async () => {
     const payload: TaskPayload = {
@@ -34,6 +36,13 @@ export const useProjectGroupTask = (
       payload.date_var = date_var ?? "due_date";
     }
 
+    if (more_variation) {
+      payload.more_variation = more_variation;
+    }
+
+    if (less_variation) {
+      payload.less_variation = less_variation;
+    }
     return postData(`${env.API_BASE_URL}/tasks/grouped-by-project`, payload);
   };
 
@@ -46,7 +55,11 @@ export const useProjectGroupTask = (
       taskPageSize,
       search_vals,
       search_vars,
-      date_var
+      min_date,
+      max_date,
+      date_var,
+      more_variation,
+      less_variation
     ],
     fetchProjectTasks,
     { revalidateOnFocus: false }
@@ -71,7 +84,9 @@ export const useUserGroupTask = (
   search_vars?: string[][],
   min_date?: string,
   max_date?: string,
-  date_var?: string
+  date_var?: string,
+  more_variation?: string,
+  less_variation?: string
 ) => {
   const fetchUserTasks = async () => {
     const payload: TaskPayload = {
@@ -92,6 +107,13 @@ export const useUserGroupTask = (
       payload.date_var = date_var ?? "due_date";
     }
 
+    if (more_variation) {
+      payload.more_variation = more_variation;
+    }
+
+    if (less_variation) {
+      payload.less_variation = less_variation;
+    }
     return postData(`${env.API_BASE_URL}/tasks/grouped-by-user`, payload);
   };
 
@@ -104,7 +126,11 @@ export const useUserGroupTask = (
       taskPageSize,
       search_vals,
       search_vars,
-      date_var
+      min_date,
+      max_date,
+      date_var,
+      more_variation,
+      less_variation
     ],
     fetchUserTasks,
     { revalidateOnFocus: false }

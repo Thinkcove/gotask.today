@@ -13,9 +13,12 @@ const parseHourMinuteString = (timeStr: string): number => {
 };
 
 const formatHoursToTimeString = (totalHours: number): string => {
-  const days = Math.floor(totalHours / 8);
-  const hours = totalHours % 8;
-  return `${days}d${hours}h`;
+  const isNegative = totalHours < 0;
+  const absHours = Math.abs(totalHours);
+  const days = Math.floor(absHours / 8);
+  const hours = Math.round(absHours % 8);
+  const result = `${days}d${hours}h`;
+  return isNegative ? `-${result}` : result;
 };
 
 const calculateTotalTime = (timeEntries: ITimeSpentEntry[]): number => {
@@ -30,6 +33,12 @@ const calculateRemainingTime = (estimatedTime: string, spentTime: string): strin
   return formatHoursToTimeString(Math.max(0, estimatedHours - spentHours));
 };
 
+const calculateVariation = (estimatedTime: string, spentTime: string): string => {
+  const estimatedHours = parseTimeString(estimatedTime);
+  const spentHours = parseTimeString(spentTime);
+  return formatHoursToTimeString(spentHours - estimatedHours);
+};
+
 const isValidTimeFormat = (timeString: string): boolean => {
   return /^(\d+d)?(\d+h)?$/.test(timeString) && timeString.length > 0;
 };
@@ -40,5 +49,6 @@ export const TimeUtil = {
   formatHoursToTimeString,
   calculateTotalTime,
   calculateRemainingTime,
+  calculateVariation,
   isValidTimeFormat
 };

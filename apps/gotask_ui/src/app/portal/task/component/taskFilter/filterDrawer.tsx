@@ -6,8 +6,12 @@ import {
   Button,
   Checkbox,
   Drawer,
+  FormControl,
   FormControlLabel,
   FormGroup,
+  FormLabel,
+  Radio,
+  RadioGroup,
   TextField,
   Typography
 } from "@mui/material";
@@ -35,12 +39,13 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
       status: [],
       dateFrom: "",
       dateTo: "",
-      // variations: [],
       projects: [],
-      users: []
+      users: [],
+      variationType: "more",
+      variationValue: ""
     });
 
-    // Expose reset method to parent via ref
+    // Expose reset method
     useImperativeHandle(ref, () => ({
       resetFilters: () => {
         setSelectedFilters({
@@ -48,9 +53,10 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
           status: [],
           dateFrom: "",
           dateTo: "",
-          // variations: [],
           projects: [],
-          users: []
+          users: [],
+          variationType: undefined,
+          variationValue: ""
         });
       }
     }));
@@ -71,22 +77,28 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
       });
     };
 
-    const renderCheckboxList = (group: keyof FilterValues, options: string[]) => (
-      <FormGroup>
-        {options.map((option) => (
-          <FormControlLabel
-            key={option}
-            control={
-              <Checkbox
-                checked={selectedFilters[group].includes(option)}
-                onChange={() => toggleCheckbox(group, option)}
-              />
-            }
-            label={option}
-          />
-        ))}
-      </FormGroup>
-    );
+    const renderCheckboxList = (group: keyof FilterValues, options: string[]) => {
+      const groupValue = selectedFilters[group];
+
+      if (!Array.isArray(groupValue)) return null; // Skip rendering if the group value isn't an array
+
+      return (
+        <FormGroup>
+          {options.map((option) => (
+            <FormControlLabel
+              key={option}
+              control={
+                <Checkbox
+                  checked={groupValue.includes(option)}
+                  onChange={() => toggleCheckbox(group, option)}
+                />
+              }
+              label={option}
+            />
+          ))}
+        </FormGroup>
+      );
+    };
 
     const handleApply = () => {
       const search_vals: string[][] = [];
@@ -124,6 +136,13 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
         payload.date_var = "due_date";
       }
 
+      if (selectedFilters.variationType && selectedFilters.variationValue) {
+        const isMore = selectedFilters.variationType === "more";
+        const key = isMore ? "more_variation" : "less_variation";
+        const sign = isMore ? "" : "-";
+        payload[key] = `${sign}${selectedFilters.variationValue}d`;
+      }
+
       onApplyFilters?.(payload);
       onClose();
     };
@@ -159,9 +178,9 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
           <Accordion
             disableGutters
             elevation={0}
-            sx={{ borderBottom: "1px solid rgba(0, 0, 0, 0.12)" }}
             expanded={expandedPanel === "project_name"}
             onChange={handleAccordionChange("project_name")}
+            sx={{ borderBottom: "1px solid rgba(0, 0, 0, 0.12)" }}
           >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
@@ -172,7 +191,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
             >
               <Typography>Filter by Project</Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ maxHeight: 150, overflowY: "auto", px: 2 }}>
+            <AccordionDetails sx={{ maxHeight: 200, overflowY: "auto", px: 2 }}>
               {renderCheckboxList(
                 "projects",
                 allProjects.map((p: SelectOption) => p.name)
@@ -197,7 +216,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
             >
               <Typography>Filter by User</Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ maxHeight: 150, overflowY: "auto", px: 2 }}>
+            <AccordionDetails sx={{ maxHeight: 200, overflowY: "auto", px: 2 }}>
               {renderCheckboxList(
                 "users",
                 allUsers.map((u: SelectOption) => u.name)
@@ -221,7 +240,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
             >
               <Typography>Filter by Status</Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ maxHeight: 150, overflowY: "auto", px: 2 }}>
+            <AccordionDetails sx={{ maxHeight: 200, overflowY: "auto", px: 2 }}>
               {renderCheckboxList("status", Object.values(TASK_STATUS))}
             </AccordionDetails>
           </Accordion>
@@ -242,12 +261,12 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
             >
               <Typography>Filter by Severity</Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ maxHeight: 150, overflowY: "auto", px: 2 }}>
+            <AccordionDetails sx={{ maxHeight: 200, overflowY: "auto", px: 2 }}>
               {renderCheckboxList("severity", Object.values(TASK_SEVERITY))}
             </AccordionDetails>
           </Accordion>
 
-          {/* By Date */}
+          {/* Due Date */}
           <Accordion
             disableGutters
             elevation={0}
@@ -286,6 +305,66 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
               </Box>
             </AccordionDetails>
           </Accordion>
+
+          {/* Variation Filter */}
+          <Accordion
+            disableGutters
+            elevation={0}
+            expanded={expandedPanel === "variation"}
+            onChange={handleAccordionChange("variation")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              sx={{
+                px: 2,
+                backgroundColor: expandedPanel === "variation" ? "#E1D7E0" : "transparent"
+              }}
+            >
+              <Typography>Filter by Variation</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ display: "flex", flexDirection: "column", gap: 2, px: 2 }}>
+              <FormControl component="fieldset">
+                <FormLabel component="legend">Variates from estimated day</FormLabel>
+                <RadioGroup
+                  row
+                  value={selectedFilters.variationType}
+                  onChange={(e) =>
+                    setSelectedFilters((prev) => ({
+                      ...prev,
+                      variationType: e.target.value as "more" | "less"
+                    }))
+                  }
+                >
+                  <FormControlLabel value="more" control={<Radio />} label="More Than" />
+                  <FormControlLabel value="less" control={<Radio />} label="Less Than" />
+                </RadioGroup>
+              </FormControl>
+              <TextField
+                label="Days"
+                type="number"
+                value={selectedFilters.variationValue}
+                onChange={(e) =>
+                  setSelectedFilters((prev) => ({
+                    ...prev,
+                    variationValue: e.target.value
+                  }))
+                }
+                InputProps={{
+                  inputProps: { min: 0 },
+                  sx: {
+                    height: 56, // adjust height as needed
+                    alignItems: "center"
+                  }
+                }}
+                sx={{
+                  width: "100%",
+                  "& .MuiInputBase-root": {
+                    height: 56 // same height applied to root
+                  }
+                }}
+              />
+            </AccordionDetails>
+          </Accordion>
         </Box>
 
         {/* Buttons */}
@@ -301,15 +380,15 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
             fullWidth
             variant="outlined"
             onClick={() => {
-              // Clear filters and close
               setSelectedFilters({
                 severity: [],
                 status: [],
                 dateFrom: "",
                 dateTo: "",
-                // variations: [],
                 projects: [],
-                users: []
+                users: [],
+                variationType: undefined,
+                variationValue: ""
               });
               onClose();
             }}

@@ -33,11 +33,11 @@ class UserController extends BaseController {
     }
   }
 
-  // Get user by ID
+  // Get user by id
   async getUserById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const user = await getUserById(id);
+      const user = await getUserById(id); // Fetch user with populated data
       if (!user) throw new Error("User not found");
       return this.sendResponse(handler, user);
     } catch (error) {
@@ -59,13 +59,14 @@ class UserController extends BaseController {
     }
   }
 
+  // User login
   async loginUser(requestHelper: RequestHelper, handler: any) {
     try {
       const { user_id, password } = requestHelper.getPayload();
       
-      // Step 1: Get user details by email/user_id, populate the 'role' field
+      // Step 1: Get user details by user_id and populate the 'role' field
       const { success, data: user, message } = await getUserByEmail(user_id, true); // Passing true to populate role
-      
+
       if (!success || !user) {
         return this.sendResponse(handler, {
           success: false,
@@ -81,7 +82,7 @@ class UserController extends BaseController {
           error: "Invalid credentials"
         });
       }
-      
+
       // Step 3: Get role and access details
       const role = user.role; // Now role should be populated, not just an ObjectId
       
@@ -91,17 +92,12 @@ class UserController extends BaseController {
           error: "Role not found for the user"
         });
       }
-      
-      // Check if role is populated as expected (not just ObjectId)
-      console.log('Populated Role:', role); // Log to check
-      
-      // Convert role to plain object
-  
+
       // Step 4: Fetch access details by UUIDs stored in role.access
       const accessRecords = await Access.find({
         id: { $in: role.access } // Accessing the populated role's access
       }).lean(); // Use lean() to get plain JavaScript objects
-  
+
       // Create an enhanced role with access details
       const roleWithAccess = {
         ...role, // Convert role to plain object if needed
@@ -111,20 +107,20 @@ class UserController extends BaseController {
           application: access.application,
         })),
       };
-      
+
       // Step 5: Generate JWT token with user and role access
       const token = jwt.sign(
         { id: user.id, user_id: user.user_id, role: roleWithAccess },
         process.env.AUTH_KEY as string,
         { expiresIn: "1h" }
       );
-      
+
       // Step 6: Sanitize the user data (remove password)
       const sanitizedUser = {
         ...user.toObject(), // Convert user to plain object
         password: undefined // Remove password from the final response
       };
-      
+
       // Step 7: Return the response with the token and sanitized user data
       return this.sendResponse(handler, {
         success: true,
@@ -140,9 +136,6 @@ class UserController extends BaseController {
       });
     }
   }
-    
-  
-  
 }
 
 export default UserController;

@@ -127,16 +127,9 @@ const getUserByEmail = async (
   try {
     let query = User.findOne({ user_id });
 
-    // If you need to populate the role field with the full role document
+    // Ensure that 'role' is populated if requested
     if (populateRole) {
-      query = query.populate({
-        path: 'role', // Make sure the 'role' path is populated
-        select: '-_id -__v', // Optionally exclude fields that you don't need
-        populate: {
-          path: 'access', // Populate access if it's also a reference
-          select: 'name application' // Optionally select which fields to include from Access
-        }
-      });
+      query = query.populate('role'); // Populate the 'role' field with the full Role document
     }
 
     const user = await query;
@@ -144,7 +137,7 @@ const getUserByEmail = async (
     if (!user) {
       return {
         success: false,
-        message: "User not found",
+        message: 'User not found',
       };
     }
 
@@ -155,11 +148,10 @@ const getUserByEmail = async (
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to fetch user by email",
+      message: error.message || 'Failed to fetch user by email',
     };
   }
 };
-
 
 
 

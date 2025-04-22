@@ -3,6 +3,7 @@ import BaseController from "../../common/baseController";
 import { comparePassword } from "../../constants/utils.ts/common";
 import jwt from "jsonwebtoken";
 import { createUser, getAllUsers, getUserByEmail, getUserById, updateUser } from "./userService";
+import { Access } from "../../domain/model/access";
 
 class UserController extends BaseController {
   // Create a new user
@@ -58,67 +59,90 @@ class UserController extends BaseController {
     }
   }
 
-// Login user
-// Login user
-async loginUser(requestHelper: RequestHelper, handler: any) {
-  try {
-    const { user_id, password } = requestHelper.getPayload();
-
-    const { success, data: user, message } = await getUserByEmail(user_id);
-    if (!success || !user) {
+  async loginUser(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { user_id, password } = requestHelper.getPayload();
+      
+      // Step 1: Get user details by email/user_id, populate the 'role' field
+      const { success, data: user, message } = await getUserByEmail(user_id, true); // Passing true to populate role
+      
+      if (!success || !user) {
+        return this.sendResponse(handler, {
+          success: false,
+          error: message || "User not found"
+        });
+      }
+      
+      // Step 2: Check if the password matches
+      const isMatch = await comparePassword(password, user.password);
+      if (!isMatch) {
+        return this.sendResponse(handler, {
+          success: false,
+          error: "Invalid credentials"
+        });
+      }
+      
+      // Step 3: Get role and access details
+      const role = user.role; // Now role should be populated, not just an ObjectId
+      
+      if (!role) {
+        return this.sendResponse(handler, {
+          success: false,
+          error: "Role not found for the user"
+        });
+      }
+      
+      // Check if role is populated as expected (not just ObjectId)
+      console.log('Populated Role:', role); // Log to check
+      
+      // Convert role to plain object
+  
+      // Step 4: Fetch access details by UUIDs stored in role.access
+      const accessRecords = await Access.find({
+        id: { $in: role.access } // Accessing the populated role's access
+      }).lean(); // Use lean() to get plain JavaScript objects
+  
+      // Create an enhanced role with access details
+      const roleWithAccess = {
+        ...role, // Convert role to plain object if needed
+        accessDetails: accessRecords.map((access: any) => ({
+          id: access.id,
+          name: access.name,
+          application: access.application,
+        })),
+      };
+      
+      // Step 5: Generate JWT token with user and role access
+      const token = jwt.sign(
+        { id: user.id, user_id: user.user_id, role: roleWithAccess },
+        process.env.AUTH_KEY as string,
+        { expiresIn: "1h" }
+      );
+      
+      // Step 6: Sanitize the user data (remove password)
+      const sanitizedUser = {
+        ...user.toObject(), // Convert user to plain object
+        password: undefined // Remove password from the final response
+      };
+      
+      // Step 7: Return the response with the token and sanitized user data
+      return this.sendResponse(handler, {
+        success: true,
+        data: {
+          token,
+          user: sanitizedUser // Send user data with full role and access details
+        }
+      });
+    } catch (error: any) {
       return this.sendResponse(handler, {
         success: false,
-        error: message || "User not found"
+        error: error.message || "Failed to login"
       });
     }
-
-    const isMatch = await comparePassword(password, user.password);
-    if (!isMatch) {
-      return this.sendResponse(handler, {
-        success: false,
-        error: "Invalid credentials"
-      });
-    }
-
-    // Step 1: Ensure that the user role includes access details
-    await user.populate({
-      path: "role",
-      populate: {
-        path: "access", // Populate the access array
-        model: "Access" // Ensure it's referring to the correct Access model
-      }
-    });
-
-    const token = jwt.sign(
-      { id: user.id, user_id: user.user_id, role: user.role },
-      process.env.AUTH_KEY as string,
-      { expiresIn: "1h" }
-    );
-
-    // Sanitize the user data to remove the password
-    const sanitizedUser = {
-      ...user.toObject?.(), // safely convert Mongoose doc to plain object
-      password: undefined // remove password field
-    };
-
-    // Step 2: Return the role with access details inside the user data
-    return this.sendResponse(handler, {
-      success: true,
-      data: {
-        token,
-        user: sanitizedUser // Send sanitized user without password, including role with access
-      }
-    });
-  } catch (error: any) {
-    return this.sendResponse(handler, {
-      success: false,
-      error: error.message || "Failed to login"
-    });
   }
-}
-
-
-
+    
+  
+  
 }
 
 export default UserController;

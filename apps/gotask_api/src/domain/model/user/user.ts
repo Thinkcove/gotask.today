@@ -1,4 +1,4 @@
-import { Document, Schema, model, Types } from "mongoose";
+import mongoose, { Document, Schema, model, Types } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 
@@ -9,7 +9,7 @@ export interface IUser extends Document {
   password: string;
   user_id: string; // email
   status: boolean;
-  role: Types.ObjectId; // Now referencing Role model
+  role: Types.ObjectId; 
   organization?: Types.ObjectId;
   projects?: Types.ObjectId[];
 }
@@ -24,7 +24,7 @@ const UserSchema = new Schema<IUser>(
     status: { type: Boolean, default: true },
 
     // Reference to Role
-    role: { type: Schema.Types.ObjectId, ref: "Role", required: true },
+    role: { type: mongoose.Schema.Types.ObjectId, ref: "Role", required: true },
 
     // Optional organization
     organization: {
@@ -32,8 +32,6 @@ const UserSchema = new Schema<IUser>(
       ref: "Organization",
       default: null
     },
-
-    // Optional projects
     projects: [
       {
         type: Schema.Types.ObjectId,
@@ -44,7 +42,7 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-// Password hash hook
+
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);

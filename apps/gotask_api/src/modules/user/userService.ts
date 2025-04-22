@@ -6,7 +6,7 @@ import {
   findUserById,
   updateUserById,
 } from "../../domain/interface/user/userInterface";
-import { IUser } from "../../domain/model/user/user";
+import { IUser, User } from "../../domain/model/user/user";
 import { Role } from "../../domain/model/role";
 
 // CREATE USER
@@ -120,17 +120,31 @@ const updateUser = async (
   }
 };
 
-// ✅ GET USER BY EMAIL — FIXED: no .populate() here, it's already done in findUserByEmail
 const getUserByEmail = async (
-  user_id: string
+  user_id: string,
+  populateRole: boolean = false
 ): Promise<{ success: boolean; data?: IUser | null; message?: string }> => {
   try {
-    const user = await findUserByEmail(user_id); // Already populated in interface
+    let query = User.findOne({ user_id });
+
+    // If you need to populate the role field with the full role document
+    if (populateRole) {
+      query = query.populate({
+        path: 'role', // Make sure the 'role' path is populated
+        select: '-_id -__v', // Optionally exclude fields that you don't need
+        populate: {
+          path: 'access', // Populate access if it's also a reference
+          select: 'name application' // Optionally select which fields to include from Access
+        }
+      });
+    }
+
+    const user = await query;
 
     if (!user) {
       return {
         success: false,
-        message: UserMessages.FETCH.NOT_FOUND,
+        message: "User not found",
       };
     }
 
@@ -141,9 +155,15 @@ const getUserByEmail = async (
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || UserMessages.FETCH.FAILED_BY_ID,
+      message: error.message || "Failed to fetch user by email",
     };
   }
 };
+
+
+
+
+
+
 
 export { createUser, getAllUsers, getUserById, updateUser, getUserByEmail };

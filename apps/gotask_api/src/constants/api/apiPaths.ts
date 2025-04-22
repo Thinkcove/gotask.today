@@ -35,7 +35,10 @@ export const API_PATHS = {
 
   CREATE_ROLE: "/roles", // POST path for creating a role
   GET_ALL_ROLES: "/roles", // GET path for fetching all roles
-  GET_ROLE_BY_ID: "/roles/{id}",
+GET_ROLE_BY_ID: "/roles/{id}",
+UPDATE_ROLE: "/roles/{id}",
+DELETE_ROLE: "/roles/{id}",
+ 
 
   //timelogRoutess
   ADD_TIME_SPENT: "/tasklog/{id}",

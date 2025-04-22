@@ -41,5 +41,62 @@ RoleRoutes.push({
   }
 });
 
+// Get Role by ID
+RoleRoutes.push({
+  path: API_PATHS.GET_ROLE_BY_ID, // e.g. "/roles/{id}"
+  method: API_METHODS.GET,
+  handler: (request: Request, h: ResponseToolkit) =>
+    roleController.getRoleById(new RequestHelper(request), h),
+  options: {
+    validate: {
+      params: Joi.object({
+        id: Joi.string().uuid().required()
+      })
+    },
+    notes: "Get role by ID",
+    tags
+  }
+});
+
+// Update Role
+RoleRoutes.push({
+  path: API_PATHS.UPDATE_ROLE, // e.g. "/roles/{id}"
+  method: API_METHODS.PUT,
+  handler: (request: Request, h: ResponseToolkit) =>
+    roleController.updateRole(new RequestHelper(request), h),
+  options: {
+    validate: {
+      params: Joi.object({
+        id: Joi.string().uuid().required()
+      }),
+      payload: Joi.object({
+        name: Joi.string().optional(),
+        priority: Joi.number().optional(),
+        accessIds: Joi.array().items(Joi.string().uuid()).optional()
+      })
+    },
+    notes: "Update role by ID",
+    tags
+  }
+});
+
+// Delete Role
+RoleRoutes.push({
+  path: API_PATHS.DELETE_ROLE, // e.g. "/roles/{id}"
+  method: API_METHODS.DELETE,
+  handler: (request: Request, h: ResponseToolkit) =>
+    roleController.deleteRole(new RequestHelper(request), h),
+  options: {
+    validate: {
+      params: Joi.object({
+        id: Joi.string().uuid().required()
+      })
+    },
+    notes: "Delete role by ID",
+    tags
+  }
+});
+
+
 
 export default RoleRoutes;

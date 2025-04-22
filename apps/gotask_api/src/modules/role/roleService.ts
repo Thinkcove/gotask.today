@@ -52,28 +52,134 @@ export const createRoleService = async (data: CreateRolePayload) => {
 
 export const getAllRolesService = async () => {
   try {
-    // Fetch all roles
     const roles = await Role.find().sort({ priority: 1 });
 
-    // For each role, fetch the access documents manually based on UUIDs
-    console.log('helo',roles);
-    for (let role of roles) {
-      const accessRecords = await Access.find({
-        id: { $in: role.access } // Find access records matching the UUIDs in the role's access field
-      });
-console.log('dfghj',accessRecords);
-      // Map the access records to only their 'id' (UUID)
-      role.access = accessRecords.map(access => access.id);  // Ensure we store only UUIDs
-      ;
-    }
-    console.log('role',roles);
+    const enhancedRoles = [];
 
-     // Log the roles to inspect if access is populated correctly
-    return { success: true, data: roles };
+    for (let role of roles) {
+      // Fetch full access records based on UUIDs
+      const accessRecords = await Access.find({
+        id: { $in: role.access }
+      });
+
+      // Convert Mongoose document to plain object
+      const roleObj = role.toObject();
+
+      // Replace access UUIDs with full access detail objects
+      const accessDetails = accessRecords.map(access => ({
+        id: access.id,
+        name: access.name,
+        application: access.application,
+      }));
+
+      // Create a new object with full access data
+      enhancedRoles.push({
+        ...roleObj,
+        accessDetails // separate key to avoid type issues
+      });
+    }
+
+    return { success: true, data: enhancedRoles };
   } catch (error) {
     console.error("Error in getAllRolesService:", error);
     return { success: false, message: "Internal server error" };
   }
 };
+
+// Get Role by ID
+export const getRoleByIdService = async (roleId: string) => {
+  try {
+    const role = await Role.findOne({ id: roleId }); // Find by UUID
+    if (!role) {
+      return { success: false, message: "Role not found" };
+    }
+
+    const accessRecords = await Access.find({ id: { $in: role.access } });
+
+    const roleObj = role.toObject();
+    const accessDetails = accessRecords.map(access => ({
+      id: access.id,
+      name: access.name,
+      application: access.application,
+    }));
+
+    return {
+      success: true,
+      data: {
+        ...roleObj,
+        accessDetails
+      }
+    };
+  } catch (error) {
+    console.error("Error in getRoleByIdService:", error);
+    return { success: false, message: "Internal server error" };
+  }
+};
+
+// Update Role
+export const updateRoleService = async (roleId: string, updatedData: Partial<CreateRolePayload>) => {
+  try {
+    const role = await Role.findOne({ id: roleId }); // Find by UUID
+    if (!role) {
+      return { success: false, message: "Role not found" };
+    }
+
+    const { name, priority, accessIds } = updatedData;
+
+    if (name !== undefined) role.name = name;
+    if (priority !== undefined) role.priority = priority;
+
+    if (accessIds) {
+      const linkedAccesses = [];
+
+      for (const accessId of accessIds) {
+        const accessExists = await Access.findOne({ id: accessId });
+        if (accessExists) {
+          linkedAccesses.push(accessExists.id);
+        }
+      }
+
+      role.access = linkedAccesses;
+    }
+
+    await role.save();
+
+    return {
+      success: true,
+      data: {
+        message: "Role updated successfully",
+        role
+      }
+    };
+  } catch (error) {
+    console.error("Error in updateRoleService:", error);
+    return { success: false, message: "Internal server error" };
+  }
+};
+
+
+// Delete Role
+export const deleteRoleService = async (roleId: string) => {
+  try {
+    const role = await Role.findOneAndDelete({ id: roleId }); // Find by UUID and delete
+
+    if (!role) {
+      return { success: false, message: "Role not found" };
+    }
+
+    return {
+      success: true,
+      data: {
+        message: "Role deleted successfully"
+      }
+    };
+  } catch (error) {
+    console.error("Error in deleteRoleService:", error);
+    return { success: false, message: "Internal server error" };
+  }
+};
+
+
+
 
 

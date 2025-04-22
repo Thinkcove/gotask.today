@@ -1,3 +1,4 @@
+import { Access } from "../../model/access";
 import { IUser, User } from "../../model/user/user";
 
 const createNewUser = async (userData: IUser): Promise<IUser> => {
@@ -17,17 +18,30 @@ const updateUserById = async (id: string, updateData: Partial<IUser>): Promise<I
   return await User.findOneAndUpdate({ id }, updateData, { new: true });
 };
 
-// Updated ✅
 const findUserByEmail = async (user_id: string): Promise<IUser | null> => {
-  return await User.findOne({ user_id })
-    .populate({
-      path: "role",                 // populate role
-      populate: {
-        path: "access",              // populate role.access
-        model: "Access"              // make sure this matches Access model name
-      }
-    });
+  try {
+    // Fetch the user by email, populate 'role'
+    const user = await User.findOne({ user_id }).populate("role");
+
+    // If user or role is not found, return null
+    if (!user || !user.role) return null;
+
+    const roleObj: any = user.role;
+
+    // If the role has an 'access' array, fetch the associated Access records
+    if (Array.isArray(roleObj.access)) {
+      // Fetch access records using UUIDs stored in role.access
+      const accessRecords = await Access.find({ id: { $in: roleObj.access } }).lean(); // <-- use .lean() to get plain objects
+      roleObj.access = accessRecords;
+    }
+
+    return user; // Return the user with populated role and access details
+  } catch (error) {
+    console.error("Error fetching user by email:", error);
+    return null; // Return null in case of error
+  }
 };
+
 
 
 export { createNewUser, findAllUsers, findUserById, updateUserById, findUserByEmail };

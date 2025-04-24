@@ -14,7 +14,11 @@ type Project = {
   status: string;
   createdAt: string;
   updatedAt: string;
-  user_id: string[]; // Assume each user_id corresponds to a user
+  users: {
+    id: string;
+    name: string;
+    user_id: string; // User email
+  }[];
 };
 
 const fetcher = async () => {
@@ -98,25 +102,35 @@ const ProjectCards: React.FC = () => {
 
                 {/* Render Avatars for users */}
                 <Box display="flex" alignItems="center">
-                  {project.user_id.slice(0, 3).map((userId, index) => (
-                    <Avatar
-                      key={index}
-                      sx={{
-                        width: 30,
-                        height: 30,
-                        mr: 0.75,
-                        backgroundColor: getColorForUser(userId),
-                        fontSize: "0.75rem"
-                      }}
-                    >
-                      {userId.charAt(0).toUpperCase()}
-                    </Avatar>
-                  ))}
+                  {/* Safely access project.users */}
+                  {project.users && project.users.length > 0 ? (
+                    project.users.slice(0, 3).map((user, index) => {
+                      console.log("Rendering user:", user); // Log user object to verify the structure
+                      return (
+                        <Avatar
+                          key={index}
+                          sx={{
+                            width: 30,
+                            height: 30,
+                            mr: 0.75,
+                            backgroundColor: getColorForUser(user.name), // Background color based on user name
+                            fontSize: "0.75rem"
+                          }}
+                        >
+                          {user.name.charAt(0).toUpperCase()} {/* First letter of name */}
+                        </Avatar>
+                      );
+                    })
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No users assigned
+                    </Typography>
+                  )}
 
                   {/* If there are more than 3 users, display the count */}
-                  {project.user_id.length > 3 && (
+                  {project.users && project.users.length > 3 && (
                     <Typography variant="caption" color="text.secondary">
-                      +{project.user_id.length - 3}
+                      +{project.users.length - 3}
                     </Typography>
                   )}
                 </Box>

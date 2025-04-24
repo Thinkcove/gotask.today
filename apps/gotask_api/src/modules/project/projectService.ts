@@ -37,17 +37,42 @@ const createProject = async (
   }
 };
 
-// Get all projects
 const getAllProjects = async (): Promise<{
   success: boolean;
   data?: IProject[];
   message?: string;
 }> => {
   try {
+    // Fetch all projects
     const projects = await findAllProjects();
+
+    // Gather all unique user IDs (filter out undefined values)
+    const allUserIds = Array.from(
+      new Set(
+        projects.flatMap((project) => project.user_id?.filter((id) => id !== undefined) || [])
+      )
+    );
+
+    // Fetch user details based on user IDs
+    const users = await findUsersByIds(allUserIds);
+
+    // Map user IDs to user objects for easy lookup
+    const userMap = new Map(users.map((user) => [user.id, user]));
+
+    // Log missing user IDs (if any) for debugging
+    const missingUserIds = allUserIds.filter((id) => !userMap.has(id));
+
+    // Attach user details to each project
+    const enrichedProjects = projects.map((project) => ({
+      ...project.toObject(),
+      users: (project.user_id || [])
+        .map((id: string) => userMap.get(id)) // Map to user details
+        .filter(Boolean) // Filter out undefined or null values
+    }));
+
     return {
       success: true,
-      data: projects
+      data: enrichedProjects
     };
   } catch (error: any) {
     return {
@@ -182,9 +207,25 @@ const getProjectById = async (
         message: ProjectMessages.FETCH.NOT_FOUND
       };
     }
+
+    // Extract user IDs from the project
+    const userIds = (project.user_id || []).filter((id) => id !== undefined);
+
+    // Fetch user details
+    const users = await findUsersByIds(userIds);
+
+    // Map users for quick lookup
+    const userMap = new Map(users.map((user) => [user.id, user]));
+
+    // Enrich the project with user details
+    const enrichedProject = {
+      ...project.toObject(),
+      users: userIds.map((id: string) => userMap.get(id)).filter(Boolean)
+    };
+
     return {
       success: true,
-      data: project
+      data: enrichedProject
     };
   } catch (error: any) {
     return {

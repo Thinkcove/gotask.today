@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CreateProject from "./createProject";
 import ProjectCards from "./projectCards";
@@ -25,7 +25,7 @@ const ProjectList = () => {
       {/* Add Task Button */}
       <ActionButton
         label="Create New Task"
-        icon={<AddIcon sx={{color:'white'}}/>}
+        icon={<AddIcon sx={{ color: "white" }} />}
         onClick={() => setIsModalOpen(true)}
       />
     </Box>

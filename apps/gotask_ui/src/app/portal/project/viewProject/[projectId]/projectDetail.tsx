@@ -2,32 +2,28 @@ import React, { useState } from "react";
 import {
   Box,
   Typography,
-  Chip,
-  Divider,
   Button,
-  Stack,
   TextField,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Avatar,
-  Paper,
-  Slide
+  Grid,
+  Card,
+  IconButton,
+  Slide,
+  Divider,
+  Stack
 } from "@mui/material";
-import { motion } from "framer-motion"; // For smooth animations
+import DeleteIcon from "@mui/icons-material/Delete";
+import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 
-// Types for Project Data
 interface Project {
   _id: string;
   name: string;
   description: string;
-  status: string;
-  id: string;
   createdAt: string;
-  updatedAt: string;
-  __v: number;
-  user_id: string[];
+  users: { _id: string; name: string; user_id: string }[];
 }
 
 interface ProjectDetailProps {
@@ -40,84 +36,102 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project }) => {
 
   const handleAddUser = () => {
     if (newUserId.trim()) {
-      // Simulate API call or state update
-      console.log("Add user:", newUserId);
-      setNewUserId(""); // Reset input field
-      setOpen(false); // Close modal
+      console.log("Assign user:", newUserId);
+      setNewUserId("");
+      setOpen(false);
     }
   };
 
+  const handleDeleteUser = (userId: string) => {
+    console.log("Delete user with ID:", userId);
+  };
+
   return (
-    <Box px={6} py={4} maxWidth="1200px" mx="auto">
-      {/* Motion for smooth page entrance */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        px: 4,
+        py: 6,
+        background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+      }}
+    >
+      {/* Project and Users Info */}
+      <Card
+        elevation={3}
+        sx={{
+          borderRadius: 4,
+          p: 4,
+          backgroundColor: "#fff",
+          border: "1px solid #e0e0e0"
+        }}
       >
-        {/* Project Header */}
-        <Box mb={4} display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h4" fontWeight={600} sx={{ color: "#333" }}>
-            {project.name}
+        {/* Project Info */}
+        <Typography variant="h4" fontWeight={700} gutterBottom>
+          {project.name}
+        </Typography>
+        <Typography variant="body1" mb={2}>
+          {project.description}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Created on: {new Date(project.createdAt).toLocaleDateString()}
+        </Typography>
+        <Divider sx={{ my: 3 }} /> {/* Divider between Project Info and Users */}
+        {/* Users Section */}
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h5" fontWeight={600}>
+            Team Members
           </Typography>
-          <Chip label={project.status} color="primary" size="medium" />
+          <Button variant="contained" onClick={() => setOpen(true)}>
+            + Add User
+          </Button>
         </Box>
-
-        {/* Project Info Card */}
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 3, mb: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Project Details
-          </Typography>
-          <Typography color="text.secondary" mb={2}>
-            {project.description}
-          </Typography>
-
-          <Divider sx={{ my: 2 }} />
-
-          <Stack spacing={1}>
-            <Typography>
-              <strong>Project ID:</strong> {project.id}
-            </Typography>
-            <Typography>
-              <strong>Created:</strong> {new Date(project.createdAt).toLocaleString()}
-            </Typography>
-            <Typography>
-              <strong>Last Updated:</strong> {new Date(project.updatedAt).toLocaleString()}
-            </Typography>
-          </Stack>
-        </Paper>
-
-        {/* Assigned Users Section */}
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h6">Assigned Users</Typography>
-            <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-              + Assign User
-            </Button>
-          </Box>
-
-          <Stack direction="row" spacing={2} flexWrap="wrap">
-            {project.user_id.length > 0 ? (
-              project.user_id.map((uid, idx) => (
-                <Chip
-                  key={uid + idx}
-                  avatar={<Avatar>{uid.charAt(0).toUpperCase()}</Avatar>}
-                  label={uid}
-                  variant="outlined"
+        <Grid container spacing={3}>
+          {project.users.length > 0 ? (
+            project.users.map((user) => (
+              <Grid item xs={12} sm={6} md={4} key={user._id}>
+                <Card
+                  elevation={2}
                   sx={{
-                    mb: 1,
-                    "&:hover": { backgroundColor: "#f0f0f0", cursor: "pointer" } // Hover effect
+                    p: 3,
+                    borderRadius: 3,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    border: "1px solid #ddd",
+                    backgroundColor: "#fff",
+                    "&:hover": {
+                      boxShadow: 3
+                    }
                   }}
-                />
-              ))
-            ) : (
-              <Typography color="text.secondary">No users assigned yet.</Typography>
-            )}
-          </Stack>
-        </Paper>
-      </motion.div>
+                >
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    {/* Use AlphabetAvatar component for user avatar */}
+                    <AlphabetAvatar userName={user.name} size={40} fontSize={16} />
 
-      {/* Modal Dialog for Adding User */}
+                    <Box>
+                      <Typography fontWeight={600} fontSize="1rem">
+                        {user.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        ID: {user.user_id}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                  <IconButton color="error" onClick={() => handleDeleteUser(user._id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Card>
+              </Grid>
+            ))
+          ) : (
+            <Typography color="text.secondary" ml={2}>
+              No users assigned yet.
+            </Typography>
+          )}
+        </Grid>
+      </Card>
+
+      {/* Add User Dialog */}
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -125,11 +139,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project }) => {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Assign New User</DialogTitle>
+        <DialogTitle>Add New User</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
-            label="Enter User ID"
+            label="User ID"
             value={newUserId}
             onChange={(e) => setNewUserId(e.target.value)}
             margin="normal"
@@ -140,8 +154,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project }) => {
           <Button onClick={() => setOpen(false)} color="secondary">
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={handleAddUser}>
-            Assign User
+          <Button variant="contained" onClick={handleAddUser}>
+            Add User
           </Button>
         </DialogActions>
       </Dialog>

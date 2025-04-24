@@ -4,22 +4,26 @@ import { comparePassword } from "../../constants/utils.ts/common";
 import jwt from "jsonwebtoken";
 import { createUser, getAllUsers, getUserByEmail, getUserById, updateUser } from "./userService";
 import { Access } from "../../domain/model/access";
+import { Role } from "../../domain/model/role"; // Import the Role model
 
 class UserController extends BaseController {
   // Create a new user
   async createUser(requestHelper: RequestHelper, handler: any) {
     try {
-      const userData = requestHelper.getPayload();
-      const { name, user_id, role } = userData;
+      const userData = requestHelper.getPayload(); // Correctly getting the payload from the request
+      const { name, user_id, roleId, password, status } = userData; // Use roleId instead of role
 
-      if (!name || !user_id || !role) {
-        throw new Error("Missing required fields");
+      if (!name || !user_id || !roleId || !password || typeof status === 'undefined') {
+        throw new Error("Missing required fields: name, user_id, roleId, password, status");
       }
 
+      // Call the service to create the user
       const newUser = await createUser(userData);
+
       return this.sendResponse(handler, newUser);
     } catch (error) {
-      return this.replyError(error);
+      console.error("Error creating user:", error);
+      return this.replyError(error); // Use this for standardized error responses
     }
   }
 
@@ -29,6 +33,7 @@ class UserController extends BaseController {
       const users = await getAllUsers();
       return this.sendResponse(handler, users);
     } catch (error) {
+      console.error("Error fetching users:", error);
       return this.replyError(error);
     }
   }
@@ -37,10 +42,11 @@ class UserController extends BaseController {
   async getUserById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const user = await getUserById(id); // Fetch user with populated data
+      const user = await getUserById(id); // Fetch user by ID
       if (!user) throw new Error("User not found");
       return this.sendResponse(handler, user);
     } catch (error) {
+      console.error("Error fetching user by ID:", error);
       return this.replyError(error);
     }
   }
@@ -49,12 +55,13 @@ class UserController extends BaseController {
   async updateUser(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const updatedData = requestHelper.getPayload();
+      const updatedData = requestHelper.getPayload(); // Get payload from request
       const updatedUser = await updateUser(id, updatedData);
 
       if (!updatedUser) throw new Error("User not found");
       return this.sendResponse(handler, updatedUser);
     } catch (error) {
+      console.error("Error updating user:", error);
       return this.replyError(error);
     }
   }
@@ -62,10 +69,17 @@ class UserController extends BaseController {
   // User login
   async loginUser(requestHelper: RequestHelper, handler: any) {
     try {
-      const { user_id, password } = requestHelper.getPayload();
-      
-      // Step 1: Get user details by user_id and populate the 'role' field
-      const { success, data: user, message } = await getUserByEmail(user_id, true); // Passing true to populate role
+      const { user_id, password } = requestHelper.getPayload(); // Get login credentials
+
+      if (!user_id || !password) {
+        return this.sendResponse(handler, {
+          success: false,
+          error: "Missing required fields: user_id and password"
+        });
+      }
+
+      // Step 1: Fetch user details by user_id, include roleId
+      const { success, data: user, message } = await getUserByEmail(user_id, true); // Fetch with populated roleId
 
       if (!success || !user) {
         return this.sendResponse(handler, {
@@ -73,8 +87,8 @@ class UserController extends BaseController {
           error: message || "User not found"
         });
       }
-      
-      // Step 2: Check if the password matches
+
+      // Step 2: Compare password
       const isMatch = await comparePassword(password, user.password);
       if (!isMatch) {
         return this.sendResponse(handler, {
@@ -83,9 +97,9 @@ class UserController extends BaseController {
         });
       }
 
-      // Step 3: Get role and access details
-      const role = user.role; // Now role should be populated, not just an ObjectId
-      
+      // Step 3: Fetch the role using roleId (this replaces accessing the role directly)
+      const role = await Role.findById(user.roleId); // Fetch the Role by ID (roleId is now used)
+
       if (!role) {
         return this.sendResponse(handler, {
           success: false,
@@ -93,14 +107,14 @@ class UserController extends BaseController {
         });
       }
 
-      // Step 4: Fetch access details by UUIDs stored in role.access
+      // Step 4: Fetch access details for the role
       const accessRecords = await Access.find({
-        id: { $in: role.access } // Accessing the populated role's access
-      }).lean(); // Use lean() to get plain JavaScript objects
+        id: { $in: role.access } // Access the populated access details from role
+      }).lean(); // Convert to plain JavaScript object
 
-      // Create an enhanced role with access details
+      // Enhance role with access details
       const roleWithAccess = {
-        ...role, // Convert role to plain object if needed
+        ...role.toObject(), // Convert the role to a plain object
         accessDetails: accessRecords.map((access: any) => ({
           id: access.id,
           name: access.name,
@@ -115,21 +129,22 @@ class UserController extends BaseController {
         { expiresIn: "1h" }
       );
 
-      // Step 6: Sanitize the user data (remove password)
+      // Step 6: Sanitize the user object by removing password
       const sanitizedUser = {
-        ...user.toObject(), // Convert user to plain object
-        password: undefined // Remove password from the final response
+        ...user.toObject(),
+        password: undefined, // Ensure password is excluded
       };
 
-      // Step 7: Return the response with the token and sanitized user data
+      // Step 7: Send response with token and user data
       return this.sendResponse(handler, {
         success: true,
         data: {
           token,
-          user: sanitizedUser // Send user data with full role and access details
+          user: sanitizedUser, // Send full user data with enhanced role and access
         }
       });
     } catch (error: any) {
+      console.error("Login error:", error);
       return this.sendResponse(handler, {
         success: false,
         error: error.message || "Failed to login"

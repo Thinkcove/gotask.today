@@ -9,7 +9,7 @@ export interface IUser extends Document {
   password: string;
   user_id: string; // email
   status: boolean;
-  role: Types.ObjectId; 
+  roleId: Types.ObjectId; // renamed from "role"
   organization?: Types.ObjectId;
   projects?: Types.ObjectId[];
 }
@@ -23,10 +23,9 @@ const UserSchema = new Schema<IUser>(
     user_id: { type: String, required: true, unique: true },
     status: { type: Boolean, default: true },
 
-    // Reference to Role
-    role: { type: mongoose.Schema.Types.ObjectId, ref: "Role", required: true },
+    // Reference to Role (renamed to roleId)
+    roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true },
 
-    // Optional organization
     organization: {
       type: Schema.Types.ObjectId,
       ref: "Organization",
@@ -42,7 +41,7 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-
+// Hash password before save
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);

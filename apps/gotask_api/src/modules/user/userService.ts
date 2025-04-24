@@ -14,30 +14,27 @@ const createUser = async (
   userData: IUser
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
-    if (!userData) {
+    if (!userData || !userData.roleId) {
       return {
         success: false,
         message: UserMessages.CREATE.REQUIRED,
       };
     }
 
-    // 🆕 Step 1: Resolve role name to ID
-    if (typeof userData.role === "string") {
-      const roleDoc = await Role.findOne({ name: userData.role });
-      if (!roleDoc) {
-        return {
-          success: false,
-          message: `Role "${userData.role}" not found`,
-        };
-      }
-      userData.role = roleDoc._id as any;
+    // ✅ Verify if the provided roleId exists
+    const roleExists = await Role.findById(userData.roleId);
+    if (!roleExists) {
+      return {
+        success: false,
+        message: `Role ID "${userData.roleId}" is invalid or not found`,
+      };
     }
 
-    // Step 2: Create the user
+    // Create user
     const newUser = await createNewUser(userData);
 
-    // 🆕 Step 3: Populate role (name only)
-    const populatedUser = await newUser.populate("role", "name");
+    // Populate role name
+    const populatedUser = await newUser.populate("roleId", "name");
 
     return {
       success: true,
@@ -72,28 +69,30 @@ const getAllUsers = async (): Promise<{
 };
 
 // GET USER BY ID
-const getUserById = async (
-  id: string
-): Promise<{ success: boolean; data?: IUser | null; message?: string }> => {
+const getUserById = async (id: string) => {
   try {
-    const user = await findUserById(id);
+    // Query the User model using the "id" field (UUID), not the default Mongo _id
+    const user = await User.findOne({ id });
+
     if (!user) {
       return {
         success: false,
-        message: UserMessages.FETCH.NOT_FOUND,
+        message: "User not found",
       };
     }
+
     return {
       success: true,
       data: user,
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       success: false,
-      message: error.message || UserMessages.FETCH.FAILED_BY_ID,
+  
     };
   }
 };
+
 
 // UPDATE USER
 const updateUser = async (
@@ -101,6 +100,16 @@ const updateUser = async (
   updateData: Partial<IUser>
 ): Promise<{ success: boolean; data?: IUser | null; message?: string }> => {
   try {
+    if (updateData.roleId) {
+      const roleExists = await Role.findById(updateData.roleId);
+      if (!roleExists) {
+        return {
+          success: false,
+          message: `Role ID "${updateData.roleId}" is invalid or not found`,
+        };
+      }
+    }
+
     const updatedUser = await updateUserById(id, updateData);
     if (!updatedUser) {
       return {
@@ -120,6 +129,7 @@ const updateUser = async (
   }
 };
 
+// GET USER BY EMAIL (or user_id)
 const getUserByEmail = async (
   user_id: string,
   populateRole: boolean = false
@@ -127,9 +137,14 @@ const getUserByEmail = async (
   try {
     let query = User.findOne({ user_id });
 
-    // Ensure that 'role' is populated if requested
     if (populateRole) {
-      query = query.populate('role'); // Populate the 'role' field with the full Role document
+      query = query.populate({
+        path: "roleId",
+        populate: {
+          path: "accessDetails", // 👈 nested populate
+          model: "AccessDetail",
+        },
+      });
     }
 
     const user = await query;
@@ -137,7 +152,7 @@ const getUserByEmail = async (
     if (!user) {
       return {
         success: false,
-        message: 'User not found',
+        message: "User not found",
       };
     }
 
@@ -148,14 +163,10 @@ const getUserByEmail = async (
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || 'Failed to fetch user by email',
+      message: error.message || "Failed to fetch user by email",
     };
   }
 };
-
-
-
-
 
 
 export { createUser, getAllUsers, getUserById, updateUser, getUserByEmail };

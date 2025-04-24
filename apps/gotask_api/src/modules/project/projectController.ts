@@ -4,6 +4,8 @@ import {
   assignUsersToProject,
   createProject,
   getAllProjects,
+  getProjectById,
+  getProjectCountByStatus,
   getProjectsByUserId
 } from "./projectService";
 
@@ -59,6 +61,27 @@ class ProjectController extends BaseController {
       return this.sendResponse(handler, projects);
     } catch (error) {
       return this.replyError(error);
+    }
+  }
+
+  // Get Task Count by Status
+  async getProjectCountByStatus(_requestHelper: RequestHelper, handler: any) {
+    try {
+      const result = await getProjectCountByStatus();
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
+
+  // Get Project by ID
+  async getProjectById(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const project = await getProjectById(id);
+      return this.sendResponse(handler, project);
+    } catch (error) {
+      return this.replyError(error, handler);
     }
   }
 }

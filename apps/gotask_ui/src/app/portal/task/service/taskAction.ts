@@ -5,15 +5,17 @@ import { IFormField, ITaskComment, Project, TaskPayload } from "../interface/tas
 
 // Modify both hooks with an optional dateRange parameter
 export const useProjectGroupTask = (
-  page: number,
-  pageSize: number,
-  taskPage: number,
-  taskPageSize: number,
+  page?: number,
+  pageSize?: number,
+  taskPage?: number,
+  taskPageSize?: number,
   search_vals?: string[][],
   search_vars?: string[][],
   min_date?: string,
   max_date?: string,
-  date_var?: string
+  date_var?: string,
+  more_variation?: string,
+  less_variation?: string
 ) => {
   const fetchProjectTasks = async () => {
     const payload: TaskPayload = {
@@ -34,6 +36,13 @@ export const useProjectGroupTask = (
       payload.date_var = date_var ?? "due_date";
     }
 
+    if (more_variation) {
+      payload.more_variation = more_variation;
+    }
+
+    if (less_variation) {
+      payload.less_variation = less_variation;
+    }
     return postData(`${env.API_BASE_URL}/tasks/grouped-by-project`, payload);
   };
 
@@ -46,7 +55,11 @@ export const useProjectGroupTask = (
       taskPageSize,
       search_vals,
       search_vars,
-      date_var
+      min_date,
+      max_date,
+      date_var,
+      more_variation,
+      less_variation
     ],
     fetchProjectTasks,
     { revalidateOnFocus: false }
@@ -63,15 +76,17 @@ export const useProjectGroupTask = (
 
 // Same for useUserGroupTask
 export const useUserGroupTask = (
-  page: number,
-  pageSize: number,
-  taskPage: number,
-  taskPageSize: number,
+  page?: number,
+  pageSize?: number,
+  taskPage?: number,
+  taskPageSize?: number,
   search_vals?: string[][],
   search_vars?: string[][],
   min_date?: string,
   max_date?: string,
-  date_var?: string
+  date_var?: string,
+  more_variation?: string,
+  less_variation?: string
 ) => {
   const fetchUserTasks = async () => {
     const payload: TaskPayload = {
@@ -92,6 +107,13 @@ export const useUserGroupTask = (
       payload.date_var = date_var ?? "due_date";
     }
 
+    if (more_variation) {
+      payload.more_variation = more_variation;
+    }
+
+    if (less_variation) {
+      payload.less_variation = less_variation;
+    }
     return postData(`${env.API_BASE_URL}/tasks/grouped-by-user`, payload);
   };
 
@@ -104,7 +126,11 @@ export const useUserGroupTask = (
       taskPageSize,
       search_vals,
       search_vars,
-      date_var
+      min_date,
+      max_date,
+      date_var,
+      more_variation,
+      less_variation
     ],
     fetchUserTasks,
     { revalidateOnFocus: false }
@@ -143,7 +169,7 @@ export const fetchAllUsers = () => {
 };
 
 //fetch all projects
-const fetchProject = async () => {
+export const fetchProject = async () => {
   return getData(`${env.API_BASE_URL}/getAllProjects`);
 };
 

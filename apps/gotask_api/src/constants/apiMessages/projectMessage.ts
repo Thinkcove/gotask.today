@@ -5,7 +5,9 @@ const ProjectMessages = {
   },
   FETCH: {
     FAILED_ALL: "Failed to retrieve projects",
-    FAILED_BY_USER: "Failed to retrieve projects for user"
+    FAILED_BY_USER: "Failed to retrieve projects for user",
+    FAILED_BY_ID: "Failed to retrieve project",
+    NOT_FOUND: "Project not found"
   },
   ASSIGN: {
     INVALID_INPUT: "Invalid user IDs or project ID",

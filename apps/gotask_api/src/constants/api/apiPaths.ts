@@ -16,6 +16,8 @@ export const API_PATHS = {
   GET_PROJECTS: "/getAllProjects",
   ASSIGN_USER_TO_PROJECT: "/usertoProject",
   GET_PROJECT_BY_USERID: "/getProjectbyUserId/{user_id}",
+  GET_PROJECT_COUNT_BY_STATUS: "/projectCount",
+  GET_PROJECT_BY_ID: "/getProjectById/{id}",
 
   //userRoutes
   CREATE_USER: "/createUser",

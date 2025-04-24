@@ -6,6 +6,8 @@ import {
   findAllProjects,
   findByProjectId,
   findByUserId,
+  findProjectById,
+  findProjectCountByStatus,
   findUsersByIds,
   saveProject
 } from "../../domain/interface/project/projectInterface";
@@ -148,10 +150,56 @@ const assignProjectToOrganization = async (
   }
 };
 
+// Get task count grouped by status
+const getProjectCountByStatus = async (): Promise<{
+  success: boolean;
+  data?: Record<string, number>;
+  message?: string;
+}> => {
+  try {
+    const taskCounts = await findProjectCountByStatus();
+    return {
+      success: true,
+      data: taskCounts
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "ProjectMessages.FETCH.FAILED_COUNTS"
+    };
+  }
+};
+
+// Get a task by ID
+const getProjectById = async (
+  id: string
+): Promise<{ success: boolean; data?: IProject | null; message?: string }> => {
+  try {
+    const project = await findProjectById(id);
+    if (!project) {
+      return {
+        success: false,
+        message: ProjectMessages.FETCH.NOT_FOUND
+      };
+    }
+    return {
+      success: true,
+      data: project
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.FETCH.FAILED_BY_ID
+    };
+  }
+};
+
 export {
   createProject,
   getAllProjects,
   assignUsersToProject,
   getProjectsByUserId,
-  assignProjectToOrganization
+  assignProjectToOrganization,
+  getProjectCountByStatus,
+  getProjectById
 };

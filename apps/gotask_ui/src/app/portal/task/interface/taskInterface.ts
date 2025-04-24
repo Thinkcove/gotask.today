@@ -75,6 +75,8 @@ export type TaskPayload = {
   min_date?: string;
   max_date?: string;
   date_var?: string;
+  more_variation?: string;
+  less_variation?: string;
 };
 
 export type Project = {
@@ -88,6 +90,8 @@ export type TaskFilterType = {
   date_var?: string;
   search_vals?: string[][];
   search_vars?: string[][];
+  more_variation?: string;
+  less_variation?: string;
 };
 
 export type FilterValues = {
@@ -97,4 +101,6 @@ export type FilterValues = {
   dateTo: string;
   projects: string[];
   users: string[];
+  variationType: "" | "more" | "less"; // ✅ allow no selection
+  variationDays: number;
 };

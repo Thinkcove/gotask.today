@@ -57,4 +57,28 @@ ProjectRoutes.push({
   }
 });
 
+// Route: Get Task Count by Status
+ProjectRoutes.push({
+  path: API_PATHS.GET_PROJECT_COUNT_BY_STATUS,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectController.getProjectCountByStatus(new RequestHelper(request), handler),
+  config: {
+    notes: "Get task count grouped by status",
+    tags
+  }
+});
+
+// Route: Get Project by ID
+ProjectRoutes.push({
+  path: API_PATHS.GET_PROJECT_BY_ID,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectController.getProjectById(new RequestHelper(request), handler),
+  config: {
+    notes: "Get a project by ID",
+    tags
+  }
+});
+
 export default ProjectRoutes;

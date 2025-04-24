@@ -219,14 +219,20 @@ export const getProjectIdsAndNames = async (userId: string) => {
 
 export const logTaskTime = async (
   taskId: string,
-  timeLogs: { date: string; time_logged: string }[]
+  timeLogs: { date: string; start_time: string; end_time: string }[]
 ) => {
+  const formattedLogs = timeLogs.map((log) => ({
+    date: log.date,
+    start_time: log.start_time,
+    end_time: log.end_time
+  }));
+
   const response = await fetch(`${env.API_BASE_URL}/tasklog/${taskId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(timeLogs)
+    body: JSON.stringify(formattedLogs)
   });
 
   if (!response.ok) {

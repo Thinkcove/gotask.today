@@ -19,27 +19,28 @@ interface TimeSpentPopupProps {
   mutate: KeyedMutator<ITask>;
 }
 
+// Updated time options with AM/PM indicators
 const timeOptions = [
-  "9:00",
-  "9:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-  "12:00",
-  "12:30",
-  "1:00",
-  "1:30",
-  "2:00",
-  "2:30",
-  "3:00",
-  "3:30",
-  "4:00",
-  "4:30",
-  "5:00",
-  "5:30",
-  "6:00",
-  "6:30"
+  "9:00 AM",
+  "9:30 AM",
+  "10:00 AM",
+  "10:30 AM",
+  "11:00 AM",
+  "11:30 AM",
+  "12:00 PM",
+  "12:30 PM",
+  "1:00 PM",
+  "1:30 PM",
+  "2:00 PM",
+  "2:30 PM",
+  "3:00 PM",
+  "3:30 PM",
+  "4:00 PM",
+  "4:30 PM",
+  "5:00 PM",
+  "5:30 PM",
+  "6:00 PM",
+  "6:30 PM"
 ];
 
 const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
@@ -76,20 +77,60 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
     setTimeEntries(updated);
   };
 
-  const handleSave = async () => {
-    try {
-      for (const entry of timeEntries) {
-        if (!entry.date || !entry.start_time || !entry.end_time) {
-          setErrorMessage(
-            "Please fill in all fields: date, start time, and end time are required."
-          );
-          return;
-        }
+  // Helper function to check if end time is after start time
+  const isEndTimeAfterStartTime = (startTime: string, endTime: string): boolean => {
+    if (!startTime || !endTime) return true; // Skip validation if times aren't selected yet
+
+    // Parse times to compare
+    const parseTime = (timeStr: string) => {
+      const [timePart, period] = timeStr.split(" ");
+      // Fixed here - using const for both hours and minutes
+      const [hoursStr, minutesStr] = timePart.split(":");
+      let hours = Number(hoursStr);
+      const minutes = Number(minutesStr);
+
+      // Convert to 24-hour format for comparison
+      if (period === "PM" && hours < 12) {
+        hours += 12;
+      } else if (period === "AM" && hours === 12) {
+        hours = 0;
       }
 
+      return hours * 60 + minutes; // Return minutes since midnight
+    };
+
+    const startMinutes = parseTime(startTime);
+    const endMinutes = parseTime(endTime);
+
+    return endMinutes > startMinutes;
+  };
+
+  const validateEntries = () => {
+    for (const entry of timeEntries) {
+      if (!entry.date || !entry.start_time || !entry.end_time) {
+        setErrorMessage("Please fill in all fields: date, start time, and end time are required.");
+        return false;
+      }
+
+      if (!isEndTimeAfterStartTime(entry.start_time, entry.end_time)) {
+        setErrorMessage("End time must be after start time.");
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleSave = async () => {
+    try {
+      if (!validateEntries()) {
+        return;
+      }
+
+      // Modified format to include start_time and end_time explicitly
       const formattedEntries = timeEntries.map((entry) => ({
         date: entry.date,
-        time_logged: `${entry.start_time}-${entry.end_time}`
+        start_time: entry.start_time,
+        end_time: entry.end_time
       }));
 
       await logTaskTime(taskId, formattedEntries);
@@ -133,7 +174,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
       </Typography>
       <Box sx={{ backgroundColor: "#F3E5F5", borderRadius: 1, p: 2 }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 600, color: "#741B92", mb: 0.5 }}>
-           Time Format Guide   
+          Time Format Guide
         </Typography>
         <Typography variant="caption" sx={{ color: "#555", whiteSpace: "pre-line" }}>
           d = day{"\n"}h = hour
@@ -159,7 +200,9 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
               flexDirection: "column",
               gap: 1,
               mb: 2,
-              position: "relative"
+              position: "relative",
+              pb: 2,
+              borderBottom: index < timeEntries.length - 1 ? "1px dashed #ddd" : "none"
             }}
           >
             <Box sx={{ width: "100%" }}>
@@ -199,11 +242,6 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                     </li>
                   )}
                 />
-                {entry.start_time && (
-                  <Typography variant="body2" sx={{ mt: 1, color: "#741B92", fontWeight: 500 }}>
-                    Selected: {entry.start_time}
-                  </Typography>
-                )}
               </Box>
 
               <Box sx={{ width: "50%" }}>
@@ -214,9 +252,15 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                   disablePortal
                   options={timeOptions}
                   value={entry.end_time || null}
-                  onChange={(event, newValue) =>
-                    handleEntryChange(index, "end_time", newValue || "")
-                  }
+                  onChange={(event, newValue) => {
+                    handleEntryChange(index, "end_time", newValue || "");
+                    // Clear error when user selects a new value
+                    if (entry.start_time && newValue) {
+                      if (isEndTimeAfterStartTime(entry.start_time, newValue)) {
+                        setErrorMessage("");
+                      }
+                    }
+                  }}
                   renderInput={(params) => (
                     <TextField {...params} variant="outlined" placeholder="Select end time" />
                   )}
@@ -229,14 +273,9 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                     </li>
                   )}
                 />
-                {entry.end_time && (
-                  <Typography variant="body2" sx={{ mt: 1, color: "#741B92", fontWeight: 500 }}>
-                    Selected: {entry.end_time}
-                  </Typography>
-                )}
               </Box>
 
-              {index > 0 && (
+              {timeEntries.length > 1 && (
                 <IconButton
                   onClick={() => handleDeleteEntry(index)}
                   sx={{
@@ -246,6 +285,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                     right: -10,
                     top: 65
                   }}
+                  aria-label="Delete entry"
                 >
                   <Delete fontSize="small" />
                 </IconButton>

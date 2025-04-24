@@ -9,7 +9,7 @@ import { createComment, updateTask } from "../../service/taskAction";
 import { History } from "@mui/icons-material";
 import { IFormField, ITask, ITaskComment } from "../../interface/taskInterface";
 import HistoryDrawer from "../taskHistory";
-import TaskComments from "../taskComments";
+import TaskComments from "../taskComments";  
 import { useUser } from "@/app/userContext";
 import { KeyedMutator } from "swr";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -34,7 +34,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const [formData, setFormData] = useState<IFormField>(() => ({
-    title: data?.title || "",
+    title: data?.title || "",   
     description: data?.description || "",
     status: data?.status || TASK_STATUS.TO_DO,
     severity: data?.severity || TASK_SEVERITY.LOW,

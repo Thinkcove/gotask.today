@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import { Box, Button, Typography, IconButton } from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
+import React, { useState, useEffect } from "react";
+import { Box, Button, Typography, IconButton, Autocomplete, TextField } from "@mui/material";
+import { Delete } from "@mui/icons-material";
 import { logTaskTime } from "../service/taskAction";
 import { KeyedMutator } from "swr";
 import { ITask } from "../interface/taskInterface";
 
 interface TimeEntry {
   date: string;
-  time_logged: string;
+  start_time: string;
+  end_time: string;
 }
 
 interface TimeSpentPopupProps {
@@ -18,7 +19,28 @@ interface TimeSpentPopupProps {
   mutate: KeyedMutator<ITask>;
 }
 
-const hourOptions = Array.from({ length: 8 }, (_, i) => `${i + 1}:00`);
+const timeOptions = [
+  "9:00",
+  "9:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "1:00",
+  "1:30",
+  "2:00",
+  "2:30",
+  "3:00",
+  "3:30",
+  "4:00",
+  "4:30",
+  "5:00",
+  "5:30",
+  "6:00",
+  "6:30"
+];
 
 const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
   isOpen,
@@ -27,24 +49,19 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
   taskId,
   mutate
 }) => {
-  const [timeSpent, setTimeSpent] = useState("");
-  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
-  const [currentEntry, setCurrentEntry] = useState<TimeEntry>({ date: "", time_logged: "" });
+  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([
+    { date: "", start_time: "", end_time: "" }
+  ]);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const isDaysFormat = (val: string) => /^\d+d$/.test(val);
-  const isDaysMode = isDaysFormat(timeSpent);
-
-  const handleTimeSpentInput = (value: string) => {
-    setTimeSpent(value);
-    const match = value.match(/^(\d+)d$/);
-    if (match) {
-      const days = parseInt(match[1], 10);
-      const newEntries = Array.from({ length: days }, () => ({ date: "", time_logged: "" }));
-      setTimeEntries(newEntries);
-    } else {
-      setTimeEntries([]);
+  useEffect(() => {
+    if (isOpen) {
+      const today = new Date().toISOString().split("T")[0];
+      const initialEntries = [{ date: today, start_time: "", end_time: "" }];
+      setTimeEntries(initialEntries);
+      setErrorMessage("");
     }
-  };
+  }, [isOpen]);
 
   const handleEntryChange = (index: number, field: keyof TimeEntry, value: string) => {
     const updated = [...timeEntries];
@@ -52,30 +69,35 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
     setTimeEntries(updated);
   };
 
-  const handleAddEntry = () => {
-    if (!currentEntry.date || !currentEntry.time_logged) return;
-    const updated = [...timeEntries, currentEntry];
-    setTimeEntries(updated);
-    setCurrentEntry({ date: "", time_logged: "" });
-    const newSpent = `${updated.length}d`;
-    setTimeSpent(newSpent);
-  };
-
   const handleDeleteEntry = (index: number) => {
+    if (timeEntries.length === 1) return;
     const updated = [...timeEntries];
     updated.splice(index, 1);
     setTimeEntries(updated);
-    const newSpent = updated.length > 0 ? `${updated.length}d` : "";
-    setTimeSpent(newSpent);
   };
 
   const handleSave = async () => {
     try {
-      await logTaskTime(taskId, timeEntries);
+      for (const entry of timeEntries) {
+        if (!entry.date || !entry.start_time || !entry.end_time) {
+          setErrorMessage(
+            "Please fill in all fields: date, start time, and end time are required."
+          );
+          return;
+        }
+      }
+
+      const formattedEntries = timeEntries.map((entry) => ({
+        date: entry.date,
+        time_logged: `${entry.start_time}-${entry.end_time}`
+      }));
+
+      await logTaskTime(taskId, formattedEntries);
       await mutate();
       onClose();
     } catch (err) {
       console.error("Error logging time:", err);
+      setErrorMessage("Failed to save time entry. Please try again.");
     }
   };
 
@@ -109,162 +131,155 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
       <Typography variant="body2" sx={{ fontStyle: "italic", color: "#666" }}>
         The original estimate for the issue was {originalEstimate || "0d0h"}
       </Typography>
-
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Box sx={{ width: "100%" }}>
-          <Typography variant="body2">Time Spent:</Typography>
-          <input
-            value={timeSpent}
-            onChange={(e) => handleTimeSpentInput(e.target.value)}
-            placeholder="e.g., 1d, 2d"
-            style={{
-              width: "100%",
-              padding: "8px",
-              border: "1px solid #ccc",
-              borderRadius: "4px"
-            }}
-          />
-        </Box>
+      <Box sx={{ backgroundColor: "#F3E5F5", borderRadius: 1, p: 2 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: "#741B92", mb: 0.5 }}>
+           Time Format Guide   
+        </Typography>
+        <Typography variant="caption" sx={{ color: "#555", whiteSpace: "pre-line" }}>
+          d = day{"\n"}h = hour
+        </Typography>
       </Box>
 
-      {/* Time Entries Section */}
-      {timeSpent && (
-        <Box>
-          <Typography variant="subtitle2" sx={{ mt: 2, fontWeight: 600 }}>
-            Log work details:
-          </Typography>
-
-          {timeEntries.map((entry, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: "flex",
-                gap: 1,
-                alignItems: "center",
-                p: 1,
-                borderRadius: 1,
-                bgcolor: "rgba(116, 27, 146, 0.05)"
-              }}
-            >
-              <Box sx={{ flexGrow: 1, display: "flex", gap: 2 }}>
-                <Box sx={{ width: "60%" }}>
-                  <Typography variant="body2">Date {index + 1}:</Typography>
-                  <input
-                    type="date"
-                    value={entry.date}
-                    onChange={(e) => handleEntryChange(index, "date", e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "6px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px"
-                    }}
-                  />
-                </Box>
-                <Box sx={{ width: "40%" }}>
-                  <Typography variant="body2">Hours:</Typography>
-                  <select
-                    value={entry.time_logged}
-                    onChange={(e) => handleEntryChange(index, "time_logged", e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "6px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px"
-                    }}
-                  >
-                    <option value="">Select hour</option>
-                    {hourOptions.map((hour) => (
-                      <option key={hour} value={hour}>
-                        {hour}
-                      </option>
-                    ))}
-                  </select>
-                </Box>
-              </Box>
-
-              {/* {!isDaysMode && ( */}
-              <IconButton onClick={() => handleDeleteEntry(index)} sx={{ color: "#d32f2f", mt: 2 }}>
-                <Delete fontSize="small" />
-              </IconButton>
-              {/* )} */}
-            </Box>
-          ))}
-
-          {!isDaysMode && (
-            <Box
-              sx={{
-                display: "flex",
-                gap: 1,
-                alignItems: "center",
-                p: 1,
-                borderRadius: 1,
-                bgcolor: "rgba(116, 27, 146, 0.05)"
-              }}
-            >
-              <Box sx={{ flexGrow: 1, display: "flex", gap: 2 }}>
-                <Box sx={{ width: "60%" }}>
-                  <Typography variant="body2">New Date:</Typography>
-                  <input
-                    type="date"
-                    value={currentEntry.date}
-                    onChange={(e) => setCurrentEntry((prev) => ({ ...prev, date: e.target.value }))}
-                    style={{
-                      width: "100%",
-                      padding: "6px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px"
-                    }}
-                  />
-                </Box>
-                <Box sx={{ width: "40%" }}>
-                  <Typography variant="body2">Hours:</Typography>
-                  <select
-                    value={currentEntry.time_logged}
-                    onChange={(e) =>
-                      setCurrentEntry((prev) => ({ ...prev, time_logged: e.target.value }))
-                    }
-                    style={{
-                      width: "100%",
-                      padding: "6px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px"
-                    }}
-                  >
-                    <option value="">Select hour</option>
-                    {hourOptions.map((hour) => (
-                      <option key={hour} value={hour}>
-                        {hour}
-                      </option>
-                    ))}
-                  </select>
-                </Box>
-              </Box>
-              <IconButton onClick={handleAddEntry} sx={{ color: "#741B92", mt: 2 }}>
-                <Add fontSize="small" />
-              </IconButton>
-            </Box>
-          )}
-        </Box>
+      {errorMessage && (
+        <Typography variant="body2" sx={{ color: "#d32f2f", mb: 1 }}>
+          {errorMessage}
+        </Typography>
       )}
+
+      <Box>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
+          Log work details:
+        </Typography>
+
+        {timeEntries.map((entry, index) => (
+          <Box
+            key={index}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+              mb: 2,
+              position: "relative"
+            }}
+          >
+            <Box sx={{ width: "100%" }}>
+              <Typography variant="body2">Date:</Typography>
+              <TextField
+                type="date"
+                value={entry.date}
+                onChange={(e) => handleEntryChange(index, "date", e.target.value)}
+                variant="outlined"
+                placeholder="Select a date"
+                InputLabelProps={{ shrink: true }}
+                sx={{ width: "100%" }}
+              />
+            </Box>
+
+            <Box sx={{ display: "flex", gap: 2, width: "100%" }}>
+              <Box sx={{ width: "50%" }}>
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  Start Time
+                </Typography>
+                <Autocomplete
+                  disablePortal
+                  options={timeOptions}
+                  value={entry.start_time || null}
+                  onChange={(event, newValue) =>
+                    handleEntryChange(index, "start_time", newValue || "")
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} variant="outlined" placeholder="Select start time" />
+                  )}
+                  sx={{ width: "100%" }}
+                  getOptionLabel={(option) => option}
+                  isOptionEqualToValue={(option, value) => option === value}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+                {entry.start_time && (
+                  <Typography variant="body2" sx={{ mt: 1, color: "#741B92", fontWeight: 500 }}>
+                    Selected: {entry.start_time}
+                  </Typography>
+                )}
+              </Box>
+
+              <Box sx={{ width: "50%" }}>
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  End Time
+                </Typography>
+                <Autocomplete
+                  disablePortal
+                  options={timeOptions}
+                  value={entry.end_time || null}
+                  onChange={(event, newValue) =>
+                    handleEntryChange(index, "end_time", newValue || "")
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} variant="outlined" placeholder="Select end time" />
+                  )}
+                  sx={{ width: "100%" }}
+                  getOptionLabel={(option) => option}
+                  isOptionEqualToValue={(option, value) => option === value}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+                {entry.end_time && (
+                  <Typography variant="body2" sx={{ mt: 1, color: "#741B92", fontWeight: 500 }}>
+                    Selected: {entry.end_time}
+                  </Typography>
+                )}
+              </Box>
+
+              {index > 0 && (
+                <IconButton
+                  onClick={() => handleDeleteEntry(index)}
+                  sx={{
+                    color: "#d32f2f",
+                    p: 0.5,
+                    position: "absolute",
+                    right: -10,
+                    top: 65
+                  }}
+                >
+                  <Delete fontSize="small" />
+                </IconButton>
+              )}
+            </Box>
+          </Box>
+        ))}
+      </Box>
 
       <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
         <Button
           onClick={onClose}
           variant="outlined"
-          sx={{ borderColor: "#741B92", color: "#741B92", borderRadius: "20px" }}
+          sx={{
+            borderColor: "#741B92",
+            color: "#741B92",
+            borderRadius: "20px",
+            textTransform: "uppercase"
+          }}
         >
           Cancel
         </Button>
-        {timeSpent && (
-          <Button
-            onClick={handleSave}
-            variant="contained"
-            sx={{ backgroundColor: "#741B92", color: "#fff", borderRadius: "20px" }}
-          >
-            Save
-          </Button>
-        )}
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          sx={{
+            backgroundColor: "#741B92",
+            color: "#fff",
+            borderRadius: "20px",
+            textTransform: "uppercase"
+          }}
+        >
+          Save
+        </Button>
       </Box>
     </Box>
   );

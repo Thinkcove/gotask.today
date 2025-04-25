@@ -39,5 +39,9 @@ export const API_PATHS = {
   //timelogRoutess
   ADD_TIME_SPENT: "/tasklog/{id}",
   UPDATE_ESTIMATED_TIME: "/updatetimelog/{id}",
-  GET_TIME_TRACKING_SUMMARY: "/timeSummary/{id}"
+  GET_TIME_TRACKING_SUMMARY: "/timeSummary/{id}",
+
+  // OTP routes
+  REQUEST_OTP: "/auth/request-otp",
+  VERIFY_OTP: "/auth/verify-otp"
 };

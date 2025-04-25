@@ -2,7 +2,16 @@ import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
 import { comparePassword } from "../../constants/utils.ts/common";
 import jwt from "jsonwebtoken";
-import { createUser, getAllUsers, getUserByEmail, getUserById, updateUser } from "./userService";
+import {
+  createUser,
+  getAllUsers,
+  getUserByEmail,
+  getUserById,
+  requestOTP,
+  updateUser,
+  verifyOTP
+} from "./userService";
+import UserMessages from "../../constants/apiMessages/userMessage";
 
 class UserController extends BaseController {
   // Create a new user
@@ -96,6 +105,34 @@ class UserController extends BaseController {
       return this.sendResponse(handler, {
         success: false,
         error: error.message || "Failed to login"
+      });
+    }
+  }
+
+  // Request OTP
+  async requestOTPLayer(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { user_id } = requestHelper.getPayload();
+      const result = await requestOTP(user_id); // logic in service
+      return this.sendResponse(handler, result);
+    } catch (error: any) {
+      return this.sendResponse(handler, {
+        success: false,
+        error: error.message || UserMessages.OTP.SEND_FAILED
+      });
+    }
+  }
+
+  // Verify OTP and login
+  async verifyOTPLayer(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { user_id, otp } = requestHelper.getPayload();
+      const result = await verifyOTP(user_id, otp); // logic in service
+      return this.sendResponse(handler, result);
+    } catch (error: any) {
+      return this.sendResponse(handler, {
+        success: false,
+        error: error.message || UserMessages.OTP.VERIFY_FAILED
       });
     }
   }

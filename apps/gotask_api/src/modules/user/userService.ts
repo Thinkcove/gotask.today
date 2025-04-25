@@ -1,4 +1,6 @@
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { generateOTP, sendOTPEmail } from "../../constants/utils.ts/otpHelper";
+import { clearOTP, retrieveOTP, storeOTP } from "../../domain/interface/otp/otp";
 import {
   createNewUser,
   findAllUsers,
@@ -125,4 +127,74 @@ const getUserByEmail = async (
   }
 };
 
-export { createUser, getAllUsers, getUserById, updateUser, getUserByEmail };
+// Request OTP
+const requestOTP = async (user_id: string): Promise<{ success: boolean; message?: string }> => {
+  try {
+    const user = await findUserByEmail(user_id);
+    if (!user) {
+      return {
+        success: false,
+        message: UserMessages.FETCH.NOT_FOUND
+      };
+    }
+    const otp = generateOTP();
+    const expiresAt = Date.now() + 60 * 60 * 1000; // 1 hour expiration
+    const payload = {
+      user_id,
+      otp,
+      expiresAt
+    };
+
+    await storeOTP(payload); // Now passing the full payload object
+    await sendOTPEmail(user.user_id, otp);
+
+    return {
+      success: true,
+      message: UserMessages.OTP.SENT
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || UserMessages.OTP.SEND_FAILED
+    };
+  }
+};
+
+const verifyOTP = async (
+  user_id: string,
+  otp: string
+): Promise<{ success: boolean; message?: string }> => {
+  try {
+    const storedOTP = await retrieveOTP({ user_id });
+
+    if (!storedOTP) {
+      return {
+        success: false,
+        message: UserMessages.OTP.EXPIRED_OR_INVALID
+      };
+    }
+
+    const isOTPValid = storedOTP.otp === otp;
+    const isOTPNotExpired = Date.now() <= storedOTP.expiresAt;
+
+    if (isOTPValid && isOTPNotExpired) {
+      await clearOTP({ user_id });
+      return {
+        success: true,
+        message: UserMessages.OTP.VERIFIED
+      };
+    }
+
+    return {
+      success: false,
+      message: UserMessages.OTP.INCORRECT
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || UserMessages.OTP.VERIFY_FAILED
+    };
+  }
+};
+
+export { createUser, getAllUsers, getUserById, updateUser, getUserByEmail, requestOTP, verifyOTP };

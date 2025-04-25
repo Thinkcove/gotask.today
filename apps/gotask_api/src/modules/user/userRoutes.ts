@@ -69,4 +69,28 @@ UserRoutes.push({
   }
 });
 
+// Route: Request OTP
+UserRoutes.push({
+  path: API_PATHS.REQUEST_OTP,
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.requestOTPLayer(new RequestHelper(request), handler),
+  config: {
+    notes: "Send OTP to user email",
+    tags
+  }
+});
+
+//Route: Verify OTP
+UserRoutes.push({
+  path: API_PATHS.VERIFY_OTP,
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.verifyOTPLayer(new RequestHelper(request), handler),
+  config: {
+    notes: "Verify OTP entered by user",
+    tags
+  }
+});
+
 export default UserRoutes;

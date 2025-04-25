@@ -138,13 +138,7 @@ const getUserByEmail = async (
     let query = User.findOne({ user_id });
 
     if (populateRole) {
-      query = query.populate({
-        path: "roleId",
-        populate: {
-          path: "accessDetails", // 👈 nested populate
-          model: "AccessDetail",
-        },
-      });
+      query = query.populate("roleId"); // ✅ Just populate the roleId, no nested populate
     }
 
     const user = await query;
@@ -167,6 +161,7 @@ const getUserByEmail = async (
     };
   }
 };
+
 
 
 export { createUser, getAllUsers, getUserById, updateUser, getUserByEmail };

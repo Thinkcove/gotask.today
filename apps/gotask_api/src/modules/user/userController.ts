@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { createUser, getAllUsers, getUserByEmail, getUserById, updateUser } from "./userService";
 import { Access } from "../../domain/model/access";
 import { Role } from "../../domain/model/role"; // Import the Role model
+import { getRoleByIdService } from "../role/roleService";
 
 class UserController extends BaseController {
   // Create a new user
@@ -69,88 +70,87 @@ class UserController extends BaseController {
   // User login
   async loginUser(requestHelper: RequestHelper, handler: any) {
     try {
-      const { user_id, password } = requestHelper.getPayload(); // Get login credentials
-
+      const { user_id, password } = requestHelper.getPayload();
+  
       if (!user_id || !password) {
         return this.sendResponse(handler, {
           success: false,
-          error: "Missing required fields: user_id and password"
+          error: "Missing required fields: user_id and password",
         });
       }
-
-      // Step 1: Fetch user details by user_id, include roleId
-      const { success, data: user, message } = await getUserByEmail(user_id, true); // Fetch with populated roleId
-
+  
+      const { success, data: user, message } = await getUserByEmail(user_id, true);
+  
       if (!success || !user) {
         return this.sendResponse(handler, {
           success: false,
-          error: message || "User not found"
+          error: message || "User not found",
         });
       }
-
-      // Step 2: Compare password
+  
       const isMatch = await comparePassword(password, user.password);
       if (!isMatch) {
         return this.sendResponse(handler, {
           success: false,
-          error: "Invalid credentials"
+          error: "Invalid credentials",
         });
       }
+  
+      // ✅ Fetch full role with access details using UUID
+      const roleId = user.roleId?.id?.toString();
 
-      // Step 3: Fetch the role using roleId (this replaces accessing the role directly)
-      const role = await Role.findById(user.roleId); // Fetch the Role by ID (roleId is now used)
+if (!roleId) {
+  return this.sendResponse(handler, {
+    success: false,
+    error: "Role ID not found for this user",
+  });
+}
 
-      if (!role) {
+const roleResult = await getRoleByIdService(roleId);
+
+  
+      if (!roleResult.success || !roleResult.data) {
         return this.sendResponse(handler, {
           success: false,
-          error: "Role not found for the user"
+          error: roleResult.message || "Failed to fetch role details",
         });
       }
-
-      // Step 4: Fetch access details for the role
-      const accessRecords = await Access.find({
-        id: { $in: role.access } // Access the populated access details from role
-      }).lean(); // Convert to plain JavaScript object
-
-      // Enhance role with access details
-      const roleWithAccess = {
-        ...role.toObject(), // Convert the role to a plain object
-        accessDetails: accessRecords.map((access: any) => ({
-          id: access.id,
-          name: access.name,
-          application: access.application,
-        })),
-      };
-
-      // Step 5: Generate JWT token with user and role access
+  
+      const enrichedRole = roleResult.data;
+  
+      // ✅ Generate JWT with full role
       const token = jwt.sign(
-        { id: user.id, user_id: user.user_id, role: roleWithAccess },
+        {
+          id: user.id,
+          user_id: user.user_id,
+          role: enrichedRole,
+        },
         process.env.AUTH_KEY as string,
         { expiresIn: "1h" }
       );
-
-      // Step 6: Sanitize the user object by removing password
-      const sanitizedUser = {
-        ...user.toObject(),
-        password: undefined, // Ensure password is excluded
-      };
-
-      // Step 7: Send response with token and user data
+  
+      // ✅ Clean user object before returning
+      const { password: _, ...sanitizedUser } = user.toObject();
+      sanitizedUser.role = enrichedRole;
+  
       return this.sendResponse(handler, {
         success: true,
         data: {
           token,
-          user: sanitizedUser, // Send full user data with enhanced role and access
-        }
+          user: sanitizedUser,
+        },
       });
     } catch (error: any) {
       console.error("Login error:", error);
       return this.sendResponse(handler, {
         success: false,
-        error: error.message || "Failed to login"
+        error: error.message || "Failed to login",
       });
     }
   }
+  
+  
+  
 }
 
 export default UserController;

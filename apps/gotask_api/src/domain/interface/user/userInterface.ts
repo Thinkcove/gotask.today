@@ -31,8 +31,8 @@ const findUserById = async (id: string): Promise<IUser | null> => {
         populate: {
           path: "access",
           model: "Access",
-          select: "name application",
-        },
+          select: "name application"
+        }
       })
       .exec();
   } catch (error) {

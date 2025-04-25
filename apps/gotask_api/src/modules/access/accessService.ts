@@ -1,11 +1,5 @@
 import { IAccess, Access } from "../../domain/model/access";
-import AccessMessages from "../../constants/apiMessages/accessMeggage"; // Corrected typo 'accessMeggage' to 'accessMessage'
-
-// Helper function to get valid access by ID
-const getValidAccessById = async (accessIds: string[]): Promise<string[]> => {
-  const validAccesses = await Access.find({ id: { $in: accessIds } });
-  return validAccesses.map((access) => access.id);
-};
+import AccessMessages from "../../constants/apiMessages/accessMeggage";
 
 // Create a new access record
 const createAccess = async (

@@ -23,7 +23,7 @@ class AccessController extends BaseController {
         return this.replyError(new Error(newAccess.message || "Failed to create access"));
       }
 
-      return this.sendResponse(handler, newAccess.data); // Status code 201 for creation
+      return this.sendResponse(handler, newAccess.data);
     } catch (error) {
       return this.replyError(error);
     }

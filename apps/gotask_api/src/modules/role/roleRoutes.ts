@@ -21,7 +21,7 @@ RoleRoutes.push({
       payload: Joi.object({
         name: Joi.string().required(),
         priority: Joi.number().required(),
-        accessIds: Joi.array().items(Joi.string()).optional() // Optional array of access IDs
+        accessIds: Joi.array().items(Joi.string()).optional() //  array of access IDs
       })
     },
     notes: "Create a new role",
@@ -43,7 +43,7 @@ RoleRoutes.push({
 
 // Get Role by ID
 RoleRoutes.push({
-  path: API_PATHS.GET_ROLE_BY_ID, // e.g. "/roles/{id}"
+  path: API_PATHS.GET_ROLE_BY_ID, //  "/roles/{id}"
   method: API_METHODS.GET,
   handler: (request: Request, h: ResponseToolkit) =>
     roleController.getRoleById(new RequestHelper(request), h),
@@ -60,7 +60,7 @@ RoleRoutes.push({
 
 // Update Role
 RoleRoutes.push({
-  path: API_PATHS.UPDATE_ROLE, // e.g. "/roles/{id}"
+  path: API_PATHS.UPDATE_ROLE, //  "/roles/{id}"
   method: API_METHODS.PUT,
   handler: (request: Request, h: ResponseToolkit) =>
     roleController.updateRole(new RequestHelper(request), h),
@@ -82,7 +82,7 @@ RoleRoutes.push({
 
 // Delete Role
 RoleRoutes.push({
-  path: API_PATHS.DELETE_ROLE, // e.g. "/roles/{id}"
+  path: API_PATHS.DELETE_ROLE, // "/roles/{id}"
   method: API_METHODS.DELETE,
   handler: (request: Request, h: ResponseToolkit) =>
     roleController.deleteRole(new RequestHelper(request), h),
@@ -96,7 +96,5 @@ RoleRoutes.push({
     tags
   }
 });
-
-
 
 export default RoleRoutes;

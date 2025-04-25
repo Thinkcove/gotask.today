@@ -1,6 +1,12 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { createRoleService, deleteRoleService, getAllRolesService, getRoleByIdService, updateRoleService } from "./roleService";
+import {
+  createRoleService,
+  deleteRoleService,
+  getAllRolesService,
+  getRoleByIdService,
+  updateRoleService
+} from "./roleService";
 
 class RoleController extends BaseController {
   // Create Role
@@ -38,8 +44,8 @@ class RoleController extends BaseController {
     }
   }
 
-   // Get Role by ID
-   async getRoleById(requestHelper: RequestHelper, handler: any) {
+  // Get Role by ID
+  async getRoleById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
       const result = await getRoleByIdService(id);

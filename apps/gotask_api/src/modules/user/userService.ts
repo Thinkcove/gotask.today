@@ -2,9 +2,7 @@ import UserMessages from "../../constants/apiMessages/userMessage";
 import {
   createNewUser,
   findAllUsers,
-  findUserByEmail,
-  findUserById,
-  updateUserById,
+  updateUserById
 } from "../../domain/interface/user/userInterface";
 import { IUser, User } from "../../domain/model/user/user";
 import { Role } from "../../domain/model/role";
@@ -17,16 +15,15 @@ const createUser = async (
     if (!userData || !userData.roleId) {
       return {
         success: false,
-        message: UserMessages.CREATE.REQUIRED,
+        message: UserMessages.CREATE.REQUIRED
       };
     }
 
-    // ✅ Verify if the provided roleId exists
     const roleExists = await Role.findById(userData.roleId);
     if (!roleExists) {
       return {
         success: false,
-        message: `Role ID "${userData.roleId}" is invalid or not found`,
+        message: `Role ID "${userData.roleId}" is invalid or not found`
       };
     }
 
@@ -38,12 +35,12 @@ const createUser = async (
 
     return {
       success: true,
-      data: populatedUser,
+      data: populatedUser
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || UserMessages.CREATE.FAILED,
+      message: error.message || UserMessages.CREATE.FAILED
     };
   }
 };
@@ -58,41 +55,68 @@ const getAllUsers = async (): Promise<{
     const users = await findAllUsers();
     return {
       success: true,
-      data: users,
+      data: users
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || UserMessages.FETCH.FAILED_ALL,
+      message: error.message || UserMessages.FETCH.FAILED_ALL
     };
   }
 };
 
 // GET USER BY ID
+import { getRoleByIdService } from "../role/roleService";
+
 const getUserById = async (id: string) => {
   try {
-    // Query the User model using the "id" field (UUID), not the default Mongo _id
-    const user = await User.findOne({ id });
+    // Find user and populate basic role info
+    const user = await User.findOne({ id }).populate("roleId");
 
     if (!user) {
       return {
         success: false,
-        message: "User not found",
+        message: "User not found"
       };
     }
 
+    // Extract UUID role ID from populated roleId
+    const roleId = user.roleId?.id?.toString();
+    if (!roleId) {
+      return {
+        success: false,
+        message: "Role ID not found for this user"
+      };
+    }
+
+    // Fetch enriched role details (with access)
+    const roleResult = await getRoleByIdService(roleId);
+    if (!roleResult.success || !roleResult.data) {
+      return {
+        success: false,
+        message: roleResult.message || "Failed to fetch role details"
+      };
+    }
+
+    const enrichedRole = roleResult.data;
+
+    //  Return user with full role and remove password
+    const userObj = user.toObject() as any;
+    delete userObj.password;
+    userObj.role = enrichedRole;
+
     return {
       success: true,
-      data: user,
+      data: userObj
     };
-  } catch (error) {
+  } catch (error: any) {
+    console.error("getUserById error:", error);
     return {
       success: false,
-  
+      message: error.message || "Failed to fetch user"
     };
   }
 };
-
 
 // UPDATE USER
 const updateUser = async (
@@ -105,7 +129,7 @@ const updateUser = async (
       if (!roleExists) {
         return {
           success: false,
-          message: `Role ID "${updateData.roleId}" is invalid or not found`,
+          message: `Role ID "${updateData.roleId}" is invalid or not found`
         };
       }
     }
@@ -114,17 +138,43 @@ const updateUser = async (
     if (!updatedUser) {
       return {
         success: false,
-        message: UserMessages.FETCH.NOT_FOUND,
+        message: UserMessages.FETCH.NOT_FOUND
       };
     }
     return {
       success: true,
-      data: updatedUser,
+      data: updatedUser
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || UserMessages.UPDATE.FAILED,
+      message: error.message || UserMessages.UPDATE.FAILED
+    };
+  }
+};
+
+// DELETE USER
+const deleteUser = async (id: string): Promise<{ success: boolean; message?: string }> => {
+  try {
+    const user = await User.findOne({ id });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found"
+      };
+    }
+
+    await User.deleteOne({ id });
+
+    return {
+      success: true,
+      message: "User deleted successfully"
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to delete user"
     };
   }
 };
@@ -138,7 +188,7 @@ const getUserByEmail = async (
     let query = User.findOne({ user_id });
 
     if (populateRole) {
-      query = query.populate("roleId"); // ✅ Just populate the roleId, no nested populate
+      query = query.populate("roleId"); // Just populate the roleId, no nested populate
     }
 
     const user = await query;
@@ -146,22 +196,20 @@ const getUserByEmail = async (
     if (!user) {
       return {
         success: false,
-        message: "User not found",
+        message: "User not found"
       };
     }
 
     return {
       success: true,
-      data: user,
+      data: user
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to fetch user by email",
+      message: error.message || "Failed to fetch user by email"
     };
   }
 };
 
-
-
-export { createUser, getAllUsers, getUserById, updateUser, getUserByEmail };
+export { createUser, getAllUsers, getUserById, updateUser, deleteUser, getUserByEmail };

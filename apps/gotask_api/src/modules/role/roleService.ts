@@ -1,6 +1,5 @@
 import { Role } from "../../domain/model/role";
 import { Access } from "../../domain/model/access";
-import { access } from "fs";
 
 interface CreateRolePayload {
   name: string;
@@ -56,7 +55,7 @@ export const getAllRolesService = async () => {
 
     const enhancedRoles = [];
 
-    for (let role of roles) {
+    for (const role of roles) {
       // Fetch full access records based on UUIDs
       const accessRecords = await Access.find({
         id: { $in: role.access }
@@ -66,10 +65,10 @@ export const getAllRolesService = async () => {
       const roleObj = role.toObject();
 
       // Replace access UUIDs with full access detail objects
-      const accessDetails = accessRecords.map(access => ({
+      const accessDetails = accessRecords.map((access) => ({
         id: access.id,
         name: access.name,
-        application: access.application,
+        application: access.application
       }));
 
       // Create a new object with full access data
@@ -89,7 +88,7 @@ export const getAllRolesService = async () => {
 // Get Role by ID
 export const getRoleByIdService = async (roleId: string) => {
   try {
-    const role = await Role.findOne({ id: roleId }); // Find by UUID
+    const role = await Role.findOne({ id: roleId });
     if (!role) {
       return { success: false, message: "Role not found" };
     }
@@ -97,10 +96,10 @@ export const getRoleByIdService = async (roleId: string) => {
     const accessRecords = await Access.find({ id: { $in: role.access } });
 
     const roleObj = role.toObject();
-    const accessDetails = accessRecords.map(access => ({
+    const accessDetails = accessRecords.map((access) => ({
       id: access.id,
       name: access.name,
-      application: access.application,
+      application: access.application
     }));
 
     return {
@@ -117,7 +116,10 @@ export const getRoleByIdService = async (roleId: string) => {
 };
 
 // Update Role
-export const updateRoleService = async (roleId: string, updatedData: Partial<CreateRolePayload>) => {
+export const updateRoleService = async (
+  roleId: string,
+  updatedData: Partial<CreateRolePayload>
+) => {
   try {
     const role = await Role.findOne({ id: roleId }); // Find by UUID
     if (!role) {
@@ -157,11 +159,10 @@ export const updateRoleService = async (roleId: string, updatedData: Partial<Cre
   }
 };
 
-
 // Delete Role
 export const deleteRoleService = async (roleId: string) => {
   try {
-    const role = await Role.findOneAndDelete({ id: roleId }); // Find by UUID and delete
+    const role = await Role.findOneAndDelete({ id: roleId });
 
     if (!role) {
       return { success: false, message: "Role not found" };
@@ -178,8 +179,3 @@ export const deleteRoleService = async (roleId: string) => {
     return { success: false, message: "Internal server error" };
   }
 };
-
-
-
-
-

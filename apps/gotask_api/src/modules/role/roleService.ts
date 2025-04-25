@@ -1,3 +1,5 @@
+// src/modules/role/roleService.ts
+import { roleMessages } from "../../constants/apiMessages/roleMessages"; // Import the messages
 import { Role } from "../../domain/model/role";
 import { Access } from "../../domain/model/access";
 
@@ -15,7 +17,7 @@ export const createRoleService = async (data: CreateRolePayload) => {
     // Check if the role already exists
     const exists = await Role.findOne({ name });
     if (exists) {
-      return { success: false, message: "Role already exists" };
+      return { success: false, message: roleMessages.CREATE.ALREADY_EXISTS }; // Use constant
     }
 
     // Validate the access IDs and fetch associated access documents
@@ -39,16 +41,17 @@ export const createRoleService = async (data: CreateRolePayload) => {
     return {
       success: true,
       data: {
-        message: "Role created successfully",
+        message: roleMessages.CREATE.SUCCESS, // Use constant
         role
       }
     };
   } catch (error) {
     console.error("Error in createRoleService:", error);
-    return { success: false, message: "Internal server error" };
+    return { success: false, message: roleMessages.CREATE.FAILED }; // Use constant
   }
 };
 
+// Get All Roles
 export const getAllRolesService = async () => {
   try {
     const roles = await Role.find().sort({ priority: 1 });
@@ -81,7 +84,7 @@ export const getAllRolesService = async () => {
     return { success: true, data: enhancedRoles };
   } catch (error) {
     console.error("Error in getAllRolesService:", error);
-    return { success: false, message: "Internal server error" };
+    return { success: false, message: roleMessages.FETCH.FAILED }; // Use constant
   }
 };
 
@@ -90,7 +93,7 @@ export const getRoleByIdService = async (roleId: string) => {
   try {
     const role = await Role.findOne({ id: roleId });
     if (!role) {
-      return { success: false, message: "Role not found" };
+      return { success: false, message: roleMessages.FETCH.NOT_FOUND }; // Use constant
     }
 
     const accessRecords = await Access.find({ id: { $in: role.access } });
@@ -111,7 +114,7 @@ export const getRoleByIdService = async (roleId: string) => {
     };
   } catch (error) {
     console.error("Error in getRoleByIdService:", error);
-    return { success: false, message: "Internal server error" };
+    return { success: false, message: roleMessages.FETCH.FAILED }; // Use constant
   }
 };
 
@@ -123,7 +126,7 @@ export const updateRoleService = async (
   try {
     const role = await Role.findOne({ id: roleId }); // Find by UUID
     if (!role) {
-      return { success: false, message: "Role not found" };
+      return { success: false, message: roleMessages.FETCH.NOT_FOUND }; // Use constant
     }
 
     const { name, priority, accessIds } = updatedData;
@@ -149,13 +152,13 @@ export const updateRoleService = async (
     return {
       success: true,
       data: {
-        message: "Role updated successfully",
+        message: roleMessages.UPDATE.SUCCESS, // Use constant
         role
       }
     };
   } catch (error) {
     console.error("Error in updateRoleService:", error);
-    return { success: false, message: "Internal server error" };
+    return { success: false, message: roleMessages.UPDATE.FAILED }; // Use constant
   }
 };
 
@@ -165,17 +168,17 @@ export const deleteRoleService = async (roleId: string) => {
     const role = await Role.findOneAndDelete({ id: roleId });
 
     if (!role) {
-      return { success: false, message: "Role not found" };
+      return { success: false, message: roleMessages.FETCH.NOT_FOUND }; // Use constant
     }
 
     return {
       success: true,
       data: {
-        message: "Role deleted successfully"
+        message: roleMessages.DELETE.SUCCESS // Use constant
       }
     };
   } catch (error) {
     console.error("Error in deleteRoleService:", error);
-    return { success: false, message: "Internal server error" };
+    return { success: false, message: roleMessages.DELETE.FAILED }; // Use constant
   }
 };

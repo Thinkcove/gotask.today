@@ -8,6 +8,7 @@ import {
   updateAccess,
   deleteAccessById
 } from "../access/accessService";
+import AccessMessages from "../../constants/apiMessages/accessMessage";
 
 class AccessController extends BaseController {
   // Create Access
@@ -15,12 +16,12 @@ class AccessController extends BaseController {
     try {
       const accessData = requestHelper.getPayload();
       if (!accessData.name || !accessData.application) {
-        return this.replyError(new Error("Name and Application fields are required"));
+        return this.replyError(new Error(AccessMessages.CREATE.REQUIRED));
       }
 
       const newAccess = await createAccess(accessData);
       if (!newAccess.success) {
-        return this.replyError(new Error(newAccess.message || "Failed to create access"));
+        return this.replyError(new Error(newAccess.message || AccessMessages.CREATE.FAILED));
       }
 
       return this.sendResponse(handler, newAccess.data);
@@ -34,7 +35,7 @@ class AccessController extends BaseController {
     try {
       const result = await getAllAccesses();
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to fetch accesses"));
+        return this.replyError(new Error(result.message || AccessMessages.FETCH.FAILED_ALL));
       }
 
       return this.sendResponse(handler, result.data);
@@ -49,7 +50,7 @@ class AccessController extends BaseController {
       const id = requestHelper.getParam("id");
       const result = await getAccessById(id);
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Access not found"));
+        return this.replyError(new Error(result.message || AccessMessages.FETCH.FAILED_BY_ID));
       }
 
       return this.sendResponse(handler, result.data);
@@ -65,7 +66,7 @@ class AccessController extends BaseController {
       const payload = requestHelper.getPayload() as Partial<IAccess>;
       const result = await updateAccess(id, payload);
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to update access"));
+        return this.replyError(new Error(result.message || AccessMessages.UPDATE.FAILED));
       }
 
       return this.sendResponse(handler, result.data);
@@ -80,10 +81,10 @@ class AccessController extends BaseController {
       const id = requestHelper.getParam("id");
       const result = await deleteAccessById(id);
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to delete access"));
+        return this.replyError(new Error(result.message || AccessMessages.DELETE.FAILED));
       }
 
-      return this.sendResponse(handler, { message: "Access deleted successfully" });
+      return this.sendResponse(handler, { message: AccessMessages.DELETE.SUCCESS });
     } catch (error) {
       return this.replyError(error);
     }

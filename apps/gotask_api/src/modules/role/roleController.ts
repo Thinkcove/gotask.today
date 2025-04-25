@@ -7,6 +7,7 @@ import {
   getRoleByIdService,
   updateRoleService
 } from "./roleService";
+import { roleMessages } from "../../constants/apiMessages/roleMessages"; // Import the constants
 
 class RoleController extends BaseController {
   // Create Role
@@ -16,12 +17,12 @@ class RoleController extends BaseController {
 
       // Basic validation (optional here if you’re already using Joi at route-level)
       if (!roleData.name || roleData.priority === undefined) {
-        return this.replyError(new Error("Name and Priority fields are required"));
+        return this.replyError(new Error(roleMessages.namePriorityRequired));
       }
 
       const result = await createRoleService(roleData);
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to create role"));
+        return this.replyError(new Error(result.message || roleMessages.createRoleFailed));
       }
 
       return this.sendResponse(handler, result.data); // Return HTTP 201 for created resource
@@ -35,7 +36,7 @@ class RoleController extends BaseController {
     try {
       const result = await getAllRolesService();
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to fetch roles"));
+        return this.replyError(new Error(result.message || roleMessages.fetchRolesFailed));
       }
 
       return this.sendResponse(handler, result.data);
@@ -51,7 +52,7 @@ class RoleController extends BaseController {
       const result = await getRoleByIdService(id);
 
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Role not found"));
+        return this.replyError(new Error(result.message || roleMessages.roleNotFound));
       }
 
       return this.sendResponse(handler, result.data);
@@ -68,7 +69,7 @@ class RoleController extends BaseController {
 
       const result = await updateRoleService(id, updatedData);
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to update role"));
+        return this.replyError(new Error(result.message || roleMessages.updateRoleFailed));
       }
 
       return this.sendResponse(handler, result.data);
@@ -84,10 +85,10 @@ class RoleController extends BaseController {
       const result = await deleteRoleService(id);
 
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to delete role"));
+        return this.replyError(new Error(result.message || roleMessages.deleteRoleFailed));
       }
 
-      return this.sendSuccess(handler, "Role deleted successfully");
+      return this.sendSuccess(handler, roleMessages.deleteRoleSuccess);
     } catch (error) {
       return this.replyError(error);
     }

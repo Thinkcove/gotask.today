@@ -1,5 +1,5 @@
 import { IAccess, Access } from "../../domain/model/access";
-import AccessMessages from "../../constants/apiMessages/accessMeggage";
+import AccessMessages from "../../constants/apiMessages/accessMessage";
 
 // Create a new access record
 const createAccess = async (

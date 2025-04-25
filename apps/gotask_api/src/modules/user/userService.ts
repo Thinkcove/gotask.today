@@ -23,7 +23,7 @@ const createUser = async (
     if (!roleExists) {
       return {
         success: false,
-        message: `Role ID "${userData.roleId}" is invalid or not found`
+        message: UserMessages.CREATE.ROLE_INVALID
       };
     }
 
@@ -35,7 +35,8 @@ const createUser = async (
 
     return {
       success: true,
-      data: populatedUser
+      data: populatedUser,
+      message: UserMessages.CREATE.SUCCESS
     };
   } catch (error: any) {
     return {
@@ -76,7 +77,7 @@ const getUserById = async (id: string) => {
     if (!user) {
       return {
         success: false,
-        message: "User not found"
+        message: UserMessages.FETCH.NOT_FOUND
       };
     }
 
@@ -85,7 +86,7 @@ const getUserById = async (id: string) => {
     if (!roleId) {
       return {
         success: false,
-        message: "Role ID not found for this user"
+        message: UserMessages.FETCH.ROLE_NOT_FOUND
       };
     }
 
@@ -94,7 +95,7 @@ const getUserById = async (id: string) => {
     if (!roleResult.success || !roleResult.data) {
       return {
         success: false,
-        message: roleResult.message || "Failed to fetch role details"
+        message: roleResult.message || UserMessages.FETCH.FETCH_ROLE_FAILED
       };
     }
 
@@ -113,7 +114,7 @@ const getUserById = async (id: string) => {
     console.error("getUserById error:", error);
     return {
       success: false,
-      message: error.message || "Failed to fetch user"
+      message: error.message || UserMessages.FETCH.FAILED_BY_ID
     };
   }
 };
@@ -129,7 +130,7 @@ const updateUser = async (
       if (!roleExists) {
         return {
           success: false,
-          message: `Role ID "${updateData.roleId}" is invalid or not found`
+          message: UserMessages.UPDATE.ROLE_INVALID
         };
       }
     }
@@ -143,7 +144,8 @@ const updateUser = async (
     }
     return {
       success: true,
-      data: updatedUser
+      data: updatedUser,
+      message: UserMessages.UPDATE.SUCCESS
     };
   } catch (error: any) {
     return {
@@ -161,7 +163,7 @@ const deleteUser = async (id: string): Promise<{ success: boolean; message?: str
     if (!user) {
       return {
         success: false,
-        message: "User not found"
+        message: UserMessages.FETCH.NOT_FOUND
       };
     }
 
@@ -169,12 +171,12 @@ const deleteUser = async (id: string): Promise<{ success: boolean; message?: str
 
     return {
       success: true,
-      message: "User deleted successfully"
+      message: UserMessages.DELETE.SUCCESS
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to delete user"
+      message: error.message || UserMessages.DELETE.FAILED
     };
   }
 };
@@ -196,7 +198,7 @@ const getUserByEmail = async (
     if (!user) {
       return {
         success: false,
-        message: "User not found"
+        message: UserMessages.FETCH.NOT_FOUND
       };
     }
 
@@ -207,7 +209,7 @@ const getUserByEmail = async (
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to fetch user by email"
+      message: error.message || UserMessages.FETCH.FAILED_BY_ID
     };
   }
 };

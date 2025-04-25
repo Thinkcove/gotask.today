@@ -69,5 +69,4 @@ AccessRoutes.push({
   }
 });
 
-// Export AccessRoutes as default export
 export default AccessRoutes;

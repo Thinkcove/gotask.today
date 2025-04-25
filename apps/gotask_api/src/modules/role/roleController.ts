@@ -7,7 +7,7 @@ import {
   getRoleByIdService,
   updateRoleService
 } from "./roleService";
-import { roleMessages } from "../../constants/apiMessages/roleMessages"; // Import the constants
+import { roleMessages } from "../../constants/apiMessages/roleMessages";
 
 class RoleController extends BaseController {
   // Create Role
@@ -15,7 +15,6 @@ class RoleController extends BaseController {
     try {
       const roleData = requestHelper.getPayload();
 
-      // Basic validation (optional here if you’re already using Joi at route-level)
       if (!roleData.name || roleData.priority === undefined) {
         return this.replyError(new Error(roleMessages.namePriorityRequired));
       }
@@ -25,7 +24,7 @@ class RoleController extends BaseController {
         return this.replyError(new Error(result.message || roleMessages.createRoleFailed));
       }
 
-      return this.sendResponse(handler, result.data); // Return HTTP 201 for created resource
+      return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);
     }

@@ -11,7 +11,7 @@ import {
   deleteUser
 } from "./userService";
 import { getRoleByIdService } from "../role/roleService";
-import UserMessages from "../../constants/apiMessages/userMessage"; // Import user messages
+import UserMessages from "../../constants/apiMessages/userMessage";
 
 class UserController extends BaseController {
   // Create a new user
@@ -21,7 +21,7 @@ class UserController extends BaseController {
       const { name, user_id, roleId, password, status } = userData;
 
       if (!name || !user_id || !roleId || !password || typeof status === "undefined") {
-        throw new Error(UserMessages.CREATE.MISSING_FIELDS); // Use the message constants
+        throw new Error(UserMessages.CREATE.MISSING_FIELDS);
       }
 
       // Call the service to create the user
@@ -30,7 +30,7 @@ class UserController extends BaseController {
       return this.sendResponse(handler, newUser);
     } catch (error) {
       console.error("Error creating user:", error);
-      return this.replyError(new Error(UserMessages.CREATE.FAILED)); // Use the message constants
+      return this.replyError(new Error(UserMessages.CREATE.FAILED));
     }
   }
 
@@ -41,7 +41,7 @@ class UserController extends BaseController {
       return this.sendResponse(handler, users);
     } catch (error) {
       console.error("Error fetching users:", error);
-      return this.replyError(new Error(UserMessages.FETCH.FAILED_ALL)); // Use the message constants
+      return this.replyError(new Error(UserMessages.FETCH.FAILED_ALL));
     }
   }
 
@@ -50,11 +50,11 @@ class UserController extends BaseController {
     try {
       const id = requestHelper.getParam("id");
       const user = await getUserById(id);
-      if (!user) throw new Error(UserMessages.FETCH.NOT_FOUND); // Use the message constants
+      if (!user) throw new Error(UserMessages.FETCH.NOT_FOUND);
       return this.sendResponse(handler, user);
     } catch (error) {
       console.error("Error fetching user by ID:", error);
-      return this.replyError(new Error(UserMessages.FETCH.FAILED_BY_ID)); // Use the message constants
+      return this.replyError(new Error(UserMessages.FETCH.FAILED_BY_ID));
     }
   }
 
@@ -65,11 +65,11 @@ class UserController extends BaseController {
       const updatedData = requestHelper.getPayload();
       const updatedUser = await updateUser(id, updatedData);
 
-      if (!updatedUser) throw new Error(UserMessages.FETCH.NOT_FOUND); // Use the message constants
+      if (!updatedUser) throw new Error(UserMessages.FETCH.NOT_FOUND);
       return this.sendResponse(handler, updatedUser);
     } catch (error) {
       console.error("Error updating user:", error);
-      return this.replyError(new Error(UserMessages.UPDATE.FAILED)); // Use the message constants
+      return this.replyError(new Error(UserMessages.UPDATE.FAILED));
     }
   }
 
@@ -79,14 +79,14 @@ class UserController extends BaseController {
       const id = requestHelper.getParam("id");
       const deletedUser = await deleteUser(id);
 
-      if (!deletedUser) throw new Error(UserMessages.DELETE.NOT_FOUND); // Use the message constants
+      if (!deletedUser) throw new Error(UserMessages.DELETE.NOT_FOUND);
       return this.sendResponse(handler, {
         success: true,
-        message: UserMessages.DELETE.SUCCESS // Use the message constants
+        message: UserMessages.DELETE.SUCCESS
       });
     } catch (error) {
       console.error("Error deleting user:", error);
-      return this.replyError(new Error(UserMessages.DELETE.FAILED)); // Use the message constants
+      return this.replyError(new Error(UserMessages.DELETE.FAILED));
     }
   }
 
@@ -98,7 +98,7 @@ class UserController extends BaseController {
       if (!user_id || !password) {
         return this.sendResponse(handler, {
           success: false,
-          error: UserMessages.LOGIN.MISSING_FIELDS // Use the message constants
+          error: UserMessages.LOGIN.MISSING_FIELDS
         });
       }
 
@@ -107,7 +107,7 @@ class UserController extends BaseController {
       if (!success || !user) {
         return this.sendResponse(handler, {
           success: false,
-          error: message || UserMessages.LOGIN.USER_NOT_FOUND // Use the message constants
+          error: message || UserMessages.LOGIN.USER_NOT_FOUND
         });
       }
 
@@ -115,7 +115,7 @@ class UserController extends BaseController {
       if (!isMatch) {
         return this.sendResponse(handler, {
           success: false,
-          error: UserMessages.LOGIN.INVALID_CREDENTIALS // Use the message constants
+          error: UserMessages.LOGIN.INVALID_CREDENTIALS
         });
       }
 
@@ -125,7 +125,7 @@ class UserController extends BaseController {
       if (!roleId) {
         return this.sendResponse(handler, {
           success: false,
-          error: UserMessages.LOGIN.ROLE_NOT_FOUND // Use the message constants
+          error: UserMessages.LOGIN.ROLE_NOT_FOUND
         });
       }
 
@@ -134,7 +134,7 @@ class UserController extends BaseController {
       if (!roleResult.success || !roleResult.data) {
         return this.sendResponse(handler, {
           success: false,
-          error: roleResult.message || UserMessages.LOGIN.ROLE_FETCH_FAILED // Use the message constants
+          error: roleResult.message || UserMessages.LOGIN.ROLE_FETCH_FAILED
         });
       }
 
@@ -166,7 +166,7 @@ class UserController extends BaseController {
       console.error("Login error:", error);
       return this.sendResponse(handler, {
         success: false,
-        error: error.message || UserMessages.LOGIN.INVALID_CREDENTIALS // Use the message constants
+        error: error.message || UserMessages.LOGIN.INVALID_CREDENTIALS
       });
     }
   }

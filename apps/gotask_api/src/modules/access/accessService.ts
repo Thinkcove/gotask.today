@@ -1,4 +1,5 @@
-import { IAccess, Access } from "../../domain/model/access";
+import { Access } from "../../domain/model/access";
+import { IAccess } from "../../domain/interface/access/accessInterface";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
 
 // Create a new access record

@@ -1,6 +1,6 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { IAccess } from "../../domain/model/access";
+import { IAccess } from "../../domain/interface/access/accessInterface";
 import {
   createAccess,
   getAllAccesses,

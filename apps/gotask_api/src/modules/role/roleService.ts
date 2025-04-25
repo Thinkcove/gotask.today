@@ -1,12 +1,7 @@
 import { roleMessages } from "../../constants/apiMessages/roleMessages";
 import { Role } from "../../domain/model/role";
 import { Access } from "../../domain/model/access";
-
-interface CreateRolePayload {
-  name: string;
-  priority: number;
-  accessIds?: string[];
-}
+import { CreateRolePayload } from "../../domain/interface/role/roleInterface";
 
 // Create Role Logic
 export const createRoleService = async (data: CreateRolePayload) => {

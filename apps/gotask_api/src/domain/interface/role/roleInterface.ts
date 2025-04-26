@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Access } from "../../model/access";
 import { Role, IRole, CreateRolePayload } from "../../model/role";
 
@@ -61,4 +62,10 @@ export const updateRoleInDb = async (
 export const deleteRoleInDb = async (roleId: string): Promise<boolean> => {
   const result = await Role.findOneAndDelete({ id: roleId });
   return result !== null;
+};
+
+// Get roles by a single role ID
+export const findRoleByIds = async (roleIds: string[]): Promise<any[]> => {
+  const roleObjectIds = roleIds.map((id) => new mongoose.Types.ObjectId(id));
+  return await Role.find({ _id: { $in: roleObjectIds } });
 };

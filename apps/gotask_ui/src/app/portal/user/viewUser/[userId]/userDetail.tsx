@@ -1,52 +1,84 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Card, IconButton, Divider, Stack, Chip, Grid } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
-import { User } from "../../interfaces/userInterface";
+import { ArrowBack, Delete, Edit } from "@mui/icons-material";
+import { useParams, useRouter } from "next/navigation";
+import { IUserField, User } from "../../interfaces/userInterface";
+import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import EditUser from "./editUser";
+import { KeyedMutator } from "swr";
+import CommonDialog from "@/app/component/dialog/commonDialog";
+import { deleteUser } from "../../services/userAction";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
 
 interface UserDetailProps {
   user: User;
+  mutate: KeyedMutator<User>;
 }
 
-const UserDetail: React.FC<UserDetailProps> = ({ user }) => {
+const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const router = useRouter();
+  const { userId } = useParams();
+  const userID = userId as string;
+  const [editOpen, setEditOpen] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
 
   const handleBack = () => {
-    router.back();
+    setTimeout(() => router.back(), 2000);
   };
+
+  const handleDelete = async () => {
+    try {
+      await deleteUser(userID);
+      await mutate();
+      setSnackbar({
+        open: true,
+        message: "User deleted successfully!",
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
+      setOpenDeleteDialog(false);
+      setTimeout(() => router.back(), 2000);
+    } catch {
+      setSnackbar({
+        open: true,
+        message: "Error while deleting a user",
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+    }
+  };
+
+  const mapUserToUserField = (user: User): IUserField => ({
+    name: user.name,
+    status: user.status,
+    organization: user.organization,
+    roleId: user.roleId._id,
+    user_id: user.user_id
+  });
 
   return (
     <>
       {/* Header */}
-      <Box
-        sx={{
-          backgroundColor: "#741B92",
-          color: "white",
-          py: 2,
-          textAlign: "center",
-          boxShadow: 2
-        }}
-      >
-        <Typography variant="h5" fontWeight="bold">
-          User Detail View
-        </Typography>
-      </Box>
+      <ModuleHeader name="User Detail View" />
 
       {/* Main Content */}
       <Box
         sx={{
           minHeight: "100vh",
-          px: 4,
-          py: 6,
+          p: 3,
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
       >
-        <Card
-          elevation={4}
+        <Box
           sx={{
             borderRadius: 4,
             p: 4,
-            backgroundColor: "#fff"
+            backgroundColor: "#fff",
+            border: "1px solid #e0e0e0"
           }}
         >
           {/* User Info Header */}
@@ -54,9 +86,16 @@ const UserDetail: React.FC<UserDetailProps> = ({ user }) => {
             <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
               <ArrowBack />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
               {user.name}
             </Typography>
+            <Box sx={{ flexGrow: 1 }} /> {/* This pushes the next icons to the right */}
+            <IconButton color="primary" onClick={() => setEditOpen(true)}>
+              <Edit />
+            </IconButton>
+            <IconButton color="error" onClick={() => setOpenDeleteDialog(true)}>
+              <Delete />
+            </IconButton>
           </Box>
 
           {/* Basic Details */}
@@ -72,7 +111,9 @@ const UserDetail: React.FC<UserDetailProps> = ({ user }) => {
               <Typography variant="subtitle2" color="text.secondary">
                 Role ID
               </Typography>
-              <Typography variant="body1">{user?.roleId.name}</Typography>
+              <Typography variant="body1" sx={{ textTransform: "capitalize" }}>
+                {user?.roleId.name}
+              </Typography>
             </Grid>
 
             <Grid item xs={12} md={6}>
@@ -100,8 +141,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ user }) => {
                 Organizations
               </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap">
-                {user.organization?.map((orgId) => (
-                  <Chip key={orgId} label={orgId} variant="outlined" />
+                {user.orgDetails?.map((orgId) => (
+                  <Chip key={orgId.id} label={orgId.name} variant="outlined" />
                 ))}
               </Stack>
             </Grid>
@@ -115,20 +156,54 @@ const UserDetail: React.FC<UserDetailProps> = ({ user }) => {
             Project Details
           </Typography>
 
-          {user.projectDetails?.map((project) => (
-            <Card key={project.id} variant="outlined" sx={{ mb: 2, p: 2 }}>
-              <Typography variant="subtitle1" fontWeight="600">
-                {project.name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {project.description}
-              </Typography>
-              <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center">
-                <Chip label={`Status: ${project.status}`} size="small" color="warning" />
-              </Stack>
-            </Card>
-          ))}
-        </Card>
+          {user.projectDetails && user.projectDetails.length > 0 ? (
+            user.projectDetails.map((project) => (
+              <Card key={project.id} variant="outlined" sx={{ mb: 2, p: 2 }}>
+                <Typography variant="subtitle1" fontWeight="600">
+                  {project.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  {project.description}
+                </Typography>
+                <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center">
+                  <Chip label={`Status: ${project.status}`} size="small" color="warning" />
+                </Stack>
+              </Card>
+            ))
+          ) : (
+            <Grid item xs={12}>
+              <Typography color="text.secondary">No projects assigned yet.</Typography>
+            </Grid>
+          )}
+        </Box>
+
+        {/* Edit User Dialog */}
+        <EditUser
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          data={mapUserToUserField(user)}
+          mutate={mutate}
+          userID={userID}
+        />
+
+        <CommonDialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+          onSubmit={handleDelete}
+          title="Delete User"
+          submitLabel="Delete"
+        >
+          <Typography>
+            Are you sure you want to delete this user? This action cannot be undone.
+          </Typography>
+        </CommonDialog>
+
+        <CustomSnackbar
+          open={snackbar.open}
+          message={snackbar.message}
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        />
       </Box>
     </>
   );

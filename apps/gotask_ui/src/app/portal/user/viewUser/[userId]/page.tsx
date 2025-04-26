@@ -8,13 +8,13 @@ import UserDetail from "./userDetail";
 
 const ViewAction: React.FC = () => {
   const { userId } = useParams();
-  const { data } = useSWR(`${env.API_BASE_URL}/getUserById/${userId}`, {
+  const { data, mutate } = useSWR(`${env.API_BASE_URL}/getUserById/${userId}`, {
     revalidateOnFocus: false
   });
   const selectedTask = data?.data || null;
 
   return selectedTask ? (
-    <UserDetail user={selectedTask} />
+    <UserDetail user={selectedTask} mutate={mutate} />
   ) : (
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
       <CircularProgress />

@@ -22,6 +22,24 @@ export const postData = async (url: string, payload: Record<string, unknown>) =>
   return response.json();
 };
 
+// putData function
+export const putData = async (url: string, payload: Record<string, unknown>) => {
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: apiHeaders(),
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw {
+      message: `HTTP error! Status: ${response.status}`,
+      response: errorResponse
+    };
+  }
+  return response.json();
+};
+
 //GETData function
 export const getData = async (url: string) => {
   const response = await fetch(url, {

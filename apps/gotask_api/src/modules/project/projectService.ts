@@ -1,13 +1,16 @@
 import ProjectMessages from "../../constants/apiMessages/projectMessage";
 import { IProject, Project } from "../../domain/model/project/project";
-import { Organization } from "../../domain/model/organization";
+import { Organization } from "../../domain/model/organization/organization";
 import {
   createNewProject,
   findAllProjects,
   findByProjectId,
   findByUserId,
+  findProjectById,
+  findProjectCountByStatus,
   findUsersByIds,
-  saveProject
+  saveProject,
+  updateProjectById
 } from "../../domain/interface/project/projectInterface";
 
 // Create a new project
@@ -35,17 +38,39 @@ const createProject = async (
   }
 };
 
-// Get all projects
 const getAllProjects = async (): Promise<{
   success: boolean;
   data?: IProject[];
   message?: string;
 }> => {
   try {
+    // Fetch all projects
     const projects = await findAllProjects();
+
+    // Gather all unique user IDs (filter out undefined values)
+    const allUserIds = Array.from(
+      new Set(
+        projects.flatMap((project) => project.user_id?.filter((id) => id !== undefined) || [])
+      )
+    );
+
+    // Fetch user details based on user IDs
+    const users = await findUsersByIds(allUserIds);
+
+    // Map user IDs to user objects for easy lookup
+    const userMap = new Map(users.map((user) => [user.id, user]));
+
+    // Attach user details to each project
+    const enrichedProjects = projects.map((project) => ({
+      ...project.toObject(),
+      users: (project.user_id || [])
+        .map((id: string) => userMap.get(id)) // Map to user details
+        .filter(Boolean) // Filter out undefined or null values
+    }));
+
     return {
       success: true,
-      data: projects
+      data: enrichedProjects
     };
   } catch (error: any) {
     return {
@@ -92,7 +117,8 @@ const assignUsersToProject = async (
     const updatedProject = await saveProject(project);
     return {
       success: true,
-      data: updatedProject
+      data: updatedProject,
+      message: "Successfully Assigned to the project"
     };
   } catch (error: any) {
     return {
@@ -148,10 +174,140 @@ const assignProjectToOrganization = async (
   }
 };
 
+// Get task count grouped by status
+const getProjectCountByStatus = async (): Promise<{
+  success: boolean;
+  data?: Record<string, number>;
+  message?: string;
+}> => {
+  try {
+    const taskCounts = await findProjectCountByStatus();
+    return {
+      success: true,
+      data: taskCounts
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "ProjectMessages.FETCH.FAILED_COUNTS"
+    };
+  }
+};
+
+// Get a task by ID
+const getProjectById = async (
+  id: string
+): Promise<{ success: boolean; data?: IProject | null; message?: string }> => {
+  try {
+    const project = await findProjectById(id);
+    if (!project) {
+      return {
+        success: false,
+        message: ProjectMessages.FETCH.NOT_FOUND
+      };
+    }
+
+    // Extract user IDs from the project
+    const userIds = (project.user_id || []).filter((id) => id !== undefined);
+
+    // Fetch user details
+    const users = await findUsersByIds(userIds);
+
+    // Map users for quick lookup
+    const userMap = new Map(users.map((user) => [user.id, user]));
+
+    // Enrich the project with user details
+    const enrichedProject = {
+      ...project.toObject(),
+      users: userIds.map((id: string) => userMap.get(id)).filter(Boolean)
+    };
+
+    return {
+      success: true,
+      data: enrichedProject
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.FETCH.FAILED_BY_ID
+    };
+  }
+};
+
+// Remove users from a project
+const removeUsersFromProject = async (
+  userIds: string[],
+  projectId: string
+): Promise<{ success: boolean; data?: IProject; message?: string }> => {
+  try {
+    if (!Array.isArray(userIds) || userIds.length === 0 || !projectId) {
+      return {
+        success: false,
+        message: ProjectMessages.REMOVE.INVALID_INPUT
+      };
+    }
+
+    const project = await findByProjectId(projectId);
+    if (!project) {
+      return {
+        success: false,
+        message: ProjectMessages.REMOVE.PROJECT_NOT_FOUND
+      };
+    }
+
+    if (!Array.isArray(project.user_id)) {
+      project.user_id = [];
+    }
+
+    // Filter out the users to be removed
+    project.user_id = project.user_id.filter((id: string) => !userIds.includes(id));
+
+    await saveProject(project);
+
+    return {
+      success: true,
+      message: "Successfully removed from the project"
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.REMOVE.FAILED
+    };
+  }
+};
+
+// Update project
+const updateProject = async (
+  id: string,
+  updateData: Partial<IProject>
+): Promise<{ success: boolean; data?: IProject | null; message?: string }> => {
+  try {
+    const updatedProject = await updateProjectById(id, updateData);
+    if (!updatedProject) {
+      return {
+        success: false,
+        message: ProjectMessages.FETCH.NOT_FOUND
+      };
+    }
+    return {
+      success: true,
+      data: updatedProject
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.UPDATE.FAILED
+    };
+  }
+};
 export {
   createProject,
   getAllProjects,
   assignUsersToProject,
   getProjectsByUserId,
-  assignProjectToOrganization
+  assignProjectToOrganization,
+  getProjectCountByStatus,
+  getProjectById,
+  removeUsersFromProject,
+  updateProject
 };

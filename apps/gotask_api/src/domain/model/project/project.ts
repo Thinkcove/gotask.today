@@ -39,8 +39,7 @@ const ProjectSchema = new Schema<IProject>(
       }
     ],
     organization_id: {
-      type: String,
-      required: true // Make optional if needed
+      type: String
     }
   },
   { timestamps: true }

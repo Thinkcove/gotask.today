@@ -1,0 +1,37 @@
+[
+  {
+    "text": "Dashboard",
+    "icon": "DashboardIcon",
+    "path": "/portal/dashboard"
+  },
+  {
+    "text": "Project",
+    "icon": "FolderIcon",
+    "path": "/portal/project"
+  },
+  {
+    "text": "User",
+    "icon": "PeopleIcon",
+    "path": "/portal/user"
+  },
+  {
+    "text": "Organization",
+    "icon": "BusinessIcon",
+    "path": "/portal/organization"
+  },
+  {
+    "text": "Role",
+    "icon": "SecurityIcon",
+    "path": "/portal/role"
+  },
+  {
+    "text": "Access",
+    "icon": "VpnKeyIcon",
+    "path": "/portal/access"
+  },
+  {
+    "text": "Task",
+    "icon": "AssignmentIcon",
+    "path": "/portal/task"
+  }
+]

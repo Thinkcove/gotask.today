@@ -7,14 +7,23 @@ import { fetchAllOrganizations } from "../../organization/services/organizationA
 
 interface IProjectInputProps {
   formData: IProjectField;
+  errors?: { [key: string]: string };
+  readOnlyFields?: string[];
   handleChange: (field: keyof IProjectField, value: string) => void;
 }
 
-const ProjectInput = ({ formData, handleChange }: IProjectInputProps) => {
+const ProjectInput = ({
+  formData,
+  errors,
+  readOnlyFields = [],
+  handleChange
+}: IProjectInputProps) => {
   const currentStatus = formData.status;
   const allowedStatuses = PROJECT_WORKFLOW[currentStatus] || [];
   const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
   const { getOrganizations } = fetchAllOrganizations();
+  const isReadOnly = (field: string) => readOnlyFields.includes(field);
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
@@ -24,6 +33,8 @@ const ProjectInput = ({ formData, handleChange }: IProjectInputProps) => {
           value={formData.name}
           onChange={(value) => handleChange("name", String(value))}
           required
+          error={errors?.name}
+          disabled={isReadOnly("name")}
           placeholder="Enter project name"
         />
       </Grid>
@@ -34,6 +45,8 @@ const ProjectInput = ({ formData, handleChange }: IProjectInputProps) => {
           value={formData.description}
           onChange={(value) => handleChange("description", String(value))}
           required
+          error={errors?.description}
+          disabled={isReadOnly("description")}
           placeholder="Enter project description"
         />
       </Grid>
@@ -43,8 +56,10 @@ const ProjectInput = ({ formData, handleChange }: IProjectInputProps) => {
           type="select"
           options={uniqueStatuses.map((s) => s.toUpperCase())}
           required
+          error={errors?.status}
           placeholder="Select project status"
           value={currentStatus.toUpperCase()}
+          disabled={isReadOnly("status")}
           onChange={(value) => handleChange("status", String(value).toLowerCase())}
         />
       </Grid>
@@ -56,6 +71,7 @@ const ProjectInput = ({ formData, handleChange }: IProjectInputProps) => {
           onChange={(value) => handleChange("organization_id", String(value))}
           options={getOrganizations}
           required
+          disabled={isReadOnly("organization_id")}
           placeholder="Select organization"
         />
       </Grid>

@@ -4,15 +4,8 @@ import { getData, postData, putData } from "@/app/common/utils/apiData";
 
 //createProject
 export const createProject = async (formData: IProjectField) => {
-  const response = await fetch(`${env.API_BASE_URL}/createProject`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData)
-  });
-  if (!response.ok) {
-    throw new Error("Failed to create project");
-  }
-  return response.json();
+  const url = `${env.API_BASE_URL}/createProject`;
+  return await postData(url, formData as unknown as Record<string, unknown>);
 };
 
 //update a project

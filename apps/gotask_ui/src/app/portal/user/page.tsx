@@ -1,28 +1,14 @@
-import { Box, Typography } from "@mui/material";
+"use client";
 import React from "react";
+import UserList from "./components/userList";
+import ModuleHeader from "@/app/component/appBar/moduleHeader";
 
 const page = () => {
   return (
-    <Box
-      sx={{
-        backgroundColor: "#741B92", // Solid color for a bold look
-        color: "white",
-        p: 1.5,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-      }}
-    >
-      <Typography
-        variant="h6"
-        sx={{
-          fontWeight: "600",
-          textTransform: "capitalize"
-        }}
-      >
-        User
-      </Typography>
-    </Box>
+    <>
+      <ModuleHeader name="User" />
+      <UserList />
+    </>
   );
 };
 

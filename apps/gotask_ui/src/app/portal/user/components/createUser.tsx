@@ -1,65 +1,64 @@
 "use client";
 import React, { useState } from "react";
-import { IProjectField, Project, PROJECT_STATUS } from "../interfaces/projectInterface";
-import { createProject } from "../services/projectAction";
-import ProjectInput from "./projectInputs";
 import { KeyedMutator } from "swr";
-import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { IUserField, User } from "../interfaces/userInterface";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import UserInput from "./userInputs";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import { createUser } from "../services/userAction";
 
-interface CreateProjectProps {
+interface CreateUserProps {
   open: boolean;
   onClose: () => void;
-  mutate: KeyedMutator<Project>;
+  mutate: KeyedMutator<User>;
 }
 
-const initialFormState: IProjectField = {
+const initialFormState: IUserField = {
   name: "",
-  description: "",
-  status: PROJECT_STATUS.TO_DO,
-  organization_id: ""
+  status: true,
+  organization: [],
+  role: "",
+  user_id: "",
+  password: ""
 };
 
-const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
+const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-
-  const [formData, setFormData] = useState<IProjectField>(initialFormState);
+  const [formData, setFormData] = useState<IUserField>(initialFormState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name = "Project Title is required";
-    if (!formData.description) newErrors.description = "Description is required";
+    if (!formData.name) newErrors.name = "User name is required";
+    if (!formData.role) newErrors.role = "Role is required";
     if (!formData.status) newErrors.status = "Status is required";
-
+    if (!formData.user_id) newErrors.user_id = "Email is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  const handleChange = (field: keyof IProjectField, value: string) => {
+  const handleChange = (field: keyof IUserField, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-
   const handleSubmit = async () => {
     if (!validateForm()) return;
     try {
-      await createProject(formData);
+      await createUser(formData);
       await mutate();
       setSnackbar({
         open: true,
-        message: "Project created successfully!",
+        message: "User created successfully!",
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while creating project",
+        message: "Error while creating user",
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -67,13 +66,8 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
 
   return (
     <>
-      <CommonDialog
-        open={open}
-        onClose={onClose}
-        onSubmit={handleSubmit}
-        title="Create New Project"
-      >
-        <ProjectInput formData={formData} handleChange={handleChange} errors={errors} />
+      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Create New User">
+        <UserInput formData={formData} handleChange={handleChange} errors={errors} />
       </CommonDialog>
       <CustomSnackbar
         open={snackbar.open}
@@ -85,4 +79,4 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
   );
 };
 
-export default CreateProject;
+export default CreateUser;

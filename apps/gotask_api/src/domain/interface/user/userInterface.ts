@@ -1,3 +1,4 @@
+import { Project } from "../../model/project/project";
 import { IUser, User } from "../../model/user/user";
 
 const createNewUser = async (userData: IUser): Promise<IUser> => {
@@ -6,7 +7,7 @@ const createNewUser = async (userData: IUser): Promise<IUser> => {
 };
 
 const findAllUsers = async (): Promise<IUser[]> => {
-  return await User.find();
+  return await User.find().sort({ updatedAt: -1 });
 };
 
 const findUserById = async (id: string): Promise<IUser | null> => {
@@ -31,11 +32,17 @@ const findUserByEmail = async (user_id: string): Promise<IUser | null> => {
   return await User.findOne({ user_id });
 };
 
+// Get users by an array of user IDs
+const findProjectsByIds = async (projectIds: string[]) => {
+  return await Project.find({ id: { $in: projectIds } });
+};
+
 export {
   createNewUser,
   findAllUsers,
   findUserById,
   updateUserById,
   findUserByEmail,
-  findUsersByIds
+  findUsersByIds,
+  findProjectsByIds
 };

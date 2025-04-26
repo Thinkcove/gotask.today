@@ -27,8 +27,8 @@ interface FormFieldProps {
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];
-  value: string | number | Date | string[]; // updated to allow string[]
-  onChange: (value: string | number | Date | string[]) => void;
+  value?: string | number | Date | string[]; // updated to allow string[]
+  onChange?: (value: string | number | Date | string[]) => void;
   error?: string;
   disabled?: boolean;
   multiline?: boolean;
@@ -88,7 +88,7 @@ const FormField: React.FC<FormFieldProps> = ({
               },
               ...(multiline && { height: height || 100, overflowY: "auto" })
             }}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange?.(e.target.value)}
             InputProps={{
               disableUnderline: true,
               startAdornment: (
@@ -103,7 +103,7 @@ const FormField: React.FC<FormFieldProps> = ({
         {type === "select" && (
           <Select
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange?.(e.target.value)}
             displayEmpty
             variant="standard"
             fullWidth
@@ -140,7 +140,7 @@ const FormField: React.FC<FormFieldProps> = ({
             selected={
               value instanceof Date ? value : value ? new Date(value as string | number) : null
             }
-            onChange={(date) => onChange(date ? date.toISOString().split("T")[0] : "")}
+            onChange={(date) => onChange?.(date ? date.toISOString().split("T")[0] : "")}
             disabled={disabled}
             dateFormat="MM/dd/yyyy"
             customInput={
@@ -167,7 +167,7 @@ const FormField: React.FC<FormFieldProps> = ({
             multiple
             value={Array.isArray(value) ? value : []}
             onChange={(e) =>
-              onChange(
+              onChange?.(
                 typeof e.target.value === "string" ? e.target.value.split(",") : e.target.value
               )
             }

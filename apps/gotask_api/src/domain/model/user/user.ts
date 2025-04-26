@@ -1,7 +1,17 @@
-import { Schema, model } from "mongoose";
+import { Document, Schema, model, Types } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
-import { IUser } from "../../interface/user/userInterface";
+
+export interface IUser extends Document {
+  id: string;
+  name: string;
+  password: string;
+  user_id: string;
+  status: boolean;
+  roleId: Types.ObjectId;
+  organization?: Types.ObjectId;
+  projects?: Types.ObjectId[];
+}
 
 // User schema
 const UserSchema = new Schema<IUser>(
@@ -11,6 +21,8 @@ const UserSchema = new Schema<IUser>(
     password: { type: String, required: true },
     user_id: { type: String, required: true, unique: true },
     status: { type: Boolean, default: true },
+
+    // Reference to Role (renamed to roleId)
     roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true },
 
     organization: {

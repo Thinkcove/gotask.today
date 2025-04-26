@@ -1,12 +1,50 @@
-import { Document, Types } from "mongoose";
+import { Access } from "../../model/access";
+import { IUser, User } from "../../model/user/user";
 
-export interface IUser extends Document {
-  id: string;
-  name: string;
-  password: string;
-  user_id: string; // email
-  status: boolean;
-  roleId: Types.ObjectId;
-  organization?: Types.ObjectId;
-  projects?: Types.ObjectId[];
-}
+// Create a new user
+const createNewUser = async (userData: IUser): Promise<IUser> => {
+  const newUser = new User(userData);
+  return await newUser.save();
+};
+
+// Find all users
+const findAllUsers = async (): Promise<IUser[]> => {
+  return await User.find();
+};
+
+// Find a user by ID with populated fields (roleId → role → access)
+const findUserById = async (id: string): Promise<IUser | null> => {
+  return await User.findOne({ id })
+    .populate({
+      path: "roleId",
+      populate: {
+        path: "access",
+        model: "Access",
+        select: "name application"
+      }
+    })
+    .exec();
+};
+
+// Update a user by ID
+const updateUserById = async (id: string, updateData: Partial<IUser>): Promise<IUser | null> => {
+  return await User.findOneAndUpdate({ id }, updateData, { new: true });
+};
+
+// Find a user by email and populate roleId with access
+const findUserByEmail = async (user_id: string): Promise<IUser | null> => {
+  const user = await User.findOne({ user_id }).populate("roleId");
+
+  if (!user || !user.roleId) return null;
+
+  const roleObj: any = user.roleId;
+
+  if (Array.isArray(roleObj.access)) {
+    const accessRecords = await Access.find({ id: { $in: roleObj.access } }).lean();
+    roleObj.access = accessRecords;
+  }
+
+  return user;
+};
+
+export { createNewUser, findAllUsers, findUserById, updateUserById, findUserByEmail };

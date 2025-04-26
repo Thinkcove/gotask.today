@@ -1,6 +1,14 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { IAccess } from "../interface/access/accessInterface";
+
+export interface IAccess extends Document {
+  id: string;
+  name: string;
+  application: {
+    access: string;
+    actions: string[];
+  }[];
+}
 
 const AccessSchema = new Schema<IAccess>(
   {

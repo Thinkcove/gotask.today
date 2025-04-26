@@ -1,6 +1,17 @@
-import { Schema, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { IRole } from "../interface/role/roleInterface";
+
+export interface IRole extends Document {
+  id: string;
+  name: string;
+  priority: number;
+  access: string[];
+}
+export interface CreateRolePayload {
+  name: string;
+  priority: number;
+  accessIds?: string[];
+}
 
 const RoleSchema = new Schema<IRole>(
   {

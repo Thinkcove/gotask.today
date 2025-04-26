@@ -41,6 +41,8 @@ const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUse
           inputType="email"
           placeholder="Enter your email"
           required
+          value={formData.user_id}
+          onChange={(value) => handleChange("user_id", String(value))}
           error={errors?.user_id}
           disabled={isReadOnly("user_id")}
         />
@@ -52,9 +54,9 @@ const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUse
           type="select"
           placeholder="Select Role"
           options={getRoles}
-          error={errors?.role}
-          value={formData.role || ""}
-          onChange={(value) => handleChange("role", String(value))}
+          error={errors?.roleId}
+          value={formData.roleId || ""}
+          onChange={(value) => handleChange("roleId", String(value))}
         />
       </Grid>
 

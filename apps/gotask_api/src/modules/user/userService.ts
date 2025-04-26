@@ -3,6 +3,7 @@ import { findOrganizationsByIds } from "../../domain/interface/organization/orga
 import {
   createNewUser,
   findAllUsers,
+  findProjectsByIds,
   updateUserById
 } from "../../domain/interface/user/userInterface";
 import { IUser, User } from "../../domain/model/user/user";
@@ -123,10 +124,32 @@ const getUserById = async (id: string) => {
 
     const enrichedRole = roleResult.data;
 
-    //  Return user with full role and remove password
+    // Convert user to plain object and remove sensitive fields
     const userObj = user.toObject() as any;
     delete userObj.password;
+
+    // --- New Project Enrichment Logic ---
+
+    // Extract project IDs from user
+    const projectIds = (userObj.projects || []).filter(
+      (id: string | undefined) => id !== undefined
+    );
+
+    let projectDetails = [];
+    if (projectIds.length > 0) {
+      // Fetch project details
+      const projects = await findProjectsByIds(projectIds);
+
+      // Map projects for quick lookup
+      const projectMap = new Map(projects.map((project: any) => [project.id, project]));
+
+      // Map enriched project details
+      projectDetails = projectIds.map((id: string) => projectMap.get(id)).filter(Boolean); // Remove undefineds if any
+    }
+
+    // Attach enriched data
     userObj.role = enrichedRole;
+    userObj.projectDetails = projectDetails;
 
     return {
       success: true,

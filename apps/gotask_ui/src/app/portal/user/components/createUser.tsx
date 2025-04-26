@@ -18,7 +18,7 @@ const initialFormState: IUserField = {
   name: "",
   status: true,
   organization: [],
-  role: "",
+  roleId: "",
   user_id: "",
   password: ""
 };
@@ -35,7 +35,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.name) newErrors.name = "User name is required";
-    if (!formData.role) newErrors.role = "Role is required";
+    if (!formData.roleId) newErrors.roleId = "Role is required";
     if (!formData.status) newErrors.status = "Status is required";
     if (!formData.user_id) newErrors.user_id = "Email is required";
     setErrors(newErrors);

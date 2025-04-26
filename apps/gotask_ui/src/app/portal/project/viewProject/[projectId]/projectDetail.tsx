@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Card, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
+import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
 import { fetchAllUsers } from "@/app/portal/task/service/taskAction";
@@ -45,7 +45,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
         message: response.message,
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-    } catch (error) {
+    } catch {
       setSnackbar({
         open: true,
         message: "Error while adding assignee",
@@ -66,7 +66,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
         message: response.message,
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-    } catch (error) {
+    } catch {
       setSnackbar({
         open: true,
         message: "Error while removing assignee",

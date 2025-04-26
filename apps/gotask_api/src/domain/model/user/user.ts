@@ -10,8 +10,8 @@ export interface IUser extends Document {
   user_id: string; // email
   status: boolean;
   role: Types.ObjectId; // Now referencing Role model
-  organization?: Types.ObjectId;
-  projects?: Types.ObjectId[];
+  organization?: string[];
+  projects?: string[];
 }
 
 // User schema
@@ -28,18 +28,12 @@ const UserSchema = new Schema<IUser>(
 
     // Optional organization
     organization: {
-      type: Schema.Types.ObjectId,
-      ref: "Organization",
-      default: null
+      type: [String],
+      default: []
     },
 
     // Optional projects
-    projects: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Project"
-      }
-    ]
+    projects: { type: [String], default: [] }
   },
   { timestamps: true }
 );

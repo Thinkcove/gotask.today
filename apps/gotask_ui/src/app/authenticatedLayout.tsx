@@ -3,7 +3,6 @@
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Box } from "@mui/material";
-import Header from "./component/appBar/header";
 import { useUser } from "./userContext";
 import Sidebar from "./component/sidebar/sideBar";
 

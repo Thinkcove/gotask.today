@@ -50,7 +50,7 @@ const TaskList: React.FC = () => {
   const fetchTasks = () => {
     const { search_vals, search_vars } = searchParams;
     if (view === "projects") {
-      const { tasksByProjects, mutate, ...rest } = useProjectGroupTask(
+      const { tasksByProjects, ...rest } = useProjectGroupTask(
         page,
         6,
         1,

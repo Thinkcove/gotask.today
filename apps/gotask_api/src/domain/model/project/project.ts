@@ -8,7 +8,7 @@ export interface IProject extends Document {
   name: string;
   description: string;
   status: string;
-  user_id?: string[];
+  user_id?: string[]; //user id
   organization_id: string; // UUID from Organization model
 }
 

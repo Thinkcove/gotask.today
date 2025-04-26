@@ -12,6 +12,7 @@ import {
   saveProject,
   updateProjectById
 } from "../../domain/interface/project/projectInterface";
+import { User } from "../../domain/model/user/user";
 
 // Create a new project
 const createProject = async (
@@ -80,7 +81,6 @@ const getAllProjects = async (): Promise<{
   }
 };
 
-// Assign users to a project
 const assignUsersToProject = async (
   userIds: string[],
   projectId: string
@@ -109,16 +109,36 @@ const assignUsersToProject = async (
       };
     }
 
+    // Update the project
     project.user_id = Array.isArray(project.user_id) ? project.user_id : [];
     const existingUserIds = new Set(project.user_id);
     users.forEach((user: any) => existingUserIds.add(user.id));
     project.user_id = Array.from(existingUserIds);
 
     const updatedProject = await saveProject(project);
+
+    // ⚡️ Update each user to add this projectId to their projects[]
+    await Promise.all(
+      users.map(async (user: any) => {
+        const foundUser = await User.findOne({ id: user.id });
+        if (foundUser) {
+          // Initialize projects array if it's undefined
+          if (!foundUser.projects) {
+            foundUser.projects = [];
+          }
+          // Avoid duplicates
+          if (!foundUser.projects.includes(projectId)) {
+            foundUser.projects.push(projectId);
+            await foundUser.save();
+          }
+        }
+      })
+    );
+
     return {
       success: true,
       data: updatedProject,
-      message: "Successfully Assigned to the project"
+      message: "Successfully assigned users to the project"
     };
   } catch (error: any) {
     return {

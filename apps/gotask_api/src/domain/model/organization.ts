@@ -28,11 +28,10 @@ const OrganizationSchema = new Schema<IOrganization>(
     }
   },
   {
-    timestamps: true // Adds createdAt and updatedAt automatically
+    timestamps: true
   }
 );
 
-// Ensure `id` is always included when converting to JSON
 OrganizationSchema.set("toJSON", {
   transform: function (doc, ret) {
     delete ret._id;

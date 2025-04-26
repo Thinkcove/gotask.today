@@ -1,6 +1,13 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { createRoleService, getAllRolesService } from "./roleService";
+import {
+  createRoleService,
+  deleteRoleService,
+  getAllRolesService,
+  getRoleByIdService,
+  updateRoleService
+} from "./roleService";
+import { roleMessages } from "../../constants/apiMessages/roleMessages";
 
 class RoleController extends BaseController {
   // Create Role
@@ -8,14 +15,13 @@ class RoleController extends BaseController {
     try {
       const roleData = requestHelper.getPayload();
 
-      // Basic validation (optional here if you’re already using Joi at route-level)
       if (!roleData.name || roleData.priority === undefined) {
-        return this.replyError(new Error("Name and Priority fields are required"));
+        return this.replyError(new Error(roleMessages.CREATE.FAILED)); // replaced with CREATE.FAILED
       }
 
       const result = await createRoleService(roleData);
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to create role"));
+        return this.replyError(new Error(result.message || roleMessages.CREATE.FAILED));
       }
 
       return this.sendResponse(handler, result.data);
@@ -29,10 +35,59 @@ class RoleController extends BaseController {
     try {
       const result = await getAllRolesService();
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to fetch roles"));
+        return this.replyError(new Error(result.message || roleMessages.FETCH.FAILED));
       }
 
       return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Get Role by ID
+  async getRoleById(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const result = await getRoleByIdService(id);
+
+      if (!result.success) {
+        return this.replyError(new Error(result.message || roleMessages.FETCH.NOT_FOUND));
+      }
+
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Update Role
+  async updateRole(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const updatedData = requestHelper.getPayload();
+
+      const result = await updateRoleService(id, updatedData);
+      if (!result.success) {
+        return this.replyError(new Error(result.message || roleMessages.UPDATE.FAILED));
+      }
+
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Delete Role
+  async deleteRole(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const result = await deleteRoleService(id);
+
+      if (!result.success) {
+        return this.replyError(new Error(result.message || roleMessages.DELETE.FAILED));
+      }
+
+      return this.sendSuccess(handler, roleMessages.DELETE.SUCCESS);
     } catch (error) {
       return this.replyError(error);
     }

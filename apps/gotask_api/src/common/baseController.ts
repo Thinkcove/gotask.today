@@ -1,9 +1,9 @@
 import * as Boom from "@hapi/boom";
 import httpStatus from "http-status";
-
 import ErrorMessages from "./errorMessage";
 import logger from "./logger";
 
+// Utility functions for handling errors
 const setDataInError = (err: Boom.Boom, data?: any): Boom.Boom => {
   err.output.payload.details = data || err.data;
   return err;
@@ -46,16 +46,37 @@ const sendExternalApiErrors = (ex: any, errorMessages: any): Boom.Boom => {
   return setDataInError(err, exceptionResponse.data);
 };
 
-/* eslint class-methods-use-this: ["error", { "exceptMethods": ["sendResponse"] }] */
 class BaseController {
-  sendResponse(handler: any, response: any): any {
-    return handler.response(response).type("application/json").code(httpStatus.OK);
+  // Send a success response with a message and optional data
+  sendSuccess(handler: any, message: string, data?: any): any {
+    return handler
+      .response({
+        success: true,
+        message,
+        data
+      })
+      .type("application/json")
+      .code(httpStatus.OK); // HTTP status 200 for successful requests
   }
 
+  // Send a generic response for an update, which may include partial data
+  update(handler: any, message: string, updatedData: any): any {
+    return handler
+      .response({
+        success: true,
+        message,
+        data: updatedData
+      })
+      .type("application/json")
+      .code(httpStatus.OK); // HTTP status 200 for successful updates
+  }
+
+  // Send error responses
   replyError(ex: any, errorMessages: ErrorMessages = new ErrorMessages()): Boom.Boom {
     logger.error(ex);
     const className = this.constructor.name.replace("Controller", "");
     errorMessages.addErrorMessage(httpStatus.INTERNAL_SERVER_ERROR, `${className} Service Error`);
+
     // DynamoDB Errors
     if (ex && ex.type === "dynamo") {
       return sendDbError(ex);
@@ -73,6 +94,11 @@ class BaseController {
       return sendError(Boom.badData, ex, ex.details);
     }
     return sendExternalApiErrors(ex, errorMessages);
+  }
+
+  // Send a generic success response with a customizable message
+  sendResponse(handler: any, response: any): any {
+    return handler.response(response).type("application/json").code(httpStatus.OK);
   }
 }
 

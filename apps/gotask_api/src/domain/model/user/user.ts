@@ -2,14 +2,13 @@ import { Document, Schema, model, Types } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 
-// User interface
 export interface IUser extends Document {
   id: string;
   name: string;
   password: string;
-  user_id: string; // email
+  user_id: string;
   status: boolean;
-  role: Types.ObjectId; // Now referencing Role model
+  roleId: Types.ObjectId;
   organization?: string[];
   projects?: string[];
 }
@@ -23,10 +22,9 @@ const UserSchema = new Schema<IUser>(
     user_id: { type: String, required: true, unique: true },
     status: { type: Boolean, default: true },
 
-    // Reference to Role
-    role: { type: Schema.Types.ObjectId, ref: "Role", required: true },
+    // Reference to Role (renamed to roleId)
+    roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true },
 
-    // Optional organization
     organization: {
       type: [String],
       default: []
@@ -38,7 +36,7 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-// Password hash hook
+// Hash password before save
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);

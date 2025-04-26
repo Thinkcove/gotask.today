@@ -4,27 +4,42 @@ import {
   createNewUser,
   findAllUsers,
   findProjectsByIds,
-  findUserByEmail,
-  findUserById,
   updateUserById
 } from "../../domain/interface/user/userInterface";
-import { IUser } from "../../domain/model/user/user";
+import { IUser, User } from "../../domain/model/user/user";
+import { Role } from "../../domain/model/role";
+import { getRoleByIdService } from "../role/roleService";
 
-// Create a new user
+// CREATE USER
 const createUser = async (
   userData: IUser
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
-    if (!userData) {
+    if (!userData || !userData.roleId) {
       return {
         success: false,
         message: UserMessages.CREATE.REQUIRED
       };
     }
+
+    const roleExists = await Role.findById(userData.roleId);
+    if (!roleExists) {
+      return {
+        success: false,
+        message: UserMessages.CREATE.ROLE_INVALID
+      };
+    }
+
+    // Create user
     const newUser = await createNewUser(userData);
+
+    // Populate role name
+    const populatedUser = await newUser.populate("roleId", "name");
+
     return {
       success: true,
-      data: newUser
+      data: populatedUser,
+      message: UserMessages.CREATE.SUCCESS
     };
   } catch (error: any) {
     return {
@@ -34,7 +49,7 @@ const createUser = async (
   }
 };
 
-// Get all users
+// GET ALL USERS
 const getAllUsers = async (): Promise<{
   success: boolean;
   data?: IUser[];
@@ -75,12 +90,13 @@ const getAllUsers = async (): Promise<{
   }
 };
 
-// Get user by ID
-const getUserById = async (
-  id: string
-): Promise<{ success: boolean; data?: IUser | null; message?: string }> => {
+// GET USER BY ID
+
+const getUserById = async (id: string) => {
   try {
-    const user = await findUserById(id);
+    // Find user and populate basic role info
+    const user = await User.findOne({ id }).populate("roleId");
+
     if (!user) {
       return {
         success: false,
@@ -88,26 +104,59 @@ const getUserById = async (
       };
     }
 
-    // Extract project IDs from the project
-    const projectIds = (user.projects || []).filter((id) => id !== undefined);
+    // Extract UUID role ID from populated roleId
+    const roleId = user.roleId?.id?.toString();
+    if (!roleId) {
+      return {
+        success: false,
+        message: UserMessages.FETCH.ROLE_NOT_FOUND
+      };
+    }
 
-    // Fetch project details
-    const projects = await findProjectsByIds(projectIds);
+    // Fetch enriched role details (with access)
+    const roleResult = await getRoleByIdService(roleId);
+    if (!roleResult.success || !roleResult.data) {
+      return {
+        success: false,
+        message: roleResult.message || UserMessages.FETCH.FETCH_ROLE_FAILED
+      };
+    }
 
-    // Map projects for quick lookup
-    const projectMap = new Map(projects.map((project) => [project.id, project]));
+    const enrichedRole = roleResult.data;
 
-    // Enrich the project with project details
-    const enrichedProject = {
-      ...user.toObject(),
-      projectDetails: projectIds.map((id: string) => projectMap.get(id)).filter(Boolean)
-    };
+    // Convert user to plain object and remove sensitive fields
+    const userObj = user.toObject() as any;
+    delete userObj.password;
+
+    // --- New Project Enrichment Logic ---
+
+    // Extract project IDs from user
+    const projectIds = (userObj.projects || []).filter(
+      (id: string | undefined) => id !== undefined
+    );
+
+    let projectDetails = [];
+    if (projectIds.length > 0) {
+      // Fetch project details
+      const projects = await findProjectsByIds(projectIds);
+
+      // Map projects for quick lookup
+      const projectMap = new Map(projects.map((project: any) => [project.id, project]));
+
+      // Map enriched project details
+      projectDetails = projectIds.map((id: string) => projectMap.get(id)).filter(Boolean); // Remove undefineds if any
+    }
+
+    // Attach enriched data
+    userObj.role = enrichedRole;
+    userObj.projectDetails = projectDetails;
 
     return {
       success: true,
-      data: enrichedProject
+      data: userObj
     };
   } catch (error: any) {
+    console.error("getUserById error:", error);
     return {
       success: false,
       message: error.message || UserMessages.FETCH.FAILED_BY_ID
@@ -115,12 +164,22 @@ const getUserById = async (
   }
 };
 
-// Update user
+// UPDATE USER
 const updateUser = async (
   id: string,
   updateData: Partial<IUser>
 ): Promise<{ success: boolean; data?: IUser | null; message?: string }> => {
   try {
+    if (updateData.roleId) {
+      const roleExists = await Role.findById(updateData.roleId);
+      if (!roleExists) {
+        return {
+          success: false,
+          message: UserMessages.UPDATE.ROLE_INVALID
+        };
+      }
+    }
+
     const updatedUser = await updateUserById(id, updateData);
     if (!updatedUser) {
       return {
@@ -130,7 +189,8 @@ const updateUser = async (
     }
     return {
       success: true,
-      data: updatedUser
+      data: updatedUser,
+      message: UserMessages.UPDATE.SUCCESS
     };
   } catch (error: any) {
     return {
@@ -140,18 +200,53 @@ const updateUser = async (
   }
 };
 
-// Find user by user_id (email)
-const getUserByEmail = async (
-  user_id: string
-): Promise<{ success: boolean; data?: IUser | null; message?: string }> => {
+// DELETE USER
+const deleteUser = async (id: string): Promise<{ success: boolean; message?: string }> => {
   try {
-    const user = await findUserByEmail(user_id);
+    const user = await User.findOne({ id });
+
     if (!user) {
       return {
         success: false,
         message: UserMessages.FETCH.NOT_FOUND
       };
     }
+
+    await User.deleteOne({ id });
+
+    return {
+      success: true,
+      message: UserMessages.DELETE.SUCCESS
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || UserMessages.DELETE.FAILED
+    };
+  }
+};
+
+// GET USER BY EMAIL (or user_id)
+const getUserByEmail = async (
+  user_id: string,
+  populateRole: boolean = false
+): Promise<{ success: boolean; data?: IUser | null; message?: string }> => {
+  try {
+    let query = User.findOne({ user_id });
+
+    if (populateRole) {
+      query = query.populate("roleId"); // Just populate the roleId, no nested populate
+    }
+
+    const user = await query;
+
+    if (!user) {
+      return {
+        success: false,
+        message: UserMessages.FETCH.NOT_FOUND
+      };
+    }
+
     return {
       success: true,
       data: user
@@ -164,4 +259,4 @@ const getUserByEmail = async (
   }
 };
 
-export { createUser, getAllUsers, getUserById, updateUser, getUserByEmail };
+export { createUser, getAllUsers, getUserById, updateUser, deleteUser, getUserByEmail };

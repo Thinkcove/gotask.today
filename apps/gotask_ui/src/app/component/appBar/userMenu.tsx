@@ -16,7 +16,7 @@ interface UserMenuProps {
   user: {
     id?: string;
     name?: string;
-    role?: string;
+    roleId?: string;
     status?: boolean;
   } | null;
 }
@@ -64,7 +64,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
         <Box display="flex" alignItems="center" gap={1} mt={0.5}>
           <Work sx={{ fontSize: 18, color: "grey" }} />
           <Typography variant="body2" color="text.secondary">
-            {user?.role}
+            {user?.roleId}
           </Typography>
         </Box>
 

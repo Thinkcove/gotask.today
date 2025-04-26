@@ -1,4 +1,5 @@
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { findOrganizationsByIds } from "../../domain/interface/organization/organizationInterface";
 import {
   createNewUser,
   findAllUsers,
@@ -55,9 +56,30 @@ const getAllUsers = async (): Promise<{
 }> => {
   try {
     const users = await findAllUsers();
+
+    // Gather all unique organization IDs (filter out undefined values)
+    const allOrganizationIds = Array.from(
+      new Set(users.flatMap((user) => user.organization?.filter((id) => id !== undefined) || []))
+    );
+    // Fetch organization details based on organization IDs
+    const organizations = await findOrganizationsByIds(allOrganizationIds);
+
+    // Map organization IDs to organization objects for easy lookup
+    const organizationMap = new Map(
+      organizations.map((organization) => [organization.id, organization])
+    );
+
+    // Attach organization details to each user
+    const enrichedUsers = users.map((user) => ({
+      ...user.toObject(),
+      organizations: (user.organization || [])
+        .map((id: string) => organizationMap.get(id)) // Map to user details
+        .filter(Boolean) // Filter out undefined or null values
+    }));
+
     return {
       success: true,
-      data: users
+      data: enrichedUsers
     };
   } catch (error: any) {
     return {

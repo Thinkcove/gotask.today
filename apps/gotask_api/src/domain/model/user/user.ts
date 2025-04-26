@@ -26,16 +26,12 @@ const UserSchema = new Schema<IUser>(
     roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true },
 
     organization: {
-      type: Schema.Types.ObjectId,
-      ref: "Organization",
-      default: null
+      type: [String],
+      default: []
     },
-    projects: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Project"
-      }
-    ]
+
+    // Optional projects
+    projects: { type: [String], default: [] }
   },
   { timestamps: true }
 );

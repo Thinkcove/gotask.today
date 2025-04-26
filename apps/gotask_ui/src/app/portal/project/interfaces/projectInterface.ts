@@ -1,5 +1,4 @@
 export interface IProjectField {
-  
   name: string;
   description: string;
   status: string;

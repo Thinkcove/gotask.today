@@ -43,7 +43,7 @@ const EditProject: React.FC<EditTaskProps> = ({ data, open, onClose, projectID, 
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
-    } catch (error) {
+    } catch {
       setSnackbar({
         open: true,
         message: "Error while updating project",
@@ -74,7 +74,7 @@ const EditProject: React.FC<EditTaskProps> = ({ data, open, onClose, projectID, 
       ></Box>
 
       <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Edit Project">
-        <ProjectInput formData={formData} handleChange={handleChange} />
+        <ProjectInput formData={formData} handleChange={handleChange} readOnlyFields={["name"]} />
       </CommonDialog>
       <CustomSnackbar
         open={snackbar.open}

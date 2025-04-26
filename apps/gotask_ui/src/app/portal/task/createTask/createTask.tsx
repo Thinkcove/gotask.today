@@ -58,7 +58,7 @@ const CreateTask: React.FC = () => {
     if (!validateForm()) return;
     try {
       // Create the task
-      const newTask = await createTask(formData);
+      await createTask(formData);
 
       await ProjectMutate(); // Update project-specific tasks
       await UserMutate(); // Update user-specific tasks

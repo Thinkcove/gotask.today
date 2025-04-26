@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Grid, Chip, CircularProgress, Box, Button } from "@mui/material";
+import { Typography, Grid, CircularProgress, Box } from "@mui/material";
 import { ArrowForward, Group } from "@mui/icons-material";
 import { getStatusColor } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,7 @@ import { Project } from "../interfaces/projectInterface";
 
 interface ProjectCardProps {
   projects: Project[] | null; // Ensure projects is an array or null
-  error: any;
+  error: { [key: string]: string };
 }
 
 const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {

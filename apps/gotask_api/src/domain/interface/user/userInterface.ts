@@ -1,4 +1,5 @@
 import { Access } from "../../model/access";
+import { Project } from "../../model/project/project";
 import { IUser, User } from "../../model/user/user";
 
 // Create a new user
@@ -9,7 +10,7 @@ const createNewUser = async (userData: IUser): Promise<IUser> => {
 
 // Find all users
 const findAllUsers = async (): Promise<IUser[]> => {
-  return await User.find();
+  return await User.find().sort({ updatedAt: -1 });
 };
 
 // Find a user by ID with populated fields (roleId → role → access)
@@ -28,13 +29,8 @@ const findUserById = async (id: string): Promise<IUser | null> => {
 
 // Update a user by ID
 const findUsersByIds = async (userIds: string[]): Promise<IUser[]> => {
-  try {
-    // Find users by their ids
-    const users = await User.find({ id: { $in: userIds } }).exec();
-    return users;
-  } catch (error) {
-    throw new Error("Error fetching users");
-  }
+  const users = await User.find({ id: { $in: userIds } }).exec();
+  return users;
 };
 
 const updateUserById = async (id: string, updateData: Partial<IUser>): Promise<IUser | null> => {
@@ -57,11 +53,17 @@ const findUserByEmail = async (user_id: string): Promise<IUser | null> => {
   return user;
 };
 
+// Get users by an array of user IDs
+const findProjectsByIds = async (projectIds: string[]) => {
+  return await Project.find({ id: { $in: projectIds } });
+};
+
 export {
   createNewUser,
   findAllUsers,
   findUserById,
   updateUserById,
   findUserByEmail,
-  findUsersByIds
+  findUsersByIds,
+  findProjectsByIds
 };

@@ -23,6 +23,7 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import menuItemsData from "./menuItems.json";
 import { useRouter, usePathname } from "next/navigation";
+import { Theme } from "@mui/material/styles";
 
 const iconMap: Record<string, React.ReactNode> = {
   DashboardIcon: <GridViewIcon />,
@@ -38,10 +39,10 @@ const drawerWidth = 260;
 
 const Sidebar: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [collapsed] = useState<boolean>(false);
   const router = useRouter();
   const pathname = usePathname();
-  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const drawerRef = useRef<HTMLDivElement>(null);
 
   const selectedIndex = menuItemsData.findIndex((item) => pathname === item.path);

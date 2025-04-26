@@ -3,13 +3,11 @@ import { Box, Button, Typography, IconButton, Autocomplete, TextField } from "@m
 import { Delete } from "@mui/icons-material";
 import { logTaskTime } from "../service/taskAction";
 import { KeyedMutator } from "swr";
-import { ITask } from "../interface/taskInterface";
+import { ITask, TimeEntry, TimeOption } from "../interface/taskInterface";
+import { isEndTimeAfterStartTime } from "@/app/common/utils/common";
+import { timeOptions as importedTimeOptions } from "../../../common/constants/timeOptions";
+import { TIME_GUIDE_DESCRIPTION } from "@/app/common/constants/timeTask";
 
-interface TimeEntry {
-  date: string;
-  start_time: string;
-  end_time: string;
-}
 
 interface TimeSpentPopupProps {
   isOpen: boolean;
@@ -19,29 +17,11 @@ interface TimeSpentPopupProps {
   mutate: KeyedMutator<ITask>;
 }
 
-// Updated time options with AM/PM indicators
-const timeOptions = [
-  "9:00 AM",
-  "9:30 AM",
-  "10:00 AM",
-  "10:30 AM",
-  "11:00 AM",
-  "11:30 AM",
-  "12:00 PM",
-  "12:30 PM",
-  "1:00 PM",
-  "1:30 PM",
-  "2:00 PM",
-  "2:30 PM",
-  "3:00 PM",
-  "3:30 PM",
-  "4:00 PM",
-  "4:30 PM",
-  "5:00 PM",
-  "5:30 PM",
-  "6:00 PM",
-  "6:30 PM"
-];
+// Transform the imported time options into the format needed for Autocomplete
+const timeOptions: TimeOption[] = importedTimeOptions.map((time) => ({
+  label: time,
+  value: time
+}));
 
 const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
   isOpen,
@@ -75,34 +55,6 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
     const updated = [...timeEntries];
     updated.splice(index, 1);
     setTimeEntries(updated);
-  };
-
-  // Helper function to check if end time is after start time
-  const isEndTimeAfterStartTime = (startTime: string, endTime: string): boolean => {
-    if (!startTime || !endTime) return true; // Skip validation if times aren't selected yet
-
-    // Parse times to compare
-    const parseTime = (timeStr: string) => {
-      const [timePart, period] = timeStr.split(" ");
-      // Fixed here - using const for both hours and minutes
-      const [hoursStr, minutesStr] = timePart.split(":");
-      let hours = Number(hoursStr);
-      const minutes = Number(minutesStr);
-
-      // Convert to 24-hour format for comparison
-      if (period === "PM" && hours < 12) {
-        hours += 12;
-      } else if (period === "AM" && hours === 12) {
-        hours = 0;
-      }
-
-      return hours * 60 + minutes; // Return minutes since midnight
-    };
-
-    const startMinutes = parseTime(startTime);
-    const endMinutes = parseTime(endTime);
-
-    return endMinutes > startMinutes;
   };
 
   const validateEntries = () => {
@@ -177,7 +129,9 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
           Time Format Guide
         </Typography>
         <Typography variant="caption" sx={{ color: "#555", whiteSpace: "pre-line" }}>
-          d = day{"\n"}h = hour
+          {TIME_GUIDE_DESCRIPTION.DAY}
+          {"\n"}
+          {TIME_GUIDE_DESCRIPTION.HOUR}
         </Typography>
       </Box>
 
@@ -226,19 +180,25 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                 <Autocomplete
                   disablePortal
                   options={timeOptions}
-                  value={entry.start_time || null}
+                  value={
+                    entry.start_time
+                      ? timeOptions.find((option) => option.value === entry.start_time) || null
+                      : null
+                  }
                   onChange={(event, newValue) =>
-                    handleEntryChange(index, "start_time", newValue || "")
+                    handleEntryChange(index, "start_time", newValue ? newValue.value : "")
                   }
                   renderInput={(params) => (
                     <TextField {...params} variant="outlined" placeholder="Select start time" />
                   )}
                   sx={{ width: "100%" }}
-                  getOptionLabel={(option) => option}
-                  isOptionEqualToValue={(option, value) => option === value}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option}>
-                      {option}
+                  getOptionLabel={(option: TimeOption) => option.label}
+                  isOptionEqualToValue={(option: TimeOption, value: TimeOption) =>
+                    option.value === value.value
+                  }
+                  renderOption={(props, option: TimeOption) => (
+                    <li {...props} key={option.value}>
+                      {option.label}
                     </li>
                   )}
                 />
@@ -251,12 +211,16 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                 <Autocomplete
                   disablePortal
                   options={timeOptions}
-                  value={entry.end_time || null}
+                  value={
+                    entry.end_time
+                      ? timeOptions.find((option) => option.value === entry.end_time) || null
+                      : null
+                  }
                   onChange={(event, newValue) => {
-                    handleEntryChange(index, "end_time", newValue || "");
+                    handleEntryChange(index, "end_time", newValue ? newValue.value : "");
                     // Clear error when user selects a new value
                     if (entry.start_time && newValue) {
-                      if (isEndTimeAfterStartTime(entry.start_time, newValue)) {
+                      if (isEndTimeAfterStartTime(entry.start_time, newValue.value)) {
                         setErrorMessage("");
                       }
                     }
@@ -265,11 +229,13 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                     <TextField {...params} variant="outlined" placeholder="Select end time" />
                   )}
                   sx={{ width: "100%" }}
-                  getOptionLabel={(option) => option}
-                  isOptionEqualToValue={(option, value) => option === value}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option}>
-                      {option}
+                  getOptionLabel={(option: TimeOption) => option.label}
+                  isOptionEqualToValue={(option: TimeOption, value: TimeOption) =>
+                    option.value === value.value
+                  }
+                  renderOption={(props, option: TimeOption) => (
+                    <li {...props} key={option.value}>
+                      {option.label}
                     </li>
                   )}
                 />
@@ -285,7 +251,6 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                     right: -10,
                     top: 65
                   }}
-                  aria-label="Delete entry"
                 >
                   <Delete fontSize="small" />
                 </IconButton>

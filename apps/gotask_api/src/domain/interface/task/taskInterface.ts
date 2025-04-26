@@ -10,6 +10,7 @@ import { ITaskHistory, TaskHistorySchema } from "../../model/task/taskHistory";
 import logger from "../../../common/logger";
 import { TimeUtil } from "../../../constants/utils.ts/timeUtils";
 import { ITimeSpentEntry } from "../../model/task/timespent";
+import { TIME_FORMAT_PATTERNS } from "../../../constants/commonConstants/timeConstants";
 
 // Create a new task
 const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
@@ -166,7 +167,7 @@ const updateCommentInTask = async (
   return updatedComment;
 };
 
-//add time spent to  stask
+//add time spent to task
 const addTimeSpentToTask = async (
   id: string,
   timeEntries: ITimeSpentEntry[]
@@ -179,19 +180,28 @@ const addTimeSpentToTask = async (
   const entries = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
 
   for (const entry of entries) {
-    // Check if time_logged is in H:MM format
-    if (/^\d+:\d{2}$/.test(entry.time_logged)) {
-      // Convert "H:MM" to hours as number
+    // Handle start_time and end_time if provided
+    if (entry.start_time && entry.end_time) {
+      entry.time_logged = TimeUtil.calculateTimeLoggedFromStartEnd(
+        entry.start_time,
+        entry.end_time
+      );
+    } else if (TIME_FORMAT_PATTERNS.STANDARD_TIME.test(entry.time_logged)) {
+      // Handle H:MM format for time_logged
       const totalHours = TimeUtil.parseHourMinuteString(entry.time_logged);
-      // Convert hours to "XdYh" format
       entry.time_logged = TimeUtil.formatHoursToTimeString(totalHours);
     }
 
+    // Validate the time_logged format
     if (!TimeUtil.isValidTimeFormat(entry.time_logged)) {
       throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
     }
 
-    task.time_spent.push(entry);
+    task.time_spent.push({
+      ...entry,
+      start_time: entry.start_time,
+      end_time: entry.end_time
+    });
   }
 
   const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);

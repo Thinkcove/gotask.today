@@ -99,3 +99,14 @@ export type FilterValues = {
   projects: string[];
   users: string[];
 };
+
+export interface TimeOption {
+  label: string;
+  value: string;
+}
+
+export interface TimeEntry {
+  date: string;
+  start_time: string;
+  end_time: string;
+}

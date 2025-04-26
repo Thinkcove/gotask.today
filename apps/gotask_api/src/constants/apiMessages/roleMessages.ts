@@ -18,12 +18,4 @@ export const roleMessages = {
     SUCCESS: "Role deleted successfully.",
     FAILED: "Failed to delete role."
   },
-
-  namePriorityRequired: "Name and Priority fields are required.",
-  createRoleFailed: "Failed to create role.",
-  fetchRolesFailed: "Failed to fetch roles.",
-  roleNotFound: "Role not found.",
-  updateRoleFailed: "Failed to update role.",
-  deleteRoleFailed: "Failed to delete role.",
-  deleteRoleSuccess: "Role deleted successfully"
 };

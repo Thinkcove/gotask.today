@@ -16,12 +16,12 @@ class RoleController extends BaseController {
       const roleData = requestHelper.getPayload();
 
       if (!roleData.name || roleData.priority === undefined) {
-        return this.replyError(new Error(roleMessages.namePriorityRequired));
+        return this.replyError(new Error(roleMessages.CREATE.FAILED)); // replaced with CREATE.FAILED
       }
 
       const result = await createRoleService(roleData);
       if (!result.success) {
-        return this.replyError(new Error(result.message || roleMessages.createRoleFailed));
+        return this.replyError(new Error(result.message || roleMessages.CREATE.FAILED));
       }
 
       return this.sendResponse(handler, result.data);
@@ -35,7 +35,7 @@ class RoleController extends BaseController {
     try {
       const result = await getAllRolesService();
       if (!result.success) {
-        return this.replyError(new Error(result.message || roleMessages.fetchRolesFailed));
+        return this.replyError(new Error(result.message || roleMessages.FETCH.FAILED));
       }
 
       return this.sendResponse(handler, result.data);
@@ -51,7 +51,7 @@ class RoleController extends BaseController {
       const result = await getRoleByIdService(id);
 
       if (!result.success) {
-        return this.replyError(new Error(result.message || roleMessages.roleNotFound));
+        return this.replyError(new Error(result.message || roleMessages.FETCH.NOT_FOUND));
       }
 
       return this.sendResponse(handler, result.data);
@@ -68,7 +68,7 @@ class RoleController extends BaseController {
 
       const result = await updateRoleService(id, updatedData);
       if (!result.success) {
-        return this.replyError(new Error(result.message || roleMessages.updateRoleFailed));
+        return this.replyError(new Error(result.message || roleMessages.UPDATE.FAILED));
       }
 
       return this.sendResponse(handler, result.data);
@@ -84,10 +84,10 @@ class RoleController extends BaseController {
       const result = await deleteRoleService(id);
 
       if (!result.success) {
-        return this.replyError(new Error(result.message || roleMessages.deleteRoleFailed));
+        return this.replyError(new Error(result.message || roleMessages.DELETE.FAILED));
       }
 
-      return this.sendSuccess(handler, roleMessages.deleteRoleSuccess);
+      return this.sendSuccess(handler, roleMessages.DELETE.SUCCESS);
     } catch (error) {
       return this.replyError(error);
     }

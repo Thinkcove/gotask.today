@@ -1,11 +1,9 @@
 import UserMessages from "../../constants/apiMessages/userMessage";
-import {
-  createNewUser,
-  findAllUsers,
-  updateUserById
-} from "../../domain/interface/user/userInterface";
-import { IUser, User } from "../../domain/model/user/user";
+import { IUser } from "../../domain/interface/user/userInterface";
+import { User } from "../../domain/model/user/user";
 import { Role } from "../../domain/model/role";
+import { Access } from "../../domain/model/access";
+import { getRoleByIdService } from "../role/roleService";
 
 // CREATE USER
 const createUser = async (
@@ -27,11 +25,9 @@ const createUser = async (
       };
     }
 
-    // Create user
-    const newUser = await createNewUser(userData);
-
-    // Populate role name
-    const populatedUser = await newUser.populate("roleId", "name");
+    const newUser = new User(userData);
+    const savedUser = await newUser.save();
+    const populatedUser = await savedUser.populate("roleId", "name");
 
     return {
       success: true,
@@ -53,7 +49,7 @@ const getAllUsers = async (): Promise<{
   message?: string;
 }> => {
   try {
-    const users = await findAllUsers();
+    const users = await User.find();
     return {
       success: true,
       data: users
@@ -67,11 +63,8 @@ const getAllUsers = async (): Promise<{
 };
 
 // GET USER BY ID
-import { getRoleByIdService } from "../role/roleService";
-
 const getUserById = async (id: string) => {
   try {
-    // Find user and populate basic role info
     const user = await User.findOne({ id }).populate("roleId");
 
     if (!user) {
@@ -81,7 +74,6 @@ const getUserById = async (id: string) => {
       };
     }
 
-    // Extract UUID role ID from populated roleId
     const roleId = user.roleId?.id?.toString();
     if (!roleId) {
       return {
@@ -90,7 +82,6 @@ const getUserById = async (id: string) => {
       };
     }
 
-    // Fetch enriched role details (with access)
     const roleResult = await getRoleByIdService(roleId);
     if (!roleResult.success || !roleResult.data) {
       return {
@@ -99,12 +90,9 @@ const getUserById = async (id: string) => {
       };
     }
 
-    const enrichedRole = roleResult.data;
-
-    //  Return user with full role and remove password
     const userObj = user.toObject() as any;
     delete userObj.password;
-    userObj.role = enrichedRole;
+    userObj.role = roleResult.data;
 
     return {
       success: true,
@@ -135,13 +123,14 @@ const updateUser = async (
       }
     }
 
-    const updatedUser = await updateUserById(id, updateData);
+    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true });
     if (!updatedUser) {
       return {
         success: false,
         message: UserMessages.FETCH.NOT_FOUND
       };
     }
+
     return {
       success: true,
       data: updatedUser,
@@ -181,7 +170,7 @@ const deleteUser = async (id: string): Promise<{ success: boolean; message?: str
   }
 };
 
-// GET USER BY EMAIL (or user_id)
+// GET USER BY EMAIL
 const getUserByEmail = async (
   user_id: string,
   populateRole: boolean = false
@@ -190,7 +179,7 @@ const getUserByEmail = async (
     let query = User.findOne({ user_id });
 
     if (populateRole) {
-      query = query.populate("roleId"); // Just populate the roleId, no nested populate
+      query = query.populate("roleId");
     }
 
     const user = await query;
@@ -200,6 +189,13 @@ const getUserByEmail = async (
         success: false,
         message: UserMessages.FETCH.NOT_FOUND
       };
+    }
+
+    // Populate access records manually if needed
+    const roleObj: any = user.roleId;
+    if (populateRole && Array.isArray(roleObj?.access)) {
+      const accessRecords = await Access.find({ id: { $in: roleObj.access } }).lean();
+      roleObj.access = accessRecords;
     }
 
     return {
@@ -214,4 +210,11 @@ const getUserByEmail = async (
   }
 };
 
-export { createUser, getAllUsers, getUserById, updateUser, deleteUser, getUserByEmail };
+export {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getUserByEmail
+};

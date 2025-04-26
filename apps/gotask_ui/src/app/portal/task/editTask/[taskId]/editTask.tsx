@@ -101,7 +101,15 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        maxWidth: "1400px",
+        margin: "0 auto",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column"
+      }}
+    >
       <Box
         sx={{
           position: "sticky",
@@ -216,7 +224,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         onClose={() => setOpenDrawer(false)}
         history={data.history || []}
       />
-    </>
+    </Box>
   );
 };
 

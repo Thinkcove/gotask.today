@@ -8,7 +8,7 @@ export interface IProject extends Document {
   name: string;
   description: string;
   status: string;
-  user_id?: string[];
+  user_id?: string[]; //user id
   organization_id: string; // UUID from Organization model
 }
 
@@ -39,8 +39,7 @@ const ProjectSchema = new Schema<IProject>(
       }
     ],
     organization_id: {
-      type: String,
-      required: true // Make optional if needed
+      type: String
     }
   },
   { timestamps: true }

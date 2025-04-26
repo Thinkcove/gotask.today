@@ -57,4 +57,51 @@ ProjectRoutes.push({
   }
 });
 
+// Route: Get Task Count by Status
+ProjectRoutes.push({
+  path: API_PATHS.GET_PROJECT_COUNT_BY_STATUS,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectController.getProjectCountByStatus(new RequestHelper(request), handler),
+  config: {
+    notes: "Get task count grouped by status",
+    tags
+  }
+});
+
+// Route: Get Project by ID
+ProjectRoutes.push({
+  path: API_PATHS.GET_PROJECT_BY_ID,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectController.getProjectById(new RequestHelper(request), handler),
+  config: {
+    notes: "Get a project by ID",
+    tags
+  }
+});
+
+// Route: Remove User from Project
+ProjectRoutes.push({
+  path: API_PATHS.REMOVE_USER_FROM_PROJECT,
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectController.removeUserFromProject(new RequestHelper(request), handler),
+  config: {
+    notes: "Remove User from Project",
+    tags
+  }
+});
+
+// Route: Update Project
+ProjectRoutes.push({
+  path: API_PATHS.UPDATE_PROJECT,
+  method: API_METHODS.PUT,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectController.updateProjectDetails(new RequestHelper(request), handler),
+  config: {
+    notes: "Update project details",
+    tags
+  }
+});
 export default ProjectRoutes;

@@ -4,7 +4,11 @@ import {
   assignUsersToProject,
   createProject,
   getAllProjects,
-  getProjectsByUserId
+  getProjectById,
+  getProjectCountByStatus,
+  getProjectsByUserId,
+  removeUsersFromProject,
+  updateProject
 } from "./projectService";
 
 class ProjectController extends BaseController {
@@ -57,6 +61,58 @@ class ProjectController extends BaseController {
       }
       const projects = await getProjectsByUserId(user_id);
       return this.sendResponse(handler, projects);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Get Task Count by Status
+  async getProjectCountByStatus(_requestHelper: RequestHelper, handler: any) {
+    try {
+      const result = await getProjectCountByStatus();
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
+
+  // Get Project by ID
+  async getProjectById(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const project = await getProjectById(id);
+      return this.sendResponse(handler, project);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
+
+  // Remove users from a project
+  async removeUserFromProject(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { user_id, project_id } = requestHelper.getPayload();
+      if (!user_id || !Array.isArray(user_id) || !project_id) {
+        throw new Error(
+          "Invalid payload. 'user_id' must be an array and 'project_id' is required."
+        );
+      }
+
+      const result = await removeUsersFromProject(user_id, project_id);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Update project
+  async updateProjectDetails(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const updatedData = requestHelper.getPayload();
+      const updatedProject = await updateProject(id, updatedData);
+
+      if (!updatedProject) throw new Error("Project not found");
+      return this.sendResponse(handler, updatedProject);
     } catch (error) {
       return this.replyError(error);
     }

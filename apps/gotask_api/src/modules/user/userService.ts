@@ -1,7 +1,9 @@
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { findOrganizationsByIds } from "../../domain/interface/organization/organizationInterface";
 import {
   createNewUser,
   findAllUsers,
+  findProjectsByIds,
   findUserByEmail,
   findUserById,
   updateUserById
@@ -40,9 +42,30 @@ const getAllUsers = async (): Promise<{
 }> => {
   try {
     const users = await findAllUsers();
+
+    // Gather all unique organization IDs (filter out undefined values)
+    const allOrganizationIds = Array.from(
+      new Set(users.flatMap((user) => user.organization?.filter((id) => id !== undefined) || []))
+    );
+    // Fetch organization details based on organization IDs
+    const organizations = await findOrganizationsByIds(allOrganizationIds);
+
+    // Map organization IDs to organization objects for easy lookup
+    const organizationMap = new Map(
+      organizations.map((organization) => [organization.id, organization])
+    );
+
+    // Attach organization details to each user
+    const enrichedUsers = users.map((user) => ({
+      ...user.toObject(),
+      organizations: (user.organization || [])
+        .map((id: string) => organizationMap.get(id)) // Map to user details
+        .filter(Boolean) // Filter out undefined or null values
+    }));
+
     return {
       success: true,
-      data: users
+      data: enrichedUsers
     };
   } catch (error: any) {
     return {
@@ -64,9 +87,25 @@ const getUserById = async (
         message: UserMessages.FETCH.NOT_FOUND
       };
     }
+
+    // Extract project IDs from the project
+    const projectIds = (user.projects || []).filter((id) => id !== undefined);
+
+    // Fetch project details
+    const projects = await findProjectsByIds(projectIds);
+
+    // Map projects for quick lookup
+    const projectMap = new Map(projects.map((project) => [project.id, project]));
+
+    // Enrich the project with project details
+    const enrichedProject = {
+      ...user.toObject(),
+      projectDetails: projectIds.map((id: string) => projectMap.get(id)).filter(Boolean)
+    };
+
     return {
       success: true,
-      data: user
+      data: enrichedProject
     };
   } catch (error: any) {
     return {

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { CircularProgress, Typography, Grid, Box, Tooltip, Fab } from "@mui/material";
+import { Grid, Box, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useProjectGroupTask, useUserGroupTask } from "../../service/taskAction";
 import TaskToggle from "../taskLayout/taskToggle";
@@ -12,7 +12,9 @@ import SearchBar from "@/app/component/searchBar/searchBar";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import NoTasksImage from "@assets/placeholderImages/notask.svg";
+import TaskErrorImage from "@assets/placeholderImages/taskerror.svg";
 import TaskFilterControls from "../taskFilter/taskFilterControls";
+import ActionButton from "@/app/component/floatingButton/actionButton";
 
 const TaskList: React.FC = () => {
   const [view, setView] = useState<"projects" | "users">("projects");
@@ -43,10 +45,12 @@ const TaskList: React.FC = () => {
   const [minDate, setMinDate] = useState<string | undefined>();
   const [maxDate, setMaxDate] = useState<string | undefined>();
   const [dateVar, setDateVar] = useState<string>("due_date");
+  const [moreDays, setMoreDays] = useState<string | undefined>();
+  const [lessDays, setLessDays] = useState<string | undefined>();
   const fetchTasks = () => {
     const { search_vals, search_vars } = searchParams;
     if (view === "projects") {
-      const { tasksByProjects, ...rest } = useProjectGroupTask(
+      const { tasksByProjects, mutate, ...rest } = useProjectGroupTask(
         page,
         6,
         1,
@@ -55,7 +59,9 @@ const TaskList: React.FC = () => {
         search_vars,
         minDate,
         maxDate,
-        dateVar // pass here
+        dateVar,
+        moreDays,
+        lessDays
       );
       return { tasks: tasksByProjects, ...rest };
     } else {
@@ -68,7 +74,9 @@ const TaskList: React.FC = () => {
         search_vars,
         minDate,
         maxDate,
-        dateVar // and here
+        dateVar,
+        moreDays,
+        lessDays
       );
       return { tasks: tasksByUsers, ...rest };
     }
@@ -135,6 +143,8 @@ const TaskList: React.FC = () => {
     setMinDate(undefined);
     setMaxDate(undefined);
     setDateVar("due_date");
+    setMoreDays(undefined);
+    setLessDays(undefined);
     const newParams = searchText.trim()
       ? { search_vals: [[searchText]], search_vars: [["title"]] }
       : {};
@@ -146,20 +156,30 @@ const TaskList: React.FC = () => {
   const isSearched = searchText.trim() !== "";
   const activeFilterCount =
     (filtersOnly.search_vals ?? []).filter((arr) => arr.length > 0).length +
-    (minDate && maxDate ? 1 : 0);
+    (minDate && maxDate ? 1 : 0) +
+    (moreDays ? 1 : 0) +
+    (lessDays ? 1 : 0);
+
   const isFiltered = () =>
-    (filtersOnly.search_vals ?? []).some((arr) => arr.length > 0) || (!!minDate && !!maxDate);
+    (filtersOnly.search_vals ?? []).some((arr) => arr.length > 0) ||
+    (!!minDate && !!maxDate) ||
+    !!moreDays ||
+    !!lessDays;
 
   if (isError) {
     return (
-      <Typography color="error" align="center" mt={4}>
-        Failed to fetch tasks
-      </Typography>
+      <Grid container spacing={3} sx={{ p: 2, mb: 8 }}>
+        <Grid item xs={12}>
+          <EmptyState imageSrc={TaskErrorImage} message={"Failed to Fetch the Task"} />
+        </Grid>
+      </Grid>
     );
   }
 
   const handleApplyTaskFilters = (filters: TaskFilterType) => {
     setFiltersOnly(filters);
+    setMoreDays(filters.more_variation || undefined);
+    setLessDays(filters.less_variation || undefined);
     // Capture and apply date range if provided
     setMinDate(filters.min_date || undefined);
     setMaxDate(filters.max_date || undefined);
@@ -177,8 +197,42 @@ const TaskList: React.FC = () => {
     resetTaskState();
   };
 
+  const listenerAdded = useRef(false);
+
+  if (typeof window !== "undefined" && !listenerAdded.current) {
+    window.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === "g") {
+        e.preventDefault();
+        router.push("/portal/task/createTask");
+      }
+    });
+    listenerAdded.current = true;
+  }
+
   return (
     <Box>
+      {/* Title Bar */}
+      <Box
+        sx={{
+          backgroundColor: "#741B92", // Solid color for a bold look
+          color: "white",
+          p: 1.5,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "600",
+            textTransform: "capitalize"
+          }}
+        >
+          Task Workflow
+        </Typography>
+      </Box>
+
       {/* Top Bar */}
       <Box
         sx={{
@@ -197,7 +251,6 @@ const TaskList: React.FC = () => {
 
         <TaskToggle view={view} setView={setView} />
       </Box>
-
       {/* Filter Buttons */}
       <TaskFilterControls
         activeFilterCount={activeFilterCount}
@@ -205,7 +258,6 @@ const TaskList: React.FC = () => {
         onClearAll={handleClearAll}
         onOpenFilter={() => setFilterDrawerOpen(true)}
       />
-
       {/* Task Grid */}
       <Box
         ref={scrollRef}
@@ -235,27 +287,15 @@ const TaskList: React.FC = () => {
               />
             </Grid>
           ))}
-
-          {isLoading && (
-            <Grid item xs={12} display="flex" justifyContent="center">
-              <CircularProgress />
-            </Grid>
-          )}
         </Grid>
       </Box>
 
       {/* Add Task Button */}
-      <Box position="fixed" bottom={16} right={12}>
-        <Tooltip title="Create New Task" arrow>
-          <Fab
-            color="primary"
-            sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#5E1374" } }}
-            onClick={() => router.push("/portal/task/createTask")}
-          >
-            <AddIcon />
-          </Fab>
-        </Tooltip>
-      </Box>
+      <ActionButton
+        label="Create New Task"
+        icon={<AddIcon sx={{ color: "white" }} />}
+        onClick={() => router.push("/portal/task/createTask")}
+      />
 
       {/* View More Drawer */}
       <ViewMoreList

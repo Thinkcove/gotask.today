@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import TaskInput from "@/app/portal/task/createTask/taskInput";
-import { createTask } from "../service/taskAction";
+import { createTask, useProjectGroupTask, useUserGroupTask } from "../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
@@ -50,16 +50,25 @@ const CreateTask: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const { mutate: ProjectMutate } = useProjectGroupTask();
+  const { mutate: UserMutate } = useUserGroupTask();
+
   // Handle form submission
   const handleSubmit = async () => {
     if (!validateForm()) return;
     try {
-      await createTask(formData);
+      // Create the task
+      const newTask = await createTask(formData);
+
+      await ProjectMutate(); // Update project-specific tasks
+      await UserMutate(); // Update user-specific tasks
+
       setSnackbar({
         open: true,
         message: "Task created successfully!",
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+
       setTimeout(() => router.back(), 2000);
     } catch (error) {
       console.error("Error while creating task:", error);
@@ -74,7 +83,15 @@ const CreateTask: React.FC = () => {
   const router = useRouter();
 
   return (
-    <>
+    <Box
+      sx={{
+        maxWidth: "1400px",
+        margin: "0 auto",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column"
+      }}
+    >
       <Box
         sx={{
           position: "sticky",
@@ -153,7 +170,7 @@ const CreateTask: React.FC = () => {
         severity={snackbar.severity}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       />
-    </>
+    </Box>
   );
 };
 

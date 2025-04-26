@@ -12,6 +12,10 @@ import HistoryDrawer from "../taskHistory";
 import TaskComments from "../taskComments";
 import { useUser } from "@/app/userContext";
 import { KeyedMutator } from "swr";
+import LinearProgress from "@mui/material/LinearProgress";
+
+import { convertToHours } from "@/app/common/utils/common";
+import TimeSpentPopup from "../timeSpentPopup";
 
 interface EditTaskProps {
   data: ITask;
@@ -27,6 +31,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const [formData, setFormData] = useState<IFormField>(() => ({
     title: data?.title || "",
@@ -68,7 +73,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         updatedFields.description = formData.description;
       }
       await updateTask(data.id, updatedFields);
-      mutate();
+      await mutate();
       setSnackbar({
         open: true,
         message: "Task updated successfully!",
@@ -95,17 +100,33 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       comment: commentText
     };
     await createComment(commentData);
-    mutate();
+    await mutate();
+  };
+
+  const calculateProgress = (spent: string = "0h", remaining: string = "0h"): number => {
+    const spentHours = convertToHours(spent);
+    const remainingHours = convertToHours(remaining);
+    const totalHours = spentHours + remainingHours;
+    if (totalHours === 0) return 0; // Avoid division by zero
+    return Math.min(100, (spentHours / totalHours) * 100);
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        maxWidth: "1400px",
+        margin: "0 auto",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column"
+      }}
+    >
       <Box
         sx={{
           position: "sticky",
           top: 0,
-          px: 4,
-          py: 2,
+          px: 2,
+          pt: 2,
           zIndex: 1000,
           flexDirection: "column",
           gap: 2
@@ -170,6 +191,64 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             <History />
           </Box>
         )}
+        {/* Time Tracking Progress Bar */}
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          mt={2}
+          mb={2}
+          sx={{ cursor: "pointer" }}
+          onClick={() => setIsPopupOpen(true)}
+        >
+          <Box
+            sx={{
+              minWidth: 400,
+              maxWidth: 500,
+              width: "100%",
+              px: 2,
+              "&:hover .progress-info": {
+                color: "#741B92"
+              }
+            }}
+          >
+            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+              <Typography className="progress-info" variant="body2" color="text.secondary">
+                Spent: {data.time_spent_total || "0h"}
+              </Typography>
+              <Typography className="progress-info" variant="body2" color="text.secondary">
+                Remaining: {data.remaining_time || "0h"}
+              </Typography>
+            </Box>
+
+            <LinearProgress
+              variant="determinate"
+              value={calculateProgress(data.time_spent_total || "0h", data.remaining_time || "0h")}
+              sx={{
+                height: 10,
+                borderRadius: 5,
+                backgroundColor: "#e0e0e0",
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor: "purple"
+                },
+                "&:hover": {
+                  boxShadow: "0 0 5px 1px rgba(116, 27, 146, 0.5)"
+                }
+              }}
+            />
+
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              textAlign="center"
+              mt={1}
+              sx={{ fontStyle: "italic" }}
+            >
+              Click the bar to update time tracking
+            </Typography>
+          </Box>
+        </Box>
       </Box>
 
       <Box
@@ -189,6 +268,14 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         <TaskComments comments={data.comment || []} onSave={submitComment} />
       </Box>
 
+      <TimeSpentPopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        originalEstimate={data.estimated_time || "0d0h"}
+        taskId={data.id}
+        mutate={mutate}
+      />
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}
@@ -200,7 +287,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         onClose={() => setOpenDrawer(false)}
         history={data.history || []}
       />
-    </>
+    </Box>
   );
 };
 

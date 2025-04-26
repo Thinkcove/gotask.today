@@ -2,12 +2,7 @@
 import React, { useState } from "react";
 import { Typography, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import {
-  BackgroundContainer,
-  LoginCard,
-  StyledButton,
-  StyledTextField,
-} from "./style";
+import { BackgroundContainer, LoginCard, StyledButton, StyledTextField } from "./style";
 import { useUser } from "../userContext";
 import env from "../common/env";
 
@@ -23,12 +18,12 @@ const LoginForm = () => {
     const response = await fetch(`${env.API_BASE_URL}/user/login`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         user_id: userId,
-        password: password,
-      }),
+        password: password
+      })
     });
     const data = await response.json();
     if (!response.ok) {
@@ -53,7 +48,7 @@ const LoginForm = () => {
       // Update global state
       setUser({ ...user, token });
       // Redirect to dashboard
-      window.location.href = "/portal/task";
+      window.location.href = "/portal/dashboard";
     } else {
       setError(response.error);
     }
@@ -92,24 +87,16 @@ const LoginForm = () => {
             sx: { height: 56 },
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton
-                  onClick={() => setShowPassword(!showPassword)}
-                  edge="end"
-                >
+                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
-            ),
+            )
           }}
         />
 
         {error && <Typography color="error">{error}</Typography>}
-        <StyledButton
-          fullWidth
-          variant="contained"
-          onClick={handleLogin}
-          disabled={loading}
-        >
+        <StyledButton fullWidth variant="contained" onClick={handleLogin} disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </StyledButton>
       </LoginCard>

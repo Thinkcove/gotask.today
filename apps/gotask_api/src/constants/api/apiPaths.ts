@@ -15,7 +15,11 @@ export const API_PATHS = {
   CREATE_PROJECT: "/createProject",
   GET_PROJECTS: "/getAllProjects",
   ASSIGN_USER_TO_PROJECT: "/usertoProject",
+  REMOVE_USER_FROM_PROJECT: "/removeUser",
   GET_PROJECT_BY_USERID: "/getProjectbyUserId/{user_id}",
+  GET_PROJECT_COUNT_BY_STATUS: "/projectCount",
+  GET_PROJECT_BY_ID: "/getProjectById/{id}",
+  UPDATE_PROJECT: "/updateProject/{id}",
 
   //userRoutes
   CREATE_USER: "/createUser",
@@ -43,5 +47,9 @@ export const API_PATHS = {
   //timelogRoutess
   ADD_TIME_SPENT: "/tasklog/{id}",
   UPDATE_ESTIMATED_TIME: "/updatetimelog/{id}",
-  GET_TIME_TRACKING_SUMMARY: "/timeSummary/{id}"
+  GET_TIME_TRACKING_SUMMARY: "/timeSummary/{id}",
+
+  //organizationRoutes
+  CREATE_ORGANIZATION: "/createOrganization",
+  GET_ORGANIZATIONS: "/getAllOrganizations"
 };

@@ -1,4 +1,4 @@
-export const statuses = [
+export const TaskStatuses = [
   { label: "To Do", color: "#B1AAAA" },
   { label: "In Progress", color: "#F29807" },
   { label: "Need Info", color: "#939FCF" },
@@ -6,20 +6,20 @@ export const statuses = [
   { label: "Completed", color: "#4CAF50" }
 ];
 
-export const getStatusColor = (status: string) => {
+export const getStatusColor = (status: string): string => {
   switch (status) {
     case "to-do":
-      return "#B1AAAA";
+      return "#F44336";
     case "in-progress":
-      return "#F29807";
+      return "#FF9800";
     case "need-info":
-      return "#939FCF";
+      return "#03A9F4";
     case "hold":
-      return "#E2A3D5";
+      return "#CE93D8";
     case "completed":
       return "#4CAF50";
     default:
-      return "#000"; // Default black
+      return "000000";
   }
 };
 

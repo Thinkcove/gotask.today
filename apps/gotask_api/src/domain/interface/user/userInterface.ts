@@ -15,13 +15,8 @@ const findUserById = async (id: string): Promise<IUser | null> => {
 };
 
 const findUsersByIds = async (userIds: string[]): Promise<IUser[]> => {
-  try {
-    // Find users by their ids
-    const users = await User.find({ id: { $in: userIds } }).exec();
-    return users;
-  } catch (error) {
-    throw new Error("Error fetching users");
-  }
+  const users = await User.find({ id: { $in: userIds } }).exec();
+  return users;
 };
 
 const updateUserById = async (id: string, updateData: Partial<IUser>): Promise<IUser | null> => {

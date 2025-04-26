@@ -1,6 +1,6 @@
 import env from "@/app/common/env";
 import { IProjectField } from "../interfaces/projectInterface";
-import { getData } from "@/app/common/utils/apiData";
+import { getData, postData, putData } from "@/app/common/utils/apiData";
 
 //createProject
 export const createProject = async (formData: IProjectField) => {
@@ -10,9 +10,15 @@ export const createProject = async (formData: IProjectField) => {
     body: JSON.stringify(formData)
   });
   if (!response.ok) {
-    throw new Error("Failed to create task");
+    throw new Error("Failed to create project");
   }
   return response.json();
+};
+
+//update a project
+export const updateProject = async (projectId: string, updatedFields: IProjectField) => {
+  const url = `${env.API_BASE_URL}/updateProject/${projectId}`;
+  return await putData(url, updatedFields as unknown as Record<string, unknown>);
 };
 
 //fetch status count
@@ -32,7 +38,7 @@ export const fetchProjects = async () => {
         status: string;
         createdAt: string;
         updatedAt: string;
-        user_id: string[];
+        users: string[];
       }) => ({
         id: project.id,
         name: project.name,
@@ -40,8 +46,44 @@ export const fetchProjects = async () => {
         status: project.status,
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
-        user_id: project.user_id
+        users: project.users
       })
     ) || []
   );
+};
+
+// Assigne user to project
+export const assignUsersToProject = async (userIds: string[], projectId: string) => {
+  try {
+    const payload = {
+      user_id: userIds,
+      project_id: projectId
+    };
+    const url = `${env.API_BASE_URL}/usertoProject`;
+    return await postData(url, payload);
+  } catch (error) {
+    console.error("Error assigning users to project:", error);
+    throw error;
+  }
+};
+
+//removing users from the project
+export const removeUsersFromProject = async (userIds: string[], projectId: string) => {
+  try {
+    const payload = {
+      user_id: userIds,
+      project_id: projectId
+    };
+    const url = `${env.API_BASE_URL}/removeUser`;
+    return await postData(url, payload);
+  } catch (error) {
+    console.error("Error while removing users from project:", error);
+    throw error; // Propagate error to handle in the calling function
+  }
+};
+
+// Fetching data using SWR
+export const fetcher = async () => {
+  const data = await fetchProjects();
+  return data;
 };

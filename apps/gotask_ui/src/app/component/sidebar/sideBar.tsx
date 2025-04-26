@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   Drawer,
   List,
@@ -37,9 +37,7 @@ const iconMap: Record<string, React.ReactNode> = {
 const drawerWidth = 260;
 
 const Sidebar: React.FC = () => {
-  const [open, setOpen] = useState<boolean>(
-    !useMediaQuery((theme: any) => theme.breakpoints.down("sm"))
-  );
+  const [open, setOpen] = useState<boolean>(false);
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -56,23 +54,6 @@ const Sidebar: React.FC = () => {
   const toggleSidebar = () => {
     setOpen(!open);
   };
-
-  // Handle outside click on desktop
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        !isMobile &&
-        open &&
-        drawerRef.current &&
-        !drawerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open, isMobile]);
 
   return (
     <>
@@ -94,7 +75,7 @@ const Sidebar: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Desktop Open Button when Sidebar is Closed */}
+      {/* Desktop Menu Icon when Sidebar is Closed */}
       {!isMobile && !open && (
         <IconButton
           onClick={toggleSidebar}
@@ -120,6 +101,9 @@ const Sidebar: React.FC = () => {
         variant={isMobile ? "temporary" : "persistent"}
         open={open}
         onClose={toggleSidebar}
+        onMouseLeave={() => {
+          if (!isMobile) setOpen(false);
+        }}
         sx={{
           width: collapsed ? 60 : drawerWidth,
           flexShrink: 0,

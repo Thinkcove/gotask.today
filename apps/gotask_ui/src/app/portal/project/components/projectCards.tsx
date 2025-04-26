@@ -1,44 +1,32 @@
 import React from "react";
-import { Typography, Grid, Chip, CircularProgress, Box, Avatar, Button } from "@mui/material";
-import useSWR from "swr";
-import { fetchProjects } from "../services/projectAction";
-import { Group } from "@mui/icons-material";
+import { Typography, Grid, Chip, CircularProgress, Box, Button } from "@mui/material";
+import { ArrowForward, Group } from "@mui/icons-material";
 import { getStatusColor } from "@/app/common/constants/task";
-import { getColorForUser } from "@/app/common/constants/avatar";
 import { useRouter } from "next/navigation";
+import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
+import CardComponent from "@/app/component/card/cardComponent";
+import { Project } from "../interfaces/projectInterface";
 
-type Project = {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  users: {
-    id: string;
-    name: string;
-    user_id: string; // User email
-  }[];
-};
+interface ProjectCardProps {
+  projects: Project[] | null; // Ensure projects is an array or null
+  error: any;
+}
 
-const fetcher = async () => {
-  const data = await fetchProjects();
-  return data;
-};
+const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
+  const router = useRouter();
 
-const ProjectCards: React.FC = () => {
-  const { data: projects, error } = useSWR("fetch-projects", fetcher);
-
+  // Handle error
   if (error) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="error">
-          Error loading projects
+          Error loading projects: {error.message || "Unknown error"}
         </Typography>
       </Box>
     );
   }
 
+  // Handle loading state
   if (!projects) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -46,81 +34,70 @@ const ProjectCards: React.FC = () => {
       </Box>
     );
   }
-  const router = useRouter();
+
+  // Handle empty projects array
+  if (projects.length === 0) {
+    return (
+      <Box display="flex" justifyContent="center" mt={5}>
+        <Typography variant="body1" color="text.secondary">
+          No projects available.
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
         {projects.map((project: Project) => (
           <Grid item xs={12} sm={6} md={3} key={project.id}>
-            <Box
-              sx={{
-                borderRadius: 3,
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                overflow: "hidden",
-                background: "linear-gradient(145deg, #ffffff, #f7f3fa)",
-                border: "1px solid #eee",
-                p: 4,
-                transition: "transform 0.3s ease-in-out, box-shadow 0.3s",
-                "&:hover": {
-                  boxShadow: "0 4px 4px rgba(0, 0, 0, 0.2)"
-                }
-              }}
-            >
-              {/* Title */}
-              <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: "#741B92" }}>
-                {project.name}
-              </Typography>
+            <CardComponent>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Typography variant="h6" fontWeight={600}>
+                  {project.name}
+                </Typography>
 
-              {/* Description */}
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      backgroundColor: getStatusColor(project.status),
+                      mr: 1.5
+                    }}
+                  />
+                  <Typography
+                    sx={{
+                      color: getStatusColor(project.status),
+                      textTransform: "capitalize"
+                    }}
+                  >
+                    {project.status}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Project Description */}
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, pt: 1 }}>
                 {project.description}
               </Typography>
-
-              {/* Status Chip */}
-              <Chip
-                label={project.status}
-                sx={{
-                  backgroundColor: "#fff",
-                  border: `1px solid ${getStatusColor(project.status)}`,
-                  color: getStatusColor(project.status),
-                  fontWeight: "bold",
-                  textTransform: "capitalize",
-                  borderRadius: 4,
-                  px: 2,
-                  py: 0.5,
-                  mb: 2
-                }}
-              />
 
               {/* Users Info */}
               <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
                 <Group sx={{ fontSize: 20, color: "#741B92", mr: 1 }} />
-                <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
-                  Users:
-                </Typography>
 
                 {/* Render Avatars for users */}
                 <Box display="flex" alignItems="center">
-                  {/* Safely access project.users */}
-                  {project.users && project.users.length > 0 ? (
-                    project.users.slice(0, 3).map((user, index) => {
-                      console.log("Rendering user:", user); // Log user object to verify the structure
-                      return (
-                        <Avatar
-                          key={index}
-                          sx={{
-                            width: 30,
-                            height: 30,
-                            mr: 0.75,
-                            backgroundColor: getColorForUser(user.name), // Background color based on user name
-                            fontSize: "0.75rem"
-                          }}
-                        >
-                          {user.name.charAt(0).toUpperCase()} {/* First letter of name */}
-                        </Avatar>
-                      );
-                    })
+                  {project.users?.length > 0 ? (
+                    project.users
+                      .slice(0, 3)
+                      .map((user, index) => <AlphabetAvatar userName={user.name} key={index} />)
                   ) : (
                     <Typography variant="body2" color="text.secondary">
                       No users assigned
@@ -128,7 +105,7 @@ const ProjectCards: React.FC = () => {
                   )}
 
                   {/* If there are more than 3 users, display the count */}
-                  {project.users && project.users.length > 3 && (
+                  {project.users?.length > 3 && (
                     <Typography variant="caption" color="text.secondary">
                       +{project.users.length - 3}
                     </Typography>
@@ -136,30 +113,30 @@ const ProjectCards: React.FC = () => {
                 </Box>
               </Box>
 
-              {/* Button or Action */}
+              {/* View Details Button */}
               <Box display="flex" justifyContent="flex-end">
-                <Button
-                  variant="contained"
+                <Box
                   sx={{
-                    backgroundColor: "white",
-                    border: "1px solid #741B92",
+                    display: "flex",
+                    alignItems: "center",
                     color: "#741B92",
-                    textTransform: "capitalize",
-                    borderRadius: 2,
-                    padding: "4px 8px"
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    "&:hover": {
+                      textDecoration: "underline"
+                    }
                   }}
                   onClick={() => {
-                    if (!project.id) {
-                      console.warn("Project ID is missing", project);
-                      return;
-                    }
                     router.push(`/portal/project/viewProject/${project.id}`);
                   }}
                 >
-                  View Details
-                </Button>
+                  <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
+                    View Details
+                  </Typography>
+                  <ArrowForward fontSize="small" />
+                </Box>
               </Box>
-            </Box>
+            </CardComponent>
           </Grid>
         ))}
       </Grid>

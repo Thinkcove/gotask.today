@@ -1,165 +1,281 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Grid,
-  Card,
-  IconButton,
-  Slide,
-  Divider,
-  Stack
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Box, Typography, Card, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
+import { ArrowBack, Delete, Edit } from "@mui/icons-material";
+import { Project } from "../../interfaces/projectInterface";
+import { fetchAllUsers } from "@/app/portal/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
-
-interface Project {
-  _id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  users: { _id: string; name: string; user_id: string }[];
-}
+import FormField from "@/app/component/formField";
+import { useParams, useRouter } from "next/navigation";
+import { assignUsersToProject, removeUsersFromProject } from "../../services/projectAction";
+import { KeyedMutator } from "swr";
+import CommonDialog from "@/app/component/dialog/commonDialog";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { getStatusColor } from "@/app/common/constants/task";
+import EditProject from "./editProject";
 
 interface ProjectDetailProps {
   project: Project;
+  mutate: KeyedMutator<Project>;
 }
 
-const ProjectDetail: React.FC<ProjectDetailProps> = ({ project }) => {
+const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const [open, setOpen] = useState(false);
-  const [newUserId, setNewUserId] = useState("");
+  const router = useRouter();
+  const handleBack = () => {
+    setTimeout(() => router.back(), 2000);
+  };
+  const [editOpen, setEditOpen] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const { getAllUsers } = fetchAllUsers(); // Fetch all users
+  const { projectId } = useParams();
+  const projectID = projectId as string;
+  const handleAddUser = async () => {
+    setOpen(false);
+    try {
+      const response = await assignUsersToProject(selectedUserIds, projectID);
+      await mutate();
+      setSnackbar({
+        open: true,
+        message: response.message,
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Error while adding assignee",
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+    }
+  };
+  const onClose = () => {
+    setOpen(false);
+  };
 
-  const handleAddUser = () => {
-    if (newUserId.trim()) {
-      console.log("Assign user:", newUserId);
-      setNewUserId("");
-      setOpen(false);
+  const handleDeleteUser = async (userIds: string[]) => {
+    try {
+      const response = await removeUsersFromProject(userIds, projectID);
+      await mutate();
+      setSnackbar({
+        open: true,
+        message: response.message,
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Error while removing assignee",
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
     }
   };
 
-  const handleDeleteUser = (userId: string) => {
-    console.log("Delete user with ID:", userId);
-  };
-
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        px: 4,
-        py: 6,
-        background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-      }}
-    >
-      {/* Project and Users Info */}
-      <Card
-        elevation={3}
+    <>
+      <Box
         sx={{
-          borderRadius: 4,
-          p: 4,
-          backgroundColor: "#fff",
-          border: "1px solid #e0e0e0"
+          backgroundColor: "#741B92", // Solid color for a bold look
+          color: "white",
+          p: 1.5,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
         }}
       >
-        {/* Project Info */}
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          {project.name}
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "600",
+            textTransform: "capitalize"
+          }}
+        >
+          Project Detail View
         </Typography>
-        <Typography variant="body1" mb={2}>
-          {project.description}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Created on: {new Date(project.createdAt).toLocaleDateString()}
-        </Typography>
-        <Divider sx={{ my: 3 }} /> {/* Divider between Project Info and Users */}
-        {/* Users Section */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h5" fontWeight={600}>
-            Team Members
-          </Typography>
-          <Button variant="contained" onClick={() => setOpen(true)}>
-            + Add User
-          </Button>
-        </Box>
-        <Grid container spacing={3}>
-          {project.users.length > 0 ? (
-            project.users.map((user) => (
-              <Grid item xs={12} sm={6} md={4} key={user._id}>
-                <Card
-                  elevation={2}
+      </Box>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          px: 3,
+          py: 4,
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+        }}
+      >
+        {/* Project and Users Info */}
+        <Box
+          sx={{
+            borderRadius: 4,
+            p: 4,
+            bgcolor: "#f9fafb",
+            border: "1px solid #e0e0e0"
+          }}
+        >
+          {/* Header */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              mb: 3
+            }}
+          >
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <IconButton edge="start" color="primary" onClick={handleBack}>
+                <ArrowBack />
+              </IconButton>
+              <Box>
+                <Typography variant="h4" fontWeight={700}>
+                  {project.name}
+                </Typography>
+                <Typography variant="body1" sx={{ mt: 0.5 }}>
+                  {project.description}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ mt: 1, display: "block" }}
+                >
+                  Created on: {new Date(project.createdAt).toLocaleDateString()}
+                </Typography>
+                <Box
                   sx={{
-                    p: 3,
-                    borderRadius: 3,
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "center",
-                    border: "1px solid #ddd",
-                    backgroundColor: "#fff",
-                    "&:hover": {
-                      boxShadow: 3
-                    }
+                    pt: 1
                   }}
                 >
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    {/* Use AlphabetAvatar component for user avatar */}
-                    <AlphabetAvatar userName={user.name} size={40} fontSize={16} />
+                  <Box
+                    sx={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      backgroundColor: getStatusColor(project.status),
+                      mr: 1.5
+                    }}
+                  />
+                  <Typography
+                    sx={{
+                      color: getStatusColor(project.status),
+                      textTransform: "capitalize"
+                    }}
+                  >
+                    Status : {project.status}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+            {/* Status Pill */}
+            <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+              <Edit />
+            </IconButton>
+          </Box>
 
-                    <Box>
-                      <Typography fontWeight={600} fontSize="1rem">
-                        {user.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        ID: {user.user_id}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                  <IconButton color="error" onClick={() => handleDeleteUser(user._id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Card>
-              </Grid>
-            ))
-          ) : (
-            <Typography color="text.secondary" ml={2}>
-              No users assigned yet.
+          <Divider sx={{ mb: 4 }} />
+
+          {/* Assignees Section */}
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography variant="h5" fontWeight={600}>
+              Assignees
             </Typography>
-          )}
-        </Grid>
-      </Card>
+            <Button
+              variant="contained"
+              onClick={() => setOpen(true)}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2
+              }}
+            >
+              Add Assignee
+            </Button>
+          </Box>
 
-      {/* Add User Dialog */}
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        TransitionComponent={Slide as any}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Add New User</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="User ID"
-            value={newUserId}
-            onChange={(e) => setNewUserId(e.target.value)}
-            margin="normal"
-            autoFocus
+          {/* Users Grid */}
+          <Grid container spacing={3} sx={{ maxHeight: "500px", overflowY: "auto" }}>
+            {project.users.length > 0 ? (
+              project.users.map((user) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
+                  <Box
+                    sx={{
+                      p: 3,
+                      borderRadius: 3,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      bgcolor: "#ffffff",
+                      border: "1px solid #e0e0e0"
+                    }}
+                  >
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
+
+                      <Box>
+                        <Typography fontWeight={600} fontSize="1rem">
+                          {user.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {user.user_id}
+                        </Typography>
+                      </Box>
+                    </Stack>
+
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDeleteUser([user.id])}
+                      sx={{
+                        transition: "0.2s ease",
+                        "&:hover": {
+                          transform: "scale(1.1)"
+                        }
+                      }}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </Box>
+                </Grid>
+              ))
+            ) : (
+              <Grid item xs={12}>
+                <Typography color="text.secondary">No users assigned yet.</Typography>
+              </Grid>
+            )}
+          </Grid>
+        </Box>
+        {/* Add User Dialog */}
+        <CommonDialog
+          open={open}
+          onClose={onClose}
+          onSubmit={handleAddUser}
+          title="Add Assignee"
+          submitLabel=" Add User"
+        >
+          <FormField
+            label="Assignees"
+            type="multiselect"
+            placeholder="Select users"
+            options={getAllUsers}
+            value={selectedUserIds} // This is an array of user IDs: ["123", "456"]
+            onChange={(ids) => setSelectedUserIds(ids as string[])}
           />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)} color="secondary">
-            Cancel
-          </Button>
-          <Button variant="contained" onClick={handleAddUser}>
-            Add User
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+        </CommonDialog>
+        <EditProject
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          data={project}
+          mutate={mutate}
+          projectID={projectID}
+        />
+        <CustomSnackbar
+          open={snackbar.open}
+          message={snackbar.message}
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        />
+      </Box>
+    </>
   );
 };
 

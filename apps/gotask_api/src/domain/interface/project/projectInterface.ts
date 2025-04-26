@@ -63,6 +63,14 @@ const findProjectById = async (id: string): Promise<IProject | null> => {
   return await Project.findOne({ id });
 };
 
+//update
+const updateProjectById = async (
+  id: string,
+  updateData: Partial<IProject>
+): Promise<IProject | null> => {
+  return await Project.findOneAndUpdate({ id }, updateData, { new: true });
+};
+
 export {
   createNewProject,
   findAllProjects,
@@ -71,5 +79,6 @@ export {
   saveProject,
   findByUserId,
   findProjectCountByStatus,
-  findProjectById
+  findProjectById,
+  updateProjectById
 };

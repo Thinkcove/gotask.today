@@ -14,7 +14,7 @@ const ViewAction: React.FC = () => {
   const selectedTask = data?.data || null;
 
   return selectedTask ? (
-    <ProjectDetail project={selectedTask} />
+    <ProjectDetail project={selectedTask} mutate={UpdateData} />
   ) : (
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
       <CircularProgress />

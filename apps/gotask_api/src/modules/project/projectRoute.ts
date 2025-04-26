@@ -81,4 +81,27 @@ ProjectRoutes.push({
   }
 });
 
+// Route: Remove User from Project
+ProjectRoutes.push({
+  path: API_PATHS.REMOVE_USER_FROM_PROJECT,
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectController.removeUserFromProject(new RequestHelper(request), handler),
+  config: {
+    notes: "Remove User from Project",
+    tags
+  }
+});
+
+// Route: Update Project
+ProjectRoutes.push({
+  path: API_PATHS.UPDATE_PROJECT,
+  method: API_METHODS.PUT,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectController.updateProjectDetails(new RequestHelper(request), handler),
+  config: {
+    notes: "Update project details",
+    tags
+  }
+});
 export default ProjectRoutes;

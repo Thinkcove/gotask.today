@@ -15,8 +15,16 @@ const ProjectMessages = {
     PROJECT_NOT_FOUND: "Project not found",
     FAILED: "Failed to assign users to project"
   },
+  REMOVE: {
+    INVALID_INPUT: "Invalid user IDs or project ID",
+    PROJECT_NOT_FOUND: "Project not found",
+    FAILED: "Failed to remove users from project"
+  },
   USER: {
     REQUIRED: "User ID is required"
+  },
+  UPDATE: {
+    FAILED: "Failed to Update a Project"
   }
 };
 

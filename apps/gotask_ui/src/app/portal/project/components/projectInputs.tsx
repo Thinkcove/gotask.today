@@ -3,19 +3,18 @@ import React from "react";
 import { Grid } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { IProjectField, PROJECT_WORKFLOW } from "../interfaces/projectInterface";
+import { fetchAllOrganizations } from "../../organization/services/organizationAction";
 
 interface IProjectInputProps {
   formData: IProjectField;
-  handleChange: (field: keyof IProjectField, value: String) => void;
+  handleChange: (field: keyof IProjectField, value: string) => void;
 }
-
-const organizationOptions = [{ id: "1", name: "Thinkcove" }];
 
 const ProjectInput = ({ formData, handleChange }: IProjectInputProps) => {
   const currentStatus = formData.status;
   const allowedStatuses = PROJECT_WORKFLOW[currentStatus] || [];
   const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
-
+  const { getOrganizations } = fetchAllOrganizations();
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
@@ -55,7 +54,7 @@ const ProjectInput = ({ formData, handleChange }: IProjectInputProps) => {
           type="select"
           value={formData.organization_id}
           onChange={(value) => handleChange("organization_id", String(value))}
-          options={organizationOptions}
+          options={getOrganizations}
           required
           placeholder="Select organization"
         />

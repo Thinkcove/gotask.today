@@ -50,8 +50,8 @@ const CreateTask: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const { mutate: ProjectMutate, tasksByProjects } = useProjectGroupTask();
-  const { mutate: UserMutate, tasksByUsers } = useUserGroupTask();
+  const { mutate: ProjectMutate } = useProjectGroupTask();
+  const { mutate: UserMutate } = useUserGroupTask();
 
   // Handle form submission
   const handleSubmit = async () => {
@@ -60,12 +60,8 @@ const CreateTask: React.FC = () => {
       // Create the task
       const newTask = await createTask(formData);
 
-      const updatedTasksByProjects = [...tasksByProjects, newTask];
-
-      const updatedTasksByUsers = [...tasksByUsers, newTask];
-
-      await ProjectMutate(updatedTasksByProjects); // Update project-specific tasks
-      await UserMutate(updatedTasksByUsers); // Update user-specific tasks
+      await ProjectMutate(); // Update project-specific tasks
+      await UserMutate(); // Update user-specific tasks
 
       setSnackbar({
         open: true,

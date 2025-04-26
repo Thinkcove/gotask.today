@@ -1,13 +1,17 @@
 "use client";
 import React, { useState } from "react";
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
-import { IProjectField, PROJECT_STATUS } from "../interfaces/projectInterface";
+import { IProjectField, Project, PROJECT_STATUS } from "../interfaces/projectInterface";
 import { createProject } from "../services/projectAction";
 import ProjectInput from "./projectInputs";
+import { KeyedMutator } from "swr";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
 interface CreateProjectProps {
   open: boolean;
   onClose: () => void;
+  mutate: KeyedMutator<Project>;
 }
 
 const initialFormState: IProjectField = {
@@ -17,13 +21,13 @@ const initialFormState: IProjectField = {
   organization_id: ""
 };
 
-const CreateProject = ({ open, onClose }: CreateProjectProps) => {
+const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
   const [formData, setFormData] = useState<IProjectField>(initialFormState);
-
-  // Reset formData when modal opens
-  const handleDialogEnter = () => {
-    setFormData(initialFormState);
-  };
 
   const handleChange = (field: keyof IProjectField, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -32,28 +36,39 @@ const CreateProject = ({ open, onClose }: CreateProjectProps) => {
   const handleSubmit = async () => {
     try {
       await createProject(formData);
-      console.log("Project created!");
+      await mutate();
+      setSnackbar({
+        open: true,
+        message: "Project created successfully!",
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
       onClose();
     } catch (error) {
-      console.error("Error creating project:", error);
+      setSnackbar({
+        open: true,
+        message: "Error while creating project",
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Create Project</DialogTitle>
-      <DialogContent>
+    <>
+      <CommonDialog
+        open={open}
+        onClose={onClose}
+        onSubmit={handleSubmit}
+        title="Create New Project"
+      >
         <ProjectInput formData={formData} handleChange={handleChange} />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit} color="primary">
-          Submit
-        </Button>
-      </DialogActions>
-    </Dialog>
+      </CommonDialog>
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
+    </>
   );
 };
 

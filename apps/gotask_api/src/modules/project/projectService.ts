@@ -1,6 +1,6 @@
 import ProjectMessages from "../../constants/apiMessages/projectMessage";
 import { IProject, Project } from "../../domain/model/project/project";
-import { Organization } from "../../domain/model/organization";
+import { Organization } from "../../domain/model/organization/organization";
 import {
   createNewProject,
   findAllProjects,
@@ -9,7 +9,8 @@ import {
   findProjectById,
   findProjectCountByStatus,
   findUsersByIds,
-  saveProject
+  saveProject,
+  updateProjectById
 } from "../../domain/interface/project/projectInterface";
 
 // Create a new project
@@ -58,9 +59,6 @@ const getAllProjects = async (): Promise<{
 
     // Map user IDs to user objects for easy lookup
     const userMap = new Map(users.map((user) => [user.id, user]));
-
-    // Log missing user IDs (if any) for debugging
-    const missingUserIds = allUserIds.filter((id) => !userMap.has(id));
 
     // Attach user details to each project
     const enrichedProjects = projects.map((project) => ({
@@ -119,7 +117,8 @@ const assignUsersToProject = async (
     const updatedProject = await saveProject(project);
     return {
       success: true,
-      data: updatedProject
+      data: updatedProject,
+      message: "Successfully Assigned to the project"
     };
   } catch (error: any) {
     return {
@@ -235,6 +234,72 @@ const getProjectById = async (
   }
 };
 
+// Remove users from a project
+const removeUsersFromProject = async (
+  userIds: string[],
+  projectId: string
+): Promise<{ success: boolean; data?: IProject; message?: string }> => {
+  try {
+    if (!Array.isArray(userIds) || userIds.length === 0 || !projectId) {
+      return {
+        success: false,
+        message: ProjectMessages.REMOVE.INVALID_INPUT
+      };
+    }
+
+    const project = await findByProjectId(projectId);
+    if (!project) {
+      return {
+        success: false,
+        message: ProjectMessages.REMOVE.PROJECT_NOT_FOUND
+      };
+    }
+
+    if (!Array.isArray(project.user_id)) {
+      project.user_id = [];
+    }
+
+    // Filter out the users to be removed
+    project.user_id = project.user_id.filter((id: string) => !userIds.includes(id));
+
+    await saveProject(project);
+
+    return {
+      success: true,
+      message: "Successfully removed from the project"
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.REMOVE.FAILED
+    };
+  }
+};
+
+// Update project
+const updateProject = async (
+  id: string,
+  updateData: Partial<IProject>
+): Promise<{ success: boolean; data?: IProject | null; message?: string }> => {
+  try {
+    const updatedProject = await updateProjectById(id, updateData);
+    if (!updatedProject) {
+      return {
+        success: false,
+        message: ProjectMessages.FETCH.NOT_FOUND
+      };
+    }
+    return {
+      success: true,
+      data: updatedProject
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.UPDATE.FAILED
+    };
+  }
+};
 export {
   createProject,
   getAllProjects,
@@ -242,5 +307,7 @@ export {
   getProjectsByUserId,
   assignProjectToOrganization,
   getProjectCountByStatus,
-  getProjectById
+  getProjectById,
+  removeUsersFromProject,
+  updateProject
 };

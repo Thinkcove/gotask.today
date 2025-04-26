@@ -9,8 +9,8 @@ export interface IUser extends Document {
   user_id: string;
   status: boolean;
   roleId: Types.ObjectId;
-  organization?: Types.ObjectId;
-  projects?: Types.ObjectId[];
+  organization?: string[];
+  projects?: string[];
 }
 
 // User schema

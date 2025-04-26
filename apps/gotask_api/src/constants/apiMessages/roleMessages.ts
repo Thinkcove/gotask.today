@@ -17,5 +17,5 @@ export const roleMessages = {
   DELETE: {
     SUCCESS: "Role deleted successfully.",
     FAILED: "Failed to delete role."
-  },
+  }
 };

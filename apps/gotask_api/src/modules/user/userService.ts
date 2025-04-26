@@ -210,11 +210,4 @@ const getUserByEmail = async (
   }
 };
 
-export {
-  createUser,
-  getAllUsers,
-  getUserById,
-  updateUser,
-  deleteUser,
-  getUserByEmail
-};
+export { createUser, getAllUsers, getUserById, updateUser, deleteUser, getUserByEmail };

@@ -2,7 +2,6 @@ import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { IAccess } from "../interface/access/accessInterface";
 
-
 const AccessSchema = new Schema<IAccess>(
   {
     id: {
@@ -26,4 +25,3 @@ const AccessSchema = new Schema<IAccess>(
 );
 
 export const Access = mongoose.model<IAccess>("Access", AccessSchema);
-

@@ -7,7 +7,7 @@ export interface IRole extends Document {
   access: string[];
 }
 export interface CreateRolePayload {
-    name: string;
-    priority: number;
-    accessIds?: string[];
-  }
+  name: string;
+  priority: number;
+  accessIds?: string[];
+}

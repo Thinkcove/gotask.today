@@ -1,5 +1,3 @@
-import { Access } from "../../model/access";
-import { User } from "../../model/user/user";
 import { Document, Types } from "mongoose";
 
 export interface IUser extends Document {

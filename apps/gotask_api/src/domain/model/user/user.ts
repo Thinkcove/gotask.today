@@ -1,4 +1,4 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 import { IUser } from "../../interface/user/userInterface";

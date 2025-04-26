@@ -2,7 +2,6 @@ import { Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { IRole } from "../interface/role/roleInterface";
 
-
 const RoleSchema = new Schema<IRole>(
   {
     id: { type: String, default: uuidv4, unique: true },

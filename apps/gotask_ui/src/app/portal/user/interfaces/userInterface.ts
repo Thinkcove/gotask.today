@@ -2,9 +2,9 @@ export interface IUserField {
   name: string;
   status: boolean;
   organization: string[];
-  role: string;
+  roleId: string;
   user_id: string;
-  password: string;
+  password?: string;
 }
 
 export interface User {
@@ -12,11 +12,19 @@ export interface User {
   name: string;
   status: boolean;
   user_id: string;
-  role: string;
+  roleId: RoleData;
+  role: RoleData;
   createdAt: string;
   updatedAt: string;
   projects: { id: string; name: string }[];
   organization: string[];
   organizations: { id: string; name: string; address: string }[];
   projectDetails: { id: string; name: string; description: string; status: string }[];
+  orgDetails: { id: string; name: string }[];
+}
+
+export interface RoleData {
+  _id: string;
+  id: string;
+  name: string;
 }

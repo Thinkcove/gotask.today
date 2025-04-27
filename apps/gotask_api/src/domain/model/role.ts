@@ -1,16 +1,16 @@
-import { Document, Types } from "mongoose";
-import mongoose, { Schema } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-
-// Import Access model
-import { IAccess } from "../model/access"; // Assuming Access model is in the same folder or adjust path
 
 export interface IRole extends Document {
   id: string;
-  name: string; // e.g. Admin, Manager, Associate
-  priority: number; // Lower = higher authority
-  access: Types.ObjectId[] | IAccess[];
-  // References to Access model
+  name: string;
+  priority: number;
+  access: string[];
+}
+export interface CreateRolePayload {
+  name: string;
+  priority: number;
+  accessIds?: string[];
 }
 
 const RoleSchema = new Schema<IRole>(
@@ -20,8 +20,7 @@ const RoleSchema = new Schema<IRole>(
     priority: { type: Number, required: true },
     access: [
       {
-        type: Schema.Types.ObjectId, // Reference to Access collection
-        ref: "Access",
+        type: String,
         required: true
       }
     ]
@@ -29,4 +28,4 @@ const RoleSchema = new Schema<IRole>(
   { timestamps: true }
 );
 
-export const Role = mongoose.model<IRole>("Role", RoleSchema);
+export const Role = model<IRole>("Role", RoleSchema);

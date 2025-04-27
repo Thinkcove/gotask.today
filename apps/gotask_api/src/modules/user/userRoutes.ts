@@ -69,4 +69,16 @@ UserRoutes.push({
   }
 });
 
+// Route: Delete User
+UserRoutes.push({
+  path: API_PATHS.DELETE_USER,
+  method: API_METHODS.DELETE,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.deleteUser(new RequestHelper(request), handler),
+  config: {
+    notes: "Delete a user by ID",
+    tags
+  }
+});
+
 export default UserRoutes;

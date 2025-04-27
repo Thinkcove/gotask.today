@@ -18,7 +18,7 @@ const initialFormState: IUserField = {
   name: "",
   status: true,
   organization: [],
-  role: "",
+  roleId: "",
   user_id: "",
   password: ""
 };
@@ -35,13 +35,13 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.name) newErrors.name = "User name is required";
-    if (!formData.role) newErrors.role = "Role is required";
+    if (!formData.roleId) newErrors.roleId = "Role is required";
     if (!formData.status) newErrors.status = "Status is required";
     if (!formData.user_id) newErrors.user_id = "Email is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleChange = (field: keyof IUserField, value: string) => {
+  const handleChange = (field: keyof IUserField, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
   const handleSubmit = async () => {
@@ -67,7 +67,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   return (
     <>
       <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Create New User">
-        <UserInput formData={formData} handleChange={handleChange} errors={errors} />
+        <UserInput formData={formData} handleChange={handleChange} errors={errors} isEdit={true} />
       </CommonDialog>
       <CustomSnackbar
         open={snackbar.open}

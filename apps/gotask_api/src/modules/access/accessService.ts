@@ -1,7 +1,12 @@
-// accessService.ts
-
-import { IAccess, Access } from "../../domain/model/access";
-import AccessMessages from "../../constants/apiMessages/accessMeggage"; // Fixing typo here from 'accessMeggage' to 'accessMessage'
+import { IAccess } from "../../domain/model/access";
+import {
+  createAccessInDb,
+  getAllAccessRecordsFromDb,
+  getAccessByIdFromDb,
+  updateAccessInDb,
+  deleteAccessByIdFromDb
+} from "../../domain/interface/access/accessInterface";
+import AccessMessages from "../../constants/apiMessages/accessMessage";
 
 // Create a new access record
 const createAccess = async (
@@ -15,10 +20,7 @@ const createAccess = async (
       };
     }
 
-    const newAccess = await new Access({
-      name: accessData.name,
-      application: accessData.application
-    }).save();
+    const newAccess = await createAccessInDb(accessData);
 
     return {
       success: true,
@@ -35,11 +37,11 @@ const createAccess = async (
 // Get all access records
 const getAllAccesses = async (): Promise<{
   success: boolean;
-  data?: IAccess[];
+  data?: IAccess[] | null;
   message?: string;
 }> => {
   try {
-    const accesses = await Access.find();
+    const accesses = await getAllAccessRecordsFromDb();
     return {
       success: true,
       data: accesses
@@ -57,7 +59,7 @@ const getAccessById = async (
   id: string
 ): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
   try {
-    const access = await Access.findOne({ id });
+    const access = await getAccessByIdFromDb(id);
     if (!access) {
       return {
         success: false,
@@ -82,10 +84,7 @@ const updateAccess = async (
   updateData: Partial<IAccess>
 ): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
   try {
-    const updatedAccess = await Access.findOneAndUpdate({ id }, updateData, {
-      new: true,
-      runValidators: true
-    });
+    const updatedAccess = await updateAccessInDb(id, updateData);
 
     if (!updatedAccess) {
       return {
@@ -110,8 +109,9 @@ const deleteAccessById = async (
   id: string
 ): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
   try {
-    const deletedAccess = await Access.findOneAndDelete({ id });
-    if (!deletedAccess) {
+    const success = await deleteAccessByIdFromDb(id);
+
+    if (!success) {
       return {
         success: false,
         message: AccessMessages.DELETE.NOT_FOUND

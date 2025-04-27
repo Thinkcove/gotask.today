@@ -1,9 +1,8 @@
-import { Document } from "mongoose";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 export interface IAccess extends Document {
-  id: string; // Custom access ID
+  id: string;
   name: string;
   application: {
     access: string;

@@ -23,7 +23,7 @@ export const convertToHours = (timeStr: string): number => {
 
 // Define constants needed for time comparison
 const TIME_SEPARATOR = " ";
-const TIME_PART_SEPARATOR = ":"; 
+const TIME_PART_SEPARATOR = ":";
 
 export const isEndTimeAfterStartTime = (startTime: string, endTime: string): boolean => {
   if (!startTime || !endTime) return true; // Skip validation if times aren't selected yet

@@ -11,7 +11,7 @@ export const TIME_FORMAT = {
 
 // Time unit labels
 export const TIME_UNITS = {
-  DAY: "d", 
+  DAY: "d",
   HOUR: "h"
 };
 
@@ -20,6 +20,3 @@ export const TIME_GUIDE_DESCRIPTION = {
   DAY: "d = day",
   HOUR: "h = hour"
 };
-
-
-

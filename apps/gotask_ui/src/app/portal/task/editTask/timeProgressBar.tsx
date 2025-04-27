@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { calculateTimeProgressData } from "@/app/common/utils/common";
 
 interface ProgressBarProps {
   estimatedTime: string;
@@ -8,15 +7,30 @@ interface ProgressBarProps {
   onClick: () => void;
 }
 
-const TimeProgressBar: React.FC<ProgressBarProps> = ({ estimatedTime, timeSpentTotal, onClick }) => {
-  const {
-    estimatedHours,
-    spentHours,
-    variationHours,
-    spentFillPercentage,
-    variationFillPercentage,
-    totalFillPercentage
-  } = calculateTimeProgressData(estimatedTime || "0h", timeSpentTotal || "0h");
+const TimeProgressBar: React.FC<ProgressBarProps> = ({
+  estimatedTime,
+  timeSpentTotal,
+  onClick
+}) => {
+  // Parse time strings to extract hours
+  const parseTimeString = (timeStr: string) => {
+    const days = parseInt(timeStr.match(/(\d+)d/)?.[1] || "0", 10);
+    const hours = parseInt(timeStr.match(/(\d+)h/)?.[1] || "0", 10);
+    return days * 8 + hours; // Converting days to hours (8 hours = 1 day)
+  };
+
+  const estimatedHours = parseTimeString(estimatedTime || "0h");
+  const spentHours = parseTimeString(timeSpentTotal || "0h");
+  const variationHours = spentHours - estimatedHours;
+
+  // Calculate percentages for progress bar visualization
+  const spentFillPercentage =
+    estimatedHours > 0 ? Math.min(70, (spentHours / estimatedHours) * 70) : spentHours > 0 ? 70 : 0;
+
+  const variationFillPercentage =
+    variationHours > 0 ? Math.min(30, (variationHours / (estimatedHours || 1)) * 30) : 0;
+
+  const totalFillPercentage = spentFillPercentage + variationFillPercentage;
 
   const purpleColor = "#741B92";
   const redColor = "#d32f2f";
@@ -51,14 +65,16 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({ estimatedTime, timeSpentT
             Estimated: {estimatedHours.toFixed(1)}h
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: "normal" }}>
-            Variation:{" "}
             {variationHours > 0
-              ? `+${variationHours.toFixed(1)}h`
-              : `${variationHours.toFixed(1)}h`}
+              ? `Variation: ${variationHours.toFixed(1)}h`
+              : variationHours < 0
+                ? "Variation: 0"
+                : "Variation: 0"}
           </Typography>
         </Box>
 
         <Box sx={{ position: "relative", height: 10, borderRadius: 5, backgroundColor: "#e0e0e0" }}>
+          {/* Time spent progress */}
           <Box
             sx={{
               position: "absolute",
@@ -71,7 +87,9 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({ estimatedTime, timeSpentT
               zIndex: 1
             }}
           />
-          {variationFillPercentage > 0 && (
+
+          {/* Variation progress (only if positive) */}
+          {variationHours > 0 && (
             <Box
               sx={{
                 position: "absolute",
@@ -87,6 +105,8 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({ estimatedTime, timeSpentT
               }}
             />
           )}
+
+          {/* Divider between time spent and variation sections */}
           <Box
             sx={{
               position: "absolute",
@@ -106,6 +126,7 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({ estimatedTime, timeSpentT
           textAlign="center"
           mt={1}
           sx={{ fontStyle: "italic", display: "block" }}
+          className="progress-info"
         >
           Click the bar to update time tracking
         </Typography>

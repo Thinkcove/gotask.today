@@ -22,8 +22,8 @@ export const convertToHours = (timeStr: string): number => {
 };
 
 // Define constants needed for time comparison
-const TIME_SEPARATOR = " "; // Space between time and AM/PM
-const TIME_PART_SEPARATOR = ":"; // Colon between hours and minutes
+const TIME_SEPARATOR = " ";
+const TIME_PART_SEPARATOR = ":"; 
 
 export const isEndTimeAfterStartTime = (startTime: string, endTime: string): boolean => {
   if (!startTime || !endTime) return true; // Skip validation if times aren't selected yet
@@ -52,19 +52,29 @@ export const isEndTimeAfterStartTime = (startTime: string, endTime: string): boo
 };
 
 export const calculateTimeProgressData = (estimatedTime: string, spentTime: string) => {
+  // Parse time strings to extract hours
+  const parseTimeString = (timeStr: string) => {
+    const weeks = parseInt(timeStr.match(/(\d+)w/)?.[1] || "0", 10);
+    const days = parseInt(timeStr.match(/(\d+)d/)?.[1] || "0", 10);
+    const hours = parseInt(timeStr.match(/(\d+)h/)?.[1] || "0", 10);
+    const minutes = parseInt(timeStr.match(/(\d+)m/)?.[1] || "0", 10);
+    return weeks * 40 + days * 8 + hours + minutes / 60; // Converting to hours
+  };
+
   // Convert time strings to hours
-  const estimatedHours: number = convertToHours(estimatedTime || "0h");
-  const spentHours: number = convertToHours(spentTime || "0h");
-  const variationHours: number = spentHours - estimatedHours;
+
+  const estimatedHours = parseTimeString(estimatedTime || "0h");
+  const spentHours = parseTimeString(spentTime || "0h");
+  const variationHours = spentHours - estimatedHours;
 
   // Calculate percentages for progress bar visualization
-  const spentFillPercentage: number =
+  const spentFillPercentage =
     estimatedHours > 0 ? Math.min(70, (spentHours / estimatedHours) * 70) : spentHours > 0 ? 70 : 0;
 
-  const variationFillPercentage: number =
+  const variationFillPercentage =
     variationHours > 0 ? Math.min(30, (variationHours / (estimatedHours || 1)) * 30) : 0;
 
-  const totalFillPercentage: number = spentFillPercentage + variationFillPercentage;
+  const totalFillPercentage = spentFillPercentage + variationFillPercentage;
 
   return {
     estimatedHours,

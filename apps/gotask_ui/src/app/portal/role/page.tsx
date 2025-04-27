@@ -1,29 +1,9 @@
-import { Box, Typography } from "@mui/material";
+"use client";
+import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import React from "react";
 
 const page = () => {
-  return (
-    <Box
-      sx={{
-        backgroundColor: "#741B92", // Solid color for a bold look
-        color: "white",
-        p: 1.5,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-      }}
-    >
-      <Typography
-        variant="h6"
-        sx={{
-          fontWeight: "600",
-          textTransform: "capitalize"
-        }}
-      >
-        Role
-      </Typography>
-    </Box>
-  );
+  return <ModuleHeader name="Role" />;
 };
 
 export default page;

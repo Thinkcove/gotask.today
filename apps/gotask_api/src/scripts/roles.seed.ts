@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Role } from "../../../gotask_api/src/domain/model/role";
+import { Role } from "../domain/model/role/role";
 
 const roles = [
   { name: "Admin", priority: 1 },

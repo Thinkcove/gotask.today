@@ -16,4 +16,23 @@ const findOrganizationsByIds = async (organizationIds: string[]) => {
   return await Organization.find({ id: { $in: organizationIds } });
 };
 
-export { createNewOrganization, findAllOrganizations, findOrganizationsByIds };
+// Find a organization by ID
+const findOrganizationyId = async (id: string): Promise<IOrganization | null> => {
+  return await Organization.findOne({ id });
+};
+
+//update org
+const updateOrgById = async (
+  id: string,
+  updateData: Partial<IOrganization>
+): Promise<IOrganization | null> => {
+  return await Organization.findOneAndUpdate({ id }, updateData, { new: true });
+};
+
+export {
+  createNewOrganization,
+  findAllOrganizations,
+  findOrganizationsByIds,
+  findOrganizationyId,
+  updateOrgById
+};

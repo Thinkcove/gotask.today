@@ -27,6 +27,14 @@ const createProject = async (
     }
 
     const createProject = await createNewProject(projectData);
+    if (createProject && createProject.organization_id) {
+      await Organization.findOneAndUpdate(
+        { id: createProject.organization_id }, // Search organization by UUID (not _id)
+        { $push: { projects: createProject.id } }, // Push project id to projects array
+        { new: true } // Return the updated document (optional)
+      );
+    }
+
     return {
       success: true,
       data: createProject
@@ -38,7 +46,6 @@ const createProject = async (
     };
   }
 };
-
 const getAllProjects = async (): Promise<{
   success: boolean;
   data?: IProject[];
@@ -296,7 +303,6 @@ const removeUsersFromProject = async (
   }
 };
 
-// Update project
 const updateProject = async (
   id: string,
   updateData: Partial<IProject>
@@ -309,6 +315,15 @@ const updateProject = async (
         message: ProjectMessages.FETCH.NOT_FOUND
       };
     }
+    // After updating project, if organization_id is provided in updateData
+    if (updateData.organization_id) {
+      await Organization.findOneAndUpdate(
+        { id: updateData.organization_id }, // Find the organization by UUID
+        { $addToSet: { projects: updatedProject.id } }, // Add only if not already present
+        { new: true }
+      );
+    }
+
     return {
       success: true,
       data: updatedProject
@@ -320,6 +335,7 @@ const updateProject = async (
     };
   }
 };
+
 export {
   createProject,
   getAllProjects,

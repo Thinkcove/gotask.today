@@ -33,4 +33,27 @@ OrganizationRoutes.push({
   }
 });
 
+// Route: Get Org by ID
+OrganizationRoutes.push({
+  path: API_PATHS.GET_ORG_BY_ID,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    organizationController.getOrgById(new RequestHelper(request), handler),
+  config: {
+    notes: "Get a organization by ID",
+    tags
+  }
+});
+
+// Route: Update Organization
+OrganizationRoutes.push({
+  path: API_PATHS.UPDATE_ORGANIZATION,
+  method: API_METHODS.PUT,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    organizationController.updateOrg(new RequestHelper(request), handler),
+  config: {
+    notes: "Update organization details",
+    tags
+  }
+});
 export default OrganizationRoutes;

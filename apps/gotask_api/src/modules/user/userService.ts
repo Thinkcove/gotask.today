@@ -9,9 +9,10 @@ import {
   updateUserById
 } from "../../domain/interface/user/userInterface";
 import { IUser, User } from "../../domain/model/user/user";
-import { Role } from "../../domain/model/role";
+import { Role } from "../../domain/model/role/role";
 import { getRoleByIdService } from "../role/roleService";
 import { findRoleByIds } from "../../domain/interface/role/roleInterface";
+import { Organization } from "../../domain/model/organization/organization";
 
 // CREATE USER
 const createUser = async (
@@ -35,6 +36,14 @@ const createUser = async (
 
     // Create user
     const newUser = await createNewUser(userData);
+
+    // Now update organization(s) users array
+    if (userData.organization && userData.organization.length > 0) {
+      await Organization.updateMany(
+        { id: { $in: userData.organization } }, // Match multiple organizations by their id (UUID)
+        { $addToSet: { users: newUser.id } } // Add user ID only if not already in array
+      );
+    }
 
     // Populate role name
     const populatedUser = await newUser.populate("roleId", "name");
@@ -115,7 +124,6 @@ const getAllUsers = async (): Promise<{
 };
 
 // GET USER BY ID
-
 const getUserById = async (id: string) => {
   try {
     // Find user and populate basic role info
@@ -177,13 +185,13 @@ const getUserById = async (id: string) => {
     );
     let orgDetails = [];
     if (orgIds.length > 0) {
-      // Fetch project details
+      // Fetch organization details
       const organizations = await findOrganizationsByIds(orgIds);
 
-      // Map projects for quick lookup
+      // Map organization for quick lookup
       const organizationMap = new Map(organizations.map((org: any) => [org.id, org]));
 
-      // Map enriched project details
+      // Map enriched organization details
       orgDetails = orgIds.map((id: string) => organizationMap.get(id)).filter(Boolean); // Remove undefineds if any
     }
 
@@ -196,7 +204,6 @@ const getUserById = async (id: string) => {
       data: userObj
     };
   } catch (error: any) {
-    console.error("getUserById error:", error);
     return {
       success: false,
       message: error.message || UserMessages.FETCH.FAILED_BY_ID
@@ -227,6 +234,15 @@ const updateUser = async (
         message: UserMessages.FETCH.NOT_FOUND
       };
     }
+
+    // After updating user, if organization IDs are provided
+    if (updateData.organization && updateData.organization.length > 0) {
+      await Organization.updateMany(
+        { id: { $in: updateData.organization } },
+        { $addToSet: { users: updatedUser.id } }
+      );
+    }
+
     return {
       success: true,
       data: updatedUser,

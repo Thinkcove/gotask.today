@@ -19,18 +19,14 @@ class UserController extends BaseController {
     try {
       const userData = requestHelper.getPayload();
       const { name, user_id, roleId, password, status } = userData;
-
       if (!name || !user_id || !roleId || !password || typeof status === "undefined") {
         throw new Error(UserMessages.CREATE.MISSING_FIELDS);
       }
-
       // Call the service to create the user
       const newUser = await createUser(userData);
-
       return this.sendResponse(handler, newUser);
     } catch (error) {
-      console.error("Error creating user:", error);
-      return this.replyError(new Error(UserMessages.CREATE.FAILED));
+      return this.replyError(error);
     }
   }
 
@@ -40,8 +36,7 @@ class UserController extends BaseController {
       const users = await getAllUsers();
       return this.sendResponse(handler, users);
     } catch (error) {
-      console.error("Error fetching users:", error);
-      return this.replyError(new Error(UserMessages.FETCH.FAILED_ALL));
+      return this.replyError(error);
     }
   }
 
@@ -50,11 +45,9 @@ class UserController extends BaseController {
     try {
       const id = requestHelper.getParam("id");
       const user = await getUserById(id);
-      if (!user) throw new Error(UserMessages.FETCH.NOT_FOUND);
       return this.sendResponse(handler, user);
     } catch (error) {
-      console.error("Error fetching user by ID:", error);
-      return this.replyError(new Error(UserMessages.FETCH.FAILED_BY_ID));
+      return this.replyError(error);
     }
   }
 
@@ -64,12 +57,9 @@ class UserController extends BaseController {
       const id = requestHelper.getParam("id");
       const updatedData = requestHelper.getPayload();
       const updatedUser = await updateUser(id, updatedData);
-
-      if (!updatedUser) throw new Error(UserMessages.FETCH.NOT_FOUND);
       return this.sendResponse(handler, updatedUser);
     } catch (error) {
-      console.error("Error updating user:", error);
-      return this.replyError(new Error(UserMessages.UPDATE.FAILED));
+      return this.replyError(error);
     }
   }
 
@@ -78,15 +68,9 @@ class UserController extends BaseController {
     try {
       const id = requestHelper.getParam("id");
       const deletedUser = await deleteUser(id);
-
-      if (!deletedUser) throw new Error(UserMessages.DELETE.NOT_FOUND);
-      return this.sendResponse(handler, {
-        success: true,
-        message: UserMessages.DELETE.SUCCESS
-      });
+      return this.sendResponse(handler, deletedUser);
     } catch (error) {
-      console.error("Error deleting user:", error);
-      return this.replyError(new Error(UserMessages.DELETE.FAILED));
+      return this.replyError(error);
     }
   }
 
@@ -94,23 +78,19 @@ class UserController extends BaseController {
   async loginUser(requestHelper: RequestHelper, handler: any) {
     try {
       const { user_id, password } = requestHelper.getPayload();
-
       if (!user_id || !password) {
         return this.sendResponse(handler, {
           success: false,
           error: UserMessages.LOGIN.MISSING_FIELDS
         });
       }
-
       const { success, data: user, message } = await getUserByEmail(user_id, true);
-
       if (!success || !user) {
         return this.sendResponse(handler, {
           success: false,
           error: message || UserMessages.LOGIN.USER_NOT_FOUND
         });
       }
-
       const isMatch = await comparePassword(password, user.password);
       if (!isMatch) {
         return this.sendResponse(handler, {
@@ -118,28 +98,22 @@ class UserController extends BaseController {
           error: UserMessages.LOGIN.INVALID_CREDENTIALS
         });
       }
-
       // Fetch full role with access details using UUID
       const roleId = user.roleId?.id?.toString();
-
       if (!roleId) {
         return this.sendResponse(handler, {
           success: false,
           error: UserMessages.LOGIN.ROLE_NOT_FOUND
         });
       }
-
       const roleResult = await getRoleByIdService(roleId);
-
       if (!roleResult.success || !roleResult.data) {
         return this.sendResponse(handler, {
           success: false,
           error: roleResult.message || UserMessages.LOGIN.ROLE_FETCH_FAILED
         });
       }
-
       const enrichedRole = roleResult.data;
-
       // Generate JWT with full role
       const token = jwt.sign(
         {

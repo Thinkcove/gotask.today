@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Card, IconButton, Divider, Stack, Chip, Grid } from "@mui/material";
+import { Box, Typography, IconButton, Divider, Stack, Chip, Grid } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { IUserField, User } from "../../interfaces/userInterface";
@@ -10,6 +10,7 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import { deleteUser } from "../../services/userAction";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { getStatusColor } from "@/app/common/constants/task";
 
 interface UserDetailProps {
   user: User;
@@ -127,15 +128,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Created At
-              </Typography>
-              <Typography variant="body1">
-                {new Date(user.createdAt).toLocaleDateString()}
-              </Typography>
-            </Grid>
-
             <Grid item xs={12}>
               <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                 Organizations
@@ -157,19 +149,45 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           </Typography>
 
           {user.projectDetails && user.projectDetails.length > 0 ? (
-            user.projectDetails.map((project) => (
-              <Card key={project.id} variant="outlined" sx={{ mb: 2, p: 2 }}>
-                <Typography variant="subtitle1" fontWeight="600">
-                  {project.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                  {project.description}
-                </Typography>
-                <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center">
-                  <Chip label={`Status: ${project.status}`} size="small" color="warning" />
-                </Stack>
-              </Card>
-            ))
+            <Grid container spacing={2} sx={{ maxHeight: "300px", overflowY: "auto" }}>
+              {user.projectDetails.map((project) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={project.id}>
+                  <Box
+                    sx={{
+                      p: 3,
+                      borderRadius: 3,
+                      display: "flex",
+                      flexDirection: "column",
+                      bgcolor: "#ffffff",
+                      border: "1px solid #e0e0e0",
+                      height: "100%",
+                      justifyContent: "space-between"
+                    }}
+                  >
+                    <Stack spacing={1}>
+                      <Typography fontWeight={600} fontSize="1rem">
+                        {project.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {project.description}
+                      </Typography>
+                    </Stack>
+
+                    <Stack direction="row" spacing={1} alignItems="center" mt={2}>
+                      <Chip
+                        label={`Status: ${project.status}`}
+                        size="small"
+                        color="warning"
+                        sx={{
+                          backgroundColor: getStatusColor(project.status),
+                          textTransform: "capitalize"
+                        }}
+                      />
+                    </Stack>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
           ) : (
             <Grid item xs={12}>
               <Typography color="text.secondary">No projects assigned yet.</Typography>

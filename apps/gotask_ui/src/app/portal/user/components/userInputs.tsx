@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import FormField from "@/app/component/formField";
@@ -8,16 +7,27 @@ import { fetchAllRoles } from "../../role/services/roleAction";
 
 interface IUserInputProps {
   formData: IUserField;
-  handleChange: (field: keyof IUserField, value: string) => void;
+  handleChange: (field: keyof IUserField, value: string | string[]) => void; // Value type for organization is string[]
   errors: { [key: string]: string };
   readOnlyFields?: string[];
+  isEdit?: boolean;
 }
 
-const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUserInputProps) => {
+const UserInput = ({
+  formData,
+  handleChange,
+  errors,
+  readOnlyFields = [],
+  isEdit = false
+}: IUserInputProps) => {
   const { getOrganizations } = fetchAllOrganizations();
   const { getRoles } = fetchAllRoles();
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
-  const [selectedOrganizationIds, setSelectedOrganizationIds] = useState<string[]>([]);
+
+  // Initialize selectedOrganizationIds directly from formData.organization
+  const [selectedOrganizationIds, setSelectedOrganizationIds] = useState<string[]>(
+    formData.organization || [] // Initialize with the formData.organization value
+  );
 
   return (
     <Grid container spacing={1}>
@@ -33,7 +43,6 @@ const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUse
           placeholder="Enter user name"
         />
       </Grid>
-
       <Grid item xs={12}>
         <FormField
           label="Email"
@@ -47,7 +56,6 @@ const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUse
           disabled={isReadOnly("user_id")}
         />
       </Grid>
-
       <Grid item xs={12} sm={6}>
         <FormField
           label="Role"
@@ -59,7 +67,6 @@ const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUse
           onChange={(value) => handleChange("roleId", String(value))}
         />
       </Grid>
-
       <Grid item xs={12} sm={6}>
         <FormField
           label="Organization"
@@ -68,27 +75,28 @@ const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUse
           options={getOrganizations}
           value={selectedOrganizationIds}
           onChange={(ids) => {
-            const selectedIds = ids as string[];
+            const selectedIds = ids as string[]; // Ensure selectedIds is an array of strings
             setSelectedOrganizationIds(selectedIds);
 
-            // set formData.organization to the first selected id or empty string
-            handleChange("organization", selectedIds.length > 0 ? selectedIds[0] : "");
+            // Set formData.organization to the selected array
+            handleChange("organization", selectedIds);
           }}
           disabled={isReadOnly("organization")}
         />
       </Grid>
-
-      <Grid item xs={12}>
-        <FormField
-          label="Password"
-          type="text"
-          inputType="password"
-          placeholder="Enter password"
-          required
-          value={formData.password || ""}
-          onChange={(value) => handleChange("password", String(value))}
-        />
-      </Grid>
+      {isEdit && (
+        <Grid item xs={12}>
+          <FormField
+            label="Password"
+            type="text"
+            inputType="password"
+            placeholder="Enter password"
+            required
+            value={formData.password || ""}
+            onChange={(value) => handleChange("password", String(value))}
+          />
+        </Grid>
+      )}
     </Grid>
   );
 };

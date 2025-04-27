@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
+import { Box, Typography, Grid, IconButton, Button, Divider, Stack, Chip } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
 import { fetchAllUsers } from "@/app/portal/task/service/taskAction";
@@ -21,6 +21,8 @@ interface ProjectDetailProps {
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const [open, setOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
   const router = useRouter();
   const handleBack = () => {
     setTimeout(() => router.back(), 2000);
@@ -57,10 +59,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     setOpen(false);
   };
 
-  const handleDeleteUser = async (userIds: string[]) => {
+  const handleDelete = async () => {
+    if (!selectedUserId) return; // If no user selected, do nothing
     try {
-      const response = await removeUsersFromProject(userIds, projectID);
+      const response = await removeUsersFromProject([selectedUserId], projectID); // send array with 1 id
       await mutate();
+      setOpenDeleteDialog(false);
+      setSelectedUserId(null); // clear after deletion
       setSnackbar({
         open: true,
         message: response.message,
@@ -100,8 +105,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
       <Box
         sx={{
           minHeight: "100vh",
-          px: 3,
-          py: 4,
+          p: 3,
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
       >
@@ -114,65 +118,52 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             border: "1px solid #e0e0e0"
           }}
         >
-          {/* Header */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "space-between",
-              mb: 3
-            }}
-          >
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <IconButton edge="start" color="primary" onClick={handleBack}>
-                <ArrowBack />
-              </IconButton>
-              <Box>
-                <Typography variant="h4" fontWeight={700}>
-                  {project.name}
-                </Typography>
-                <Typography variant="body1" sx={{ mt: 0.5 }}>
-                  {project.description}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ mt: 1, display: "block" }}
-                >
-                  Created on: {new Date(project.createdAt).toLocaleDateString()}
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    pt: 1
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      backgroundColor: getStatusColor(project.status),
-                      mr: 1.5
-                    }}
-                  />
-                  <Typography
-                    sx={{
-                      color: getStatusColor(project.status),
-                      textTransform: "capitalize"
-                    }}
-                  >
-                    Status : {project.status}
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-            {/* Status Pill */}
-            <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
-              <Edit />
+          {/* User Info Header */}
+          <Box display="flex" alignItems="center" mb={3}>
+            <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
+              <ArrowBack />
             </IconButton>
+            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+              <Typography variant="h4" fontWeight={700}>
+                {project.name}
+              </Typography>
+
+              <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+                <Edit />
+              </IconButton>
+            </Box>
           </Box>
+
+          {/* Basic Details */}
+          <Grid container spacing={2} flexDirection="column" mb={2}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Description
+              </Typography>
+              <Typography variant="body1">{project.description}</Typography>
+            </Grid>
+          </Grid>
+          <Grid container spacing={2} mb={2}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Created on:
+              </Typography>
+              <Typography variant="body1">
+                {new Date(project.createdAt).toLocaleDateString()}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Status
+              </Typography>
+              <Chip
+                label={project.status}
+                color="primary"
+                sx={{ backgroundColor: getStatusColor(project.status) }}
+                size="small"
+              />
+            </Grid>
+          </Grid>
 
           <Divider sx={{ mb: 4 }} />
 
@@ -224,7 +215,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
 
                     <IconButton
                       color="error"
-                      onClick={() => handleDeleteUser([user.id])}
+                      onClick={() => {
+                        setSelectedUserId(user.id); // <-- save which user is clicked
+                        setOpenDeleteDialog(true); // <-- open the confirmation dialog
+                      }}
                       sx={{
                         transition: "0.2s ease",
                         "&:hover": {
@@ -268,6 +262,21 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           mutate={mutate}
           projectID={projectID}
         />
+        <CommonDialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+          onSubmit={handleDelete}
+          title="Delete User"
+          submitLabel="Delete"
+        >
+          <Typography>
+            Are you sure you want to remove this user from the project?
+            <br />
+            This action will unassign the user, but will not delete their account.
+            <br />
+            You can reassign them anytime later if needed.
+          </Typography>
+        </CommonDialog>
         <CustomSnackbar
           open={snackbar.open}
           message={snackbar.message}

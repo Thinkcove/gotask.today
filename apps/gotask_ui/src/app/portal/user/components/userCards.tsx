@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography, Grid, CircularProgress, Box, Stack, Divider, Chip } from "@mui/material";
-import { Business, ArrowForward } from "@mui/icons-material";
+import { Business, ArrowForward, Email } from "@mui/icons-material";
 import CardComponent from "@/app/component/card/cardComponent";
 import { User } from "../interfaces/userInterface";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
@@ -62,8 +62,12 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
                       >
                         {user.name}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {user.user_id}
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ textTransform: "capitalize" }}
+                      >
+                        {user.role?.name || "No Role Assigned"}
                       </Typography>
                     </Box>
                   </Stack>
@@ -85,26 +89,47 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
 
                 <Divider />
 
-                {/* Organization Info */}
-                <Box display="flex" alignItems="flex-start">
-                  <Business sx={{ fontSize: 20, color: "#741B92", mr: 1 }} />
-                  <Box>
-                    {user.organizations && user.organizations.length > 0 ? (
-                      user.organizations.map((org, index) => (
+                <Box>
+                  {/* Email Info */}
+                  <Box display="flex" alignItems="center" mb={0}>
+                    <Email sx={{ fontSize: 20, color: "#741B92", mr: 1 }} />
+                    <Typography
+                      variant="body2"
+                      fontWeight={500}
+                      color="text.secondary"
+                      sx={{ m: 0 }}
+                    >
+                      {user.user_id}
+                    </Typography>
+                  </Box>
+
+                  {/* Organization Info */}
+                  <Box display="flex" alignItems="center" mt={0.5}>
+                    <Business sx={{ fontSize: 20, color: "#741B92", mr: 1 }} />
+                    <Box>
+                      {user.organizations && user.organizations.length > 0 ? (
+                        user.organizations.map((org, index) => (
+                          <Typography
+                            key={org.id || index}
+                            variant="body2"
+                            fontWeight={500}
+                            color="text.secondary"
+                            sx={{ m: 0 }}
+                          >
+                            {org.name}
+                          </Typography>
+                        ))
+                      ) : (
                         <Typography
-                          key={org.id || index}
                           variant="body2"
                           fontWeight={500}
                           color="text.secondary"
+                          sx={{ m: 0 }}
                         >
-                          {org.name}
+                          No Organization for this user
                         </Typography>
-                      ))
-                    ) : (
-                      <Typography variant="body2" fontWeight={500} color="text.secondary">
-                        No Organization for this user
-                      </Typography>
-                    )}
+                      )}
+                    </Box>
                   </Box>
                 </Box>
 

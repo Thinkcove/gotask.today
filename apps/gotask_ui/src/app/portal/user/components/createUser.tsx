@@ -41,7 +41,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleChange = (field: keyof IUserField, value: string) => {
+  const handleChange = (field: keyof IUserField, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
   const handleSubmit = async () => {
@@ -67,7 +67,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   return (
     <>
       <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Create New User">
-        <UserInput formData={formData} handleChange={handleChange} errors={errors} />
+        <UserInput formData={formData} handleChange={handleChange} errors={errors} isEdit={true} />
       </CommonDialog>
       <CustomSnackbar
         open={snackbar.open}

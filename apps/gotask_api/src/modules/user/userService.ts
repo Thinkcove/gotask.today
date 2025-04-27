@@ -2,13 +2,16 @@ import UserMessages from "../../constants/apiMessages/userMessage";
 import { findOrganizationsByIds } from "../../domain/interface/organization/organizationInterface";
 import {
   createNewUser,
+  deleteUserId,
   findAllUsers,
   findProjectsByIds,
+  findUser,
   updateUserById
 } from "../../domain/interface/user/userInterface";
 import { IUser, User } from "../../domain/model/user/user";
 import { Role } from "../../domain/model/role";
 import { getRoleByIdService } from "../role/roleService";
+import { findRoleByIds } from "../../domain/interface/role/roleInterface";
 
 // CREATE USER
 const createUser = async (
@@ -56,36 +59,57 @@ const getAllUsers = async (): Promise<{
   message?: string;
 }> => {
   try {
+    // Fetch all users
     const users = await findAllUsers();
 
-    // Gather all unique organization IDs (filter out undefined values)
+    // Gather all unique role IDs and organization IDs (filter out undefined values)
+    const allRoleIds = Array.from(
+      new Set(users.map((user) => user.roleId?.toString()).filter(Boolean))
+    );
+
     const allOrganizationIds = Array.from(
       new Set(users.flatMap((user) => user.organization?.filter((id) => id !== undefined) || []))
     );
-    // Fetch organization details based on organization IDs
-    const organizations = await findOrganizationsByIds(allOrganizationIds);
+    // Fetch roles and organizations in parallel
+    const [roles, organizations] = await Promise.all([
+      findRoleByIds(allRoleIds), // Fetch roles by IDs
+      findOrganizationsByIds(allOrganizationIds) // Fetch organizations by IDs
+    ]);
+
+    // Map roles by their IDs for quick lookup
+    const roleMap = new Map(roles.map((role: any) => [role._id.toString(), role]));
 
     // Map organization IDs to organization objects for easy lookup
     const organizationMap = new Map(
-      organizations.map((organization) => [organization.id, organization])
+      organizations.map((organization: any) => [organization.id, organization])
     );
 
-    // Attach organization details to each user
-    const enrichedUsers = users.map((user) => ({
-      ...user.toObject(),
-      organizations: (user.organization || [])
-        .map((id: string) => organizationMap.get(id)) // Map to user details
-        .filter(Boolean) // Filter out undefined or null values
-    }));
+    // Attach enriched data (role and organization details) to each user
+    const enrichedUsers = users.map((user) => {
+      const userObj = user.toObject();
+      // Enrich organizations
+      const userOrganizations = (user.organization || [])
+        .map((id: string) => organizationMap.get(id)) // Map to organization details
+        .filter(Boolean); // Filter out undefined or null values
+
+      // Enrich role
+      const userRole = roleMap.get(user.roleId?.toString() || ""); // Map the single role by ID
+      return {
+        ...userObj,
+        organizations: userOrganizations, // Attach organization details
+        role: userRole || null // Attach role details (single role)
+      };
+    });
 
     return {
       success: true,
       data: enrichedUsers
     };
   } catch (error: any) {
+    console.error("getAllUsers error:", error);
     return {
       success: false,
-      message: error.message || UserMessages.FETCH.FAILED_ALL
+      message: error.message || "Failed to fetch all users"
     };
   }
 };
@@ -147,10 +171,26 @@ const getUserById = async (id: string) => {
       projectDetails = projectIds.map((id: string) => projectMap.get(id)).filter(Boolean); // Remove undefineds if any
     }
 
+    // Extract org  IDs from user
+    const orgIds = (userObj.organization || []).filter(
+      (id: string | undefined) => id !== undefined
+    );
+    let orgDetails = [];
+    if (orgIds.length > 0) {
+      // Fetch project details
+      const organizations = await findOrganizationsByIds(orgIds);
+
+      // Map projects for quick lookup
+      const organizationMap = new Map(organizations.map((org: any) => [org.id, org]));
+
+      // Map enriched project details
+      orgDetails = orgIds.map((id: string) => organizationMap.get(id)).filter(Boolean); // Remove undefineds if any
+    }
+
     // Attach enriched data
     userObj.role = enrichedRole;
     userObj.projectDetails = projectDetails;
-
+    userObj.orgDetails = orgDetails;
     return {
       success: true,
       data: userObj
@@ -203,17 +243,14 @@ const updateUser = async (
 // DELETE USER
 const deleteUser = async (id: string): Promise<{ success: boolean; message?: string }> => {
   try {
-    const user = await User.findOne({ id });
-
+    const user = await findUser(id);
     if (!user) {
       return {
         success: false,
         message: UserMessages.FETCH.NOT_FOUND
       };
     }
-
-    await User.deleteOne({ id });
-
+    await deleteUserId(id);
     return {
       success: true,
       message: UserMessages.DELETE.SUCCESS

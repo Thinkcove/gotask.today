@@ -51,5 +51,7 @@ export const API_PATHS = {
 
   //organizationRoutes
   CREATE_ORGANIZATION: "/createOrganization",
-  GET_ORGANIZATIONS: "/getAllOrganizations"
+  GET_ORGANIZATIONS: "/getAllOrganizations",
+  GET_ORG_BY_ID: "/getOrgById/{id}",
+  UPDATE_ORGANIZATION: "/updateOrg/{id}"
 };

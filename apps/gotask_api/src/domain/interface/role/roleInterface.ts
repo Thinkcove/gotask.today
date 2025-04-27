@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { Access } from "../../model/access";
-import { Role, IRole, CreateRolePayload } from "../../model/role";
+import { Access } from "../../model/access/access";
+import { Role, IRole, CreateRolePayload } from "../../model/role/role";
 
 // Check if role exists by name
 export const roleExistsByName = async (name: string): Promise<boolean> => {

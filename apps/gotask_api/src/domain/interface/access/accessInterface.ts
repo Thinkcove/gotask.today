@@ -1,4 +1,4 @@
-import { Access, IAccess } from "../../model/access";
+import { Access, IAccess } from "../../model/access/access";
 
 // Create a new access record
 export const createAccessInDb = async (accessData: Partial<IAccess>): Promise<IAccess> => {

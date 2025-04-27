@@ -13,6 +13,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
 import EditProject from "./editProject";
+import ModuleHeader from "@/app/component/appBar/moduleHeader";
 
 interface ProjectDetailProps {
   project: Project;
@@ -82,26 +83,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
 
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "#741B92", // Solid color for a bold look
-          color: "white",
-          p: 1.5,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "600",
-            textTransform: "capitalize"
-          }}
-        >
-          Project Detail View
-        </Typography>
-      </Box>
+      <ModuleHeader name="Project Detail View" />
       <Box
         sx={{
           minHeight: "100vh",
@@ -159,7 +141,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               <Chip
                 label={project.status}
                 color="primary"
-                sx={{ backgroundColor: getStatusColor(project.status) }}
+                sx={{
+                  backgroundColor: getStatusColor(project.status),
+                  textTransform: "capitalize"
+                }}
                 size="small"
               />
             </Grid>

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Grid, Box, Typography } from "@mui/material";
+import { Grid, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useProjectGroupTask, useUserGroupTask } from "../../service/taskAction";
 import TaskToggle from "../taskLayout/taskToggle";
@@ -211,28 +211,6 @@ const TaskList: React.FC = () => {
 
   return (
     <Box>
-      {/* Title Bar */}
-      <Box
-        sx={{
-          backgroundColor: "#741B92", // Solid color for a bold look
-          color: "white",
-          p: 1.5,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "600",
-            textTransform: "capitalize"
-          }}
-        >
-          Task Workflow
-        </Typography>
-      </Box>
-
       {/* Top Bar */}
       <Box
         sx={{

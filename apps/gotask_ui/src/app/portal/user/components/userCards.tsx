@@ -18,7 +18,7 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="error">
-          Error loading users: {error.message || "Unknown error"}
+          Error loading users
         </Typography>
       </Box>
     );

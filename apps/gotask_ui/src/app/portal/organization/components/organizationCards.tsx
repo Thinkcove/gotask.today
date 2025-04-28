@@ -5,12 +5,14 @@ import PlaceIcon from "@mui/icons-material/Place";
 import { Organization } from "../interfaces/organizatioinInterface";
 import CardComponent from "@/app/component/card/cardComponent";
 import { ArrowForward, Business } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 interface OrganizationCardProps {
   organizations: Organization[] | null;
 }
 
 const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) => {
+  const router = useRouter();
   if (!organizations) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -75,6 +77,9 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
                       "&:hover": {
                         textDecoration: "underline"
                       }
+                    }}
+                    onClick={() => {
+                      router.push(`/portal/organization/viewOrganization/${organization.id}`);
                     }}
                   >
                     <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>

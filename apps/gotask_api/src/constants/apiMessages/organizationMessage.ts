@@ -1,7 +1,8 @@
 const OrganizationMessages = {
   CREATE: {
     REQUIRED: "Organization data is required",
-    FAILED: "Failed to create organization"
+    FAILED: "Failed to create organization",
+    SUCCESS: "Organization Created Successfully"
   },
   FETCH: {
     FAILED_ALL: "Failed to retrieve organizations",
@@ -17,6 +18,10 @@ const OrganizationMessages = {
   },
   USER: {
     REQUIRED: "User ID is required"
+  },
+  UPDATE: {
+    FAILED: "Failed to update the organization",
+    SUCCESS: "Organization updated Successfully"
   }
 };
 

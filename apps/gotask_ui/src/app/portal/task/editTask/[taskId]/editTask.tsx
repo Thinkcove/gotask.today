@@ -14,6 +14,7 @@ import { useUser } from "@/app/userContext";
 import { KeyedMutator } from "swr";
 import TimeSpentPopup from "../timeSpentPopup";
 import TimeProgressBar from "@/app/portal/task/editTask/timeProgressBar";
+import ModuleHeader from "@/app/component/appBar/moduleHeader";
 
 interface EditTaskProps {
   data: ITask;
@@ -101,81 +102,84 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   };
 
   return (
-    <Box
-      sx={{
-        maxWidth: "1400px",
-        margin: "0 auto",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column"
-      }}
-    >
+    <>
+      <ModuleHeader name="Task" />
       <Box
         sx={{
-          position: "sticky",
-          top: 0,
-          px: 2,
-          pt: 2,
-          zIndex: 1000,
-          flexDirection: "column",
-          gap: 2
+          maxWidth: "1400px",
+          margin: "0 auto",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column"
         }}
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%"
+            position: "sticky",
+            top: 0,
+            px: 2,
+            pt: 2,
+            zIndex: 1000,
+            flexDirection: "column",
+            gap: 2
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            Edit Task
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Button
-              variant="outlined"
-              sx={{
-                borderRadius: "30px",
-                color: "black",
-                border: "2px solid #741B92",
-                px: 2,
-                textTransform: "none",
-                "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
-              }}
-              onClick={() => router.back()}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                borderRadius: "30px",
-                backgroundColor: "#741B92",
-                color: "white",
-                px: 2,
-                textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": { backgroundColor: "rgb(202, 187, 201)" }
-              }}
-              onClick={handleSubmit}
-            >
-              Save
-            </Button>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%"
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+              Edit Task
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderRadius: "30px",
+                  color: "black",
+                  border: "2px solid #741B92",
+                  px: 2,
+                  textTransform: "none",
+                  "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
+                }}
+                onClick={() => router.back()}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: "30px",
+                  backgroundColor: "#741B92",
+                  color: "white",
+                  px: 2,
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  "&:hover": { backgroundColor: "rgb(202, 187, 201) 100%)" }
+                }}
+                onClick={handleSubmit}
+              >
+                Save
+              </Button>
+            </Box>
           </Box>
         </Box>
 
         {data.history && data.history.length > 0 && (
           <Box
             sx={{
-              textDecoration: "underline",
               display: "flex",
-              gap: 1,
-              color: "#741B92"
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%"
             }}
           >
-            <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
-              Show History
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+              Edit Task
             </Typography>
             <History />
           </Box>
@@ -186,46 +190,45 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           timeSpentTotal={data.time_spent_total || "0h"}
           onClick={() => setIsPopupOpen(true)}
         />
-      </Box>
 
-      <Box
-        sx={{
-          px: 2,
-          pb: 2,
-          maxHeight: "calc(100vh - 200px)",
-          overflowY: "auto"
-        }}
-      >
-        <TaskInput
-          formData={formData}
-          handleInputChange={handleInputChange}
-          errors={{}}
-          readOnlyFields={["title", "user_id", "project_id", "created_on"]}
+        <Box
+          sx={{
+            px: 2,
+            pb: 2,
+            maxHeight: "calc(100vh - 200px)",
+            overflowY: "auto"
+          }}
+        >
+          <TaskInput
+            formData={formData}
+            handleInputChange={handleInputChange}
+            errors={{}}
+            readOnlyFields={["title", "user_id", "project_id", "created_on"]}
+          />
+          <TaskComments comments={data.comment || []} onSave={submitComment} />
+        </Box>
+
+        <TimeSpentPopup
+          isOpen={isPopupOpen}
+          onClose={() => setIsPopupOpen(false)}
+          originalEstimate={data.estimated_time || "0d0h"}
+          taskId={data.id}
+          mutate={mutate}
         />
-        <TaskComments comments={data.comment || []} onSave={submitComment} />
+
+        <CustomSnackbar
+          open={snackbar.open}
+          message={snackbar.message}
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        />
+        <HistoryDrawer
+          open={openDrawer}
+          onClose={() => setOpenDrawer(false)}
+          history={data.history || []}
+        />
       </Box>
-
-      <TimeSpentPopup
-        isOpen={isPopupOpen}
-        onClose={() => setIsPopupOpen(false)}
-        originalEstimate={data.estimated_time || "0d0h"}
-        taskId={data.id}
-        mutate={mutate}
-      />
-
-
-      <CustomSnackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      />
-      <HistoryDrawer
-        open={openDrawer}
-        onClose={() => setOpenDrawer(false)}
-        history={data.history || []}
-      />
-    </Box>
+    </>
   );
 };
 

@@ -6,6 +6,8 @@ export interface IOrganization extends Document {
   name: string;
   address: string;
   mail_id: string;
+  projects: string[]; // Array of project UUIDs
+  users: string[]; // Array of user UUIDs
 }
 
 const OrganizationSchema = new Schema<IOrganization>(
@@ -25,7 +27,19 @@ const OrganizationSchema = new Schema<IOrganization>(
       type: String,
       default: ""
     },
-    mail_id: { type: String, required: true, unique: true }
+    mail_id: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    projects: {
+      type: [String], // Array of strings
+      default: []
+    },
+    users: {
+      type: [String], // Array of strings
+      default: []
+    }
   },
   {
     timestamps: true // Adds createdAt and updatedAt automatically

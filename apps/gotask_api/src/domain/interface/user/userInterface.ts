@@ -1,4 +1,4 @@
-import { Access } from "../../model/access";
+import { Access } from "../../model/access/access";
 import { Project } from "../../model/project/project";
 import { IUser, User } from "../../model/user/user";
 

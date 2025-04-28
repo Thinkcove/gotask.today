@@ -1,4 +1,4 @@
-import { IAccess } from "../../domain/model/access";
+import { IAccess } from "../../domain/model/access/access";
 import {
   createAccessInDb,
   getAllAccessRecordsFromDb,

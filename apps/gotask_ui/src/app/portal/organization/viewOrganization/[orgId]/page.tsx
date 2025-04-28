@@ -4,17 +4,17 @@ import useSWR from "swr";
 import { useParams } from "next/navigation";
 import env from "@/app/common/env";
 import { CircularProgress, Box } from "@mui/material";
-import ProjectDetail from "@/app/portal/project/viewProject/[projectId]/projectDetail";
+import OrgDetail from "./orgDetail";
 
 const ViewAction: React.FC = () => {
-  const { projectId } = useParams();
-  const { data, mutate: UpdateData } = useSWR(`${env.API_BASE_URL}/getProjectById/${projectId}`, {
+  const { orgId } = useParams();
+  const { data, mutate } = useSWR(`${env.API_BASE_URL}/getOrgById/${orgId}`, {
     revalidateOnFocus: false
   });
   const selectedTask = data?.data || null;
 
   return selectedTask ? (
-    <ProjectDetail project={selectedTask} mutate={UpdateData} />
+    <OrgDetail org={selectedTask} mutate={mutate} />
   ) : (
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
       <CircularProgress />

@@ -2,7 +2,7 @@ export interface IUserField {
   name: string;
   status: boolean;
   organization: string;
-  role: string;
+  roleId: string;
   user_id: string;
 }
 
@@ -11,7 +11,7 @@ export interface User {
   name: string;
   status: boolean;
   user_id: string;
-  role: string;
+  roleId: string;
   createdAt: string;
   updatedAt: string;
   projects: { id: string; name: string }[];

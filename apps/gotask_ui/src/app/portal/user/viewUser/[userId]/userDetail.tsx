@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Typography, Card, IconButton, Divider, Stack, Chip, Grid } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-
 import { User } from "../../interfaces/userInterface";
 
 interface UserDetailProps {
@@ -73,7 +72,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user }) => {
               <Typography variant="subtitle2" color="text.secondary">
                 Role ID
               </Typography>
-              <Typography variant="body1">{user.role}</Typography>
+              <Typography variant="body1">{user?.roleId.name}</Typography>
             </Grid>
 
             <Grid item xs={12} md={6}>

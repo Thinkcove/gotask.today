@@ -7,6 +7,7 @@ import {
   deleteAccessByIdFromDb
 } from "../../domain/interface/access/accessInterface";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
+import accessConfig from "../../modules/access/accessConfig.json";
 
 // Create a new access record
 const createAccess = async (
@@ -129,5 +130,16 @@ const deleteAccessById = async (
   }
 };
 
+const getAccessOptionsFromConfig = async () => {
+  try {
+    // Assuming `accessConfig.json` contains an array of access modules and actions
+    const accessOptions = accessConfig.accesses || [];
+    return { success: true, data: accessOptions };
+  } catch (error) {
+    return  { success: false, message: AccessMessages.CONFIG.LOAD_FAILED };
+  }
+};
+
 // Export functions as named exports
-export { createAccess, getAllAccesses, getAccessById, updateAccess, deleteAccessById };
+// Export functions as named exports
+export { createAccess, getAllAccesses, getAccessById, updateAccess, deleteAccessById, getAccessOptionsFromConfig };

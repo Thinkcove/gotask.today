@@ -6,7 +6,8 @@ import {
   getAllAccesses,
   getAccessById,
   updateAccess,
-  deleteAccessById
+  deleteAccessById,
+  getAccessOptionsFromConfig,
 } from "../access/accessService";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
 
@@ -89,6 +90,21 @@ class AccessController extends BaseController {
       return this.replyError(error);
     }
   }
+
+  
+  // Get Access Options from Config
+  async getAccessOptions(requestHelper: RequestHelper, handler: any) {
+    try {
+      const result = await getAccessOptionsFromConfig();
+      if (!result.success) {
+        return this.replyError(new Error(result.message || AccessMessages.CONFIG.LOAD_FAILED));
+      }
+
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  } 
 }
 
 export default AccessController;

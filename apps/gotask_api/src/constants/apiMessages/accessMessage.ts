@@ -16,6 +16,9 @@ const AccessMessages = {
   UPDATE: {
     NOT_FOUND: "Access not found",
     FAILED: "Failed to update access"
+  },
+  CONFIG: {
+    LOAD_FAILED: "Error loading access configuration."
   }
 };
 

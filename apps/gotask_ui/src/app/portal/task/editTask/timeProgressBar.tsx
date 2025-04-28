@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
+import { calculateTimeProgressData } from "../../../common/utils/common";
 
 interface ProgressBarProps {
   estimatedTime: string;
@@ -12,25 +13,14 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
   timeSpentTotal,
   onClick
 }) => {
-  // Parse time strings to extract hours
-  const parseTimeString = (timeStr: string) => {
-    const days = parseInt(timeStr.match(/(\d+)d/)?.[1] || "0", 10);
-    const hours = parseInt(timeStr.match(/(\d+)h/)?.[1] || "0", 10);
-    return days * 8 + hours; // Converting days to hours (8 hours = 1 day)
-  };
-
-  const estimatedHours = parseTimeString(estimatedTime || "0h");
-  const spentHours = parseTimeString(timeSpentTotal || "0h");
-  const variationHours = spentHours - estimatedHours;
-
-  // Calculate percentages for progress bar visualization
-  const spentFillPercentage =
-    estimatedHours > 0 ? Math.min(70, (spentHours / estimatedHours) * 70) : spentHours > 0 ? 70 : 0;
-
-  const variationFillPercentage =
-    variationHours > 0 ? Math.min(30, (variationHours / (estimatedHours || 1)) * 30) : 0;
-
-  const totalFillPercentage = spentFillPercentage + variationFillPercentage;
+  const {
+    estimatedHours,
+    spentHours,
+    variationHours,
+    spentFillPercentage,
+    variationFillPercentage,
+    totalFillPercentage
+  } = calculateTimeProgressData(estimatedTime, timeSpentTotal);
 
   const purpleColor = "#741B92";
   const redColor = "#d32f2f";
@@ -65,11 +55,7 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
             Estimated: {estimatedHours.toFixed(1)}h
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: "normal" }}>
-            {variationHours > 0
-              ? `Variation: ${variationHours.toFixed(1)}h`
-              : variationHours < 0
-                ? "Variation: 0"
-                : "Variation: 0"}
+            {variationHours > 0 ? `Variation: ${variationHours.toFixed(1)}h` : "Variation: 0"}
           </Typography>
         </Box>
 
@@ -106,7 +92,7 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
             />
           )}
 
-          {/* Divider between time spent and variation sections */}
+          {/* Divider between spent and variation sections */}
           <Box
             sx={{
               position: "absolute",

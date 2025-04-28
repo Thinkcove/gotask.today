@@ -16,7 +16,7 @@ const parseTimeString = (timeString: string): number => {
 // Parse "HH:MM" string to total hours
 const parseHourMinuteString = (timeStr: string): number => {
   const [hours, minutes] = timeStr.split(":").map(Number);
-  return ((hours || 0) * 60 + (minutes || 0)) / 60;
+  return ((hours || 0) * 60 + (minutes || 0)) / 60; 
 };
 
 // Format total hours to "XdYh" format

@@ -12,10 +12,8 @@ import HistoryDrawer from "../taskHistory";
 import TaskComments from "../taskComments";
 import { useUser } from "@/app/userContext";
 import { KeyedMutator } from "swr";
-import LinearProgress from "@mui/material/LinearProgress";
-
-import { convertToHours } from "@/app/common/utils/common";
 import TimeSpentPopup from "../timeSpentPopup";
+import TimeProgressBar from "@/app/portal/task/editTask/timeProgressBar";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 
 interface EditTaskProps {
@@ -26,7 +24,7 @@ interface EditTaskProps {
 const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const router = useRouter();
   const { user } = useUser();
-  const [openDrawer, setOpenDrawer] = useState(false); // Drawer state
+  const [openDrawer, setOpenDrawer] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -91,7 +89,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     }
   };
 
-  // Handle comment submission
   const submitComment = async (commentText: string) => {
     if (!commentText.trim()) return;
     const commentData: ITaskComment = {
@@ -102,14 +99,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     };
     await createComment(commentData);
     await mutate();
-  };
-
-  const calculateProgress = (spent: string = "0h", remaining: string = "0h"): number => {
-    const spentHours = convertToHours(spent);
-    const remainingHours = convertToHours(remaining);
-    const totalHours = spentHours + remainingHours;
-    if (totalHours === 0) return 0; // Avoid division by zero
-    return Math.min(100, (spentHours / totalHours) * 100);
   };
 
   return (
@@ -178,84 +167,29 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
               </Button>
             </Box>
           </Box>
-
-          {data.history && data.history.length > 0 && (
-            <Box
-              sx={{
-                textDecoration: "underline",
-                display: "flex",
-                gap: 1,
-                color: "#741B92"
-              }}
-            >
-              <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
-                Show History
-              </Typography>
-              <History />
-            </Box>
-          )}
-          {/* Time Tracking Progress Bar */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            mt={2}
-            mb={2}
-            sx={{ cursor: "pointer" }}
-            onClick={() => setIsPopupOpen(true)}
-          >
-            <Box
-              sx={{
-                minWidth: 400,
-                maxWidth: 500,
-                width: "100%",
-                px: 2,
-                "&:hover .progress-info": {
-                  color: "#741B92"
-                }
-              }}
-            >
-              <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
-                <Typography className="progress-info" variant="body2" color="text.secondary">
-                  Spent: {data.time_spent_total || "0h"}
-                </Typography>
-                <Typography className="progress-info" variant="body2" color="text.secondary">
-                  Remaining: {data.remaining_time || "0h"}
-                </Typography>
-              </Box>
-
-              <LinearProgress
-                variant="determinate"
-                value={calculateProgress(
-                  data.time_spent_total || "0h",
-                  data.remaining_time || "0h"
-                )}
-                sx={{
-                  height: 10,
-                  borderRadius: 5,
-                  backgroundColor: "#e0e0e0",
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor: "purple"
-                  },
-                  "&:hover": {
-                    boxShadow: "0 0 5px 1px rgba(116, 27, 146, 0.5)"
-                  }
-                }}
-              />
-
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                textAlign="center"
-                mt={1}
-                sx={{ fontStyle: "italic" }}
-              >
-                Click the bar to update time tracking
-              </Typography>
-            </Box>
-          </Box>
         </Box>
+
+        {data.history && data.history.length > 0 && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%"
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+              Edit Task
+            </Typography>
+            <History />
+          </Box>
+        )}
+
+        <TimeProgressBar
+          estimatedTime={data.estimated_time || "0h"}
+          timeSpentTotal={data.time_spent_total || "0h"}
+          onClick={() => setIsPopupOpen(true)}
+        />
 
         <Box
           sx={{

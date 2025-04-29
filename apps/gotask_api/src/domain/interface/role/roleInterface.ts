@@ -15,15 +15,10 @@ export const getAccessRecords = async (accessIds: string[]): Promise<string[]> =
 };
 
 // Create a new role
-export const createRoleInDb = async (
-  name: string,
-  priority: number,
-  accessIds: string[]
-): Promise<IRole> => {
+export const createRoleInDb = async (name: string, accessIds: string[]): Promise<IRole> => {
   const linkedAccesses = await getAccessRecords(accessIds);
   const role = new Role({
     name,
-    priority,
     access: linkedAccesses
   });
   return await role.save();
@@ -31,7 +26,7 @@ export const createRoleInDb = async (
 
 // Get all roles from the database
 export const getAllRolesFromDb = async (): Promise<IRole[]> => {
-  return await Role.find().sort({ priority: 1 });
+  return await Role.find().sort({ updatedAt: -1 });
 };
 
 // Get a single role by ID
@@ -48,7 +43,6 @@ export const updateRoleInDb = async (
   if (!role) return null;
 
   if (updatedData.name !== undefined) role.name = updatedData.name;
-  if (updatedData.priority !== undefined) role.priority = updatedData.priority;
 
   if (updatedData.accessIds) {
     const linkedAccesses = await getAccessRecords(updatedData.accessIds);

@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 interface User {
   id: string;
   name: string;
-  roleId: string;
+  roleId: { id: string; name: string };
   user_id: string;
   status: boolean;
   token: string;
@@ -42,11 +42,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     window.location.href = "/login"; // Redirect to login
   };
 
-  return (
-    <UserContext.Provider value={{ user, setUser, logout }}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={{ user, setUser, logout }}>{children}</UserContext.Provider>;
 };
 
 // Custom hook to use UserContext easily

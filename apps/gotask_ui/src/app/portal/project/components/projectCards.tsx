@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import CardComponent from "@/app/component/card/cardComponent";
 import { Project } from "../interfaces/projectInterface";
+import EllipsisText from "@/app/component/text/ellipsisText";
 
 interface ProjectCardProps {
   projects: Project[] | null; // Ensure projects is an array or null
@@ -84,9 +85,9 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
               </Box>
 
               {/* Project Description */}
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, pt: 1 }}>
-                {project.description}
-              </Typography>
+              <Box sx={{ mb: 2, pt: 1 }}>
+                <EllipsisText text={project.description} maxWidth={350} />
+              </Box>
 
               {/* Users Info */}
               <Box display="flex" alignItems="center" sx={{ mb: 2 }}>

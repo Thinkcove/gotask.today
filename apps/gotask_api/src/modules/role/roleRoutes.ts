@@ -20,7 +20,6 @@ RoleRoutes.push({
     validate: {
       payload: Joi.object({
         name: Joi.string().required(),
-        priority: Joi.number().required(),
         accessIds: Joi.array().items(Joi.string()).optional() //  array of access IDs
       })
     },
@@ -71,7 +70,6 @@ RoleRoutes.push({
       }),
       payload: Joi.object({
         name: Joi.string().optional(),
-        priority: Joi.number().optional(),
         accessIds: Joi.array().items(Joi.string().uuid()).optional()
       })
     },

@@ -1,106 +1,95 @@
 import React from "react";
-import {
-  Menu,
-  MenuItem,
-  Box,
-  Typography,
-  Divider,
-  ListItemIcon,
-} from "@mui/material";
-import { Logout, Person, Work, CheckCircle, Cancel } from "@mui/icons-material";
+import { Box, Typography, Divider } from "@mui/material";
+import { Person, Work, CheckCircle, Cancel } from "@mui/icons-material";
 
-interface UserMenuProps {
-  anchorEl: HTMLElement | null;
-  handleClose: () => void;
-  handleLogout: () => void;
+interface UserInfoCardProps {
   user: {
     id?: string;
     name?: string;
-    roleId?: string;
+    roleId: {
+      id: string;
+      name: string;
+    };
     status?: boolean;
   } | null;
 }
 
-const UserMenu: React.FC<UserMenuProps> = ({
-  anchorEl,
-  handleClose,
-  handleLogout,
-  user,
-}) => {
+const UserInfoCard: React.FC<UserInfoCardProps> = ({ user }) => {
+  if (!user) return null;
+
   return (
-    <Menu
-      anchorEl={anchorEl}
-      open={Boolean(anchorEl)}
-      onClose={handleClose}
-      MenuListProps={{
-        "aria-labelledby": "basic-button",
-        disablePadding: true,
-      }}
-      sx={{
-        "& .MuiPaper-root": {
-          borderRadius: "12px",
-          padding: "12px",
-          minWidth: "240px",
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-        },
-      }}
-    >
-      {/* User Info Section */}
-      <Box>
+    <>
+      <Box
+        sx={{
+          backgroundColor: "#ffffff",
+          borderRadius: 3,
+          p: 2,
+          mb: 2,
+          boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
+          mx: 1
+        }}
+      >
         {/* Name */}
         <Box display="flex" alignItems="center" gap={1}>
-          <Person sx={{ fontSize: 18 }} />
+          <Person sx={{ color: "#741B92", fontSize: 20 }} />
           <Typography
-            variant="body1"
-            color="text.primary"
-            fontWeight="bold"
-            sx={{ textTransform: "capitalize" }}
+            variant="subtitle1"
+            sx={{ fontWeight: "bold", textTransform: "capitalize", color: "#2A1237" }}
           >
-            {user?.name}
+            {user.name}
           </Typography>
         </Box>
 
         {/* Role */}
-        <Box display="flex" alignItems="center" gap={1} mt={0.5}>
-          <Work sx={{ fontSize: 18, color: "grey" }} />
+        <Box display="flex" alignItems="center" gap={1} mt={1}>
+          <Work sx={{ color: "#999", fontSize: 18 }} />
           <Typography variant="body2" color="text.secondary">
-            {user?.roleId}
+            {user?.roleId?.name}
           </Typography>
         </Box>
 
         {/* Status */}
         <Box display="flex" alignItems="center" gap={1} mt={1}>
-          {user?.status ? (
-            <CheckCircle sx={{ fontSize: 18, color: "green" }} />
+          {user.status ? (
+            <CheckCircle sx={{ color: "green", fontSize: 18 }} />
           ) : (
-            <Cancel sx={{ fontSize: 18, color: "grey" }} />
+            <Cancel sx={{ color: "grey", fontSize: 18 }} />
           )}
-          <Typography variant="body2" color={user?.status ? "green" : "grey"}>
-            {user?.status ? "Active" : "Inactive"}
+          <Typography variant="body2" sx={{ color: user.status ? "green" : "grey" }}>
+            {user.status ? "Active" : "Inactive"}
           </Typography>
         </Box>
       </Box>
 
-      <Divider sx={{ my: 1 }} />
-
-      {/* Logout Button */}
-      <MenuItem
-        onClick={handleLogout}
-        sx={{
-          justifyContent: "center",
-          fontWeight: "bold",
-          color: "#741B92",
-          transition: "background 0.2s",
-          "&:hover": { backgroundColor: "#f5f5f5" },
-        }}
-      >
-        <ListItemIcon>
-          <Logout sx={{ color: "#741B92" }} />
-        </ListItemIcon>
-        Logout
-      </MenuItem>
-    </Menu>
+      {/* Logout */}
+      <Box sx={{ px: 1.5, pb: 2 }}>
+        <Box
+          component="button"
+          onClick={() => {
+            // You can replace this with props.handleLogout if needed
+            console.log("Logout clicked");
+          }}
+          sx={{
+            width: "100%",
+            backgroundColor: "#741B92",
+            color: "#fff",
+            border: "none",
+            borderRadius: 2,
+            padding: "8px 12px",
+            fontWeight: "bold",
+            fontSize: "0.9rem",
+            cursor: "pointer",
+            transition: "background 0.3s",
+            "&:hover": {
+              backgroundColor: "#5a1473"
+            }
+          }}
+        >
+          Logout
+        </Box>
+      </Box>
+    </>
   );
 };
 
-export default UserMenu;
+export default UserInfoCard;

@@ -15,7 +15,7 @@ class RoleController extends BaseController {
     try {
       const roleData = requestHelper.getPayload();
 
-      if (!roleData.name || roleData.priority === undefined) {
+      if (!roleData.name) {
         return this.replyError(new Error(roleMessages.CREATE.FAILED)); // replaced with CREATE.FAILED
       }
 

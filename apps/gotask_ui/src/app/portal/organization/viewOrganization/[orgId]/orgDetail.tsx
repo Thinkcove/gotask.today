@@ -8,6 +8,8 @@ import { useState } from "react";
 import { getStatusColor } from "@/app/common/constants/task";
 import EditOrganization from "./editOrganization";
 import { KeyedMutator } from "swr";
+import EllipsisText from "@/app/component/text/ellipsisText";
+import LabelValueText from "@/app/component/text/labelValueText";
 
 interface OrgDetailProps {
   org: Organization;
@@ -67,24 +69,16 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
           {/* Basic Details */}
           <Grid container spacing={2} mb={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Address
-              </Typography>
-              <Typography variant="body1">{org.address}</Typography>
+              <LabelValueText label="Address" value={org.address} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Email ID
-              </Typography>
-              <Typography variant="body1">{org.mail_id}</Typography>
+              <LabelValueText label="Email ID" value={org.mail_id} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Created on:
-              </Typography>
-              <Typography variant="body1">
-                {new Date(org?.createdAt).toLocaleDateString()}
-              </Typography>
+              <LabelValueText
+                label="Created on:"
+                value={new Date(org?.createdAt).toLocaleDateString()}
+              />
             </Grid>
           </Grid>
 
@@ -176,9 +170,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                           <Typography fontWeight={600} fontSize="1rem">
                             {project.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {project.description}
-                          </Typography>
+                          <EllipsisText text={project.description} maxWidth={350} />
                           <Box
                             sx={{
                               display: "flex",

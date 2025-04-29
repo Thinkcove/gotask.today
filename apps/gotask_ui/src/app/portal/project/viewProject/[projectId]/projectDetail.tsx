@@ -14,6 +14,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
 import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import LabelValueText from "@/app/component/text/labelValueText";
 
 interface ProjectDetailProps {
   project: Project;
@@ -119,23 +120,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Basic Details */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Description
-              </Typography>
-              <Typography variant="body1">{project.description}</Typography>
+              <LabelValueText label="Description" value={project.description} />
             </Grid>
           </Grid>
           <Grid container spacing={2} mb={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Created on:
-              </Typography>
-              <Typography variant="body1">
-                {new Date(project.createdAt).toLocaleDateString()}
-              </Typography>
+              <LabelValueText
+                label=" Created on"
+                value={new Date(project.createdAt).toLocaleDateString()}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 Status
               </Typography>
               <Chip

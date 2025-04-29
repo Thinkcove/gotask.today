@@ -11,6 +11,7 @@ import { deleteUser } from "../../services/userAction";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
+import LabelValueText from "@/app/component/text/labelValueText";
 
 interface UserDetailProps {
   user: User;
@@ -102,23 +103,19 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           {/* Basic Details */}
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                User ID
-              </Typography>
-              <Typography variant="body1">{user.user_id}</Typography>
+              <LabelValueText label="User ID" value={user.user_id} />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Role ID
-              </Typography>
-              <Typography variant="body1" sx={{ textTransform: "capitalize" }}>
-                {user?.roleId.name}
-              </Typography>
+              <LabelValueText
+                label="Role ID"
+                value={user?.roleId.name}
+                sx={{ textTransform: "capitalize" }}
+              />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 Status
               </Typography>
               <Chip
@@ -129,7 +126,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Grid>
 
             <Grid item xs={12}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 Organizations
               </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap">

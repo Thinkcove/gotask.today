@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { AppBar, Box, Typography, Avatar } from "@mui/material";
 import { useUser } from "@/app/userContext";
-import UserMenu from "./userMenu";
 
 const Header = () => {
   const { user, logout } = useUser();
@@ -32,15 +31,11 @@ const Header = () => {
           width: "100%",
           backgroundColor: "#741B92",
           py: 2,
-          px: 2,
+          px: 2
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography
-            variant="h6"
-            fontWeight="bold"
-            sx={{ color: "white", mb: 0 }}
-          >
+          <Typography variant="h6" fontWeight="bold" sx={{ color: "white", mb: 0 }}>
             Go Task Today
           </Typography>
 
@@ -52,19 +47,19 @@ const Header = () => {
                 color: "#741B92",
                 cursor: "pointer",
                 height: 32,
-                width: 32,
+                width: 32
               }}
               onClick={handleClick}
             >
               {firstLetter}
             </Avatar>
 
-            <UserMenu
+            {/* <UserMenu
               anchorEl={anchorEl}
               handleClose={handleClose}
               handleLogout={handleLogout}
               user={user}
-            />
+            /> */}
           </Box>
         </Box>
       </AppBar>

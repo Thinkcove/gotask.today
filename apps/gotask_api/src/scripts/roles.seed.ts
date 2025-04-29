@@ -1,12 +1,7 @@
 import mongoose from "mongoose";
 import { Role } from "../domain/model/role/role";
 
-const roles = [
-  { name: "Admin", priority: 1 },
-  { name: "HR", priority: 2 },
-  { name: "Manager", priority: 3 },
-  { name: "Associate", priority: 4 }
-];
+const roles = [{ name: "Admin" }, { name: "HR" }, { name: "Manager" }, { name: "Associate" }];
 
 const seedRoles = async () => {
   try {

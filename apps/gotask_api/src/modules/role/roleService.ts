@@ -6,7 +6,7 @@ import { Access } from "../../domain/model/access/access";
 // Create Role Logic
 export const createRoleService = async (data: CreateRolePayload) => {
   try {
-    const { name, priority, accessIds = [] } = data;
+    const { name, accessIds = [] } = data;
 
     const exists = await RoleInterface.roleExistsByName(name);
     if (exists) {
@@ -14,7 +14,7 @@ export const createRoleService = async (data: CreateRolePayload) => {
     }
 
     // Create the new role and save the associated access references
-    const role = await RoleInterface.createRoleInDb(name, priority, accessIds);
+    const role = await RoleInterface.createRoleInDb(name, accessIds);
 
     return {
       success: true,

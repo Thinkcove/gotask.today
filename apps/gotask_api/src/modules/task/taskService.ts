@@ -440,7 +440,8 @@ const addTimeSpent = async (
         time_spent: updatedTask.time_spent,
         estimated_time: updatedTask.estimated_time,
         remaining_time: updatedTask.remaining_time,
-        time_spent_total: updatedTask.time_spent_total
+        time_spent_total: updatedTask.time_spent_total,
+        variation: updatedTask.variation 
       }
     };
   } catch (error: any) {
@@ -458,6 +459,6 @@ export {
   getTaskById,
   updateTask,
   createComment,
-  updateComment,
+  updateComment, 
   addTimeSpent
 };

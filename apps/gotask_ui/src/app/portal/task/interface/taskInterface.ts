@@ -39,7 +39,8 @@ export interface ITask {
   estimated_time?: string;
   time_spent?: {
     date: string;
-    time_logged: string;
+    start_time: string;
+    end_time: string;
   }[];
   time_spent_total?: string;
   remaining_time?: string;
@@ -104,3 +105,14 @@ export type FilterValues = {
   variationType: "" | "more" | "less"; // ✅ allow no selection
   variationDays: number;
 };
+
+export interface TimeOption {
+  label: string;
+  value: string;
+}
+
+export interface TimeEntry {
+  date: string;
+  start_time: string;
+  end_time: string;
+}

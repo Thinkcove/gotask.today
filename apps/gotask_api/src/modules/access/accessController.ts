@@ -16,7 +16,9 @@ class AccessController extends BaseController {
   async createAccess(requestHelper: RequestHelper, handler: any) {
     try {
       const accessData = requestHelper.getPayload();
-      if (!accessData.name || !accessData.application) {
+      console.log(JSON.stringify(accessData.name, null, 2));
+      if (!accessData.name ) {
+        console.log(accessData)
         return this.replyError(new Error(AccessMessages.CREATE.REQUIRED));
       }
 
@@ -46,19 +48,21 @@ class AccessController extends BaseController {
   }
 
   // Get Access by ID
-  async getAccessById(requestHelper: RequestHelper, handler: any) {
-    try {
-      const id = requestHelper.getParam("id");
-      const result = await getAccessById(id);
-      if (!result.success) {
-        return this.replyError(new Error(result.message || AccessMessages.FETCH.FAILED_BY_ID));
-      }
-
-      return this.sendResponse(handler, result.data);
-    } catch (error) {
-      return this.replyError(error);
+ // Get a specific access by ID
+ async getAccessById(requestHelper: RequestHelper, handler: any) {
+  try {
+    const id = requestHelper.getParam("id");
+    const result = await getAccessById(id);
+    if (!result.success) {
+      return this.replyError(new Error(result.message || AccessMessages.FETCH.FAILED_BY_ID));
     }
+
+    return this.sendResponse(handler, result.data);
+  } catch (error) {
+    return this.replyError(error);
   }
+}
+  
 
   // Update Access
   async updateAccess(requestHelper: RequestHelper, handler: any) {

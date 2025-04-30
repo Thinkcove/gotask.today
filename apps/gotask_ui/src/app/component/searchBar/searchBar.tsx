@@ -1,14 +1,16 @@
 import React, { useRef } from "react";
-import { InputBase, IconButton, Paper, alpha } from "@mui/material";
+import { InputBase, IconButton, Paper, alpha, SxProps, Theme } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 
+// Extend SearchBarProps to allow sx prop
 interface SearchBarProps {
   value: string;
   onChange: (val: string) => void;
+  sx?: SxProps<Theme>;  // Allows custom styling via sx prop
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, sx }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const clear = () => {
@@ -30,7 +32,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
         display: "flex",
         alignItems: "center",
         boxShadow: "0 4px 30px rgba(0,0,0,0.02)",
-        border: "2px solid rgb(195, 144, 212)"
+        border: "2px solid rgb(195, 144, 212)",
+        ...sx, // Spread the sx prop if passed
       }}
     >
       <SearchIcon sx={{ color: "#741B92", mr: 1 }} />
@@ -42,7 +45,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
         sx={{
           flex: 1,
           color: "#333",
-          fontSize: 16
+          fontSize: 16,
         }}
       />
       <IconButton onClick={clear} size="small" sx={{ visibility: value ? "visible" : "hidden" }}>

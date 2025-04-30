@@ -79,20 +79,23 @@ const getAccessById = async (
   }
 };
 
-// Update access record by ID
+
+// Update access record by unique ID
 const updateAccess = async (
   id: string,
   updateData: Partial<IAccess>
 ): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
   try {
-    const updatedAccess = await updateAccessInDb(id, updateData);
-
-    if (!updatedAccess) {
+    const access = await getAccessByIdFromDb(id);
+    if (!access) {
       return {
         success: false,
         message: AccessMessages.UPDATE.NOT_FOUND
       };
     }
+
+    const updatedAccess = await updateAccessInDb(id, updateData);
+
     return {
       success: true,
       data: updatedAccess
@@ -105,17 +108,25 @@ const updateAccess = async (
   }
 };
 
-// Delete access record by ID
+// Delete access record by unique ID
 const deleteAccessById = async (
   id: string
 ): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
   try {
+    const access = await getAccessByIdFromDb(id);
+    if (!access) {
+      return {
+        success: false,
+        message: AccessMessages.DELETE.NOT_FOUND
+      };
+    }
+
     const success = await deleteAccessByIdFromDb(id);
 
     if (!success) {
       return {
         success: false,
-        message: AccessMessages.DELETE.NOT_FOUND
+        message: AccessMessages.DELETE.FAILED
       };
     }
     return {

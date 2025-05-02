@@ -176,7 +176,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
                             >
                               {app.access}
                             </Typography>
-                            <Stack direction="row" spacing={1} flexWrap="wrap">
+                            <Stack direction="row" flexWrap="wrap" gap={1}>
                               {app.actions.map((action) => (
                                 <Chip
                                   key={action}

@@ -42,14 +42,14 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
       await mutate();
       setSnackbar({
         open: true,
-        message:transproject("updateSuccess"),
+        message:transproject("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
     } catch {
       setSnackbar({
         open: true,
-        message: transproject("updateError"),
+        message: transproject("updateerror"),
         severity: SNACKBAR_SEVERITY.ERROR 
       });
     }

@@ -37,7 +37,6 @@ const LoginForm = () => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      // setError("Both fields are required");
       setError(translogin("seterror"));
       return;
     }

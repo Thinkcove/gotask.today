@@ -1,7 +1,6 @@
-// components/StatusChart.tsx
 import React from "react";
-import { Box, Typography, Card, Stack, Divider } from "@mui/material";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { Box, Typography, Stack } from "@mui/material";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface StatusItem {
   label: string;
@@ -16,125 +15,80 @@ interface Props {
 }
 
 const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitle }) => {
-  const pieChartData = statuses.map((status) => ({
+  const total = Object.values(statusCounts).reduce((sum, value) => sum + value, 0);
+
+  const barChartData = statuses.map((status) => ({
     name: status.label,
     value: statusCounts[status.label.toLowerCase().replace(/\s/g, "-")] || 0,
     color: status.color
   }));
 
-  const total = pieChartData.reduce((sum, item) => sum + item.value, 0);
-
   return (
-    <Card
+    <Box
       sx={{
         width: "100%",
-        boxShadow: 3,
-        borderRadius: 3,
         bgcolor: "#fff",
-        p: 2
+        borderRadius: 3,
+        p: 3,
+        textAlign: "center",
+        border: "1px solid #eee"
       }}
     >
       <Typography
-        variant="h6"
+        variant="h5"
         sx={{
           fontWeight: "bold",
-          color: "#741B92",
-          textAlign: "center",
+          color: "#311B47",
           mb: 2
         }}
       >
         {title}
       </Typography>
 
-      <Box sx={{ height: 220, width: "100%", position: "relative" }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={pieChartData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius="80%"
-              innerRadius="55%"
-              labelLine={false}
-              stroke="none"
-            >
-              {pieChartData.map((entry, index) => (
-                <Cell key={index} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: "bold",
+          color: "#777",
+          mb: 3
+        }}
+      >
+        Total: {total} {chartTitle}
+      </Typography>
 
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            textAlign: "center"
-          }}
-        >
-          <Typography variant="h5" sx={{ fontWeight: 600, color: "#2A1237" }}>
-            {total}
-          </Typography>
-          <Typography variant="caption" sx={{ color: "#777" }}>
-            {chartTitle}
-          </Typography>
-        </Box>
+      <Box sx={{ height: 250 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={barChartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+            <XAxis dataKey="name" axisLine={false} />
+            <YAxis axisLine={false} tickLine={false} />
+            <Tooltip />
+            <Bar dataKey="value" fill="#8849AE" radius={[10, 10, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
       </Box>
 
-      <Divider sx={{ my: 2 }} />
+      <Stack spacing={2} mt={2}>
+        {statuses.map((status, index) => {
+          const value = statusCounts[status.label.toLowerCase().replace(/\s/g, "-")] || 0;
+          const percent = total ? Math.round((value / total) * 100) : 0;
 
-      <Stack spacing={2}>
-        {pieChartData.map((entry, index) => (
-          <Box
-            key={index}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              p: 2,
-              borderRadius: 2,
-              backgroundColor: `${entry.color}1A`, // subtle tint of the status color
-              border: `1px solid ${entry.color}`,
-              transition: "all 0.3s ease",
-              "&:hover": {
-                backgroundColor: `${entry.color}33`,
-                boxShadow: `0 4px 12px ${entry.color}44`
-              }
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <Box
-                sx={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: "50%",
-                  backgroundColor: entry.color
-                }}
-              />
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 600,
-                  color: "#2A1237",
-                  textTransform: "capitalize"
-                }}
-              >
-                {entry.name}
+          return (
+            <Box
+              key={index}
+              sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <Typography variant="body1" sx={{ color: "#333", fontWeight: 600 }}>
+                {status.label}
+              </Typography>
+              <Typography variant="body2" sx={{ color: status.color }}>
+                {value} ({percent}%)
               </Typography>
             </Box>
-
-            <Typography variant="body2" sx={{ fontWeight: 600, color: entry.color }}>
-              {entry.value}
-            </Typography>
-          </Box>
-        ))}
+          );
+        })}
       </Stack>
-    </Card>
+    </Box>
   );
 };
 

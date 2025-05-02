@@ -176,9 +176,7 @@ class TaskController extends BaseController {
   async addTimeSpent(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      console.log("task id", id);
       const timeEntries = requestHelper.getPayload() as ITimeSpentEntry | ITimeSpentEntry[];
-      console.log("timeEntries", timeEntries);
       const result = await addTimeSpent(id, timeEntries);
       return this.sendResponse(handler, result);
     } catch (error) {

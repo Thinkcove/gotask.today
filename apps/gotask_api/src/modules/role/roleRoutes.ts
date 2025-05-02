@@ -20,7 +20,6 @@ RoleRoutes.push({
     validate: {
       payload: Joi.object({
         name: Joi.string().required(),
-        priority: Joi.number().required(),
         accessIds: Joi.array().items(Joi.string()).optional() //  array of access IDs
       })
     },
@@ -71,7 +70,6 @@ RoleRoutes.push({
       }),
       payload: Joi.object({
         name: Joi.string().optional(),
-        priority: Joi.number().optional(),
         accessIds: Joi.array().items(Joi.string().uuid()).optional()
       })
     },
@@ -93,6 +91,18 @@ RoleRoutes.push({
       })
     },
     notes: "Delete role by ID",
+    tags
+  }
+});
+
+// Remove Access from Role
+RoleRoutes.push({
+  path: `${API_PATHS.DLETE_ROLEACCESS}/{id}`,
+  method: API_METHODS.DELETE,
+  handler: (request: Request, h: ResponseToolkit) =>
+    roleController.removeAccessFromRole(new RequestHelper(request), h),
+  options: {
+    notes: "Remove specific access from a role",
     tags
   }
 });

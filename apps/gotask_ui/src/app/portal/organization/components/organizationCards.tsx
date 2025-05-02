@@ -8,6 +8,7 @@ import { ArrowForward, Business } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import EllipsisText from "@/app/component/text/ellipsisText";
 
 interface OrganizationCardProps {
   organizations: Organization[] | null;
@@ -56,9 +57,7 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
                 <Stack spacing={1.5} mt={1}>
                   <Stack direction="row" spacing={1} alignItems="center">
                     <PlaceIcon fontSize="small" sx={{ color: "#741B92" }} />
-                    <Typography variant="body2" color="text.secondary">
-                      {organization.address}
-                    </Typography>
+                    <EllipsisText text={organization.address} maxWidth={350} />
                   </Stack>
                   <Stack direction="row" spacing={1} alignItems="center">
                     <EmailIcon fontSize="small" sx={{ color: "#741B92" }} />

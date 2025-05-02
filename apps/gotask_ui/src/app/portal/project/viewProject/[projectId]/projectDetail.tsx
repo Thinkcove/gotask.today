@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Grid, IconButton, Button, Divider, Stack, Chip } from "@mui/material";
+import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
 import { fetchAllUsers } from "@/app/portal/task/service/taskAction";
@@ -16,6 +16,8 @@ import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import LabelValueText from "@/app/component/text/labelValueText";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 
 interface ProjectDetailProps {
   project: Project;
@@ -23,7 +25,7 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
-   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
@@ -54,7 +56,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     } catch {
       setSnackbar({
         open: true,
-        message: transproject( "erroradd"),
+        message: transproject("erroradd"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -86,7 +88,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
 
   return (
     <>
-      <ModuleHeader name= {transproject( "detailview")}/>
+      <ModuleHeader name={transproject("detailview")} />
       <Box
         sx={{
           minHeight: "100vh",
@@ -109,10 +111,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               <ArrowBack />
             </IconButton>
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-              <Typography variant="h4" fontWeight={700}>
-                {project.name}
-              </Typography>
-
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+                  {project.name}
+                </Typography>
+                <StatusIndicator status={project.status} getColor={getStatusColor} />
+              </Box>
               <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
                 <Edit />
               </IconButton>
@@ -122,33 +126,17 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Basic Details */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-              {transproject( "detaildescription")}
-              </Typography>
-              <Typography variant="body1">{project.description}</Typography>
+              <LabelValueText
+                label={transproject("detaildescription")}
+                value={project.description}
+              />
             </Grid>
           </Grid>
           <Grid container spacing={2} mb={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                {transproject("detailcreatedon")}
-              </Typography>
-              <Typography variant="body1">
-                {new Date(project.createdAt).toLocaleDateString()}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-              {transproject("detailstatus")}
-              </Typography>
-              <Chip
-                label={project.status}
-                color="primary"
-                sx={{
-                  backgroundColor: getStatusColor(project.status),
-                  textTransform: "capitalize"
-                }}
-                size="small"
+              <LabelValueText
+                label={transproject("detailcreatedon")}
+                value={new Date(project.createdAt).toLocaleDateString()}
               />
             </Grid>
           </Grid>
@@ -158,7 +146,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Assignees Section */}
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h5" fontWeight={600}>
-            {transproject("detailassignee")}
+              {transproject("detailassignee")}
             </Typography>
             <Button
               variant="contained"
@@ -168,7 +156,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 borderRadius: 2
               }}
             >
-           {transproject("detailaddassignee")}
+              {transproject("detailaddassignee")}
             </Button>
           </Box>
 
@@ -185,14 +173,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       alignItems: "center",
                       justifyContent: "space-between",
                       bgcolor: "#ffffff",
-                      border: "1px solid #e0e0e0" 
+                      border: "1px solid #e0e0e0"
                     }}
                   >
                     <Stack direction="row" spacing={2} alignItems="center">
                       <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
 
                       <Box>
-                        <Typography fontWeight={600} fontSize="1rem">
+                        <Typography
+                          fontWeight={600}
+                          fontSize="1rem"
+                          sx={{ textTransform: "capitalize" }}
+                        >
                           {user.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -221,9 +213,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               ))
             ) : (
               <Grid item xs={12}>
-                <Typography color="text.secondary">
-                  {transproject("detailnouser")}
-                </Typography>
+                <Typography color="text.secondary">{transproject("detailnouser")}</Typography>
               </Grid>
             )}
           </Grid>
@@ -260,11 +250,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           submitLabel={transproject("labeldelete")}
         >
           <Typography>
-          {transproject("removeuserconfirmation")}
+            {transproject("removeuserconfirmation")}
             <br />
-          {transproject("removeusernote1")}
+            {transproject("removeusernote1")}
             <br />
-          {transproject("removeusernote2")}
+            {transproject("removeusernote2")}
           </Typography>
         </CommonDialog>
         <CustomSnackbar

@@ -10,6 +10,8 @@ import EditOrganization from "./editOrganization";
 import { KeyedMutator } from "swr";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import EllipsisText from "@/app/component/text/ellipsisText";
+import LabelValueText from "@/app/component/text/labelValueText";
 
 interface OrgDetailProps {
   org: Organization;
@@ -57,7 +59,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
               <ArrowBack />
             </IconButton>
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-              <Typography variant="h4" fontWeight={700}>
+              <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
                 {org.name}
               </Typography>
 
@@ -69,24 +71,16 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
           {/* Basic Details */}
           <Grid container spacing={2} mb={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                {transorganization("detailaddress")}
-              </Typography>
-              <Typography variant="body1">{org.address}</Typography>
+              <LabelValueText label={transorganization("detailaddress")} value={org.address} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                {transorganization("detailemail")}
-              </Typography>
-              <Typography variant="body1">{org.mail_id}</Typography>
+              <LabelValueText label={transorganization("detailemail")} value={org.mail_id} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                {transorganization("detailcreatedon")}
-              </Typography>
-              <Typography variant="body1">
-                {new Date(org?.createdAt).toLocaleDateString()}
-              </Typography>
+              <LabelValueText
+                label={transorganization("detailcreatedon")}
+                value={new Date(org?.createdAt).toLocaleDateString()}
+              />
             </Grid>
           </Grid>
           <Divider sx={{ mb: 1 }} />
@@ -125,7 +119,11 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                       <Stack direction="row" spacing={2} alignItems="center">
                         <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
                         <Box>
-                          <Typography fontWeight={600} fontSize="1rem">
+                          <Typography
+                            fontWeight={600}
+                            fontSize="1rem"
+                            sx={{ textTransform: "capitalize" }}
+                          >
                             {user.name}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
@@ -141,10 +139,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                 ))
               ) : (
                 <Grid item xs={12}>
-                  <Typography color="text.secondary">
-                    {" "}
-                    {transorganization("nousers")}
-                  </Typography>
+                  <Typography color="text.secondary"> {transorganization("nousers")}</Typography>
                 </Grid>
               )}
             </Grid>
@@ -175,12 +170,14 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                     >
                       <Stack direction="row" spacing={2} alignItems="center">
                         <Box>
-                          <Typography fontWeight={600} fontSize="1rem">
+                          <Typography
+                            fontWeight={600}
+                            fontSize="1rem"
+                            sx={{ textTransform: "capitalize" }}
+                          >
                             {project.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {project.description}
-                          </Typography>
+                          <EllipsisText text={project.description} maxWidth={350} />
                           <Box
                             sx={{
                               display: "flex",
@@ -215,9 +212,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                 ))
               ) : (
                 <Grid item xs={12}>
-                  <Typography color="text.secondary">
-                    {transorganization("projectsyet")}
-                  </Typography>
+                  <Typography color="text.secondary">{transorganization("projectsyet")}</Typography>
                 </Grid>
               )}
             </Grid>

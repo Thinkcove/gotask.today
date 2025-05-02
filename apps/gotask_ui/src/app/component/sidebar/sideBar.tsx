@@ -24,6 +24,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import menuItemsData from "./menuItems.json";
 import { useRouter, usePathname } from "next/navigation";
 import { Theme } from "@mui/material/styles";
+import UserInfoCard from "../appBar/userMenu";
 
 const iconMap: Record<string, React.ReactNode> = {
   DashboardIcon: <GridViewIcon />,
@@ -120,7 +121,7 @@ const Sidebar: React.FC = () => {
           }
         }}
       >
-        <div ref={drawerRef}>
+        <div ref={drawerRef} style={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <Toolbar>
             <Box sx={{ fontWeight: "bold", fontSize: "1.6rem", color: "#741B92" }}>
               {collapsed ? "" : "Go Task Today"}
@@ -153,12 +154,7 @@ const Sidebar: React.FC = () => {
                       }
                     }}
                   >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: "40px",
-                        color: "#741B92"
-                      }}
-                    >
+                    <ListItemIcon sx={{ minWidth: "40px", color: "#741B92" }}>
                       {iconMap[item.icon]}
                     </ListItemIcon>
 
@@ -174,6 +170,11 @@ const Sidebar: React.FC = () => {
                 </ListItem>
               ))}
             </List>
+          </Box>
+
+          {/* Push the UserInfoCard to the bottom */}
+          <Box sx={{ marginTop: "auto" }}>
+            <UserInfoCard />
           </Box>
         </div>
       </Drawer>

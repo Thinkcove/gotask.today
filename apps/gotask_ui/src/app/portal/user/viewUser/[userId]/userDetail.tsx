@@ -11,6 +11,8 @@ import { deleteUser } from "../../services/userAction";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
+import LabelValueText from "@/app/component/text/labelValueText";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 
 interface UserDetailProps {
   user: User;
@@ -102,23 +104,19 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           {/* Basic Details */}
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                User ID
-              </Typography>
-              <Typography variant="body1">{user.user_id}</Typography>
+              <LabelValueText label="User ID" value={user.user_id} />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Role ID
-              </Typography>
-              <Typography variant="body1" sx={{ textTransform: "capitalize" }}>
-                {user?.roleId.name}
-              </Typography>
+              <LabelValueText
+                label="Role ID"
+                value={user?.roleId.name}
+                sx={{ textTransform: "capitalize" }}
+              />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 Status
               </Typography>
               <Chip
@@ -129,12 +127,17 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Grid>
 
             <Grid item xs={12}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 Organizations
               </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap">
                 {user.orgDetails?.map((orgId) => (
-                  <Chip key={orgId.id} label={orgId.name} variant="outlined" />
+                  <Chip
+                    key={orgId.id}
+                    label={orgId.name}
+                    variant="outlined"
+                    sx={{ textTransform: "capitalize" }}
+                  />
                 ))}
               </Stack>
             </Grid>
@@ -165,24 +168,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                     }}
                   >
                     <Stack spacing={1}>
-                      <Typography fontWeight={600} fontSize="1rem">
+                      <Typography variant="h4" fontWeight={700} fontSize="1rem">
                         {project.name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {project.description}
                       </Typography>
-                    </Stack>
-
-                    <Stack direction="row" spacing={1} alignItems="center" mt={2}>
-                      <Chip
-                        label={`Status: ${project.status}`}
-                        size="small"
-                        color="warning"
-                        sx={{
-                          backgroundColor: getStatusColor(project.status),
-                          textTransform: "capitalize"
-                        }}
-                      />
+                      <StatusIndicator status={project.status} getColor={getStatusColor} />
                     </Stack>
                   </Box>
                 </Grid>

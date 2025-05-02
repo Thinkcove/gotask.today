@@ -97,7 +97,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
             sx={{ mb: 4, width: "100%" }}
           >
             <Tab label={transorganization("labelresource")} />
-            <Tab label={transorganization("labelProjectsList")} />
+            <Tab label={transorganization("labelprojectslist")} />
           </Tabs>
           {/* Users Tab */}
           {activeTab === 0 && (

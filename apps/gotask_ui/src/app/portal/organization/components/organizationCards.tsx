@@ -28,7 +28,7 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="text.secondary">
-          {transorganization("noOrganizations")}
+          {transorganization("noorganizations")}
         </Typography>
       </Box>
     );
@@ -86,7 +86,7 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
                     }}
                   >
                     <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                      {transorganization("viewDetails")}
+                      {transorganization("viewdetails")}
                     </Typography>
                     <ArrowForward fontSize="small" />
                   </Box>

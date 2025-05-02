@@ -6,7 +6,7 @@
         "labelpassword": "password",
         "seterror": "Both fields are required"
       },
-       
+    
       "Dashboard":{
         "overview": "Dashboard Overview",
         "dashboard": "Dashboard",
@@ -18,14 +18,14 @@
       },
 
       "Organization": {
-        "createTitle": "Create New Organization",
-        "errorName": "Organization Name is required",
-        "errorMail": "Mail ID is required",
-        "errorAddress": "Address is required",
-        "successCreate": "Organization created successfully!",
-        "errorCreate": "Error while creating Organization",
-        "noOrganizations": "No organizations available.",
-        "viewDetails": "View Details",
+        "createtitle": "Create New Organization",
+        "errorname": "Organization Name is required",
+        "errormail": "Mail ID is required",
+        "erroraddress": "Address is required",
+        "successcreate": "Organization created successfully!",
+        "errorcreate": "Error while creating Organization",
+        "noorganizations": "No organizations available.",
+        "viewdetails": "View Details",
         "labelname": "Organization Name",
         "labeladdress": "Address",
         "labelemail": "Email ID",
@@ -36,14 +36,14 @@
         "viewname": "Organization",
         "errorupdate": "Organization update successfully",
         "successupdate": "Error while updating oragnization",
-        "editTitle": "Edit Organization",
+        "edittitle": "Edit Organization",
         "detailview":"Organization Detail View",
         "detailaddress":"Address",
         "detailemail":"Email ID",
         "detailcreatedon":" Created on:",
         "labelresource":"Resources",
-        "labelProjectsList":"Projects List",
-        "nosers":"No users yet.",
+        "labelprojectslist":"Projects List",
+        "nousers":"No users yet.",
         "projectsyet":"No projects yet."
       },
 
@@ -70,7 +70,7 @@
         "viewname": "Project",
         "erroradd": "Error while adding assignee",
         "errorremove": "Error while removing assignee",
-        "DetailView": "Project Detail View",
+        "detailview": "Project Detail View",
         "detaildescription": "Description",
         "detailcreatedon": "Created on:",
         "detailstatus": "Status",
@@ -83,12 +83,12 @@
         "placeholderselect": "Select users",
         "titledelete": "Delete users",
         "labeldelete": "Delete",
-        "removeUserConfirmation": "Are you sure you want to remove this user from the project?",
-        "removeUserNote1": "This action will unassign the user, but will not delete their account.",
-        "removeUserNote2": "You can reassign them anytime later if needed.",
+        "removeuserconfirmation": "Are you sure you want to remove this user from the project?",
+        "removeusernote1": "This action will unassign the user, but will not delete their account.",
+        "removeusernote2": "You can reassign them anytime later if needed.",
         "updateSuccess": "Project updated successfully!",
         "updateError": "Error while updating project",
-        "editTitle": "Edit Project"
+        "edittitle": "Edit Project"
       },
 
       "Role":{
@@ -96,29 +96,27 @@
       },
 
       "Task":{
+        "filter": "Filter",
         "filterproject": "Filter by Project",
         "filteruser": "Filter by User",
         "filterstatus": "Filter by Status",
         "filterseverity": "Filter by Severity",
         "filterduedate": "Filter by Due Date",
         "filtervariation": "Filter by Variation",
-        "applyfilter": "Apply Filter",
-        "filter": "Filter",
-        "labemore": "More Variation",
+        "from": "From",
+        "to": "To",
+        "labelmore": "More Variation",
         "labelless": "Less Variation",
         "days": "Days:",
         "cancel": "Cancel",
-        "from": "From",
-        "to": "To",
-        "clearall":"  Clear All",
-        "filters":"Filter",
-        "viewmore":"ViewMore",
-        "notask":"No tasks available",
-        "taskstatus":"task.status",
-        "projects":"Projects",
-        "assignees":"Assignees"
-       
-
+        "applyfilter": "Apply Filter",
+        "clearall": "  Clear All",
+        "filters": "Filter",
+        "viewmore": "ViewMore",
+        "notask": "No tasks available",
+        "projects": "Projects",
+        "assignees": "Assignees",
+        "createtask": "Create New Task"
       }
 
     }

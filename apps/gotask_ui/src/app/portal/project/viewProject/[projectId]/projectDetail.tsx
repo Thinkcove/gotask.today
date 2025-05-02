@@ -86,7 +86,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
 
   return (
     <>
-      <ModuleHeader name= {transproject( "DetailView")}/>
+      <ModuleHeader name= {transproject( "detailview")}/>
       <Box
         sx={{
           minHeight: "100vh",
@@ -260,11 +260,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           submitLabel={transproject("labeldelete")}
         >
           <Typography>
-          {transproject("removeUserConfirmation")}
+          {transproject("removeuserconfirmation")}
             <br />
-          {transproject("removeUserNote1")}
+          {transproject("removeusernote1")}
             <br />
-          {transproject("removeUserNote2")}
+          {transproject("removeusernote2")}
           </Typography>
         </CommonDialog>
         <CustomSnackbar

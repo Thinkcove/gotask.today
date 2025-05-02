@@ -49,7 +49,6 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
       await mutate();
       setSnackbar({
         open: true,
-        // message: response.message,
         message: transorganization("successupdate"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
@@ -57,7 +56,6 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
     } catch {
       setSnackbar({
         open: true,
-        // message: "Error while updating organization",
          message: transorganization("errorupdate"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
@@ -85,7 +83,7 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
         }}
       ></Box>
 
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transorganization("editTitle")}>
+      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transorganization("edittitle")}>
         <OrganizationInput
           formData={formData}
           handleChange={handleChange}

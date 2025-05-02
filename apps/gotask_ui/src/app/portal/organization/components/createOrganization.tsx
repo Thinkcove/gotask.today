@@ -36,9 +36,9 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name =  transorganization("errorName");
-    if (!formData.mail_id) newErrors.mail_id = transorganization("errorMail");
-    if (!formData.address) newErrors.address = transorganization("errorAddress");
+    if (!formData.name) newErrors.name =  transorganization("errorname");
+    if (!formData.mail_id) newErrors.mail_id = transorganization("errormail");
+    if (!formData.address) newErrors.address = transorganization("erroraddress");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -54,14 +54,14 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
       await mutate();
       setSnackbar({
         open: true,
-        message: transorganization("successCreate"),
+        message: transorganization("successcreate"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
     } catch { 
       setSnackbar({
         open: true,
-        message: transorganization("errorCreate"),
+        message: transorganization("errorcreate"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -72,7 +72,7 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
         open={open}
         onClose={onClose}
         onSubmit={handleSubmit}
-        title={transorganization("createTitle")}
+        title={transorganization("createtitle")}
       >
         <OrganizationInput formData={formData} handleChange={handleChange} errors={errors} />
       </CommonDialog>

@@ -16,7 +16,7 @@ interface ProjectCardProps {
 
 const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
   const router = useRouter();
-  const transproject =  useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   // Handle error
   if (error) {

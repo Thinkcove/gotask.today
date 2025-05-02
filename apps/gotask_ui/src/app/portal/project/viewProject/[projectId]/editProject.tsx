@@ -76,7 +76,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
         }}
       ></Box>
 
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transproject("editTitle")}>
+      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transproject("edittitle")}>
         <ProjectInput formData={formData} handleChange={handleChange} readOnlyFields={["name"]} />
       </CommonDialog>
       <CustomSnackbar

@@ -1,8 +1,6 @@
 import { Box, Typography, Tooltip, Avatar } from "@mui/material";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
 
 interface Task {
   id: string;
@@ -28,7 +26,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
   getStatusColor,
   formatDate
 }) => {
-  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
     <Box
       key={task.id}
@@ -71,9 +68,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             {formatDate(task.due_date)}
           </Typography>
           <Typography sx={{ color: getStatusColor(task.status), fontSize: "0.7rem" }}>
-           {transtask(`status.${task.status}`, {
-              defaultValue: task.status.replace(/-/g, " ").toUpperCase(),
-            })}
+            {task.status.replace(/-/g, " ").toUpperCase()}
           </Typography>
         </Box>
       </Box>

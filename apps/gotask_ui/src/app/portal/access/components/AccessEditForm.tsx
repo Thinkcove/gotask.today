@@ -1,11 +1,9 @@
-// app/portal/access/edit/[id]/page.tsx
 'use client';
 
 import {
   Box,
   Button,
   CircularProgress,
-  Container,
   MenuItem,
   Select,
   TextField,
@@ -118,30 +116,36 @@ export default function AccessEditForm() {
 
   if (loading) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Box display="flex" justifyContent="center">
-          <CircularProgress />
-        </Box>
-      </Container>
+      <Box sx={{ width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <CircularProgress />
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Edit Access Role
-      </Typography>
+    <Box sx={{ width: '100%', height: '100vh', overflow: 'auto', p: 0, m: 0 }}>
+      {/* Header with Back Button */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} p={2}>
+        <Typography variant="h5" fontWeight={600}>
+          Edit Access Role
+        </Typography>
+        <Button variant="contained" color="primary" onClick={() => router.push('/portal/access')}>
+          Back
+        </Button>
+      </Box>
 
-      <Box mb={3}>
+      {/* Role Name Input */}
+      <Box mb={2} px={2}>
         <TextField
           fullWidth
-          label="Role Name"
+          label="Access Name"
           value={roleName}
           onChange={(e) => setRoleName(e.target.value)}
         />
       </Box>
 
-      <Box mb={3}>
+      {/* Module Select Dropdown */}
+      <Box mb={2} px={2}>
         <Select
           fullWidth
           value={currentTab}
@@ -155,7 +159,8 @@ export default function AccessEditForm() {
         </Select>
       </Box>
 
-      <Box mb={4}>
+      {/* Permissions Table */}
+      <Box mb={1} px={2}>
         {currentTab && (
           <AccessPermissionsContainer
             currentModule={currentTab}
@@ -167,11 +172,15 @@ export default function AccessEditForm() {
         )}
       </Box>
 
-      <Box display="flex" justifyContent="flex-end">
+      {/* Bottom Action Buttons */}
+      <Box display="flex" justifyContent="flex-end" gap={2} px={2} pb={2}>
+        <Button variant="outlined" onClick={() => router.push('/portal/access')}>
+          Cancel
+        </Button>
         <Button variant="contained" color="primary" onClick={handleSubmit}>
           Save Changes
         </Button>
       </Box>
-    </Container>
+    </Box>
   );
 }

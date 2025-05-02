@@ -1,5 +1,3 @@
-// app/(dashboard)/access/view/[id]/page.tsx
-
 "use client";
 
 import React from "react";
@@ -8,35 +6,26 @@ import AccessView from "../../../components/AccessView";
 
 const AccessViewPage = () => {
   return (
-    <div className="flex flex-col h-full m-0 p-4 overflow-hidden">
-      {/* Header Section */}
+    <Box className="flex flex-col h-screen w-full m-0 p-0 overflow-hidden">
+      {/* Header */}
       <Box
         sx={{
-          backgroundColor: "#741B92", // Purple background
+          backgroundColor: "#741B92",
           color: "white",
-          p: 1.5,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          py: 2,
+          textAlign: "center",
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "600",
-            textTransform: "capitalize",
-          }}
-        >
+        <Typography variant="h6" sx={{ fontWeight: 600, textTransform: "capitalize" }}>
           View Access
         </Typography>
       </Box>
 
-      {/* Content Section */}
-      <div className="flex-1 overflow-hidden">
-        {/* Reusable AccessView component handles data fetch & display */}
+      {/* Content */}
+      <Box className="flex-1 overflow-auto">
         <AccessView />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

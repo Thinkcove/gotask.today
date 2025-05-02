@@ -1,11 +1,23 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, CircularProgress, Container } from '@mui/material';
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Stack,
+  useMediaQuery,
+  useTheme,
+  TextField,
+} from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
-import { getAccessRoleById, deleteAccessRole } from '../services/accessService';
+import toast from 'react-hot-toast';
+import {
+  getAccessRoleById,
+  getAccessOptions,
+  deleteAccessRole,
+} from '../services/accessService';
 import { AccessRole, AccessOption } from '../interfaces/accessInterfaces';
-import { toast } from 'react-hot-toast';
 import AccessPermissionsContainer from './AccessPermissionsContainer';
 import Button from './Button';
 import AccessHeading from './AccessHeading';
@@ -13,44 +25,51 @@ import AccessHeading from './AccessHeading';
 const AccessView: React.FC = () => {
   const { id } = useParams();
   const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [accessRole, setAccessRole] = useState<AccessRole | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [accessOptions, setAccessOptions] = useState<AccessOption[]>([]);
   const [currentTab, setCurrentTab] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchRole = async () => {
-      setLoading(true);
-      const res = await getAccessRoleById(id as string);
-      if (res.success && res.data) {
-        setAccessRole(res.data);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const roleRes = await getAccessRoleById(id as string);
+        const optionsRes = await getAccessOptions();
 
-        const selectedMap: Record<string, string[]> = {};
-        res.data.application.forEach((app) => {
-          selectedMap[app.access] = app.actions;
-        });
+        if (!roleRes.success || !roleRes.data) {
+          throw new Error(roleRes.message || 'Failed to load role.');
+        }
 
-        // Collect all modules from API and mark selected actions
-        const fullAccessOptions = res.data.application.map((app) => ({
-          access: app.access,
-          actions: app.actions,
-        }));
+        if (!optionsRes.success || !optionsRes.data) {
+          throw new Error(optionsRes.message || 'Failed to load access options.');
+        }
 
-        setAccessOptions(fullAccessOptions);
+        setAccessRole(roleRes.data);
+        setAccessOptions(optionsRes.data);
 
-        if (fullAccessOptions.length) setCurrentTab(fullAccessOptions[0].access);
-      } else {
-        setError(res.message || 'Failed to load access role.');
+        const initialTab =
+          roleRes.data.application?.[0]?.access ||
+          optionsRes.data?.[0]?.access ||
+          '';
+        setCurrentTab(initialTab);
+      } catch (err: any) {
+        setError(err.message || 'Error fetching data.');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    if (id) fetchRole();
+    if (id) fetchData();
   }, [id]);
 
   const handleDelete = async () => {
     if (!accessRole) return;
+
     const confirmed = window.confirm('Are you sure you want to delete this access role?');
     if (!confirmed) return;
 
@@ -58,57 +77,71 @@ const AccessView: React.FC = () => {
       setLoading(true);
       const res = await deleteAccessRole(accessRole.id);
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || 'Role deleted successfully.');
         router.push('/portal/access');
       } else {
         toast.error(res.message || 'Failed to delete role.');
       }
     } catch (err) {
-      toast.error('Error deleting role. Please try again.');
+      toast.error('Unexpected error while deleting.');
     } finally {
       setLoading(false);
     }
   };
 
+  const selectedPermissions = accessRole?.application?.reduce((acc, app) => {
+    acc[app.access] = app.actions;
+    return acc;
+  }, {} as Record<string, string[]>) || {};
+
   if (loading) {
     return (
-      <Container sx={{ py: 4 }}>
-        <Box display="flex" justifyContent="center">
-          <CircularProgress />
-        </Box>
-      </Container>
+      <Box sx={{ width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', m: 0, p: 0 }}>
+        <CircularProgress />
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <Container sx={{ py: 4 }}>
+      <Box sx={{ width: '100%', height: '100vh', p: 2 }}>
         <Typography color="error">{error}</Typography>
-      </Container>
+      </Box>
     );
   }
 
   if (!accessRole) {
     return (
-      <Container sx={{ py: 4 }}>
+      <Box sx={{ width: '100%', height: '100vh', p: 2 }}>
         <Typography>No Access Role Found</Typography>
-      </Container>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Box className="bg-white rounded-xl shadow-md p-6 space-y-6">
-        {/* Header with title and actions */}
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <AccessHeading title={accessRole.name} />
-          <Box display="flex" gap={2}>
-            <Button text="Back" onClick={() => router.back()} />
-            <Button text="Edit" href={`/portal/access/pages/edit/${accessRole.id}`} />
-            <Button text="Delete" onClick={handleDelete} />
-          </Box>
-        </Box>
+    <Box sx={{ width: '100%', height: '100vh', overflow: 'auto', p: 0, m: 0 }}>
+      {/* Header with Back and Actions */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} p={2} flexDirection={isMobile ? 'column' : 'row'} gap={2}>
+        <AccessHeading title={accessRole.name} />
+        <Stack direction={isMobile ? 'column' : 'row'} spacing={1} width={isMobile ? '100%' : 'auto'}>
+          <Button text="Back" onClick={() => router.back()} fullWidth={isMobile} />
+          <Button text="Edit" href={`/portal/access/pages/edit/${accessRole.id}`} fullWidth={isMobile} />
+          <Button text="Delete" onClick={handleDelete} fullWidth={isMobile} />
+        </Stack>
+      </Box>
 
+      {/* Access Name (read-only) */}
+      <Box mb={2} px={2}>
+        <TextField
+          fullWidth
+          label="Access Name"
+          value={accessRole.name}
+          disabled
+        />
+      </Box>
+
+      {/* Permissions Table */}
+      <Box px={2} sx={{ height: 'calc(100vh - 150px)', overflowY: 'auto' }}>
         <Typography variant="h6" gutterBottom>
           Permissions
         </Typography>
@@ -117,16 +150,13 @@ const AccessView: React.FC = () => {
         <AccessPermissionsContainer
           accessOptions={accessOptions}
           currentModule={currentTab}
-          selectedPermissions={accessOptions.reduce((acc, option) => {
-            acc[option.access] = option.actions;
-            return acc;
-          }, {} as Record<string, string[]>)}
+          selectedPermissions={selectedPermissions}
           onTabChange={setCurrentTab}
           onCheckboxChange={() => {}}
-          readOnly // Checkbox won't be editable, but visually enabled
+          readOnly
         />
       </Box>
-    </Container>
+    </Box>
   );
 };
 

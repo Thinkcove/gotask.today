@@ -2,8 +2,11 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 import DashboardLayout from "./components/dashboardLayout";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const page = () => {
+  const transdashboard = useTranslations(LOCALIZATION.TRANSITION.DASHBOARD);
   return (
     <Box>
       <Box
@@ -23,7 +26,7 @@ const page = () => {
             textTransform: "capitalize"
           }}
         >
-          Dashboard
+          {transdashboard("dashboard")}
         </Typography>
       </Box>
       <DashboardLayout />

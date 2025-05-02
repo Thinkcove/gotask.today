@@ -21,6 +21,8 @@ import { fetchAllProjects, fetchAllUsers } from "../../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { SelectOption } from "@/app/component/formField";
 import { FilterValues, TaskFilterType, TaskPayload } from "../../interface/taskInterface";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 // import { useMediaQuery, useTheme } from "@mui/material";
 
 export interface TaskFilterDrawerRef {
@@ -35,6 +37,7 @@ interface TaskFilterDrawerProps {
 
 const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
   ({ open, onClose, onApplyFilters }, ref) => {
+    const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
     const [selectedFilters, setSelectedFilters] = useState<FilterValues>({
       severity: [],
       status: [],
@@ -64,6 +67,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
     // const theme = useTheme();
     // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const toggleCheckbox = (group: keyof FilterValues, value: string) => {
+      
       setSelectedFilters((prev) => {
         const groupValue = prev[group];
         if (Array.isArray(groupValue)) {
@@ -164,7 +168,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
         }}
       >
         <Box sx={{ p: 2 }}>
-          <Typography variant="h6">Filter</Typography>
+          <Typography variant="h6">{transtask("filter")}</Typography>
         </Box>
 
         <Box sx={{ flex: 1, overflowY: "auto" }}>
@@ -182,7 +186,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
                 backgroundColor: expandedPanel === "project_name" ? "#E1D7E0" : "transparent"
               }}
             >
-              <Typography>Filter by Project</Typography>
+              <Typography>{transtask("filterproject")}</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ maxHeight: 150, overflowY: "auto", px: 2 }}>
               {renderCheckboxList(
@@ -206,7 +210,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
                 backgroundColor: expandedPanel === "user_name" ? "#E1D7E0" : "transparent"
               }}
             >
-              <Typography>Filter by User</Typography>
+              <Typography>{transtask("filteruser")}</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ maxHeight: 150, overflowY: "auto", px: 2 }}>
               {renderCheckboxList(
@@ -230,7 +234,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
                 backgroundColor: expandedPanel === "status" ? "#E1D7E0" : "transparent"
               }}
             >
-              <Typography>Filter by Status</Typography>
+              <Typography>{transtask("filterstatus")}</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ maxHeight: 150, overflowY: "auto", px: 2 }}>
               {renderCheckboxList("status", Object.values(TASK_STATUS))}
@@ -251,7 +255,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
                 backgroundColor: expandedPanel === "severity" ? "#E1D7E0" : "transparent"
               }}
             >
-              <Typography>Filter by Severity</Typography>
+              <Typography>{transtask("filterseverity")}</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ maxHeight: 150, overflowY: "auto", px: 2 }}>
               {renderCheckboxList("severity", Object.values(TASK_SEVERITY))}
@@ -272,12 +276,12 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
                 backgroundColor: expandedPanel === "bydate" ? "#E1D7E0" : "transparent"
               }}
             >
-              <Typography>Filter by Due Date</Typography>
+              <Typography>{transtask("filterduedate")}</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ gap: 2, px: 2 }}>
               <Box sx={{ py: 1, display: "flex", flexDirection: "row", gap: 2 }}>
                 <TextField
-                  label="From"
+                  label={transtask("from")}
                   type="date"
                   InputLabelProps={{ shrink: true }}
                   value={selectedFilters.dateFrom}
@@ -286,7 +290,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
                   }
                 />
                 <TextField
-                  label="To"
+                  label={transtask("to")}
                   type="date"
                   InputLabelProps={{ shrink: true }}
                   value={selectedFilters.dateTo}
@@ -312,7 +316,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
                 backgroundColor: expandedPanel === "variation" ? "#E1D7E0" : "transparent"
               }}
             >
-              <Typography>Filter by Variation</Typography>
+              <Typography>{transtask("filtervariation")}</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ display: "flex", flexDirection: "column", gap: 2, px: 2 }}>
               <FormControl component="fieldset">
@@ -325,13 +329,23 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
                     }))
                   }
                 >
-                  <FormControlLabel value="more" control={<Radio />} label="More Variation" />
-                  <FormControlLabel value="less" control={<Radio />} label="Less Variation" />
+                  <FormControlLabel
+                    value="more"
+                    control={<Radio />}
+                    label={transtask("labelmore")}
+                  />
+                  <FormControlLabel
+                    value="less"
+                    control={<Radio />}
+                    label={transtask("labelless")}
+                  />
                 </RadioGroup>
               </FormControl>
               {selectedFilters.variationType && (
                 <Box sx={{ px: 2 }}>
-                  <Typography variant="body2">Days: {selectedFilters.variationDays}d</Typography>
+                  <Typography variant="body2">
+                    {transtask("days")} {selectedFilters.variationDays}d
+                  </Typography>
                   <Slider
                     value={selectedFilters.variationDays}
                     onChange={(_, newValue) =>
@@ -384,7 +398,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
               color: "#741B92"
             }}
           >
-            Cancel
+            {transtask("cancel")}
           </Button>
 
           <Button
@@ -393,7 +407,7 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
             onClick={handleApply}
             sx={{ bgcolor: "#741B92", textTransform: "none" }}
           >
-            Apply Filter
+            {transtask("applyfilter")}
           </Button>
         </Box>
       </Drawer>

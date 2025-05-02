@@ -7,13 +7,15 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import OrganizationInput from "../../components/organizationInputs";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { updateOrganization } from "../../services/organizationAction";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface EditOrganizationProps {
   data: IOrganizationField;
   open: boolean;
   onClose: () => void;
   OrganizationID: string;
-  mutate: KeyedMutator<Organization>;
+  mutate: KeyedMutator<Organization>;  
 }
 
 const EditOrganization: React.FC<EditOrganizationProps> = ({
@@ -23,6 +25,7 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
   OrganizationID,
   mutate
 }) => {
+  const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -42,18 +45,18 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
 
   const handleSubmit = async () => {
     try {
-      const response = await updateOrganization(OrganizationID, formData);
+     await updateOrganization(OrganizationID, formData);
       await mutate();
       setSnackbar({
         open: true,
-        message: response.message,
+        message: transorganization("successupdate"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while updating organization",
+         message: transorganization("errorupdate"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -80,7 +83,7 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
         }}
       ></Box>
 
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Edit Organization">
+      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transorganization("edittitle")}>
         <OrganizationInput
           formData={formData}
           handleChange={handleChange}

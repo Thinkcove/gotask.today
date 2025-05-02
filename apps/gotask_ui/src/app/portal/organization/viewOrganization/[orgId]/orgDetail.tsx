@@ -59,7 +59,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
               <ArrowBack />
             </IconButton>
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-              <Typography variant="h4" fontWeight={700}>
+              <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
                 {org.name}
               </Typography>
 
@@ -119,7 +119,11 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                       <Stack direction="row" spacing={2} alignItems="center">
                         <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
                         <Box>
-                          <Typography fontWeight={600} fontSize="1rem">
+                          <Typography
+                            fontWeight={600}
+                            fontSize="1rem"
+                            sx={{ textTransform: "capitalize" }}
+                          >
                             {user.name}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
@@ -166,7 +170,11 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                     >
                       <Stack direction="row" spacing={2} alignItems="center">
                         <Box>
-                          <Typography fontWeight={600} fontSize="1rem">
+                          <Typography
+                            fontWeight={600}
+                            fontSize="1rem"
+                            sx={{ textTransform: "capitalize" }}
+                          >
                             {project.name}
                           </Typography>
                           <EllipsisText text={project.description} maxWidth={350} />

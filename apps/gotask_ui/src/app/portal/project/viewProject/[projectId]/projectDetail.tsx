@@ -112,7 +112,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             </IconButton>
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography variant="h4" fontWeight={700}>
+                <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
                   {project.name}
                 </Typography>
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
@@ -180,7 +180,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
 
                       <Box>
-                        <Typography fontWeight={600} fontSize="1rem">
+                        <Typography
+                          fontWeight={600}
+                          fontSize="1rem"
+                          sx={{ textTransform: "capitalize" }}
+                        >
                           {user.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">

@@ -59,7 +59,7 @@ const RoleCards: React.FC<RolesCardProps> = ({ roles }) => {
                       key={role.accessDetails[0].id}
                       variant="body2"
                       fontWeight={500}
-                      sx={{ color: "text.secondary", m: 0 }}
+                      sx={{ color: "text.secondary", m: 0, textTransform: "capitalize" }}
                     >
                       • {role.accessDetails[0].name}
                     </Typography>

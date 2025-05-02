@@ -132,7 +132,12 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap">
                 {user.orgDetails?.map((orgId) => (
-                  <Chip key={orgId.id} label={orgId.name} variant="outlined" />
+                  <Chip
+                    key={orgId.id}
+                    label={orgId.name}
+                    variant="outlined"
+                    sx={{ textTransform: "capitalize" }}
+                  />
                 ))}
               </Stack>
             </Grid>

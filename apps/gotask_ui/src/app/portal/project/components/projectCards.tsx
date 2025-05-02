@@ -58,7 +58,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
           <Grid item xs={12} sm={6} md={3} key={project.id}>
             <CardComponent>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
                   {project.name}
                 </Typography>
                 <StatusIndicator status={project.status} getColor={getStatusColor} />

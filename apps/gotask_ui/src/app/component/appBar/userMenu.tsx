@@ -37,7 +37,7 @@ const UserInfoCard: React.FC = ({}) => {
         {/* Role */}
         <Box display="flex" alignItems="center" gap={1} mt={1}>
           <Work sx={{ color: "#999", fontSize: 18 }} />
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ textTransform: "capitalize" }}>
             {user?.roleId?.name}
           </Typography>
         </Box>

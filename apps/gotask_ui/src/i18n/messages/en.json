@@ -100,7 +100,7 @@
         "filteruser": "Filter by User",
         "filterstatus": "Filter by Status",
         "filterseverity": "Filter by Severity",
-        "filterdue_date": "Filter by Due Date",
+        "filterduedate": "Filter by Due Date",
         "filtervariation": "Filter by Variation",
         "applyfilter": "Apply Filter",
         "filter": "Filter",

@@ -11,7 +11,6 @@ const ViewAction: React.FC = () => {
   const { data, mutate } = useSWR(`${env.API_BASE_URL}/roles/${roleId}`, {
     revalidateOnFocus: false
   });
-  console.log("data view ", data);
   const selectedTask = data || null;
 
   return selectedTask ? (

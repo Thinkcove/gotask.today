@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Grid, IconButton, Button, Divider, Stack, Chip } from "@mui/material";
+import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
 import { fetchAllUsers } from "@/app/portal/task/service/taskAction";
@@ -15,6 +15,7 @@ import { getStatusColor } from "@/app/common/constants/task";
 import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import LabelValueText from "@/app/component/text/labelValueText";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 
 interface ProjectDetailProps {
   project: Project;
@@ -107,10 +108,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               <ArrowBack />
             </IconButton>
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-              <Typography variant="h4" fontWeight={700}>
-                {project.name}
-              </Typography>
-
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="h4" fontWeight={700}>
+                  {project.name}
+                </Typography>
+                <StatusIndicator status={project.status} getColor={getStatusColor} />
+              </Box>
               <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
                 <Edit />
               </IconButton>
@@ -128,20 +131,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               <LabelValueText
                 label=" Created on"
                 value={new Date(project.createdAt).toLocaleDateString()}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                Status
-              </Typography>
-              <Chip
-                label={project.status}
-                color="primary"
-                sx={{
-                  backgroundColor: getStatusColor(project.status),
-                  textTransform: "capitalize"
-                }}
-                size="small"
               />
             </Grid>
           </Grid>

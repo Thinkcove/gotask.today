@@ -12,6 +12,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
 import LabelValueText from "@/app/component/text/labelValueText";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 
 interface UserDetailProps {
   user: User;
@@ -162,24 +163,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                     }}
                   >
                     <Stack spacing={1}>
-                      <Typography fontWeight={600} fontSize="1rem">
+                      <Typography variant="h4" fontWeight={700} fontSize="1rem">
                         {project.name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {project.description}
                       </Typography>
-                    </Stack>
-
-                    <Stack direction="row" spacing={1} alignItems="center" mt={2}>
-                      <Chip
-                        label={`Status: ${project.status}`}
-                        size="small"
-                        color="warning"
-                        sx={{
-                          backgroundColor: getStatusColor(project.status),
-                          textTransform: "capitalize"
-                        }}
-                      />
+                      <StatusIndicator status={project.status} getColor={getStatusColor} />
                     </Stack>
                   </Box>
                 </Grid>

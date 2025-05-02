@@ -1,5 +1,5 @@
 import env from "@/app/common/env";
-import { getData, putData } from "@/app/common/utils/apiData";
+import { deleteData, getData, putData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
 import { Role } from "../interfaces/roleInterface";
 
@@ -26,7 +26,6 @@ export const getRoleData = async () => {
   const res = await fetch(`${env.API_BASE_URL}/roles`);
   if (!res.ok) throw new Error("Failed to fetch role");
   const result = await res.json();
-  console.log("result", result);
   return result;
 };
 
@@ -52,4 +51,9 @@ export const fetchAllAccess = () => {
 export const updateRole = async (roleId: string, updatedFields: Role) => {
   const url = `${env.API_BASE_URL}/roles/${roleId}`;
   return await putData(url, updatedFields as unknown as Record<string, unknown>);
+};
+
+//remove a access from a role
+export const removeAccessFromRole = async (roleId: string, accessId: string) => {
+  return await deleteData(`${env.API_BASE_URL}/roleAccess/${roleId}`, { accessId });
 };

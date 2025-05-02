@@ -9,7 +9,7 @@ import RoleCards from "./roleCards";
 
 const RoleList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data, mutate } = useSWR("getRoles", getRoleData);
+  const { data } = useSWR("getRoles", getRoleData);
 
   return (
     <Box

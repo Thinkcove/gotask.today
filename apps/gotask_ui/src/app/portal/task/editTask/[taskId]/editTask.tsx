@@ -172,14 +172,15 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         {data.history && data.history.length > 0 && (
           <Box
             sx={{
+              textDecoration: "underline",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%"
+              gap: 1,
+              color: "#741B92",
+              px: 2
             }}
           >
-            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-              Edit Task
+            <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
+              Show History
             </Typography>
             <History />
           </Box>

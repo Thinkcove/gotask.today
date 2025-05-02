@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation";
 import { Role } from "../interfaces/roleInterface";
 import { Box, CircularProgress, Grid, Stack, Typography } from "@mui/material";
 import CardComponent from "@/app/component/card/cardComponent";
-import { AccountTree, ArrowForward, SupervisorAccount } from "@mui/icons-material"; // <-- New Icon
+import { ArrowForward, SupervisorAccount } from "@mui/icons-material"; // <-- New Icon
 
 interface RolesCardProps {
   roles: Role[] | null;
@@ -35,8 +35,8 @@ const RoleCards: React.FC<RolesCardProps> = ({ roles }) => {
         {roles.map((role: Role) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={role.id}>
             <CardComponent>
-              <Stack spacing={2}>
-                {/* Icon and Role Name */}
+              <Stack spacing={2} sx={{ height: "100%" }}>
+                {/* Top Content */}
                 <Stack direction="row" spacing={2} alignItems="center">
                   <SupervisorAccount sx={{ fontSize: 40, color: "#741B92", mr: 1 }} />
                   <Box>
@@ -45,24 +45,44 @@ const RoleCards: React.FC<RolesCardProps> = ({ roles }) => {
                     </Typography>
                   </Box>
                 </Stack>
-
-                {/* Only Access Names */}
+                {/* Access Details */}
                 {role.accessDetails && role.accessDetails.length > 0 && (
-                  <Stack spacing={0.5}>
-                    {role.accessDetails.map((accessDetail) => (
-                      <Typography
-                        key={accessDetail.id}
-                        variant="body2"
-                        fontWeight={500}
-                        sx={{ color: "text.secondary", ml: 1 }}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      ml: 1
+                    }}
+                  >
+                    <Typography
+                      key={role.accessDetails[0].id}
+                      variant="body2"
+                      fontWeight={500}
+                      sx={{ color: "text.secondary", m: 0 }}
+                    >
+                      • {role.accessDetails[0].name}
+                    </Typography>
+
+                    {role.accessDetails.length > 1 && (
+                      <Box
+                        sx={{
+                          px: 1,
+                          backgroundColor: "#F3E5F5",
+                          color: "#741B92",
+                          fontSize: 12,
+                          fontWeight: 500,
+                          borderRadius: "8px",
+                          lineHeight: "20px"
+                        }}
                       >
-                        • {accessDetail.name}
-                      </Typography>
-                    ))}
-                  </Stack>
+                        +{role.accessDetails.length - 1} more
+                      </Box>
+                    )}
+                  </Box>
                 )}
 
-                {/* View Details Action */}
+                {/* View Details at Bottom */}
                 <Box display="flex" justifyContent="flex-end">
                   <Box
                     sx={{

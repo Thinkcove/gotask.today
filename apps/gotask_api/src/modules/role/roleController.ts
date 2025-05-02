@@ -5,6 +5,7 @@ import {
   deleteRoleService,
   getAllRolesService,
   getRoleByIdService,
+  removeAccessFromRoleService,
   updateRoleService
 } from "./roleService";
 import { roleMessages } from "../../constants/apiMessages/roleMessages";
@@ -65,12 +66,7 @@ class RoleController extends BaseController {
     try {
       const id = requestHelper.getParam("id");
       const updatedData = requestHelper.getPayload();
-
       const result = await updateRoleService(id, updatedData);
-      if (!result.success) {
-        return this.replyError(new Error(result.message || roleMessages.UPDATE.FAILED));
-      }
-
       return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);
@@ -81,13 +77,20 @@ class RoleController extends BaseController {
   async deleteRole(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const result = await deleteRoleService(id);
-
-      if (!result.success) {
-        return this.replyError(new Error(result.message || roleMessages.DELETE.FAILED));
-      }
-
+      await deleteRoleService(id);
       return this.sendSuccess(handler, roleMessages.DELETE.SUCCESS);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Remove Access from Role
+  async removeAccessFromRole(requestHelper: RequestHelper, handler: any) {
+    try {
+      const roleId = requestHelper.getParam("id");
+      const { accessId } = requestHelper.getPayload();
+      const result = await removeAccessFromRoleService(roleId, accessId);
+      return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);
     }

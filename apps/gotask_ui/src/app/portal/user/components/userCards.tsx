@@ -48,9 +48,8 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
         {users.map((user: User) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
             <CardComponent>
-              <Stack spacing={3}>
-                {/* Top Section: Avatar & Name */}
-                {/* Top Section: Avatar, Name & Status */}
+              <Stack spacing={3} sx={{ height: "100%" }}>
+                {/* Header with Name and Status */}
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Stack direction="row" spacing={2} alignItems="center">
                     <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
@@ -89,6 +88,7 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
 
                 <Divider />
 
+                {/* Contact Info */}
                 <Box>
                   {/* Email Info */}
                   <Box display="flex" alignItems="center" mb={0}>
@@ -106,19 +106,34 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
                   {/* Organization Info */}
                   <Box display="flex" alignItems="center" mt={0.5}>
                     <Business sx={{ fontSize: 20, color: "#741B92", mr: 1 }} />
-                    <Box>
+                    <Box display="flex" alignItems="center" flexWrap="wrap">
                       {user.organizations && user.organizations.length > 0 ? (
-                        user.organizations.map((org, index) => (
+                        <>
                           <Typography
-                            key={org.id || index}
                             variant="body2"
                             fontWeight={500}
                             color="text.secondary"
                             sx={{ m: 0 }}
                           >
-                            {org.name}
+                            {user.organizations[0].name}
                           </Typography>
-                        ))
+                          {user.organizations.length > 1 && (
+                            <Box
+                              sx={{
+                                ml: 1,
+                                px: 1,
+                                backgroundColor: "#F3E5F5",
+                                color: "#741B92",
+                                fontSize: 12,
+                                fontWeight: 500,
+                                borderRadius: "8px",
+                                lineHeight: "20px"
+                              }}
+                            >
+                              +{user.organizations.length - 1} more
+                            </Box>
+                          )}
+                        </>
                       ) : (
                         <Typography
                           variant="body2"

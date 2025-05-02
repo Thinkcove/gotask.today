@@ -42,11 +42,16 @@ export const updateRoleInDb = async (
   const role = await Role.findOne({ id: roleId });
   if (!role) return null;
 
-  if (updatedData.name !== undefined) role.name = updatedData.name;
+  if (updatedData.name !== undefined) {
+    role.name = updatedData.name;
+  }
 
-  if (updatedData.accessIds) {
-    const linkedAccesses = await getAccessRecords(updatedData.accessIds);
-    role.access = linkedAccesses;
+  if (updatedData.accessIds && updatedData.accessIds.length > 0) {
+    const newAccesses = await getAccessRecords(updatedData.accessIds);
+
+    // Merge existing access with new, avoiding duplicates
+    const accessSet = new Set([...role.access, ...newAccesses]);
+    role.access = Array.from(accessSet);
   }
 
   return await role.save();
@@ -62,4 +67,20 @@ export const deleteRoleInDb = async (roleId: string): Promise<boolean> => {
 export const findRoleByIds = async (roleIds: string[]): Promise<any[]> => {
   const roleObjectIds = roleIds.map((id) => new mongoose.Types.ObjectId(id));
   return await Role.find({ _id: { $in: roleObjectIds } });
+};
+
+//update a role by their id
+export const updateRoleById = async (
+  id: string,
+  updateData: Partial<IRole>
+): Promise<IRole | null> => {
+  return await Role.findOneAndUpdate({ id }, updateData, { new: true });
+};
+
+//remove access from a role
+export const removeAccess = async (roleId: string, accessId: string): Promise<IRole | null> => {
+  const role = await Role.findOne({ id: roleId });
+  if (!role) return null;
+  role.access = role.access.filter((id: string) => id !== accessId);
+  return await role.save();
 };

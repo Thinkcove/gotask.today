@@ -95,4 +95,16 @@ RoleRoutes.push({
   }
 });
 
+// Remove Access from Role
+RoleRoutes.push({
+  path: `${API_PATHS.DLETE_ROLEACCESS}/{id}`,
+  method: API_METHODS.DELETE,
+  handler: (request: Request, h: ResponseToolkit) =>
+    roleController.removeAccessFromRole(new RequestHelper(request), h),
+  options: {
+    notes: "Remove specific access from a role",
+    tags
+  }
+});
+
 export default RoleRoutes;

@@ -423,8 +423,6 @@ const addTimeSpent = async (
   id: string,
   timeEntries: ITimeSpentEntry | ITimeSpentEntry[]
 ): Promise<{ success: boolean; data?: Partial<ITask>; message?: string }> => {
-  console.log("timeEntries in service", timeEntries);
-
   try {
     const entriesArray = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
 
@@ -441,7 +439,7 @@ const addTimeSpent = async (
         estimated_time: updatedTask.estimated_time,
         remaining_time: updatedTask.remaining_time,
         time_spent_total: updatedTask.time_spent_total,
-        variation: updatedTask.variation 
+        variation: updatedTask.variation
       }
     };
   } catch (error: any) {
@@ -459,6 +457,6 @@ export {
   getTaskById,
   updateTask,
   createComment,
-  updateComment, 
+  updateComment,
   addTimeSpent
 };

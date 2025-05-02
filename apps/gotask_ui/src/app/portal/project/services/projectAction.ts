@@ -69,7 +69,7 @@ export const removeUsersFromProject = async (userIds: string[], projectId: strin
     };
     const url = `${env.API_BASE_URL}/removeUser`;
     return await postData(url, payload);
-  } catch (error) {
+  } catch {
     return {
       message: "failed"
     };

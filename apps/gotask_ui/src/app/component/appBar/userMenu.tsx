@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Divider } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Person, Work, CheckCircle, Cancel } from "@mui/icons-material";
 
 interface UserInfoCardProps {

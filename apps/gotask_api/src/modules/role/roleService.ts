@@ -135,3 +135,22 @@ export const deleteRoleService = async (roleId: string) => {
     return { success: false, message: roleMessages.DELETE.FAILED };
   }
 };
+
+export const removeAccessFromRoleService = async (roleId: string, accessId: string) => {
+  try {
+    const updatedRole = await RoleInterface.removeAccess(roleId, accessId);
+    if (!updatedRole) {
+      return { success: false, message: roleMessages.FETCH.NOT_FOUND };
+    }
+    return {
+      success: true,
+      data: {
+        message: roleMessages.DELETE.ACCESS_DELETE,
+        role: updatedRole
+      }
+    };
+  } catch (error) {
+    console.error("Error in removeAccessFromRoleService:", error);
+    return { success: false, message: roleMessages.UPDATE.FAILED };
+  }
+};

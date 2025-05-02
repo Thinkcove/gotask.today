@@ -7,15 +7,13 @@ import {
   Typography,
   Chip,
   Stack,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  List,
-  ListItem,
-  Button,
-  Tooltip
+  Tooltip,
+  Grid,
+  Card,
+  CardHeader,
+  CardContent
 } from "@mui/material";
-import { Add, ArrowBack, ExpandMore } from "@mui/icons-material";
+import { Add, ArrowBack, Delete } from "@mui/icons-material";
 import { useState } from "react";
 import { KeyedMutator } from "swr";
 import { Role } from "../../interfaces/roleInterface";
@@ -23,7 +21,8 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import FormField from "@/app/component/formField";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import { fetchAllAccess, updateRole } from "../../services/roleAction";
+import { fetchAllAccess, removeAccessFromRole, updateRole } from "../../services/roleAction";
+import { scrollStyles } from "@/app/styles/style";
 
 interface RoleDetailProps {
   role: Role;
@@ -32,6 +31,9 @@ interface RoleDetailProps {
 
 const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
   const [open, setOpen] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
+  const [selectedAccessId, setSelectedAccessId] = useState<string | null>(null);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -46,6 +48,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
   };
 
   const onClose = () => {
+    setSelectedAccessIds([]); // Refresh data
     setOpen(false);
   };
   const [selectedAccessIds, setSelectedAccessIds] = useState<string[]>([]);
@@ -56,7 +59,8 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
         accessIds: selectedAccessIds
       };
       const response = await updateRole(roleID, payload as Role); // Using roleID from useParams
-      await mutate(); // Refresh data
+      await mutate();
+      setSelectedAccessIds([]); // Refresh data
       setSnackbar({
         open: true,
         message: response.message,
@@ -71,6 +75,30 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
       });
     }
   };
+
+  const handleDelete = async () => {
+    if (!selectedAccessId) return;
+    try {
+      const response = await removeAccessFromRole(roleID, selectedAccessId);
+      await mutate(); // Refresh data after successful deletion
+      setOpenDeleteDialog(false);
+      setSelectedAccessId(null); // Clear selection
+
+      setSnackbar({
+        open: true,
+        message: response.message,
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
+    } catch (error) {
+      console.error("Error removing access:", error);
+      setSnackbar({
+        open: true,
+        message: "Error while removing access",
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+    }
+  };
+
   return (
     <>
       <ModuleHeader name="Role Detail View" />
@@ -125,51 +153,94 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
           </Typography>
 
           <Divider sx={{ mb: 3 }} />
-          <Box>
-            {role.accessDetails && role.accessDetails.length > 0 ? (
-              role.accessDetails.map((access) => (
-                <Accordion key={access.id} defaultExpanded sx={{ mb: 2, borderRadius: 2 }}>
-                  <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography variant="h6" fontWeight={400} sx={{ textTransform: "capitalize" }}>
-                      {access.name}
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <List disablePadding>
-                      {access.application.map((app) => (
-                        <ListItem
-                          key={app._id}
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "flex-start",
-                            mb: 2,
-                            bgcolor: "#f4f6f8",
-                            borderRadius: 2,
-                            p: 2
-                          }}
+          <Box
+            sx={{
+              ...scrollStyles
+            }}
+          >
+            <Box>
+              {role.accessDetails && role.accessDetails.length > 0 ? (
+                role.accessDetails.map((access) => (
+                  <Card key={access.id} variant="outlined" sx={{ mb: 4, borderRadius: 3 }}>
+                    <CardHeader
+                      title={
+                        <Typography
+                          variant="h6"
+                          fontWeight={600}
+                          sx={{ textTransform: "capitalize", color: "#222" }}
                         >
-                          <Typography
-                            variant="subtitle1"
-                            fontWeight={500}
-                            sx={{ textTransform: "capitalize" }}
+                          {access.name}
+                        </Typography>
+                      }
+                      action={
+                        <Tooltip title="Delete Access">
+                          <IconButton
+                            onClick={() => {
+                              setSelectedAccessId(access.id);
+                              setOpenDeleteDialog(true);
+                            }}
+                            sx={{
+                              transition: "0.2s ease",
+                              "&:hover": {
+                                transform: "scale(1.1)"
+                              }
+                            }}
+                            size="small"
+                            color="error"
                           >
-                            {app.access}
-                          </Typography>
-                          <Stack direction="row" spacing={1} flexWrap="wrap" mt={1}>
-                            {app.actions.map((action) => (
-                              <Chip key={action} label={action} color="secondary" size="small" />
-                            ))}
-                          </Stack>
-                        </ListItem>
-                      ))}
-                    </List>
-                  </AccordionDetails>
-                </Accordion>
-              ))
-            ) : (
-              <Typography>No Access Details Available</Typography>
-            )}
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                      }
+                      sx={{ pb: 0 }}
+                    />
+
+                    <CardContent sx={{ pt: 1 }}>
+                      <Divider sx={{ mb: 2 }} />
+                      <Grid container spacing={3}>
+                        {access.application.map((app) => (
+                          <Grid item xs={12} sm={6} md={4} key={app._id}>
+                            <Box
+                              sx={{
+                                p: 2,
+                                borderRadius: 2,
+                                bgcolor: "#fafafa",
+                                height: "100%",
+                                transition: "all 0.3s ease",
+                                border: "1px solid #eeee"
+                              }}
+                            >
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight={600}
+                                sx={{ textTransform: "capitalize", mb: 1, color: "#555" }}
+                              >
+                                {app.access}
+                              </Typography>
+                              <Stack direction="row" spacing={1} flexWrap="wrap">
+                                {app.actions.map((action) => (
+                                  <Chip
+                                    key={action}
+                                    label={action}
+                                    color="primary"
+                                    size="small"
+                                    variant="outlined"
+                                  />
+                                ))}
+                              </Stack>
+                            </Box>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <Typography color="text.secondary" sx={{ mt: 2 }}>
+                  No Access Details Available
+                </Typography>
+              )}
+            </Box>
           </Box>
         </Box>
 
@@ -188,6 +259,20 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
             value={selectedAccessIds} // This is an array of user IDs: ["123", "456"]
             onChange={(ids) => setSelectedAccessIds(ids as string[])}
           />
+        </CommonDialog>
+
+        <CommonDialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+          onSubmit={handleDelete}
+          title="Delete Access"
+          submitLabel="Delete"
+        >
+          <Typography>
+            Are you sure you want to remove this access from the role?
+            <br />
+            This will revoke the permissions granted by this access.
+          </Typography>
         </CommonDialog>
         <CustomSnackbar
           open={snackbar.open}

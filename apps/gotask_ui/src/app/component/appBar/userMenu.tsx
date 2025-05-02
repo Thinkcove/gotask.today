@@ -1,22 +1,16 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { Person, Work, CheckCircle, Cancel } from "@mui/icons-material";
+import { useUser } from "@/app/userContext";
 
-interface UserInfoCardProps {
-  user: {
-    id?: string;
-    name?: string;
-    roleId: {
-      id: string;
-      name: string;
-    };
-    status?: boolean;
-  } | null;
-}
+const UserInfoCard: React.FC = ({}) => {
+  const { user, logout } = useUser();
 
-const UserInfoCard: React.FC<UserInfoCardProps> = ({ user }) => {
   if (!user) return null;
 
+  const handleLogout = () => {
+    logout();
+  };
   return (
     <>
       <Box
@@ -65,10 +59,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user }) => {
       <Box sx={{ px: 1.5, pb: 2 }}>
         <Box
           component="button"
-          onClick={() => {
-            // You can replace this with props.handleLogout if needed
-            console.log("Logout clicked");
-          }}
+          onClick={handleLogout}
           sx={{
             width: "100%",
             backgroundColor: "#741B92",

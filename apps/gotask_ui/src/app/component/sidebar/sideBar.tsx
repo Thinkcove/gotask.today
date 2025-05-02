@@ -24,7 +24,6 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import menuItemsData from "./menuItems.json";
 import { useRouter, usePathname } from "next/navigation";
 import { Theme } from "@mui/material/styles";
-import { useUser } from "@/app/userContext";
 import UserInfoCard from "../appBar/userMenu";
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -57,7 +56,6 @@ const Sidebar: React.FC = () => {
   const toggleSidebar = () => {
     setOpen(!open);
   };
-  const { user } = useUser();
 
   return (
     <>
@@ -176,7 +174,7 @@ const Sidebar: React.FC = () => {
 
           {/* Push the UserInfoCard to the bottom */}
           <Box sx={{ marginTop: "auto" }}>
-            <UserInfoCard user={user} />
+            <UserInfoCard />
           </Box>
         </div>
       </Drawer>

@@ -1,7 +1,7 @@
 import env from "@/app/common/env";
-import { deleteData, getData, putData } from "@/app/common/utils/apiData";
+import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
-import { Role } from "../interfaces/roleInterface";
+import { IRole, Role } from "../interfaces/roleInterface";
 
 //fetch all users
 const fetchRole = async () => {
@@ -56,4 +56,10 @@ export const updateRole = async (roleId: string, updatedFields: Role) => {
 //remove a access from a role
 export const removeAccessFromRole = async (roleId: string, accessId: string) => {
   return await deleteData(`${env.API_BASE_URL}/roleAccess/${roleId}`, { accessId });
+};
+
+//createROle
+export const createRole = async (formData: IRole) => {
+  const url = `${env.API_BASE_URL}/roles`;
+  return await postData(url, formData as unknown as Record<string, unknown>);
 };

@@ -20,3 +20,8 @@ export interface Application {
   actions: string[];
   _id: string;
 }
+
+export interface IRole {
+  name: string;
+  accessIds: string[];
+}

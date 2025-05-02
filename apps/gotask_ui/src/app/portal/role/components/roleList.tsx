@@ -6,10 +6,11 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import useSWR from "swr";
 import { getRoleData } from "../services/roleAction";
 import RoleCards from "./roleCards";
+import CreateRole from "./createRole";
 
 const RoleList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data } = useSWR("getRoles", getRoleData);
+  const { data, mutate } = useSWR("getRoles", getRoleData);
 
   return (
     <Box
@@ -20,11 +21,7 @@ const RoleList = () => {
         maxHeight: "calc(100vh - 100px)"
       }}
     >
-      {/* <CreateOrganization
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        mutate={mutate}
-      /> */}
+      <CreateRole open={isModalOpen} onClose={() => setIsModalOpen(false)} mutate={mutate} />
 
       <RoleCards roles={data} />
 

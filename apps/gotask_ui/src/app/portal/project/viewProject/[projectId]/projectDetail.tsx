@@ -14,6 +14,8 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
 import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 
@@ -23,6 +25,7 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
@@ -53,7 +56,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while adding assignee",
+        message: transproject("erroradd"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -77,7 +80,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while removing assignee",
+        message: transproject("errorremove"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -85,7 +88,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
 
   return (
     <>
-      <ModuleHeader name="Project Detail View" />
+      <ModuleHeader name={transproject("detailview")} />
       <Box
         sx={{
           minHeight: "100vh",
@@ -123,13 +126,16 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Basic Details */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
-              <LabelValueText label="Description" value={project.description} />
+              <LabelValueText
+                label={transproject("detaildescription")}
+                value={project.description}
+              />
             </Grid>
           </Grid>
           <Grid container spacing={2} mb={2}>
             <Grid item xs={12} md={6}>
               <LabelValueText
-                label=" Created on"
+                label={transproject("detailcreatedon")}
                 value={new Date(project.createdAt).toLocaleDateString()}
               />
             </Grid>
@@ -140,7 +146,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Assignees Section */}
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h5" fontWeight={600}>
-              Assignees
+              {transproject("detailassignee")}
             </Typography>
             <Button
               variant="contained"
@@ -150,7 +156,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 borderRadius: 2
               }}
             >
-              Add Assignee
+              {transproject("detailaddassignee")}
             </Button>
           </Box>
 
@@ -203,7 +209,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               ))
             ) : (
               <Grid item xs={12}>
-                <Typography color="text.secondary">No users assigned yet.</Typography>
+                <Typography color="text.secondary">{transproject("detailnouser")}</Typography>
               </Grid>
             )}
           </Grid>
@@ -213,13 +219,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           open={open}
           onClose={onClose}
           onSubmit={handleAddUser}
-          title="Add Assignee"
-          submitLabel=" Add User"
+          title={transproject("addassignetitle")}
+          submitLabel={transproject("addusertitle")}
         >
           <FormField
-            label="Assignees"
+            label={transproject("labelassignee")}
             type="multiselect"
-            placeholder="Select users"
+            placeholder={transproject("placeholdeselect")}
             options={getAllUsers}
             value={selectedUserIds} // This is an array of user IDs: ["123", "456"]
             onChange={(ids) => setSelectedUserIds(ids as string[])}
@@ -236,15 +242,15 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
           onSubmit={handleDelete}
-          title="Delete User"
-          submitLabel="Delete"
+          title={transproject("titledelete")}
+          submitLabel={transproject("labeldelete")}
         >
           <Typography>
-            Are you sure you want to remove this user from the project?
+            {transproject("removeuserconfirmation")}
             <br />
-            This action will unassign the user, but will not delete their account.
+            {transproject("removeusernote1")}
             <br />
-            You can reassign them anytime later if needed.
+            {transproject("removeusernote2")}
           </Typography>
         </CommonDialog>
         <CustomSnackbar

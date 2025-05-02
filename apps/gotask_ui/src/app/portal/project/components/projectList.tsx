@@ -7,8 +7,11 @@ import ProjectCards from "./projectCards";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { fetcher } from "../services/projectAction";
 import useSWR from "swr";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const ProjectList = () => {
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: projects, error, mutate: ProjectUpdate } = useSWR("fetch-projects", fetcher);
 
@@ -31,7 +34,7 @@ const ProjectList = () => {
 
       {/* Add Task Button */}
       <ActionButton
-        label="Create New Projet"
+        label={transproject("createnewproject")}
         icon={<AddIcon sx={{ color: "white" }} />}
         onClick={() => setIsModalOpen(true)}
       />

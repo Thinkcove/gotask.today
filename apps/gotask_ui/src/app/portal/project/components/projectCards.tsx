@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import CardComponent from "@/app/component/card/cardComponent";
 import { Project } from "../interfaces/projectInterface";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 
@@ -16,13 +18,14 @@ interface ProjectCardProps {
 
 const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
   const router = useRouter();
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   // Handle error
   if (error) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="error">
-          Error loading projects: {error.message || "Unknown error"}
+          {transproject("errorloading")} {error.message || "Unknown error"}
         </Typography>
       </Box>
     );
@@ -42,7 +45,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="text.secondary">
-          No projects available.
+          {transproject("noprojects")}
         </Typography>
       </Box>
     );
@@ -78,7 +81,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
                       .map((user, index) => <AlphabetAvatar userName={user.name} key={index} />)
                   ) : (
                     <Typography variant="body2" color="text.secondary">
-                      No users assigned
+                      {transproject("nouser")}
                     </Typography>
                   )}
 
@@ -120,7 +123,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
                   }}
                 >
                   <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                    View Details
+                    {transproject("viewdetails")}
                   </Typography>
                   <ArrowForward fontSize="small" />
                 </Box>

@@ -3,8 +3,11 @@ import { Box, Grid, Typography } from "@mui/material";
 import ProjectStatus from "./statusDetails/projectStatus";
 import TaskStatus from "./statusDetails/taskStatus";
 import { useUser } from "@/app/userContext";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const DashboardLayout = () => {
+  const transdashboard = useTranslations(LOCALIZATION.TRANSITION.DASHBOARD);
   const { user } = useUser(); // Use the user from context
 
   return (
@@ -40,7 +43,7 @@ const DashboardLayout = () => {
           color: "#2A1237"
         }}
       >
-        Dashboard Overview
+        {transdashboard("overview")}
       </Typography>
 
       {/* Dashboard Content */}

@@ -4,6 +4,8 @@ import { Grid } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { IProjectField, PROJECT_WORKFLOW } from "../interfaces/projectInterface";
 import { fetchAllOrganizations } from "../../organization/services/organizationAction";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface IProjectInputProps {
   formData: IProjectField;
@@ -18,6 +20,7 @@ const ProjectInput = ({
   readOnlyFields = [],
   handleChange
 }: IProjectInputProps) => {
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const currentStatus = formData.status;
   const allowedStatuses = PROJECT_WORKFLOW[currentStatus] || [];
   const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
@@ -28,36 +31,36 @@ const ProjectInput = ({
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <FormField
-          label="Project Name"
+          label={transproject("labelname")}
           type="text"
           value={formData.name}
           onChange={(value) => handleChange("name", String(value))}
           required
           error={errors?.name}
           disabled={isReadOnly("name")}
-          placeholder="Enter project name"
+          placeholder={transproject("placeholdername")}
         />
       </Grid>
       <Grid item xs={12}>
         <FormField
-          label="Description"
+          label={transproject("labeldescription")}
           type="text"
           value={formData.description}
           onChange={(value) => handleChange("description", String(value))}
           required
           error={errors?.description}
           disabled={isReadOnly("description")}
-          placeholder="Enter project description"
+          placeholder={transproject("placeholderdescription")}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         <FormField
-          label="Status"
+          label={transproject("labelstatus")}
           type="select"
           options={uniqueStatuses.map((s) => s.toUpperCase())}
           required
           error={errors?.status}
-          placeholder="Select project status"
+          placeholder={transproject("placeholderstatus")}
           value={currentStatus.toUpperCase()}
           disabled={isReadOnly("status")}
           onChange={(value) => handleChange("status", String(value).toLowerCase())}
@@ -65,14 +68,14 @@ const ProjectInput = ({
       </Grid>
       <Grid item xs={12} sm={6}>
         <FormField
-          label="Organization"
+          label={transproject("labelorganization")}
           type="select"
           value={formData.organization_id}
           onChange={(value) => handleChange("organization_id", String(value))}
           options={getOrganizations}
           required
           disabled={isReadOnly("organization_id")}
-          placeholder="Select organization"
+          placeholder={transproject("placeholderorganization")}
         />
       </Grid>
     </Grid>

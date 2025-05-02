@@ -6,6 +6,8 @@ import { Organization } from "../interfaces/organizatioinInterface";
 import CardComponent from "@/app/component/card/cardComponent";
 import { ArrowForward, Business } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
 
 interface OrganizationCardProps {
@@ -13,6 +15,7 @@ interface OrganizationCardProps {
 }
 
 const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) => {
+  const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const router = useRouter();
   if (!organizations) {
     return (
@@ -26,7 +29,7 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="text.secondary">
-          No organizations available.
+          {transorganization("noorganizations")}
         </Typography>
       </Box>
     );
@@ -82,7 +85,7 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
                     }}
                   >
                     <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                      View Details
+                      {transorganization("viewdetails")}
                     </Typography>
                     <ArrowForward fontSize="small" />
                   </Box>

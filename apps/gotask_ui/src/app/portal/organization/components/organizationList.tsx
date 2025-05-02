@@ -7,8 +7,11 @@ import useSWR from "swr";
 import OrganizationCards from "./organizationCards";
 import { getOrganizationData } from "../services/organizationAction";
 import CreateOrganization from "./createOrganization";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const OrganizationList = () => {
+  const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data, mutate } = useSWR("getOrganizations", getOrganizationData);
 
@@ -31,7 +34,7 @@ const OrganizationList = () => {
 
       {/* Add Task Button */}
       <ActionButton
-        label="Create New Organization"
+        label={transorganization("createnew")}
         icon={<AddIcon sx={{ color: "white" }} />}
         onClick={() => setIsModalOpen(true)}
       />

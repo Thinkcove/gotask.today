@@ -7,6 +7,8 @@ import { updateProject } from "../../services/projectAction";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface EditProjectProps {
   data: IProjectField;
@@ -17,6 +19,7 @@ interface EditProjectProps {
 }
 
 const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectID, mutate }) => {
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -39,15 +42,15 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
       await mutate();
       setSnackbar({
         open: true,
-        message: "Project updated successfully!",
+        message:transproject("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while updating project",
-        severity: SNACKBAR_SEVERITY.ERROR
+        message: transproject("updateerror"),
+        severity: SNACKBAR_SEVERITY.ERROR 
       });
     }
   };
@@ -73,7 +76,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
         }}
       ></Box>
 
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Edit Project">
+      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transproject("edittitle")}>
         <ProjectInput formData={formData} handleChange={handleChange} readOnlyFields={["name"]} />
       </CommonDialog>
       <CustomSnackbar

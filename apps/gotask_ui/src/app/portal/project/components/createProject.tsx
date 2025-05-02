@@ -7,6 +7,8 @@ import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface CreateProjectProps {
   open: boolean;
@@ -22,6 +24,7 @@ const initialFormState: IProjectField = {
 };
 
 const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
+  const transproject =  useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -33,9 +36,9 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name = "Project Title is required";
-    if (!formData.description) newErrors.description = "Description is required";
-    if (!formData.status) newErrors.status = "Status is required";
+    if (!formData.name) newErrors.name = transproject("Projecttitle");
+    if (!formData.description) newErrors.description = transproject("description");
+    if (!formData.status) newErrors.status = transproject("status");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -52,14 +55,14 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
       await mutate();
       setSnackbar({
         open: true,
-        message: "Project created successfully!",
+        message: transproject("errormessage"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while creating project",
+        message: transproject("successmessage"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -71,7 +74,7 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
         open={open}
         onClose={onClose}
         onSubmit={handleSubmit}
-        title="Create New Project"
+        title={transproject("createnew")}
       >
         <ProjectInput formData={formData} handleChange={handleChange} errors={errors} />
       </CommonDialog>

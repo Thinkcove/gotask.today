@@ -5,8 +5,11 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { BackgroundContainer, LoginCard, StyledButton, StyledTextField } from "./style";
 import { useUser } from "../userContext";
 import env from "../common/env";
+import { LOCALIZATION } from "../common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const LoginForm = () => {
+  const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
   const { setUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +37,8 @@ const LoginForm = () => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Both fields are required");
+      // setError("Both fields are required");
+      setError(translogin("seterror"));
       return;
     }
     setError("");
@@ -59,14 +63,14 @@ const LoginForm = () => {
     <BackgroundContainer>
       <LoginCard>
         <Typography variant="h4" gutterBottom style={{ fontWeight: "bold" }}>
-          Go Task Today
+          {translogin("gotask")}
         </Typography>
         <Typography variant="subtitle1" gutterBottom>
-          "Work smarter, own your time."
+          {translogin("worksmarter")}
         </Typography>
         <StyledTextField
           fullWidth
-          label="Email"
+          label={translogin("labelemail")}
           variant="outlined"
           margin="normal"
           value={email || ""}
@@ -74,10 +78,9 @@ const LoginForm = () => {
           id="email-input"
           InputProps={{ sx: { height: 56 } }}
         />
-
         <StyledTextField
           fullWidth
-          label="Password"
+          label={translogin("labelpassword")}
           type={showPassword ? "password" : "text"} // Toggle between text & password
           variant="outlined"
           margin="normal"
@@ -94,7 +97,6 @@ const LoginForm = () => {
             )
           }}
         />
-
         {error && <Typography color="error">{error}</Typography>}
         <StyledButton fullWidth variant="contained" onClick={handleLogin} disabled={loading}>
           {loading ? "Logging in..." : "Login"}

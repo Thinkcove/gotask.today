@@ -8,6 +8,8 @@ import { useState } from "react";
 import { getStatusColor } from "@/app/common/constants/task";
 import EditOrganization from "./editOrganization";
 import { KeyedMutator } from "swr";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface OrgDetailProps {
   org: Organization;
@@ -15,6 +17,7 @@ interface OrgDetailProps {
 }
 
 const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
+  const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const router = useRouter();
   const { orgId } = useParams();
   const orgID = orgId as string;
@@ -31,7 +34,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
 
   return (
     <>
-      <ModuleHeader name="Organization Detail View" />
+      <ModuleHeader name={transorganization("detailview")} />
       <Box
         sx={{
           minHeight: "100vh",
@@ -63,43 +66,39 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
               </IconButton>
             </Box>
           </Box>
-
           {/* Basic Details */}
           <Grid container spacing={2} mb={2}>
             <Grid item xs={12} md={6}>
               <Typography variant="subtitle2" color="text.secondary">
-                Address
+                {transorganization("detailaddress")}
               </Typography>
               <Typography variant="body1">{org.address}</Typography>
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="subtitle2" color="text.secondary">
-                Email ID
+                {transorganization("detailemail")}
               </Typography>
               <Typography variant="body1">{org.mail_id}</Typography>
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="subtitle2" color="text.secondary">
-                Created on:
+                {transorganization("detailcreatedon")}
               </Typography>
               <Typography variant="body1">
                 {new Date(org?.createdAt).toLocaleDateString()}
               </Typography>
             </Grid>
           </Grid>
-
           <Divider sx={{ mb: 1 }} />
-
           <Tabs
             value={activeTab}
             onChange={handleTabChange}
             variant="fullWidth"
             sx={{ mb: 4, width: "100%" }}
           >
-            <Tab label="Resources" />
-            <Tab label="Projects List" />
+            <Tab label={transorganization("labelresource")} />
+            <Tab label={transorganization("labelProjectsList")} />
           </Tabs>
-
           {/* Users Tab */}
           {activeTab === 0 && (
             <Grid container spacing={3} sx={{ maxHeight: "300px", overflowY: "auto" }}>
@@ -142,7 +141,10 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                 ))
               ) : (
                 <Grid item xs={12}>
-                  <Typography color="text.secondary">No users yet.</Typography>
+                  <Typography color="text.secondary">
+                    {" "}
+                    {transorganization("nousers")}
+                  </Typography>
                 </Grid>
               )}
             </Grid>
@@ -213,7 +215,9 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                 ))
               ) : (
                 <Grid item xs={12}>
-                  <Typography color="text.secondary">No projects yet.</Typography>
+                  <Typography color="text.secondary">
+                    {transorganization("projectsyet")}
+                  </Typography>
                 </Grid>
               )}
             </Grid>

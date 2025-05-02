@@ -2,8 +2,11 @@ import React from "react";
 import { Box, Grid, Typography } from "@mui/material";
 import ProjectStatus from "./statusDetails/projectStatus";
 import TaskStatus from "./statusDetails/taskStatus";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const DashboardLayout = () => {
+  const transdashboard = useTranslations(LOCALIZATION.TRANSITION.DASHBOARD);
   return (
     <Box
       sx={{
@@ -21,7 +24,7 @@ const DashboardLayout = () => {
           color: "#2A1237"
         }}
       >
-        Dashboard Overview
+        {transdashboard("overview")}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>

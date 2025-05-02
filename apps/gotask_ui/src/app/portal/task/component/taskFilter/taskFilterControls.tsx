@@ -2,6 +2,8 @@
 import React from "react";
 import { Button, Box } from "@mui/material";
 import { FilterAltOutlined } from "@mui/icons-material";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface TaskFilterControlsProps {
   activeFilterCount: number;
@@ -16,6 +18,7 @@ const TaskFilterControls: React.FC<TaskFilterControlsProps> = ({
   onClearAll,
   onOpenFilter
 }) => {
+   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
     <Box sx={{ display: "flex", justifyContent: "flex-end", pr: 3, gap: 2 }}>
       {activeFilterCount > 0 && isFiltered && (
@@ -29,7 +32,7 @@ const TaskFilterControls: React.FC<TaskFilterControlsProps> = ({
             color: "#741B92"
           }}
         >
-          Clear All
+          {transtask("clearall")}
         </Button>
       )}
       <Button
@@ -43,7 +46,8 @@ const TaskFilterControls: React.FC<TaskFilterControlsProps> = ({
           "&:hover": { bgcolor: "#5e1574" }
         }}
       >
-        Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+        {transtask("filters")}
+        {activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
       </Button>
     </Box>
   );

@@ -1,5 +1,7 @@
 import React from "react";
 import { Box, Typography, Switch } from "@mui/material";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface TaskToggleProps {
   view: "projects" | "users";
@@ -7,12 +9,13 @@ interface TaskToggleProps {
 }
 
 const TaskToggle: React.FC<TaskToggleProps> = ({ view, setView }) => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center">
       <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
         <Box display="flex" alignItems="center" gap={0.5}>
           <Typography fontWeight="bold" color="#333">
-            {view === "projects" ? "Projects" : "Assignees"}
+            {view === "projects" ? transtask("projects") : transtask("assignees")}
           </Typography>
           <Switch
             checked={view === "users"}

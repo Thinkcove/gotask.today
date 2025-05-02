@@ -7,6 +7,8 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { IOrganizationField, Organization } from "../interfaces/organizatioinInterface";
 import { KeyedMutator } from "swr";
 import { createOrganization } from "../services/organizationAction";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface CreateOrgProps {
   open: boolean;
@@ -22,6 +24,7 @@ const initialFormState: IOrganizationField = {
   users: []
 };
 const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
+  const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -33,9 +36,9 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name = "Organization Name is required";
-    if (!formData.mail_id) newErrors.mail_id = "Mail id is required";
-    if (!formData.address) newErrors.address = "Address is required";
+    if (!formData.name) newErrors.name =  transorganization("errorName");
+    if (!formData.mail_id) newErrors.mail_id = transorganization("errorMail");
+    if (!formData.address) newErrors.address = transorganization("errorAddress");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -51,14 +54,14 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
       await mutate();
       setSnackbar({
         open: true,
-        message: "Organization created successfully!",
+        message: transorganization("successCreate"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
-    } catch {
+    } catch { 
       setSnackbar({
         open: true,
-        message: "Error while creating Organization",
+        message: transorganization("errorCreate"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -69,7 +72,7 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
         open={open}
         onClose={onClose}
         onSubmit={handleSubmit}
-        title="Create New Organization"
+        title={transorganization("createTitle")}
       >
         <OrganizationInput formData={formData} handleChange={handleChange} errors={errors} />
       </CommonDialog>

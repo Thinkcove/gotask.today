@@ -30,42 +30,33 @@ interface RoleDetailProps {
 }
 
 const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
-  const [open, setOpen] = useState<boolean>(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
-  const [selectedAccessId, setSelectedAccessId] = useState<string | null>(null);
+  const router = useRouter();
+  const { roleId } = useParams();
+  const roleID = roleId as string;
+  const { getAllAccess } = fetchAllAccess();
 
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedAccessIds, setSelectedAccessIds] = useState<string[]>([]);
+  const [selectedAccessId, setSelectedAccessId] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-  const router = useRouter();
-  const { roleId } = useParams();
-  const roleID = roleId as string;
-  const { getAllAccess } = fetchAllAccess();
-  const handleBack = () => {
-    setTimeout(() => router.back(), 200);
-  };
 
-  const onClose = () => {
-    setSelectedAccessIds([]); // Refresh data
-    setOpen(false);
-  };
-  const [selectedAccessIds, setSelectedAccessIds] = useState<string[]>([]);
+  const handleBack = () => setTimeout(() => router.back(), 200);
+
   const handleAddAccess = async () => {
-    setOpen(false);
+    setOpenAddDialog(false);
     try {
       const payload = {
         accessIds: selectedAccessIds
       };
-      const response = await updateRole(roleID, payload as Role); // Using roleID from useParams
+      const response = await updateRole(roleID, payload as Role);
       await mutate();
-      setSelectedAccessIds([]); // Refresh data
-      setSnackbar({
-        open: true,
-        message: response.message,
-        severity: SNACKBAR_SEVERITY.SUCCESS
-      });
+      setSelectedAccessIds([]);
+      setSnackbar({ open: true, message: response.message, severity: SNACKBAR_SEVERITY.SUCCESS });
     } catch (error) {
       console.error("Error updating access:", error);
       setSnackbar({
@@ -80,15 +71,10 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
     if (!selectedAccessId) return;
     try {
       const response = await removeAccessFromRole(roleID, selectedAccessId);
-      await mutate(); // Refresh data after successful deletion
+      await mutate();
       setOpenDeleteDialog(false);
-      setSelectedAccessId(null); // Clear selection
-
-      setSnackbar({
-        open: true,
-        message: response.message,
-        severity: SNACKBAR_SEVERITY.SUCCESS
-      });
+      setSelectedAccessId(null);
+      setSnackbar({ open: true, message: response.message, severity: SNACKBAR_SEVERITY.SUCCESS });
     } catch (error) {
       console.error("Error removing access:", error);
       setSnackbar({
@@ -109,16 +95,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
       >
-        {/* Main Card */}
-        <Box
-          sx={{
-            borderRadius: 4,
-            p: 4,
-            bgcolor: "#f9fafb",
-            border: "1px solid #e0e0e0"
-          }}
-        >
-          {/* Header */}
+        <Box sx={{ borderRadius: 4, p: 4, bgcolor: "#f9fafb", border: "1px solid #e0e0e0" }}>
           <Box display="flex" alignItems="center" mb={3}>
             <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
               <ArrowBack />
@@ -129,14 +106,8 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
               </Typography>
               <Tooltip title="Add Access">
                 <IconButton
-                  onClick={() => setOpen(true)}
-                  sx={{
-                    textTransform: "none",
-                    backgroundColor: "#741B92",
-                    "&:hover": {
-                      backgroundColor: "#741B92"
-                    }
-                  }}
+                  onClick={() => setOpenAddDialog(true)}
+                  sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#741B92" } }}
                 >
                   <Add sx={{ color: "white" }} />
                 </IconButton>
@@ -144,109 +115,100 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
             </Box>
           </Box>
 
-          {/* Role Access Section */}
           <Typography variant="h6" fontWeight={200}>
             Access Details for this Role
           </Typography>
           <Typography variant="body2" color="textSecondary" mb={2}>
             Below are the areas and actions that this role has access to.
           </Typography>
-
           <Divider sx={{ mb: 3 }} />
-          <Box
-            sx={{
-              ...scrollStyles
-            }}
-          >
-            <Box>
-              {role.accessDetails && role.accessDetails.length > 0 ? (
-                role.accessDetails.map((access) => (
-                  <Card key={access.id} variant="outlined" sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardHeader
-                      title={
-                        <Typography
-                          variant="h6"
-                          fontWeight={600}
-                          sx={{ textTransform: "capitalize", color: "#222" }}
-                        >
-                          {access.name}
-                        </Typography>
-                      }
-                      action={
-                        <Tooltip title="Delete Access">
-                          <IconButton
-                            onClick={() => {
-                              setSelectedAccessId(access.id);
-                              setOpenDeleteDialog(true);
-                            }}
-                            sx={{
-                              transition: "0.2s ease",
-                              "&:hover": {
-                                transform: "scale(1.1)"
-                              }
-                            }}
-                            size="small"
-                            color="error"
-                          >
-                            <Delete />
-                          </IconButton>
-                        </Tooltip>
-                      }
-                      sx={{ pb: 0 }}
-                    />
 
-                    <CardContent sx={{ pt: 1 }}>
-                      <Divider sx={{ mb: 2 }} />
-                      <Grid container spacing={3}>
-                        {access.application.map((app) => (
-                          <Grid item xs={12} sm={6} md={4} key={app._id}>
-                            <Box
-                              sx={{
-                                p: 2,
-                                borderRadius: 2,
-                                bgcolor: "#fafafa",
-                                height: "100%",
-                                transition: "all 0.3s ease",
-                                border: "1px solid #eeee"
-                              }}
+          <Box sx={{ ...scrollStyles }}>
+            {role.accessDetails?.length ? (
+              role.accessDetails.map((access) => (
+                <Card key={access.id} variant="outlined" sx={{ mb: 4, borderRadius: 3 }}>
+                  <CardHeader
+                    title={
+                      <Typography
+                        variant="h6"
+                        fontWeight={600}
+                        sx={{ textTransform: "capitalize", color: "#222" }}
+                      >
+                        {access.name}
+                      </Typography>
+                    }
+                    action={
+                      <Tooltip title="Delete Access">
+                        <IconButton
+                          onClick={() => {
+                            setSelectedAccessId(access.id);
+                            setOpenDeleteDialog(true);
+                          }}
+                          sx={{ transition: "0.2s ease", "&:hover": { transform: "scale(1.1)" } }}
+                          size="small"
+                          color="error"
+                        >
+                          <Delete />
+                        </IconButton>
+                      </Tooltip>
+                    }
+                    sx={{ pb: 0 }}
+                  />
+                  <CardContent sx={{ pt: 1 }}>
+                    <Divider sx={{ mb: 2 }} />
+                    <Grid container spacing={3}>
+                      {access.application.map((app) => (
+                        <Grid item xs={12} sm={6} md={4} key={app._id}>
+                          <Box
+                            sx={{
+                              p: 2,
+                              borderRadius: 2,
+                              bgcolor: "#fafafa",
+                              height: "100%",
+                              border: "1px solid #eeee",
+                              transition: "all 0.3s ease"
+                            }}
+                          >
+                            <Typography
+                              variant="subtitle1"
+                              fontWeight={600}
+                              sx={{ textTransform: "capitalize", mb: 1, color: "#555" }}
                             >
-                              <Typography
-                                variant="subtitle1"
-                                fontWeight={600}
-                                sx={{ textTransform: "capitalize", mb: 1, color: "#555" }}
-                              >
-                                {app.access}
-                              </Typography>
-                              <Stack direction="row" spacing={1} flexWrap="wrap">
-                                {app.actions.map((action) => (
-                                  <Chip
-                                    key={action}
-                                    label={action}
-                                    color="primary"
-                                    size="small"
-                                    variant="outlined"
-                                  />
-                                ))}
-                              </Stack>
-                            </Box>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                <Typography color="text.secondary" sx={{ mt: 2 }}>
-                  No Access Details Available
-                </Typography>
-              )}
-            </Box>
+                              {app.access}
+                            </Typography>
+                            <Stack direction="row" spacing={1} flexWrap="wrap">
+                              {app.actions.map((action) => (
+                                <Chip
+                                  key={action}
+                                  label={action}
+                                  color="primary"
+                                  size="small"
+                                  variant="outlined"
+                                />
+                              ))}
+                            </Stack>
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <Typography color="text.secondary" sx={{ mt: 2 }}>
+                No Access Details Available
+              </Typography>
+            )}
           </Box>
         </Box>
 
+        {/* Add Access Dialog */}
         <CommonDialog
-          open={open}
-          onClose={onClose}
+          open={openAddDialog}
+          onClose={() => {
+            setSelectedAccessIds([]);
+            setOpenAddDialog(false);
+          }}
           onSubmit={handleAddAccess}
           title="Add Access"
           submitLabel=" Add Access"
@@ -256,11 +218,12 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
             type="multiselect"
             placeholder="Select Access"
             options={getAllAccess}
-            value={selectedAccessIds} // This is an array of user IDs: ["123", "456"]
+            value={selectedAccessIds}
             onChange={(ids) => setSelectedAccessIds(ids as string[])}
           />
         </CommonDialog>
 
+        {/* Delete Access Dialog */}
         <CommonDialog
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
@@ -274,6 +237,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
             This will revoke the permissions granted by this access.
           </Typography>
         </CommonDialog>
+
         <CustomSnackbar
           open={snackbar.open}
           message={snackbar.message}

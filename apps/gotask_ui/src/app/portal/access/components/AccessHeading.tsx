@@ -7,7 +7,7 @@ interface AccessHeadingProps {
 
 const AccessHeading: React.FC<AccessHeadingProps> = ({ title = "Access" }) => {
   return (
-    <Box sx={{ paddingBottom: 4 }}>
+    <Box sx={{ }}>
       <Typography
         variant="h4"  // This will use a predefined Material UI typography style for headings
         component="h1"

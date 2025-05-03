@@ -71,7 +71,7 @@ export const updateAccessRole = async (
 ): Promise<{ success: boolean; data?: AccessRole; message?: string }> => {
   try {
     // ✅ Remove _id from each application item before sending
-    const cleanedApplication = accessData.application?.map(({ _id, ...rest }) => rest);
+    const cleanedApplication = accessData.application?.map(({...rest }) => rest);
 
     const cleanedPayload = {
       name: accessData.name,

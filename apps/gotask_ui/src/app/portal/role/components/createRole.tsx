@@ -7,6 +7,8 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import RoleInput from "./roleInputs";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { createRole } from "../services/roleAction";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface CreateRoleProps {
   open: boolean;
@@ -19,6 +21,8 @@ const initialFormState: IRole = {
   accessIds: []
 };
 const CreateRole = ({ open, onClose, mutate }: CreateRoleProps) => {
+  const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -30,9 +34,9 @@ const CreateRole = ({ open, onClose, mutate }: CreateRoleProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name = "Role Name is required";
+    if (!formData.name) newErrors.name = transrole("rolename");
     if (!formData.accessIds || formData.accessIds.length === 0) {
-      newErrors.accessIds = "Select at least one Access";
+      newErrors.accessIds = transrole("selectaccess");
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -48,21 +52,21 @@ const CreateRole = ({ open, onClose, mutate }: CreateRoleProps) => {
       await mutate();
       setSnackbar({
         open: true,
-        message: "Role created successfully!",
+        message: transrole("successmessage"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while creating Role",
+        message: transrole("errormessage"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
   };
   return (
     <>
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Create New Role">
+      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transrole("createnewrole")}>
         <RoleInput formData={formData} handleChange={handleChange} errors={errors} />
       </CommonDialog>
       <CustomSnackbar

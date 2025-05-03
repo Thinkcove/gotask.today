@@ -3,6 +3,8 @@ import { Box, Button, Avatar, Typography } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { ITaskComment } from "../interface/taskInterface";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface TaskCommentsProps {
   comments: ITaskComment[];
@@ -10,6 +12,7 @@ interface TaskCommentsProps {
 }
 
 const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [newComment, setNewComment] = useState("");
   const [isFocused, setIsFocused] = useState(false);
 
@@ -25,9 +28,9 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
     <Box sx={{ mb: 5 }}>
       {/* Comment Input Field */}
       <FormField
-        label="Add a Comment"
+        label={transtask("labelcomment")}
         type="text"
-        placeholder="Write a comment..."
+        placeholder={transtask("placeholdercomment")}
         value={newComment}
         onChange={(value) => setNewComment(value as string)}
         multiline
@@ -43,7 +46,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
             sx={{ backgroundColor: "#741B92", textTransform: "none" }}
             onClick={handleSave}
           >
-            Save Comment
+            {transtask("savecomment")}
           </Button>
           <Button
             variant="outlined"
@@ -59,7 +62,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
               setIsFocused(false);
             }}
           >
-            Cancel
+            {transtask("cancelcomment")}
           </Button>
         </Box>
       )}
@@ -69,7 +72,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
       {comments.length > 0 && (
         <Box mt={2}>
           <Box sx={{ display: "flex", gap: 1, color: "#741B92" }}>
-            <Typography fontWeight="bold">Comments</Typography>
+            <Typography fontWeight="bold">{transtask("comments")}</Typography>
             <SpeakerNotesOutlined />
           </Box>
           {comments.map((comment) => (

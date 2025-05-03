@@ -5,6 +5,8 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { User } from "../interfaces/userInterface";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import { useRouter } from "next/navigation";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface UserCardProps {
   users: User[] | null;
@@ -12,13 +14,14 @@ interface UserCardProps {
 }
 
 const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
+  const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const router = useRouter();
 
   if (error) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="error">
-          Error loading users
+          {transuser("errorload")}
         </Typography>
       </Box>
     );
@@ -36,7 +39,7 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="text.secondary">
-          No Users available.
+          {transuser("nouser")}
         </Typography>
       </Box>
     );
@@ -141,7 +144,7 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
                           color="text.secondary"
                           sx={{ m: 0 }}
                         >
-                          No Organization for this user
+                          {transuser("noorganzationuser")}
                         </Typography>
                       )}
                     </Box>
@@ -166,7 +169,7 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
                     }}
                   >
                     <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                      View Details
+                      {transuser("viewdetails")}
                     </Typography>
                     <ArrowForward fontSize="small" />
                   </Box>

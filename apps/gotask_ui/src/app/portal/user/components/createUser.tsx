@@ -7,6 +7,8 @@ import UserInput from "./userInputs";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { createUser } from "../services/userAction";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface CreateUserProps {
   open: boolean;
@@ -24,6 +26,7 @@ const initialFormState: IUserField = {
 };
 
 const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
+  const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -34,10 +37,10 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name = "User name is required";
-    if (!formData.roleId) newErrors.roleId = "Role is required";
-    if (!formData.status) newErrors.status = "Status is required";
-    if (!formData.user_id) newErrors.user_id = "Email is required";
+    if (!formData.name) newErrors.name = transuser("username");
+    if (!formData.roleId) newErrors.roleId = transuser("userrole");
+    if (!formData.status) newErrors.status = transuser("userstatus");
+    if (!formData.user_id) newErrors.user_id = transuser("useremail");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -51,14 +54,14 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
       await mutate();
       setSnackbar({
         open: true,
-        message: "User created successfully!",
+        message: transuser("successmessage"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while creating user",
+        message: transuser("errormessage"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -66,7 +69,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
 
   return (
     <>
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Create New User">
+      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transuser("createuser")}>
         <UserInput formData={formData} handleChange={handleChange} errors={errors} isEdit={true} />
       </CommonDialog>
       <CustomSnackbar

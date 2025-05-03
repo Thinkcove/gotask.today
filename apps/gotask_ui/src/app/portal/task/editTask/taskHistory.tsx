@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import { ITaskHistory } from "../interface/taskInterface";
 import { InfoOutlined } from "@mui/icons-material";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface HistoryDrawerProps {
   open: boolean;
@@ -22,6 +24,7 @@ interface HistoryDrawerProps {
 }
 
 const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history }) => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
     <Drawer anchor="right" open={open} onClose={onClose}>
       <Box
@@ -44,7 +47,7 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history })
           }}
         >
           <Typography variant="h6" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            Task History
+            {transtask("taskhistory")}
           </Typography>
 
           {/* Log Info Box */}
@@ -80,7 +83,7 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history })
                   alignItems: "center"
                 }}
               >
-                Log of who performed the updates in the task
+                {transtask("log")}
               </Typography>
             </Paper>
           )}

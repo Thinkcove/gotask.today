@@ -6,3 +6,9 @@ export const comparePassword = async (
 ): Promise<boolean> => {
   return bcrypt.compare(candidatePassword, hashedPassword);
 };
+
+export interface UserCredentials {
+  id: string;
+  email: string;
+  role: string;
+}

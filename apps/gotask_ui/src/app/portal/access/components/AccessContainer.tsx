@@ -51,7 +51,7 @@ const AccessContainer: React.FC = () => {
     item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const theme = useTheme(); // Get theme object for custom MUI styles
+  const theme = useTheme(); 
 
   return (
     <Box sx={{ width: "100%", maxHeight: "100vh", overflow: "hidden", m:0 }}>
@@ -59,33 +59,48 @@ const AccessContainer: React.FC = () => {
         {/* Heading */}
         <AccessHeading />
 
-        {/* Search and Button */}
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", gap: 4, width: "100%" }}>
-          <SearchBar
-            value={searchTerm}
-            onChange={setSearchTerm}
-            sx={{
-              width: { xs: "250px", md: "300px" }, // Responsive width using MUI's sx
-              flex: 1
-            }} 
-          />
-        </Box>
+{/* Search and Button */}
+<Box
+  sx={{
+    display: 'flex',
+    flexDirection: { xs: 'column', md: 'row' },
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: 2,
+  }}
+>
+  {/* Search Bar aligned to the left with fixed width */}
+  <Box sx={{ width: '30%' }}>
+    <SearchBar
+      value={searchTerm}
+      onChange={setSearchTerm}
+      sx={{
+        width: '100%',
+      }}
+    />
+  </Box>
 
-        <Box sx={{ marginLeft: "10px" }}>
-          <MuiButton
-            component="a"
-            href="/portal/access/pages/create"
-            variant="contained"
-            color="primary"
-            sx={{
-              padding: "10px 20px",
-              backgroundColor: theme.palette.primary.main,
-              "&:hover": { backgroundColor: theme.palette.primary.dark },
-            }}
-          >
-            Create Access
-          </MuiButton>
-        </Box>
+  {/* "Create Access" Button aligned to the right */}
+  <MuiButton
+    component="a"
+    href="/portal/access/pages/create"
+    variant="contained"
+    color="primary"
+    sx={{
+      marginRight:'20px',
+      padding: '10px 20px',
+      backgroundColor: theme.palette.primary.main,
+      '&:hover': { backgroundColor: theme.palette.primary.dark },
+    }}
+  >
+    Create Access
+  </MuiButton>
+</Box>
+
+
+
+
 
         {/* Table */}
         <Box sx={{ flex: 1, overflowY: "auto" }}>

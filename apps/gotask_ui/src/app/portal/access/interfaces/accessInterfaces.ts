@@ -1,22 +1,20 @@
-// interfaces/accessInterfaces.ts
 
-// Option received from the backend representing available modules and actions
 export interface AccessOption {
-  access: string;     // Module name (e.g., "user", "project")
-  actions: string[];  // Available actions (e.g., ["create", "read", "update", "delete"])
+  access: string;    
+  actions: string[]; 
 }
 
 // Actual permissions assigned to an access role
 export interface ApplicationPermission {
-  access: string;      // Module name
-  actions: string[];   // Allowed actions for this role on that module
+  access: string;      
+  actions: string[];  
 }
 
 // Represents the access role entity
 export interface AccessRole {
-  id: string;                        // UUID
-  name: string;                      // Role name (e.g., "Admin")
-  application: ApplicationPermission[];  // Module-action pairs
+  id: string;                       
+  name: string;                      
+  application: ApplicationPermission[]; 
 }
 
 // API response structure when fetching an access role
@@ -31,4 +29,6 @@ export interface AccessData {
   id: string;
   name: string;
   accesses: AccessOption[];
+  createdAt?: string;
+  updatedAt?: string;
 }

@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import AccessContainer from "../access/components/AccessContainer";  // Assuming you have this component
+import AccessContainer from "../access/components/AccessContainer"; 
 
 const AccessPage = () => {
   return (
@@ -8,7 +8,7 @@ const AccessPage = () => {
       {/* Header Section */}
       <Box
         sx={{
-          backgroundColor: "#741B92", // Solid color for a bold look
+          backgroundColor: "#741B92", 
           color: "white",
           p: 1.5,
           display: "flex",
@@ -17,7 +17,7 @@ const AccessPage = () => {
         }}
       >
         <Typography
-          variant="h6"
+          variant="h5"
           sx={{
             fontWeight: "600",
             textTransform: "capitalize"
@@ -27,9 +27,9 @@ const AccessPage = () => {
         </Typography>
       </Box>
 
-      {/* Content Section */}
+      
       <div className="flex-1 overflow-hidden">
-        <AccessContainer /> {/* Your custom Access container */}
+        <AccessContainer />
       </div>
     </div>
   );

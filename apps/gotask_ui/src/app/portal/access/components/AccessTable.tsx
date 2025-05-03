@@ -1,4 +1,3 @@
-'use client';
 import React, { useState } from "react";
 import {
   Table,
@@ -12,10 +11,10 @@ import {
   Box,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { AccessData } from "../interfaces/accessInterfaces"; 
+import { AccessData } from "../interfaces/accessInterfaces";
 
 interface Props {
-  data: AccessData[];  // Data is expected to be of type AccessData[]
+  data: AccessData[];
   loading?: boolean;
 }
 
@@ -23,14 +22,12 @@ const AccessTable: React.FC<Props> = ({ data, loading = false }) => {
   const router = useRouter();
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Default: 5 rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Handle pagination page change
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  // Handle change in rows per page
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -38,12 +35,10 @@ const AccessTable: React.FC<Props> = ({ data, loading = false }) => {
     setPage(0);
   };
 
-  // Navigate to detailed view of the access role
-  const handleRowClick = (id: string) => {  // Use string for UUID
+  const handleRowClick = (id: string) => {
     router.push(`access/pages/view/${id}`);
   };
 
-  // Slice the data for current pagination
   const paginatedData = data.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
@@ -64,14 +59,14 @@ const AccessTable: React.FC<Props> = ({ data, loading = false }) => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                {["S.No.", "Access Name", "Modules & Operations"].map((heading) => (
+                {["S.No.", "Access Name", "Created At", "Updated At"].map((heading) => (
                   <TableCell
                     key={heading}
                     sx={{
                       backgroundColor: "rgb(55, 65, 81)",
                       color: "#ffffff",
                       fontWeight: "bold",
-                      fontSize: { xs: '0.8rem', sm: '1rem' },  // Adjust font size
+                      fontSize: { xs: '0.8rem', sm: '1rem' },
                     }}
                   >
                     {heading}
@@ -83,49 +78,36 @@ const AccessTable: React.FC<Props> = ({ data, loading = false }) => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={3} align="center">
+                  <TableCell colSpan={4} align="center">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={3} align="center">
+                  <TableCell colSpan={4} align="center">
                     No Access Roles Found
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedData.map((access, index) => {
-                  // Mapping over application data (AccessRole)
-                  const applications = Array.isArray(access.accesses)
-                    ? access.accesses
-                    : [access.accesses];
-
-                  return (
-                    <TableRow
-                      key={access.id}
-                      hover
-                      onClick={() => handleRowClick(access.id)}  // Handle row click for more details
-                      className="cursor-pointer"
-                    >
-                      <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                      <TableCell>{access.name}</TableCell>
-                      <TableCell>
-                        {applications.map((app, idx) => (
-                          <div key={idx} className="mb-2">
-                            <strong>{app.access}:</strong> {app.actions.join(", ")}
-                          </div>
-                        ))}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
+                paginatedData.map((access, index) => (
+                  <TableRow
+                    key={access.id}
+                    hover
+                    onClick={() => handleRowClick(access.id)}
+                    className="cursor-pointer"
+                  >
+                    <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                    <TableCell>{access.name}</TableCell>
+                    <TableCell>{access.createdAt ? new Date(access.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
+                    <TableCell>{access.updatedAt ? new Date(access.updatedAt).toLocaleDateString() : 'N/A'}</TableCell>
+                  </TableRow>
+                ))
               )}
             </TableBody>
           </Table>
         </TableContainer>
       </Box>
 
-      {/* Pagination controls */}
       <TablePagination
         component="div"
         count={data.length}
@@ -140,4 +122,3 @@ const AccessTable: React.FC<Props> = ({ data, loading = false }) => {
 };
 
 export default AccessTable;
-  

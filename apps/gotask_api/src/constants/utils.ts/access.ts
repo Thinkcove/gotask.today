@@ -16,9 +16,9 @@ export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];
 export const ACTIONS = {
   CREATE: "CREATE",
   READ: "READ",
-  LIST: "LIST",
   UPDATE: "UPDATE",
-  DELETE: "DELETE"
+  DELETE: "DELETE",
+  VIEW: "VIEW"
 } as const;
 
 export type ActionType = (typeof ACTIONS)[keyof typeof ACTIONS];

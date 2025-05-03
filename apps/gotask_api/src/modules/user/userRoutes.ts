@@ -33,7 +33,7 @@ UserRoutes.push({
 UserRoutes.push({
   path: API_PATHS.GET_USERS,
   method: API_METHODS.GET,
-  handler: withAccessCheck(appName, ACTIONS.LIST, (request: Request, handler: ResponseToolkit) =>
+  handler: withAccessCheck(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     userController.getAllUsers(new RequestHelper(request), handler)
   ),
   config: {
@@ -49,7 +49,7 @@ UserRoutes.push({
 UserRoutes.push({
   path: API_PATHS.GET_USER_BY_ID,
   method: API_METHODS.GET,
-  handler: withAccessCheck(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+  handler: withAccessCheck(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit) =>
     userController.getUserById(new RequestHelper(request), handler)
   ),
   config: {
@@ -85,10 +85,7 @@ UserRoutes.push({
     userController.loginUser(new RequestHelper(request), handler),
   config: {
     notes: "Authenticate user login",
-    tags,
-    auth: {
-      strategy: authStrategy.SIMPLE
-    }
+    tags
   }
 });
 

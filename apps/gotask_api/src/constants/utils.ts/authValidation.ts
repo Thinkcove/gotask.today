@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import Boom from "@hapi/boom";
 import { Request } from "@hapi/hapi";
 import Auth from "./auth";

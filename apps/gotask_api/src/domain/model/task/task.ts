@@ -57,7 +57,7 @@ const TaskSchema = new Schema<ITask>(
     time_spent: { type: [TimeSpentEntrySchema], default: [] },
     time_spent_total: { type: String, default: "0d0h" },
     remaining_time: { type: String, default: null },
-    variation:{ type: String, default:"0d0h"  },
+    variation: { type: String, default: "0d0h" },
     comment: { type: [TaskCommentSchema] },
     history: { type: [TaskHistorySchema] }
   },

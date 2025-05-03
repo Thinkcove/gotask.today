@@ -1,13 +1,11 @@
-/eslint-disable /;
+import HapiAuthBearer from "hapi-auth-bearer-token";
+import HapiCookie from "@hapi/cookie";
+
 export const plugins = [
   {
-    plugin: require("hapi-auth-bearer-token")
+    plugin: HapiAuthBearer
   },
   {
-    plugin: require("@hapi/cookie")
-  },
-  {
-    plugin: require("blipp"),
-    options: {}
+    plugin: HapiCookie
   }
 ];

@@ -211,7 +211,6 @@ const addTimeSpentToTask = async (
   return task;
 };
 
-
 export {
   createNewTask,
   deleteByTaskId,

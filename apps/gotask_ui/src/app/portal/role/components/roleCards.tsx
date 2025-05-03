@@ -3,12 +3,15 @@ import { Role } from "../interfaces/roleInterface";
 import { Box, CircularProgress, Grid, Stack, Typography } from "@mui/material";
 import CardComponent from "@/app/component/card/cardComponent";
 import { ArrowForward, SupervisorAccount } from "@mui/icons-material"; // <-- New Icon
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface RolesCardProps {
   roles: Role[] | null;
 }
 
 const RoleCards: React.FC<RolesCardProps> = ({ roles }) => {
+  const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   const router = useRouter();
 
   if (!roles) {
@@ -23,7 +26,7 @@ const RoleCards: React.FC<RolesCardProps> = ({ roles }) => {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="text.secondary">
-          No roles available.
+          {transrole("noroleavailable")}
         </Typography>
       </Box>
     );
@@ -100,7 +103,7 @@ const RoleCards: React.FC<RolesCardProps> = ({ roles }) => {
                     }}
                   >
                     <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                      View Details
+                      {transrole("viewdetail")}
                     </Typography>
                     <ArrowForward fontSize="small" />
                   </Box>

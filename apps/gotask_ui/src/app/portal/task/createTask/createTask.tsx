@@ -8,8 +8,11 @@ import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { IFormField } from "../interface/taskInterface";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const CreateTask: React.FC = () => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -40,11 +43,11 @@ const CreateTask: React.FC = () => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.title) newErrors.title = "Task Title is required";
-    if (!formData.user_id) newErrors.user_id = "Assignee Name is required";
-    if (!formData.project_id) newErrors.project_id = "Project Name is required";
-    if (!formData.status) newErrors.status = "Status is required";
-    if (!formData.severity) newErrors.severity = "Severity is required";
+    if (!formData.title) newErrors.title = transtask("tasktitle");
+    if (!formData.user_id) newErrors.user_id = transtask("assigneename");
+    if (!formData.project_id) newErrors.project_id =transtask("projectname");
+    if (!formData.status) newErrors.status = transtask("status");
+    if (!formData.severity) newErrors.severity = transtask("severity");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -65,7 +68,7 @@ const CreateTask: React.FC = () => {
 
       setSnackbar({
         open: true,
-        message: "Task created successfully!",
+        message: transtask("successmessage"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
 
@@ -74,7 +77,7 @@ const CreateTask: React.FC = () => {
       console.error("Error while creating task:", error);
       setSnackbar({
         open: true,
-        message: "Error while creating task",
+        message: transtask("errormessage"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -111,7 +114,7 @@ const CreateTask: React.FC = () => {
         >
           {/* Title with Gradient Effect */}
           <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            Create Task
+            {transtask("create")}
           </Typography>
 
           {/* Buttons with Soft Hover Effects */}
@@ -130,7 +133,7 @@ const CreateTask: React.FC = () => {
               }}
               onClick={() => router.back()}
             >
-              Cancel
+              {transtask("cancelcreate")}
             </Button>
             <Button
               variant="contained"
@@ -147,7 +150,7 @@ const CreateTask: React.FC = () => {
               }}
               onClick={handleSubmit}
             >
-              Create
+             {transtask("creates")}
             </Button>
           </Box>
         </Box>

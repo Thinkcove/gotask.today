@@ -1,11 +1,14 @@
+import { LOCALIZATION } from "@/app/common/constants/localization";
 import { Box, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 const page = () => {
+  const transaccess = useTranslations(LOCALIZATION.TRANSITION.ACCESS);
   return (
     <Box
       sx={{
-        backgroundColor: "#741B92", // Solid color for a bold look
+        backgroundColor: "#741B92", // Solid color for a bold look   
         color: "white",
         p: 1.5,
         display: "flex",
@@ -19,11 +22,11 @@ const page = () => {
           fontWeight: "600",
           textTransform: "capitalize"
         }}
-      >
-        Access
+    >
+        {transaccess("access")}
       </Typography>
     </Box>
   );
 };
 
-export default page;
+export default page; 

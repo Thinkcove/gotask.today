@@ -25,6 +25,8 @@ import menuItemsData from "./menuItems.json";
 import { useRouter, usePathname } from "next/navigation";
 import { Theme } from "@mui/material/styles";
 import UserInfoCard from "../appBar/userMenu";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const iconMap: Record<string, React.ReactNode> = {
   DashboardIcon: <GridViewIcon />,
@@ -39,6 +41,7 @@ const iconMap: Record<string, React.ReactNode> = {
 const drawerWidth = 260;
 
 const Sidebar: React.FC = () => {
+  const transsidebar = useTranslations(LOCALIZATION.TRANSITION.SIDEBAR);
   const [open, setOpen] = useState<boolean>(false);
   const [collapsed] = useState<boolean>(false);
   const router = useRouter();
@@ -72,7 +75,7 @@ const Sidebar: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Go Task Today
+            {transsidebar("gotask")}
           </Typography>
         </Toolbar>
       </AppBar>

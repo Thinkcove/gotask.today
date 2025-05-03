@@ -1,6 +1,8 @@
 import React from "react";
 import { Box, Typography, Stack } from "@mui/material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface StatusItem {
   label: string;
@@ -15,6 +17,8 @@ interface Props {
 }
 
 const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitle }) => {
+  const transstatuschart = useTranslations(LOCALIZATION.TRANSITION.STATUSCHART);
+  
   const total = Object.values(statusCounts).reduce((sum, value) => sum + value, 0);
 
   const barChartData = statuses.map((status) => ({
@@ -53,7 +57,7 @@ const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitl
           mb: 3
         }}
       >
-        Total: {total} {chartTitle}
+        {transstatuschart("total")} {total} {chartTitle}
       </Typography>
 
       <Box sx={{ height: 250 }}>

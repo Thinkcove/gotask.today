@@ -7,8 +7,11 @@ import useSWR from "swr";
 import { getRoleData } from "../services/roleAction";
 import RoleCards from "./roleCards";
 import CreateRole from "./createRole";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const RoleList = () => {
+  const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data, mutate } = useSWR("getRoles", getRoleData);
 
@@ -27,7 +30,7 @@ const RoleList = () => {
 
       {/* Add Task Button */}
       <ActionButton
-        label="Create New Role"
+        label={transrole("createrole")}
         icon={<AddIcon sx={{ color: "white" }} />}
         onClick={() => setIsModalOpen(true)}
       />

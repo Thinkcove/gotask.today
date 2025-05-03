@@ -7,8 +7,11 @@ import useSWR from "swr";
 import UserCards from "./userCards";
 import { fetcherUserList } from "../services/userAction";
 import CreateUser from "./createUser";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const UserList = () => {
+  const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: projects, error, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
 
@@ -27,7 +30,7 @@ const UserList = () => {
 
       {/* Add Task Button */}
       <ActionButton
-        label="Create New User"
+        label={transuser("createusernew")}
         icon={<AddIcon sx={{ color: "white" }} />}
         onClick={() => setIsModalOpen(true)}
       />

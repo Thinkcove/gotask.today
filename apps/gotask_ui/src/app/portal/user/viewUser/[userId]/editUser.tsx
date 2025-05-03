@@ -7,6 +7,8 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { IUserField, User } from "../../interfaces/userInterface";
 import UserInput from "../../components/userInputs";
 import { updateUser } from "../../services/userAction";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface EditUserProps {
   data: IUserField;
@@ -17,6 +19,7 @@ interface EditUserProps {
 }
 
 const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate }) => {
+  const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -40,14 +43,14 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
       await mutate();
       setSnackbar({
         open: true,
-        message: "User updated successfully!",
+        message: transuser("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while updating user",
+        message: transuser("updateerror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -74,7 +77,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
         }}
       ></Box>
 
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Edit User">
+      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transuser("edituser")}>
         <UserInput
           formData={formData}
           handleChange={handleChange}

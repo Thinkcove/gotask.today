@@ -1,6 +1,8 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { calculateTimeProgressData } from "../../../common/utils/common";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface ProgressBarProps {
   estimatedTime: string;
@@ -13,6 +15,7 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
   timeSpentTotal,
   onClick
 }) => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);   
   const {
     estimatedHours,
     spentHours,
@@ -49,10 +52,10 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
       >
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
           <Typography variant="body2" sx={{ fontWeight: "normal" }}>
-            Spent: {spentHours.toFixed(1)}h
+            {transtask("spent")} {spentHours.toFixed(1)}h
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: "normal" }}>
-            Estimated: {estimatedHours.toFixed(1)}h
+            {transtask("estimated")} {estimatedHours.toFixed(1)}h
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: "normal" }}>
             {variationHours > 0 ? `Variation: ${variationHours.toFixed(1)}h` : "Variation: 0"}
@@ -114,7 +117,7 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
           sx={{ fontStyle: "italic", display: "block" }}
           className="progress-info"
         >
-          Click the bar to update time tracking
+          {transtask("timetrackingclick")}
         </Typography>
       </Box>
     </Box>

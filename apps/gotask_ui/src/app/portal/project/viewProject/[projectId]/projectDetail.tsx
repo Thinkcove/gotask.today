@@ -13,6 +13,11 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
 import EditProject from "./editProject";
+import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
+import LabelValueText from "@/app/component/text/labelValueText";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 
 interface ProjectDetailProps {
   project: Project;
@@ -20,7 +25,10 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
   const router = useRouter();
   const handleBack = () => {
     setTimeout(() => router.back(), 2000);
@@ -48,7 +56,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while adding assignee",
+        message: transproject("erroradd"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -57,10 +65,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     setOpen(false);
   };
 
-  const handleDeleteUser = async (userIds: string[]) => {
+  const handleDelete = async () => {
+    if (!selectedUserId) return; // If no user selected, do nothing
     try {
-      const response = await removeUsersFromProject(userIds, projectID);
+      const response = await removeUsersFromProject([selectedUserId], projectID); // send array with 1 id
       await mutate();
+      setOpenDeleteDialog(false);
+      setSelectedUserId(null); // clear after deletion
       setSnackbar({
         open: true,
         message: response.message,
@@ -69,7 +80,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while removing assignee",
+        message: transproject("errorremove"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -77,31 +88,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
 
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "#741B92", // Solid color for a bold look
-          color: "white",
-          p: 1.5,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "600",
-            textTransform: "capitalize"
-          }}
-        >
-          Project Detail View
-        </Typography>
-      </Box>
+      <ModuleHeader name={transproject("detailview")} />
       <Box
         sx={{
           minHeight: "100vh",
-          px: 3,
-          py: 4,
+          p: 3,
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
       >
@@ -114,72 +105,48 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             border: "1px solid #e0e0e0"
           }}
         >
-          {/* Header */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "space-between",
-              mb: 3
-            }}
-          >
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <IconButton edge="start" color="primary" onClick={handleBack}>
-                <ArrowBack />
-              </IconButton>
-              <Box>
-                <Typography variant="h4" fontWeight={700}>
+          {/* User Info Header */}
+          <Box display="flex" alignItems="center" mb={3}>
+            <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
+              <ArrowBack />
+            </IconButton>
+            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
                   {project.name}
                 </Typography>
-                <Typography variant="body1" sx={{ mt: 0.5 }}>
-                  {project.description}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ mt: 1, display: "block" }}
-                >
-                  Created on: {new Date(project.createdAt).toLocaleDateString()}
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    pt: 1
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      backgroundColor: getStatusColor(project.status),
-                      mr: 1.5
-                    }}
-                  />
-                  <Typography
-                    sx={{
-                      color: getStatusColor(project.status),
-                      textTransform: "capitalize"
-                    }}
-                  >
-                    Status : {project.status}
-                  </Typography>
-                </Box>
+                <StatusIndicator status={project.status} getColor={getStatusColor} />
               </Box>
+              <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+                <Edit />
+              </IconButton>
             </Box>
-            {/* Status Pill */}
-            <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
-              <Edit />
-            </IconButton>
           </Box>
+
+          {/* Basic Details */}
+          <Grid container spacing={2} flexDirection="column" mb={2}>
+            <Grid item xs={12} md={6}>
+              <LabelValueText
+                label={transproject("detaildescription")}
+                value={project.description}
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={2} mb={2}>
+            <Grid item xs={12} md={6}>
+              <LabelValueText
+                label={transproject("detailcreatedon")}
+                value={new Date(project.createdAt).toLocaleDateString()}
+              />
+            </Grid>
+          </Grid>
 
           <Divider sx={{ mb: 4 }} />
 
           {/* Assignees Section */}
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h5" fontWeight={600}>
-              Assignees
+              {transproject("detailassignee")}
             </Typography>
             <Button
               variant="contained"
@@ -189,7 +156,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 borderRadius: 2
               }}
             >
-              Add Assignee
+              {transproject("detailaddassignee")}
             </Button>
           </Box>
 
@@ -213,7 +180,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
 
                       <Box>
-                        <Typography fontWeight={600} fontSize="1rem">
+                        <Typography
+                          fontWeight={600}
+                          fontSize="1rem"
+                          sx={{ textTransform: "capitalize" }}
+                        >
                           {user.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -224,7 +195,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
 
                     <IconButton
                       color="error"
-                      onClick={() => handleDeleteUser([user.id])}
+                      onClick={() => {
+                        setSelectedUserId(user.id); // <-- save which user is clicked
+                        setOpenDeleteDialog(true); // <-- open the confirmation dialog
+                      }}
                       sx={{
                         transition: "0.2s ease",
                         "&:hover": {
@@ -239,7 +213,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               ))
             ) : (
               <Grid item xs={12}>
-                <Typography color="text.secondary">No users assigned yet.</Typography>
+                <Typography color="text.secondary">{transproject("detailnouser")}</Typography>
               </Grid>
             )}
           </Grid>
@@ -249,13 +223,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           open={open}
           onClose={onClose}
           onSubmit={handleAddUser}
-          title="Add Assignee"
-          submitLabel=" Add User"
+          title={transproject("addassignetitle")}
+          submitLabel={transproject("addusertitle")}
         >
           <FormField
-            label="Assignees"
+            label={transproject("labelassignee")}
             type="multiselect"
-            placeholder="Select users"
+            placeholder={transproject("placeholdeselect")}
             options={getAllUsers}
             value={selectedUserIds} // This is an array of user IDs: ["123", "456"]
             onChange={(ids) => setSelectedUserIds(ids as string[])}
@@ -268,6 +242,21 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           mutate={mutate}
           projectID={projectID}
         />
+        <CommonDialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+          onSubmit={handleDelete}
+          title={transproject("titledelete")}
+          submitLabel={transproject("labeldelete")}
+        >
+          <Typography>
+            {transproject("removeuserconfirmation")}
+            <br />
+            {transproject("removeusernote1")}
+            <br />
+            {transproject("removeusernote2")}
+          </Typography>
+        </CommonDialog>
         <CustomSnackbar
           open={snackbar.open}
           message={snackbar.message}

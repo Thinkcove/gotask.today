@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import CardComponent from "@/app/component/card/cardComponent";
 import { Project } from "../interfaces/projectInterface";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
+import EllipsisText from "@/app/component/text/ellipsisText";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 
 interface ProjectCardProps {
   projects: Project[] | null; // Ensure projects is an array or null
@@ -14,13 +18,14 @@ interface ProjectCardProps {
 
 const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
   const router = useRouter();
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   // Handle error
   if (error) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="error">
-          Error loading projects: {error.message || "Unknown error"}
+          {transproject("errorloading")} {error.message || "Unknown error"}
         </Typography>
       </Box>
     );
@@ -40,7 +45,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="text.secondary">
-          No projects available.
+          {transproject("noprojects")}
         </Typography>
       </Box>
     );
@@ -53,40 +58,16 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
           <Grid item xs={12} sm={6} md={3} key={project.id}>
             <CardComponent>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
                   {project.name}
                 </Typography>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center"
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      backgroundColor: getStatusColor(project.status),
-                      mr: 1.5
-                    }}
-                  />
-                  <Typography
-                    sx={{
-                      color: getStatusColor(project.status),
-                      textTransform: "capitalize"
-                    }}
-                  >
-                    {project.status}
-                  </Typography>
-                </Box>
+                <StatusIndicator status={project.status} getColor={getStatusColor} />
               </Box>
 
               {/* Project Description */}
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, pt: 1 }}>
-                {project.description}
-              </Typography>
+              <Box sx={{ mb: 2, pt: 1 }}>
+                <EllipsisText text={project.description} maxWidth={350} />
+              </Box>
 
               {/* Users Info */}
               <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
@@ -100,15 +81,26 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
                       .map((user, index) => <AlphabetAvatar userName={user.name} key={index} />)
                   ) : (
                     <Typography variant="body2" color="text.secondary">
-                      No users assigned
+                      {transproject("nouser")}
                     </Typography>
                   )}
 
                   {/* If there are more than 3 users, display the count */}
                   {project.users?.length > 3 && (
-                    <Typography variant="caption" color="text.secondary">
-                      +{project.users.length - 3}
-                    </Typography>
+                    <Box
+                      sx={{
+                        ml: 1,
+                        px: 1,
+                        backgroundColor: "#F3E5F5",
+                        color: "#741B92",
+                        fontSize: 12,
+                        fontWeight: 500,
+                        borderRadius: "8px",
+                        lineHeight: "20px"
+                      }}
+                    >
+                      +{project.users.length - 3} more
+                    </Box>
                   )}
                 </Box>
               </Box>
@@ -131,7 +123,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
                   }}
                 >
                   <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                    View Details
+                    {transproject("viewdetails")}
                   </Typography>
                   <ArrowForward fontSize="small" />
                 </Box>

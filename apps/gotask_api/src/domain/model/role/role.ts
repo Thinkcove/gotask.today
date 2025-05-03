@@ -4,12 +4,10 @@ import { v4 as uuidv4 } from "uuid";
 export interface IRole extends Document {
   id: string;
   name: string;
-  priority: number;
   access: string[];
 }
 export interface CreateRolePayload {
   name: string;
-  priority: number;
   accessIds?: string[];
 }
 
@@ -17,7 +15,6 @@ const RoleSchema = new Schema<IRole>(
   {
     id: { type: String, default: uuidv4, unique: true },
     name: { type: String, required: true, unique: true },
-    priority: { type: Number, required: true },
     access: [
       {
         type: String,

@@ -16,6 +16,7 @@ export const roleMessages = {
   },
   DELETE: {
     SUCCESS: "Role deleted successfully.",
-    FAILED: "Failed to delete role."
+    FAILED: "Failed to delete role.",
+    ACCESS_DELETE: "Selected Access has been removed succesfully "
   }
 };

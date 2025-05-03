@@ -1,11 +1,12 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, SxProps, Theme } from "@mui/material";
 
 interface CardComponentProps {
   children: React.ReactNode;
+  sx?: SxProps<Theme>;
 }
 
-const CardComponent: React.FC<CardComponentProps> = ({ children }) => {
+const CardComponent: React.FC<CardComponentProps> = ({ children, sx = {} }) => {
   return (
     <Box
       sx={{
@@ -14,7 +15,8 @@ const CardComponent: React.FC<CardComponentProps> = ({ children }) => {
         background: "linear-gradient(145deg, #ffffff, #f7f3fa)",
         border: "2px solid #eee",
         p: 2,
-        transition: "transform 0.3s ease-in-out, box-shadow 0.3s"
+        transition: "transform 0.3s ease-in-out, box-shadow 0.3s",
+        ...sx // override or extend styles
       }}
     >
       {children}

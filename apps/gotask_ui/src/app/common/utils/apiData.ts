@@ -52,3 +52,19 @@ export const getData = async (url: string) => {
   const data = await response.json();
   return data;
 };
+
+//delete
+export const deleteData = async (url: string, payload?: Record<string, unknown>) => {
+  const options: RequestInit = {
+    method: "DELETE",
+    headers: apiHeaders()
+  };
+  if (payload) {
+    options.body = JSON.stringify(payload);
+  }
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return await response.json();
+};

@@ -68,6 +68,7 @@ UserRoutes.push({
     tags
   }
 });
+
 // Route: Delete User
 UserRoutes.push({
   path: API_PATHS.DELETE_USER,

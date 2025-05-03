@@ -1,12 +1,12 @@
 import { roleMessages } from "../../constants/apiMessages/roleMessages";
-import { CreateRolePayload } from "../../domain/model/role";
+import { CreateRolePayload } from "../../domain/model/role/role";
 import * as RoleInterface from "../../domain/interface/role/roleInterface";
-import { Access } from "../../domain/model/access";
+import { Access } from "../../domain/model/access/access";
 
 // Create Role Logic
 export const createRoleService = async (data: CreateRolePayload) => {
   try {
-    const { name, priority, accessIds = [] } = data;
+    const { name, accessIds = [] } = data;
 
     const exists = await RoleInterface.roleExistsByName(name);
     if (exists) {
@@ -14,7 +14,7 @@ export const createRoleService = async (data: CreateRolePayload) => {
     }
 
     // Create the new role and save the associated access references
-    const role = await RoleInterface.createRoleInDb(name, priority, accessIds);
+    const role = await RoleInterface.createRoleInDb(name, accessIds);
 
     return {
       success: true,
@@ -133,5 +133,24 @@ export const deleteRoleService = async (roleId: string) => {
   } catch (error) {
     console.error("Error in deleteRoleService:", error);
     return { success: false, message: roleMessages.DELETE.FAILED };
+  }
+};
+
+export const removeAccessFromRoleService = async (roleId: string, accessId: string) => {
+  try {
+    const updatedRole = await RoleInterface.removeAccess(roleId, accessId);
+    if (!updatedRole) {
+      return { success: false, message: roleMessages.FETCH.NOT_FOUND };
+    }
+    return {
+      success: true,
+      data: {
+        message: roleMessages.DELETE.ACCESS_DELETE,
+        role: updatedRole
+      }
+    };
+  } catch (error) {
+    console.error("Error in removeAccessFromRoleService:", error);
+    return { success: false, message: roleMessages.UPDATE.FAILED };
   }
 };

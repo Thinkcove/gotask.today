@@ -44,6 +44,7 @@ export const API_PATHS = {
   GET_ROLE_BY_ID: "/roles/{id}",
   UPDATE_ROLE: "/roles/{id}",
   DELETE_ROLE: "/roles/{id}",
+  DLETE_ROLEACCESS: "/roleAccess",
 
   //timelogRoutess
   ADD_TIME_SPENT: "/tasklog/{id}",
@@ -52,5 +53,7 @@ export const API_PATHS = {
 
   //organizationRoutes
   CREATE_ORGANIZATION: "/createOrganization",
-  GET_ORGANIZATIONS: "/getAllOrganizations"
+  GET_ORGANIZATIONS: "/getAllOrganizations",
+  GET_ORG_BY_ID: "/getOrgById/{id}",
+  UPDATE_ORGANIZATION: "/updateOrg/{id}"
 };

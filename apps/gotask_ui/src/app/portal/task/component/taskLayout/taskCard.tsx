@@ -5,6 +5,8 @@ import { formatDate } from "@/app/common/utils/common";
 import { ReadMoreTwoTone } from "@mui/icons-material";
 import TaskItem from "./taskItem";
 import { IGroup, ITask } from "../../interface/taskInterface";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface TaskCardProps {
   view: "projects" | "users";
@@ -14,6 +16,7 @@ interface TaskCardProps {
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMore }) => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
     <Paper
       elevation={2}
@@ -53,7 +56,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
             onClick={() => onViewMore(group.id)}
           >
             <Typography variant="subtitle1" sx={{ color: "#741B92" }} fontWeight="bold">
-              View {group.tasks.length - 3} more
+              {transtask("viewmore", { count: group.tasks.length - 3 })}
             </Typography>
             <ReadMoreTwoTone sx={{ color: "#741B92" }} />
           </Box>
@@ -78,7 +81,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
           </>
         ) : (
           <Typography variant="body2" color="textSecondary" align="center">
-            No tasks available
+            {transtask("notask")}
           </Typography>
         )}
       </Box>

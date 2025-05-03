@@ -1,11 +1,23 @@
 import env from "@/app/common/env";
-import { getData, postData } from "@/app/common/utils/apiData";
+import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import { IUserField } from "../interfaces/userInterface";
 
 //createUser
 export const createUser = async (formData: IUserField) => {
   const url = `${env.API_BASE_URL}/createUser`;
   return await postData(url, formData as unknown as Record<string, unknown>);
+};
+
+//update a user
+export const updateUser = async (userId: string, updatedFields: IUserField) => {
+  const url = `${env.API_BASE_URL}/updateUser/${userId}`;
+  return await putData(url, updatedFields as unknown as Record<string, unknown>);
+};
+
+// deleteUser
+export const deleteUser = async (userId: string) => {
+  const url = `${env.API_BASE_URL}/deleteUser/${userId}`; // Assuming the API accepts the userId in the URL
+  return await deleteData(url);
 };
 
 //fetch users
@@ -23,6 +35,7 @@ export const fetchUsers = async () => {
         updatedAt: string;
         projects: string[];
         organizations: string[];
+        role: string;
       }) => ({
         id: user.id,
         name: user.name,
@@ -31,7 +44,8 @@ export const fetchUsers = async () => {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         users: user.projects,
-        organizations: user.organizations
+        organizations: user.organizations,
+        role: user.role
       })
     ) || []
   );

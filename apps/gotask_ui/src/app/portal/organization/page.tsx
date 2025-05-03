@@ -1,33 +1,18 @@
-import { Box, Typography } from "@mui/material";
 import React from "react";
 import OrganizationList from "./components/organizationList";
+import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const page = () => {
+  const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "#741B92",
-          color: "white",
-          p: 1.5,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "600",
-            textTransform: "capitalize"
-          }}
-        >
-          Organization
-        </Typography>
-      </Box>
+      <ModuleHeader name={transorganization("viewname")} />
       <OrganizationList />
     </>
   );
 };
 
 export default page;
+

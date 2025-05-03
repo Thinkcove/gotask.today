@@ -1,4 +1,4 @@
-import { Access } from "../../model/access";
+import { Access } from "../../model/access/access";
 import { Project } from "../../model/project/project";
 import { IUser, User } from "../../model/user/user";
 
@@ -58,6 +58,16 @@ const findProjectsByIds = async (projectIds: string[]) => {
   return await Project.find({ id: { $in: projectIds } });
 };
 
+// Find all userby id
+const findUser = async (id: string): Promise<IUser[] | null> => {
+  return await User.findOne({ id });
+};
+
+// delete user
+const deleteUserId = async (id: string): Promise<IUser[] | null> => {
+  return await User.findOneAndDelete({ id });
+};
+
 export {
   createNewUser,
   findAllUsers,
@@ -65,5 +75,7 @@ export {
   updateUserById,
   findUserByEmail,
   findUsersByIds,
-  findProjectsByIds
+  findProjectsByIds,
+  findUser,
+  deleteUserId
 };

@@ -5,6 +5,7 @@ import RequestHelper from "../../helpers/requestHelper";
 import UserController from "./userController";
 import { withAccessCheck } from "../../middleware/withAccessCheck";
 import { ACTIONS, APPLICATIONS } from "../../constants/utils.ts/access";
+import authStrategy from "../../constants/utils.ts/authStrategy";
 
 const userController = new UserController();
 const tags = [API, "User"];
@@ -21,7 +22,10 @@ UserRoutes.push({
   ),
   config: {
     notes: "Create a new user",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -34,7 +38,10 @@ UserRoutes.push({
   ),
   config: {
     notes: "Get all users",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -47,7 +54,10 @@ UserRoutes.push({
   ),
   config: {
     notes: "Get a user by ID",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -60,7 +70,10 @@ UserRoutes.push({
   ),
   config: {
     notes: "Update user details",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -72,7 +85,10 @@ UserRoutes.push({
     userController.loginUser(new RequestHelper(request), handler),
   config: {
     notes: "Authenticate user login",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -85,7 +101,10 @@ UserRoutes.push({
   ),
   config: {
     notes: "Delete a user by ID",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 

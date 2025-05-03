@@ -1,7 +1,7 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { hasAccess } from "../constants/utils.ts/accessControls";
+import { hasAccess } from "../constants/accessCheck/accessControls";
 
-export function withAccessCheck(appName: string, action: string, handlerFunc: any) {
+export function permission(appName: string, action: string, handlerFunc: any) {
   return async (request: Request, h: ResponseToolkit) => {
     const user = request.auth?.artifacts?.user;
 

@@ -3,9 +3,9 @@ import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
 import UserController from "./userController";
-import { withAccessCheck } from "../../middleware/withAccessCheck";
-import { ACTIONS, APPLICATIONS } from "../../constants/utils.ts/access";
-import authStrategy from "../../constants/utils.ts/authStrategy";
+import { permission } from "../../middleware/permission";
+import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
+import authStrategy from "../../constants/auth/authStrategy";
 
 const userController = new UserController();
 const tags = [API, "User"];
@@ -17,7 +17,7 @@ const appName = APPLICATIONS.USER_MANAGEMENT;
 UserRoutes.push({
   path: API_PATHS.CREATE_USER,
   method: API_METHODS.POST,
-  handler: withAccessCheck(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
     userController.createUser(new RequestHelper(request), handler)
   ),
   config: {
@@ -33,7 +33,7 @@ UserRoutes.push({
 UserRoutes.push({
   path: API_PATHS.GET_USERS,
   method: API_METHODS.GET,
-  handler: withAccessCheck(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     userController.getAllUsers(new RequestHelper(request), handler)
   ),
   config: {
@@ -49,7 +49,7 @@ UserRoutes.push({
 UserRoutes.push({
   path: API_PATHS.GET_USER_BY_ID,
   method: API_METHODS.GET,
-  handler: withAccessCheck(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit) =>
+  handler: permission(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit) =>
     userController.getUserById(new RequestHelper(request), handler)
   ),
   config: {
@@ -65,7 +65,7 @@ UserRoutes.push({
 UserRoutes.push({
   path: API_PATHS.UPDATE_USER,
   method: API_METHODS.PUT,
-  handler: withAccessCheck(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
+  handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
     userController.updateUser(new RequestHelper(request), handler)
   ),
   config: {
@@ -93,7 +93,7 @@ UserRoutes.push({
 UserRoutes.push({
   path: API_PATHS.DELETE_USER,
   method: API_METHODS.DELETE,
-  handler: withAccessCheck(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
+  handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
     userController.deleteUser(new RequestHelper(request), handler)
   ),
   config: {

@@ -1,5 +1,3 @@
-// src/constants/access/applications.ts
-
 export const APPLICATIONS = {
   USER_MANAGEMENT: "User Management",
   TASK_MANAGEMENT: "Task Management",
@@ -10,8 +8,6 @@ export const APPLICATIONS = {
 } as const;
 
 export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];
-
-// src/constants/access/actions.ts
 
 export const ACTIONS = {
   CREATE: "CREATE",

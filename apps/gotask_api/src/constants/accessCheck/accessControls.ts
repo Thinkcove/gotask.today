@@ -1,5 +1,3 @@
-// utils/accessControl.ts
-
 interface User {
   role?: {
     accessDetails?: {

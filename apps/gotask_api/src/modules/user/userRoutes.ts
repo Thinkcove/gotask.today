@@ -11,7 +11,7 @@ const userController = new UserController();
 const tags = [API, "User"];
 const UserRoutes = [];
 
-const appName = APPLICATIONS.USER_MANAGEMENT;
+const appName = APPLICATIONS.USER;
 
 // Route: Create User
 UserRoutes.push({

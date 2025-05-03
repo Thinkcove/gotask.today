@@ -1,12 +1,13 @@
-export const apiHeaders = () => ({
+export const apiHeaders = (token?: string) => ({
+  Authorization: `Bearer ${token}`,
   "Content-Type": "application/json"
 });
 
 // postData function
-export const postData = async (url: string, payload: Record<string, unknown>) => {
+export const postData = async (url: string, payload: Record<string, unknown>, token: string) => {
   const response = await fetch(url, {
     method: "POST",
-    headers: apiHeaders(),
+    headers: apiHeaders(token),
     body: JSON.stringify(payload)
   });
 
@@ -23,10 +24,10 @@ export const postData = async (url: string, payload: Record<string, unknown>) =>
 };
 
 // putData function
-export const putData = async (url: string, payload: Record<string, unknown>) => {
+export const putData = async (url: string, payload: Record<string, unknown>, token?: string) => {
   const response = await fetch(url, {
     method: "PUT",
-    headers: apiHeaders(),
+    headers: apiHeaders(token),
     body: JSON.stringify(payload)
   });
 
@@ -41,10 +42,10 @@ export const putData = async (url: string, payload: Record<string, unknown>) => 
 };
 
 //GETData function
-export const getData = async (url: string) => {
+export const getData = async (url: string, token?: string) => {
   const response = await fetch(url, {
     method: "GET",
-    headers: apiHeaders()
+    headers: apiHeaders(token)
   });
   if (!response.ok) {
     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -54,10 +55,14 @@ export const getData = async (url: string) => {
 };
 
 //delete
-export const deleteData = async (url: string, payload?: Record<string, unknown>) => {
+export const deleteData = async (
+  url: string,
+  payload?: Record<string, unknown>,
+  token?: string
+) => {
   const options: RequestInit = {
     method: "DELETE",
-    headers: apiHeaders()
+    headers: apiHeaders(token)
   };
   if (payload) {
     options.body = JSON.stringify(payload);

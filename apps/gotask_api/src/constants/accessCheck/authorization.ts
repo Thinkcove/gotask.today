@@ -1,10 +1,10 @@
 export const APPLICATIONS = {
-  USER_MANAGEMENT: "User Management",
-  TASK_MANAGEMENT: "Task Management",
-  PROJECT_MANAGEMENT: "Project Management",
-  ROLE_MANAGEMENT: "Role Management",
-  ACCESS_MANAGEMENT: "Access Management",
-  ORGANIZATION_MANAGEMENT: "Organization Management"
+  USER: "User Management",
+  TASK: "Task Management",
+  PROJECT: "Project Management",
+  ROLE: "Role Management",
+  ACCESS: "Access Management",
+  ORGANIZATION: "Organization Management"
 } as const;
 
 export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];
@@ -14,7 +14,10 @@ export const ACTIONS = {
   READ: "READ",
   UPDATE: "UPDATE",
   DELETE: "DELETE",
-  VIEW: "VIEW"
+  VIEW: "VIEW",
+  ASSIGN: "ASSIGN",
+  UNASSIGN: "UNASSIGN",
+  REVOKE_ACCESS: "REVOKE"
 } as const;
 
 export type ActionType = (typeof ACTIONS)[keyof typeof ACTIONS];

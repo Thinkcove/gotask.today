@@ -1,11 +1,16 @@
 import env from "@/app/common/env";
 import { IProjectField } from "../interfaces/projectInterface";
 import { getData, postData, putData } from "@/app/common/utils/apiData";
+import { fetchToken } from "@/app/common/utils/authToken";
 
 //createProject
 export const createProject = async (formData: IProjectField) => {
+  const token = fetchToken();
+  if (!token) {
+    return { error: "Please login again." };
+  }
   const url = `${env.API_BASE_URL}/createProject`;
-  return await postData(url, formData as unknown as Record<string, unknown>);
+  return await postData(url, formData as unknown as Record<string, unknown>, token);
 };
 
 //update a project
@@ -20,7 +25,11 @@ export const fetchProjectStatusCounts = async () => {
 };
 
 export const fetchProjects = async () => {
-  const { data } = await getData(`${env.API_BASE_URL}/getAllProjects`);
+  const token = fetchToken();
+  if (!token) {
+    return { error: "Please login again." };
+  }
+  const { data } = await getData(`${env.API_BASE_URL}/getAllProjects`, token);
 
   return (
     data?.map(
@@ -52,8 +61,12 @@ export const assignUsersToProject = async (userIds: string[], projectId: string)
       user_id: userIds,
       project_id: projectId
     };
+    const token = fetchToken();
+    if (!token) {
+      return { error: "Please login again." };
+    }
     const url = `${env.API_BASE_URL}/usertoProject`;
-    return await postData(url, payload);
+    return await postData(url, payload, token);
   } catch (error) {
     console.error("Error assigning users to project:", error);
     throw error;
@@ -67,8 +80,12 @@ export const removeUsersFromProject = async (userIds: string[], projectId: strin
       user_id: userIds,
       project_id: projectId
     };
+    const token = fetchToken();
+    if (!token) {
+      return { error: "Please login again." };
+    }
     const url = `${env.API_BASE_URL}/removeUser`;
-    return await postData(url, payload);
+    return await postData(url, payload, token);
   } catch {
     return {
       message: "failed"

@@ -2,7 +2,7 @@ import useSWR from "swr";
 import env from "@/app/common/env";
 import { getData, postData } from "@/app/common/utils/apiData";
 import { IFormField, ITaskComment, Project, TaskPayload } from "../interface/taskInterface";
-import { fetchToken, withAuth } from "@/app/common/utils/authToken";
+import { withAuth } from "@/app/common/utils/authToken";
 
 // Modify both hooks with an optional dateRange parameter
 export const useProjectGroupTask = (

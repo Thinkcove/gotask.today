@@ -3,8 +3,8 @@ import connectDB from "./src/config/database";
 import dotenv from "dotenv";
 import { plugins } from "./src/plugins/plugins";
 import routes from "./src/routes/route";
-import authStrategy from "./src/constants/utils.ts/authStrategy";
-import { authValidation } from "./src/constants/utils.ts/authValidation";
+import authStrategy from "./src/constants/auth/authStrategy";
+import { authValidation } from "./src/constants/auth/authValidation";
 
 dotenv.config();
 const server = Hapi.server({

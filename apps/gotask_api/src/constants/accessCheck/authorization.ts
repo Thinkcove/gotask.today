@@ -12,12 +12,12 @@ export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];
 export const ACTIONS = {
   CREATE: "CREATE",
   READ: "READ",
-  UPDATE: "UPDATE",
+  UPDATE: "EDIT",
   DELETE: "DELETE",
   VIEW: "VIEW",
   ASSIGN: "ASSIGN",
   UNASSIGN: "UNASSIGN",
-  REVOKE_ACCESS: "REVOKE"
+  REVOKE_ACCESS: "REMOVE ACCESS"
 } as const;
 
 export type ActionType = (typeof ACTIONS)[keyof typeof ACTIONS];

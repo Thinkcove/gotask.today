@@ -11,3 +11,13 @@ export const storeToken = (token: string) => {
 export const removeToken = () => {
   localStorage.removeItem("token");
 };
+
+export const withAuth = async <T>(
+  callback: (token: string) => Promise<T>
+): Promise<T | { error: string }> => {
+  const token = fetchToken();
+  if (!token) {
+    return { error: "Please login again." };
+  }
+  return await callback(token);
+};

@@ -57,8 +57,8 @@ export const getData = async (url: string, token?: string) => {
 //delete
 export const deleteData = async (
   url: string,
-  payload?: Record<string, unknown>,
-  token?: string
+  token?: string,
+  payload?: Record<string, unknown>
 ) => {
   const options: RequestInit = {
     method: "DELETE",

@@ -1,6 +1,8 @@
 import { Box, Typography, Tooltip, Avatar } from "@mui/material";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface Task {
   id: string;
@@ -26,6 +28,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   getStatusColor,
   formatDate
 }) => {
+  const { canAccess } = userPermission();
   return (
     <Box
       key={task.id}
@@ -82,11 +85,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
             width: "100%",
             backgroundColor: "#F9F9F9",
             borderRadius: 2,
-            cursor: "pointer",
+            cursor: canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) ? "pointer" : "default",
             padding: 1,
             boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)"
           }}
-          onClick={() => onTaskClick(task.id)}
+          onClick={
+            canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) ? () => onTaskClick(task.id) : undefined
+          }
         >
           <Box
             sx={{

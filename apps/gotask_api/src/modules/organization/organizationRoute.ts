@@ -3,9 +3,12 @@ import OrganizationController from "./organizationController";
 import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
+import { permission } from "../../middleware/permission";
+import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
+import authStrategy from "../../constants/auth/authStrategy";
 
 const organizationController = new OrganizationController();
-
+const appName = APPLICATIONS.ORGANIZATION;
 const tags = [API, "Organization"];
 const OrganizationRoutes = [];
 
@@ -13,11 +16,15 @@ const OrganizationRoutes = [];
 OrganizationRoutes.push({
   path: API_PATHS.CREATE_ORGANIZATION,
   method: API_METHODS.POST,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    organizationController.createOrganization(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    organizationController.createOrganization(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Create a New Organization",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -25,11 +32,15 @@ OrganizationRoutes.push({
 OrganizationRoutes.push({
   path: API_PATHS.GET_ORGANIZATIONS,
   method: API_METHODS.GET,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    organizationController.getAllOrganizations(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+    organizationController.getAllOrganizations(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Get All Organizations",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -37,11 +48,15 @@ OrganizationRoutes.push({
 OrganizationRoutes.push({
   path: API_PATHS.GET_ORG_BY_ID,
   method: API_METHODS.GET,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    organizationController.getOrgById(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit) =>
+    organizationController.getOrgById(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Get a organization by ID",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -49,11 +64,15 @@ OrganizationRoutes.push({
 OrganizationRoutes.push({
   path: API_PATHS.UPDATE_ORGANIZATION,
   method: API_METHODS.PUT,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    organizationController.updateOrg(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
+    organizationController.updateOrg(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Update organization details",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 export default OrganizationRoutes;

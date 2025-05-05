@@ -17,8 +17,11 @@ import TaskFilterControls from "../taskFilter/taskFilterControls";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 const TaskList: React.FC = () => {
+  const { canAccess } = userPermission();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [view, setView] = useState<"projects" | "users">("projects");
   const router = useRouter();
@@ -272,11 +275,13 @@ const TaskList: React.FC = () => {
       </Box>
 
       {/* Add Task Button */}
-      <ActionButton
-        label={transtask("createtask")}
-        icon={<AddIcon sx={{ color: "white" }} />}
-        onClick={() => router.push("/portal/task/createTask")}
-      />
+      {canAccess(APPLICATIONS.TASK, ACTIONS.CREATE) && (
+        <ActionButton
+          label={transtask("createtask")}
+          icon={<AddIcon sx={{ color: "white" }} />}
+          onClick={() => router.push("/portal/task/createTask")}
+        />
+      )}
 
       {/* View More Drawer */}
       <ViewMoreList

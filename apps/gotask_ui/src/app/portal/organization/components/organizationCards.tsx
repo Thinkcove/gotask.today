@@ -9,12 +9,15 @@ import { useRouter } from "next/navigation";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface OrganizationCardProps {
   organizations: Organization[] | null;
 }
 
 const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) => {
+  const { canAccess } = userPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const router = useRouter();
   if (!organizations) {
@@ -68,28 +71,30 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
                 </Stack>
 
                 {/* Action */}
-                <Box display="flex" justifyContent="flex-end">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      color: "#741B92",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      "&:hover": {
-                        textDecoration: "underline"
-                      }
-                    }}
-                    onClick={() => {
-                      router.push(`/portal/organization/viewOrganization/${organization.id}`);
-                    }}
-                  >
-                    <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                      {transorganization("viewdetails")}
-                    </Typography>
-                    <ArrowForward fontSize="small" />
+                {canAccess(APPLICATIONS.ORGANIZATION, ACTIONS.VIEW) && (
+                  <Box display="flex" justifyContent="flex-end">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        color: "#741B92",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        "&:hover": {
+                          textDecoration: "underline"
+                        }
+                      }}
+                      onClick={() => {
+                        router.push(`/portal/organization/viewOrganization/${organization.id}`);
+                      }}
+                    >
+                      <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
+                        {transorganization("viewdetails")}
+                      </Typography>
+                      <ArrowForward fontSize="small" />
+                    </Box>
                   </Box>
-                </Box>
+                )}
               </Stack>
             </CardComponent>
           </Grid>

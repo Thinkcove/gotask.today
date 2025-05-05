@@ -27,6 +27,9 @@ import { Theme } from "@mui/material/styles";
 import UserInfoCard from "../appBar/userMenu";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { useUser } from "@/app/userContext";
+import { hasPermission } from "@/app/common/utils/permisssion";
+import { ACTIONS, ActionType, ApplicationName } from "@/app/common/utils/authCheck";
 
 const iconMap: Record<string, React.ReactNode> = {
   DashboardIcon: <GridViewIcon />,
@@ -41,6 +44,8 @@ const iconMap: Record<string, React.ReactNode> = {
 const drawerWidth = 260;
 
 const Sidebar: React.FC = () => {
+  const { user } = useUser();
+
   const transsidebar = useTranslations(LOCALIZATION.TRANSITION.SIDEBAR);
   const [open, setOpen] = useState<boolean>(false);
   const [collapsed] = useState<boolean>(false);
@@ -48,6 +53,21 @@ const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const drawerRef = useRef<HTMLDivElement>(null);
+  const accessDetails = (user?.role?.accessDetails ?? []) as {
+    id: string;
+    name: string;
+    application: {
+      access: ApplicationName;
+      actions: ActionType[];
+      _id: string;
+    }[];
+  }[];
+
+  // Only include menu items the user has READ access to
+  const filteredMenuItems = menuItemsData.filter((item) => {
+    if (!item.access) return true; // Allow items like Dashboard
+    return hasPermission(accessDetails, item.access as ApplicationName, ACTIONS.READ);
+  });
 
   const selectedIndex = menuItemsData.findIndex((item) => pathname === item.path);
 
@@ -133,7 +153,7 @@ const Sidebar: React.FC = () => {
 
           <Box sx={{ overflow: "auto", px: 1, flex: 1 }}>
             <List>
-              {menuItemsData.map((item, index) => (
+              {filteredMenuItems.map((item, index) => (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton
                     selected={selectedIndex === index}

@@ -12,6 +12,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import LabelValueText from "@/app/component/text/labelValueText";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface OrgDetailProps {
   org: Organization;
@@ -19,6 +21,7 @@ interface OrgDetailProps {
 }
 
 const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
+  const { canAccess } = userPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const router = useRouter();
   const { orgId } = useParams();
@@ -33,6 +36,8 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
+  const hasUserView = canAccess(APPLICATIONS.USER, ACTIONS.VIEW);
+  const hasProjectView = canAccess(APPLICATIONS.PROJECT, ACTIONS.VIEW);
 
   return (
     <>
@@ -63,9 +68,11 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                 {org.name}
               </Typography>
 
-              <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
-                <Edit />
-              </IconButton>
+              {canAccess(APPLICATIONS.ORGANIZATION, ACTIONS.UPDATE) && (
+                <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+                  <Edit />
+                </IconButton>
+              )}
             </Box>
           </Box>
           {/* Basic Details */}
@@ -113,7 +120,9 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                         }
                       }}
                       onClick={() => {
-                        router.push(`/portal/user/viewUser/${user.id}`);
+                        if (hasUserView) {
+                          router.push(`/portal/user/viewUser/${user.id}`);
+                        }
                       }}
                     >
                       <Stack direction="row" spacing={2} alignItems="center">
@@ -165,7 +174,9 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                         }
                       }}
                       onClick={() => {
-                        router.push(`/portal/project/viewProject/${project.id}`);
+                        if (hasProjectView) {
+                          router.push(`/portal/project/viewProject/${project.id}`);
+                        }
                       }}
                     >
                       <Stack direction="row" spacing={2} alignItems="center">

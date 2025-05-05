@@ -10,6 +10,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface ProjectCardProps {
   projects: Project[] | null; // Ensure projects is an array or null
@@ -17,6 +19,7 @@ interface ProjectCardProps {
 }
 
 const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
+  const { canAccess } = userPermission();
   const router = useRouter();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
@@ -106,28 +109,30 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
               </Box>
 
               {/* View Details Button */}
-              <Box display="flex" justifyContent="flex-end">
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    color: "#741B92",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    "&:hover": {
-                      textDecoration: "underline"
-                    }
-                  }}
-                  onClick={() => {
-                    router.push(`/portal/project/viewProject/${project.id}`);
-                  }}
-                >
-                  <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                    {transproject("viewdetails")}
-                  </Typography>
-                  <ArrowForward fontSize="small" />
+              {canAccess(APPLICATIONS.PROJECT, ACTIONS.VIEW) && (
+                <Box display="flex" justifyContent="flex-end">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      color: "#741B92",
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      "&:hover": {
+                        textDecoration: "underline"
+                      }
+                    }}
+                    onClick={() => {
+                      router.push(`/portal/project/viewProject/${project.id}`);
+                    }}
+                  >
+                    <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
+                      {transproject("viewdetails")}
+                    </Typography>
+                    <ArrowForward fontSize="small" />
+                  </Box>
                 </Box>
-              </Box>
+              )}
             </CardComponent>
           </Grid>
         ))}

@@ -2,64 +2,72 @@ import env from "@/app/common/env";
 import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
 import { IRole, Role } from "../interfaces/roleInterface";
+import { withAuth } from "@/app/common/utils/authToken";
 
-//fetch all users
+// Create Role
+export const createRole = async (formData: IRole) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/roles`;
+    return postData(url, formData as unknown as Record<string, unknown>, token);
+  });
+};
+
+// Update Role
+export const updateRole = async (roleId: string, updatedFields: Role) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/roles/${roleId}`;
+    return putData(url, updatedFields as unknown as Record<string, unknown>, token);
+  });
+};
+
+// Get All Roles
+export const getRoleData = async () => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/roles`;
+    return getData(url, token);
+  });
+};
+
+// Fetch Roles (for dropdowns or simplified lists)
 const fetchRole = async () => {
-  return getData(`${env.API_BASE_URL}/roles`);
+  return withAuth((token) => getData(`${env.API_BASE_URL}/roles`, token));
 };
 
 export const fetchAllRoles = () => {
-  const { data } = useSWR([`fetchrole`], () => fetchRole(), {
+  const { data } = useSWR([`fetchrole`], fetchRole, {
     revalidateOnFocus: false
   });
   return {
     getRoles:
-      data?.map((user: { name: string; _id: string }) => ({
-        name: user.name,
-        id: user._id
+      data?.map((role: { name: string; _id: string }) => ({
+        name: role.name,
+        id: role._id
       })) || []
   };
 };
 
-//get all roles
-export const getRoleData = async () => {
-  const res = await fetch(`${env.API_BASE_URL}/roles`);
-  if (!res.ok) throw new Error("Failed to fetch role");
-  const result = await res.json();
-  return result;
-};
-
-//get all access
+// Fetch Access
 const fetchAccess = async () => {
-  return getData(`${env.API_BASE_URL}/access`);
+  return withAuth((token) => getData(`${env.API_BASE_URL}/access`, token));
 };
 
 export const fetchAllAccess = () => {
-  const { data } = useSWR([`fetchaccess`], () => fetchAccess(), {
+  const { data } = useSWR([`fetchaccess`], fetchAccess, {
     revalidateOnFocus: false
   });
   return {
     getAllAccess:
-      data?.map((user: { name: string; id: string }) => ({
-        name: user.name,
-        id: user.id
+      data?.map((access: { name: string; id: string }) => ({
+        name: access.name,
+        id: access.id
       })) || []
   };
 };
 
-//update a role
-export const updateRole = async (roleId: string, updatedFields: Role) => {
-  const url = `${env.API_BASE_URL}/roles/${roleId}`;
-  return await putData(url, updatedFields as unknown as Record<string, unknown>);
-};
-
-//remove a access from a role
+// Remove Access from Role
 export const removeAccessFromRole = async (roleId: string, accessId: string) => {
-  return await deleteData(`${env.API_BASE_URL}/roleAccess/${roleId}`, { accessId });
-};
-
-//createROle
-export const createRole = async (formData: IRole) => {
-  const url = `${env.API_BASE_URL}/roles`;
-  return await postData(url, formData as unknown as Record<string, unknown>);
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/roleAccess/${roleId}`;
+    return deleteData(url, token, { accessId });
+  });
 };

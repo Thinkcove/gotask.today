@@ -4,9 +4,12 @@ import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
 import RoleController from "./roleController";
+import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
+import { permission } from "../../middleware/permission";
+import authStrategy from "../../constants/auth/authStrategy";
 
 const roleController = new RoleController();
-
+const appName = APPLICATIONS.ROLE;
 const tags = [API, "Role"];
 const RoleRoutes = [];
 
@@ -14,8 +17,9 @@ const RoleRoutes = [];
 RoleRoutes.push({
   path: API_PATHS.CREATE_ROLE, // "/roles"
   method: API_METHODS.POST,
-  handler: (request: Request, h: ResponseToolkit) =>
-    roleController.createRole(new RequestHelper(request), h),
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, h: ResponseToolkit) =>
+    roleController.createRole(new RequestHelper(request), h)
+  ),
   options: {
     validate: {
       payload: Joi.object({
@@ -24,7 +28,10 @@ RoleRoutes.push({
       })
     },
     notes: "Create a new role",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -32,11 +39,15 @@ RoleRoutes.push({
 RoleRoutes.push({
   path: API_PATHS.GET_ALL_ROLES, // "/roles"
   method: API_METHODS.GET,
-  handler: (request: Request, h: ResponseToolkit) =>
-    roleController.getAllRoles(new RequestHelper(request), h),
+  handler: permission(appName, ACTIONS.READ, (request: Request, h: ResponseToolkit) =>
+    roleController.getAllRoles(new RequestHelper(request), h)
+  ),
   options: {
     notes: "Get all roles",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -44,8 +55,9 @@ RoleRoutes.push({
 RoleRoutes.push({
   path: API_PATHS.GET_ROLE_BY_ID, //  "/roles/{id}"
   method: API_METHODS.GET,
-  handler: (request: Request, h: ResponseToolkit) =>
-    roleController.getRoleById(new RequestHelper(request), h),
+  handler: permission(appName, ACTIONS.VIEW, (request: Request, h: ResponseToolkit) =>
+    roleController.getRoleById(new RequestHelper(request), h)
+  ),
   options: {
     validate: {
       params: Joi.object({
@@ -53,7 +65,10 @@ RoleRoutes.push({
       })
     },
     notes: "Get role by ID",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -61,8 +76,9 @@ RoleRoutes.push({
 RoleRoutes.push({
   path: API_PATHS.UPDATE_ROLE, //  "/roles/{id}"
   method: API_METHODS.PUT,
-  handler: (request: Request, h: ResponseToolkit) =>
-    roleController.updateRole(new RequestHelper(request), h),
+  handler: permission(appName, ACTIONS.UPDATE, (request: Request, h: ResponseToolkit) =>
+    roleController.updateRole(new RequestHelper(request), h)
+  ),
   options: {
     validate: {
       params: Joi.object({
@@ -74,7 +90,10 @@ RoleRoutes.push({
       })
     },
     notes: "Update role by ID",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -82,8 +101,9 @@ RoleRoutes.push({
 RoleRoutes.push({
   path: API_PATHS.DELETE_ROLE, // "/roles/{id}"
   method: API_METHODS.DELETE,
-  handler: (request: Request, h: ResponseToolkit) =>
-    roleController.deleteRole(new RequestHelper(request), h),
+  handler: permission(appName, ACTIONS.DELETE, (request: Request, h: ResponseToolkit) =>
+    roleController.deleteRole(new RequestHelper(request), h)
+  ),
   options: {
     validate: {
       params: Joi.object({
@@ -91,7 +111,10 @@ RoleRoutes.push({
       })
     },
     notes: "Delete role by ID",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -99,11 +122,15 @@ RoleRoutes.push({
 RoleRoutes.push({
   path: `${API_PATHS.DLETE_ROLEACCESS}/{id}`,
   method: API_METHODS.DELETE,
-  handler: (request: Request, h: ResponseToolkit) =>
-    roleController.removeAccessFromRole(new RequestHelper(request), h),
+  handler: permission(appName, ACTIONS.REVOKE_ACCESS, (request: Request, h: ResponseToolkit) =>
+    roleController.removeAccessFromRole(new RequestHelper(request), h)
+  ),
   options: {
     notes: "Remove specific access from a role",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 

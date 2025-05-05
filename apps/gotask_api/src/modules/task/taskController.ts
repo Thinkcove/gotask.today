@@ -62,7 +62,9 @@ class TaskController extends BaseController {
         search_vars,
         min_date,
         max_date,
-        date_var
+        date_var,
+        more_variation,
+        less_variation
       } = requestHelper.getPayload();
 
       const result = await getTasksByProject(
@@ -74,7 +76,9 @@ class TaskController extends BaseController {
         search_vars,
         min_date,
         max_date,
-        date_var
+        date_var,
+        more_variation,
+        less_variation
       );
 
       return this.sendResponse(handler, result);

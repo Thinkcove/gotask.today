@@ -3,9 +3,12 @@ import ProjectController from "./projectController";
 import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
+import { permission } from "../../middleware/permission";
+import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
+import authStrategy from "../../constants/auth/authStrategy";
 
 const projectController = new ProjectController();
-
+const appName = APPLICATIONS.PROJECT;
 const tags = [API, "Project"];
 const ProjectRoutes = [];
 
@@ -13,11 +16,15 @@ const ProjectRoutes = [];
 ProjectRoutes.push({
   path: API_PATHS.CREATE_PROJECT,
   method: API_METHODS.POST,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    projectController.createProject(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    projectController.createProject(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Create a New Project",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -25,11 +32,15 @@ ProjectRoutes.push({
 ProjectRoutes.push({
   path: API_PATHS.GET_PROJECTS,
   method: API_METHODS.GET,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    projectController.getAllProjects(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+    projectController.getAllProjects(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Get All Projects",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -37,11 +48,15 @@ ProjectRoutes.push({
 ProjectRoutes.push({
   path: API_PATHS.ASSIGN_USER_TO_PROJECT,
   method: API_METHODS.POST,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    projectController.assignUserToProject(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.ASSIGN, (request: Request, handler: ResponseToolkit) =>
+    projectController.assignUserToProject(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Assign User to Project",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -73,11 +88,15 @@ ProjectRoutes.push({
 ProjectRoutes.push({
   path: API_PATHS.GET_PROJECT_BY_ID,
   method: API_METHODS.GET,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    projectController.getProjectById(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit) =>
+    projectController.getProjectById(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Get a project by ID",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -85,11 +104,15 @@ ProjectRoutes.push({
 ProjectRoutes.push({
   path: API_PATHS.REMOVE_USER_FROM_PROJECT,
   method: API_METHODS.POST,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    projectController.removeUserFromProject(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.UNASSIGN, (request: Request, handler: ResponseToolkit) =>
+    projectController.removeUserFromProject(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Remove User from Project",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -97,11 +120,15 @@ ProjectRoutes.push({
 ProjectRoutes.push({
   path: API_PATHS.UPDATE_PROJECT,
   method: API_METHODS.PUT,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    projectController.updateProjectDetails(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
+    projectController.updateProjectDetails(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Update project details",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 export default ProjectRoutes;

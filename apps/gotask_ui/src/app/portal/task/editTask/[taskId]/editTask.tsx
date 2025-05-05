@@ -15,6 +15,8 @@ import { KeyedMutator } from "swr";
 import TimeSpentPopup from "../timeSpentPopup";
 import TimeProgressBar from "@/app/portal/task/editTask/timeProgressBar";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface EditTaskProps {
   data: ITask;
@@ -22,6 +24,7 @@ interface EditTaskProps {
 }
 
 const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const { user } = useUser();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -75,7 +78,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       await mutate();
       setSnackbar({
         open: true,
-        message: "Task updated successfully!",
+        message: transtask("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       setTimeout(() => router.back(), 2000);
@@ -83,7 +86,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       console.error("Error while updating task:", error);
       setSnackbar({
         open: true,
-        message: "Error updating task",
+        message: transtask("upadteerror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -103,7 +106,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   return (
     <>
-      <ModuleHeader name="Task" />
+      <ModuleHeader name={transtask("tasks")} />
       <Box
         sx={{
           maxWidth: "1400px",
@@ -133,7 +136,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             }}
           >
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-              Edit Task
+              {transtask("edittask")}
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <Button
@@ -148,7 +151,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                 }}
                 onClick={() => router.back()}
               >
-                Cancel
+                {transtask("canceledit")}
               </Button>
               <Button
                 variant="contained"
@@ -163,7 +166,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                 }}
                 onClick={handleSubmit}
               >
-                Save
+                {transtask("save")}
               </Button>
             </Box>
           </Box>
@@ -180,7 +183,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             }}
           >
             <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
-              Show History
+              {transtask("showhistory")}
             </Typography>
             <History />
           </Box>

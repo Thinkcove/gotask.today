@@ -2,8 +2,11 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import { Person, Work, CheckCircle, Cancel } from "@mui/icons-material";
 import { useUser } from "@/app/userContext";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const UserInfoCard: React.FC = ({}) => {
+  const transappbar = useTranslations(LOCALIZATION.TRANSITION.APPBAR);
   const { user, logout } = useUser();
 
   if (!user) return null;
@@ -76,7 +79,7 @@ const UserInfoCard: React.FC = ({}) => {
             }
           }}
         >
-          Logout
+          {transappbar("logout")}
         </Box>
       </Box>
     </>

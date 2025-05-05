@@ -1,6 +1,5 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { comparePassword } from "../../constants/utils.ts/common";
 import jwt from "jsonwebtoken";
 import {
   createUser,
@@ -12,6 +11,7 @@ import {
 } from "./userService";
 import { getRoleByIdService } from "../role/roleService";
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { comparePassword } from "../../constants/utils/common";
 
 class UserController extends BaseController {
   // Create a new user

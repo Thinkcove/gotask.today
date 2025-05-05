@@ -9,8 +9,11 @@ import { fetcher } from "../services/projectAction";
 import useSWR from "swr";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 const ProjectList = () => {
+  const { canAccess } = userPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: projects, error, mutate: ProjectUpdate } = useSWR("fetch-projects", fetcher);
@@ -32,12 +35,14 @@ const ProjectList = () => {
 
       <ProjectCards projects={projects} error={error} />
 
-      {/* Add Task Button */}
-      <ActionButton
-        label={transproject("createnewproject")}
-        icon={<AddIcon sx={{ color: "white" }} />}
-        onClick={() => setIsModalOpen(true)}
-      />
+      {/* Add Project Button */}
+      {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (
+        <ActionButton
+          label={transproject("createnewproject")}
+          icon={<AddIcon sx={{ color: "white" }} />}
+          onClick={() => setIsModalOpen(true)}
+        />
+      )}
     </Box>
   );
 };

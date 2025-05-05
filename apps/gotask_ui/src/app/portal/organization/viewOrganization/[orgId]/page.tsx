@@ -5,12 +5,17 @@ import { useParams } from "next/navigation";
 import env from "@/app/common/env";
 import { CircularProgress, Box } from "@mui/material";
 import OrgDetail from "./orgDetail";
+import { getData } from "@/app/common/utils/apiData";
+import { fetchToken } from "@/app/common/utils/authToken";
 
 const ViewAction: React.FC = () => {
   const { orgId } = useParams();
-  const { data, mutate } = useSWR(`${env.API_BASE_URL}/getOrgById/${orgId}`, {
-    revalidateOnFocus: false
-  });
+  const token = fetchToken();
+  const { data, mutate } = useSWR(
+    token ? `${env.API_BASE_URL}/getOrgById/${orgId}` : null,
+    (url) => getData(url, token ?? undefined),
+    { revalidateOnFocus: false }
+  );
   const selectedTask = data?.data || null;
 
   return selectedTask ? (

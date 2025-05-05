@@ -4,6 +4,8 @@ import FormField from "@/app/component/formField";
 import { IUserField } from "../interfaces/userInterface";
 import { fetchAllOrganizations } from "../../organization/services/organizationAction";
 import { fetchAllRoles } from "../../role/services/roleAction";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface IUserInputProps {
   formData: IUserField;
@@ -20,6 +22,7 @@ const UserInput = ({
   readOnlyFields = [],
   isEdit = false
 }: IUserInputProps) => {
+  const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const { getOrganizations } = fetchAllOrganizations();
   const { getRoles } = fetchAllRoles();
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
@@ -33,22 +36,22 @@ const UserInput = ({
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <FormField
-          label="User Name"
+          label={transuser("labeluser")}
           type="text"
           value={formData.name}
           onChange={(value) => handleChange("name", String(value))}
           required
           error={errors.name}
           disabled={isReadOnly("name")}
-          placeholder="Enter user name"
+          placeholder={transuser("placeholderuser")}
         />
       </Grid>
       <Grid item xs={12}>
         <FormField
-          label="Email"
+          label={transuser("labelemail")}
           type="text"
           inputType="email"
-          placeholder="Enter your email"
+          placeholder={transuser("placeholderemail")}
           required
           value={formData.user_id}
           onChange={(value) => handleChange("user_id", String(value))}
@@ -58,9 +61,9 @@ const UserInput = ({
       </Grid>
       <Grid item xs={12} sm={6}>
         <FormField
-          label="Role"
+          label={transuser("labelrole")}
           type="select"
-          placeholder="Select Role"
+          placeholder={transuser("placeholderrole")}
           options={getRoles}
           error={errors?.roleId}
           value={formData.roleId || ""}
@@ -69,9 +72,9 @@ const UserInput = ({
       </Grid>
       <Grid item xs={12} sm={6}>
         <FormField
-          label="Organization"
+          label={transuser("labelorganization")}
           type="multiselect"
-          placeholder="Select Organization"
+          placeholder={transuser("placeholderorganization")}
           options={getOrganizations}
           value={selectedOrganizationIds}
           onChange={(ids) => {
@@ -87,10 +90,10 @@ const UserInput = ({
       {isEdit && (
         <Grid item xs={12}>
           <FormField
-            label="Password"
+            label={transuser("labelpassword")}
             type="text"
             inputType="password"
-            placeholder="Enter password"
+            placeholder={transuser("placeholderpassword")}
             required
             value={formData.password || ""}
             onChange={(value) => handleChange("password", String(value))}

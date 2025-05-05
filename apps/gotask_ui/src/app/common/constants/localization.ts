@@ -1,12 +1,15 @@
 export const LOCALIZATION = {
   TRANSITION: {
     LOGINCARD: "LoginCard",
-    PROJECTSTATUS: "ProjectStatus",
-    TASKSTATUS: "TaskStatus",
+    ACCESS: "Access",
     DASHBOARD: "Dashboard",
     ORGANIZATION: "Organization",
     PROJECTS: "Projects",
     ROLE: "Role",
-    TASK: "Task"
+    TASK: "Task",
+    USER: "User",
+    APPBAR: "Appbar",
+    SIDEBAR: "Sidebar",
+    STATUSCHART: "Statuschart"
   }
 };

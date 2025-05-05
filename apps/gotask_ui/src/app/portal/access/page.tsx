@@ -1,12 +1,24 @@
+import { LOCALIZATION } from "@/app/common/constants/localization";
 import { Box, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 import React from "react";
 import AccessContainer from "../access/components/AccessContainer"; 
 
-const AccessPage = () => {
+const page = () => {
+  const transaccess = useTranslations(LOCALIZATION.TRANSITION.ACCESS);
   return (
-    <div className="flex flex-col h-full m-0 p-4 overflow-hidden">
-      {/* Header Section */}
-      <Box
+    <Box
+      sx={{
+        backgroundColor: "#741B92", // Solid color for a bold look   
+        color: "white",
+        p: 1.5,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+      }}
+    >
+      <Typography
+        variant="h6"
         sx={{
           backgroundColor: "#741B92", 
           color: "white",
@@ -15,24 +27,11 @@ const AccessPage = () => {
           justifyContent: "center",
           alignItems: "center"
         }}
-      >
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: "600",
-            textTransform: "capitalize"
-          }}
-        >
-          Access
-        </Typography>
-      </Box>
-
-      
-      <div className="flex-1 overflow-hidden">
-        <AccessContainer />
-      </div>
-    </div>
+    >
+        {transaccess("access")}
+      </Typography>
+    </Box>
   );
 };
 
-export default AccessPage;
+export default page; 

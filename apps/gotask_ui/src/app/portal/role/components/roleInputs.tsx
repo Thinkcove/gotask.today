@@ -4,6 +4,8 @@ import { Grid } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { IRole } from "../interfaces/roleInterface";
 import { fetchAllAccess } from "../services/roleAction";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface IRoleInputProps {
   formData: IRole;
@@ -13,6 +15,7 @@ interface IRoleInputProps {
 }
 
 const RoleInput = ({ formData, errors, readOnlyFields = [], handleChange }: IRoleInputProps) => {
+  const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   const { getAllAccess } = fetchAllAccess();
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
@@ -21,21 +24,21 @@ const RoleInput = ({ formData, errors, readOnlyFields = [], handleChange }: IRol
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <FormField
-          label="Role Name"
+          label={transrole("labelname")}
           type="text"
           value={formData.name}
           onChange={(value) => handleChange("name", String(value))}
           required
           error={errors?.name}
           disabled={isReadOnly("name")}
-          placeholder="Enter Role name"
+          placeholder={transrole("placeholdername")}
         />
       </Grid>
       <Grid item xs={12}>
         <FormField
-          label="Access"
+          label={transrole("labelaccess")}
           type="multiselect"
-          placeholder="Select Access"
+          placeholder={transrole("placeholderaccess")}
           options={getAllAccess}
           value={selectedAccessIds}
           onChange={(ids) => {

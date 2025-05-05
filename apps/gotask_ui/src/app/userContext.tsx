@@ -2,6 +2,23 @@
 
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
+import { fetchToken, removeToken } from "./common/utils/authToken";
+
+interface AccessDetail {
+  id: string;
+  name: string;
+  application: {
+    access: string;
+    actions: string[];
+    _id: string;
+  }[];
+}
+
+interface Role {
+  id: string;
+  name: string;
+  accessDetails: AccessDetail[];
+}
 
 interface User {
   id: string;
@@ -10,6 +27,7 @@ interface User {
   user_id: string;
   status: boolean;
   token: string;
+  role: Role;
 }
 
 interface UserContextType {
@@ -24,20 +42,19 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   useEffect(() => {
-    // Load user data from localStorage once when app starts
     const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
+    const token = fetchToken();
 
     if (storedUser && token) {
       setUser({ ...JSON.parse(storedUser), token });
     } else {
-      router.push("/login"); // Redirect to login if no user
+      router.push("/login");
     }
   }, []);
 
   const logout = () => {
     localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    removeToken();
     setUser(null);
     window.location.href = "/login"; // Redirect to login
   };

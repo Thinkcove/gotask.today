@@ -9,8 +9,11 @@ import { getOrganizationData } from "../services/organizationAction";
 import CreateOrganization from "./createOrganization";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 const OrganizationList = () => {
+  const { canAccess } = userPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data, mutate } = useSWR("getOrganizations", getOrganizationData);
@@ -32,12 +35,14 @@ const OrganizationList = () => {
 
       <OrganizationCards organizations={data} />
 
-      {/* Add Task Button */}
-      <ActionButton
-        label={transorganization("createnew")}
-        icon={<AddIcon sx={{ color: "white" }} />}
-        onClick={() => setIsModalOpen(true)}
-      />
+      {/* Add Organization Button */}
+      {canAccess(APPLICATIONS.ORGANIZATION, ACTIONS.CREATE) && (
+        <ActionButton
+          label={transorganization("createnew")}
+          icon={<AddIcon sx={{ color: "white" }} />}
+          onClick={() => setIsModalOpen(true)}
+        />
+      )}
     </Box>
   );
 };

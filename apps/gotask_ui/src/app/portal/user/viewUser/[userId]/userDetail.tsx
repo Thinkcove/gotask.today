@@ -13,6 +13,10 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface UserDetailProps {
   user: User;
@@ -20,6 +24,8 @@ interface UserDetailProps {
 }
 
 const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
+  const { canAccess } = userPermission();
+  const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const router = useRouter();
   const { userId } = useParams();
   const userID = userId as string;
@@ -41,7 +47,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
       await mutate();
       setSnackbar({
         open: true,
-        message: "User deleted successfully!",
+        message: transuser("deletesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       setOpenDeleteDialog(false);
@@ -49,7 +55,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while deleting a user",
+        message: transuser("deleteerror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -66,7 +72,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   return (
     <>
       {/* Header */}
-      <ModuleHeader name="User Detail View" />
+      <ModuleHeader name={transuser("userdetail")} />
 
       {/* Main Content */}
       <Box
@@ -93,23 +99,27 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               {user.name}
             </Typography>
             <Box sx={{ flexGrow: 1 }} /> {/* This pushes the next icons to the right */}
-            <IconButton color="primary" onClick={() => setEditOpen(true)}>
-              <Edit />
-            </IconButton>
-            <IconButton color="error" onClick={() => setOpenDeleteDialog(true)}>
-              <Delete />
-            </IconButton>
+            {canAccess(APPLICATIONS.USER, ACTIONS.UPDATE) && (
+              <IconButton color="primary" onClick={() => setEditOpen(true)}>
+                <Edit />
+              </IconButton>
+            )}
+            {canAccess(APPLICATIONS.USER, ACTIONS.DELETE) && (
+              <IconButton color="error" onClick={() => setOpenDeleteDialog(true)}>
+                <Delete />
+              </IconButton>
+            )}
           </Box>
 
           {/* Basic Details */}
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <LabelValueText label="User ID" value={user.user_id} />
+              <LabelValueText label={transuser("uesrid")} value={user.user_id} />
             </Grid>
 
             <Grid item xs={12} md={6}>
               <LabelValueText
-                label="Role ID"
+                label={transuser("roleid")}
                 value={user?.roleId.name}
                 sx={{ textTransform: "capitalize" }}
               />
@@ -117,7 +127,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
             <Grid item xs={12} md={6}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                Status
+                {transuser("status")}
               </Typography>
               <Chip
                 label={user.status ? "Active" : "Inactive"}
@@ -128,7 +138,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
             <Grid item xs={12}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                Organizations
+                {transuser("organization")}
               </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap">
                 {user.orgDetails?.map((orgId) => (
@@ -148,7 +158,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {/* Project Details */}
           <Typography variant="h6" fontWeight="bold" gutterBottom>
-            Project Details
+            {transuser("projectdetails")}
           </Typography>
 
           {user.projectDetails && user.projectDetails.length > 0 ? (
@@ -200,12 +210,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
           onSubmit={handleDelete}
-          title="Delete User"
+          title={transuser("deleteuser")}
           submitLabel="Delete"
         >
-          <Typography>
-            Are you sure you want to delete this user? This action cannot be undone.
-          </Typography>
+          <Typography>{transuser("deleteornot")}</Typography>
         </CommonDialog>
 
         <CustomSnackbar

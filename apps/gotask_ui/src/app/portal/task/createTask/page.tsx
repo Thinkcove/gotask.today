@@ -2,8 +2,11 @@
 import React from "react";
 import CreateTask from "./createTask";
 import { Box, Typography } from "@mui/material";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const CreateAction: React.FC = () => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
     <>
       <Box
@@ -23,7 +26,7 @@ const CreateAction: React.FC = () => {
             textTransform: "capitalize"
           }}
         >
-          Task
+         {transtask("task")}
         </Typography>
       </Box>
       <CreateTask />

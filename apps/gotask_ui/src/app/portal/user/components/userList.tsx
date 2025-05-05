@@ -7,8 +7,14 @@ import useSWR from "swr";
 import UserCards from "./userCards";
 import { fetcherUserList } from "../services/userAction";
 import CreateUser from "./createUser";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 const UserList = () => {
+  const { canAccess } = userPermission();
+  const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: projects, error, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
 
@@ -25,12 +31,14 @@ const UserList = () => {
 
       <UserCards users={projects} error={error} />
 
-      {/* Add Task Button */}
-      <ActionButton
-        label="Create New User"
-        icon={<AddIcon sx={{ color: "white" }} />}
-        onClick={() => setIsModalOpen(true)}
-      />
+      {/* Add User Button */}
+      {canAccess(APPLICATIONS.USER, ACTIONS.CREATE) && (
+        <ActionButton
+          label={transuser("createusernew")}
+          icon={<AddIcon sx={{ color: "white" }} />}
+          onClick={() => setIsModalOpen(true)}
+        />
+      )}
     </Box>
   );
 };

@@ -4,6 +4,8 @@ import FormField from "../../../component/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
 import { fetchAllProjects, fetchAllUsers, getProjectIdsAndNames } from "../service/taskAction";
 import { IFormField, Project } from "../interface/taskInterface";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface TaskInputProps {
   formData: IFormField;
@@ -18,6 +20,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
   errors,
   readOnlyFields = []
 }) => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = fetchAllUsers();
   const { getAllProjects } = fetchAllProjects();
   // Get projects based on the assigned user
@@ -46,10 +49,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
     <>
       <Grid item xs={12} sm={6} mb={2}>
         <FormField
-          label="Task Title * :"
+          label={transtask("labeltitle")}
           type="text"
           required
-          placeholder="Enter Task Name"
+          placeholder={transtask("placeholdername")}
           value={formData.title}
           onChange={(value) => handleInputChange("title", String(value))}
           error={errors.title}
@@ -59,11 +62,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <FormField
-            label="Assignee Name * :"
+            label={transtask("labelassignee")}
             type="select"
             options={getAllUsers}
             required
-            placeholder="Select Assignee Name"
+            placeholder={transtask("placeholderassignee")}
             value={formData.user_id}
             onChange={(value) => handleAssigneeChange(String(value))}
             error={errors.user_id}
@@ -72,11 +75,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormField
-            label="Project Name * :"
+            label={transtask("labelproject")}
             type="select"
             options={userProjects}
             required
-            placeholder="Select Project Name"
+            placeholder={transtask("placeholderproject")}
             value={selectedProject.id}
             onChange={(value) => handleInputChange("project_id", String(value))}
             error={errors.project_id}
@@ -85,11 +88,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormField
-            label="Status * :"
+            label={transtask("labelstatus")}
             type="select"
             options={uniqueStatuses.map((s) => s.toUpperCase())}
             required
-            placeholder="Select Status Type"
+            placeholder={transtask("placeholderstatus")}
             value={currentStatus.toUpperCase()}
             onChange={(value) => handleInputChange("status", String(value).toLowerCase())}
             error={errors.status}
@@ -98,10 +101,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormField
-            label="Severity * :"
+            label={transtask("labelseverity")}
             type="select"
             options={Object.values(TASK_SEVERITY).map((s) => s.toUpperCase())}
-            placeholder="Select Severity Type"
+            placeholder={transtask("placeholderseverity")}
             value={formData.severity.toUpperCase()}
             onChange={(value) => handleInputChange("severity", String(value).toLowerCase())}
             error={errors.severity}
@@ -110,9 +113,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormField
-            label="Created Date * :"
+            label={transtask("labelcreateon")}
             type="date"
-            placeholder="Select Created Date"
+            placeholder={transtask("placeholdercreatedon")}
             value={formData.created_on || new Date().toISOString().split("T")[0]}
             onChange={(value) =>
               handleInputChange(
@@ -125,9 +128,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormField
-            label="Due Date * :"
+            label={transtask("labelduedate")}
             type="date"
-            placeholder="Select Due Date"
+            placeholder={transtask("placeholderduedate")}
             value={formData.due_date || new Date().toISOString().split("T")[0]}
             onChange={(value) =>
               handleInputChange(
@@ -141,9 +144,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
         <Grid item xs={12}>
           <FormField
-            label="Description :"
+            label={transtask("labeldescription")}
             type="text"
-            placeholder="Enter Description"
+            placeholder={transtask("placeholderdescription")}
             value={formData.description}
             onChange={(value) => handleInputChange("description", String(value))}
             disabled={isReadOnly("description")}

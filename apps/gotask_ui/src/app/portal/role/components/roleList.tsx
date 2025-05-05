@@ -7,8 +7,14 @@ import useSWR from "swr";
 import { getRoleData } from "../services/roleAction";
 import RoleCards from "./roleCards";
 import CreateRole from "./createRole";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 const RoleList = () => {
+  const { canAccess } = userPermission();
+  const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data, mutate } = useSWR("getRoles", getRoleData);
 
@@ -25,12 +31,14 @@ const RoleList = () => {
 
       <RoleCards roles={data} />
 
-      {/* Add Task Button */}
-      <ActionButton
-        label="Create New Role"
-        icon={<AddIcon sx={{ color: "white" }} />}
-        onClick={() => setIsModalOpen(true)}
-      />
+      {/* Add Role Button */}
+      {canAccess(APPLICATIONS.ROLE, ACTIONS.CREATE) && (
+        <ActionButton
+          label={transrole("createrole")}
+          icon={<AddIcon sx={{ color: "white" }} />}
+          onClick={() => setIsModalOpen(true)}
+        />
+      )}
     </Box>
   );
 };

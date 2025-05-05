@@ -16,7 +16,7 @@ const parseTimeString = (timeString: string): number => {
 // Parse "HH:MM" string to total hours
 const parseHourMinuteString = (timeStr: string): number => {
   const [hours, minutes] = timeStr.split(":").map(Number);
-  return ((hours || 0) * 60 + (minutes || 0)) / 60; 
+  return ((hours || 0) * 60 + (minutes || 0)) / 60;
 };
 
 // Format total hours to "XdYh" format
@@ -62,7 +62,10 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
         startMinute = parseInt(startParts[2], 10);
         if (startParts[3].toUpperCase() === TIME_PERIODS.PM && startHour < TIME_FORMAT.NOON_HOUR) {
           startHour += TIME_FORMAT.NOON_HOUR;
-        } else if (startParts[3].toUpperCase() === TIME_PERIODS.AM && startHour === TIME_FORMAT.NOON_HOUR) {
+        } else if (
+          startParts[3].toUpperCase() === TIME_PERIODS.AM &&
+          startHour === TIME_FORMAT.NOON_HOUR
+        ) {
           startHour = 0;
         }
       } else {
@@ -76,7 +79,10 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
         endMinute = parseInt(endParts[2], 10);
         if (endParts[3].toUpperCase() === TIME_PERIODS.PM && endHour < TIME_FORMAT.NOON_HOUR) {
           endHour += TIME_FORMAT.NOON_HOUR;
-        } else if (endParts[3].toUpperCase() === TIME_PERIODS.AM && endHour === TIME_FORMAT.NOON_HOUR) {
+        } else if (
+          endParts[3].toUpperCase() === TIME_PERIODS.AM &&
+          endHour === TIME_FORMAT.NOON_HOUR
+        ) {
           endHour = 0;
         }
       } else {
@@ -87,10 +93,14 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
     }
 
     if (
-      startHour < 0 || startHour > 23 ||
-      startMinute < 0 || startMinute > 59 ||
-      endHour < 0 || endHour > 23 ||
-      endMinute < 0 || endMinute > 59
+      startHour < 0 ||
+      startHour > 23 ||
+      startMinute < 0 ||
+      startMinute > 59 ||
+      endHour < 0 ||
+      endHour > 23 ||
+      endMinute < 0 ||
+      endMinute > 59
     ) {
       throw new Error("Hours must be 0-23 and minutes 0-59");
     }
@@ -105,7 +115,9 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
     const totalHours = (endMinutes - startMinutes) / 60;
     return formatHoursToTimeString(totalHours);
   } catch (error: unknown) {
-    throw new Error(`Failed to calculate time logged: ${error instanceof Error ? error.message : "Unknown error"}`);
+    throw new Error(
+      `Failed to calculate time logged: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
   }
 };
 

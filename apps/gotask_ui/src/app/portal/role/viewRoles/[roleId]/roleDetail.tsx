@@ -23,6 +23,10 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { fetchAllAccess, removeAccessFromRole, updateRole } from "../../services/roleAction";
 import { scrollStyles } from "@/app/styles/style";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface RoleDetailProps {
   role: Role;
@@ -30,6 +34,8 @@ interface RoleDetailProps {
 }
 
 const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
+  const { canAccess } = userPermission();
+  const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   const router = useRouter();
   const { roleId } = useParams();
   const roleID = roleId as string;
@@ -61,7 +67,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
       console.error("Error updating access:", error);
       setSnackbar({
         open: true,
-        message: "Error while adding access",
+        message: transrole("adderror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -79,7 +85,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
       console.error("Error removing access:", error);
       setSnackbar({
         open: true,
-        message: "Error while removing access",
+        message: transrole("removeerror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -87,7 +93,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
 
   return (
     <>
-      <ModuleHeader name="Role Detail View" />
+      <ModuleHeader name={transrole("roledetail")} />
       <Box
         sx={{
           minHeight: "100vh",
@@ -104,22 +110,24 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
               <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
                 {role.name}
               </Typography>
-              <Tooltip title="Add Access">
-                <IconButton
-                  onClick={() => setOpenAddDialog(true)}
-                  sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#741B92" } }}
-                >
-                  <Add sx={{ color: "white" }} />
-                </IconButton>
-              </Tooltip>
+              {canAccess(APPLICATIONS.ROLE, ACTIONS.ASSIGN_ACCESS) && (
+                <Tooltip title={transrole("addaccess")}>
+                  <IconButton
+                    onClick={() => setOpenAddDialog(true)}
+                    sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#741B92" } }}
+                  >
+                    <Add sx={{ color: "white" }} />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
           </Box>
 
           <Typography variant="h6" fontWeight={200}>
-            Access Details for this Role
+            {transrole("accessdetail")}
           </Typography>
           <Typography variant="body2" color="textSecondary" mb={2}>
-            Below are the areas and actions that this role has access to.
+            {transrole("areaandactionaccess")}
           </Typography>
           <Divider sx={{ mb: 3 }} />
 
@@ -138,19 +146,21 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
                       </Typography>
                     }
                     action={
-                      <Tooltip title="Delete Access">
-                        <IconButton
-                          onClick={() => {
-                            setSelectedAccessId(access.id);
-                            setOpenDeleteDialog(true);
-                          }}
-                          sx={{ transition: "0.2s ease", "&:hover": { transform: "scale(1.1)" } }}
-                          size="small"
-                          color="error"
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Tooltip>
+                      canAccess(APPLICATIONS.ROLE, ACTIONS.REVOKE_ACCESS) && (
+                        <Tooltip title={transrole("deleteaccess")}>
+                          <IconButton
+                            onClick={() => {
+                              setSelectedAccessId(access.id);
+                              setOpenDeleteDialog(true);
+                            }}
+                            sx={{ transition: "0.2s ease", "&:hover": { transform: "scale(1.1)" } }}
+                            size="small"
+                            color="error"
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                      )
                     }
                     sx={{ pb: 0 }}
                   />
@@ -196,7 +206,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
               ))
             ) : (
               <Typography color="text.secondary" sx={{ mt: 2 }}>
-                No Access Details Available
+                {transrole("noaccessdetail")}
               </Typography>
             )}
           </Box>
@@ -210,13 +220,13 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
             setOpenAddDialog(false);
           }}
           onSubmit={handleAddAccess}
-          title="Add Access"
+          title={transrole("addaccesss")}
           submitLabel=" Add Access"
         >
           <FormField
-            label="Access"
+            label={transrole("labelaccesses")}
             type="multiselect"
-            placeholder="Select Access"
+            placeholder={transrole("placeholderaccesss")}
             options={getAllAccess}
             value={selectedAccessIds}
             onChange={(ids) => setSelectedAccessIds(ids as string[])}
@@ -228,13 +238,13 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
           onSubmit={handleDelete}
-          title="Delete Access"
+          title={transrole("delete")}
           submitLabel="Delete"
         >
           <Typography>
-            Are you sure you want to remove this access from the role?
+            {transrole("removeaccess")}
             <br />
-            This will revoke the permissions granted by this access.
+            {transrole("revokepermission")}
           </Typography>
         </CommonDialog>
 

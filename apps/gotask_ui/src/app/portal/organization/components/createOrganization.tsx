@@ -36,7 +36,7 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name =  transorganization("errorname");
+    if (!formData.name) newErrors.name = transorganization("errorname");
     if (!formData.mail_id) newErrors.mail_id = transorganization("errormail");
     if (!formData.address) newErrors.address = transorganization("erroraddress");
 
@@ -58,7 +58,8 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
-    } catch { 
+      handleClose();
+    } catch {
       setSnackbar({
         open: true,
         message: transorganization("errorcreate"),
@@ -66,11 +67,18 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
       });
     }
   };
+
+  const handleClose = () => {
+    setFormData(initialFormState);
+    setErrors({});
+    onClose();
+  };
+
   return (
     <>
       <CommonDialog
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         onSubmit={handleSubmit}
         title={transorganization("createtitle")}
       >

@@ -209,7 +209,9 @@ const getTasksByUser = async (
   search_vars?: string[][],
   min_date?: string,
   max_date?: string,
-  date_var?: string
+  date_var?: string,
+  more_variation?: string,
+  less_variation?: string
 ): Promise<{
   success: boolean;
   data?: any;
@@ -219,42 +221,45 @@ const getTasksByUser = async (
     const skip = (page - 1) * pageSize;
     const taskSkip = (taskPage - 1) * taskPageSize;
 
-    // Build filter
-    let filter: any = {};
-
-    // Type guard to ensure search arrays are valid
+    const orConditions: any[] = [];
     const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
       Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
 
     // Text search filter
     if (isValidSearch(search_vars) && isValidSearch(search_vals)) {
-      const orConditions: any[] = [];
       for (let i = 0; i < search_vars.length; i++) {
         const field = search_vars[i][0];
         const value = search_vals[i][0];
         const fieldName = field === "id" ? "project_id" : field;
         orConditions.push({ [fieldName]: { $regex: new RegExp(value, "i") } });
       }
-      filter = orConditions.length === 1 ? orConditions[0] : { $or: orConditions };
     }
 
-    // Date range filter
+    // Date filter
     if (date_var && min_date && max_date) {
-      const dateFilter = {
+      orConditions.push({
         [date_var]: {
           $gte: new Date(min_date),
           $lte: new Date(max_date)
         }
-      };
-
-      if (Object.keys(filter).length > 0) {
-        filter = {
-          $or: [filter, dateFilter]
-        };
-      } else {
-        filter = dateFilter;
-      }
+      });
     }
+
+    // More variation filter
+    if (more_variation?.length) {
+      orConditions.push({
+        variation: { $regex: new RegExp(more_variation, "i") }
+      });
+    }
+
+    // Less variation filter
+    if (less_variation?.length) {
+      orConditions.push({
+        variation: { $regex: new RegExp(less_variation, "i") }
+      });
+    }
+
+    const filter = orConditions.length > 0 ? { $or: orConditions } : {};
 
     // Build aggregation pipeline
     const aggregationPipeline: any[] = [

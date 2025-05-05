@@ -20,6 +20,7 @@ const initialFormState: IRole = {
   name: "",
   accessIds: []
 };
+
 const CreateRole = ({ open, onClose, mutate }: CreateRoleProps) => {
   const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
 
@@ -31,7 +32,7 @@ const CreateRole = ({ open, onClose, mutate }: CreateRoleProps) => {
 
   const [formData, setFormData] = useState<IRole>(initialFormState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  // Validate required fields
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.name) newErrors.name = transrole("rolename");
@@ -41,6 +42,7 @@ const CreateRole = ({ open, onClose, mutate }: CreateRoleProps) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleChange = (field: keyof IRole, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -55,7 +57,7 @@ const CreateRole = ({ open, onClose, mutate }: CreateRoleProps) => {
         message: transrole("successmessage"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      onClose();
+      handleClose();
     } catch {
       setSnackbar({
         open: true,
@@ -64,11 +66,24 @@ const CreateRole = ({ open, onClose, mutate }: CreateRoleProps) => {
       });
     }
   };
+
+  const handleClose = () => {
+    setFormData(initialFormState);
+    setErrors({});
+    onClose();
+  };
+
   return (
     <>
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transrole("createnewrole")}>
+      <CommonDialog
+        open={open}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+        title={transrole("createnewrole")}
+      >
         <RoleInput formData={formData} handleChange={handleChange} errors={errors} />
       </CommonDialog>
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

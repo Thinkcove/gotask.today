@@ -105,7 +105,7 @@ const getTasksByProject = async (
     const skip = (page - 1) * pageSize;
     const taskSkip = (taskPage - 1) * taskPageSize;
 
-    let orConditions: any[] = [];
+    const orConditions: any[] = [];
     const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
       Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
 
@@ -143,8 +143,7 @@ const getTasksByProject = async (
       });
     }
 
-    // Final filter: OR of all conditions
-    let filter = orConditions.length > 0 ? { $or: orConditions } : {};
+    const filter = orConditions.length > 0 ? { $or: orConditions } : {};
 
     const aggregationPipeline: any[] = [
       { $match: filter },
@@ -181,7 +180,6 @@ const getTasksByProject = async (
 
     const taskGroups = await findTasksByProject(aggregationPipeline);
 
-    // Calculate total project count based on filter
     const totalProjects = await Task.distinct("project_name", filter).then((res) => res.length);
 
     return {

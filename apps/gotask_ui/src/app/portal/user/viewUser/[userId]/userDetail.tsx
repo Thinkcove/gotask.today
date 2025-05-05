@@ -15,6 +15,8 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface UserDetailProps {
   user: User;
@@ -22,6 +24,7 @@ interface UserDetailProps {
 }
 
 const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
+  const { canAccess } = userPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const router = useRouter();
   const { userId } = useParams();
@@ -96,12 +99,16 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               {user.name}
             </Typography>
             <Box sx={{ flexGrow: 1 }} /> {/* This pushes the next icons to the right */}
-            <IconButton color="primary" onClick={() => setEditOpen(true)}>
-              <Edit />
-            </IconButton>
-            <IconButton color="error" onClick={() => setOpenDeleteDialog(true)}>
-              <Delete />
-            </IconButton>
+            {canAccess(APPLICATIONS.USER, ACTIONS.UPDATE) && (
+              <IconButton color="primary" onClick={() => setEditOpen(true)}>
+                <Edit />
+              </IconButton>
+            )}
+            {canAccess(APPLICATIONS.USER, ACTIONS.DELETE) && (
+              <IconButton color="error" onClick={() => setOpenDeleteDialog(true)}>
+                <Delete />
+              </IconButton>
+            )}
           </Box>
 
           {/* Basic Details */}

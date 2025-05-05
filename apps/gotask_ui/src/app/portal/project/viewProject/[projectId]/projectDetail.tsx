@@ -18,6 +18,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { userPermission } from "@/app/common/utils/userPermission";
 
 interface ProjectDetailProps {
   project: Project;
@@ -25,6 +27,7 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
+  const { canAccess } = userPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -117,9 +120,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 </Typography>
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
               </Box>
-              <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
-                <Edit />
-              </IconButton>
+              {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
+                <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+                  <Edit />
+                </IconButton>
+              )}
             </Box>
           </Box>
 
@@ -148,16 +153,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             <Typography variant="h5" fontWeight={600}>
               {transproject("detailassignee")}
             </Typography>
-            <Button
-              variant="contained"
-              onClick={() => setOpen(true)}
-              sx={{
-                textTransform: "none",
-                borderRadius: 2
-              }}
-            >
-              {transproject("detailaddassignee")}
-            </Button>
+            {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
+              <Button
+                variant="contained"
+                onClick={() => setOpen(true)}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2
+                }}
+              >
+                {transproject("detailaddassignee")}
+              </Button>
+            )}
           </Box>
 
           {/* Users Grid */}
@@ -193,21 +200,23 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       </Box>
                     </Stack>
 
-                    <IconButton
-                      color="error"
-                      onClick={() => {
-                        setSelectedUserId(user.id); // <-- save which user is clicked
-                        setOpenDeleteDialog(true); // <-- open the confirmation dialog
-                      }}
-                      sx={{
-                        transition: "0.2s ease",
-                        "&:hover": {
-                          transform: "scale(1.1)"
-                        }
-                      }}
-                    >
-                      <Delete />
-                    </IconButton>
+                    {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
+                      <IconButton
+                        color="error"
+                        onClick={() => {
+                          setSelectedUserId(user.id); // <-- save which user is clicked
+                          setOpenDeleteDialog(true); // <-- open the confirmation dialog
+                        }}
+                        sx={{
+                          transition: "0.2s ease",
+                          "&:hover": {
+                            transform: "scale(1.1)"
+                          }
+                        }}
+                      >
+                        <Delete />
+                      </IconButton>
+                    )}
                   </Box>
                 </Grid>
               ))

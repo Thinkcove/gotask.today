@@ -25,6 +25,8 @@ import { fetchAllAccess, removeAccessFromRole, updateRole } from "../../services
 import { scrollStyles } from "@/app/styles/style";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface RoleDetailProps {
   role: Role;
@@ -32,6 +34,7 @@ interface RoleDetailProps {
 }
 
 const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
+  const { canAccess } = userPermission();
   const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   const router = useRouter();
   const { roleId } = useParams();
@@ -107,14 +110,16 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
               <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
                 {role.name}
               </Typography>
-              <Tooltip title={transrole("addaccess")}>
-                <IconButton
-                  onClick={() => setOpenAddDialog(true)}
-                  sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#741B92" } }}
-                >
-                  <Add sx={{ color: "white" }} />
-                </IconButton>
-              </Tooltip>
+              {canAccess(APPLICATIONS.ROLE, ACTIONS.ASSIGN_ACCESS) && (
+                <Tooltip title={transrole("addaccess")}>
+                  <IconButton
+                    onClick={() => setOpenAddDialog(true)}
+                    sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#741B92" } }}
+                  >
+                    <Add sx={{ color: "white" }} />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
           </Box>
 
@@ -141,19 +146,21 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
                       </Typography>
                     }
                     action={
-                      <Tooltip title={transrole("deleteaccess")}>
-                        <IconButton
-                          onClick={() => {
-                            setSelectedAccessId(access.id);
-                            setOpenDeleteDialog(true);
-                          }}
-                          sx={{ transition: "0.2s ease", "&:hover": { transform: "scale(1.1)" } }}
-                          size="small"
-                          color="error"
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Tooltip>
+                      canAccess(APPLICATIONS.ROLE, ACTIONS.REVOKE_ACCESS) && (
+                        <Tooltip title={transrole("deleteaccess")}>
+                          <IconButton
+                            onClick={() => {
+                              setSelectedAccessId(access.id);
+                              setOpenDeleteDialog(true);
+                            }}
+                            sx={{ transition: "0.2s ease", "&:hover": { transform: "scale(1.1)" } }}
+                            size="small"
+                            color="error"
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                      )
                     }
                     sx={{ pb: 0 }}
                   />

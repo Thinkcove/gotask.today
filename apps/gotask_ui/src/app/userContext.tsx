@@ -4,6 +4,22 @@ import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { fetchToken, removeToken } from "./common/utils/authToken";
 
+interface AccessDetail {
+  id: string;
+  name: string;
+  application: {
+    access: string;
+    actions: string[];
+    _id: string;
+  }[];
+}
+
+interface Role {
+  id: string;
+  name: string;
+  accessDetails: AccessDetail[];
+}
+
 interface User {
   id: string;
   name: string;
@@ -11,6 +27,7 @@ interface User {
   user_id: string;
   status: boolean;
   token: string;
+  role: Role;
 }
 
 interface UserContextType {

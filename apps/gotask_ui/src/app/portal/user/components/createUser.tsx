@@ -58,6 +58,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
+      handleClose();
     } catch {
       setSnackbar({
         open: true,
@@ -67,9 +68,20 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     }
   };
 
+  const handleClose = () => {
+    setFormData(initialFormState);
+    setErrors({});
+    onClose();
+  };
+
   return (
     <>
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transuser("createuser")}>
+      <CommonDialog
+        open={open}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+        title={transuser("createuser")}
+      >
         <UserInput formData={formData} handleChange={handleChange} errors={errors} isEdit={true} />
       </CommonDialog>
       <CustomSnackbar

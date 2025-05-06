@@ -77,7 +77,23 @@ const Sidebar: React.FC = () => {
   };
 
   const toggleSidebar = () => {
-    setOpen(!open);
+    setOpen((prev) => !prev);
+  };
+
+  // Smooth hover logic
+  let closeTimeout: NodeJS.Timeout;
+
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      closeTimeout = setTimeout(() => setOpen(false), 200); // small delay
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (!isMobile) {
+      clearTimeout(closeTimeout);
+      setOpen(true);
+    }
   };
 
   return (
@@ -100,7 +116,7 @@ const Sidebar: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Desktop Menu Icon when Sidebar is Closed */}
+      {/* Desktop Menu Icon */}
       {!isMobile && !open && (
         <IconButton
           onClick={toggleSidebar}
@@ -112,9 +128,7 @@ const Sidebar: React.FC = () => {
             zIndex: 1300,
             backgroundColor: "#741B92",
             color: "#fff",
-            "&:hover": {
-              backgroundColor: "#5a1473"
-            }
+            "&:hover": { backgroundColor: "#5a1473" }
           }}
         >
           <MenuIcon />
@@ -126,21 +140,23 @@ const Sidebar: React.FC = () => {
         variant={isMobile ? "temporary" : "persistent"}
         open={open}
         onClose={toggleSidebar}
-        onMouseLeave={() => {
-          if (!isMobile) setOpen(false);
-        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         sx={{
-          width: collapsed ? 60 : drawerWidth,
+          width: open ? drawerWidth : 60,
           flexShrink: 0,
+          transition: "width 0.3s ease",
+          whiteSpace: "nowrap",
           [`& .MuiDrawer-paper`]: {
-            width: collapsed ? 60 : drawerWidth,
+            width: open ? drawerWidth : 60,
+            transition: "width 0.3s ease",
+            overflowX: "hidden",
             boxSizing: "border-box",
             background: "linear-gradient(180deg, #EFE2F3 0%, #D6C4E4 100%)",
             color: "#2A1237",
             borderRight: "1px solid #d3b7eb",
             display: "flex",
-            flexDirection: "column",
-            transition: "width 0.3s ease-in-out"
+            flexDirection: "column"
           }
         }}
       >
@@ -180,7 +196,6 @@ const Sidebar: React.FC = () => {
                     <ListItemIcon sx={{ minWidth: "40px", color: "#741B92" }}>
                       {iconMap[item.icon]}
                     </ListItemIcon>
-
                     <ListItemText
                       primary={item.text}
                       primaryTypographyProps={{
@@ -195,7 +210,7 @@ const Sidebar: React.FC = () => {
             </List>
           </Box>
 
-          {/* Push the UserInfoCard to the bottom */}
+          {/* User Info Card */}
           <Box sx={{ marginTop: "auto" }}>
             <UserInfoCard />
           </Box>

@@ -85,3 +85,15 @@ export const calculateTimeProgressData = (estimatedTime: string, spentTime: stri
     totalFillPercentage
   };
 };
+
+//mail validation
+export const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+//phone no validation
+export const validatePhone = (phone: string) => {
+  const phoneRegex = /^\+?[1-9]\d{7,14}$/; // Accepts international formats like +1234567890
+  return phoneRegex.test(phone);
+};

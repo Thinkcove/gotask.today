@@ -3,6 +3,7 @@ export interface Organization {
   name: string;
   address: string;
   mail_id: string;
+  mobile_no: string;
   createdAt: string;
   updatedAt: string;
   projects: string[];
@@ -16,6 +17,7 @@ export interface IOrganizationField {
   name: string;
   address: string;
   mail_id: string;
+  mobile_no: string;
   projects: string[];
   users: string[];
 }

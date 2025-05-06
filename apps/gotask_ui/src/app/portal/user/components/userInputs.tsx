@@ -95,6 +95,7 @@ const UserInput = ({
             inputType="password"
             placeholder={transuser("placeholderpassword")}
             required
+            error={errors?.password}
             value={formData.password || ""}
             onChange={(value) => handleChange("password", String(value))}
           />

@@ -84,6 +84,9 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
               <LabelValueText label={transorganization("detailemail")} value={org.mail_id} />
             </Grid>
             <Grid item xs={12} md={6}>
+              <LabelValueText label={transorganization("contactno")} value={org.mobile_no} />
+            </Grid>
+            <Grid item xs={12} md={6}>
               <LabelValueText
                 label={transorganization("detailcreatedon")}
                 value={new Date(org?.createdAt).toLocaleDateString()}

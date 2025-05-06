@@ -84,11 +84,18 @@ const FormField: React.FC<FormFieldProps> = ({
             sx={{
               "& .MuiInputBase-input::placeholder": {
                 color: "#9C8585",
-                opacity: 1 // Ensures full opacity
+                opacity: 1
               },
               ...(multiline && { height: height || 100, overflowY: "auto" })
             }}
-            onChange={(e) => onChange?.(e.target.value)}
+            onChange={(e) => {
+              let val = e.target.value;
+              // If inputType is "tel", restrict to numbers, spaces, +, -, (, )
+              if (inputType === "tel") {
+                val = val.replace(/[^\d\s()+-]/g, "");
+              }
+              onChange?.(val);
+            }}
             InputProps={{
               disableUnderline: true,
               startAdornment: (

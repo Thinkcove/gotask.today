@@ -10,9 +10,9 @@ interface IOrganizationInputProps {
   formData: IOrganizationField;
   errors?: { [key: string]: string };
   readOnlyFields?: string[];
-  handleChange: (field: keyof IOrganizationField, value: string) => void; 
-}         
-     
+  handleChange: (field: keyof IOrganizationField, value: string) => void;
+}
+
 const OrganizationInput = ({
   formData,
   errors,
@@ -26,13 +26,13 @@ const OrganizationInput = ({
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <FormField
-         label={transorganization("labelname")}
+          label={transorganization("labelname")}
           type="text"
           value={formData.name}
           onChange={(value) => handleChange("name", String(value))}
           required
           error={errors?.name}
-          disabled={isReadOnly("name")} 
+          disabled={isReadOnly("name")}
           placeholder={transorganization("placeholdername")}
         />
       </Grid>
@@ -59,7 +59,20 @@ const OrganizationInput = ({
           required
           error={errors?.mail_id}
           disabled={isReadOnly("mail_id")}
-           placeholder={transorganization("placeholderemail")}
+          placeholder={transorganization("placeholderemail")}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <FormField
+          label={transorganization("labelphone")}
+          type="text"
+          value={formData.mobile_no}
+          onChange={(value) => handleChange("mobile_no", String(value))}
+          required
+          error={errors?.mobile_no}
+          disabled={isReadOnly("mobile_no")}
+          placeholder={transorganization("placeholderphone")}
+          inputType="tel"
         />
       </Grid>
     </Grid>

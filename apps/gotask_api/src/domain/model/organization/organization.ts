@@ -6,6 +6,7 @@ export interface IOrganization extends Document {
   name: string;
   address: string;
   mail_id: string;
+  mobile_no: string;
   projects: string[]; // Array of project UUIDs
   users: string[]; // Array of user UUIDs
 }
@@ -31,6 +32,12 @@ const OrganizationSchema = new Schema<IOrganization>(
       type: String,
       required: true,
       unique: true
+    },
+    mobile_no: {
+      type: String,
+      required: true,
+      trim: true,
+      default: ""
     },
     projects: {
       type: [String], // Array of strings

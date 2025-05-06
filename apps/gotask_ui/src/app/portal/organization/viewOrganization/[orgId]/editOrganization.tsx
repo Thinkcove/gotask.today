@@ -15,7 +15,7 @@ interface EditOrganizationProps {
   open: boolean;
   onClose: () => void;
   OrganizationID: string;
-  mutate: KeyedMutator<Organization>;  
+  mutate: KeyedMutator<Organization>;
 }
 
 const EditOrganization: React.FC<EditOrganizationProps> = ({
@@ -35,6 +35,7 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
     name: data?.name || "",
     address: data?.address || "",
     mail_id: data?.mail_id || "",
+    mobile_no: data?.mobile_no || "",
     projects: data?.projects || [],
     users: data?.users || []
   }));
@@ -45,7 +46,7 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
 
   const handleSubmit = async () => {
     try {
-     await updateOrganization(OrganizationID, formData);
+      await updateOrganization(OrganizationID, formData);
       await mutate();
       setSnackbar({
         open: true,
@@ -56,7 +57,7 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
     } catch {
       setSnackbar({
         open: true,
-         message: transorganization("errorupdate"),
+        message: transorganization("errorupdate"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -83,7 +84,12 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
         }}
       ></Box>
 
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transorganization("edittitle")}>
+      <CommonDialog
+        open={open}
+        onClose={onClose}
+        onSubmit={handleSubmit}
+        title={transorganization("edittitle")}
+      >
         <OrganizationInput
           formData={formData}
           handleChange={handleChange}

@@ -1,7 +1,5 @@
-// components/AccessCreateForm.tsx
-
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   TextField,
   Typography,
@@ -13,34 +11,26 @@ import { useRouter } from "next/navigation";
 
 import AccessHeading from "./AccessHeading";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
-import { getAccessOptions, createAccessRole } from "../services/accessService";
+import { useAccessOptions, createAccessRole } from "../services/accessService";
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 
 const AccessCreateForm: React.FC = () => {
   const [accessName, setAccessName] = useState("");
-  const [accessOptions, setAccessOptions] = useState<AccessOption[]>([]);
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
   const [currentModule, setCurrentModule] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchOptions = async () => {
-      try {
-        const response = await getAccessOptions();
-        const data: AccessOption[] = Array.isArray(response?.data) ? response.data : [];
-        setAccessOptions(data);
+  const { accessOptions, isLoading, error } = useAccessOptions();
 
-        if (data.length > 0) {
-          setCurrentModule(data[0].access);
-        }
-      } catch (error) {
-        console.error("Failed to fetch access options:", error);
-      }
-    };
+  console.log("AccessCreateForm accessOptions:", accessOptions); // Debug log
+  console.log("AccessCreateForm isLoading:", isLoading); // Debug log
+  console.log("AccessCreateForm error:", error); // Debug log
 
-    fetchOptions();
-  }, []);
+  // Set initial currentModule when accessOptions load
+  if (accessOptions.length > 0 && !currentModule) {
+    setCurrentModule(accessOptions[0].access);
+  }
 
   const handleCheckboxChange = (module: string, action: string, checked: boolean) => {
     setSelectedPermissions((prev) => {
@@ -66,25 +56,26 @@ const AccessCreateForm: React.FC = () => {
     const payload: AccessRole = {
       name: accessName,
       application,
-      id: ""
+      id: "",
+      createdAt: undefined
     };
 
     try {
-      setLoading(true);
+      setIsSubmitting(true);
       const response = await createAccessRole(payload);
+      console.log("createAccessRole response:", response); // Debug log
       if (response.success) {
         router.push("/portal/access");
       } else {
         alert(response.message);
       }
     } catch (err) {
-      console.error("Failed to create access role", err);
+      console.error("Failed to create access role:", err);
+      alert("Failed to create access role.");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
-
-  const currentActions = accessOptions.find((opt) => opt.access === currentModule)?.actions || [];
 
   return (
     <Box
@@ -112,7 +103,23 @@ const AccessCreateForm: React.FC = () => {
 
         <Typography variant="h6">Access Management</Typography>
 
-        {accessOptions.length > 0 && currentModule && (
+        {isLoading ? (
+          <Box display="flex" justifyContent="center" mt={5}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Box display="flex" justifyContent="center" mt={5}>
+            <Typography variant="body1" color="error">
+              {error}
+            </Typography>
+          </Box>
+        ) : accessOptions.length === 0 ? (
+          <Box display="flex" justifyContent="center" mt={5}>
+            <Typography variant="body1" color="text.secondary">
+              No Access Options Available.
+            </Typography>
+          </Box>
+        ) : (
           <AccessPermissionsContainer
             accessOptions={accessOptions}
             currentModule={currentModule}
@@ -133,11 +140,20 @@ const AccessCreateForm: React.FC = () => {
           gap: 2,
         }}
       >
-        <Button variant="outlined" color="secondary" onClick={() => router.push("/portal/access/pages")}>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => router.push("/portal/access")}
+        >
           Cancel
         </Button>
-        <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading}>
-          {loading ? <CircularProgress size={20} /> : "Create Access"}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? <CircularProgress size={20} /> : "Create Access"}
         </Button>
       </Box>
     </Box>

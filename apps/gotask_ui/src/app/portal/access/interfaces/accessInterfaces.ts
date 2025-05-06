@@ -12,6 +12,7 @@ export interface ApplicationPermission {
 
 // Represents the access role entity
 export interface AccessRole {
+  createdAt: any;
   id: string;                       
   name: string;                      
   application: ApplicationPermission[]; 

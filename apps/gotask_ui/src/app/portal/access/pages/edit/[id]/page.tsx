@@ -1,33 +1,48 @@
 "use client";
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import AccessEditForm from '../../../components/AccessEditForm';
 
-const AccessEditPage: React.FC = () => {
+import { Box, Typography } from "@mui/material";
+import React from "react";
+import AccessEditForm from "../../../components/AccessEditForm";
+
+const AccessEditPage = () => {
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden m-0 p-0">
-      {/* Header */}
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        m: 0,
+        p: 0,
+        overflow: "hidden",
+      }}
+    >
+      {/* Header Section */}
       <Box
         sx={{
-          backgroundColor: '#741B92',
-          color: 'white',
-          py: 2,
-          px: 4,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          backgroundColor: "#741B92",
+          color: "white",
+          p: 1.5,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <Typography variant="h6" sx={{ fontWeight: 600, textTransform: 'capitalize' }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "600",
+            textTransform: "capitalize",
+          }}
+        >
           Edit Access
         </Typography>
       </Box>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto">
+      {/* Content Section */}
+      <Box sx={{ flex: 1, overflow: "hidden" }}>
         <AccessEditForm />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

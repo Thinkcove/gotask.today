@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Typography,
@@ -6,36 +8,42 @@ import {
   Box,
   Stack,
   Divider,
-  Chip,
 } from "@mui/material";
 import { CalendarMonth, ArrowForward } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CardComponent from "@/app/component/card/cardComponent";
 import { AccessData } from "../interfaces/accessInterfaces";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 
 interface Props {
-  data: AccessData[] | null;
+  data: AccessData[];
   loading?: boolean;
-  error?: { [key: string]: string };
+  error?: string | null;
 }
 
 const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
+  const { canAccess } = userPermission();
   const router = useRouter();
+
+  console.log("AccessCards data:", data); // Debug log
+  console.log("AccessCards loading:", loading); // Debug log
+  console.log("AccessCards error:", error); // Debug log
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={5}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (error) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="error">
-          Error loading access roles
+          {error}
         </Typography>
-      </Box>
-    );
-  }
-
-  if (loading || !data) {
-    return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <CircularProgress />
       </Box>
     );
   }
@@ -57,7 +65,6 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
           <Grid item xs={12} sm={6} md={4} lg={3} key={access.id}>
             <CardComponent>
               <Stack spacing={2} sx={{ height: "100%" }}>
-                {/* Header */}
                 <Typography
                   variant="h6"
                   fontWeight={600}
@@ -65,8 +72,6 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                 >
                   {access.name}
                 </Typography>
-
-                {/* Metadata */}
                 {access.createdAt && (
                   <Box display="flex" alignItems="center">
                     <CalendarMonth sx={{ fontSize: 20, color: "#741B92", mr: 1 }} />
@@ -75,30 +80,29 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                     </Typography>
                   </Box>
                 )}
-
                 <Divider />
-
-                {/* View Details Button */}
-                <Box display="flex" justifyContent="flex-end">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      color: "#741B92",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      "&:hover": { textDecoration: "underline" },
-                    }}
-                    onClick={() => {
-                      router.push(`/portal/access/pages/view/${access.id}`);
-                    }}
-                  >
-                    <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                      View Details
-                    </Typography>
-                    <ArrowForward fontSize="small" />
+                {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
+                  <Box display="flex" justifyContent="flex-end">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        color: "#741B92",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        "&:hover": { textDecoration: "underline" },
+                      }}
+                      onClick={() => {
+                        router.push(`/portal/access/pages/view/${access.id}`);
+                      }}
+                    >
+                      <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
+                        View Details
+                      </Typography>
+                      <ArrowForward fontSize="small" />
+                    </Box>
                   </Box>
-                </Box>
+                )}
               </Stack>
             </CardComponent>
           </Grid>

@@ -1,68 +1,55 @@
-'use client';
+"use client";
 
 import {
   Box,
   Button,
   CircularProgress,
-  MenuItem,
-  Select,
   TextField,
   Typography,
-} from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
+} from "@mui/material";
+import React, { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { userPermission } from "@/app/common/utils/userPermission";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import {
-  getAccessOptions,
-  getAccessRoleById,
+  useAccessOptions,
+  useAccessRoleById,
   updateAccessRole,
-} from '../services/accessService';
-import { AccessOption, AccessRole } from '../interfaces/accessInterfaces';
-import AccessPermissionsContainer from '../components/AccessPermissionsContainer';
+} from "../services/accessService";
+import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
+import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 
 export default function AccessEditForm() {
+  const { canAccess } = userPermission();
   const { id } = useParams();
   const router = useRouter();
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const [roleName, setRoleName] = useState<string>('');
-  const [options, setOptions] = useState<AccessOption[]>([]);
-  const [application, setApplication] = useState<AccessRole['application']>([]);
-  const [currentTab, setCurrentTab] = useState<string>('');
+  const [roleName, setRoleName] = useState<string>("");
+  const [application, setApplication] = useState<AccessRole["application"]>([]);
+  const [currentTab, setCurrentTab] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
+  const { role, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(String(id));
+  const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
 
-        const roleRes = await getAccessRoleById(String(id));
-        const optionsRes = await getAccessOptions();
+  console.log("AccessEditForm role:", role); // Debug log
+  console.log("AccessEditForm isRoleLoading:", isRoleLoading); // Debug log
+  console.log("AccessEditForm roleError:", roleError); // Debug log
+  console.log("AccessEditForm accessOptions:", accessOptions); // Debug log
+  console.log("AccessEditForm isOptionsLoading:", isOptionsLoading); // Debug log
+  console.log("AccessEditForm optionsError:", optionsError); // Debug log
 
-        if (roleRes.success && roleRes.data) {
-          setRoleName(roleRes.data.name);
-          setApplication(roleRes.data.application);
-        }
-
-        if (optionsRes.success && optionsRes.data) {
-          setOptions(optionsRes.data);
-        }
-
-        const initialTab =
-          roleRes.data?.application?.[0]?.access ||
-          optionsRes.data?.[0]?.access ||
-          '';
-
-        setCurrentTab(initialTab);
-      } catch (err) {
-        console.error('Error loading data:', err);
-        toast.error('Failed to fetch role or options');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [id]);
+  // Initialize form data when role and options load
+  if (role && roleName === "" && application.length === 0) {
+    setRoleName(role.name);
+    setApplication(role.application || []);
+  }
+  if (accessOptions.length > 0 && !currentTab) {
+    setCurrentTab(
+      role?.application?.[0]?.access || accessOptions[0].access || ""
+    );
+  }
 
   const handlePermissionChange = (access: string, action: string, checked: boolean) => {
     setApplication((prev) => {
@@ -71,11 +58,9 @@ export default function AccessEditForm() {
 
       if (index > -1) {
         let actions = updated[index].actions;
-
         actions = checked
           ? [...actions, action]
           : actions.filter((a) => a !== action);
-
         updated[index] = { ...updated[index], actions: [...new Set(actions)] };
       } else if (checked) {
         updated.push({ access, actions: [action] });
@@ -91,80 +76,123 @@ export default function AccessEditForm() {
 
   const handleSubmit = async () => {
     if (!roleName.trim()) {
-      toast.error('Role name is required');
+      toast.error("Role name is required");
+      return;
+    }
+
+    if (!role) {
+      toast.error("Role data not loaded");
       return;
     }
 
     const payload = {
       name: roleName.trim(),
       application,
+      createdAt: role.createdAt,
     };
 
-    const res = await updateAccessRole(String(id), payload);
-    if (res.success) {
-      toast.success('Access role updated');
-      router.push('/portal/access');
-    } else {
-      toast.error(res.message || 'Failed to update role');
+    try {
+      setIsSubmitting(true);
+      const res = await updateAccessRole(String(id), payload);
+      console.log("updateAccessRole response:", res); // Debug log
+      if (res.success) {
+        toast.success("Access role updated");
+        router.push("/portal/access");
+      } else {
+        toast.error(res.message || "Failed to update role");
+      }
+    } catch (err) {
+      console.error("Failed to update access role:", err);
+      toast.error("Failed to update role");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const selectedPermissionsMap = application.reduce((acc, app) => {
-    acc[app.access] = app.actions;
-    return acc;
-  }, {} as Record<string, string[]>);
+  const selectedPermissionsMap = application.reduce(
+    (acc: Record<string, string[]>, app: { access: string; actions: string[] }) => {
+      acc[app.access] = app.actions;
+      return acc;
+    },
+    {}
+  );
 
-  if (loading) {
+  if (isRoleLoading || isOptionsLoading) {
     return (
-      <Box sx={{ width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
   }
 
+  if (roleError || optionsError) {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="body1" color="error">
+          {roleError || optionsError}
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
-    <Box sx={{ width: '100%', height: '100vh', overflow: 'auto', p: 0, m: 0 }}>
-      {/* Header with Back Button */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} p={2}>
-        <Typography variant="h5" fontWeight={600}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "90vh",
+        width: "100%",
+        bgcolor: "white",
+        borderRadius: 2,
+        boxShadow: 3,
+        p: 2,
+      }}
+    >
+      <Box sx={{ flex: 1, overflowY: "auto" }}>
+        <Typography variant="h5" fontWeight={600} mb={2}>
           Edit Access Role
         </Typography>
-        <Button variant="contained" color="primary" onClick={() => router.push('/portal/access')}>
-          Back
-        </Button>
-      </Box>
 
-      {/* Role Name Input */}
-      <Box mb={2} px={2}>
         <TextField
           fullWidth
           label="Access Name"
+          variant="outlined"
+          required
           value={roleName}
           onChange={(e) => setRoleName(e.target.value)}
+          sx={{ mb: 2 }}
         />
-      </Box>
 
-      {/* Module Select Dropdown */}
-      <Box mb={2} px={2}>
-        <Select
-          fullWidth
-          value={currentTab}
-          onChange={(e) => setCurrentTab(e.target.value)}
-        >
-          {options.map((opt) => (
-            <MenuItem key={opt.access} value={opt.access}>
-              {opt.access.charAt(0).toUpperCase() + opt.access.slice(1)}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box>
+        <Typography variant="h6" mb={2}>
+          Access Management
+        </Typography>
 
-      {/* Permissions Table */}
-      <Box mb={1} px={2}>
-        {currentTab && (
+        {accessOptions.length === 0 ? (
+          <Box display="flex" justifyContent="center" mt={5}>
+            <Typography variant="body1" color="text.secondary">
+              No Access Options Available.
+            </Typography>
+          </Box>
+        ) : (
           <AccessPermissionsContainer
             currentModule={currentTab}
-            accessOptions={options}
+            accessOptions={accessOptions}
             selectedPermissions={selectedPermissionsMap}
             onCheckboxChange={handlePermissionChange}
             onTabChange={handleTabChange}
@@ -172,14 +200,35 @@ export default function AccessEditForm() {
         )}
       </Box>
 
-      {/* Bottom Action Buttons */}
-      <Box display="flex" justifyContent="flex-end" gap={2} px={2} pb={2}>
-        <Button variant="outlined" onClick={() => router.push('/portal/access')}>
-          Cancel
-        </Button>
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
-          Save Changes
-        </Button>
+      <Box
+        sx={{
+          borderTop: 1,
+          borderColor: "gray",
+          pt: 2,
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: 2,
+        }}
+      >
+        {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => router.push("/portal/access")}
+          >
+            Cancel
+          </Button>
+        )}
+        {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? <CircularProgress size={20} /> : "Save Changes"}
+          </Button>
+        )}
       </Box>
     </Box>
   );

@@ -6,11 +6,20 @@ import AccessCreateForm from "../../components/AccessCreateForm";
 
 const AccessCreatePage = () => {
   return (
-    <div className="flex flex-col h-full m-0 p-4 overflow-hidden">
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        m: 0,
+        p: 0,
+        overflow: "hidden",
+      }}
+    >
       {/* Header Section */}
       <Box
         sx={{
-          backgroundColor: "#741B92", // Same purple background
+          backgroundColor: "#741B92",
           color: "white",
           p: 1.5,
           display: "flex",
@@ -30,10 +39,10 @@ const AccessCreatePage = () => {
       </Box>
 
       {/* Content Section */}
-      <div className="flex-1 overflow-hidden">
-        <AccessCreateForm /> {/* Your custom create form */}
-      </div>
-    </div>
+      <Box sx={{ flex: 1, overflow: "hidden" }}>
+        <AccessCreateForm />
+      </Box>
+    </Box>
   );
 };
 

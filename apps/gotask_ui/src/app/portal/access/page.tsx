@@ -2,36 +2,28 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { Box, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 import React from "react";
-import AccessContainer from "../access/components/AccessContainer"; 
+import AccessContainer from "../access/components/AccessContainer";
 
-const page = () => {
+const Page = () => {
   const transaccess = useTranslations(LOCALIZATION.TRANSITION.ACCESS);
+
   return (
-    <Box
-      sx={{
-        backgroundColor: "#741B92", // Solid color for a bold look   
-        color: "white",
-        p: 1.5,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-      }}
-    >
-      <Typography
-        variant="h6"
+    <>
+      <Box
         sx={{
-          backgroundColor: "#741B92", 
+          backgroundColor: "#741B92",
           color: "white",
           p: 1.5,
           display: "flex",
           justifyContent: "center",
-          alignItems: "center"
+          alignItems: "center",
         }}
-    >
-        {transaccess("access")}
-      </Typography>
-    </Box>
+      >
+        <Typography variant="h6">{transaccess("access")}</Typography>
+      </Box>
+      <AccessContainer />
+    </>
   );
 };
 
-export default page; 
+export default Page;

@@ -10,7 +10,7 @@ const AccessHeading: React.FC<AccessHeadingProps> = ({ title = "Access" }) => {
     <Box sx={{ }}>
       <Typography
         variant="h4"  // This will use a predefined Material UI typography style for headings
-        component="h1"
+        component="h2"
         color="textPrimary"  // Ensures the text color matches the theme's primary text color
         fontWeight="bold"  // Equivalent to font-semibold in Tailwind
       >

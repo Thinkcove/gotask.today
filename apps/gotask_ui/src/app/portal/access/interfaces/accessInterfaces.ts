@@ -1,21 +1,20 @@
-
 export interface AccessOption {
-  access: string;    
-  actions: string[]; 
+  access: string;
+  actions: string[];
 }
 
 // Actual permissions assigned to an access role
 export interface ApplicationPermission {
-  access: string;      
-  actions: string[];  
+  access: string;
+  actions: string[];
 }
 
 // Represents the access role entity
 export interface AccessRole {
   createdAt: any;
-  id: string;                       
-  name: string;                      
-  application: ApplicationPermission[]; 
+  id: string;
+  name: string;
+  application: ApplicationPermission[];
 }
 
 // API response structure when fetching an access role

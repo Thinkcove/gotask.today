@@ -46,11 +46,16 @@ const AccessView: React.FC = () => {
   console.log("AccessView isOptionsLoading:", isOptionsLoading); // Debug log
   console.log("AccessView optionsError:", optionsError); // Debug log
 
+  // Valid modules for AccessTabs
+  const validModules = ["User Management", "Task Management", "Project Management"];
+
   // Set initial tab when data loads
   if (accessOptions.length > 0 && !currentTab && accessRole) {
-    setCurrentTab(
-      accessRole.application?.[0]?.access || accessOptions[0].access || ""
-    );
+    const firstValidModule =
+      accessRole.application?.find((app: { access: string; }) => validModules.includes(app.access))?.access ||
+      accessOptions.find(opt => validModules.includes(opt.access))?.access ||
+      validModules[0];
+    setCurrentTab(firstValidModule);
   }
 
   const handleDelete = async () => {
@@ -90,7 +95,7 @@ const AccessView: React.FC = () => {
       <Box
         sx={{
           width: "100%",
-          height: "100vh",
+          height: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -106,7 +111,7 @@ const AccessView: React.FC = () => {
       <Box
         sx={{
           width: "100%",
-          height: "100vh",
+          height: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -124,7 +129,7 @@ const AccessView: React.FC = () => {
       <Box
         sx={{
           width: "100%",
-          height: "100vh",
+          height: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -142,12 +147,13 @@ const AccessView: React.FC = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "90vh",
+        height: "100%",
         width: "100%",
         bgcolor: "white",
-        borderRadius: "2px",
+        borderRadius: 2,
         boxShadow: 3,
         p: 2,
+        m: 0, // Zero margin
       }}
     >
       <Box sx={{ flex: 1, overflowY: "auto" }}>
@@ -181,16 +187,30 @@ const AccessView: React.FC = () => {
           </Stack>
         </Box>
 
-        <TextField
-          fullWidth
-          label="Access Name"
-          variant="outlined"
-          value={accessRole.name}
-          disabled
-          sx={{ mb: 2 }}
-        />
+        <Box sx={{ maxWidth: 400, width: "100%", mb: 3 }}>
+          <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
+            Access Name
+          </Typography>
+          <TextField
+            fullWidth
+            variant="outlined"
+            value={accessRole.name}
+            disabled
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 1,
+                "&:hover fieldset": {
+                  borderColor: "#741B92",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#741B92",
+                },
+              },
+            }}
+          />
+        </Box>
 
-        <Typography variant="h6" mb={2}>
+        <Typography variant="h6" mb={2} fontWeight={600} sx={{ color: "#333" }}>
           Permissions
         </Typography>
 
@@ -215,4 +235,4 @@ const AccessView: React.FC = () => {
   );
 };
 
-export default AccessView;
+export default AccessView;  

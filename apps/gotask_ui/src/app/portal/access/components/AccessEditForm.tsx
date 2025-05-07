@@ -19,6 +19,7 @@ import {
 } from "../services/accessService";
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
+import AccessHeading from "../components/AccessHeading";
 
 export default function AccessEditForm() {
   const { canAccess } = userPermission();
@@ -40,15 +41,20 @@ export default function AccessEditForm() {
   console.log("AccessEditForm isOptionsLoading:", isOptionsLoading); // Debug log
   console.log("AccessEditForm optionsError:", optionsError); // Debug log
 
+  // Valid modules for AccessTabs
+  const validModules = ["User Management", "Task Management", "Project Management"];
+
   // Initialize form data when role and options load
   if (role && roleName === "" && application.length === 0) {
     setRoleName(role.name);
     setApplication(role.application || []);
   }
   if (accessOptions.length > 0 && !currentTab) {
-    setCurrentTab(
-      role?.application?.[0]?.access || accessOptions[0].access || ""
-    );
+    const firstValidModule =
+      role?.application?.find((app: { access: string; }) => validModules.includes(app.access))?.access ||
+      accessOptions.find(opt => validModules.includes(opt.access))?.access ||
+      validModules[0];
+    setCurrentTab(firstValidModule);
   }
 
   const handlePermissionChange = (access: string, action: string, checked: boolean) => {
@@ -122,7 +128,7 @@ export default function AccessEditForm() {
       <Box
         sx={{
           width: "100%",
-          height: "100vh",
+          height: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -138,7 +144,7 @@ export default function AccessEditForm() {
       <Box
         sx={{
           width: "100%",
-          height: "100vh",
+          height: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -156,58 +162,73 @@ export default function AccessEditForm() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "90vh",
+        height: "100%",
         width: "100%",
         bgcolor: "white",
         borderRadius: 2,
         boxShadow: 3,
-        p: 2,
+        p: 1,
+        m: 0,
       }}
     >
-      <Box sx={{ flex: 1, overflowY: "auto" }}>
-        <Typography variant="h5" fontWeight={600} mb={2}>
-          Edit Access Role
-        </Typography>
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <AccessHeading title="Edit Access Role" />
 
-        <TextField
-          fullWidth
-          label="Access Name"
-          variant="outlined"
-          required
-          value={roleName}
-          onChange={(e) => setRoleName(e.target.value)}
-          sx={{ mb: 2 }}
-        />
+        <Box sx={{ maxWidth: 400, width: "100%", mb: 3, mt: 2 }}>
+          <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
+            Access Name *
+          </Typography>
+          <TextField
+            fullWidth
+            variant="outlined"
+            required
+            value={roleName}
+            onChange={(e) => setRoleName(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 1,
+                "&:hover fieldset": {
+                  borderColor: "#741B92",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#741B92",
+                },
+              },
+            }}
+          />
+        </Box>
 
-        <Typography variant="h6" mb={2}>
+        <Typography variant="h6" fontWeight={600} sx={{ color: "#333" }}>
           Access Management
         </Typography>
 
-        {accessOptions.length === 0 ? (
-          <Box display="flex" justifyContent="center" mt={5}>
-            <Typography variant="body1" color="text.secondary">
-              No Access Options Available.
-            </Typography>
-          </Box>
-        ) : (
-          <AccessPermissionsContainer
-            currentModule={currentTab}
-            accessOptions={accessOptions}
-            selectedPermissions={selectedPermissionsMap}
-            onCheckboxChange={handlePermissionChange}
-            onTabChange={handleTabChange}
-          />
-        )}
+        <Box sx={{ flex: 1, maxHeight: "100%", overflow: "hidden" }}>
+          {accessOptions.length === 0 ? (
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Typography variant="body1" color="text.secondary">
+                No Access Options Available.
+              </Typography>
+            </Box>
+          ) : (
+            <AccessPermissionsContainer
+              currentModule={currentTab}
+              accessOptions={accessOptions}
+              selectedPermissions={selectedPermissionsMap}
+              onCheckboxChange={handlePermissionChange}
+              onTabChange={handleTabChange}
+            />
+          )}
+        </Box>
       </Box>
 
       <Box
         sx={{
           borderTop: 1,
-          borderColor: "gray",
-          pt: 2,
+          borderColor: "divider",
+          pt: 1,
           display: "flex",
           justifyContent: "flex-end",
-          gap: 2,
+          gap: 1,
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
@@ -215,6 +236,14 @@ export default function AccessEditForm() {
             variant="outlined"
             color="secondary"
             onClick={() => router.push("/portal/access")}
+            sx={{
+              minWidth: 120,
+              borderRadius: 1,
+              textTransform: "none",
+              "&:hover": {
+                bgcolor: "#f5f5f5",
+              },
+            }}
           >
             Cancel
           </Button>
@@ -225,6 +254,15 @@ export default function AccessEditForm() {
             color="primary"
             onClick={handleSubmit}
             disabled={isSubmitting}
+            sx={{
+              minWidth: 120,
+              borderRadius: 1,
+              textTransform: "none",
+              bgcolor: "#741B92",
+              "&:hover": {
+                bgcolor: "#5e1675",
+              },
+            }}
           >
             {isSubmitting ? <CircularProgress size={20} /> : "Save Changes"}
           </Button>

@@ -30,7 +30,7 @@ export const getAccessOptions = async (): Promise<{
     console.error("getAccessOptions error:", error.response || error.message);
     return {
       success: false,
-      message: error.response?.message || error.message || "Failed to fetch access options.",
+      message: error.response?.message || error.message || "Failed to fetch access options."
     };
   }
 };
@@ -48,7 +48,7 @@ const fetchAccessOptions = async () => {
 
 export const useAccessOptions = () => {
   const { data, error, isLoading } = useSWR([`fetchAccessOptions`], fetchAccessOptions, {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
 
   console.log("useAccessOptions data:", data); // Debug log
@@ -56,7 +56,7 @@ export const useAccessOptions = () => {
   return {
     accessOptions: Array.isArray(data) ? data : [],
     isLoading,
-    error: error ? error.message || "Failed to fetch access options" : null,
+    error: error ? error.message || "Failed to fetch access options" : null
   };
 };
 
@@ -80,8 +80,7 @@ export const createAccessRole = async (
     console.error("createAccessRole error:", error.response || error.message);
     return {
       success: false,
-      message:
-        error.response?.message || error.message || "Failed to create access role.",
+      message: error.response?.message || error.message || "Failed to create access role."
     };
   }
 };
@@ -99,7 +98,7 @@ const fetchAccessRoles = async () => {
 
 export const fetchAllAccessRoles = () => {
   const { data, error, isLoading } = useSWR([`fetchAccessRoles`], fetchAccessRoles, {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
 
   const mappedData: AccessData[] =
@@ -107,7 +106,7 @@ export const fetchAllAccessRoles = () => {
       id: role.id,
       name: role.name,
       accesses: role.application || [], // Map application to accesses
-      createdAt: role.createdAt,
+      createdAt: role.createdAt
     })) || [];
 
   console.log("fetchAllAccessRoles mappedData:", mappedData); // Debug log
@@ -115,7 +114,7 @@ export const fetchAllAccessRoles = () => {
   return {
     accessRoles: mappedData,
     isLoading,
-    error: error ? error.message || "Failed to fetch access roles" : null,
+    error: error ? error.message || "Failed to fetch access roles" : null
   };
 };
 
@@ -132,7 +131,7 @@ export const updateAccessRole = async (
     const cleanedApplication = accessData.application?.map(({ ...rest }) => rest);
     const cleanedPayload = {
       name: accessData.name,
-      application: cleanedApplication,
+      application: cleanedApplication
     };
     const data = await putData(
       `${env.API_BASE_URL}/access/${id}`,
@@ -145,7 +144,7 @@ export const updateAccessRole = async (
     console.error("updateAccessRole error:", error.response || error.message);
     return {
       success: false,
-      message: error.response?.message || error.message || "Failed to update access role.",
+      message: error.response?.message || error.message || "Failed to update access role."
     };
   }
 };
@@ -166,7 +165,7 @@ export const deleteAccessRole = async (
     console.error("deleteAccessRole error:", error.response || error.message);
     return {
       success: false,
-      message: error.response?.message || error.message || "Failed to delete access role.",
+      message: error.response?.message || error.message || "Failed to delete access role."
     };
   }
 };
@@ -187,8 +186,7 @@ export const getAccessRoleById = async (
     console.error("getAccessRoleById error:", error.response || error.message);
     return {
       success: false,
-      message:
-        error.response?.message || error.message || "Failed to fetch access role by ID.",
+      message: error.response?.message || error.message || "Failed to fetch access role by ID."
     };
   }
 };
@@ -206,7 +204,7 @@ const fetchAccessRoleById = async ([_, id]: [string, string]) => {
 
 export const useAccessRoleById = (id: string) => {
   const { data, error, isLoading } = useSWR([`fetchAccessRoleById`, id], fetchAccessRoleById, {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
 
   console.log("useAccessRoleById data:", data); // Debug log
@@ -214,6 +212,6 @@ export const useAccessRoleById = (id: string) => {
   return {
     role: data,
     isLoading,
-    error: error ? error.message || "Failed to fetch access role" : null,
+    error: error ? error.message || "Failed to fetch access role" : null
   };
 };

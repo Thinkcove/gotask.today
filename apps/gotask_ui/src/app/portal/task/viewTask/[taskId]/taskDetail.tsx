@@ -1,4 +1,4 @@
-import { Box, Typography, Grid, IconButton, Divider, Chip } from "@mui/material";
+import { Box, Typography, Grid, IconButton, Divider } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";

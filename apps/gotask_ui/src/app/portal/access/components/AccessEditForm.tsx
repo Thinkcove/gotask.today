@@ -222,49 +222,69 @@ export default function AccessEditForm() {
       </Box>
 
       <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      >
-        {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => router.push("/portal/access")}
-            sx={{
-              minWidth: 120,
-              borderRadius: 1,
-              textTransform: "none",
-              "&:hover": {
-                bgcolor: "#f5f5f5",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-        )}
-        {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            sx={{
-              minWidth: 120,
-              borderRadius: 1,
-              textTransform: "none",
-              bgcolor: "#741B92",
-              "&:hover": {
-                bgcolor: "#5e1675",
-              },
-            }}
-          >
-            {isSubmitting ? <CircularProgress size={20} /> : "Save Changes"}
-          </Button>
-        )}
-      </Box>
+  sx={{
+    flex: 1,
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: 2,
+    
+    flexWrap: "wrap",
+    flexDirection: {
+      xs: "column-reverse", // stack vertically on small screens
+      sm: "row",             // horizontal on small-medium+
+    },
+    alignItems: {
+      xs: "stretch",         // full width on small screens
+      sm: "center",
+    },
+  }}
+>
+  {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
+    <Button
+      variant="outlined"
+      color="secondary"
+      onClick={() => router.push("/portal/access")}
+      sx={{
+        minWidth: 120,
+        borderRadius: 1,
+        textTransform: "none",
+        "&:hover": {
+          bgcolor: "#f5f5f5",
+        },
+        width: {
+          xs: "100%", // full width on small screens
+          sm: "auto",
+        },
+      }}
+    >
+      Cancel
+    </Button>
+  )}
+  {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleSubmit}
+      disabled={isSubmitting}
+      sx={{
+        minWidth: 120,
+        borderRadius: 1,
+        textTransform: "none",
+        bgcolor: "#741B92",
+        "&:hover": {
+          bgcolor: "#5e1675",
+        },
+        width: {
+          xs: "100%", // full width on small screens
+          sm: "auto",
+        },
+      }}
+    >
+      {isSubmitting ? <CircularProgress size={20} /> : "Save Changes"}
+    </Button>
+  )}
+</Box>
+
     </Box>
   );
 }

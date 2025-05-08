@@ -11,6 +11,7 @@ import {
   TextField,
   Tooltip,
   IconButton,
+  Grid,
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -37,9 +38,7 @@ const AccessView: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { role: accessRole, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(
-    id as string
-  );
+  const { role: accessRole, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(id as string);
   const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
 
   const validModules = ["User Management", "Task Management", "Project Management"];
@@ -140,18 +139,18 @@ const AccessView: React.FC = () => {
 
   return (
     <Box
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      height: "95%",
-      width: "97%",
-      bgcolor: "white",
-      borderRadius: 2,
-      boxShadow: 3,
-      p: 2,
-      m: 3, // uniform margin on all sides
-    }}
-  >
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "95%",
+        width: "97%",
+        bgcolor: "white",
+        borderRadius: 2,
+        boxShadow: 3,
+        p: isMobile ? 1.5 : 2,
+        m: isMobile ? 1 : 3,
+      }}
+    >
       <Box sx={{ flex: 1, overflowY: "auto" }}>
         <Box
           display="flex"
@@ -159,14 +158,15 @@ const AccessView: React.FC = () => {
           alignItems="center"
           mb={2}
           flexDirection={isMobile ? "column" : "row"}
-          gap={2}
+          gap={isMobile ? 2 : 0}
         >
           <AccessHeading title={accessRole.name} />
           <Stack
             direction="row"
             spacing={1}
             alignItems="center"
-            justifyContent="flex-end"
+            justifyContent={isMobile ? "center" : "flex-end"}
+            width={isMobile ? "100%" : "auto"}
           >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
               <Tooltip title="Back">
@@ -197,7 +197,7 @@ const AccessView: React.FC = () => {
           </Stack>
         </Box>
 
-        <Box sx={{ maxWidth: 400, width: "100%", mb: 3 }}>
+        <Box sx={{ width: "100%", maxWidth: 500, mb: 3 }}>
           <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
             Access Name
           </Typography>

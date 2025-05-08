@@ -90,7 +90,7 @@ const FormField: React.FC<FormFieldProps> = ({
               ...(multiline && { height: height || 100, overflowY: "auto" })
             }}
             onChange={(e) => {
-              let val = e.target.value;
+              const val = e.target.value;
               onChange?.(val);
             }}
             InputProps={{

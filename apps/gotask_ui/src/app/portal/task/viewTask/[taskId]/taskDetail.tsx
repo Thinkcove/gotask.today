@@ -2,7 +2,7 @@ import { Box, Typography, Grid, IconButton, Divider } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { getStatusColor, TASK_SEVERITY } from "@/app/common/constants/task";
+import { getSeverityColor, getStatusColor } from "@/app/common/constants/task";
 import LabelValueText from "@/app/component/text/labelValueText";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { ITask } from "../../interface/taskInterface";
@@ -18,18 +18,6 @@ interface TaskDetailViewProps {
 const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case TASK_SEVERITY.HIGH:
-        return "error";
-      case TASK_SEVERITY.MEDIUM:
-        return "warning";
-      case TASK_SEVERITY.LOW:
-        return "success";
-      default:
-        return "default";
-    }
-  };
   const router = useRouter();
 
   const handleBack = () => {

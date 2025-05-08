@@ -52,41 +52,52 @@ const RoleCards: React.FC<RolesCardProps> = ({ roles }) => {
                   </Box>
                 </Stack>
                 {/* Access Details */}
-                {role.accessDetails && role.accessDetails.length > 0 && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      ml: 1
-                    }}
-                  >
+                {/* Access Details */}
+                <Box sx={{ ml: 1 }}>
+                  {role.accessDetails && role.accessDetails.length > 0 ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        ml: 1
+                      }}
+                    >
+                      <Typography
+                        key={role.accessDetails[0].id}
+                        variant="body2"
+                        fontWeight={500}
+                        sx={{ color: "text.secondary", m: 0, textTransform: "capitalize" }}
+                      >
+                        • {role.accessDetails[0].name}
+                      </Typography>
+
+                      {role.accessDetails.length > 1 && (
+                        <Box
+                          sx={{
+                            px: 1,
+                            backgroundColor: "#F3E5F5",
+                            color: "#741B92",
+                            fontSize: 12,
+                            fontWeight: 500,
+                            borderRadius: "8px",
+                            lineHeight: "20px"
+                          }}
+                        >
+                          +{role.accessDetails.length - 1} more
+                        </Box>
+                      )}
+                    </Box>
+                  ) : (
                     <Typography
-                      key={role.accessDetails[0].id}
                       variant="body2"
                       fontWeight={500}
-                      sx={{ color: "text.secondary", m: 0, textTransform: "capitalize" }}
+                      sx={{ color: "text.secondary", m: 0 }}
                     >
-                      • {role.accessDetails[0].name}
+                      {transrole("noaccess")}
                     </Typography>
-
-                    {role.accessDetails.length > 1 && (
-                      <Box
-                        sx={{
-                          px: 1,
-                          backgroundColor: "#F3E5F5",
-                          color: "#741B92",
-                          fontSize: 12,
-                          fontWeight: 500,
-                          borderRadius: "8px",
-                          lineHeight: "20px"
-                        }}
-                      >
-                        +{role.accessDetails.length - 1} more
-                      </Box>
-                    )}
-                  </Box>
-                )}
+                  )}
+                </Box>
 
                 {/* View Details at Bottom */}
                 {canAccess(APPLICATIONS.ROLE, ACTIONS.VIEW) && (

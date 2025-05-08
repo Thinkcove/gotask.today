@@ -293,7 +293,7 @@ const TaskList: React.FC = () => {
           setSelectedGroupId("");
           setSearchParams({});
         }}
-        onTaskClick={(id) => router.push(`/portal/task/editTask/${id}`)}
+        onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
         view={view}
       />
 

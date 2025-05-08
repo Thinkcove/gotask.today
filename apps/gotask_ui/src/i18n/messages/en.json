@@ -123,7 +123,8 @@
     "delete": "Delete Access",
     "removeaccess": " Are you sure you want to remove this access from the role?",
     "revokepermission": " This will revoke the permissions granted by this access.",
-    "role": "Role"
+    "role": "Role",
+    "noaccess": "No access mapped to this role"
   },
   "Task": {
     "filter": "Filter",

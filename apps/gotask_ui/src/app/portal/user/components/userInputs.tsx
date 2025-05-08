@@ -6,10 +6,11 @@ import { fetchAllOrganizations } from "../../organization/services/organizationA
 import { fetchAllRoles } from "../../role/services/roleAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { statusOptions } from "@/app/common/constants/user";
 
 interface IUserInputProps {
   formData: IUserField;
-  handleChange: (field: keyof IUserField, value: string | string[]) => void; // Value type for organization is string[]
+  handleChange: (field: keyof IUserField, value: string | string[] | boolean) => void;
   errors: { [key: string]: string };
   readOnlyFields?: string[];
   isEdit?: boolean;
@@ -71,6 +72,18 @@ const UserInput = ({
         />
       </Grid>
       <Grid item xs={12} sm={6}>
+        <FormField
+          label={transuser("labelstate")}
+          type="select"
+          placeholder={transuser("placeholderstatus")}
+          options={statusOptions}
+          error={errors?.status}
+          value={formData.status.toString()}
+          onChange={(value) => handleChange("status", value === "true")}
+          disabled={isReadOnly("status")}
+        />
+      </Grid>
+      <Grid item xs={12}>
         <FormField
           label={transuser("labelorganization")}
           type="multiselect"

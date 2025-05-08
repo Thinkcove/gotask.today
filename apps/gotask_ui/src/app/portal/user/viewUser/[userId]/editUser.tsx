@@ -40,7 +40,9 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     const newErrors: { [key: string]: string } = {};
     if (!formData.name) newErrors.name = transuser("username");
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
-    if (!formData.status) newErrors.status = transuser("userstatus");
+    if (formData.status === undefined || formData.status === null) {
+      newErrors.status = transuser("userstatus");
+    }
     if (!formData.user_id) {
       newErrors.user_id = transuser("useremail");
     } else if (!validateEmail(formData.user_id)) {
@@ -50,7 +52,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleChange = (field: keyof IUserField, value: string | string[]) => {
+  const handleChange = (field: keyof IUserField, value: string | string[] | boolean) => {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 

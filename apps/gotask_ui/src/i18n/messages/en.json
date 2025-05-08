@@ -6,11 +6,9 @@
     "labelpassword": "password",
     "seterror": "Both fields are required"
   },
-
   "Access": {
     "access": "Access"
   },
-
   "Dashboard": {
     "overview": "Dashboard Overview",
     "dashboard": "Dashboard",
@@ -19,7 +17,6 @@
     "task": "Task Distribution",
     "totals": "Total Tasks"
   },
-
   "Organization": {
     "createtitle": "Create New Organization",
     "errorname": "Organization Name is required",
@@ -55,7 +52,6 @@
     "errormailvalid": "Please enter a valid email address.",
     "projectsyet": "No projects yet."
   },
-
   "Projects": {
     "Projecttitle": "Project Title is required",
     "description": "Description is required",
@@ -100,7 +96,6 @@
     "edittitle": "Edit Project",
     "placeholdeselect": "Select Assignees to the project"
   },
-
   "Role": {
     "rolename": "Role Name is required",
     "selectaccess": "Select at least one Access",
@@ -130,7 +125,6 @@
     "revokepermission": " This will revoke the permissions granted by this access.",
     "role": "Role"
   },
-
   "Task": {
     "filter": "Filter",
     "filterproject": "Filter by Project",
@@ -212,9 +206,14 @@
     "endtime": "End Time",
     "popupcancel": "Cancel",
     "popupsave": "Save",
-    "taskname": "Task"
+    "taskname": "Task",
+    "detaildesc": "Description",
+    "detailproject": "Project Name",
+    "detailuser": "Assignee Name",
+    "detailseverity": "Severity",
+    "detaildue": "Due Date",
+    "detailcreated": "Created Date"
   },
-
   "User": {
     "username": "User name is required",
     "userrole": "Role is required",
@@ -255,15 +254,12 @@
     "userpwd": "Create a password",
     "validmail": "Please enter a valid email address"
   },
-
   "Appbar": {
     "logout": "Logout"
   },
-
   "Sidebar": {
     "gotask": "Go Task Today"
   },
-
   "Statuschart": {
     "total": "Total:"
   }

@@ -81,37 +81,34 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
           {/* Task Description */}
           <Grid container spacing={2} flexDirection="column" mb={3}>
             <Grid item xs={4}>
-              <LabelValueText
-                label={transtask("labeldescription")}
-                value={task.description || "-"}
-              />
+              <LabelValueText label={transtask("detaildesc")} value={task.description || "-"} />
             </Grid>
           </Grid>
 
           {/* Meta Info */}
           <Grid container spacing={2} mb={3}>
             <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText label={transtask("labelassignee")} value={task.user_name} />
+              <LabelValueText label={transtask("detailuser")} value={task.user_name} />
             </Grid>
             <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText label={transtask("labelproject")} value={task.project_name} />
+              <LabelValueText label={transtask("detailproject")} value={task.project_name} />
             </Grid>
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
-                label={transtask("labelseverity")}
+                label={transtask("detailseverity")}
                 value={task.severity.toUpperCase()}
                 sx={{ color: getSeverityColor(task.severity) }}
               />
             </Grid>
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
-                label={transtask("labelcreateon")}
+                label={transtask("detailcreated")}
                 value={new Date(task.created_on).toLocaleDateString()}
               />
             </Grid>
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
-                label={transtask("labelduedate")}
+                label={transtask("detaildue")}
                 value={new Date(task.due_date).toLocaleDateString()}
               />
             </Grid>

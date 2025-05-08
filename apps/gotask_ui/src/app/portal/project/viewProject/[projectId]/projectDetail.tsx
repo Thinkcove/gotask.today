@@ -4,7 +4,7 @@ import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
 import { fetchAllUsers } from "@/app/portal/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
-import FormField from "@/app/component/formField";
+import FormField, { SelectOption } from "@/app/component/formField";
 import { useParams, useRouter } from "next/navigation";
 import { assignUsersToProject, removeUsersFromProject } from "../../services/projectAction";
 import { KeyedMutator } from "swr";
@@ -43,7 +43,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     severity: SNACKBAR_SEVERITY.INFO
   });
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const { getAllUsers } = fetchAllUsers(); // Fetch all users
+  const { getAllUsers } = fetchAllUsers();
+  const assignedUserIds = project.users.map((user) => user.id);
+  const unassignedUsers = getAllUsers.filter(
+    (user: SelectOption) => !assignedUserIds.includes(user.id)
+  );
   const { projectId } = useParams();
   const projectID = projectId as string;
   const handleAddUser = async () => {
@@ -51,6 +55,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     try {
       const response = await assignUsersToProject(selectedUserIds, projectID);
       await mutate();
+      setSelectedUserIds([]);
       setSnackbar({
         open: true,
         message: response.message,
@@ -65,6 +70,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     }
   };
   const onClose = () => {
+    setSelectedUserIds([]);
     setOpen(false);
   };
 
@@ -239,8 +245,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             label={transproject("labelassignee")}
             type="multiselect"
             placeholder={transproject("placeholdeselect")}
-            options={getAllUsers}
-            value={selectedUserIds} // This is an array of user IDs: ["123", "456"]
+            options={unassignedUsers}
+            value={selectedUserIds}
             onChange={(ids) => setSelectedUserIds(ids as string[])}
           />
         </CommonDialog>

@@ -129,17 +129,17 @@ const getTasksByProject = async (
       });
     }
 
-    // More variation filter
-    if (more_variation?.length) {
+    // More variation filter (positive values)
+    if (more_variation?.length && !more_variation.startsWith("-")) {
       orConditions.push({
-        variation: { $regex: new RegExp(more_variation, "i") }
+        variation: { $regex: new RegExp(`^${more_variation}`, "i") }
       });
     }
 
-    // Less variation filter
-    if (less_variation?.length) {
+    // Less variation filter (negative values)
+    if (less_variation?.length && less_variation.startsWith("-")) {
       orConditions.push({
-        variation: { $regex: new RegExp(less_variation, "i") }
+        variation: { $regex: new RegExp(`^${less_variation}`, "i") }
       });
     }
 
@@ -245,17 +245,17 @@ const getTasksByUser = async (
       });
     }
 
-    // More variation filter
-    if (more_variation?.length) {
+    // More variation filter (positive values)
+    if (more_variation?.length && !more_variation.startsWith("-")) {
       orConditions.push({
-        variation: { $regex: new RegExp(more_variation, "i") }
+        variation: { $regex: new RegExp(`^${more_variation}`, "i") }
       });
     }
 
-    // Less variation filter
-    if (less_variation?.length) {
+    // Less variation filter (negative values)
+    if (less_variation?.length && less_variation.startsWith("-")) {
       orConditions.push({
-        variation: { $regex: new RegExp(less_variation, "i") }
+        variation: { $regex: new RegExp(`^${less_variation}`, "i") }
       });
     }
 

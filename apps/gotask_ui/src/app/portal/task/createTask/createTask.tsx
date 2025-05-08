@@ -45,7 +45,7 @@ const CreateTask: React.FC = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.title) newErrors.title = transtask("tasktitle");
     if (!formData.user_id) newErrors.user_id = transtask("assigneename");
-    if (!formData.project_id) newErrors.project_id =transtask("projectname");
+    if (!formData.project_id) newErrors.project_id = transtask("projectname");
     if (!formData.status) newErrors.status = transtask("status");
     if (!formData.severity) newErrors.severity = transtask("severity");
 
@@ -150,7 +150,7 @@ const CreateTask: React.FC = () => {
               }}
               onClick={handleSubmit}
             >
-             {transtask("creates")}
+              {transtask("creates")}
             </Button>
           </Box>
         </Box>
@@ -165,7 +165,12 @@ const CreateTask: React.FC = () => {
           overflowY: "auto" // Enables vertical scrolling
         }}
       >
-        <TaskInput formData={formData} handleInputChange={handleInputChange} errors={errors} />
+        <TaskInput
+          formData={formData}
+          handleInputChange={handleInputChange}
+          errors={errors}
+          readOnlyFields={["status"]}
+        />
       </Box>
       <CustomSnackbar
         open={snackbar.open}

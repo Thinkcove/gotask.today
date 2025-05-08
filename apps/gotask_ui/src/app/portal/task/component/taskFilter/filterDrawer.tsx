@@ -137,8 +137,12 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
       }
 
       if (selectedFilters.variationType && selectedFilters.variationDays > 0) {
-        const key = selectedFilters.variationType === "more" ? "more_variation" : "less_variation";
-        payload[key] = `${selectedFilters.variationDays}d`;
+        const isMore = selectedFilters.variationType === "more";
+        const key = isMore ? "more_variation" : "less_variation";
+        const value = isMore
+          ? `${selectedFilters.variationDays}d`
+          : `-${selectedFilters.variationDays}d`;
+        payload[key] = value;
       }
 
       onApplyFilters?.(payload);

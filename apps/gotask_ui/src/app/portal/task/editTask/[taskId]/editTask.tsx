@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography, IconButton } from "@mui/material";
 import TaskInput from "@/app/portal/task/createTask/taskInput";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { createComment, updateTask } from "../../service/taskAction";
-import { History } from "@mui/icons-material";
+import { ArrowBack, History } from "@mui/icons-material";
 import { IFormField, ITask, ITaskComment } from "../../interface/taskInterface";
 import HistoryDrawer from "../taskHistory";
 import TaskComments from "../taskComments";
@@ -81,7 +81,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         message: transtask("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setTimeout(() => router.back(), 2000);
     } catch (error) {
       console.error("Error while updating task:", error);
       setSnackbar({
@@ -102,6 +101,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     };
     await createComment(commentData);
     await mutate();
+  };
+
+  const handleBack = () => {
+    setTimeout(() => router.back(), 2000);
   };
 
   return (
@@ -135,9 +138,14 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
               width: "100%"
             }}
           >
-            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-              {transtask("edittask")}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <IconButton color="primary" onClick={handleBack}>
+                <ArrowBack />
+              </IconButton>
+              <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+                {transtask("edittask")}
+              </Typography>
+            </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <Button
                 variant="outlined"

@@ -24,8 +24,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
         p: 2,
         borderRadius: 3,
         transition: "0.3s",
-        "&:hover": { boxShadow: "0px 4px 10px rgba(156, 32, 240, 0.6)" },
-        height: 360,
+        height: 400,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between"
@@ -65,7 +64,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
 
       <Divider sx={{ my: 1 }} />
 
-      <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 300 }}>
+      <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 400 }}>
         {group.tasks.length > 0 ? (
           <>
             {group.tasks.slice(0, 3).map((task: ITask) => (

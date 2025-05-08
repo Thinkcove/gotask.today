@@ -9,6 +9,7 @@ import UserInput from "../../components/userInputs";
 import { updateUser } from "../../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { validateEmail } from "@/app/common/utils/common";
 
 interface EditUserProps {
   data: IUserField;
@@ -33,11 +34,28 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     roleId: data?.roleId || "",
     user_id: data?.user_id || ""
   }));
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  // Validate required fields
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.name) newErrors.name = transuser("username");
+    if (!formData.roleId) newErrors.roleId = transuser("userrole");
+    if (!formData.status) newErrors.status = transuser("userstatus");
+    if (!formData.user_id) {
+      newErrors.user_id = transuser("useremail");
+    } else if (!validateEmail(formData.user_id)) {
+      newErrors.user_id = transuser("validmail");
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const handleChange = (field: keyof IUserField, value: string | string[]) => {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
     try {
       await updateUser(userID, formData);
       await mutate();
@@ -77,12 +95,17 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
         }}
       ></Box>
 
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transuser("edituser")}>
+      <CommonDialog
+        open={open}
+        onClose={onClose}
+        onSubmit={handleSubmit}
+        title={transuser("edituser")}
+      >
         <UserInput
           formData={formData}
           handleChange={handleChange}
           readOnlyFields={["name"]}
-          errors={{}}
+          errors={errors}
         />
       </CommonDialog>
       <CustomSnackbar

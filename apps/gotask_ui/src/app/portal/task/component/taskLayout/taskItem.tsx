@@ -1,8 +1,10 @@
-import { Box, Typography, Tooltip, Avatar } from "@mui/material";
+import { Box, Typography, Tooltip, Avatar, Card, CardContent, Grid, Chip } from "@mui/material";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import { userPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { getVariationColor } from "@/app/common/constants/task";
+import { TuneRounded } from "@mui/icons-material";
 
 interface Task {
   id: string;
@@ -11,6 +13,7 @@ interface Task {
   title: string;
   user_name: string;
   project_name: string;
+  variation: string;
 }
 
 interface TaskItemProps {
@@ -31,116 +34,106 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const { canAccess } = userPermission();
   return (
     <Box
-      key={task.id}
       sx={{
-        mb: 2,
-        px: 1,
-        pb: 1,
-        pt: 1,
-        backgroundColor: "white",
-        borderRadius: 2,
         display: "flex",
-        flexDirection: "column",
-        border: "2px solid rgba(92, 89, 89, 0.1)",
-        boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)"
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "#ffffff",
+        borderRadius: 2,
+        border: "1px solid rgba(0, 0, 0, 0.12)",
+        boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
+        px: 2,
+        py: 1.5,
+        mb: 1.5,
+        cursor: canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? "pointer" : "default",
+        transition: "box-shadow 0.2s ease-in-out",
+        "&:hover": {
+          boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)"
+        }
       }}
+      onClick={canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? () => onTaskClick(task.id) : undefined}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <Avatar
-          sx={{
-            border: "1px solid white",
-            backgroundColor: "#741B92",
-            width: 18,
-            height: 18,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <CalendarMonth sx={{ height: 10, width: 10 }} />
-        </Avatar>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%"
-          }}
-        >
-          <Typography variant="subtitle2" fontWeight="semibold">
-            {formatDate(task.due_date)}
+      {/* Left Section */}
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        {/* Task Title */}
+        <Tooltip title={task.title} arrow>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              textTransform: "capitalize",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: 250,
+              display: "block"
+            }}
+          >
+            {task.title}
           </Typography>
-          <Typography sx={{ color: getStatusColor(task.status), fontSize: "0.7rem" }}>
+        </Tooltip>
+
+        {/* Variation Detail */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}>
+          <TuneRounded sx={{ fontSize: 16, color: getVariationColor(task.variation) }} />
+          <Typography
+            variant="caption"
+            sx={{
+              fontWeight: 500,
+              color: getVariationColor(task.variation),
+              textTransform: "capitalize"
+            }}
+          >
+            Variation: {task.variation ? task.variation : "0d0h"}
+          </Typography>
+        </Box>
+
+        {/* Metadata: Due Date + Status */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 0.5 }}>
+          {/* Due Date */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <CalendarMonth sx={{ fontSize: 16, color: "#888" }} />
+            <Typography variant="caption" color="text.secondary">
+              {formatDate(task.due_date)}
+            </Typography>
+          </Box>
+
+          {/* Status */}
+          <Box
+            sx={{
+              px: 1,
+              py: 0.2,
+              borderRadius: 1,
+              backgroundColor: getStatusColor(task.status),
+              fontSize: "0.7rem",
+              color: "#fff"
+            }}
+          >
             {task.status.replace(/-/g, " ").toUpperCase()}
-          </Typography>
+          </Box>
         </Box>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-            backgroundColor: "#F9F9F9",
-            borderRadius: 2,
-            cursor: canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) ? "pointer" : "default",
-            padding: 1,
-            boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)"
-          }}
-          onClick={
-            canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) ? () => onTaskClick(task.id) : undefined
-          }
-        >
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column"
-            }}
-          >
-            <Tooltip title={task.title} arrow>
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  textTransform: "capitalize",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  maxWidth: 250,
-                  display: "block"
-                }}
-              >
-                {task.title}
-              </Typography>
-            </Tooltip>
-          </Box>
-          {view === "projects" ? (
-            <Box
-              sx={{ width: "10%", display: "flex", justifyContent: "center", alignItems: "center" }}
-            >
-              <Tooltip title={task.user_name} arrow>
-                <AlphabetAvatar userName={task.user_name} />
-              </Tooltip>
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                width: "10%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                flexWrap: "nowrap",
-                pr: 2
-              }}
-            >
-              <Tooltip title={task.project_name} arrow>
-                <Typography>{task.project_name}</Typography>
-              </Tooltip>
-            </Box>
-          )}
-        </Box>
+      {/* Right Section */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "flex-end",
+          textAlign: "right"
+        }}
+      >
+        {view === "projects" ? (
+          <Tooltip title={task.user_name} arrow>
+            <AlphabetAvatar userName={task.user_name} />
+          </Tooltip>
+        ) : (
+          <Tooltip title={task.project_name} arrow>
+            <Typography variant="caption" color="text.secondary">
+              {task.project_name}
+            </Typography>
+          </Tooltip>
+        )}
       </Box>
     </Box>
   );

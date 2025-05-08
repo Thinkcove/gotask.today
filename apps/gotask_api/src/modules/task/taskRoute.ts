@@ -64,11 +64,15 @@ TaskRoutes.push({
 TaskRoutes.push({
   path: API_PATHS.GET_TASK_BY_PROJECT,
   method: API_METHODS.POST,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    taskController.getTaskByProject(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+    taskController.getTaskByProject(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Retrieve tasks by project ID",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -76,11 +80,15 @@ TaskRoutes.push({
 TaskRoutes.push({
   path: API_PATHS.GET_TASK_BY_USER,
   method: API_METHODS.POST,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    taskController.getTaskByUser(new RequestHelper(request), handler),
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+    taskController.getTaskByUser(new RequestHelper(request), handler)
+  ),
   config: {
     notes: "Retrieve tasks by user ID",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 

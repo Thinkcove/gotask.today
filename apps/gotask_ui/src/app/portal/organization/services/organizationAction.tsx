@@ -2,57 +2,50 @@ import env from "@/app/common/env";
 import { getData, postData, putData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
 import { IOrganizationField } from "../interfaces/organizatioinInterface";
-import { fetchToken } from "@/app/common/utils/authToken";
+import { withAuth } from "@/app/common/utils/authToken";
 
-//fetch all users
+// Fetch all organizations
 const fetchOrganization = async () => {
-  const token = fetchToken();
-  if (!token) {
-    return { error: "Please login again." };
-  }
-  return await getData(`${env.API_BASE_URL}/getAllOrganizations`, token);
+  return withAuth((token) => {
+    return getData(`${env.API_BASE_URL}/getAllOrganizations`, token);
+  });
 };
 
+// Hook using SWR
 export const fetchAllOrganizations = () => {
-  const { data } = useSWR([`fetchorganization`], () => fetchOrganization(), {
+  const { data } = useSWR([`fetchorganization`], fetchOrganization, {
     revalidateOnFocus: false
   });
   return {
     getOrganizations:
-      data?.data?.map((user: { name: string; id: string }) => ({
-        name: user.name,
-        id: user.id
+      data?.data?.map((org: { name: string; id: string }) => ({
+        name: org.name,
+        id: org.id
       })) || []
   };
 };
 
-//get all organization
+// Direct fetch method
 export const getOrganizationData = async () => {
-  const token = fetchToken();
-  if (!token) {
-    return { error: "Please login again." };
-  }
-  const url = `${env.API_BASE_URL}/getAllOrganizations`;
-  const response = await getData(url, token);
-  return response.data;
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/getAllOrganizations`;
+    const response = await getData(url, token);
+    return response.data;
+  });
 };
 
-//update a organization
+// Update an organization
 export const updateOrganization = async (orgId: string, updatedFields: IOrganizationField) => {
-  const token = fetchToken();
-  if (!token) {
-    return { error: "Please login again." };
-  }
-  const url = `${env.API_BASE_URL}/updateOrg/${orgId}`;
-  return await putData(url, updatedFields as unknown as Record<string, unknown>, token);
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/updateOrg/${orgId}`;
+    return putData(url, updatedFields as unknown as Record<string, unknown>, token);
+  });
 };
 
-//createOrganization
+// Create organization
 export const createOrganization = async (formData: IOrganizationField) => {
-  const token = fetchToken();
-  if (!token) {
-    return { error: "Please login again." };
-  }
-  const url = `${env.API_BASE_URL}/createOrganization`;
-  return await postData(url, formData as unknown as Record<string, unknown>, token);
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/createOrganization`;
+    return postData(url, formData as unknown as Record<string, unknown>, token);
+  });
 };

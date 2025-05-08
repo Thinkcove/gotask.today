@@ -34,7 +34,7 @@
     "labelemail": "Email ID",
     "placeholdername": "Enter organization name",
     "placeholderaddress": "Enter organization address",
-    "placeholderemail": "Enter organization  mail_id",
+    "placeholderemail": "Enter organization email",
     "labelphone": "Phone Number",
     "placeholderphone": "Enter phone number",
     "createnew": "Create New Organization",
@@ -97,7 +97,8 @@
     "removeusernote2": "You can reassign them anytime later if needed.",
     "updatesuccess": "Project updated successfully!",
     "updateerror": "Error while updating project",
-    "edittitle": "Edit Project"
+    "edittitle": "Edit Project",
+    "placeholdeselect": "Select Assignees to the project"
   },
 
   "Role": {
@@ -244,7 +245,7 @@
     "deleteerror": "Error while deleting a user",
     "userdetail": "User Detail View",
     "uesrid": "User ID",
-    "roleid": "Role ID",
+    "roleid": "Role",
     "status": "Status",
     "organization": "Organizations",
     "projectdetails": "Project Details",

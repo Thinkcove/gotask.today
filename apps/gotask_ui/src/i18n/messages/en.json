@@ -8,7 +8,8 @@
   },
 
   "Access": {
-    "access":"Access"
+    "access":"Access",
+    "createaccessnew": "Create New Access"
   },
 
   "Dashboard": {

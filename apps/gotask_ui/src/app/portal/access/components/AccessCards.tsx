@@ -9,7 +9,7 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-import { CalendarMonth, ArrowForward } from "@mui/icons-material";
+import { ArrowForward } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CardComponent from "@/app/component/card/cardComponent";
 import { AccessData } from "../interfaces/accessInterfaces";
@@ -74,8 +74,19 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                 </Typography>
                 {access.createdAt && (
                   <Box display="flex" alignItems="center">
-                    <CalendarMonth sx={{ fontSize: 20, color: "#741B92", mr: 1 }} />
-                    <Typography variant="body2" fontWeight={500} color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      fontWeight={500}
+                      color="text.secondary"
+                      sx={{ mr: 1 }}
+                    >
+                      Created At:
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      fontWeight={500}
+                      color="text.secondary"
+                    >
                       {new Date(access.createdAt).toLocaleDateString()}
                     </Typography>
                   </Box>

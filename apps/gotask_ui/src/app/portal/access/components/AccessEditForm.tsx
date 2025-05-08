@@ -159,23 +159,23 @@ export default function AccessEditForm() {
 
   return (
     <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        width: "100%",
-        bgcolor: "white",
-        borderRadius: 2,
-        boxShadow: 3,
-        p: 1,
-        m: 0,
-      }}
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      height: "95%",
+      width: "97%",
+      bgcolor: "white",
+      borderRadius: 2,
+      boxShadow: 3,
+      p: 2,
+      m: 3, // uniform margin on all sides
+    }}
     >
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <AccessHeading title="Edit Access Role" />
 
-        <Box sx={{ maxWidth: 400, width: "100%", mb: 3, mt: 2 }}>
-          <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
+        <Box sx={{ maxWidth: 400, width: "100%", mb: 1, mt: 1 }}>
+          <Typography variant="body2" sx={{ color: "#333", fontWeight: 500 }}>
             Access Name *
           </Typography>
           <TextField
@@ -202,9 +202,9 @@ export default function AccessEditForm() {
           Access Management
         </Typography>
 
-        <Box sx={{ flex: 1, maxHeight: "100%", overflow: "hidden" }}>
+        <Box sx={{ flex: 1, maxHeight: "80%", overflow: "hidden" }}>
           {accessOptions.length === 0 ? (
-            <Box display="flex" justifyContent="center" mt={2}>
+            <Box display="flex" justifyContent="center">
               <Typography variant="body1" color="text.secondary">
                 No Access Options Available.
               </Typography>
@@ -223,12 +223,9 @@ export default function AccessEditForm() {
 
       <Box
         sx={{
-          borderTop: 1,
-          borderColor: "divider",
-          pt: 1,
+          flex: 1,
           display: "flex",
           justifyContent: "flex-end",
-          gap: 1,
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (

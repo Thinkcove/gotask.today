@@ -9,9 +9,13 @@ import {
   useMediaQuery,
   useTheme,
   TextField,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { ArrowBack, Edit, Delete } from "@mui/icons-material";
+
 import { userPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import {
@@ -21,7 +25,6 @@ import {
 } from "../services/accessService";
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "./AccessPermissionsContainer";
-import Button from "./Button";
 import AccessHeading from "./AccessHeading";
 
 const AccessView: React.FC = () => {
@@ -39,21 +42,14 @@ const AccessView: React.FC = () => {
   );
   const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
 
-  console.log("AccessView accessRole:", accessRole); // Debug log
-  console.log("AccessView isRoleLoading:", isRoleLoading); // Debug log
-  console.log("AccessView roleError:", roleError); // Debug log
-  console.log("AccessView accessOptions:", accessOptions); // Debug log
-  console.log("AccessView isOptionsLoading:", isOptionsLoading); // Debug log
-  console.log("AccessView optionsError:", optionsError); // Debug log
-
-  // Valid modules for AccessTabs
   const validModules = ["User Management", "Task Management", "Project Management"];
 
-  // Set initial tab when data loads
   if (accessOptions.length > 0 && !currentTab && accessRole) {
     const firstValidModule =
-      accessRole.application?.find((app: { access: string; }) => validModules.includes(app.access))?.access ||
-      accessOptions.find(opt => validModules.includes(opt.access))?.access ||
+      accessRole.application?.find((app: { access: string }) =>
+        validModules.includes(app.access)
+      )?.access ||
+      accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
       validModules[0];
     setCurrentTab(firstValidModule);
   }
@@ -67,7 +63,6 @@ const AccessView: React.FC = () => {
     try {
       setIsDeleting(true);
       const res = await deleteAccessRole(accessRole.id);
-      console.log("deleteAccessRole response:", res); // Debug log
       if (res.success) {
         toast.success(res.message || "Role deleted successfully.");
         router.push("/portal/access");
@@ -82,13 +77,14 @@ const AccessView: React.FC = () => {
     }
   };
 
-  const selectedPermissions = accessRole?.application?.reduce(
-    (acc: Record<string, string[]>, app: { access: string; actions: string[] }) => {
-      acc[app.access] = app.actions;
-      return acc;
-    },
-    {}
-  ) || {};
+  const selectedPermissions =
+    accessRole?.application?.reduce(
+      (acc: Record<string, string[]>, app: { access: string; actions: string[] }) => {
+        acc[app.access] = app.actions;
+        return acc;
+      },
+      {}
+    ) || {};
 
   if (isRoleLoading || isOptionsLoading) {
     return (
@@ -144,18 +140,18 @@ const AccessView: React.FC = () => {
 
   return (
     <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        width: "100%",
-        bgcolor: "white",
-        borderRadius: 2,
-        boxShadow: 3,
-        p: 2,
-        m: 0, // Zero margin
-      }}
-    >
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      height: "95%",
+      width: "97%",
+      bgcolor: "white",
+      borderRadius: 2,
+      boxShadow: 3,
+      p: 2,
+      m: 3, // uniform margin on all sides
+    }}
+  >
       <Box sx={{ flex: 1, overflowY: "auto" }}>
         <Box
           display="flex"
@@ -167,22 +163,36 @@ const AccessView: React.FC = () => {
         >
           <AccessHeading title={accessRole.name} />
           <Stack
-            direction={isMobile ? "column" : "row"}
+            direction="row"
             spacing={1}
-            width={isMobile ? "100%" : "auto"}
+            alignItems="center"
+            justifyContent="flex-end"
           >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
-              <Button text="Back" onClick={() => router.back()} fullWidth={isMobile} />
+              <Tooltip title="Back">
+                <IconButton onClick={() => router.back()} color="primary">
+                  <ArrowBack />
+                </IconButton>
+              </Tooltip>
             )}
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
-              <Button
-                text="Edit"
-                href={`/portal/access/pages/edit/${accessRole.id}`}
-                fullWidth={isMobile}
-              />
+              <Tooltip title="Edit">
+                <IconButton
+                  onClick={() =>
+                    router.push(`/portal/access/pages/edit/${accessRole.id}`)
+                  }
+                  color="primary"
+                >
+                  <Edit />
+                </IconButton>
+              </Tooltip>
             )}
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.DELETE) && (
-              <Button text="Delete" onClick={handleDelete} fullWidth={isMobile} />
+              <Tooltip title="Delete">
+                <IconButton onClick={handleDelete} color="error" disabled={isDeleting}>
+                  <Delete />
+                </IconButton>
+              </Tooltip>
             )}
           </Stack>
         </Box>
@@ -235,4 +245,4 @@ const AccessView: React.FC = () => {
   );
 };
 
-export default AccessView;  
+export default AccessView;

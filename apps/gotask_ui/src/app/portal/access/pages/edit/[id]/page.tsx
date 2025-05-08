@@ -1,49 +1,49 @@
-"use client";
+  "use client";
 
-import { Box, Typography } from "@mui/material";
-import React from "react";
-import AccessEditForm from "../../../components/AccessEditForm";
+  import { Box, Typography } from "@mui/material";
+  import React from "react";
+  import AccessEditForm from "../../../components/AccessEditForm";
 
-const AccessEditPage = () => {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        m: 0,
-        p: 0,
-        overflow: "hidden",
-      }}
-    >
-      {/* Header Section */}
+  const AccessEditPage = () => {
+    return (
       <Box
         sx={{
-          backgroundColor: "#741B92",
-          color: "white",
-          p: 1.5,
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          flexDirection: "column",
+          height: "100vh",
+          m: 0,
+          p: 0,
+          overflow: "hidden",
         }}
       >
-        <Typography
-          variant="h6"
+        {/* Header Section */}
+        <Box
           sx={{
-            fontWeight: "600",
-            textTransform: "capitalize",
+            backgroundColor: "#741B92",
+            color: "white",
+            p: 1.5,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          Edit Access
-        </Typography>
-      </Box>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "600",
+              textTransform: "capitalize",
+            }}
+          >
+            Edit Access
+          </Typography>
+        </Box>
 
-      {/* Content Section */}
-      <Box sx={{ flex: 1, overflow: "hidden" }}>
-        <AccessEditForm />
+        {/* Content Section */}
+        <Box sx={{ flex: 1, overflow: "hidden" }}>
+          <AccessEditForm />
+        </Box>
       </Box>
-    </Box>
-  );
-};
+    );
+  };
 
-export default AccessEditPage;
+  export default AccessEditPage;

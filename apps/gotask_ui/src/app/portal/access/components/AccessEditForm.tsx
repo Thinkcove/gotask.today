@@ -6,7 +6,11 @@ import {
   CircularProgress,
   TextField,
   Typography,
+  Stack,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -20,10 +24,10 @@ import {
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import AccessHeading from "../components/AccessHeading";
-import { useTranslations } from "next-intl"; // <-- Import localization hook
+import { useTranslations } from "next-intl"; 
 
 export default function AccessEditForm() {
-  const t = useTranslations("Access"); // <-- Using "Access" namespace
+  const t = useTranslations("Access"); 
   const { canAccess } = userPermission();
   const { id } = useParams();
   const router = useRouter();
@@ -149,7 +153,20 @@ export default function AccessEditForm() {
       }}
     >
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+         {/* Back Icon and Heading */}
+         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
+              <Tooltip title={t("cancel")}>
+                <IconButton onClick={() => router.back()} color="primary">
+                  <ArrowBack />
+                </IconButton>
+              </Tooltip>
+            )}
         <AccessHeading title={t("editaccess")} />
+
+        </Stack>
+        </Box>
 
         <Box sx={{ maxWidth: 400, width: "100%", mb: 1, mt: 1 }}>
           <Typography variant="body2" sx={{ color: "#333", fontWeight: 500 }}>

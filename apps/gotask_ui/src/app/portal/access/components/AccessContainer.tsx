@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
 import AccessHeading from "../components/AccessHeading";
@@ -29,7 +29,15 @@ const AccessContainer: React.FC = () => {
   const { accessRoles, isLoading, error } = fetchAllAccessRoles();
   const theme = useTheme();
 
-  const filteredData = accessRoles.filter((item) =>
+  // Sort the accessRoles array by createdAt in descending order
+  const sortedData = [...accessRoles].sort((a, b) => {
+    if (a.createdAt && b.createdAt) {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+    return 0; // If createdAt is missing, maintain the original order
+  });
+
+  const filteredData = sortedData.filter((item) =>
     item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

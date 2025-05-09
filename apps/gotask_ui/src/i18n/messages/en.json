@@ -31,7 +31,8 @@
   "viewdetails": "View Details",
   "cancel": "Cancel",
   "accessName": "Access Name" ,
-  "accessManagement": "Access Management" 
+  "accessManagement": "Access Management",
+  "atLeastOnePermissionRequired": "Please select at least one permission." 
 },
   "Dashboard": {
     "overview": "Dashboard Overview",

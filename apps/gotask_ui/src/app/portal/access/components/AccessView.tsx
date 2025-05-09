@@ -36,7 +36,7 @@ const AccessView: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [currentTab, setCurrentTab] = useState<string>("");
+  const [currentTab, setCurrentTab] = useState<string>(""); 
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { role: accessRole, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(id as string);
@@ -129,23 +129,21 @@ const AccessView: React.FC = () => {
       }}
     >
       <Box sx={{ flex: 1, overflowY: "auto" }}>
-
-
         <Box
           display="flex"
           justifyContent="space-between"
           alignItems="center"
           mb={2}
-          flexDirection={isMobile ? "column" : "row"}
+          flexDirection={isMobile ? "column" : "row"} // Keep this for mobile responsiveness
           gap={isMobile ? 2 : 0}
         >
-          <AccessHeading title={accessRole.name} />
+          {/* Back Icon and Heading Aligned to the Left */}
           <Stack
             direction="row"
             spacing={1}
             alignItems="center"
-            justifyContent={isMobile ? "center" : "flex-end"}
-            width={isMobile ? "100%" : "auto"}
+            justifyContent="flex-start"
+            width="auto"
           >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
               <Tooltip title={t("cancel")}>
@@ -154,6 +152,17 @@ const AccessView: React.FC = () => {
                 </IconButton>
               </Tooltip>
             )}
+            <AccessHeading title={accessRole.name} />
+          </Stack>
+
+          {/* Right-side action buttons */}
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="flex-end"
+            width="auto"
+          >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
               <Tooltip title={t("editaccess")}>
                 <IconButton
@@ -174,6 +183,7 @@ const AccessView: React.FC = () => {
           </Stack>
         </Box>
 
+        {/* Access Role Name */}
         <Box sx={{ width: "100%", maxWidth: 500, mb: 3 }}>
           <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
             {t("accessName")}

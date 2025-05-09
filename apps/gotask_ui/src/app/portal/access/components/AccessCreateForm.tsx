@@ -28,10 +28,8 @@ const AccessCreateForm: React.FC = () => {
 
   const { accessOptions, isLoading, error } = useAccessOptions();
 
-  // Valid modules for AccessTabs
   const validModules = ["User Management", "Task Management", "Project Management"];
 
-  // Set initial currentModule when accessOptions load
   if (accessOptions.length > 0 && !currentModule) {
     const firstValidModule = accessOptions.find(opt => validModules.includes(opt.access))?.access || validModules[0];
     setCurrentModule(firstValidModule);
@@ -49,14 +47,19 @@ const AccessCreateForm: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!accessName.trim()) {
-      alert(t("Access.accessNameRequired")); // Added a new key for this purpose
+      alert(t("Access.accessNameRequired"));
       return;
     }
 
     const application = Object.entries(selectedPermissions).map(([access, actions]) => ({
       access,
       actions,
-    }));
+    })).filter(app => app.actions.length > 0);
+
+    if (application.length === 0) {
+      alert(t("Access.atLeastOnePermissionRequired")); // Add this key in your translation file
+      return;
+    }
 
     const payload: AccessRole = {
       name: accessName.trim(),
@@ -68,7 +71,7 @@ const AccessCreateForm: React.FC = () => {
     try {
       setIsSubmitting(true);
       const response = await createAccessRole(payload);
-      console.log("createAccessRole response:", response); // Debug log
+      console.log("createAccessRole response:", response);
       if (response.success) {
         router.push("/portal/access");
       } else {
@@ -99,7 +102,7 @@ const AccessCreateForm: React.FC = () => {
       <Box sx={{ flex: 1 }}>
         <AccessHeading title={t("Access.createaccessnew")} />
         <Box sx={{ maxWidth: 400, width: "100%", mt: 1 }}>
-          <Typography variant="body2" sx={{  color: "#333", fontWeight: 500 }}>
+          <Typography variant="body2" sx={{ color: "#333", fontWeight: 500 }}>
             {t("Access.accessName")}
           </Typography>
           <TextField
@@ -155,12 +158,10 @@ const AccessCreateForm: React.FC = () => {
 
       <Box
         sx={{
-          
           borderColor: "divider",
-          
           display: "flex",
           justifyContent: "flex-end",
-          gap: 1, 
+          gap: 1,
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (

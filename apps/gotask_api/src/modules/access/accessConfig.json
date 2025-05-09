@@ -11,6 +11,14 @@
       {
         "access": "Project Management",
         "actions": ["CREATE", "READ", "UPDATE", "DELETE"]
+      },
+      {
+        "access": "Access Management",
+        "actions": ["CREATE", "READ", "UPDATE", "DELETE"]
+      },
+      {
+        "access": "Organization Management",
+        "actions": ["CREATE", "READ", "UPDATE", "DELETE"]
       }
     ]
   }

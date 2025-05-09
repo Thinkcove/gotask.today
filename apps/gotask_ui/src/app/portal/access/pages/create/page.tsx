@@ -18,14 +18,22 @@ const AccessCreatePage = () => {
         height: "100vh",
         m: 0,
         p: 0,
-        overflow: "hidden", // Prevent scrolling
+        overflow: "hidden", // Prevent scroll on whole page
       }}
     >
       {/* Header Section */}
-      <ModuleHeader name={t("createaccessnew")} />
+      <Box sx={{ flexShrink: 0 }}>
+        <ModuleHeader name={t("createaccessnew")} />
+      </Box>
 
       {/* Content Section */}
-      <Box sx={{ flex: 1, overflowY: "auto", p: 3 }}>
+      <Box
+        sx={{
+          flex: 1,
+          overflow: "hidden", // No page scroll here
+          p: 3,
+        }}
+      >
         <AccessCreateForm />
       </Box>
     </Box>

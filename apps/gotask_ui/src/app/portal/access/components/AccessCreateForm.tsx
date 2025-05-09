@@ -93,14 +93,14 @@ const AccessCreateForm: React.FC = () => {
         borderRadius: 2,
         boxShadow: 3,
         p: 2,
-        overflow: "hidden", // Prevent scroll here as well
+        overflow: "hidden",
       }}
     >
-      <Box sx={{ flex: 1, overflowY: "auto" }}>
+      <Box sx={{ flex: 1 }}>
         <AccessHeading title={t("Access.createaccessnew")} />
-        <Box sx={{ maxWidth: 400, width: "100%", mb: 1, mt: 1 }}>
-          <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
-            {t("Access.accessName")} * {/* Updated key */}
+        <Box sx={{ maxWidth: 400, width: "100%", mt: 1 }}>
+          <Typography variant="body2" sx={{  color: "#333", fontWeight: 500 }}>
+            {t("Access.accessName")}
           </Typography>
           <TextField
             fullWidth
@@ -155,12 +155,12 @@ const AccessCreateForm: React.FC = () => {
 
       <Box
         sx={{
-          borderTop: 1,
+          
           borderColor: "divider",
-          pt: 2,
+          
           display: "flex",
           justifyContent: "flex-end",
-          gap: 2, // Added gap for space between buttons
+          gap: 1, 
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (

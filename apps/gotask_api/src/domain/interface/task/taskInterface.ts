@@ -167,7 +167,6 @@ const updateCommentInTask = async (
   return updatedComment;
 };
 
-// Add time spent to task
 const addTimeSpentToTask = async (
   id: string,
   timeEntries: ITimeSpentEntry[]
@@ -178,6 +177,7 @@ const addTimeSpentToTask = async (
   if (!task.time_spent) task.time_spent = [];
 
   const entries = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
+  let delayHours = 0;
 
   for (const entry of entries) {
     if (entry.start_time && entry.end_time) {
@@ -194,6 +194,25 @@ const addTimeSpentToTask = async (
       throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
     }
 
+    // 🔍 Date comparison debug logs
+    const entryDate = new Date(entry.date);
+    const dueDate = new Date(task.due_date);
+
+    console.log("Checking entry date:", entry.date);
+    console.log("Task due date:", task.due_date);
+    console.log("Parsed entry date:", entryDate);
+    console.log("Parsed due date:", dueDate);
+    console.log("Is entry after due date?", entryDate > dueDate);
+
+    if (entryDate > dueDate) {
+      const diffMs = entryDate.getTime() - dueDate.getTime();
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); // calendar days
+      const delayHoursForThisEntry = diffDays * 8; // 8 working hours per day
+      delayHours += delayHoursForThisEntry;
+
+      console.log(`Entry is late by ${diffDays} working days (${delayHoursForThisEntry} hours)`);
+    }
+
     task.time_spent.push({
       ...entry,
       start_time: entry.start_time,
@@ -204,13 +223,19 @@ const addTimeSpentToTask = async (
   const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);
   task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
   task.remaining_time = TimeUtil.calculateRemainingTime(task.estimated_time, task.time_spent_total);
-
   task.variation = TimeUtil.calculateVariation(task.estimated_time, task.time_spent_total);
+
+  if (delayHours > 0) {
+    const delayString = TimeUtil.formatHoursToTimeString(delayHours);
+    console.log("Total delay time:", delayString);
+    task.variation = delayString; // ONLY show delay
+  } else {
+    task.variation = "0d0h"; // No delay
+  }
 
   await task.save();
   return task;
 };
-
 
 export {
   createNewTask,

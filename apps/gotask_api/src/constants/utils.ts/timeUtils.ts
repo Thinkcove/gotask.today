@@ -15,8 +15,9 @@ const parseTimeString = (timeString: string): number => {
 
 // Parse "HH:MM" string to total hours
 const parseHourMinuteString = (timeStr: string): number => {
+  if (!timeStr || !timeStr.includes(":")) return 0;
   const [hours, minutes] = timeStr.split(":").map(Number);
-  return ((hours || 0) * 60 + (minutes || 0)) / 60; 
+  return ((hours || 0) * 60 + (minutes || 0)) / 60;
 };
 
 // Format total hours to "XdYh" format
@@ -51,10 +52,12 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
   try {
     let startHour: number, startMinute: number, endHour: number, endMinute: number;
 
+    // Ensure startTime and endTime match the expected format
     if (
       TIME_FORMAT_PATTERNS.ANY_TIME_FORMAT.test(startTime) &&
       TIME_FORMAT_PATTERNS.ANY_TIME_FORMAT.test(endTime)
     ) {
+      // Parse AM/PM format
       if (TIME_FORMAT_PATTERNS.AMPM_TIME.test(startTime)) {
         const startParts = startTime.match(TIME_FORMAT_PATTERNS.AMPM_PARTS);
         if (!startParts) throw new Error("Invalid start time format");
@@ -62,13 +65,17 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
         startMinute = parseInt(startParts[2], 10);
         if (startParts[3].toUpperCase() === TIME_PERIODS.PM && startHour < TIME_FORMAT.NOON_HOUR) {
           startHour += TIME_FORMAT.NOON_HOUR;
-        } else if (startParts[3].toUpperCase() === TIME_PERIODS.AM && startHour === TIME_FORMAT.NOON_HOUR) {
+        } else if (
+          startParts[3].toUpperCase() === TIME_PERIODS.AM &&
+          startHour === TIME_FORMAT.NOON_HOUR
+        ) {
           startHour = 0;
         }
       } else {
         [startHour, startMinute] = startTime.split(":").map(Number);
       }
 
+      // Parse AM/PM format for end time
       if (TIME_FORMAT_PATTERNS.AMPM_TIME.test(endTime)) {
         const endParts = endTime.match(TIME_FORMAT_PATTERNS.AMPM_PARTS);
         if (!endParts) throw new Error("Invalid end time format");
@@ -76,7 +83,10 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
         endMinute = parseInt(endParts[2], 10);
         if (endParts[3].toUpperCase() === TIME_PERIODS.PM && endHour < TIME_FORMAT.NOON_HOUR) {
           endHour += TIME_FORMAT.NOON_HOUR;
-        } else if (endParts[3].toUpperCase() === TIME_PERIODS.AM && endHour === TIME_FORMAT.NOON_HOUR) {
+        } else if (
+          endParts[3].toUpperCase() === TIME_PERIODS.AM &&
+          endHour === TIME_FORMAT.NOON_HOUR
+        ) {
           endHour = 0;
         }
       } else {
@@ -86,11 +96,16 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
       throw new Error("Invalid time format. Use HH:MM or H:MM AM/PM format");
     }
 
+    // Validate the hour and minute ranges
     if (
-      startHour < 0 || startHour > 23 ||
-      startMinute < 0 || startMinute > 59 ||
-      endHour < 0 || endHour > 23 ||
-      endMinute < 0 || endMinute > 59
+      startHour < 0 ||
+      startHour > 23 ||
+      startMinute < 0 ||
+      startMinute > 59 ||
+      endHour < 0 ||
+      endHour > 23 ||
+      endMinute < 0 ||
+      endMinute > 59
     ) {
       throw new Error("Hours must be 0-23 and minutes 0-59");
     }
@@ -98,6 +113,7 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
     const startMinutes = startHour * 60 + startMinute;
     const endMinutes = endHour * 60 + endMinute;
 
+    // Ensure end time is after start time
     if (endMinutes <= startMinutes) {
       throw new Error("End time must be after start time");
     }
@@ -105,17 +121,23 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
     const totalHours = (endMinutes - startMinutes) / 60;
     return formatHoursToTimeString(totalHours);
   } catch (error: unknown) {
-    throw new Error(`Failed to calculate time logged: ${error instanceof Error ? error.message : "Unknown error"}`);
+    throw new Error(
+      `Failed to calculate time logged: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
   }
 };
 
-// Calculate variation (Spent - Estimated) including negative sign
-const calculateVariation = (estimatedTime: string, actualSpentTime: string): string => {
+// Calculate variation (difference) between estimated and actual time spent
+const calculateVariation = (
+  estimatedTime: string,
+  actualSpentTime: string,
+  forcePositive = false
+): string => {
   const estimatedHours = parseTimeString(estimatedTime);
   const actualSpentHours = parseTimeString(actualSpentTime);
+  const variationInHours = actualSpentHours - estimatedHours;
 
-  const variationInHours = actualSpentHours - estimatedHours; // allow negative values
-  return formatHoursToTimeString(variationInHours);
+  return formatHoursToTimeString(forcePositive ? Math.abs(variationInHours) : variationInHours);
 };
 
 export const TimeUtil = {

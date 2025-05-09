@@ -15,6 +15,8 @@ import { KeyedMutator } from "swr";
 import TimeSpentPopup from "../timeSpentPopup";
 import TimeProgressBar from "@/app/portal/task/editTask/timeProgressBar";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface EditTaskProps {
   data: ITask;
@@ -22,6 +24,7 @@ interface EditTaskProps {
 }
 
 const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const { user } = useUser();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -30,9 +33,9 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
 
-  const [formData, setFormData] = useState<IFormField>(() => ({
+  const [formData, setFormData] = useState<IFormField>({
     title: data?.title || "",
     description: data?.description || "",
     status: data?.status || TASK_STATUS.TO_DO,
@@ -43,10 +46,33 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     project_name: data?.project_name || "",
     created_on: data?.created_on ? data.created_on.split("T")[0] : "",
     due_date: data?.due_date ? data.due_date.split("T")[0] : ""
-  }));
+  });
+
+  const checkIfDateExists = (): boolean => {
+    if (!data.time_spent || !Array.isArray(data.time_spent)) {
+      return false;
+    }
+    const today = new Date().toISOString().split("T")[0];
+    return data.time_spent.some((entry) => entry.date === today);
+  };
 
   const handleInputChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const alreadyExists = checkIfDateExists();
+
+  const handleProgressClick = () => {
+    if (alreadyExists) {
+      setSnackbar({
+        open: true,
+        message: "You have already registered this date.",
+        severity: SNACKBAR_SEVERITY.INFO
+      });
+      return;
+    }
+
+    setIsPopupOpen(true);
   };
 
   const handleSubmit = async () => {
@@ -65,17 +91,31 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       }
       if (formData.due_date !== formattedDueDate) {
         updatedFields.due_date = formData.due_date;
+      }
+
+      if (formData.description !== data.description) {
+        updatedFields.description = formData.description;
+      }
+
+      // Add user info to all changes for history tracking
+      if (Object.keys(updatedFields).length > 0) {
         if (user?.name) updatedFields.loginuser_name = user.name;
         if (user?.id) updatedFields.loginuser_id = user.id;
       }
-      if (formData.description !== data.description) {
-        updatedFields.description = formData.description;
+
+      if (Object.keys(updatedFields).length === 0) {
+        setSnackbar({
+          open: true,
+          message: transtask("nochanges"),
+          severity: SNACKBAR_SEVERITY.INFO
+        });
+        return;
       }
       await updateTask(data.id, updatedFields);
       await mutate();
       setSnackbar({
         open: true,
-        message: "Task updated successfully!",
+        message: transtask("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       setTimeout(() => router.back(), 2000);
@@ -83,7 +123,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       console.error("Error while updating task:", error);
       setSnackbar({
         open: true,
-        message: "Error updating task",
+        message: transtask("upadteerror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -91,19 +131,30 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   const submitComment = async (commentText: string) => {
     if (!commentText.trim()) return;
-    const commentData: ITaskComment = {
-      task_id: data.id,
-      user_id: user?.id || "",
-      user_name: user?.name || "",
-      comment: commentText
-    };
-    await createComment(commentData);
-    await mutate();
+
+    try {
+      const commentData: ITaskComment = {
+        task_id: data.id,
+        user_id: user?.id || "",
+        user_name: user?.name || "",
+        comment: commentText
+      };
+
+      await createComment(commentData);
+      await mutate();
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+      setSnackbar({
+        open: true,
+        message: transtask("commenterror") || "Failed to add comment",
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+    }
   };
 
   return (
     <>
-      <ModuleHeader name="Task" />
+      <ModuleHeader name={transtask("tasks")} />
       <Box
         sx={{
           maxWidth: "1400px",
@@ -133,7 +184,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             }}
           >
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-              Edit Task
+              {transtask("edittask")}
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <Button
@@ -148,7 +199,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                 }}
                 onClick={() => router.back()}
               >
-                Cancel
+                {transtask("canceledit")}
               </Button>
               <Button
                 variant="contained"
@@ -159,11 +210,11 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                   px: 2,
                   textTransform: "none",
                   fontWeight: "bold",
-                  "&:hover": { backgroundColor: "rgb(202, 187, 201) 100%)" }
+                  "&:hover": { backgroundColor: "rgba(202, 187, 201, 0.9)" }
                 }}
                 onClick={handleSubmit}
               >
-                Save
+                {transtask("save")}
               </Button>
             </Box>
           </Box>
@@ -180,7 +231,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             }}
           >
             <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
-              Show History
+              {transtask("showhistory")}
             </Typography>
             <History />
           </Box>
@@ -189,7 +240,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         <TimeProgressBar
           estimatedTime={data.estimated_time || "0h"}
           timeSpentTotal={data.time_spent_total || "0h"}
-          onClick={() => setIsPopupOpen(true)}
+          onClick={handleProgressClick}
         />
 
         <Box

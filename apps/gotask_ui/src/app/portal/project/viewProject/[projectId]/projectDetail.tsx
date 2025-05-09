@@ -229,7 +229,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           <FormField
             label={transproject("labelassignee")}
             type="multiselect"
-            placeholder={transproject("placeholdeselect")}
+            placeholder={transproject("placeholderselect")}
             options={getAllUsers}
             value={selectedUserIds} // This is an array of user IDs: ["123", "456"]
             onChange={(ids) => setSelectedUserIds(ids as string[])}

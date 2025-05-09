@@ -7,7 +7,8 @@ import { ITask, TimeEntry, TimeOption } from "../interface/taskInterface";
 import { isEndTimeAfterStartTime } from "@/app/common/utils/common";
 import { timeOptions as importedTimeOptions } from "../../../common/constants/timeOptions";
 import { TIME_GUIDE_DESCRIPTION } from "@/app/common/constants/timeTask";
-
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface TimeSpentPopupProps {
   isOpen: boolean;
@@ -30,10 +31,12 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
   taskId,
   mutate
 }) => {
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([
     { date: "", start_time: "", end_time: "" }
   ]);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [dateErrors, setDateErrors] = useState<string[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -46,7 +49,28 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
 
   const handleEntryChange = (index: number, field: keyof TimeEntry, value: string) => {
     const updated = [...timeEntries];
-    updated[index] = { ...updated[index], [field]: value };
+    const updatedErrors = [...dateErrors];
+
+    if (field === "date") {
+      const isDuplicate = timeEntries.some((entry, idx) => idx !== index && entry.date === value);
+
+      if (isDuplicate) {
+        updatedErrors[index] = "You have already registered this date.";
+      } else {
+        updatedErrors[index] = ""; // Clear error if corrected
+        updated[index].date = value;
+      }
+
+      setDateErrors(updatedErrors);
+      setTimeEntries(updated);
+      return;
+    }
+
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    };
+
     setTimeEntries(updated);
   };
 
@@ -60,12 +84,12 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
   const validateEntries = () => {
     for (const entry of timeEntries) {
       if (!entry.date || !entry.start_time || !entry.end_time) {
-        setErrorMessage("Please fill in all fields: date, start time, and end time are required.");
+        setErrorMessage(transtask("allfieldfill"));
         return false;
       }
 
       if (!isEndTimeAfterStartTime(entry.start_time, entry.end_time)) {
-        setErrorMessage("End time must be after start time.");
+        setErrorMessage(transtask("endstarttime"));
         return false;
       }
     }
@@ -90,7 +114,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
       onClose();
     } catch (err) {
       console.error("Error logging time:", err);
-      setErrorMessage("Failed to save time entry. Please try again.");
+      setErrorMessage(transtask("failedentry"));
     }
   };
 
@@ -118,15 +142,15 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
       }}
     >
       <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: "#741B92" }}>
-        Update Time Tracking
+        {transtask("updatetrack")}
       </Typography>
 
       <Typography variant="body2" sx={{ fontStyle: "italic", color: "#666" }}>
-        The original estimate for the issue was {originalEstimate || "0d0h"}
+        {transtask("originalestimate")} {originalEstimate || "0d0h"}
       </Typography>
       <Box sx={{ backgroundColor: "#F3E5F5", borderRadius: 1, p: 2 }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 600, color: "#741B92", mb: 0.5 }}>
-          Time Format Guide
+          {transtask("timeformat")}
         </Typography>
         <Typography variant="caption" sx={{ color: "#555", whiteSpace: "pre-line" }}>
           {TIME_GUIDE_DESCRIPTION.DAY}
@@ -143,7 +167,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
 
       <Box>
         <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
-          Log work details:
+          {transtask("logformat")}
         </Typography>
 
         {timeEntries.map((entry, index) => (
@@ -160,22 +184,24 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
             }}
           >
             <Box sx={{ width: "100%" }}>
-              <Typography variant="body2">Date:</Typography>
+              <Typography variant="body2">{transtask("date")}</Typography>
               <TextField
                 type="date"
                 value={entry.date}
                 onChange={(e) => handleEntryChange(index, "date", e.target.value)}
                 variant="outlined"
-                placeholder="Select a date"
+                placeholder={transtask("selectname")}
                 InputLabelProps={{ shrink: true }}
                 sx={{ width: "100%" }}
+                error={!!dateErrors[index]}
+                helperText={dateErrors[index]}
               />
             </Box>
 
             <Box sx={{ display: "flex", gap: 2, width: "100%" }}>
               <Box sx={{ width: "50%" }}>
                 <Typography variant="body2" sx={{ mt: 0.5 }}>
-                  Start Time
+                  {transtask("starttime")}
                 </Typography>
                 <Autocomplete
                   disablePortal
@@ -189,7 +215,11 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                     handleEntryChange(index, "start_time", newValue ? newValue.value : "")
                   }
                   renderInput={(params) => (
-                    <TextField {...params} variant="outlined" placeholder="Select start time" />
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      placeholder={transtask("selectstart")}
+                    />
                   )}
                   sx={{ width: "100%" }}
                   getOptionLabel={(option: TimeOption) => option.label}
@@ -206,7 +236,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
 
               <Box sx={{ width: "50%" }}>
                 <Typography variant="body2" sx={{ mt: 0.5 }}>
-                  End Time
+                  {transtask("endtime")}
                 </Typography>
                 <Autocomplete
                   disablePortal
@@ -271,7 +301,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
             textTransform: "uppercase"
           }}
         >
-          Cancel
+          {transtask("popupcancel")}
         </Button>
         <Button
           onClick={handleSave}
@@ -283,7 +313,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
             textTransform: "uppercase"
           }}
         >
-          Save
+          {transtask("popupsave")}
         </Button>
       </Box>
     </Box>

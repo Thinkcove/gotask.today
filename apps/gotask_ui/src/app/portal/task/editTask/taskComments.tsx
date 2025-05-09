@@ -1,20 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Avatar, Typography } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { ITaskComment } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { fetchAllUsers } from "../service/taskAction";
 
 interface TaskCommentsProps {
   comments: ITaskComment[];
   onSave: (comment: string) => void;
 }
+type UserType = {
+  id: string;
+  name: string;
+};
 
 const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [newComment, setNewComment] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const { getAllUsers } = fetchAllUsers();
+
+  const [allUsers, setAllUsers] = useState<UserType[]>([]);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const users = await getAllUsers(); // Assuming it returns [{ id, name }]
+      setAllUsers(users);
+    };
+    fetchUsers();
+  }, []);
+  const handleCommentChange = (value: string) => {
+    setNewComment(value);
+
+    const match = value.slice(0, value.length).match(/@(\w*)$/);
+    if (match) {
+      const query = match[1].toLowerCase();
+      const filtered = allUsers.filter((user) => user.name.toLowerCase().includes(query));
+      setMentionQuery(query);
+      setFilteredUsers(filtered);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+  const handleMentionSelect = (user: UserType) => {
+    const updatedComment = newComment.replace(/@(\w*)$/, `(user_id:"${user.id}")`);
+    setNewComment(updatedComment);
+    setShowSuggestions(false);
+    setMentionQuery("");
+  };
 
   const handleSave = () => {
     if (newComment.trim()) {
@@ -28,15 +67,37 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
     <Box sx={{ mb: 5 }}>
       {/* Comment Input Field */}
       <FormField
-        label={transtask("labelcomment")}
+        label="Comment"
         type="text"
-        placeholder={transtask("placeholdercomment")}
         value={newComment}
-        onChange={(value) => setNewComment(value as string)}
-        multiline
-        height={80}
+        onChange={(value) => {
+          setNewComment(value as string);
+          const match = (value as string).match(/@(\w*)$/);
+          if (match) {
+            setMentionQuery(match[1]);
+            setShowDropdown(true);
+          } else {
+            setShowDropdown(false);
+          }
+        }}
         onFocus={() => setIsFocused(true)}
+        multiline
       />
+      {showDropdown && (
+        <Box
+          sx={{ position: "absolute", background: "white", border: "1px solid #ccc", zIndex: 10 }}
+        >
+          {filteredUsers.map((user) => (
+            <Box
+              key={user.id}
+              onClick={() => handleMentionSelect(user.name)}
+              sx={{ padding: 1, cursor: "pointer" }}
+            >
+              {user.name}
+            </Box>
+          ))}
+        </Box>
+      )}
 
       {/* Save and Cancel Buttons */}
       {isFocused && (

@@ -130,6 +130,21 @@ const calculateVariation = (estimatedTime: string, actualSpentTime: string): str
   return formatHoursToTimeString(variationInHours);
 };
 
+// Function to extract mentions (usernames) from a comment
+const extractMentions = (comment: string) => {
+  const mentionPattern = /"([^"]+)"/g; // Regex to find words between quotes (e.g., "endke")
+  const mentions = [];
+  let match;
+
+  while ((match = mentionPattern.exec(comment)) !== null) {
+    mentions.push({
+      user_id: match[1], // captured username (e.g., "endke")
+      mentionText: match[0] // Keep the original mention text for replacement
+    });
+  }
+
+  return mentions;
+};
 export const TimeUtil = {
   parseTimeString,
   parseHourMinuteString,
@@ -138,5 +153,6 @@ export const TimeUtil = {
   calculateRemainingTime,
   isValidTimeFormat,
   calculateTimeLoggedFromStartEnd,
-  calculateVariation
+  calculateVariation,
+  extractMentions
 };

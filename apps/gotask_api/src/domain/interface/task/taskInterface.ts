@@ -131,16 +131,39 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
   }
 };
 
-// Create a comment in task
+// Function to create a comment and replace mentions with actual user names
 const createCommentInTask = async (commentData: ITaskComment): Promise<ITaskComment> => {
   const { task_id, user_id, comment, user_name } = commentData;
 
   const task = await Task.findOne({ id: task_id });
   if (!task) throw new Error("Task not found");
 
-  const newComment = new TaskComment({ task_id, user_id, comment, user_name });
+  // Extract mentions (usernames) from the comment
+  const mentions = TimeUtil.extractMentions(comment);
+
+  // Replace mentions with actual user names
+  let updatedComment = comment;
+  for (const mention of mentions) {
+    // Look up the user by the extracted username
+    const user = await User.findOne({ id: mention.user_id });
+    if (user) {
+      // Replace the mention text (like "endke") with the user's name (e.g., "Ram")
+      updatedComment = updatedComment.replace(mention.mentionText, user.name);
+    }
+  }
+
+  // Create the new comment with the updated text and mentions data
+  const newComment = new TaskComment({
+    task_id,
+    user_id,
+    comment: updatedComment,
+    user_name,
+    mentions: mentions
+  });
+
   await newComment.save();
 
+  // Add the new comment to the task's comment list
   if (!task.comment) {
     task.comment = [];
   }

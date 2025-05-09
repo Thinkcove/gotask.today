@@ -8,6 +8,7 @@ export interface ITaskComment extends Document {
   user_id: string;
   user_name: string;
   comment: string;
+  mentions?: { user_id: string; user_name?: string }[];
 }
 
 export const TaskCommentSchema = new Schema<ITaskComment>(
@@ -16,7 +17,13 @@ export const TaskCommentSchema = new Schema<ITaskComment>(
     task_id: { type: String, required: true },
     user_id: { type: String, required: true },
     user_name: { type: String },
-    comment: { type: String }
+    comment: { type: String },
+    mentions: [
+      {
+        user_id: { type: String, required: true },
+        user_name: { type: String }
+      }
+    ]
   },
   { timestamps: true }
 );

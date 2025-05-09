@@ -24,7 +24,7 @@ const timeOptions: TimeOption[] = importedTimeOptions.map((time) => ({
   value: time
 }));
 
-const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({         
+const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
   isOpen,
   onClose,
   originalEstimate,
@@ -36,6 +36,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
     { date: "", start_time: "", end_time: "" }
   ]);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [dateErrors, setDateErrors] = useState<string[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -48,7 +49,28 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
 
   const handleEntryChange = (index: number, field: keyof TimeEntry, value: string) => {
     const updated = [...timeEntries];
-    updated[index] = { ...updated[index], [field]: value };
+    const updatedErrors = [...dateErrors];
+
+    if (field === "date") {
+      const isDuplicate = timeEntries.some((entry, idx) => idx !== index && entry.date === value);
+
+      if (isDuplicate) {
+        updatedErrors[index] = "You have already registered this date.";
+      } else {
+        updatedErrors[index] = ""; // Clear error if corrected
+        updated[index].date = value;
+      }
+
+      setDateErrors(updatedErrors);
+      setTimeEntries(updated);
+      return;
+    }
+
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    };
+
     setTimeEntries(updated);
   };
 
@@ -171,6 +193,8 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                 placeholder={transtask("selectname")}
                 InputLabelProps={{ shrink: true }}
                 sx={{ width: "100%" }}
+                error={!!dateErrors[index]}
+                helperText={dateErrors[index]}
               />
             </Box>
 
@@ -226,7 +250,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                     handleEntryChange(index, "end_time", newValue ? newValue.value : "");
                     // Clear error when user selects a new value
                     if (entry.start_time && newValue) {
-                      if (isEndTimeAfterStartTime(entry.start_time, newValue.value)) {   
+                      if (isEndTimeAfterStartTime(entry.start_time, newValue.value)) {
                         setErrorMessage("");
                       }
                     }

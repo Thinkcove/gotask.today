@@ -6,9 +6,11 @@
     "labelpassword": "password",
     "seterror": "Both fields are required"
   },
+
   "Access": {
     "access": "Access"
   },
+
   "Dashboard": {
     "overview": "Dashboard Overview",
     "dashboard": "Dashboard",
@@ -17,6 +19,7 @@
     "task": "Task Distribution",
     "totals": "Total Tasks"
   },
+
   "Organization": {
     "createtitle": "Create New Organization",
     "errorname": "Organization Name is required",
@@ -31,9 +34,7 @@
     "labelemail": "Email ID",
     "placeholdername": "Enter organization name",
     "placeholderaddress": "Enter organization address",
-    "placeholderemail": "Enter organization email",
-    "labelphone": "Phone Number",
-    "placeholderphone": "Enter phone number",
+    "placeholderemail": "Enter organization  mail_id",
     "createnew": "Create New Organization",
     "viewname": "Organization",
     "errorupdate": "Organization update successfully",
@@ -43,15 +44,12 @@
     "detailaddress": "Address",
     "detailemail": "Email ID",
     "detailcreatedon": " Created on:",
-    "contactno": "Contact Number",
     "labelresource": "Resources",
     "labelprojectslist": "Projects List",
     "nousers": "No users yet.",
-    "errorphone": "Phone number is required.",
-    "errorphonevalid": "Enter a valid phone number.",
-    "errormailvalid": "Please enter a valid email address.",
     "projectsyet": "No projects yet."
   },
+
   "Projects": {
     "Projecttitle": "Project Title is required",
     "description": "Description is required",
@@ -93,9 +91,9 @@
     "removeusernote2": "You can reassign them anytime later if needed.",
     "updatesuccess": "Project updated successfully!",
     "updateerror": "Error while updating project",
-    "edittitle": "Edit Project",
-    "placeholdeselect": "Select Assignees to the project"
+    "edittitle": "Edit Project"
   },
+
   "Role": {
     "rolename": "Role Name is required",
     "selectaccess": "Select at least one Access",
@@ -123,9 +121,9 @@
     "delete": "Delete Access",
     "removeaccess": " Are you sure you want to remove this access from the role?",
     "revokepermission": " This will revoke the permissions granted by this access.",
-    "role": "Role",
-    "noaccess": "No access mapped to this role"
+    "role": "Role"
   },
+
   "Task": {
     "filter": "Filter",
     "filterproject": "Filter by Project",
@@ -208,13 +206,9 @@
     "popupcancel": "Cancel",
     "popupsave": "Save",
     "taskname": "Task",
-    "detaildesc": "Description",
-    "detailproject": "Project Name",
-    "detailuser": "Assignee Name",
-    "detailseverity": "Severity",
-    "detaildue": "Due Date",
-    "detailcreated": "Created Date"
+    "alreadyRegistered": "You have already registered time for this date"
   },
+
   "User": {
     "username": "User name is required",
     "userrole": "Role is required",
@@ -245,24 +239,23 @@
     "deleteerror": "Error while deleting a user",
     "userdetail": "User Detail View",
     "uesrid": "User ID",
-    "roleid": "Role",
+    "roleid": "Role ID",
     "status": "Status",
     "organization": "Organizations",
     "projectdetails": "Project Details",
     "deleteuser": "Delete User",
     "deleteornot": "Are you sure you want to delete this user? This action cannot be undone.",
-    "user": "User",
-    "userpwd": "Create a password",
-    "validmail": "Please enter a valid email address",
-    "labelstate": "Status",
-    "placeholderstatus": "Select the status"
+    "user": "User"
   },
+
   "Appbar": {
     "logout": "Logout"
   },
+
   "Sidebar": {
     "gotask": "Go Task Today"
   },
+
   "Statuschart": {
     "total": "Total:"
   }

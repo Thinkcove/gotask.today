@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Button, Box, Typography, IconButton } from "@mui/material";
+import { Button, Box, Typography } from "@mui/material";
 import TaskInput from "@/app/portal/task/createTask/taskInput";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { createComment, updateTask } from "../../service/taskAction";
-import { ArrowBack, History } from "@mui/icons-material";
+import { History } from "@mui/icons-material";
 import { IFormField, ITask, ITaskComment } from "../../interface/taskInterface";
 import HistoryDrawer from "../taskHistory";
 import TaskComments from "../taskComments";
@@ -17,7 +17,6 @@ import TimeProgressBar from "@/app/portal/task/editTask/timeProgressBar";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-
 interface EditTaskProps {
   data: ITask;
   mutate: KeyedMutator<ITask>;
@@ -33,9 +32,9 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
 
-  const [formData, setFormData] = useState<IFormField>(() => ({
+  const [formData, setFormData] = useState<IFormField>({
     title: data?.title || "",
     description: data?.description || "",
     status: data?.status || TASK_STATUS.TO_DO,
@@ -46,10 +45,33 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     project_name: data?.project_name || "",
     created_on: data?.created_on ? data.created_on.split("T")[0] : "",
     due_date: data?.due_date ? data.due_date.split("T")[0] : ""
-  }));
+  });
+
+  const checkIfDateExists = (): boolean => {
+    if (!data.time_spent || !Array.isArray(data.time_spent)) {
+      return false;
+    }
+    const today = new Date().toISOString().split("T")[0];
+    return data.time_spent.some((entry) => entry.date === today);
+  };
 
   const handleInputChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const alreadyExists = checkIfDateExists();
+
+  const handleProgressClick = () => {
+    if (alreadyExists) {
+      setSnackbar({
+        open: true,
+        message: "You have already registered this date.",
+        severity: SNACKBAR_SEVERITY.INFO
+      });
+      return;
+    }
+
+    setIsPopupOpen(true);
   };
 
   const handleSubmit = async () => {
@@ -68,11 +90,25 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       }
       if (formData.due_date !== formattedDueDate) {
         updatedFields.due_date = formData.due_date;
+      }
+
+      if (formData.description !== data.description) {
+        updatedFields.description = formData.description;
+      }
+
+      // Add user info to all changes for history tracking
+      if (Object.keys(updatedFields).length > 0) {
         if (user?.name) updatedFields.loginuser_name = user.name;
         if (user?.id) updatedFields.loginuser_id = user.id;
       }
-      if (formData.description !== data.description) {
-        updatedFields.description = formData.description;
+
+      if (Object.keys(updatedFields).length === 0) {
+        setSnackbar({
+          open: true,
+          message: transtask("nochanges"),
+          severity: SNACKBAR_SEVERITY.INFO
+        });
+        return;
       }
       await updateTask(data.id, updatedFields);
       await mutate();
@@ -81,6 +117,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         message: transtask("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+      setTimeout(() => router.back(), 2000);
     } catch (error) {
       console.error("Error while updating task:", error);
       setSnackbar({
@@ -93,18 +130,25 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   const submitComment = async (commentText: string) => {
     if (!commentText.trim()) return;
-    const commentData: ITaskComment = {
-      task_id: data.id,
-      user_id: user?.id || "",
-      user_name: user?.name || "",
-      comment: commentText
-    };
-    await createComment(commentData);
-    await mutate();
-  };
 
-  const handleBack = () => {
-    setTimeout(() => router.back(), 2000);
+    try {
+      const commentData: ITaskComment = {
+        task_id: data.id,
+        user_id: user?.id || "",
+        user_name: user?.name || "",
+        comment: commentText
+      };
+
+      await createComment(commentData);
+      await mutate();
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+      setSnackbar({
+        open: true,
+        message: transtask("commenterror") || "Failed to add comment",
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+    }
   };
 
   return (
@@ -138,14 +182,9 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
               width: "100%"
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton color="primary" onClick={handleBack}>
-                <ArrowBack />
-              </IconButton>
-              <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-                {transtask("edittask")}
-              </Typography>
-            </Box>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+              {transtask("edittask")}
+            </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <Button
                 variant="outlined"
@@ -170,7 +209,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                   px: 2,
                   textTransform: "none",
                   fontWeight: "bold",
-                  "&:hover": { backgroundColor: "rgb(202, 187, 201) 100%)" }
+                  "&:hover": { backgroundColor: "rgba(202, 187, 201, 0.9)" }
                 }}
                 onClick={handleSubmit}
               >
@@ -200,7 +239,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         <TimeProgressBar
           estimatedTime={data.estimated_time || "0h"}
           timeSpentTotal={data.time_spent_total || "0h"}
-          onClick={() => setIsPopupOpen(true)}
+          onClick={handleProgressClick}
         />
 
         <Box

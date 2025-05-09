@@ -4,7 +4,7 @@ import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
 import { fetchAllUsers } from "@/app/portal/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
-import FormField, { SelectOption } from "@/app/component/formField";
+import FormField from "@/app/component/formField";
 import { useParams, useRouter } from "next/navigation";
 import { assignUsersToProject, removeUsersFromProject } from "../../services/projectAction";
 import { KeyedMutator } from "swr";
@@ -18,8 +18,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
-import { userPermission } from "@/app/common/utils/userPermission";
 
 interface ProjectDetailProps {
   project: Project;
@@ -27,7 +25,6 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
-  const { canAccess } = userPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -43,11 +40,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     severity: SNACKBAR_SEVERITY.INFO
   });
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const { getAllUsers } = fetchAllUsers();
-  const assignedUserIds = project.users.map((user) => user.id);
-  const unassignedUsers = getAllUsers.filter(
-    (user: SelectOption) => !assignedUserIds.includes(user.id)
-  );
+  const { getAllUsers } = fetchAllUsers(); // Fetch all users
   const { projectId } = useParams();
   const projectID = projectId as string;
   const handleAddUser = async () => {
@@ -55,7 +48,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     try {
       const response = await assignUsersToProject(selectedUserIds, projectID);
       await mutate();
-      setSelectedUserIds([]);
       setSnackbar({
         open: true,
         message: response.message,
@@ -70,7 +62,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     }
   };
   const onClose = () => {
-    setSelectedUserIds([]);
     setOpen(false);
   };
 
@@ -126,11 +117,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 </Typography>
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
               </Box>
-              {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
-                <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
-                  <Edit />
-                </IconButton>
-              )}
+              <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+                <Edit />
+              </IconButton>
             </Box>
           </Box>
 
@@ -159,18 +148,16 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             <Typography variant="h5" fontWeight={600}>
               {transproject("detailassignee")}
             </Typography>
-            {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
-              <Button
-                variant="contained"
-                onClick={() => setOpen(true)}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2
-                }}
-              >
-                {transproject("detailaddassignee")}
-              </Button>
-            )}
+            <Button
+              variant="contained"
+              onClick={() => setOpen(true)}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2
+              }}
+            >
+              {transproject("detailaddassignee")}
+            </Button>
           </Box>
 
           {/* Users Grid */}
@@ -206,23 +193,21 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       </Box>
                     </Stack>
 
-                    {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
-                      <IconButton
-                        color="error"
-                        onClick={() => {
-                          setSelectedUserId(user.id); // <-- save which user is clicked
-                          setOpenDeleteDialog(true); // <-- open the confirmation dialog
-                        }}
-                        sx={{
-                          transition: "0.2s ease",
-                          "&:hover": {
-                            transform: "scale(1.1)"
-                          }
-                        }}
-                      >
-                        <Delete />
-                      </IconButton>
-                    )}
+                    <IconButton
+                      color="error"
+                      onClick={() => {
+                        setSelectedUserId(user.id); // <-- save which user is clicked
+                        setOpenDeleteDialog(true); // <-- open the confirmation dialog
+                      }}
+                      sx={{
+                        transition: "0.2s ease",
+                        "&:hover": {
+                          transform: "scale(1.1)"
+                        }
+                      }}
+                    >
+                      <Delete />
+                    </IconButton>
                   </Box>
                 </Grid>
               ))
@@ -244,9 +229,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           <FormField
             label={transproject("labelassignee")}
             type="multiselect"
-            placeholder={transproject("placeholdeselect")}
-            options={unassignedUsers}
-            value={selectedUserIds}
+            placeholder={transproject("placeholderselect")}
+            options={getAllUsers}
+            value={selectedUserIds} // This is an array of user IDs: ["123", "456"]
             onChange={(ids) => setSelectedUserIds(ids as string[])}
           />
         </CommonDialog>

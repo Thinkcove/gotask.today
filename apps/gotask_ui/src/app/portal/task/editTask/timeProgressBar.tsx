@@ -15,7 +15,7 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
   timeSpentTotal,
   onClick
 }) => {
-  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);   
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const {
     estimatedHours,
     spentHours,

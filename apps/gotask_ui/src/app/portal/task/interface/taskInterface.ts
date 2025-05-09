@@ -20,6 +20,7 @@ export interface IGroup {
   tasks: [];
 }
 export interface ITask {
+  variation(time_spent_total: string | undefined, variation: number | string): string;
   id: string;
   title: string;
   description: string;
@@ -45,7 +46,6 @@ export interface ITask {
   time_spent_total?: string;
   remaining_time?: string;
   time_entries?: Array<{ date: string; hours: number }>;
-  variation: string;
 }
 
 export interface ITaskHistory {

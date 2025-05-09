@@ -45,6 +45,7 @@ export interface ITask {
   time_spent_total?: string;
   remaining_time?: string;
   time_entries?: Array<{ date: string; hours: number }>;
+  variation: string;
 }
 
 export interface ITaskHistory {

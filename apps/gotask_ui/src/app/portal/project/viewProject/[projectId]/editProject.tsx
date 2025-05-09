@@ -31,18 +31,30 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
     status: data?.status || PROJECT_STATUS.TO_DO,
     organization_id: data?.organization_id || ""
   }));
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  // Validate required fields
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.name) newErrors.name = transproject("Projecttitle");
+    if (!formData.description) newErrors.description = transproject("description");
+    if (!formData.status) newErrors.status = transproject("status");
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
     try {
       await updateProject(projectID, formData);
       await mutate();
       setSnackbar({
         open: true,
-        message:transproject("updatesuccess"),
+        message: transproject("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
@@ -50,7 +62,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
       setSnackbar({
         open: true,
         message: transproject("updateerror"),
-        severity: SNACKBAR_SEVERITY.ERROR 
+        severity: SNACKBAR_SEVERITY.ERROR
       });
     }
   };
@@ -76,8 +88,18 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
         }}
       ></Box>
 
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transproject("edittitle")}>
-        <ProjectInput formData={formData} handleChange={handleChange} readOnlyFields={["name"]} />
+      <CommonDialog
+        open={open}
+        onClose={onClose}
+        onSubmit={handleSubmit}
+        title={transproject("edittitle")}
+      >
+        <ProjectInput
+          formData={formData}
+          handleChange={handleChange}
+          errors={errors}
+          readOnlyFields={["name"]}
+        />
       </CommonDialog>
       <CustomSnackbar
         open={snackbar.open}

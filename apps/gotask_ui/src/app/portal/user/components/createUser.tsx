@@ -40,7 +40,9 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.name) newErrors.name = transuser("username");
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
-    if (!formData.status) newErrors.status = transuser("userstatus");
+    if (formData.status === undefined || formData.status === null) {
+      newErrors.status = transuser("userstatus");
+    }
     if (!formData.password) newErrors.password = transuser("userpwd");
 
     if (!formData.user_id) {
@@ -52,7 +54,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleChange = (field: keyof IUserField, value: string | string[]) => {
+  const handleChange = (field: keyof IUserField, value: string | string[] | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
   const handleSubmit = async () => {
@@ -90,7 +92,13 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
         onSubmit={handleSubmit}
         title={transuser("createuser")}
       >
-        <UserInput formData={formData} handleChange={handleChange} errors={errors} isEdit={true} />
+        <UserInput
+          formData={formData}
+          handleChange={handleChange}
+          errors={errors}
+          isEdit={true}
+          readOnlyFields={["status"]}
+        />
       </CommonDialog>
       <CustomSnackbar
         open={snackbar.open}

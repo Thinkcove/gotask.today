@@ -263,7 +263,7 @@ const TaskList: React.FC = () => {
               <TaskCard
                 view={view}
                 group={group}
-                onTaskClick={(id) => router.push(`/portal/task/editTask/${id}`)}
+                onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
                 onViewMore={(id) => {
                   setSelectedGroupId(id);
                   setSearchParams({ search_vals: [[id]], search_vars: [["id"]] });
@@ -293,7 +293,7 @@ const TaskList: React.FC = () => {
           setSelectedGroupId("");
           setSearchParams({});
         }}
-        onTaskClick={(id) => router.push(`/portal/task/editTask/${id}`)}
+        onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
         view={view}
       />
 

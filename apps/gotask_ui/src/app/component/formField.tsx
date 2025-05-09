@@ -1,5 +1,4 @@
-"use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   TextField,
   MenuItem,
@@ -13,21 +12,20 @@ import {
 } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ArrowDropDown, CalendarMonth, Edit } from "@mui/icons-material";
+import { ArrowDropDown, CalendarMonth, Edit, Visibility, VisibilityOff } from "@mui/icons-material";
 
 export interface SelectOption {
   name: string;
   id: string;
 }
 
-// Add "multiselect" to the type options
 interface FormFieldProps {
   label: string;
   type: "text" | "select" | "date" | "multiselect"; // added "multiselect"
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];
-  value?: string | number | Date | string[]; // updated to allow string[]
+  value?: string | number | Date | string[];
   onChange?: (value: string | number | Date | string[]) => void;
   error?: string;
   disabled?: boolean;
@@ -52,6 +50,9 @@ const FormField: React.FC<FormFieldProps> = ({
   onFocus,
   inputType
 }) => {
+  // State to handle password visibility
+  const [passwordVisible, setPasswordVisible] = useState(true);
+
   return (
     <FormControl fullWidth margin="normal" error={!!error}>
       <Box
@@ -69,7 +70,7 @@ const FormField: React.FC<FormFieldProps> = ({
           {label}
         </Typography>
 
-        {type === "text" && (
+        {type === "text" && inputType === "password" ? (
           <TextField
             variant="standard"
             required={required}
@@ -80,7 +81,7 @@ const FormField: React.FC<FormFieldProps> = ({
             value={value}
             disabled={disabled}
             onFocus={onFocus}
-            type={inputType || "text"}
+            type={passwordVisible ? "text" : "password"} // Toggle between text and password
             sx={{
               "& .MuiInputBase-input::placeholder": {
                 color: "#9C8585",
@@ -89,22 +90,66 @@ const FormField: React.FC<FormFieldProps> = ({
               ...(multiline && { height: height || 100, overflowY: "auto" })
             }}
             onChange={(e) => {
-              let val = e.target.value;
-              // If inputType is "tel", restrict to numbers, spaces, +, -, (, )
-              if (inputType === "tel") {
-                val = val.replace(/[^\d\s()+-]/g, "");
-              }
+              const val = e.target.value;
               onChange?.(val);
             }}
             InputProps={{
               disableUnderline: true,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Edit sx={{ color: "#9C8585" }} />
+              endAdornment: (
+                <InputAdornment position="end">
+                  {passwordVisible ? (
+                    <Visibility
+                      sx={{ color: "#9C8585", cursor: "pointer" }}
+                      onClick={() => setPasswordVisible(false)}
+                    />
+                  ) : (
+                    <VisibilityOff
+                      sx={{ color: "#9C8585", cursor: "pointer" }}
+                      onClick={() => setPasswordVisible(true)}
+                    />
+                  )}
                 </InputAdornment>
               )
             }}
           />
+        ) : (
+          type === "text" && (
+            <TextField
+              variant="standard"
+              required={required}
+              placeholder={placeholder}
+              error={!!error}
+              fullWidth
+              multiline={multiline}
+              value={value}
+              disabled={disabled}
+              onFocus={onFocus}
+              type={inputType || "text"}
+              sx={{
+                "& .MuiInputBase-input::placeholder": {
+                  color: "#9C8585",
+                  opacity: 1
+                },
+                ...(multiline && { height: height || 100, overflowY: "auto" })
+              }}
+              onChange={(e) => {
+                let val = e.target.value;
+                // If inputType is "tel", restrict to numbers, spaces, +, -, (, )
+                if (inputType === "tel") {
+                  val = val.replace(/[^\d\s()+-]/g, "");
+                }
+                onChange?.(val);
+              }}
+              InputProps={{
+                disableUnderline: true,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Edit sx={{ color: "#9C8585" }} />
+                  </InputAdornment>
+                )
+              }}
+            />
+          )
         )}
 
         {type === "select" && (

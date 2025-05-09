@@ -94,6 +94,6 @@ export const validateEmail = (email: string): boolean => {
 
 //phone no validation
 export const validatePhone = (phone: string) => {
-  const phoneRegex = /^\+?[1-9]\d{7,14}$/; // Accepts international formats like +1234567890
+  const phoneRegex = /^\+?[1-9](?:\d\s?){7,14}$/;
   return phoneRegex.test(phone);
 };

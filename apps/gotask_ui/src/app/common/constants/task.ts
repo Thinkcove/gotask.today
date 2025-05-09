@@ -9,7 +9,7 @@ export const TaskStatuses = [
 export const getStatusColor = (status: string): string => {
   switch (status) {
     case "to-do":
-      return "#F44336";
+      return "#B1AAAA";
     case "in-progress":
       return "#FF9800";
     case "need-info":
@@ -74,4 +74,13 @@ export const TASK_SEVERITY = {
   MEDIUM: "medium",
   HIGH: "high",
   CRITICAL: "critical"
+};
+
+export const getVariationColor = (variation: string) => {
+  if (!variation) return "#grey"; // default to zero
+  const isNegative = variation.trim().startsWith("-");
+  const isZero = variation.trim() === "0d0h";
+
+  if (isZero) return "#grey";
+  return isNegative ? "green" : "red";
 };

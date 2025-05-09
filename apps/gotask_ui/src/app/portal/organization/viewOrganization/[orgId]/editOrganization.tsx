@@ -9,6 +9,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { updateOrganization } from "../../services/organizationAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { validateEmail, validatePhone } from "@/app/common/utils/common";
 
 interface EditOrganizationProps {
   data: IOrganizationField;
@@ -39,12 +40,32 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
     projects: data?.projects || [],
     users: data?.users || []
   }));
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.name) newErrors.name = transorganization("errorname");
+    if (!formData.address) newErrors.address = transorganization("erroraddress");
+    if (!formData.mail_id) {
+      newErrors.mail_id = transorganization("errormail");
+    } else if (!validateEmail(formData.mail_id)) {
+      newErrors.mail_id = transorganization("errormailvalid");
+    }
+    if (!formData.mobile_no) {
+      newErrors.mobile_no = transorganization("errorphone");
+    } else if (!validatePhone(formData.mobile_no)) {
+      newErrors.mobile_no = transorganization("errorphonevalid");
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const handleChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+
     try {
       await updateOrganization(OrganizationID, formData);
       await mutate();
@@ -94,6 +115,7 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
           formData={formData}
           handleChange={handleChange}
           readOnlyFields={["name"]}
+          errors={errors}
         />
       </CommonDialog>
       <CustomSnackbar

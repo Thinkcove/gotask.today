@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   Typography,
   Grid,
@@ -8,13 +8,14 @@ import {
   Box,
   Stack,
   Divider,
-} from "@mui/material";
-import { ArrowForward } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
-import CardComponent from "@/app/component/card/cardComponent";
-import { AccessData } from "../interfaces/accessInterfaces";
-import { userPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+} from '@mui/material';
+import { ArrowForward } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import CardComponent from '@/app/component/card/cardComponent';
+import { AccessData } from '../interfaces/accessInterfaces';
+import { userPermission } from '@/app/common/utils/userPermission';
+import { APPLICATIONS, ACTIONS } from '@/app/common/utils/authCheck';
 
 interface Props {
   data: AccessData[];
@@ -25,10 +26,7 @@ interface Props {
 const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
   const { canAccess } = userPermission();
   const router = useRouter();
-
-  console.log("AccessCards data:", data); // Debug log
-  console.log("AccessCards loading:", loading); // Debug log
-  console.log("AccessCards error:", error); // Debug log
+  const t = useTranslations('Access');
 
   if (loading) {
     return (
@@ -52,7 +50,7 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="text.secondary">
-          No Access Roles Available.
+          {t('noaccessavailable')}
         </Typography>
       </Box>
     );
@@ -60,15 +58,18 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
 
   return (
     <Box sx={{ p: 3 }}>
+      <Typography variant="h5" fontWeight={700} mb={3}>
+        {t('access')}
+      </Typography>
       <Grid container spacing={3}>
         {data.map((access) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={access.id}>
             <CardComponent>
-              <Stack spacing={2} sx={{ height: "100%" }}>
+              <Stack spacing={2} sx={{ height: '100%' }}>
                 <Typography
                   variant="h6"
                   fontWeight={600}
-                  sx={{ textTransform: "capitalize" }}
+                  sx={{ textTransform: 'capitalize' }}
                 >
                   {access.name}
                 </Typography>
@@ -80,7 +81,7 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                       color="text.secondary"
                       sx={{ mr: 1 }}
                     >
-                      Created At:
+                      {t('createdat')}:
                     </Typography>
                     <Typography
                       variant="body2"
@@ -96,19 +97,19 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                   <Box display="flex" justifyContent="flex-end">
                     <Box
                       sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        color: "#741B92",
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: '#741B92',
                         fontWeight: 500,
-                        cursor: "pointer",
-                        "&:hover": { textDecoration: "underline" },
+                        cursor: 'pointer',
+                        '&:hover': { textDecoration: 'underline' },
                       }}
                       onClick={() => {
                         router.push(`/portal/access/pages/view/${access.id}`);
                       }}
                     >
-                      <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                        View Details
+                      <Typography sx={{ textTransform: 'capitalize', mr: 0.5 }}>
+                        {t('viewdetails')}
                       </Typography>
                       <ArrowForward fontSize="small" />
                     </Box>

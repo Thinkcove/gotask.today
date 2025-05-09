@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import { Access, IAccess } from "../../model/access/access";
 
 // Create a new access record

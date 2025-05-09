@@ -143,14 +143,12 @@ const deleteAccessById = async (
 
 const getAccessOptionsFromConfig = async () => {
   try {
-    // Assuming `accessConfig.json` contains an array of access modules and actions
     const accessOptions = accessConfig.accesses || [];
     return { success: true, data: accessOptions };
-  } catch (error) {
+  } catch {
     return  { success: false, message: AccessMessages.CONFIG.LOAD_FAILED };
   }
 };
 
-// Export functions as named exports
 // Export functions as named exports
 export { createAccess, getAllAccesses, getAccessById, updateAccess, deleteAccessById, getAccessOptionsFromConfig };

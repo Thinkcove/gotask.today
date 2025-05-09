@@ -3,8 +3,12 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 import AccessView from "../../../components/AccessView";
+import { useTranslations } from "next-intl"; 
+import { LOCALIZATION } from "../../../../../common/constants/localization"; 
 
 const AccessViewPage = () => {
+  const transAccess = useTranslations(LOCALIZATION.TRANSITION.ACCESS); 
+
   return (
     <Box
       sx={{
@@ -34,7 +38,7 @@ const AccessViewPage = () => {
             textTransform: "capitalize",
           }}
         >
-          View Access
+          {transAccess("viewdetail")} {/* Using translation key from en.json */}
         </Typography>
       </Box>
 

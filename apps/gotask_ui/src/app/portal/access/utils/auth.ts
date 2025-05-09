@@ -1,9 +1,8 @@
-// utils/auth.ts
 
 // Function to get the authentication token from localStorage or sessionStorage
 export const getAuthToken = (): string | null => {
   // You can change this to sessionStorage or wherever you store the token
-  return localStorage.getItem("auth_token"); // Replace with your key if needed
+  return localStorage.getItem("auth_token"); 
 };
 
 // Function to set the authentication token to localStorage

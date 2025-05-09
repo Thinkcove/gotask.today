@@ -4,12 +4,12 @@ import OperationCheckboxes from '../components/OperationCheckboxes';
 import { Box, Grid, Typography } from '@mui/material';
 
 interface AccessPermissionsProps {
-  accessOptions: { access: string; actions: string[] }[]; // Updated to match AccessRole structure
+  accessOptions: { access: string; actions: string[] }[]; 
   currentModule: string;
   selectedPermissions: { [module: string]: string[] };
   onTabChange: (module: string) => void;
   onCheckboxChange: (module: string, action: string, checked: boolean) => void;
-  readOnly?: boolean; // New prop to make checkboxes read-only
+  readOnly?: boolean; 
 }
 
 const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
@@ -18,18 +18,18 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
   selectedPermissions,
   onTabChange,
   onCheckboxChange,
-  readOnly = false, // Default to false
+  readOnly = false, 
 }) => {
-  // Find the operations for the current module
+  
   const currentOperations =
     accessOptions.find((m) => m.access === currentModule)?.actions || [];
   const selected = selectedPermissions[currentModule] || [];
 
   return (
     <Box sx={{ mt: 4 }}>
-      {/* Tab Navigation */}
+      
       <AccessTabs
-        modules={accessOptions.map((opt) => opt.access)} // Map access instead of module
+        modules={accessOptions.map((opt) => opt.access)} 
         currentModule={currentModule}
         onChange={onTabChange}
       />
@@ -49,7 +49,7 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
             operations={currentOperations}
             selected={selected}
             onChange={onCheckboxChange}
-            readOnly={readOnly} // Pass readOnly to the child component
+            readOnly={readOnly} 
           />
         </Grid>
       </Grid>

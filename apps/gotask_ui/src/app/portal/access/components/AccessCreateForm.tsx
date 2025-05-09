@@ -15,8 +15,10 @@ import AccessHeading from "./AccessHeading";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import { useAccessOptions, createAccessRole } from "../services/accessService";
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
+import { useTranslations } from "next-intl";
 
 const AccessCreateForm: React.FC = () => {
+  const t = useTranslations();
   const { canAccess } = userPermission();
   const [accessName, setAccessName] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
@@ -25,10 +27,6 @@ const AccessCreateForm: React.FC = () => {
   const router = useRouter();
 
   const { accessOptions, isLoading, error } = useAccessOptions();
-
-  console.log("AccessCreateForm accessOptions:", accessOptions); // Debug log
-  console.log("AccessCreateForm isLoading:", isLoading); // Debug log
-  console.log("AccessCreateForm error:", error); // Debug log
 
   // Valid modules for AccessTabs
   const validModules = ["User Management", "Task Management", "Project Management"];
@@ -51,7 +49,7 @@ const AccessCreateForm: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!accessName.trim()) {
-      alert("Access name is required!");
+      alert(t("Access.accessNameRequired")); // Added a new key for this purpose
       return;
     }
 
@@ -78,7 +76,7 @@ const AccessCreateForm: React.FC = () => {
       }
     } catch (err) {
       console.error("Failed to create access role:", err);
-      alert("Failed to create access role.");
+      alert(t("Access.errormessage"));
     } finally {
       setIsSubmitting(false);
     }
@@ -95,13 +93,14 @@ const AccessCreateForm: React.FC = () => {
         borderRadius: 2,
         boxShadow: 3,
         p: 2,
+        overflow: "hidden", // Prevent scroll here as well
       }}
     >
       <Box sx={{ flex: 1, overflowY: "auto" }}>
-        <AccessHeading title="Create Access" />
-        <Box sx={{ maxWidth: 400, width: "100%", mb:2, mt: 2 }}>
+        <AccessHeading title={t("Access.createaccessnew")} />
+        <Box sx={{ maxWidth: 400, width: "100%", mb: 1, mt: 1 }}>
           <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
-            Access Name *
+            {t("Access.accessName")} * {/* Updated key */}
           </Typography>
           <TextField
             fullWidth
@@ -123,29 +122,24 @@ const AccessCreateForm: React.FC = () => {
           />
         </Box>
 
-        <Typography
-          variant="h6"
-          fontWeight={600}
-          mb={2}
-          sx={{ color: "#333" }}
-        >
-          Access Management
+        <Typography variant="h6" fontWeight={600} sx={{ color: "#333" }}>
+          {t("Access.accessManagement")}
         </Typography>
 
         {isLoading ? (
-          <Box display="flex" justifyContent="center" mt={5}>
+          <Box display="flex" justifyContent="center">
             <CircularProgress />
           </Box>
         ) : error ? (
-          <Box display="flex" justifyContent="center" mt={5}>
+          <Box display="flex" justifyContent="center">
             <Typography variant="body1" color="error">
               {error}
             </Typography>
           </Box>
         ) : accessOptions.length === 0 ? (
-          <Box display="flex" justifyContent="center" mt={5}>
+          <Box display="flex" justifyContent="center">
             <Typography variant="body1" color="text.secondary">
-              No Access Options Available.
+              {t("Access.noaccessavailable")}
             </Typography>
           </Box>
         ) : (
@@ -166,7 +160,7 @@ const AccessCreateForm: React.FC = () => {
           pt: 2,
           display: "flex",
           justifyContent: "flex-end",
-          gap: 2,
+          gap: 2, // Added gap for space between buttons
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
@@ -183,7 +177,7 @@ const AccessCreateForm: React.FC = () => {
               },
             }}
           >
-            Cancel
+            {t("Access.cancel")}
           </Button>
         )}
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.CREATE) && (
@@ -202,7 +196,7 @@ const AccessCreateForm: React.FC = () => {
               },
             }}
           >
-            {isSubmitting ? <CircularProgress size={20} /> : "Create Access"}
+            {isSubmitting ? <CircularProgress size={20} /> : t("Access.createaccessnew")}
           </Button>
         )}
       </Box>

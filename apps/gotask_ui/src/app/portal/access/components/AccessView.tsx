@@ -11,11 +11,11 @@ import {
   TextField,
   Tooltip,
   IconButton,
-  Grid,
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
+import { useTranslations } from "next-intl";
 
 import { userPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
@@ -24,11 +24,12 @@ import {
   useAccessOptions,
   deleteAccessRole,
 } from "../services/accessService";
-import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "./AccessPermissionsContainer";
 import AccessHeading from "./AccessHeading";
 
 const AccessView: React.FC = () => {
+  const t = useTranslations("Access");
+
   const { canAccess } = userPermission();
   const { id } = useParams();
   const router = useRouter();
@@ -56,21 +57,21 @@ const AccessView: React.FC = () => {
   const handleDelete = async () => {
     if (!accessRole || isDeleting) return;
 
-    const confirmed = window.confirm("Are you sure you want to delete this access role?");
+    const confirmed = window.confirm(t("deleteconfirm"));
     if (!confirmed) return;
 
     try {
       setIsDeleting(true);
       const res = await deleteAccessRole(accessRole.id);
       if (res.success) {
-        toast.success(res.message || "Role deleted successfully.");
+        toast.success(res.message || t("updatesuccess"));
         router.push("/portal/access");
       } else {
-        toast.error(res.message || "Failed to delete role.");
+        toast.error(res.message || t("updateerror"));
       }
     } catch (err) {
       console.error("Failed to delete access role:", err);
-      toast.error("Unexpected error while deleting.");
+      toast.error(t("updateerror"));
     } finally {
       setIsDeleting(false);
     }
@@ -87,15 +88,7 @@ const AccessView: React.FC = () => {
 
   if (isRoleLoading || isOptionsLoading) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <CircularProgress />
       </Box>
     );
@@ -103,15 +96,7 @@ const AccessView: React.FC = () => {
 
   if (roleError || optionsError) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <Typography variant="body1" color="error">
           {roleError || optionsError}
         </Typography>
@@ -121,17 +106,9 @@ const AccessView: React.FC = () => {
 
   if (!accessRole) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <Typography variant="body1" color="text.secondary">
-          No Access Role Found
+          {t("noaccessavailable")}
         </Typography>
       </Box>
     );
@@ -152,6 +129,8 @@ const AccessView: React.FC = () => {
       }}
     >
       <Box sx={{ flex: 1, overflowY: "auto" }}>
+
+
         <Box
           display="flex"
           justifyContent="space-between"
@@ -169,18 +148,16 @@ const AccessView: React.FC = () => {
             width={isMobile ? "100%" : "auto"}
           >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
-              <Tooltip title="Back">
+              <Tooltip title={t("cancel")}>
                 <IconButton onClick={() => router.back()} color="primary">
                   <ArrowBack />
                 </IconButton>
               </Tooltip>
             )}
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
-              <Tooltip title="Edit">
+              <Tooltip title={t("editaccess")}>
                 <IconButton
-                  onClick={() =>
-                    router.push(`/portal/access/pages/edit/${accessRole.id}`)
-                  }
+                  onClick={() => router.push(`/portal/access/pages/edit/${accessRole.id}`)}
                   color="primary"
                 >
                   <Edit />
@@ -188,7 +165,7 @@ const AccessView: React.FC = () => {
               </Tooltip>
             )}
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.DELETE) && (
-              <Tooltip title="Delete">
+              <Tooltip title={t("deleteaccess")}>
                 <IconButton onClick={handleDelete} color="error" disabled={isDeleting}>
                   <Delete />
                 </IconButton>
@@ -199,7 +176,7 @@ const AccessView: React.FC = () => {
 
         <Box sx={{ width: "100%", maxWidth: 500, mb: 3 }}>
           <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
-            Access Name
+            {t("accessName")}
           </Typography>
           <TextField
             fullWidth
@@ -221,13 +198,13 @@ const AccessView: React.FC = () => {
         </Box>
 
         <Typography variant="h6" mb={2} fontWeight={600} sx={{ color: "#333" }}>
-          Permissions
+          {t("viewdetail")}
         </Typography>
 
         {accessOptions.length === 0 ? (
           <Box display="flex" justifyContent="center" mt={5}>
             <Typography variant="body1" color="text.secondary">
-              No Access Options Available.
+              {t("noaccessavailable")}
             </Typography>
           </Box>
         ) : (

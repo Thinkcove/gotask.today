@@ -7,11 +7,32 @@
     "seterror": "Both fields are required"
   },
 
-  "Access": {
-    "access":"Access",
-    "createaccessnew": "Create New Access"
-  },
-
+"Access": {
+  "access": "Access",
+  "createaccessnew": "Create New Access",
+  "viewdetail": "Access Detail View",
+  "area": "Area",
+  "action": "Action",
+  "selectarea": "Select Area",
+  "selectaction": "Select Action",
+  "placeholderarea": "Choose area",
+  "placeholderaction": "Choose action",
+  "successmessage": "Access created successfully!",
+  "errormessage": "Error while creating access",
+  "noaccessavailable": "No access entries available.",
+  "deleteaccess": "Delete Access",
+  "deleteconfirm": "Are you sure you want to delete this access?",
+  "deletewarning": "This will remove the access permissions.",
+  "updatesuccess": "Access updated successfully!",
+  "updateerror": "Error while updating access",
+  "editaccess": "Edit Access",
+  "createdat": "Created At",
+  "selectall": "Select All",
+  "viewdetails": "View Details",
+  "cancel": "Cancel",
+  "accessName": "Access Name" ,
+  "accessManagement": "Access Management" 
+},
   "Dashboard": {
     "overview": "Dashboard Overview",
     "dashboard": "Dashboard",
@@ -25,7 +46,7 @@
     "createtitle": "Create New Organization",
     "errorname": "Organization Name is required",
     "errormail": "Mail ID is required",
-    "erroraddress": "Address is required",
+    "erroraddress": "Address is required", 
     "successcreate": "Organization created successfully!",
     "errorcreate": "Error while creating Organization",
     "noorganizations": "No organizations available.",

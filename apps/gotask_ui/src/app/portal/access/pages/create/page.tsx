@@ -1,10 +1,15 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
 import AccessCreateForm from "../../components/AccessCreateForm";
+import ModuleHeader from "../../../../component/appBar/moduleHeader";
+import { LOCALIZATION } from "../../../../common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const AccessCreatePage = () => {
+  const t = useTranslations(LOCALIZATION.TRANSITION.ACCESS);
+
   return (
     <Box
       sx={{
@@ -13,33 +18,14 @@ const AccessCreatePage = () => {
         height: "100vh",
         m: 0,
         p: 0,
-        overflow: "hidden",
+        overflow: "hidden", // Prevent scrolling
       }}
     >
       {/* Header Section */}
-      <Box
-        sx={{
-          backgroundColor: "#741B92",
-          color: "white",
-          p: 1.5,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "600",
-            textTransform: "capitalize",
-          }}
-        >
-          Create Access
-        </Typography>
-      </Box>
+      <ModuleHeader name={t("createaccessnew")} />
 
       {/* Content Section */}
-      <Box sx={{ flex: 1, overflow: "hidden" }}>
+      <Box sx={{ flex: 1, overflowY: "auto", p: 3 }}>
         <AccessCreateForm />
       </Box>
     </Box>

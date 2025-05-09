@@ -20,11 +20,11 @@ const AccessTabs: React.FC<AccessTabsProps> = ({
       variant="scrollable"
       scrollButtons="auto"
       sx={{
-        width: '100%', // Ensures the tabs take up full width
+        width: '100%', 
         '& .MuiTab-root': {
           minHeight: '30px',
-          padding: { xs: '6px 12px', sm: '8px 16px' }, // Responsive padding
-          fontSize: { xs: '0.7rem', sm: '0.85rem' }, // Adjust font size for small screens
+          padding: { xs: '6px 12px', sm: '8px 16px' }, 
+          fontSize: { xs: '0.7rem', sm: '0.85rem' }, 
           textTransform: 'none',
           whiteSpace: 'nowrap',
         },

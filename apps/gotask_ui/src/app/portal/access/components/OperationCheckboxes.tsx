@@ -9,6 +9,7 @@ import {
   CardContent,
   Paper,
 } from '@mui/material';
+import { useTranslations } from 'next-intl'; // Ensure next-intl is configured
 
 interface Props {
   module: string;
@@ -25,6 +26,7 @@ const OperationCheckboxes: React.FC<Props> = ({
   onChange,
   readOnly = false,
 }) => {
+  const t = useTranslations('Access');
   const allChecked = operations.length > 0 && selected.length === operations.length;
   const someChecked = selected.length > 0 && selected.length < operations.length;
 
@@ -38,8 +40,8 @@ const OperationCheckboxes: React.FC<Props> = ({
   return (
     <Card
       sx={{
-        width: '100%', // Ensures the card is responsive
-        maxWidth: 300, // Prevents the card from growing too wide
+        width: '100%',
+        maxWidth: 300,
         height: 'auto',
         overflow: 'hidden',
         display: 'flex',
@@ -47,25 +49,23 @@ const OperationCheckboxes: React.FC<Props> = ({
         justifyContent: 'space-between',
         mt: 2,
         borderRadius: 2,
-        // Responsive margin and padding
         '@media (max-width: 600px)': {
-          maxWidth: '100%', // Full width on small screens
+          maxWidth: '100%',
           padding: 1,
         },
       }}
     >
       <CardContent sx={{ padding: 2 }}>
-        {/* 🔹 Module Title */}
         <Typography
           variant="subtitle1"
           gutterBottom
           sx={{
             fontWeight: 600,
-            fontSize: { xs: '0.9rem', sm: '1rem' }, // Responsive font size
+            fontSize: { xs: '0.9rem', sm: '1rem' },
             mb: 1,
           }}
         >
-          {module}
+          {t('area')}: {module}
         </Typography>
 
         <FormGroup>
@@ -86,25 +86,19 @@ const OperationCheckboxes: React.FC<Props> = ({
                   checked={allChecked}
                   indeterminate={someChecked}
                   onChange={handleSelectAllChange}
-                  sx={{
-                    pointerEvents: readOnly ? 'none' : 'auto',
-                    p: 0.5,
-                  }}
+                  sx={{ pointerEvents: readOnly ? 'none' : 'auto', p: 0.5 }}
                   disabled={readOnly}
-                  inputProps={{
-                    'aria-label': 'Select all operations',
-                  }}
+                  inputProps={{ 'aria-label': t('selectall') }}
                 />
               }
               label={
                 <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
-                  Select All
+                  {t('selectall')}
                 </Typography>
               }
             />
           </Paper>
 
-          {/* ✅ Individual Operation Checkboxes */}
           {operations.map((operation) => (
             <FormControlLabel
               key={operation}
@@ -114,14 +108,9 @@ const OperationCheckboxes: React.FC<Props> = ({
                   onChange={(e) =>
                     !readOnly && onChange(module, operation, e.target.checked)
                   }
-                  sx={{
-                    pointerEvents: readOnly ? 'none' : 'auto',
-                    p: 0.5,
-                  }}
+                  sx={{ pointerEvents: readOnly ? 'none' : 'auto', p: 0.5 }}
                   disabled={readOnly}
-                  inputProps={{
-                    'aria-label': `Select ${operation}`,
-                  }}
+                  inputProps={{ 'aria-label': `${t('action')}: ${operation}` }}
                 />
               }
               label={

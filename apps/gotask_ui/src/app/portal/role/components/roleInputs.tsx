@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Grid } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { IRole } from "../interfaces/roleInterface";
@@ -19,7 +19,7 @@ const RoleInput = ({ formData, errors, readOnlyFields = [], handleChange }: IRol
   const { getAllAccess } = fetchAllAccess();
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
-  const [selectedAccessIds, setSelectedAccessIds] = useState<string[]>(formData.accessIds || []);
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
@@ -40,12 +40,8 @@ const RoleInput = ({ formData, errors, readOnlyFields = [], handleChange }: IRol
           type="multiselect"
           placeholder={transrole("placeholderaccess")}
           options={getAllAccess}
-          value={selectedAccessIds}
-          onChange={(ids) => {
-            const selectedIds = ids as string[];
-            setSelectedAccessIds(selectedIds);
-            handleChange("accessIds", selectedIds);
-          }}
+          value={formData.accessIds}
+          onChange={(ids) => handleChange("accessIds", ids as string[])}
           error={errors?.accessIds}
           disabled={isReadOnly("accessIds")}
         />

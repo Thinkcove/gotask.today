@@ -9,6 +9,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { createUser } from "../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { validateEmail } from "@/app/common/utils/common";
 
 interface CreateUserProps {
   open: boolean;
@@ -40,7 +41,14 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     if (!formData.name) newErrors.name = transuser("username");
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
     if (!formData.status) newErrors.status = transuser("userstatus");
-    if (!formData.user_id) newErrors.user_id = transuser("useremail");
+    if (!formData.password) newErrors.password = transuser("userpwd");
+
+    if (!formData.user_id) {
+      newErrors.user_id = transuser("useremail");
+    } else if (!validateEmail(formData.user_id)) {
+      newErrors.user_id = transuser("validmail");
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -58,6 +66,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
+      handleClose();
     } catch {
       setSnackbar({
         open: true,
@@ -67,9 +76,20 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     }
   };
 
+  const handleClose = () => {
+    setFormData(initialFormState);
+    setErrors({});
+    onClose();
+  };
+
   return (
     <>
-      <CommonDialog open={open} onClose={onClose} onSubmit={handleSubmit} title={transuser("createuser")}>
+      <CommonDialog
+        open={open}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+        title={transuser("createuser")}
+      >
         <UserInput formData={formData} handleChange={handleChange} errors={errors} isEdit={true} />
       </CommonDialog>
       <CustomSnackbar

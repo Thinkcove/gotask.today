@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Stack } from "@mui/material";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -18,7 +18,7 @@ interface Props {
 
 const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitle }) => {
   const transstatuschart = useTranslations(LOCALIZATION.TRANSITION.STATUSCHART);
-  
+
   const total = Object.values(statusCounts).reduce((sum, value) => sum + value, 0);
 
   const barChartData = statuses.map((status) => ({
@@ -66,7 +66,6 @@ const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitl
             <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
             <XAxis dataKey="name" axisLine={false} />
             <YAxis axisLine={false} tickLine={false} />
-            <Tooltip />
             <Bar dataKey="value" fill="#8849AE" radius={[10, 10, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
@@ -85,7 +84,7 @@ const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitl
               <Typography variant="body1" sx={{ color: "#333", fontWeight: 600 }}>
                 {status.label}
               </Typography>
-              <Typography variant="body2" sx={{ color: status.color }}>
+              <Typography variant="body1" sx={{ color: status.color, fontWeight: "bold" }}>
                 {value} ({percent}%)
               </Typography>
             </Box>

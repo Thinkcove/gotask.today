@@ -24,7 +24,7 @@ const initialFormState: IProjectField = {
 };
 
 const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
-  const transproject =  useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -59,6 +59,7 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
+      handleClose();
     } catch {
       setSnackbar({
         open: true,
@@ -68,15 +69,26 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
     }
   };
 
+  const handleClose = () => {
+    setFormData(initialFormState);
+    setErrors({});
+    onClose();
+  };
+
   return (
     <>
       <CommonDialog
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         onSubmit={handleSubmit}
         title={transproject("createnew")}
       >
-        <ProjectInput formData={formData} handleChange={handleChange} errors={errors} />
+        <ProjectInput
+          formData={formData}
+          handleChange={handleChange}
+          errors={errors}
+          readOnlyFields={["status"]}
+        />
       </CommonDialog>
       <CustomSnackbar
         open={snackbar.open}

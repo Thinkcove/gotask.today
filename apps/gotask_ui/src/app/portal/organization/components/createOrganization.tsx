@@ -9,6 +9,7 @@ import { KeyedMutator } from "swr";
 import { createOrganization } from "../services/organizationAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { validateEmail, validatePhone } from "@/app/common/utils/common";
 
 interface CreateOrgProps {
   open: boolean;
@@ -20,6 +21,7 @@ const initialFormState: IOrganizationField = {
   name: "",
   address: "",
   mail_id: "",
+  mobile_no: "",
   projects: [],
   users: []
 };
@@ -36,9 +38,20 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name =  transorganization("errorname");
-    if (!formData.mail_id) newErrors.mail_id = transorganization("errormail");
+    if (!formData.name) newErrors.name = transorganization("errorname");
     if (!formData.address) newErrors.address = transorganization("erroraddress");
+
+    if (!formData.mail_id) {
+      newErrors.mail_id = transorganization("errormail");
+    } else if (!validateEmail(formData.mail_id)) {
+      newErrors.mail_id = transorganization("errormailvalid");
+    }
+
+    if (!formData.mobile_no) {
+      newErrors.mobile_no = transorganization("errorphone");
+    } else if (!validatePhone(formData.mobile_no)) {
+      newErrors.mobile_no = transorganization("errorphonevalid");
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -58,7 +71,8 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
-    } catch { 
+      handleClose();
+    } catch {
       setSnackbar({
         open: true,
         message: transorganization("errorcreate"),
@@ -66,11 +80,18 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
       });
     }
   };
+
+  const handleClose = () => {
+    setFormData(initialFormState);
+    setErrors({});
+    onClose();
+  };
+
   return (
     <>
       <CommonDialog
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         onSubmit={handleSubmit}
         title={transorganization("createtitle")}
       >

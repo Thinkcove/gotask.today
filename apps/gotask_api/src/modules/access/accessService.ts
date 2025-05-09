@@ -79,7 +79,6 @@ const getAccessById = async (
   }
 };
 
-
 // Update access record by unique ID
 const updateAccess = async (
   id: string,
@@ -146,9 +145,16 @@ const getAccessOptionsFromConfig = async () => {
     const accessOptions = accessConfig.accesses || [];
     return { success: true, data: accessOptions };
   } catch {
-    return  { success: false, message: AccessMessages.CONFIG.LOAD_FAILED };
+    return { success: false, message: AccessMessages.CONFIG.LOAD_FAILED };
   }
 };
 
 // Export functions as named exports
-export { createAccess, getAllAccesses, getAccessById, updateAccess, deleteAccessById, getAccessOptionsFromConfig };
+export {
+  createAccess,
+  getAllAccesses,
+  getAccessById,
+  updateAccess,
+  deleteAccessById,
+  getAccessOptionsFromConfig
+};

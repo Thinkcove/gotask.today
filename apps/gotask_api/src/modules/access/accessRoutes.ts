@@ -94,7 +94,7 @@ AccessRoutes.push({
 
 // Route: Get Access Options (New Route)
 AccessRoutes.push({
-  path: API_PATHS.GET_ACCESS_OPTIONS,  // Assuming the path is defined in API_PATHS
+  path: API_PATHS.GET_ACCESS_OPTIONS, // Assuming the path is defined in API_PATHS
   method: API_METHODS.GET,
   handler: (request: Request, handler: ResponseToolkit) =>
     accessController.getAccessOptions(new RequestHelper(request), handler),

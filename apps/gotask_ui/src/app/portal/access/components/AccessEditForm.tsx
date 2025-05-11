@@ -143,7 +143,7 @@ export default function AccessEditForm() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "95%",
+        height: "100vh",
         width: "97%",
         bgcolor: "white",
         borderRadius: 2,
@@ -153,8 +153,8 @@ export default function AccessEditForm() {
       }}
     >
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-         {/* Back Icon and Heading */}
-         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        {/* Back Icon and Heading */}
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Stack direction="row" spacing={1} alignItems="center">
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
               <Tooltip title={t("cancel")}>
@@ -163,12 +163,11 @@ export default function AccessEditForm() {
                 </IconButton>
               </Tooltip>
             )}
-        <AccessHeading title={t("editaccess")} />
-
-        </Stack>
+            <AccessHeading title={t("editaccess")} />
+          </Stack>
         </Box>
 
-        <Box sx={{ maxWidth: 400, width: "100%", mb: 1, mt: 1 }}>
+        <Box sx={{ maxWidth: 400, width: "100%", mb: 1 }}>
           <Typography variant="body2" sx={{ color: "#333", fontWeight: 500 }}>
             {t("accessName")} *
           </Typography>
@@ -192,7 +191,7 @@ export default function AccessEditForm() {
           {t("accessManagement")}
         </Typography>
 
-        <Box sx={{ flex: 1, maxHeight: "80%", overflow: "hidden" }}>
+        <Box sx={{ flex: 1, maxHeight: "calc(100vh - 240px)", overflowY: "auto" }}>
           {accessOptions.length === 0 ? (
             <Box display="flex" justifyContent="center">
               <Typography variant="body1" color="text.secondary">
@@ -211,9 +210,11 @@ export default function AccessEditForm() {
         </Box>
       </Box>
 
+      {/* Fixed Buttons */}
       <Box
         sx={{
-          flex: 1,
+          position: "sticky",
+          bottom: 0,
           display: "flex",
           justifyContent: "flex-end",
           gap: 2,
@@ -221,6 +222,9 @@ export default function AccessEditForm() {
           flexDirection: { xs: "column-reverse", sm: "row" },
           alignItems: { xs: "stretch", sm: "center" },
           mt: { xs: 2, sm: 0 },
+          backgroundColor: "white",
+          padding: "8px 16px",
+          borderTop: "1px solid #ddd",
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (

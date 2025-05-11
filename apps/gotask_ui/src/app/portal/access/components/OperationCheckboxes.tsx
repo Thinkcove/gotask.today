@@ -8,8 +8,9 @@ import {
   Card,
   CardContent,
   Paper,
+  Box,
 } from '@mui/material';
-import { useTranslations } from 'next-intl'; // Ensure next-intl is configured
+import { useTranslations } from 'next-intl';
 
 interface Props {
   module: string;
@@ -42,20 +43,19 @@ const OperationCheckboxes: React.FC<Props> = ({
       sx={{
         width: '100%',
         maxWidth: 300,
-        height: 'auto',
-        overflow: 'hidden',
+        height: 260, // Fixed height for the entire card
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
         mt: 2,
         borderRadius: 2,
+        overflow: 'hidden', // Prevent content from spilling out
         '@media (max-width: 600px)': {
           maxWidth: '100%',
           padding: 1,
         },
       }}
     >
-      <CardContent sx={{ padding: 2 }}>
+      <CardContent sx={{ padding: 2, flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
         <Typography
           variant="subtitle1"
           gutterBottom
@@ -68,8 +68,8 @@ const OperationCheckboxes: React.FC<Props> = ({
           {t('area')}: {module}
         </Typography>
 
-        <FormGroup>
-          {/* 🔷 Select All */}
+        <FormGroup sx={{ flexDirection: 'column', flex: '1 1 auto' }}>
+          {/* Select All */}
           <Paper
             elevation={0}
             sx={{
@@ -99,28 +99,60 @@ const OperationCheckboxes: React.FC<Props> = ({
             />
           </Paper>
 
-          {operations.map((operation) => (
-            <FormControlLabel
-              key={operation}
-              control={
-                <Checkbox
-                  checked={selected.includes(operation)}
-                  onChange={(e) =>
-                    !readOnly && onChange(module, operation, e.target.checked)
+          {/* Scrollable Vertical List of Operations */}
+          <Box
+            sx={{
+              height: 160, // Fixed height for operations list
+              overflowY: 'auto', // Always scrollable if content exceeds height
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 0.5,
+              pr: 1,
+              '&::-webkit-scrollbar': {
+                width: '6px',
+              },
+              '&::-webkit-scrollbar-track': {
+                background: '#f1f1f1',
+                borderRadius: '4px',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: '#888',
+                borderRadius: '4px',
+              },
+              '&::-webkit-scrollbar-thumb:hover': {
+                background: '#555',
+              },
+            }}
+          >
+            {operations.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ p: 1 }}>
+                {t('Access.noOperationsAvailable')}
+              </Typography>
+            ) : (
+              operations.map((operation) => (
+                <FormControlLabel
+                  key={operation}
+                  control={
+                    <Checkbox
+                      checked={selected.includes(operation)}
+                      onChange={(e) =>
+                        !readOnly && onChange(module, operation, e.target.checked)
+                      }
+                      sx={{ pointerEvents: readOnly ? 'none' : 'auto', p: 0.5 }}
+                      disabled={readOnly}
+                      inputProps={{ 'aria-label': `${t('action')}: ${operation}` }}
+                    />
                   }
-                  sx={{ pointerEvents: readOnly ? 'none' : 'auto', p: 0.5 }}
-                  disabled={readOnly}
-                  inputProps={{ 'aria-label': `${t('action')}: ${operation}` }}
+                  label={
+                    <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                      {operation}
+                    </Typography>
+                  }
+                  sx={{ ml: 2 }}
                 />
-              }
-              label={
-                <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
-                  {operation}
-                </Typography>
-              }
-              sx={{ ml: 2 }}
-            />
-          ))}
+              ))
+            )}
+          </Box>
         </FormGroup>
       </CardContent>
     </Card>

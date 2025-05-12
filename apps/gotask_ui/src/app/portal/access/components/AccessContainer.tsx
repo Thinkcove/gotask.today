@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import AccessHeading from "../components/AccessHeading";
 import SearchBar from "../../../component/searchBar/searchBar";
 import AccessCards from "../components/AccessCards";
-import { fetchAllAccessRoles } from "../services/accessService";
+import { useAllAccessRoles } from "../services/accessService";
 import {
   Box,
   Paper,
@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 
 export interface AccessData {
@@ -24,9 +24,9 @@ export interface AccessData {
 }
 
 const AccessContainer: React.FC = () => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const [searchTerm, setSearchTerm] = useState("");
-  const { accessRoles, isLoading, error } = fetchAllAccessRoles();
+  const { accessRoles, isLoading, error } = useAllAccessRoles();
   const theme = useTheme();
 
   // Sort the accessRoles array by createdAt in descending order

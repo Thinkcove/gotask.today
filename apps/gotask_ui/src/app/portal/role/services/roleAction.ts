@@ -33,7 +33,7 @@ const fetchRole = async () => {
   return withAuth((token) => getData(`${env.API_BASE_URL}/roles`, token));
 };
 
-export const fetchAllRoles = () => {
+export const useAllRoles = () => {
   const { data } = useSWR([`fetchrole`], fetchRole, {
     revalidateOnFocus: false
   });
@@ -51,7 +51,7 @@ const fetchAccess = async () => {
   return withAuth((token) => getData(`${env.API_BASE_URL}/access`, token));
 };
 
-export const fetchAllAccess = () => {
+export const useAllAccess = () => {
   const { data } = useSWR([`fetchaccess`], fetchAccess, {
     revalidateOnFocus: false
   });

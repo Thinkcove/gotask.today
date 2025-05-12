@@ -10,7 +10,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface ProjectCardProps {
@@ -19,7 +19,7 @@ interface ProjectCardProps {
 }
 
 const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const router = useRouter();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 

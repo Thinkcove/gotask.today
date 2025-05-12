@@ -12,7 +12,7 @@ const fetchOrganization = async () => {
 };
 
 // Hook using SWR
-export const fetchAllOrganizations = () => {
+export const useAllOrganizations = () => {
   const { data } = useSWR([`fetchorganization`], fetchOrganization, {
     revalidateOnFocus: false
   });

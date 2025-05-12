@@ -55,5 +55,8 @@ export const API_PATHS = {
   CREATE_ORGANIZATION: "/createOrganization",
   GET_ORGANIZATIONS: "/getAllOrganizations",
   GET_ORG_BY_ID: "/getOrgById/{id}",
-  UPDATE_ORGANIZATION: "/updateOrg/{id}"
+  UPDATE_ORGANIZATION: "/updateOrg/{id}",
+
+  //userreport
+  GET_USER_TIME_LOG: "/timeReport"
 };

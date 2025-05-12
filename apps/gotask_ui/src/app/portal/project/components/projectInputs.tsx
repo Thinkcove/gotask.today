@@ -3,7 +3,7 @@ import React from "react";
 import { Grid } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { IProjectField, PROJECT_WORKFLOW } from "../interfaces/projectInterface";
-import { fetchAllOrganizations } from "../../organization/services/organizationAction";
+import { useAllOrganizations } from "../../organization/services/organizationAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -24,7 +24,7 @@ const ProjectInput = ({
   const currentStatus = formData.status;
   const allowedStatuses = PROJECT_WORKFLOW[currentStatus] || [];
   const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
-  const { getOrganizations } = fetchAllOrganizations();
+  const { getOrganizations } = useAllOrganizations();
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
   return (

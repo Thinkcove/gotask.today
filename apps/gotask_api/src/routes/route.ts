@@ -5,6 +5,7 @@ import * as TaskRoutes from "../modules/task/taskRoute";
 import * as AccessRoutes from "../modules/access/accessRoutes";
 import * as RoleRoutes from "../modules/role/roleRoutes";
 import * as OrganizationRoutes from "../modules/organization/organizationRoute";
+import * as ReportRoutes from "../modules/report/reportRoute";
 
 const routes: ServerRoute[] = [
   ...ProjectRoutes.default,
@@ -12,6 +13,7 @@ const routes: ServerRoute[] = [
   ...TaskRoutes.default,
   ...AccessRoutes.default,
   ...RoleRoutes.default,
-  ...OrganizationRoutes.default
+  ...OrganizationRoutes.default,
+  ...ReportRoutes.default
 ];
 export default routes;

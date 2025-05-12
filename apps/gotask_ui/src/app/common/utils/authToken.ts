@@ -1,4 +1,3 @@
-
 export const fetchToken = (): string | null => {
   return localStorage.getItem("token");
 };

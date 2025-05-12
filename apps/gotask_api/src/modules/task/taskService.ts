@@ -457,78 +457,6 @@ const addTimeSpent = async (
   }
 };
 
-const getUserTimeReportService = async (
-  fromDate: string,
-  toDate: string,
-  userIds: string[],
-  showTasks: boolean,
-  showProjects: boolean
-) => {
-  const pipeline: any[] = [
-    {
-      $match: {
-        user_id: { $in: userIds },
-        time_spent: {
-          $elemMatch: {
-            date: { $gte: fromDate, $lte: toDate }
-          }
-        }
-      }
-    },
-    { $unwind: "$time_spent" },
-    {
-      $match: {
-        "time_spent.date": { $gte: fromDate, $lte: toDate }
-      }
-    },
-    {
-      $project: {
-        user_id: 1,
-        user_name: 1,
-        "time_spent.date": 1,
-        "time_spent.time_logged": 1,
-        ...(showTasks && { task_id: "$id", task_title: "$title" }),
-        ...(showProjects && { project_id: 1, project_name: 1 })
-      }
-    },
-    {
-      $group: {
-        _id: {
-          user_id: "$user_id",
-          user_name: "$user_name", // include this line
-          date: "$time_spent.date",
-          ...(showTasks && { task_id: "$task_id", task_title: "$task_title" }),
-          ...(showProjects && { project_id: "$project_id", project_name: "$project_name" })
-        },
-        total_time_logged: { $push: "$time_spent.time_logged" }
-      }
-    },
-    {
-      $project: {
-        _id: 0,
-        user_id: "$_id.user_id",
-        user_name: "$_id.user_name", // and this line
-        date: "$_id.date",
-        task_id: "$_id.task_id",
-        task_title: "$_id.task_title",
-        project_id: "$_id.project_id",
-        project_name: "$_id.project_name",
-        total_time_logged: 1
-      }
-    },
-    {
-      $sort: { user_name: 1, date: 1 }
-    }
-  ];
-
-  const results = await Task.aggregate(pipeline);
-
-  return {
-    success: true,
-    data: results
-  };
-};
-
 export {
   createTask,
   deleteTaskById,
@@ -540,6 +468,5 @@ export {
   updateTask,
   createComment,
   updateComment,
-  addTimeSpent,
-  getUserTimeReportService
+  addTimeSpent
 };

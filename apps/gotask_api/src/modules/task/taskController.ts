@@ -12,7 +12,6 @@ import {
   getTaskCountByStatus,
   getTasksByProject,
   getTasksByUser,
-  getUserTimeReportService,
   updateComment,
   updateTask
 } from "./taskService";
@@ -187,25 +186,6 @@ class TaskController extends BaseController {
       const id = requestHelper.getParam("id");
       const timeEntries = requestHelper.getPayload() as ITimeSpentEntry | ITimeSpentEntry[];
       const result = await addTimeSpent(id, timeEntries);
-      return this.sendResponse(handler, result);
-    } catch (error) {
-      return this.replyError(error, handler);
-    }
-  }
-
-  // controllers/timeReportController.ts
-  async getUserTimeReport(requestHelper: RequestHelper, handler: any) {
-    try {
-      const { fromDate, toDate, userIds, showTasks, showProjects } = requestHelper.getPayload();
-
-      const result = await getUserTimeReportService(
-        fromDate,
-        toDate,
-        userIds,
-        showTasks,
-        showProjects
-      );
-
       return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error, handler);

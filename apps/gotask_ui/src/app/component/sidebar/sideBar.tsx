@@ -9,9 +9,7 @@ import {
   Toolbar,
   Box,
   IconButton,
-  useMediaQuery,
-  AppBar,
-  Typography
+  useMediaQuery
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import GridViewIcon from "@mui/icons-material/Dashboard";
@@ -21,12 +19,11 @@ import BusinessIcon from "@mui/icons-material/Business";
 import SecurityIcon from "@mui/icons-material/Security";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import menuItemsData from "./menuItems.json";
 import { useRouter, usePathname } from "next/navigation";
 import { Theme } from "@mui/material/styles";
 import UserInfoCard from "../appBar/userMenu";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
 import { useUser } from "@/app/userContext";
 import { hasPermission } from "@/app/common/utils/permisssion";
 import { ACTIONS, ActionType, ApplicationName } from "@/app/common/utils/authCheck";
@@ -38,15 +35,14 @@ const iconMap: Record<string, React.ReactNode> = {
   BusinessIcon: <BusinessIcon />,
   SecurityIcon: <SecurityIcon />,
   VpnKeyIcon: <VpnKeyIcon />,
-  AssignmentIcon: <AssignmentIcon />
+  AssignmentIcon: <AssignmentIcon />,
+  BarChartIcon: <BarChartIcon />
 };
 
 const drawerWidth = 260;
 
 const Sidebar: React.FC = () => {
   const { user } = useUser();
-
-  const transsidebar = useTranslations(LOCALIZATION.TRANSITION.SIDEBAR);
   const [open, setOpen] = useState<boolean>(false);
   const [collapsed] = useState<boolean>(false);
   const router = useRouter();
@@ -98,26 +94,8 @@ const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Mobile AppBar */}
-      <AppBar
-        position="sticky"
-        sx={{
-          backgroundColor: "#741B92",
-          display: { xs: "block", sm: "none" }
-        }}
-      >
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={toggleSidebar} aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {transsidebar("gotask")}
-          </Typography>
-        </Toolbar>
-      </AppBar>
-
       {/* Desktop Menu Icon */}
-      {!isMobile && !open && (
+      {!open && (
         <IconButton
           onClick={toggleSidebar}
           sx={{
@@ -156,7 +134,8 @@ const Sidebar: React.FC = () => {
             color: "#2A1237",
             borderRight: "1px solid #d3b7eb",
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
+            justifyContent: "space-between"
           }
         }}
       >
@@ -167,7 +146,7 @@ const Sidebar: React.FC = () => {
             </Box>
           </Toolbar>
 
-          <Box sx={{ overflow: "auto", px: 1, flex: 1 }}>
+          <Box sx={{ overflow: "auto", px: 1, flex: 1, width: "100%" }}>
             <List>
               {filteredMenuItems.map((item, index) => (
                 <ListItem key={item.text} disablePadding>
@@ -175,6 +154,7 @@ const Sidebar: React.FC = () => {
                     selected={selectedIndex === index}
                     onClick={() => handleListItemClick(index, item.path)}
                     sx={{
+                      width: "100%",
                       borderRadius: 2,
                       my: 0.5,
                       px: 2,

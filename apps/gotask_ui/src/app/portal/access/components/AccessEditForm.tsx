@@ -8,27 +8,23 @@ import {
   Typography,
   Stack,
   IconButton,
-  Tooltip,
+  Tooltip
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
-import {
-  useAccessOptions,
-  useAccessRoleById,
-  updateAccessRole,
-} from "../services/accessService";
+import { useAccessOptions, useAccessRoleById, updateAccessRole } from "../services/accessService";
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import AccessHeading from "../components/AccessHeading";
-import { useTranslations } from "next-intl"; 
+import { useTranslations } from "next-intl";
 
 export default function AccessEditForm() {
-  const t = useTranslations("Access"); 
-  const { canAccess } = userPermission();
+  const t = useTranslations("Access");
+  const { canAccess } = useUserPermission();
   const { id } = useParams();
   const router = useRouter();
 
@@ -49,8 +45,9 @@ export default function AccessEditForm() {
 
   if (accessOptions.length > 0 && !currentTab) {
     const firstValidModule =
-      role?.application?.find((app: { access: string; }) => validModules.includes(app.access))?.access ||
-      accessOptions.find(opt => validModules.includes(opt.access))?.access ||
+      role?.application?.find((app: { access: string }) => validModules.includes(app.access))
+        ?.access ||
+      accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
       validModules[0];
     setCurrentTab(firstValidModule);
   }
@@ -62,9 +59,7 @@ export default function AccessEditForm() {
 
       if (index > -1) {
         let actions = updated[index].actions;
-        actions = checked
-          ? [...actions, action]
-          : actions.filter((a) => a !== action);
+        actions = checked ? [...actions, action] : actions.filter((a) => a !== action);
         updated[index] = { ...updated[index], actions: [...new Set(actions)] };
       } else if (checked) {
         updated.push({ access, actions: [action] });
@@ -92,7 +87,7 @@ export default function AccessEditForm() {
     const payload = {
       name: roleName.trim(),
       application,
-      createdAt: role.createdAt,
+      createdAt: role.createdAt
     };
 
     try {
@@ -112,17 +107,22 @@ export default function AccessEditForm() {
     }
   };
 
-  const selectedPermissionsMap = application.reduce(
-    (acc: Record<string, string[]>, app) => {
-      acc[app.access] = app.actions;
-      return acc;
-    },
-    {}
-  );
+  const selectedPermissionsMap = application.reduce((acc: Record<string, string[]>, app) => {
+    acc[app.access] = app.actions;
+    return acc;
+  }, {});
 
   if (isRoleLoading || isOptionsLoading) {
     return (
-      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -130,7 +130,15 @@ export default function AccessEditForm() {
 
   if (roleError || optionsError) {
     return (
-      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
         <Typography variant="body1" color="error">
           {roleError || optionsError}
         </Typography>
@@ -149,7 +157,7 @@ export default function AccessEditForm() {
         borderRadius: 2,
         boxShadow: 3,
         p: 2,
-        m: 3,
+        m: 3
       }}
     >
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -181,8 +189,8 @@ export default function AccessEditForm() {
               "& .MuiOutlinedInput-root": {
                 borderRadius: 1,
                 "&:hover fieldset": { borderColor: "#741B92" },
-                "&.Mui-focused fieldset": { borderColor: "#741B92" },
-              },
+                "&.Mui-focused fieldset": { borderColor: "#741B92" }
+              }
             }}
           />
         </Box>
@@ -224,7 +232,7 @@ export default function AccessEditForm() {
           mt: { xs: 2, sm: 0 },
           backgroundColor: "white",
           padding: "8px 16px",
-          borderTop: "1px solid #ddd",
+          borderTop: "1px solid #ddd"
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
@@ -237,7 +245,7 @@ export default function AccessEditForm() {
               borderRadius: 1,
               textTransform: "none",
               "&:hover": { bgcolor: "#f5f5f5" },
-              width: { xs: "100%", sm: "auto" },
+              width: { xs: "100%", sm: "auto" }
             }}
           >
             {t("cancel")}
@@ -255,7 +263,7 @@ export default function AccessEditForm() {
               textTransform: "none",
               bgcolor: "#741B92",
               "&:hover": { bgcolor: "#5e1675" },
-              width: { xs: "100%", sm: "auto" },
+              width: { xs: "100%", sm: "auto" }
             }}
           >
             {isSubmitting ? <CircularProgress size={20} /> : t("editaccess")}

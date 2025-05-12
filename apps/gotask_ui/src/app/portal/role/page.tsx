@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import React from "react";
 import RoleList from "./components/roleList";
 
-const page = () => {
+const Page = () => {
   const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   return (
     <>
@@ -15,4 +15,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

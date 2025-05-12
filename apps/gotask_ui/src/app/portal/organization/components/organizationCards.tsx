@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface OrganizationCardProps {
@@ -17,7 +17,7 @@ interface OrganizationCardProps {
 }
 
 const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const router = useRouter();
   if (!organizations) {

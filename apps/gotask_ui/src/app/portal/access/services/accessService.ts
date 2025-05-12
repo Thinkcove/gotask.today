@@ -96,7 +96,7 @@ const fetchAccessRoles = async () => {
   return data;
 };
 
-export const fetchAllAccessRoles = () => {
+export const useAllAccessRoles = () => {
   const { data, error, isLoading } = useSWR([`fetchAccessRoles`], fetchAccessRoles, {
     revalidateOnFocus: false
   });
@@ -108,8 +108,6 @@ export const fetchAllAccessRoles = () => {
       accesses: role.application || [], // Map application to accesses
       createdAt: role.createdAt
     })) || [];
-
-  console.log("fetchAllAccessRoles mappedData:", mappedData); // Debug log
 
   return {
     accessRoles: mappedData,

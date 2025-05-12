@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import CardComponent from '@/app/component/card/cardComponent';
 import { AccessData } from '../interfaces/accessInterfaces';
-import { userPermission } from '@/app/common/utils/userPermission';
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from '@/app/common/utils/authCheck';
 
 interface Props {
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const router = useRouter();
   const t = useTranslations('Access');
 

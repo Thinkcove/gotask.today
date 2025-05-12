@@ -5,7 +5,7 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { ArrowForward, SupervisorAccount } from "@mui/icons-material"; // <-- New Icon
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface RolesCardProps {
@@ -13,7 +13,7 @@ interface RolesCardProps {
 }
 
 const RoleCards: React.FC<RolesCardProps> = ({ roles }) => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   const router = useRouter();
 

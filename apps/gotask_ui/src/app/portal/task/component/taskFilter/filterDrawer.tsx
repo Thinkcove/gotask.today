@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { fetchAllProjects, fetchAllUsers } from "../../service/taskAction";
+import { useAllProjects, useAllUsers } from "../../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { SelectOption } from "@/app/component/formField";
 import { FilterValues, TaskFilterType, TaskPayload } from "../../interface/taskInterface";
@@ -67,7 +67,6 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
     // const theme = useTheme();
     // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const toggleCheckbox = (group: keyof FilterValues, value: string) => {
-      
       setSelectedFilters((prev) => {
         const groupValue = prev[group];
         if (Array.isArray(groupValue)) {
@@ -155,8 +154,8 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
         setExpandedPanel(isExpanded ? panel : false);
       };
 
-    const { getAllProjects: allProjects } = fetchAllProjects();
-    const { getAllUsers: allUsers } = fetchAllUsers();
+    const { getAllProjects: allProjects } = useAllProjects();
+    const { getAllUsers: allUsers } = useAllUsers();
 
     return (
       <Drawer
@@ -418,5 +417,5 @@ const TaskFilterDrawer = forwardRef<TaskFilterDrawerRef, TaskFilterDrawerProps>(
     );
   }
 );
-
+TaskFilterDrawer.displayName = "TaskFilterDrawer";
 export default TaskFilterDrawer;

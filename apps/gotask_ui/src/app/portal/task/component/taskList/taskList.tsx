@@ -17,11 +17,11 @@ import TaskFilterControls from "../taskFilter/taskFilterControls";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 const TaskList: React.FC = () => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [view, setView] = useState<"projects" | "users">("projects");
   const router = useRouter();
@@ -53,46 +53,63 @@ const TaskList: React.FC = () => {
   const [dateVar, setDateVar] = useState<string>("due_date");
   const [moreDays, setMoreDays] = useState<string | undefined>();
   const [lessDays, setLessDays] = useState<string | undefined>();
-  const fetchTasks = () => {
-    const { search_vals, search_vars } = searchParams;
-    if (view === "projects") {
-      const { tasksByProjects, ...rest } = useProjectGroupTask(
-        page,
-        6,
-        1,
-        10,
-        search_vals,
-        search_vars,
-        minDate,
-        maxDate,
-        dateVar,
-        moreDays,
-        lessDays
-      );
-      return { tasks: tasksByProjects, ...rest };
-    } else {
-      const { tasksByUsers, ...rest } = useUserGroupTask(
-        page,
-        6,
-        1,
-        10,
-        search_vals,
-        search_vars,
-        minDate,
-        maxDate,
-        dateVar,
-        moreDays,
-        lessDays
-      );
-      return { tasks: tasksByUsers, ...rest };
-    }
-  };
 
-  const { tasks, isLoading, isError } = fetchTasks();
+  // Memoize params to avoid recomputation
+  const search_vals = searchParams.search_vals;
+  const search_vars = searchParams.search_vars;
+
+  const isProjectView = view === "projects";
+
+  const projectData = useProjectGroupTask(
+    page,
+    6,
+    1,
+    10,
+    search_vals,
+    search_vars,
+    minDate,
+    maxDate,
+    dateVar,
+    moreDays,
+    lessDays
+  );
+
+  const userData = useUserGroupTask(
+    page,
+    6,
+    1,
+    10,
+    search_vals,
+    search_vars,
+    minDate,
+    maxDate,
+    dateVar,
+    moreDays,
+    lessDays
+  );
+
+  const {
+    tasks: fetchedTasks,
+    isLoading,
+    isError
+  } = isProjectView
+    ? {
+        tasks: projectData.tasksByProjects,
+        isLoading: projectData.isLoading,
+        isError: projectData.isError
+      }
+    : {
+        tasks: userData.tasksByUsers,
+        isLoading: userData.isLoading,
+        isError: userData.isError
+      };
+
+  const tasks = fetchedTasks ?? [];
   const currentTaskKey = `${view}_${page}`;
 
   // Append new data logic
   if (!isLoading && !appendedPages.current.has(currentTaskKey) && hasMoreData) {
+    if (!tasks) return;
     const existingIds = new Set(allTasks.map((g) => g.id));
     const newTasks = tasks.filter((g: IGroup) => !existingIds.has(g.id));
     setAllTasks((prev) => [...prev, ...newTasks]);
@@ -186,7 +203,6 @@ const TaskList: React.FC = () => {
     setFiltersOnly(filters);
     setMoreDays(filters.more_variation || undefined);
     setLessDays(filters.less_variation || undefined);
-    // Capture and apply date range if provided
     setMinDate(filters.min_date || undefined);
     setMaxDate(filters.max_date || undefined);
     setDateVar(filters.date_var || "due_date");
@@ -203,21 +219,8 @@ const TaskList: React.FC = () => {
     resetTaskState();
   };
 
-  const listenerAdded = useRef(false);
-
-  if (typeof window !== "undefined" && !listenerAdded.current) {
-    window.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.key === "g") {
-        e.preventDefault();
-        router.push("/portal/task/createTask");
-      }
-    });
-    listenerAdded.current = true;
-  }
-
   return (
     <Box>
-      {/* Top Bar */}
       <Box
         sx={{
           display: "flex",
@@ -232,17 +235,16 @@ const TaskList: React.FC = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <SearchBar value={searchText} onChange={handleSearchChange} placeholder="Search Task" />
         </Box>
-
         <TaskToggle view={view} setView={setView} />
       </Box>
-      {/* Filter Buttons */}
+
       <TaskFilterControls
         activeFilterCount={activeFilterCount}
         isFiltered={isFiltered()}
         onClearAll={handleClearAll}
         onOpenFilter={() => setFilterDrawerOpen(true)}
       />
-      {/* Task Grid */}
+
       <Box
         ref={scrollRef}
         onScroll={handleScroll}
@@ -274,7 +276,6 @@ const TaskList: React.FC = () => {
         </Grid>
       </Box>
 
-      {/* Add Task Button */}
       {canAccess(APPLICATIONS.TASK, ACTIONS.CREATE) && (
         <ActionButton
           label={transtask("createtask")}
@@ -283,7 +284,6 @@ const TaskList: React.FC = () => {
         />
       )}
 
-      {/* View More Drawer */}
       <ViewMoreList
         open={Boolean(selectedGroupId)}
         selectedGroupId={selectedGroupId}
@@ -297,7 +297,6 @@ const TaskList: React.FC = () => {
         view={view}
       />
 
-      {/* Filter Drawer */}
       <TaskFilterDrawer
         ref={filterDrawerRef}
         open={filterDrawerOpen}

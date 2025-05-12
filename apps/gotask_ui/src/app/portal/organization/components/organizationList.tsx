@@ -9,11 +9,11 @@ import { getOrganizationData } from "../services/organizationAction";
 import CreateOrganization from "./createOrganization";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 const OrganizationList = () => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data, mutate } = useSWR("getOrganizations", getOrganizationData);

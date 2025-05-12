@@ -9,11 +9,11 @@ import { fetcher } from "../services/projectAction";
 import useSWR from "swr";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 const ProjectList = () => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: projects, error, mutate: ProjectUpdate } = useSWR("fetch-projects", fetcher);

@@ -4,7 +4,8 @@ export const APPLICATIONS = {
   PROJECT: "Project Management",
   ROLE: "Role Management",
   ACCESS: "Access Management",
-  ORGANIZATION: "Organization Management"
+  ORGANIZATION: "Organization Management",
+  REPORT: "User Report"
 } as const;
 
 export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];
@@ -17,7 +18,8 @@ export const ACTIONS = {
   VIEW: "VIEW",
   ASSIGN: "ASSIGN",
   UNASSIGN: "UNASSIGN",
-  REVOKE_ACCESS: "REMOVE ACCESS"
+  INVOKE_ACCESS: "INVOKE_ACCESS",
+  REVOKE_ACCESS: "REVOKE_ACCESS"
 } as const;
 
 export type ActionType = (typeof ACTIONS)[keyof typeof ACTIONS];

@@ -9,7 +9,7 @@ import {
   Box,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import AccessHeading from "./AccessHeading";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
@@ -19,7 +19,7 @@ import { useTranslations } from "next-intl";
 
 const AccessCreateForm: React.FC = () => {
   const t = useTranslations();
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const [accessName, setAccessName] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
   const [currentModule, setCurrentModule] = useState("");

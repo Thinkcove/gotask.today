@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
-import { fetchAllUsers } from "@/app/portal/task/service/taskAction";
+import { useAllUsers } from "@/app/portal/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import FormField, { SelectOption } from "@/app/component/formField";
 import { useParams, useRouter } from "next/navigation";
@@ -19,7 +19,7 @@ import { useTranslations } from "next-intl";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 
 interface ProjectDetailProps {
   project: Project;
@@ -27,7 +27,7 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -43,7 +43,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     severity: SNACKBAR_SEVERITY.INFO
   });
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const { getAllUsers } = fetchAllUsers();
+  const { getAllUsers } = useAllUsers();
   const assignedUserIds = project.users.map((user) => user.id);
   const unassignedUsers = getAllUsers.filter(
     (user: SelectOption) => !assignedUserIds.includes(user.id)

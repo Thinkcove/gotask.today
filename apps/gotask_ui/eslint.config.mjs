@@ -29,7 +29,6 @@ export default defineConfig([
       ...nextPlugin.configs.recommended.rules
     }
   },
-  // TypeScript ESLint with properly configured parser options
   {
     files: ["**/*.{ts,tsx}"],
     ...tseslint.configs.recommended,
@@ -44,17 +43,9 @@ export default defineConfig([
       }
     },
     rules: {
-      // Change all type-related rules to warnings (1) instead of errors (2)
-      "@typescript-eslint/explicit-function-return-type": "warn",
-      "@typescript-eslint/explicit-module-boundary-types": "warn",
+      
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unsafe-assignment": "warn",
-      "@typescript-eslint/no-unsafe-call": "warn",
-      "@typescript-eslint/no-unsafe-member-access": "warn",
-      "@typescript-eslint/no-unsafe-return": "warn",
-      "@typescript-eslint/restrict-template-expressions": "warn",
-      "@typescript-eslint/restrict-plus-operands": "warn",
-      // You can add more type-related rules here as needed
+     
     }
   }
 ]);

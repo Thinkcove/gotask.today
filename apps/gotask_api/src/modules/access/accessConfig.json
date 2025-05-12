@@ -1,17 +1,68 @@
 {
-    "accesses": [
-      {
-        "access": "User Management",
-        "actions": ["CREATE", "READ", "UPDATE", "DELETE"]
-      },
-      {
-        "access": "Task Management",
-        "actions": ["CREATE", "READ", "UPDATE", "DELETE"]
-      },
-      {
-        "access": "Project Management",
-        "actions": ["CREATE", "READ", "UPDATE", "DELETE"]
-      }
-    ]
-  }
-  
+  "accesses": [
+    {
+      "access": "User Management",
+      "actions": [
+        "READ",
+        "CREATE",
+        "EDIT",
+        "VIEW",
+        "DELETE"
+      ]
+    },
+    {
+      "access": "Task Management",
+      "actions": [
+        "READ",
+        "CREATE",
+        "VIEW",
+        "EDIT",
+        "DELETE"
+      ]
+    },
+    {
+      "access": "Project Management",
+      "actions": [
+        "READ",
+        "CREATE",
+        "EDIT",
+        "VIEW",
+        "ASSIGN",
+        "UNASSIGN",
+        "UPDATE"
+      ]
+    },
+    {
+      "access": "Access Management",
+      "actions": [
+        "READ",
+        "CREATE",
+        "VIEW",
+        "EDIT",
+        "DELETE",
+        "UPDATE"
+      ]
+    },
+    {
+      "access": "Organization Management",
+      "actions": [
+        "READ",
+        "CREATE",
+        "VIEW",
+        "EDIT"
+      ]
+    },
+    {
+      "access": "Role Management",
+      "actions": [
+        "READ",
+        "CREATE",
+        "VIEW",
+        "EDIT",
+        "DELETE",
+        "INVOKE_ACCESS",
+        "REVOKE_ACCESS"
+      ]
+    }
+  ]
+}

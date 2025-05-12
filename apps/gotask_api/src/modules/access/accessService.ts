@@ -7,6 +7,7 @@ import {
   deleteAccessByIdFromDb
 } from "../../domain/interface/access/accessInterface";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
+import accessConfig from "../../modules/access/accessConfig.json";
 
 // Create a new access record
 const createAccess = async (
@@ -78,20 +79,22 @@ const getAccessById = async (
   }
 };
 
-// Update access record by ID
+// Update access record by unique ID
 const updateAccess = async (
   id: string,
   updateData: Partial<IAccess>
 ): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
   try {
-    const updatedAccess = await updateAccessInDb(id, updateData);
-
-    if (!updatedAccess) {
+    const access = await getAccessByIdFromDb(id);
+    if (!access) {
       return {
         success: false,
         message: AccessMessages.UPDATE.NOT_FOUND
       };
     }
+
+    const updatedAccess = await updateAccessInDb(id, updateData);
+
     return {
       success: true,
       data: updatedAccess
@@ -104,17 +107,25 @@ const updateAccess = async (
   }
 };
 
-// Delete access record by ID
+// Delete access record by unique ID
 const deleteAccessById = async (
   id: string
 ): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
   try {
+    const access = await getAccessByIdFromDb(id);
+    if (!access) {
+      return {
+        success: false,
+        message: AccessMessages.DELETE.NOT_FOUND
+      };
+    }
+
     const success = await deleteAccessByIdFromDb(id);
 
     if (!success) {
       return {
         success: false,
-        message: AccessMessages.DELETE.NOT_FOUND
+        message: AccessMessages.DELETE.FAILED
       };
     }
     return {
@@ -129,5 +140,21 @@ const deleteAccessById = async (
   }
 };
 
+const getAccessOptionsFromConfig = async () => {
+  try {
+    const accessOptions = accessConfig.accesses || [];
+    return { success: true, data: accessOptions };
+  } catch {
+    return { success: false, message: AccessMessages.CONFIG.LOAD_FAILED };
+  }
+};
+
 // Export functions as named exports
-export { createAccess, getAllAccesses, getAccessById, updateAccess, deleteAccessById };
+export {
+  createAccess,
+  getAllAccesses,
+  getAccessById,
+  updateAccess,
+  deleteAccessById,
+  getAccessOptionsFromConfig
+};

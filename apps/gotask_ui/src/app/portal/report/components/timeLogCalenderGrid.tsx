@@ -39,8 +39,8 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
   const dateRange = getDateRange(fromDate, toDate);
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
-    const project = entry.project_name || "No Project";
-    const task = entry.task_title || "No Task";
+    const project = entry.project_name || transreport("noproject");
+    const task = entry.task_title || transreport("notask");
 
     const date = isValid(parseISO(entry.date)) ? format(parseISO(entry.date), "yyyy-MM-dd") : null;
 

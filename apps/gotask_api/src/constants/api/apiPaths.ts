@@ -10,6 +10,7 @@ export const API_PATHS = {
   GET_TASK_COUNT_BY_STATUS: "/tasks/status-count",
   CREATE_COMMENT: "/task/createComment",
   UPDATE_COMMENT: "/task/updateComment/{id}",
+  GET_USER_TIME_LOG: "/timeReport",
 
   //projectRoutes
   CREATE_PROJECT: "/createProject",

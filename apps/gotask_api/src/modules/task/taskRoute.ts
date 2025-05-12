@@ -164,4 +164,19 @@ TaskRoutes.push({
   }
 });
 
+// routes/TimeLogRoutes.ts
+
+// routes/timeReportRoute.ts
+TaskRoutes.push({
+  path: API_PATHS.GET_USER_TIME_LOG,
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    taskController.getUserTimeReport(new RequestHelper(request), handler),
+  config: {
+    notes: "Get daily user time logs within date range",
+    tags: ["api", "time", "report"]
+  }
+});
+
+
 export default TaskRoutes;

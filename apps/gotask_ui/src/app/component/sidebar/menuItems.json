@@ -40,5 +40,11 @@
     "icon": "AssignmentIcon",
     "path": "/portal/task",
     "access": "Task Management"
+  },
+  {
+    "text": "User Report",
+    "icon": "BarChartIcon",
+    "path": "/portal/report",
+    "access": "User Report"
   }
 ]

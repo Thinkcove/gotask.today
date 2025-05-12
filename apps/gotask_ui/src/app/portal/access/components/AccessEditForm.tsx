@@ -13,11 +13,10 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import { useAccessOptions, useAccessRoleById, updateAccessRole } from "../services/accessService";
-import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
+import { AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import AccessHeading from "../components/AccessHeading";
 import { useTranslations } from "next-intl";
@@ -32,6 +31,7 @@ export default function AccessEditForm() {
   const [application, setApplication] = useState<AccessRole["application"]>([]);
   const [currentTab, setCurrentTab] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formMessage, setFormMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const { role, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(String(id));
   const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
@@ -74,13 +74,15 @@ export default function AccessEditForm() {
   };
 
   const handleSubmit = async () => {
+    setFormMessage(null);
+
     if (!roleName.trim()) {
-      toast.error(t("accessName") + " " + t("errormessage"));
+      setFormMessage({ type: "error", text: t("accessName") + " " + t("errormessage") });
       return;
     }
 
     if (!role) {
-      toast.error(t("errormessage"));
+      setFormMessage({ type: "error", text: t("errormessage") });
       return;
     }
 
@@ -94,14 +96,16 @@ export default function AccessEditForm() {
       setIsSubmitting(true);
       const res = await updateAccessRole(String(id), payload);
       if (res.success) {
-        toast.success(t("updatesuccess"));
-        router.push("/portal/access");
+        setFormMessage({ type: "success", text: t("updatesuccess") });
+        setTimeout(() => {
+          router.push("/portal/access");
+        }, 1000);
       } else {
-        toast.error(res.message || t("updateerror"));
+        setFormMessage({ type: "error", text: res.message || t("updateerror") });
       }
     } catch (err) {
       console.error("Failed to update access role:", err);
-      toast.error(t("updateerror"));
+      setFormMessage({ type: "error", text: t("updateerror") });
     } finally {
       setIsSubmitting(false);
     }
@@ -114,15 +118,7 @@ export default function AccessEditForm() {
 
   if (isRoleLoading || isOptionsLoading) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
+      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <CircularProgress />
       </Box>
     );
@@ -130,15 +126,7 @@ export default function AccessEditForm() {
 
   if (roleError || optionsError) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
+      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <Typography variant="body1" color="error">
           {roleError || optionsError}
         </Typography>
@@ -151,7 +139,7 @@ export default function AccessEditForm() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        height: "87vh",
         width: "97%",
         bgcolor: "white",
         borderRadius: 2,
@@ -216,6 +204,20 @@ export default function AccessEditForm() {
             />
           )}
         </Box>
+
+        {/* Feedback Message */}
+        {formMessage && (
+          <Typography
+            variant="body2"
+            sx={{
+              mt: 2,
+              color: formMessage.type === "error" ? "error.main" : "success.main",
+              fontWeight: 500
+            }}
+          >
+            {formMessage.text}
+          </Typography>
+        )}
       </Box>
 
       {/* Fixed Buttons */}

@@ -8,7 +8,6 @@ import { useAllAccessRoles } from "../services/accessService";
 import {
   Box,
   Paper,
-  useTheme,
   Fab,
   Tooltip,
 } from "@mui/material";
@@ -27,7 +26,6 @@ const AccessContainer: React.FC = () => {
   const { canAccess } = useUserPermission();
   const [searchTerm, setSearchTerm] = useState("");
   const { accessRoles, isLoading, error } = useAllAccessRoles();
-  const theme = useTheme();
 
   // Sort the accessRoles array by createdAt in descending order
   const sortedData = [...accessRoles].sort((a, b) => {

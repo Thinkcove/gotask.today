@@ -11,9 +11,11 @@ import {
   TextField,
   Tooltip,
   IconButton,
+  Snackbar,
+  Alert as MuiAlert,
+  AlertColor,
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 
@@ -27,6 +29,10 @@ import {
 import AccessPermissionsContainer from "./AccessPermissionsContainer";
 import AccessHeading from "./AccessHeading";
 
+const Alert = React.forwardRef<HTMLDivElement, any>(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const AccessView: React.FC = () => {
   const t = useTranslations("Access");
 
@@ -36,11 +42,21 @@ const AccessView: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [currentTab, setCurrentTab] = useState<string>(""); 
+  const [currentTab, setCurrentTab] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { role: accessRole, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(id as string);
   const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>("success");
+
+  const showSnackbar = (message: string, severity: AlertColor = "success") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
 
   const validModules = ["User Management", "Task Management", "Project Management"];
 
@@ -64,14 +80,14 @@ const AccessView: React.FC = () => {
       setIsDeleting(true);
       const res = await deleteAccessRole(accessRole.id);
       if (res.success) {
-        toast.success(res.message || t("updatesuccess"));
+        showSnackbar(res.message || t("updatesuccess"), "success");
         router.push("/portal/access");
       } else {
-        toast.error(res.message || t("updateerror"));
+        showSnackbar(res.message || t("updateerror"), "error");
       }
     } catch (err) {
       console.error("Failed to delete access role:", err);
-      toast.error(t("updateerror"));
+      showSnackbar(t("updateerror"), "error");
     } finally {
       setIsDeleting(false);
     }
@@ -134,10 +150,9 @@ const AccessView: React.FC = () => {
           justifyContent="space-between"
           alignItems="center"
           mb={2}
-          flexDirection={isMobile ? "column" : "row"} // Keep this for mobile responsiveness
+          flexDirection={isMobile ? "column" : "row"}
           gap={isMobile ? 2 : 0}
         >
-          {/* Back Icon and Heading Aligned to the Left */}
           <Stack
             direction="row"
             spacing={1}
@@ -155,7 +170,6 @@ const AccessView: React.FC = () => {
             <AccessHeading title={accessRole.name} />
           </Stack>
 
-          {/* Right-side action buttons */}
           <Stack
             direction="row"
             spacing={1}
@@ -183,7 +197,6 @@ const AccessView: React.FC = () => {
           </Stack>
         </Box>
 
-        {/* Access Role Name */}
         <Box sx={{ width: "100%", maxWidth: 500, mb: 3 }}>
           <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
             {t("accessName")}
@@ -228,6 +241,18 @@ const AccessView: React.FC = () => {
           />
         )}
       </Box>
+
+      {/* Snackbar for feedback */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

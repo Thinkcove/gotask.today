@@ -14,7 +14,7 @@ import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import AccessHeading from "./AccessHeading";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import { useAccessOptions, createAccessRole } from "../services/accessService";
-import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
+import { AccessRole } from "../interfaces/accessInterfaces";
 import { useTranslations } from "next-intl";
 
 const AccessCreateForm: React.FC = () => {

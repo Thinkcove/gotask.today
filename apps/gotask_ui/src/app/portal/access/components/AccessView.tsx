@@ -11,9 +11,10 @@ import {
   TextField,
   Tooltip,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 
@@ -36,8 +37,18 @@ const AccessView: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [currentTab, setCurrentTab] = useState<string>(""); 
+  const [currentTab, setCurrentTab] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+
+  const showSnackbar = (message: string, severity: "success" | "error" = "success") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
 
   const { role: accessRole, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(id as string);
   const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
@@ -64,14 +75,14 @@ const AccessView: React.FC = () => {
       setIsDeleting(true);
       const res = await deleteAccessRole(accessRole.id);
       if (res.success) {
-        toast.success(res.message || t("updatesuccess"));
+        showSnackbar(res.message || t("updatesuccess"), "success");
         router.push("/portal/access");
       } else {
-        toast.error(res.message || t("updateerror"));
+        showSnackbar(res.message || t("updateerror"), "error");
       }
     } catch (err) {
       console.error("Failed to delete access role:", err);
-      toast.error(t("updateerror"));
+      showSnackbar(t("updateerror"), "error");
     } finally {
       setIsDeleting(false);
     }
@@ -134,17 +145,10 @@ const AccessView: React.FC = () => {
           justifyContent="space-between"
           alignItems="center"
           mb={2}
-          flexDirection={isMobile ? "column" : "row"} // Keep this for mobile responsiveness
+          flexDirection={isMobile ? "column" : "row"}
           gap={isMobile ? 2 : 0}
         >
-          {/* Back Icon and Heading Aligned to the Left */}
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="flex-start"
-            width="auto"
-          >
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-start" width="auto">
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
               <Tooltip title={t("cancel")}>
                 <IconButton onClick={() => router.back()} color="primary">
@@ -155,14 +159,7 @@ const AccessView: React.FC = () => {
             <AccessHeading title={accessRole.name} />
           </Stack>
 
-          {/* Right-side action buttons */}
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="flex-end"
-            width="auto"
-          >
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end" width="auto">
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
               <Tooltip title={t("editaccess")}>
                 <IconButton
@@ -228,6 +225,23 @@ const AccessView: React.FC = () => {
           />
         )}
       </Box>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

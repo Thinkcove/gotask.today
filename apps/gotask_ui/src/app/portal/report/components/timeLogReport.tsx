@@ -9,8 +9,11 @@ import TimeLogCalendarGrid from "./timeLogCalenderGrid";
 import FiltersPanel from "./reportFilterPanel";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoReportImage from "@assets/placeholderImages/noreportlog.svg";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const TimeLogReport = () => {
+  const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [showTasks, setShowTasks] = useState(false);
@@ -53,18 +56,15 @@ const TimeLogReport = () => {
         </Grid>
         <Grid item xs={12} md={9}>
           {isLoading && <CircularProgress />}
-          {isError && <Typography color="error">Error loading data</Typography>}
+          {isError && <Typography color="error"> {transreport("error")}</Typography>}
           {!fromDate || !toDate || userIds.length === 0 ? (
             <Grid item xs={12}>
-              <EmptyState
-                imageSrc={NoReportImage}
-                message=" Please select a date and users to see their work log."
-              />
+              <EmptyState imageSrc={NoReportImage} message={transreport("loghelper")} />
             </Grid>
           ) : isLoading ? (
             <CircularProgress />
           ) : isError ? (
-            <Typography color="error">Error loading data</Typography>
+            <Typography color="error">{transreport("error")}</Typography>
           ) : (
             data && (
               <TimeLogCalendarGrid

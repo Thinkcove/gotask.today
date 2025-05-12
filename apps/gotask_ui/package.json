@@ -13,11 +13,8 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@fullcalendar/core": "^6.1.17",
-    "@fullcalendar/daygrid": "^6.1.17",
-    "@fullcalendar/react": "^6.1.17",
     "@mui/icons-material": "^6.4.7",
-    "@mui/material": "^6.4.11",
+    "@mui/material": "^6.4.7",
     "@mui/material-nextjs": "^6.4.3",
     "@types/react-datepicker": "^6.2.0",
     "date-fns": "^4.1.0",

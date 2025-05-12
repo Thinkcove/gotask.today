@@ -17,6 +17,8 @@ import {
   SelectChangeEvent
 } from "@mui/material";
 import { User } from "../interface/timeLog";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 interface FiltersPanelProps {
   fromDate: string;
@@ -45,6 +47,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
   setShowTasks,
   setShowProjects
 }) => {
+  const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const handleUserChange = (event: SelectChangeEvent<string[]>) => {
     setUserIds(event.target.value as string[]);
   };
@@ -61,11 +64,11 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     >
       <Stack spacing={2}>
         <Typography variant="body2" color="text.secondary" fontWeight={600} fontSize="1rem">
-          Set a date range and users to view report
+          {transreport("filtertitle")}
         </Typography>
         <Box sx={{ display: "flex", gap: 2 }}>
           <TextField
-            label="From Date"
+            label={transreport("from")}
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
@@ -85,7 +88,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
           />
 
           <TextField
-            label="To Date"
+            label={transreport("to")}
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
@@ -105,14 +108,14 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
           />
         </Box>
         <FormControl fullWidth>
-          <InputLabel id="user-id-label">Users</InputLabel>
+          <InputLabel id="user-id-label"> {transreport("userlist")}</InputLabel>
           <Select
             labelId="user-id-label"
             id="user-ids"
             multiple
             value={userIds}
             onChange={handleUserChange}
-            input={<OutlinedInput label="User IDs" />}
+            input={<OutlinedInput label={transreport("userlist")} />}
             renderValue={(selected) => (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                 {selected.map((id) => {
@@ -141,7 +144,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                 </MenuItem>
               ))
             ) : (
-              <MenuItem disabled>No users available</MenuItem>
+              <MenuItem disabled>{transreport("nousers")}</MenuItem>
             )}
           </Select>
         </FormControl>
@@ -151,7 +154,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
             control={
               <Checkbox checked={showTasks} onChange={(e) => setShowTasks(e.target.checked)} />
             }
-            label="Tasks"
+            label={transreport("showtasks")}
           />
           <FormControlLabel
             control={
@@ -160,7 +163,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                 onChange={(e) => setShowProjects(e.target.checked)}
               />
             }
-            label="Projects"
+            label={transreport("showproject")}
           />
         </Stack>
       </Stack>

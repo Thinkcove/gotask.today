@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 import { GroupedLogs, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -33,8 +35,8 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
   showTasks,
   showProjects
 }) => {
+  const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const dateRange = getDateRange(fromDate, toDate);
-
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
     const project = entry.project_name || "No Project";
@@ -97,7 +99,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
         <TableHead>
           <TableRow>
             <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
-              User
+              {transreport("userlist")}
             </TableCell>
             <TableCell
               rowSpan={2}
@@ -107,16 +109,16 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
                 background: "linear-gradient( #D6C4E4 100%)"
               }}
             >
-              Total Time
+              {transreport("totalworklog")}
             </TableCell>
             {showProjects && (
               <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
-                Project
+                {transreport("showproject")}
               </TableCell>
             )}
             {showTasks && (
               <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
-                Task
+                {transreport("showtasks")}
               </TableCell>
             )}
             {Object.entries(

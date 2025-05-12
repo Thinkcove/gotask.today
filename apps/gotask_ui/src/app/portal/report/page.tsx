@@ -3,7 +3,8 @@ import TimeLogReport from "./components/timeLogReport";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-const page = () => {
+
+const Page = () => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   return (
     <>
@@ -13,4 +14,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -7,7 +7,7 @@ import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import { useRouter } from "next/navigation";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface UserCardProps {
@@ -16,7 +16,7 @@ interface UserCardProps {
 }
 
 const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const router = useRouter();
 

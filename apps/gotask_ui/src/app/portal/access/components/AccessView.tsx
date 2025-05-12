@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import {
   useAccessRoleById,
@@ -30,7 +30,7 @@ import AccessHeading from "./AccessHeading";
 const AccessView: React.FC = () => {
   const t = useTranslations("Access");
 
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const { id } = useParams();
   const router = useRouter();
   const theme = useTheme();

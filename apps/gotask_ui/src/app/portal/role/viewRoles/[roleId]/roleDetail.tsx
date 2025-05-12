@@ -21,11 +21,11 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import FormField from "@/app/component/formField";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import { fetchAllAccess, removeAccessFromRole, updateRole } from "../../services/roleAction";
+import { useAllAccess, removeAccessFromRole, updateRole } from "../../services/roleAction";
 import { scrollStyles } from "@/app/styles/style";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface RoleDetailProps {
@@ -34,13 +34,12 @@ interface RoleDetailProps {
 }
 
 const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   const router = useRouter();
   const { roleId } = useParams();
   const roleID = roleId as string;
-  const { getAllAccess } = fetchAllAccess();
-
+  const { getAllAccess } = useAllAccess();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedAccessIds, setSelectedAccessIds] = useState<string[]>([]);

@@ -137,7 +137,7 @@ export const fetchTaskStatusCounts = async () => {
 export const fetchUser = () =>
   withAuth((token) => getData(`${env.API_BASE_URL}/getAllUsers`, token));
 
-export const fetchAllUsers = () => {
+export const useAllUsers = () => {
   const { data } = useSWR([`fetchuser`], fetchUser, {
     revalidateOnFocus: false
   });
@@ -154,7 +154,7 @@ export const fetchAllUsers = () => {
 export const fetchProject = () =>
   withAuth((token) => getData(`${env.API_BASE_URL}/getAllProjects`, token));
 
-export const fetchAllProjects = () => {
+export const useAllProjects = () => {
   const { data } = useSWR([`fetchproject`], fetchProject, {
     revalidateOnFocus: false
   });

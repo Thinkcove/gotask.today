@@ -3,7 +3,7 @@ import React from "react";
 import { Grid } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { IRole } from "../interfaces/roleInterface";
-import { fetchAllAccess } from "../services/roleAction";
+import { useAllAccess } from "../services/roleAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -16,7 +16,7 @@ interface IRoleInputProps {
 
 const RoleInput = ({ formData, errors, readOnlyFields = [], handleChange }: IRoleInputProps) => {
   const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
-  const { getAllAccess } = fetchAllAccess();
+  const { getAllAccess } = useAllAccess();
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 

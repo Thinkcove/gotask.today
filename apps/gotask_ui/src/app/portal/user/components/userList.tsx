@@ -9,11 +9,11 @@ import { fetcherUserList } from "../services/userAction";
 import CreateUser from "./createUser";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 const UserList = () => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: projects, error, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);

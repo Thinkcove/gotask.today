@@ -50,7 +50,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       router.push("/login");
     }
-  }, []);
+  }, [router]);
 
   const logout = () => {
     localStorage.removeItem("user");

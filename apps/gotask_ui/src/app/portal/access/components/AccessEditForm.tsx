@@ -157,7 +157,7 @@ export default function AccessEditForm() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        height: "88vh",
         width: "97%",
         bgcolor: "white",
         borderRadius: 2,

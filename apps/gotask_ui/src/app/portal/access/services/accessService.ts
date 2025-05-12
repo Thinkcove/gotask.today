@@ -4,7 +4,7 @@ import useSWR from "swr";
 import { fetchToken } from "@/app/common/utils/authToken";
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 
-// Interface for AccessData to ensure mapping compatibility
+
 interface AccessData {
   id: string;
   name: string;
@@ -26,7 +26,6 @@ export const getAccessOptions = async (): Promise<{
     const data = await getData(`${env.API_BASE_URL}/access/options`, token);
     console.log("getAccessOptions data:", data); // Debug log
     return { success: true, data };
-    // eslint-disable-next-line
   } catch (error: any) {
     console.error("getAccessOptions error:", error.response || error.message);
     return {
@@ -77,7 +76,7 @@ export const createAccessRole = async (
     );
     console.log("createAccessRole data:", data); // Debug log
     return { success: true, data };
-    // eslint-disable-next-line
+    
   } catch (error: any) {
     console.error("createAccessRole error:", error.response || error.message);
     return {
@@ -142,7 +141,6 @@ export const updateAccessRole = async (
     );
     console.log("updateAccessRole data:", data); // Debug log
     return { success: true, data };
-    // eslint-disable-next-line
   } catch (error: any) {
     console.error("updateAccessRole error:", error.response || error.message);
     return {
@@ -164,7 +162,6 @@ export const deleteAccessRole = async (
     await deleteData(`${env.API_BASE_URL}/access/${id}`, token);
     console.log("deleteAccessRole success for id:", id); // Debug log
     return { success: true, message: "Access role deleted successfully." };
-    // eslint-disable-next-line
   } catch (error: any) {
     console.error("deleteAccessRole error:", error.response || error.message);
     return {
@@ -186,7 +183,6 @@ export const getAccessRoleById = async (
     const data = await getData(`${env.API_BASE_URL}/access/${id}`, token);
     console.log("getAccessRoleById data:", data); // Debug log
     return { success: true, data };
-    // eslint-disable-next-line
   } catch (error: any) {
     console.error("getAccessRoleById error:", error.response || error.message);
     return {
@@ -197,7 +193,7 @@ export const getAccessRoleById = async (
 };
 
 // SWR hook for access role by ID
-const fetchAccessRoleById = async ([_, id]: [string, string]) => {
+const fetchAccessRoleById = async ([, id]: [string, string]) => {
   const token = fetchToken();
   if (!token) {
     throw new Error("Please login again.");
@@ -212,7 +208,7 @@ export const useAccessRoleById = (id: string) => {
     revalidateOnFocus: false
   });
 
-  console.log("useAccessRoleById data:", data); // Debug log
+  console.log("useAccessRoleById data:", data); 
 
   return {
     role: data,

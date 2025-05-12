@@ -38,11 +38,7 @@ export interface ITask {
   history: ITaskHistory[];
   comment: ITaskComment[];
   estimated_time?: string;
-  time_spent?: {
-    date: string;
-    start_time: string;
-    end_time: string;
-  }[];
+  time_spent?: TimeEntry[];
   time_spent_total?: string;
   remaining_time?: string;
   time_entries?: Array<{ date: string; hours: number }>;
@@ -103,7 +99,7 @@ export type FilterValues = {
   dateTo: string;
   projects: string[];
   users: string[];
-  variationType: "" | "more" | "less"; // ✅ allow no selection
+  variationType: "" | "more" | "less";
   variationDays: number;
 };
 

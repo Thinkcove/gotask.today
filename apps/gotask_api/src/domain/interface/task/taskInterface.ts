@@ -167,6 +167,7 @@ const updateCommentInTask = async (
   return updatedComment;
 };
 
+//Add time log
 const addTimeSpentToTask = async (
   id: string,
   timeEntries: ITimeSpentEntry[]
@@ -194,15 +195,10 @@ const addTimeSpentToTask = async (
       throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
     }
 
-    // 🔍 Date comparison debug logs
+    //Date comparison debug logs
     const entryDate = new Date(entry.date);
     const dueDate = new Date(task.due_date);
 
-    console.log("Checking entry date:", entry.date);
-    console.log("Task due date:", task.due_date);
-    console.log("Parsed entry date:", entryDate);
-    console.log("Parsed due date:", dueDate);
-    console.log("Is entry after due date?", entryDate > dueDate);
 
     if (entryDate > dueDate) {
       const diffMs = entryDate.getTime() - dueDate.getTime();
@@ -213,7 +209,7 @@ const addTimeSpentToTask = async (
       console.log(`Entry is late by ${diffDays} working days (${delayHoursForThisEntry} hours)`);
     }
 
-    task.time_spent.push({
+    task.time_spent.unshift({
       ...entry,
       start_time: entry.start_time,
       end_time: entry.end_time

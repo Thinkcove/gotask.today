@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import TaskInput from "@/app/portal/task/createTask/taskInput";
@@ -62,16 +64,9 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const alreadyExists = checkIfDateExists();
 
   const handleProgressClick = () => {
-    if (alreadyExists) {
-      setSnackbar({
-        open: true,
-        message: "You have already registered this date.",
-        severity: SNACKBAR_SEVERITY.INFO
-      });
-      return;
+    if (!alreadyExists) {
+      setIsPopupOpen(true);
     }
-
-    setIsPopupOpen(true);
   };
 
   const handleSubmit = async () => {
@@ -96,7 +91,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         updatedFields.description = formData.description;
       }
 
-      // Add user info to all changes for history tracking
       if (Object.keys(updatedFields).length > 0) {
         if (user?.name) updatedFields.loginuser_name = user.name;
         if (user?.id) updatedFields.loginuser_id = user.id;
@@ -239,6 +233,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         <TimeProgressBar
           estimatedTime={data.estimated_time || "0h"}
           timeSpentTotal={data.time_spent_total || "0h"}
+          dueDate={data.due_date || ""}
+          timeEntries={data.time_spent || []}
+          canLogTime={!alreadyExists} // Pass the existing check as a prop
+          variation={data.variation ? String(data.variation) : "0d0h"} // Convert to string
           onClick={handleProgressClick}
         />
 
@@ -264,6 +262,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           onClose={() => setIsPopupOpen(false)}
           originalEstimate={data.estimated_time || "0d0h"}
           taskId={data.id}
+          dueDate={data.due_date || ""}
           mutate={mutate}
         />
 

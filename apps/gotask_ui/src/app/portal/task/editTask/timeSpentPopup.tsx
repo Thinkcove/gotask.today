@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Box, Button, Typography, IconButton, Autocomplete, TextField } from "@mui/material";
 import { Delete } from "@mui/icons-material";
@@ -15,10 +17,10 @@ interface TimeSpentPopupProps {
   onClose: () => void;
   originalEstimate: string;
   taskId: string;
+  dueDate: string;
   mutate: KeyedMutator<ITask>;
 }
 
-// Transform the imported time options into the format needed for Autocomplete
 const timeOptions: TimeOption[] = importedTimeOptions.map((time) => ({
   label: time,
   value: time
@@ -29,6 +31,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
   onClose,
   originalEstimate,
   taskId,
+  dueDate,
   mutate
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
@@ -44,6 +47,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
       const initialEntries = [{ date: today, start_time: "", end_time: "" }];
       setTimeEntries(initialEntries);
       setErrorMessage("");
+      setDateErrors([]);
     }
   }, [isOpen]);
 
@@ -57,8 +61,14 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
       if (isDuplicate) {
         updatedErrors[index] = "You have already registered this date.";
       } else {
-        updatedErrors[index] = ""; // Clear error if corrected
+        updatedErrors[index] = "";
         updated[index].date = value;
+
+        const dueDateObj = new Date(dueDate);
+        const entryDateObj = new Date(value);
+        if (!isNaN(dueDateObj.getTime()) && entryDateObj < dueDateObj) {
+          updatedErrors[index] = "Cannot register time before the due date.";
+        }
       }
 
       setDateErrors(updatedErrors);
@@ -72,17 +82,28 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
     };
 
     setTimeEntries(updated);
+
+    if (field === "end_time" && updated[index].start_time) {
+      if (!isEndTimeAfterStartTime(updated[index].start_time, value)) {
+        setErrorMessage(transtask("endstarttime"));
+      } else {
+        setErrorMessage("");
+      }
+    }
   };
 
   const handleDeleteEntry = (index: number) => {
     if (timeEntries.length === 1) return;
     const updated = [...timeEntries];
+    const updatedErrors = [...dateErrors];
     updated.splice(index, 1);
+    updatedErrors.splice(index, 1);
     setTimeEntries(updated);
+    setDateErrors(updatedErrors);
   };
 
   const validateEntries = () => {
-    for (const entry of timeEntries) {
+    for (const [index, entry] of timeEntries.entries()) {
       if (!entry.date || !entry.start_time || !entry.end_time) {
         setErrorMessage(transtask("allfieldfill"));
         return false;
@@ -90,6 +111,11 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
 
       if (!isEndTimeAfterStartTime(entry.start_time, entry.end_time)) {
         setErrorMessage(transtask("endstarttime"));
+        return false;
+      }
+
+      if (dateErrors[index]) {
+        setErrorMessage(dateErrors[index]);
         return false;
       }
     }
@@ -102,7 +128,6 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
         return;
       }
 
-      // Modified format to include start_time and end_time explicitly
       const formattedEntries = timeEntries.map((entry) => ({
         date: entry.date,
         start_time: entry.start_time,
@@ -248,7 +273,6 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                   }
                   onChange={(event, newValue) => {
                     handleEntryChange(index, "end_time", newValue ? newValue.value : "");
-                    // Clear error when user selects a new value
                     if (entry.start_time && newValue) {
                       if (isEndTimeAfterStartTime(entry.start_time, newValue.value)) {
                         setErrorMessage("");

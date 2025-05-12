@@ -38,6 +38,7 @@ export const API_PATHS = {
   GET_ACCESS_BY_ID: "/access/{id}", // Path for getting access by ID
   UPDATE_ACCESS: "/access/{id}",
   DELETE_ACCESS: "/access/{id}",
+  GET_ACCESS_OPTIONS: "/access/options",
 
   CREATE_ROLE: "/roles", // POST path for creating a role
   GET_ALL_ROLES: "/roles", // GET path for fetching all roles

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
-import { fetchAllUsers } from "@/app/portal/task/service/taskAction";
+import { useAllUsers } from "@/app/portal/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import FormField from "@/app/component/formField";
 import { useParams, useRouter } from "next/navigation";
@@ -25,6 +25,7 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
+  const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -40,7 +41,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     severity: SNACKBAR_SEVERITY.INFO
   });
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const { getAllUsers } = fetchAllUsers(); // Fetch all users
+  const { getAllUsers } = useAllUsers(); // Fetch all users
   const { projectId } = useParams();
   const projectID = projectId as string;
   const handleAddUser = async () => {

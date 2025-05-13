@@ -10,6 +10,7 @@ export const LOCALIZATION = {
     USER: "User",
     APPBAR: "Appbar",
     SIDEBAR: "Sidebar",
-    STATUSCHART: "Statuschart"
+    STATUSCHART: "Statuschart",
+    REPORT: "Report"
   }
 };

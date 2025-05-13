@@ -1,0 +1,27 @@
+export interface TimeLogEntry {
+  user_name: string;
+  project_name?: string;
+  task_title?: string;
+  date: string;
+  total_time_logged: string[];
+}
+
+export interface TimeLogGridProps {
+  data: TimeLogEntry[];
+  fromDate: string;
+  toDate: string;
+  showTasks: boolean;
+  showProjects: boolean;
+}
+
+export interface User {
+  id: string;
+  name: string;
+}
+
+export type GroupedLogs = Record<string, Record<string, number>>;
+
+export interface TaskLog {
+  task: string;
+  dailyLogs: Record<string, number>;
+}

@@ -7,7 +7,7 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { ITask } from "../../interface/taskInterface";
 import { useRouter } from "next/navigation";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 
@@ -23,7 +23,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
   const handleBack = () => {
     setTimeout(() => router.back(), 2000);
   };
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   return (
     <>
       <ModuleHeader name={transtask("tasks")} />

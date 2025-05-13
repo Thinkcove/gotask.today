@@ -1,7 +1,7 @@
 import { Box, Typography, Tooltip } from "@mui/material";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import { getVariationColor } from "@/app/common/constants/task";
 import { TuneRounded } from "@mui/icons-material";
@@ -31,7 +31,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   getStatusColor,
   formatDate
 }) => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   return (
     <Box
       sx={{

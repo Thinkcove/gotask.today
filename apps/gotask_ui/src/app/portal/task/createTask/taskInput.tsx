@@ -2,7 +2,7 @@ import React from "react";
 import { Grid } from "@mui/material";
 import FormField from "../../../component/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
-import { fetchAllProjects, fetchAllUsers, getProjectIdsAndNames } from "../service/taskAction";
+import { useAllProjects, useAllUsers, getProjectIdsAndNames } from "../service/taskAction";
 import { IFormField, Project } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
@@ -21,8 +21,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
   readOnlyFields = []
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const { getAllUsers } = fetchAllUsers();
-  const { getAllProjects } = fetchAllProjects();
+  const { getAllUsers } = useAllUsers();
+  const { getAllProjects } = useAllProjects();
   // Get projects based on the assigned user
   const userProjects = formData.projects || getAllProjects || [];
   // Find the selected project

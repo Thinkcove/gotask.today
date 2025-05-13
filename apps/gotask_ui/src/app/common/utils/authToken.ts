@@ -1,5 +1,3 @@
-// utils/auth.ts
-
 export const fetchToken = (): string | null => {
   return localStorage.getItem("token");
 };

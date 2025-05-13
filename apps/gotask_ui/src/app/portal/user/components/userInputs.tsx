@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { IUserField } from "../interfaces/userInterface";
-import { fetchAllOrganizations } from "../../organization/services/organizationAction";
-import { fetchAllRoles } from "../../role/services/roleAction";
+import { useAllOrganizations } from "../../organization/services/organizationAction";
+import { useAllRoles } from "../../role/services/roleAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { statusOptions } from "@/app/common/constants/user";
@@ -24,8 +24,8 @@ const UserInput = ({
   isEdit = false
 }: IUserInputProps) => {
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-  const { getOrganizations } = fetchAllOrganizations();
-  const { getRoles } = fetchAllRoles();
+  const { getOrganizations } = useAllOrganizations();
+  const { getRoles } = useAllRoles();
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
   // Initialize selectedOrganizationIds directly from formData.organization

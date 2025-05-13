@@ -12,7 +12,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import LabelValueText from "@/app/component/text/labelValueText";
-import { userPermission } from "@/app/common/utils/userPermission";
+import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
 interface OrgDetailProps {
@@ -21,7 +21,7 @@ interface OrgDetailProps {
 }
 
 const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
-  const { canAccess } = userPermission();
+  const { canAccess } = useUserPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const router = useRouter();
   const { orgId } = useParams();

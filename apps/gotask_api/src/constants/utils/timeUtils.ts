@@ -15,6 +15,7 @@ const parseTimeString = (timeString: string): number => {
 
 // Parse "HH:MM" string to total hours
 const parseHourMinuteString = (timeStr: string): number => {
+  if (!timeStr || !timeStr.includes(":")) return 0;
   const [hours, minutes] = timeStr.split(":").map(Number);
   return ((hours || 0) * 60 + (minutes || 0)) / 60;
 };
@@ -51,10 +52,12 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
   try {
     let startHour: number, startMinute: number, endHour: number, endMinute: number;
 
+    // Ensure startTime and endTime match the expected format
     if (
       TIME_FORMAT_PATTERNS.ANY_TIME_FORMAT.test(startTime) &&
       TIME_FORMAT_PATTERNS.ANY_TIME_FORMAT.test(endTime)
     ) {
+      // Parse AM/PM format
       if (TIME_FORMAT_PATTERNS.AMPM_TIME.test(startTime)) {
         const startParts = startTime.match(TIME_FORMAT_PATTERNS.AMPM_PARTS);
         if (!startParts) throw new Error("Invalid start time format");
@@ -72,6 +75,7 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
         [startHour, startMinute] = startTime.split(":").map(Number);
       }
 
+      // Parse AM/PM format for end time
       if (TIME_FORMAT_PATTERNS.AMPM_TIME.test(endTime)) {
         const endParts = endTime.match(TIME_FORMAT_PATTERNS.AMPM_PARTS);
         if (!endParts) throw new Error("Invalid end time format");
@@ -92,6 +96,7 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
       throw new Error("Invalid time format. Use HH:MM or H:MM AM/PM format");
     }
 
+    // Validate the hour and minute ranges
     if (
       startHour < 0 ||
       startHour > 23 ||
@@ -108,6 +113,7 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
     const startMinutes = startHour * 60 + startMinute;
     const endMinutes = endHour * 60 + endMinute;
 
+    // Ensure end time is after start time
     if (endMinutes <= startMinutes) {
       throw new Error("End time must be after start time");
     }
@@ -121,13 +127,17 @@ const calculateTimeLoggedFromStartEnd = (startTime: string, endTime: string): st
   }
 };
 
-// Calculate variation (Spent - Estimated) including negative sign
-const calculateVariation = (estimatedTime: string, actualSpentTime: string): string => {
+// Calculate variation (difference) between estimated and actual time spent
+const calculateVariation = (
+  estimatedTime: string,
+  actualSpentTime: string,
+  forcePositive = false
+): string => {
   const estimatedHours = parseTimeString(estimatedTime);
   const actualSpentHours = parseTimeString(actualSpentTime);
+  const variationInHours = actualSpentHours - estimatedHours;
 
-  const variationInHours = actualSpentHours - estimatedHours; // allow negative values
-  return formatHoursToTimeString(variationInHours);
+  return formatHoursToTimeString(forcePositive ? Math.abs(variationInHours) : variationInHours);
 };
 
 export const TimeUtil = {

@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { TASK_STATUS } from "../../../constants/taskConstant";
+import { generateHistoryEntry } from "../../../constants/utils/taskHistory";
 import { Project } from "../../model/project/project";
 import { ITask, Task } from "../../model/task/task";
 import { ITaskComment, TaskComment } from "../../model/task/taskComment";
 import { User } from "../../model/user/user";
 import { ITaskHistory, TaskHistorySchema } from "../../model/task/taskHistory";
 import logger from "../../../common/logger";
+import { TimeUtil } from "../../../constants/utils/timeUtils";
 import { ITimeSpentEntry } from "../../model/task/timespent";
 import { TIME_FORMAT_PATTERNS } from "../../../constants/commonConstants/timeConstants";
-import { generateHistoryEntry } from "../../../constants/utils/taskHistory";
-import { TimeUtil } from "../../../constants/utils/timeUtils";
 
 // Create a new task
 const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
@@ -167,7 +167,7 @@ const updateCommentInTask = async (
   return updatedComment;
 };
 
-// Add time spent to task
+//Add time log
 const addTimeSpentToTask = async (
   id: string,
   timeEntries: ITimeSpentEntry[]
@@ -178,6 +178,7 @@ const addTimeSpentToTask = async (
   if (!task.time_spent) task.time_spent = [];
 
   const entries = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
+  let delayHours = 0;
 
   for (const entry of entries) {
     if (entry.start_time && entry.end_time) {
@@ -194,7 +195,20 @@ const addTimeSpentToTask = async (
       throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
     }
 
-    task.time_spent.push({
+    //Date comparison debug logs
+    const entryDate = new Date(entry.date);
+    const dueDate = new Date(task.due_date);
+
+
+    if (entryDate > dueDate) {
+      const diffMs = entryDate.getTime() - dueDate.getTime();
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); // calendar days
+      const delayHoursForThisEntry = diffDays * 8; // 8 working hours per day
+      delayHours += delayHoursForThisEntry;
+
+    }
+
+    task.time_spent.unshift({
       ...entry,
       start_time: entry.start_time,
       end_time: entry.end_time
@@ -204,12 +218,19 @@ const addTimeSpentToTask = async (
   const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);
   task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
   task.remaining_time = TimeUtil.calculateRemainingTime(task.estimated_time, task.time_spent_total);
-
   task.variation = TimeUtil.calculateVariation(task.estimated_time, task.time_spent_total);
+
+  if (delayHours > 0) {
+    const delayString = TimeUtil.formatHoursToTimeString(delayHours);
+    task.variation = delayString; // ONLY show delay
+  } else {
+    task.variation = "0d0h"; // No delay
+  }
 
   await task.save();
   return task;
 };
+
 
 export {
   createNewTask,

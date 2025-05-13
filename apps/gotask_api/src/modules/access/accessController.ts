@@ -16,9 +16,7 @@ class AccessController extends BaseController {
   async createAccess(requestHelper: RequestHelper, handler: any) {
     try {
       const accessData = requestHelper.getPayload();
-      console.log(JSON.stringify(accessData.name, null, 2));
       if (!accessData.name) {
-        console.log(accessData);
         return this.replyError(new Error(AccessMessages.CREATE.REQUIRED));
       }
 

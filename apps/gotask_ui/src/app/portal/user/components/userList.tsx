@@ -11,12 +11,19 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { User } from "../interfaces/userInterface";
+import SearchBar from "@/app/component/searchBar/searchBar";
 
 const UserList = () => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: projects, error, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { data: users, error, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
+
+  const filteredUsers =
+    users?.filter((user: User) => user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    null;
 
   return (
     <Box
@@ -24,12 +31,20 @@ const UserList = () => {
         position: "relative",
         height: "100vh",
         overflowY: "auto",
-        maxHeight: "calc(100vh - 100px)"
+        maxHeight: "calc(100vh - 100px)",
+        p: 3
       }}
     >
       <CreateUser open={isModalOpen} onClose={() => setIsModalOpen(false)} mutate={UserUpdate} />
-
-      <UserCards users={projects} error={error} />
+      <Box mb={3} maxWidth={400}>
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          sx={{ width: "100%" }}
+          placeholder={transuser("searchplaceholder")}
+        />
+      </Box>
+      <UserCards users={filteredUsers} error={error} />
 
       {/* Add User Button */}
       {canAccess(APPLICATIONS.USER, ACTIONS.CREATE) && (

@@ -11,6 +11,8 @@ import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
 interface OrganizationCardProps {
   organizations: Organization[] | null;
@@ -20,6 +22,7 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
   const { canAccess } = useUserPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const router = useRouter();
+
   if (!organizations) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -30,16 +33,12 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
 
   if (organizations.length === 0) {
     return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <Typography variant="body1" color="text.secondary">
-          {transorganization("noorganizations")}
-        </Typography>
-      </Box>
+      <EmptyState imageSrc={NoSearchResultsImage} message={transorganization("noorganizations")} />
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box>
       <Grid container spacing={4}>
         {organizations.map((organization: Organization) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={organization.id}>

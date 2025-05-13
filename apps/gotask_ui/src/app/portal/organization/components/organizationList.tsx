@@ -11,12 +11,20 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import SearchBar from "@/app/component/searchBar/searchBar";
+import { Organization } from "../interfaces/organizatioinInterface";
 
 const OrganizationList = () => {
   const { canAccess } = useUserPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data, mutate } = useSWR("getOrganizations", getOrganizationData);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { data: organizations, mutate } = useSWR("getOrganizations", getOrganizationData);
+
+  const filteredOrganizations =
+    organizations?.filter((org: Organization) =>
+      org.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || null;
 
   return (
     <Box
@@ -24,7 +32,8 @@ const OrganizationList = () => {
         position: "relative",
         height: "100vh",
         overflowY: "auto",
-        maxHeight: "calc(100vh - 100px)"
+        maxHeight: "calc(100vh - 100px)",
+        p: 3
       }}
     >
       <CreateOrganization
@@ -33,9 +42,17 @@ const OrganizationList = () => {
         mutate={mutate}
       />
 
-      <OrganizationCards organizations={data} />
+      <Box mb={3} maxWidth={400}>
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          sx={{ width: "100%" }}
+          placeholder={transorganization("searchplaceholder")}
+        />
+      </Box>
 
-      {/* Add Organization Button */}
+      <OrganizationCards organizations={filteredOrganizations} />
+
       {canAccess(APPLICATIONS.ORGANIZATION, ACTIONS.CREATE) && (
         <ActionButton
           label={transorganization("createnew")}

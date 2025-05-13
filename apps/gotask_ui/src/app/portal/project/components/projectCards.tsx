@@ -12,9 +12,11 @@ import EllipsisText from "@/app/component/text/ellipsisText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
 interface ProjectCardProps {
-  projects: Project[] | null; // Ensure projects is an array or null
+  projects: Project[] | null;
   error: { [key: string]: string };
 }
 
@@ -23,7 +25,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
   const router = useRouter();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  // Handle error
+  // Error state
   if (error) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -43,24 +45,22 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
     );
   }
 
-  // Handle empty projects array
   if (projects.length === 0) {
-    return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <Typography variant="body1" color="text.secondary">
-          {transproject("noprojects")}
-        </Typography>
-      </Box>
-    );
+    return <EmptyState imageSrc={NoSearchResultsImage} message={transproject("noprojects")} />;
   }
-
   return (
-    <Box sx={{ p: 3 }}>
+    <Box>
       <Grid container spacing={3}>
-        {projects.map((project: Project) => (
+        {projects.map((project) => (
           <Grid item xs={12} sm={6} md={3} key={project.id}>
             <CardComponent>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
                 <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
                   {project.name}
                 </Typography>

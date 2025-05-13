@@ -11,12 +11,19 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import SearchBar from "@/app/component/searchBar/searchBar";
+import { Project } from "../../task/interface/taskInterface";
 
 const ProjectList = () => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const { data: projects, error, mutate: ProjectUpdate } = useSWR("fetch-projects", fetcher);
+
+  const filteredProjects =
+    projects?.filter((pro: Project) => pro.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    null;
 
   return (
     <Box
@@ -24,7 +31,8 @@ const ProjectList = () => {
         position: "relative",
         height: "100vh",
         overflowY: "auto",
-        maxHeight: "calc(100vh - 100px)"
+        maxHeight: "calc(100vh - 100px)",
+        p: 3
       }}
     >
       <CreateProject
@@ -32,8 +40,15 @@ const ProjectList = () => {
         onClose={() => setIsModalOpen(false)}
         mutate={ProjectUpdate}
       />
-
-      <ProjectCards projects={projects} error={error} />
+      <Box mb={3} maxWidth={400}>
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          sx={{ width: "100%" }}
+          placeholder={transproject("searchplaceholder")}
+        />
+      </Box>
+      <ProjectCards projects={filteredProjects} error={error} />
 
       {/* Add Project Button */}
       {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (

@@ -9,6 +9,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
 interface UserCardProps {
   users: User[] | null;
@@ -39,17 +41,11 @@ const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
   }
 
   if (users.length === 0) {
-    return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <Typography variant="body1" color="text.secondary">
-          {transuser("nouser")}
-        </Typography>
-      </Box>
-    );
+    return <EmptyState imageSrc={NoSearchResultsImage} message={transuser("nouser")} />;
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box>
       <Grid container spacing={3}>
         {users.map((user: User) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>

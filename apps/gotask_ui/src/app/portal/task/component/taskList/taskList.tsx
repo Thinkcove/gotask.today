@@ -227,13 +227,14 @@ const TaskList: React.FC = () => {
           alignItems: "center",
           justifyContent: "space-between",
           gap: 2,
-          px: 2,
+          px: 3,
+          mt: 2,
           py: 1,
           flexWrap: "nowrap"
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <SearchBar value={searchText} onChange={handleSearchChange} />
+          <SearchBar value={searchText} onChange={handleSearchChange} placeholder="Search Task" />
         </Box>
         <TaskToggle view={view} setView={setView} />
       </Box>

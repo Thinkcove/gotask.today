@@ -56,19 +56,13 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
     const updatedErrors = [...dateErrors];
 
     if (field === "date") {
-      const isDuplicate = timeEntries.some((entry, idx) => idx !== index && entry.date === value);
+      updatedErrors[index] = "";
+      updated[index].date = value;
 
-      if (isDuplicate) {
-        updatedErrors[index] = "You have already registered this date.";
-      } else {
-        updatedErrors[index] = "";
-        updated[index].date = value;
-
-        const dueDateObj = new Date(dueDate);
-        const entryDateObj = new Date(value);
-        if (!isNaN(dueDateObj.getTime()) && entryDateObj < dueDateObj) {
-          updatedErrors[index] = "Cannot register time before the due date.";
-        }
+      const dueDateObj = new Date(dueDate);
+      const entryDateObj = new Date(value);
+      if (!isNaN(dueDateObj.getTime()) && entryDateObj < dueDateObj) {
+        updatedErrors[index] ="Cannot register time before the due date.";
       }
 
       setDateErrors(updatedErrors);
@@ -280,7 +274,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                     }
                   }}
                   renderInput={(params) => (
-                    <TextField {...params} variant="outlined" placeholder="Select end time" />
+                    <TextField {...params} variant="outlined" placeholder={transtask("placeholderselecttime")} />
                   )}
                   sx={{ width: "100%" }}
                   getOptionLabel={(option: TimeOption) => option.label}

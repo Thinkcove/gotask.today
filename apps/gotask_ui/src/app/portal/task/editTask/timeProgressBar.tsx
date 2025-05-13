@@ -11,7 +11,7 @@ interface ProgressBarProps {
   timeSpentTotal: string;
   dueDate: string;
   timeEntries: Array<{ date: string; start_time: string; end_time: string }>;
-  variation: string; 
+  variation: string;
   onClick: () => void;
   canLogTime: boolean;
 }

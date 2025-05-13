@@ -223,7 +223,6 @@ const addTimeSpentToTask = async (
 
   if (delayHours > 0) {
     const delayString = TimeUtil.formatHoursToTimeString(delayHours);
-    console.log("Total delay time:", delayString);
     task.variation = delayString; // ONLY show delay
   } else {
     task.variation = "0d0h"; // No delay

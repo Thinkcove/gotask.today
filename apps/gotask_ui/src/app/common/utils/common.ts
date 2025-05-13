@@ -113,8 +113,8 @@ export const calculateTimeProgressData = (
   return {
     estimatedHours,
     spentHours,
-    spentFillPercentage, // Represents the fill percentage within the 70% time spent section
-    variationFillPercentage // Represents the fill percentage within the 30% variation section
+    spentFillPercentage,
+    variationFillPercentage
   };
 };
 

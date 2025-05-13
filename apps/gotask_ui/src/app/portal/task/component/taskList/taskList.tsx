@@ -227,7 +227,8 @@ const TaskList: React.FC = () => {
           alignItems: "center",
           justifyContent: "space-between",
           gap: 2,
-          px: 2,
+          px: 3,
+          mt: 2,
           py: 1,
           flexWrap: "nowrap"
         }}

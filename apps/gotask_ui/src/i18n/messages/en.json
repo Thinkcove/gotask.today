@@ -49,7 +49,7 @@
     "erroraddress": "Address is required",
     "successcreate": "Organization created successfully!",
     "errorcreate": "Error while creating Organization",
-    "noorganizations": "No organizations available.",
+    "noorganizations": "No organizations available",
     "viewdetails": "View Details",
     "labelname": "Organization Name",
     "labeladdress": "Address",
@@ -126,7 +126,7 @@
     "selectaccess": "Select at least one Access",
     "successmessage": "Role created successfully!",
     "errormessage": "Error while creating Role",
-    "noroleavailable": "No roles available.",
+    "noroleavailable": "No roles available",
     "createnewrole": "Create New Role",
     "viewdetail": "View Details",
     "labelname": "Role Name",
@@ -280,7 +280,8 @@
     "userpwd": "Create a password",
     "validmail": "Please enter a valid email address",
     "labelstate": "Status",
-    "placeholderstatus": "Select the status"
+    "placeholderstatus": "Select the status",
+    "nousers": "No users available"
   },
   "Appbar": {
     "logout": "Logout"

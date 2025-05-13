@@ -1,5 +1,5 @@
 import { TIME_FORMAT, TIME_PERIODS } from "../../common/constants/timeTask";
-import { TASK_SEPARATION } from "../constants/task";
+import { TASK_CALCULATION, TASK_VARIATION, TASK_HOURS } from "../constants/task";
 
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -19,7 +19,7 @@ export const parseTimeString = (timeStr: string) => {
 
 export const convertToHours = (timeStr: string): number => {
   const { weeks, days, hours, minutes } = parseTimeString(timeStr);
-  return weeks * 40 + days * 8 + hours + minutes / 60;
+  return weeks * 40 + days * TASK_HOURS + hours + minutes / 60;
 };
 
 const TIME_SEPARATOR = " ";
@@ -88,14 +88,14 @@ export const calculateTimeProgressData = (
         variationFillPercentage = pastDueEntries.length * 2;
 
         // Cap variation percentage at 30%
-        variationFillPercentage = Math.min(30, variationFillPercentage);
+        variationFillPercentage = Math.min(TASK_VARIATION, variationFillPercentage);
       } else {
         // If all entries are on or before the due date, fill the time spent bar
         spentFillPercentage =
           estimatedHours > 0
-            ? Math.min(TASK_SEPARATION, (spentHours / estimatedHours) * TASK_SEPARATION)
+            ? Math.min(TASK_CALCULATION, (spentHours / estimatedHours) * TASK_CALCULATION)
             : spentHours > 0
-              ? TASK_SEPARATION
+              ? TASK_CALCULATION
               : 0;
         variationFillPercentage = 0;
       }
@@ -104,9 +104,9 @@ export const calculateTimeProgressData = (
     // If no time entries or due date, default to filling time spent bar
     spentFillPercentage =
       estimatedHours > 0
-        ? Math.min(TASK_SEPARATION, (spentHours / estimatedHours) * TASK_SEPARATION)
+        ? Math.min(TASK_CALCULATION, (spentHours / estimatedHours) * TASK_CALCULATION)
         : spentHours > 0
-          ? TASK_SEPARATION
+          ? TASK_CALCULATION
           : 0;
     variationFillPercentage = 0;
   }

@@ -11,9 +11,6 @@ import {
   TextField,
   Tooltip,
   IconButton,
-  Snackbar,
-  Alert as MuiAlert,
-  AlertColor,
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
@@ -28,10 +25,7 @@ import {
 } from "../services/accessService";
 import AccessPermissionsContainer from "./AccessPermissionsContainer";
 import AccessHeading from "./AccessHeading";
-
-const Alert = React.forwardRef<HTMLDivElement, any>(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import CustomSnackbar from "../../../component/snackBar/snackbar"; 
 
 const AccessView: React.FC = () => {
   const t = useTranslations("Access");
@@ -48,11 +42,12 @@ const AccessView: React.FC = () => {
   const { role: accessRole, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(id as string);
   const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
 
+  // ✅ Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>("success");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "warning" | "info">("success");
 
-  const showSnackbar = (message: string, severity: AlertColor = "success") => {
+  const showSnackbar = (message: string, severity: "success" | "error" | "warning" | "info" = "success") => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
@@ -153,13 +148,7 @@ const AccessView: React.FC = () => {
           flexDirection={isMobile ? "column" : "row"}
           gap={isMobile ? 2 : 0}
         >
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="flex-start"
-            width="auto"
-          >
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-start">
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
               <Tooltip title={t("cancel")}>
                 <IconButton onClick={() => router.back()} color="primary">
@@ -170,13 +159,7 @@ const AccessView: React.FC = () => {
             <AccessHeading title={accessRole.name} />
           </Stack>
 
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="flex-end"
-            width="auto"
-          >
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
               <Tooltip title={t("editaccess")}>
                 <IconButton
@@ -242,17 +225,13 @@ const AccessView: React.FC = () => {
         )}
       </Box>
 
-      {/* Snackbar for feedback */}
-      <Snackbar
+      {/* ✅ Use reusable Snackbar */}
+      <CustomSnackbar
         open={snackbarOpen}
-        autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+      />
     </Box>
   );
 };

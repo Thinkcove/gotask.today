@@ -15,11 +15,16 @@ import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
-import { useAccessOptions, useAccessRoleById, updateAccessRole } from "../services/accessService";
+import {
+  useAccessOptions,
+  useAccessRoleById,
+  updateAccessRole
+} from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import AccessHeading from "../components/AccessHeading";
 import { useTranslations } from "next-intl";
+import CustomSnackbar from "../../../component/snackBar/snackbar";
 
 export default function AccessEditForm() {
   const t = useTranslations("Access");
@@ -31,7 +36,10 @@ export default function AccessEditForm() {
   const [application, setApplication] = useState<AccessRole["application"]>([]);
   const [currentTab, setCurrentTab] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formMessage, setFormMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info" | "warning">("info");
 
   const { role, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(String(id));
   const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
@@ -45,8 +53,7 @@ export default function AccessEditForm() {
 
   if (accessOptions.length > 0 && !currentTab) {
     const firstValidModule =
-      role?.application?.find((app: { access: string }) => validModules.includes(app.access))
-        ?.access ||
+      role?.application?.find((app: { access: string }) => validModules.includes(app.access))?.access ||
       accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
       validModules[0];
     setCurrentTab(firstValidModule);
@@ -73,16 +80,20 @@ export default function AccessEditForm() {
     setCurrentTab(module);
   };
 
-  const handleSubmit = async () => {
-    setFormMessage(null);
+  const showSnackbar = (message: string, severity: "success" | "error" | "info" | "warning") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setOpenSnackbar(true);
+  };
 
+  const handleSubmit = async () => {
     if (!roleName.trim()) {
-      setFormMessage({ type: "error", text: t("accessName") + " " + t("errormessage") });
+      showSnackbar(`${t("accessName")} ${t("errormessage")}`, "error");
       return;
     }
 
     if (!role) {
-      setFormMessage({ type: "error", text: t("errormessage") });
+      showSnackbar(t("errormessage"), "error");
       return;
     }
 
@@ -96,16 +107,16 @@ export default function AccessEditForm() {
       setIsSubmitting(true);
       const res = await updateAccessRole(String(id), payload);
       if (res.success) {
-        setFormMessage({ type: "success", text: t("updatesuccess") });
+        showSnackbar(t("updatesuccess"), "success");
         setTimeout(() => {
           router.push("/portal/access");
         }, 1000);
       } else {
-        setFormMessage({ type: "error", text: res.message || t("updateerror") });
+        showSnackbar(res.message || t("updateerror"), "error");
       }
     } catch (err) {
       console.error("Failed to update access role:", err);
-      setFormMessage({ type: "error", text: t("updateerror") });
+      showSnackbar(t("updateerror"), "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -204,20 +215,6 @@ export default function AccessEditForm() {
             />
           )}
         </Box>
-
-        {/* Feedback Message */}
-        {formMessage && (
-          <Typography
-            variant="body2"
-            sx={{
-              mt: 2,
-              color: formMessage.type === "error" ? "error.main" : "success.main",
-              fontWeight: 500
-            }}
-          >
-            {formMessage.text}
-          </Typography>
-        )}
       </Box>
 
       {/* Fixed Buttons */}
@@ -272,6 +269,14 @@ export default function AccessEditForm() {
           </Button>
         )}
       </Box>
+
+      {/* Snackbar */}
+      <CustomSnackbar
+        open={openSnackbar}
+        onClose={() => setOpenSnackbar(false)}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+      />
     </Box>
   );
 }

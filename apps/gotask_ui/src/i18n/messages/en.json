@@ -32,6 +32,7 @@
     "cancel": "Cancel",
     "accessName": "Access Name",
     "accessManagement": "Access Management",
+    "accessNameRequired": "Access name is required.",
     "atLeastOnePermissionRequired": "Please select at least one permission."
   },
   "Dashboard": {

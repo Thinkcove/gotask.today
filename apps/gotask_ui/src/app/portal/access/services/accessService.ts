@@ -190,7 +190,7 @@ export const getAccessRoleById = async (
 };
 
 // SWR hook for access role by ID
-const fetchAccessRoleById = async ([_, id]: [string, string]) => {
+const fetchAccessRoleById = async ([, id]: [string, string]) => {
   const token = fetchToken();
   if (!token) {
     throw new Error("Please login again.");

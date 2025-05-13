@@ -84,3 +84,5 @@ export const getVariationColor = (variation: string) => {
   if (isZero) return "#grey";
   return isNegative ? "green" : "red";
 };
+
+export const TASK_SEPARATION = 70;

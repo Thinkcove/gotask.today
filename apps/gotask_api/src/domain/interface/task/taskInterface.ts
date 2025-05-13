@@ -206,7 +206,6 @@ const addTimeSpentToTask = async (
       const delayHoursForThisEntry = diffDays * 8; // 8 working hours per day
       delayHours += delayHoursForThisEntry;
 
-      console.log(`Entry is late by ${diffDays} working days (${delayHoursForThisEntry} hours)`);
     }
 
     task.time_spent.unshift({

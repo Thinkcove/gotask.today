@@ -1,4 +1,5 @@
 import { TIME_FORMAT, TIME_PERIODS } from "../../common/constants/timeTask";
+import { TASK_SEPARATION } from "../constants/task";
 
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -92,9 +93,9 @@ export const calculateTimeProgressData = (
         // If all entries are on or before the due date, fill the time spent bar
         spentFillPercentage =
           estimatedHours > 0
-            ? Math.min(70, (spentHours / estimatedHours) * 70)
+            ? Math.min(TASK_SEPARATION, (spentHours / estimatedHours) * TASK_SEPARATION)
             : spentHours > 0
-              ? 70
+              ? TASK_SEPARATION
               : 0;
         variationFillPercentage = 0;
       }
@@ -103,9 +104,9 @@ export const calculateTimeProgressData = (
     // If no time entries or due date, default to filling time spent bar
     spentFillPercentage =
       estimatedHours > 0
-        ? Math.min(70, (spentHours / estimatedHours) * 70)
+        ? Math.min(TASK_SEPARATION, (spentHours / estimatedHours) * TASK_SEPARATION)
         : spentHours > 0
-          ? 70
+          ? TASK_SEPARATION
           : 0;
     variationFillPercentage = 0;
   }

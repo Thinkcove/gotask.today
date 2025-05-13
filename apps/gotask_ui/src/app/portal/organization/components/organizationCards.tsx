@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Typography, Grid, CircularProgress, Box, Stack } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import PlaceIcon from "@mui/icons-material/Place";
@@ -11,7 +11,6 @@ import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
-import SearchBar from "@/app/component/searchBar/searchBar";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
@@ -23,9 +22,6 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
   const { canAccess } = useUserPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState("");
-  const filteredOrgs =
-    organizations?.filter((org) => org.name.toLowerCase().includes(searchTerm.toLowerCase())) || [];
 
   if (!organizations) {
     return (
@@ -42,88 +38,67 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box mb={3} maxWidth={400}>
-        <SearchBar
-          value={searchTerm}
-          onChange={setSearchTerm}
-          sx={{ width: "100%" }}
-          placeholder="Search Organization"
-        />
-      </Box>
-      {filteredOrgs.length === 0 ? (
-        <Grid item xs={12}>
-          <EmptyState
-            imageSrc={NoSearchResultsImage}
-            message={transorganization("noorganizations")}
-          />
-        </Grid>
-      ) : (
-        <Grid container spacing={4}>
-          {organizations.map((organization: Organization) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={organization.id}>
-              <CardComponent>
-                <Stack spacing={2}>
-                  {/* Avatar and Name */}
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Business sx={{ fontSize: 40, color: "#741B92", mr: 1 }} />
+    <Box>
+      <Grid container spacing={4}>
+        {organizations.map((organization: Organization) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={organization.id}>
+            <CardComponent>
+              <Stack spacing={2}>
+                {/* Avatar and Name */}
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Business sx={{ fontSize: 40, color: "#741B92", mr: 1 }} />
 
-                    <Box>
-                      <Typography
-                        variant="h6"
-                        fontWeight={700}
-                        sx={{ textTransform: "capitalize" }}
-                      >
-                        {organization.name.trim()}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  {/* Details */}
-                  <Stack spacing={1.5} mt={1}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <PlaceIcon fontSize="small" sx={{ color: "#741B92" }} />
-                      <EllipsisText text={organization.address} maxWidth={350} />
-                    </Stack>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <EmailIcon fontSize="small" sx={{ color: "#741B92" }} />
-                      <Typography variant="body2" color="text.secondary">
-                        {organization.mail_id}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-
-                  {/* Action */}
-                  {canAccess(APPLICATIONS.ORGANIZATION, ACTIONS.VIEW) && (
-                    <Box display="flex" justifyContent="flex-end">
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          color: "#741B92",
-                          fontWeight: 500,
-                          cursor: "pointer",
-                          "&:hover": {
-                            textDecoration: "underline"
-                          }
-                        }}
-                        onClick={() => {
-                          router.push(`/portal/organization/viewOrganization/${organization.id}`);
-                        }}
-                      >
-                        <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-                          {transorganization("viewdetails")}
-                        </Typography>
-                        <ArrowForward fontSize="small" />
-                      </Box>
-                    </Box>
-                  )}
+                  <Box>
+                    <Typography variant="h6" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+                      {organization.name.trim()}
+                    </Typography>
+                  </Box>
                 </Stack>
-              </CardComponent>
-            </Grid>
-          ))}
-        </Grid>
-      )}
+
+                {/* Details */}
+                <Stack spacing={1.5} mt={1}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <PlaceIcon fontSize="small" sx={{ color: "#741B92" }} />
+                    <EllipsisText text={organization.address} maxWidth={350} />
+                  </Stack>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <EmailIcon fontSize="small" sx={{ color: "#741B92" }} />
+                    <Typography variant="body2" color="text.secondary">
+                      {organization.mail_id}
+                    </Typography>
+                  </Stack>
+                </Stack>
+
+                {/* Action */}
+                {canAccess(APPLICATIONS.ORGANIZATION, ACTIONS.VIEW) && (
+                  <Box display="flex" justifyContent="flex-end">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        color: "#741B92",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        "&:hover": {
+                          textDecoration: "underline"
+                        }
+                      }}
+                      onClick={() => {
+                        router.push(`/portal/organization/viewOrganization/${organization.id}`);
+                      }}
+                    >
+                      <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
+                        {transorganization("viewdetails")}
+                      </Typography>
+                      <ArrowForward fontSize="small" />
+                    </Box>
+                  </Box>
+                )}
+              </Stack>
+            </CardComponent>
+          </Grid>
+        ))}
+      </Grid>
     </Box>
   );
 };

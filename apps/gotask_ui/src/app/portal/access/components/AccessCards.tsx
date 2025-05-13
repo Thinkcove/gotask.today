@@ -42,14 +42,7 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
   }
 
   if (data.length === 0) {
-    return (
-      // <Box display="flex" justifyContent="center" mt={5}>
-      //   <Typography variant="body1" color="text.secondary">
-      //     {t("noaccessavailable")}
-      //   </Typography>
-      // </Box>
-      <EmptyState imageSrc={NoSearchResultsImage} message={t("noaccessavailable")} />
-    );
+    return <EmptyState imageSrc={NoSearchResultsImage} message={t("noaccessavailable")} />;
   }
 
   return (

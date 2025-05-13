@@ -32,7 +32,8 @@
     "cancel": "Cancel",
     "accessName": "Access Name",
     "accessManagement": "Access Management",
-    "atLeastOnePermissionRequired": "Please select at least one permission."
+    "atLeastOnePermissionRequired": "Please select at least one permission.",
+    "searchplaceholder": "Search Access"
   },
   "Dashboard": {
     "overview": "Dashboard Overview",
@@ -75,7 +76,8 @@
     "errorphone": "Phone number is required.",
     "errorphonevalid": "Enter a valid phone number.",
     "errormailvalid": "Please enter a valid email address.",
-    "projectsyet": "No projects yet."
+    "projectsyet": "No projects yet.",
+    "searchplaceholder": "Search Organizations"
   },
   "Projects": {
     "Projecttitle": "Project Title is required",
@@ -119,7 +121,8 @@
     "updatesuccess": "Project updated successfully!",
     "updateerror": "Error while updating project",
     "edittitle": "Edit Project",
-    "placeholdeselect": "Select Assignees to the project"
+    "placeholdeselect": "Select Assignees to the project",
+    "searchplaceholder": "Search Projects"
   },
   "Role": {
     "rolename": "Role Name is required",
@@ -149,7 +152,8 @@
     "removeaccess": " Are you sure you want to remove this access from the role?",
     "revokepermission": " This will revoke the permissions granted by this access.",
     "role": "Role",
-    "noaccess": "No access mapped to this role"
+    "noaccess": "No access mapped to this role",
+    "searchplaceholder": "Search Roles"
   },
   "Task": {
     "filter": "Filter",
@@ -238,7 +242,8 @@
     "detailuser": "Assignee Name",
     "detailseverity": "Severity",
     "detaildue": "Due Date",
-    "detailcreated": "Created Date"
+    "detailcreated": "Created Date",
+    "searchplaceholder": "Search Tasks"
   },
   "User": {
     "username": "User name is required",
@@ -281,7 +286,8 @@
     "validmail": "Please enter a valid email address",
     "labelstate": "Status",
     "placeholderstatus": "Select the status",
-    "nousers": "No users available"
+    "nousers": "No users available",
+    "searchplaceholder": "Search Users"
   },
   "Appbar": {
     "logout": "Logout"

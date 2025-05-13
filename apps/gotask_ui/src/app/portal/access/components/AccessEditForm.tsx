@@ -13,14 +13,18 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
-import { useAccessOptions, useAccessRoleById, updateAccessRole } from "../services/accessService";
-import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
+import {
+  useAccessOptions,
+  useAccessRoleById,
+  updateAccessRole
+} from "../services/accessService";
+import { AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import AccessHeading from "../components/AccessHeading";
 import { useTranslations } from "next-intl";
+import CustomSnackbar from "../../../component/snackBar/snackbar";
 
 export default function AccessEditForm() {
   const t = useTranslations("Access");
@@ -32,6 +36,10 @@ export default function AccessEditForm() {
   const [application, setApplication] = useState<AccessRole["application"]>([]);
   const [currentTab, setCurrentTab] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info" | "warning">("info");
 
   const { role, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(String(id));
   const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
@@ -45,8 +53,7 @@ export default function AccessEditForm() {
 
   if (accessOptions.length > 0 && !currentTab) {
     const firstValidModule =
-      role?.application?.find((app: { access: string }) => validModules.includes(app.access))
-        ?.access ||
+      role?.application?.find((app: { access: string }) => validModules.includes(app.access))?.access ||
       accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
       validModules[0];
     setCurrentTab(firstValidModule);
@@ -73,14 +80,20 @@ export default function AccessEditForm() {
     setCurrentTab(module);
   };
 
+  const showSnackbar = (message: string, severity: "success" | "error" | "info" | "warning") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setOpenSnackbar(true);
+  };
+
   const handleSubmit = async () => {
     if (!roleName.trim()) {
-      toast.error(t("accessName") + " " + t("errormessage"));
+      showSnackbar(`${t("accessName")} ${t("errormessage")}`, "error");
       return;
     }
 
     if (!role) {
-      toast.error(t("errormessage"));
+      showSnackbar(t("errormessage"), "error");
       return;
     }
 
@@ -94,14 +107,16 @@ export default function AccessEditForm() {
       setIsSubmitting(true);
       const res = await updateAccessRole(String(id), payload);
       if (res.success) {
-        toast.success(t("updatesuccess"));
-        router.push("/portal/access");
+        showSnackbar(t("updatesuccess"), "success");
+        setTimeout(() => {
+          router.push("/portal/access");
+        }, 1000);
       } else {
-        toast.error(res.message || t("updateerror"));
+        showSnackbar(res.message || t("updateerror"), "error");
       }
     } catch (err) {
       console.error("Failed to update access role:", err);
-      toast.error(t("updateerror"));
+      showSnackbar(t("updateerror"), "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -114,15 +129,7 @@ export default function AccessEditForm() {
 
   if (isRoleLoading || isOptionsLoading) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
+      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <CircularProgress />
       </Box>
     );
@@ -130,15 +137,7 @@ export default function AccessEditForm() {
 
   if (roleError || optionsError) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
+      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <Typography variant="body1" color="error">
           {roleError || optionsError}
         </Typography>
@@ -151,7 +150,7 @@ export default function AccessEditForm() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        height: "87vh",
         width: "97%",
         bgcolor: "white",
         borderRadius: 2,
@@ -270,6 +269,14 @@ export default function AccessEditForm() {
           </Button>
         )}
       </Box>
+
+      {/* Snackbar */}
+      <CustomSnackbar
+        open={openSnackbar}
+        onClose={() => setOpenSnackbar(false)}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+      />
     </Box>
   );
 }

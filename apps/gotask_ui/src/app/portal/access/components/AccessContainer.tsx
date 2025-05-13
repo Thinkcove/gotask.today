@@ -1,11 +1,9 @@
 "use client";
-
 import React, { useState } from "react";
-import AccessHeading from "../components/AccessHeading";
 import SearchBar from "../../../component/searchBar/searchBar";
 import AccessCards from "../components/AccessCards";
 import { useAllAccessRoles } from "../services/accessService";
-import { Box, Paper, useTheme, Fab, Tooltip } from "@mui/material";
+import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
@@ -21,7 +19,6 @@ const AccessContainer: React.FC = () => {
   const { canAccess } = useUserPermission();
   const [searchTerm, setSearchTerm] = useState("");
   const { accessRoles, isLoading, error } = useAllAccessRoles();
-  const theme = useTheme();
 
   // Sort the accessRoles array by createdAt in descending order
   const sortedData = [...accessRoles].sort((a, b) => {
@@ -38,7 +35,7 @@ const AccessContainer: React.FC = () => {
   return (
     <>
       <Box sx={{ p: 3 }}>
-        <Box  maxWidth={400}>
+        <Box maxWidth={400}>
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}

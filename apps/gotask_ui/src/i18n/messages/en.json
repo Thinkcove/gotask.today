@@ -33,7 +33,8 @@
     "accessName": "Access Name",
     "accessManagement": "Access Management",
     "accessNameRequired": "Access name is required.",
-    "atLeastOnePermissionRequired": "Please select at least one permission."
+    "atLeastOnePermissionRequired": "Please select at least one permission.",
+    "searchplaceholder": "Search Access"
   },
   "Dashboard": {
     "overview": "Dashboard Overview",

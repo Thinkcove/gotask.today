@@ -84,3 +84,9 @@ export const getVariationColor = (variation: string) => {
   if (isZero) return "#grey";
   return isNegative ? "green" : "red";
 };
+
+export const TASK_CALCULATION = 70;
+
+export const TASK_VARIATION = 30;
+
+export const TASK_HOURS = 8;

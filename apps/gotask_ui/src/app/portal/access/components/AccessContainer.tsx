@@ -1,16 +1,9 @@
-'use client';
-
+"use client";
 import React, { useState } from "react";
-import AccessHeading from "../components/AccessHeading";
 import SearchBar from "../../../component/searchBar/searchBar";
 import AccessCards from "../components/AccessCards";
 import { useAllAccessRoles } from "../services/accessService";
-import {
-  Box,
-  Paper,
-  Fab,
-  Tooltip,
-} from "@mui/material";
+import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
@@ -40,50 +33,19 @@ const AccessContainer: React.FC = () => {
   );
 
   return (
-    <Box sx={{ width: "100%", maxHeight: "100vh", overflow: "hidden", m: 0, position: "relative" }}>
-      <Paper
-        sx={{
-          padding: 2,
-          boxShadow: 3,
-          borderRadius: 2,
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-        }}
-      >
-        <AccessHeading />
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            gap: 2,
-          }}
-        >
-          <Box sx={{ width: { xs: "100%", md: "30%" } }}>
-            <SearchBar
-              value={searchTerm}
-              onChange={setSearchTerm}
-              sx={{ width: "100%" }}
-            />
-          </Box>
+    <>
+      <Box sx={{ p: 3 }}>
+        <Box maxWidth={400}>
+          <SearchBar
+            value={searchTerm}
+            onChange={setSearchTerm}
+            sx={{ width: "100%" }}
+            placeholder="Search Access"
+          />
         </Box>
+      </Box>
 
-        <Box
-          sx={{
-            flex: 1,
-            overflowY: "auto",
-            minHeight: "200px",
-            maxHeight: "calc(100vh - 160px)",
-            paddingBottom: "10px",
-          }}
-        >
-          <AccessCards data={filteredData} loading={isLoading} error={error} />
-        </Box>
-      </Paper>
+      <AccessCards data={filteredData} loading={isLoading} error={error} />
 
       {canAccess(APPLICATIONS.ACCESS, ACTIONS.CREATE) && (
         <Tooltip title="Create Access">
@@ -94,14 +56,14 @@ const AccessContainer: React.FC = () => {
               position: "fixed",
               bottom: 35,
               right: 35,
-              zIndex: 1000,
+              zIndex: 1000
             }}
           >
             <AddIcon />
           </Fab>
         </Tooltip>
       )}
-    </Box>
+    </>
   );
 };
 

@@ -11,12 +11,19 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { Role } from "../interfaces/roleInterface";
+import SearchBar from "@/app/component/searchBar/searchBar";
 
 const RoleList = () => {
   const { canAccess } = useUserPermission();
   const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data, mutate } = useSWR("getRoles", getRoleData);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { data: roles, mutate } = useSWR("getRoles", getRoleData);
+
+  const filteredRoles =
+    roles?.filter((role: Role) => role.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    null;
 
   return (
     <Box
@@ -24,12 +31,21 @@ const RoleList = () => {
         position: "relative",
         height: "100vh",
         overflowY: "auto",
-        maxHeight: "calc(100vh - 100px)"
+        maxHeight: "calc(100vh - 100px)",
+        p: 3
       }}
     >
       <CreateRole open={isModalOpen} onClose={() => setIsModalOpen(false)} mutate={mutate} />
 
-      <RoleCards roles={data} />
+      <Box mb={3} maxWidth={400}>
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          sx={{ width: "100%" }}
+          placeholder={transrole("searchplaceholder")}
+        />
+      </Box>
+      <RoleCards roles={filteredRoles} />
 
       {/* Add Role Button */}
       {canAccess(APPLICATIONS.ROLE, ACTIONS.CREATE) && (

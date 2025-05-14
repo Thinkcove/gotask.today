@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Button, Box, Typography, IconButton } from "@mui/material";
 import TaskInput from "@/app/portal/task/createTask/taskInput";
@@ -17,7 +19,6 @@ import TimeProgressBar from "@/app/portal/task/editTask/timeProgressBar";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-
 interface EditTaskProps {
   data: ITask;
   mutate: KeyedMutator<ITask>;
@@ -33,9 +34,9 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
 
-  const [formData, setFormData] = useState<IFormField>(() => ({
+  const [formData, setFormData] = useState<IFormField>({
     title: data?.title || "",
     description: data?.description || "",
     status: data?.status || TASK_STATUS.TO_DO,
@@ -46,10 +47,26 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     project_name: data?.project_name || "",
     created_on: data?.created_on ? data.created_on.split("T")[0] : "",
     due_date: data?.due_date ? data.due_date.split("T")[0] : ""
-  }));
+  });
+
+  const checkIfDateExists = (): boolean => {
+    if (!data.time_spent || !Array.isArray(data.time_spent)) {
+      return false;
+    }
+    const today = new Date().toISOString().split("T")[0];
+    return data.time_spent.some((entry) => entry.date === today);
+  };
 
   const handleInputChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const alreadyExists = checkIfDateExists();
+
+  const handleProgressClick = () => {
+    if (!alreadyExists) {
+      setIsPopupOpen(true);
+    }
   };
 
   const handleSubmit = async () => {
@@ -196,12 +213,17 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             <History />
           </Box>
         )}
-
-        <TimeProgressBar
-          estimatedTime={data.estimated_time || "0h"}
-          timeSpentTotal={data.time_spent_total || "0h"}
-          onClick={() => setIsPopupOpen(true)}
-        />
+        {formData.status !== TASK_STATUS.TO_DO && (
+          <TimeProgressBar
+            estimatedTime={data.estimated_time || "0h"}
+            timeSpentTotal={data.time_spent_total || "0h"}
+            dueDate={data.due_date || ""}
+            timeEntries={data.time_spent || []}
+            canLogTime={!alreadyExists} // Pass the existing check as a prop
+            variation={data.variation ? String(data.variation) : "0d0h"} // Convert to string
+            onClick={handleProgressClick}
+          />
+        )}
 
         <Box
           sx={{
@@ -225,6 +247,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           onClose={() => setIsPopupOpen(false)}
           originalEstimate={data.estimated_time || "0d0h"}
           taskId={data.id}
+          dueDate={data.due_date || ""}
           mutate={mutate}
         />
 

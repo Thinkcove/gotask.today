@@ -6,7 +6,6 @@
     "labelpassword": "password",
     "seterror": "Both fields are required"
   },
-
   "Access": {
     "access": "Access",
     "createaccessnew": "Create New Access",
@@ -51,7 +50,7 @@
     "erroraddress": "Address is required",
     "successcreate": "Organization created successfully!",
     "errorcreate": "Error while creating Organization",
-    "noorganizations": "No organizations available.",
+    "noorganizations": "No organizations available",
     "viewdetails": "View Details",
     "labelname": "Organization Name",
     "labeladdress": "Address",
@@ -77,7 +76,8 @@
     "errorphone": "Phone number is required.",
     "errorphonevalid": "Enter a valid phone number.",
     "errormailvalid": "Please enter a valid email address.",
-    "projectsyet": "No projects yet."
+    "projectsyet": "No projects yet.",
+    "searchplaceholder": "Search Organizations"
   },
   "Projects": {
     "Projecttitle": "Project Title is required",
@@ -121,14 +121,15 @@
     "updatesuccess": "Project updated successfully!",
     "updateerror": "Error while updating project",
     "edittitle": "Edit Project",
-    "placeholdeselect": "Select Assignees to the project"
+    "placeholdeselect": "Select Assignees to the project",
+    "searchplaceholder": "Search Projects"
   },
   "Role": {
     "rolename": "Role Name is required",
     "selectaccess": "Select at least one Access",
     "successmessage": "Role created successfully!",
     "errormessage": "Error while creating Role",
-    "noroleavailable": "No roles available.",
+    "noroleavailable": "No roles available",
     "createnewrole": "Create New Role",
     "viewdetail": "View Details",
     "labelname": "Role Name",
@@ -151,7 +152,8 @@
     "removeaccess": " Are you sure you want to remove this access from the role?",
     "revokepermission": " This will revoke the permissions granted by this access.",
     "role": "Role",
-    "noaccess": "No access mapped to this role"
+    "noaccess": "No access mapped to this role",
+    "searchplaceholder": "Search Roles"
   },
   "Task": {
     "filter": "Filter",
@@ -220,6 +222,7 @@
     "spent": "Spent:",
     "estimated": "Estimated:",
     "timetrackingclick": "Click the bar to update time tracking",
+    "timetrackingdisabled":"Today’s entry has already been recorded",
     "allfieldfill": "Please fill in all fields: date, start time, and end time are required.",
     "endstarttime": "End time must be after start time.",
     "failedentry": "Failed to save time entry. Please try again.",
@@ -232,6 +235,7 @@
     "starttime": " Start Time",
     "selectstart": "Select start time",
     "endtime": "End Time",
+    "placeholderselecttime":"Select end time",
     "popupcancel": "Cancel",
     "popupsave": "Save",
     "taskname": "Task",
@@ -240,7 +244,8 @@
     "detailuser": "Assignee Name",
     "detailseverity": "Severity",
     "detaildue": "Due Date",
-    "detailcreated": "Created Date"
+    "detailcreated": "Created Date",
+    "searchplaceholder": "Search Tasks"
   },
   "User": {
     "username": "User name is required",
@@ -282,7 +287,9 @@
     "userpwd": "Create a password",
     "validmail": "Please enter a valid email address",
     "labelstate": "Status",
-    "placeholderstatus": "Select the status"
+    "placeholderstatus": "Select the status",
+    "nousers": "No users available",
+    "searchplaceholder": "Search Users"
   },
   "Appbar": {
     "logout": "Logout"

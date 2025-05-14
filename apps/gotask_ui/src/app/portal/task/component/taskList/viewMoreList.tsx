@@ -1,10 +1,10 @@
 import React from "react";
 import { Box, Drawer, CircularProgress, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import TaskItem from "../taskLayout/taskItem";
+import TaskItem, { Task } from "../taskLayout/taskItem";
 import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
-import { IGroup, ITask } from "../../interface/taskInterface";
+import { IGroup } from "../../interface/taskInterface";
 
 interface ViewMoreListProps {
   open: boolean;
@@ -64,7 +64,7 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
                   </IconButton>
                 </Box>
                 <Box sx={{ overflowY: "auto", maxHeight: "calc(100vh - 100px)" }}>
-                  {group.tasks.map((task: ITask) => (
+                  {group.tasks.map((task: Task) => (
                     <Box key={task.id} sx={{ px: 1 }}>
                       <TaskItem
                         key={task.id}

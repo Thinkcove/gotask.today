@@ -4,7 +4,7 @@ import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
 import { ReadMoreTwoTone } from "@mui/icons-material";
 import TaskItem, { Task } from "./taskItem";
-import { IGroup, ITask } from "../../interface/taskInterface";
+import { IGroup } from "../../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 

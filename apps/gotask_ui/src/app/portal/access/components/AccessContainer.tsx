@@ -33,7 +33,14 @@ const AccessContainer: React.FC = () => {
   );
 
   return (
-    <>
+    <Box
+      sx={{
+        position: "relative",
+        height: "100vh",
+        overflowY: "auto",
+        maxHeight: "calc(100vh - 100px)"
+      }}
+    >
       <Box sx={{ p: 3 }}>
         <Box maxWidth={400}>
           <SearchBar
@@ -63,7 +70,7 @@ const AccessContainer: React.FC = () => {
           </Fab>
         </Tooltip>
       )}
-    </>
+    </Box>
   );
 };
 

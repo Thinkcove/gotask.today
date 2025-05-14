@@ -12,6 +12,7 @@ import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 import { GroupedLogs, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { extractHours } from "@/app/common/utils/common";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -45,17 +46,6 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
     const date = isValid(parseISO(entry.date)) ? format(parseISO(entry.date), "yyyy-MM-dd") : null;
 
     if (!date) return acc;
-
-    const extractHours = (timeStrings: string[]) =>
-      timeStrings.reduce((sum, entry) => {
-        const match = entry.match(/(\d+)d(\d+)h/);
-        if (match) {
-          const days = parseInt(match[1], 10);
-          const hours = parseInt(match[2], 10);
-          return sum + days * 24 + hours;
-        }
-        return sum;
-      }, 0);
 
     const timeLogged = extractHours(entry.total_time_logged || []);
     const key = [user, project, task].join("|");

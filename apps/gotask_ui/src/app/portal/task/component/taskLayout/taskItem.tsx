@@ -83,12 +83,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
               textTransform: "capitalize"
             }}
           >
-            Variation:{" "}
-            {task.variation === "0d0h"
-              ? "No variation"
-              : task.variation.startsWith("-")
-                ? task.variation
-                : `+${task.variation}`}
+            Variation: {task.variation ? task.variation : "0d0h"}
           </Typography>
         </Box>
 

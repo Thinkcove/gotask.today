@@ -6,7 +6,6 @@
     "labelpassword": "password",
     "seterror": "Both fields are required"
   },
-
   "Access": {
     "access": "Access",
     "createaccessnew": "Create New Access",
@@ -222,6 +221,7 @@
     "spent": "Spent:",
     "estimated": "Estimated:",
     "timetrackingclick": "Click the bar to update time tracking",
+    "timetrackingdisabled":"Today’s entry has already been recorded",
     "allfieldfill": "Please fill in all fields: date, start time, and end time are required.",
     "endstarttime": "End time must be after start time.",
     "failedentry": "Failed to save time entry. Please try again.",
@@ -234,6 +234,7 @@
     "starttime": " Start Time",
     "selectstart": "Select start time",
     "endtime": "End Time",
+    "placeholderselecttime":"Select end time",
     "popupcancel": "Cancel",
     "popupsave": "Save",
     "taskname": "Task",

@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { calculateTimeProgressData } from "../../../common/utils/common";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -7,26 +9,40 @@ import { useTranslations } from "next-intl";
 interface ProgressBarProps {
   estimatedTime: string;
   timeSpentTotal: string;
+  dueDate: string;
+  timeEntries: Array<{ date: string; start_time: string; end_time: string }>;
+  variation: string;
   onClick: () => void;
+  canLogTime: boolean;
 }
 
 const TimeProgressBar: React.FC<ProgressBarProps> = ({
   estimatedTime,
   timeSpentTotal,
-  onClick
+  dueDate,
+  timeEntries,
+  variation,
+  onClick,
+  canLogTime = true
 }) => {
-  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);   
-  const {
-    estimatedHours,
-    spentHours,
-    variationHours,
-    spentFillPercentage,
-    variationFillPercentage,
-    totalFillPercentage
-  } = calculateTimeProgressData(estimatedTime, timeSpentTotal);
+  const [isHovered, setIsHovered] = useState(false);
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+  const { estimatedHours, spentHours, spentFillPercentage, variationFillPercentage } =
+    calculateTimeProgressData(estimatedTime, timeSpentTotal, dueDate, timeEntries);
 
   const purpleColor = "#741B92";
   const redColor = "#d32f2f";
+  const disabledColor = "#a0a0a0";
+
+  const handleClick = () => {
+    if (canLogTime) {
+      onClick();
+    }
+  };
+
+  // Determine variation display based on whether variation is negative
+  const isNegativeVariation = variation.startsWith("-");
+  const variationDisplay = isNegativeVariation ? "Variation: 0" : `Variation: ${variation}`;
 
   return (
     <Box
@@ -36,8 +52,13 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
       alignItems="center"
       mt={2}
       mb={2}
-      sx={{ cursor: "pointer" }}
-      onClick={onClick}
+      sx={{
+        cursor: canLogTime ? (isHovered ? "pointer" : "default") : "not-allowed",
+        opacity: canLogTime ? 1 : 0.6
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
     >
       <Box
         sx={{
@@ -46,7 +67,7 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
           width: "100%",
           px: 2,
           "&:hover .progress-info": {
-            color: "#741B92"
+            color: canLogTime ? "#741B92" : "#a0a0a0"
           }
         }}
       >
@@ -58,12 +79,12 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
             {transtask("estimated")} {estimatedHours.toFixed(1)}h
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: "normal" }}>
-            {variationHours > 0 ? `Variation: ${variationHours.toFixed(1)}h` : "Variation: 0"}
+            {variationDisplay}
           </Typography>
         </Box>
 
         <Box sx={{ position: "relative", height: 10, borderRadius: 5, backgroundColor: "#e0e0e0" }}>
-          {/* Time spent progress */}
+          {/* Time spent progress (first 70% of the bar) */}
           <Box
             sx={{
               position: "absolute",
@@ -71,25 +92,25 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
               top: 0,
               height: "100%",
               width: `${spentFillPercentage}%`,
-              backgroundColor: purpleColor,
+              maxWidth: "70%",
+              backgroundColor: canLogTime ? purpleColor : disabledColor,
               borderRadius: "5px 0 0 5px",
               zIndex: 1
             }}
           />
 
-          {/* Variation progress (only if positive) */}
-          {variationHours > 0 && (
+          {/* Variation progress (last 30% of the bar, starting at 70%) */}
+          {!isNegativeVariation && variationFillPercentage > 0 && (
             <Box
               sx={{
                 position: "absolute",
-                left: `${spentFillPercentage}%`,
+                left: "70%",
                 top: 0,
                 height: "100%",
                 width: `${variationFillPercentage}%`,
-                backgroundColor: redColor,
-                borderRadius: spentFillPercentage === 0 ? "5px 0 0 5px" : "0",
-                borderTopRightRadius: totalFillPercentage >= 100 ? "5px" : "0",
-                borderBottomRightRadius: totalFillPercentage >= 100 ? "5px" : "0",
+                maxWidth: "30%",
+                backgroundColor: canLogTime ? redColor : disabledColor,
+                borderRadius: "0 5px 5px 0",
                 zIndex: 1
               }}
             />
@@ -114,10 +135,14 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
           color="text.secondary"
           textAlign="center"
           mt={1}
-          sx={{ fontStyle: "italic", display: "block" }}
+          sx={{
+            fontStyle: "italic",
+            display: "block",
+            color: canLogTime ? (isHovered ? "#741B92" : "text.secondary") : "#a0a0a0"
+          }}
           className="progress-info"
         >
-          {transtask("timetrackingclick")}
+          {canLogTime ? transtask("timetrackingclick") : transtask("timetrackingdisabled")}
         </Typography>
       </Box>
     </Box>

@@ -16,16 +16,13 @@ const ReportRoutes = [];
 ReportRoutes.push({
   path: API_PATHS.GET_USER_TIME_LOG,
   method: API_METHODS.POST,
-  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
-    reportController.getUserTimeReport(new RequestHelper(request), handler)
-  ),
+  handler: (request: Request, handler: ResponseToolkit) =>
+    reportController.getUserTimeLog(new RequestHelper(request), handler),
   config: {
-    notes: "Get daily user time logs within date range",
-    tags,
-    auth: {
-      strategy: authStrategy.SIMPLE
-    }
+    notes: "Get time spent by users with optional task/project breakdown",
+    tags: ["api", "time", "report"]
   }
 });
+
 
 export default ReportRoutes;

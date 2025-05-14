@@ -1,96 +1,133 @@
+import { Project } from "../../domain/model/project/project";
 import { Task } from "../../domain/model/task/task";
-import { PipelineStage } from "mongoose"; // Optional, but helps with types
+import { IUserTimeLogInput, IUserTimeLogOutput } from "./reportInterface";
 
-const getUserTimeReportService = async (
-  fromDate: string,
-  toDate: string,
-  userIds: string[],
-  showTasks: boolean,
-  showProjects: boolean
-) => {
-  const dateMatch = { $gte: fromDate, $lte: toDate };
+const getUserTimeLogService = async (input: IUserTimeLogInput): Promise<IUserTimeLogOutput> => {
+  console.log("input", input);
+  const {
+    from,
+    to,
+    users = [],
+    projectIds: rawProjectIds = [],
+    includeTasks = false,
+    includeProject = false
+  } = input;
 
-  const pipeline: PipelineStage[] = [];
+  console.log("RAW PAYLOAD >>>", input);
 
-  pipeline.push({
-    $match: {
-      user_id: { $in: userIds },
-      time_spent: { $elemMatch: { date: dateMatch } }
-    }
-  });
+  const finalProjectIds =
+    Array.isArray(rawProjectIds) && rawProjectIds.length > 0 ? rawProjectIds : [];
 
-  pipeline.push({ $unwind: "$time_spent" });
+  console.log("finalProjectIds", finalProjectIds);
 
-  pipeline.push({
-    $match: {
-      "time_spent.date": dateMatch
-    }
-  });
+  const projectFilter = finalProjectIds.length > 0 ? { id: { $in: finalProjectIds } } : {};
 
-  const projectStage: Record<string, any> = {
-    user_id: 1,
-    user_name: 1,
-    "time_spent.date": 1,
-    "time_spent.time_logged": 1
-  };
+  console.log("projectFilter", projectFilter);
 
-  if (showTasks) {
-    projectStage.task_id = "$id";
-    projectStage.task_title = "$title";
+  const projects = await Project.find(projectFilter).lean();
+  console.log("projects", projects);
+
+  if (!projects.length) {
+    return {
+      success: true,
+      data: users.map((userId) => ({
+        user_id: userId,
+        message: "No matching projects found"
+      }))
+    };
   }
 
-  if (showProjects) {
-    projectStage.project_id = 1;
-    projectStage.project_name = 1;
-  }
+  const userProjectMap = new Map<string, Set<string>>();
 
-  pipeline.push({ $project: projectStage });
+  for (const project of projects) {
+    const usersInProject = Array.isArray(project.user_id)
+      ? project.user_id
+      : project.user_id
+        ? [project.user_id]
+        : [];
 
-  const groupId: Record<string, any> = {
-    user_id: "$user_id",
-    user_name: "$user_name",
-    date: "$time_spent.date"
-  };
-
-  if (showTasks) {
-    groupId.task_id = "$task_id";
-    groupId.task_title = "$task_title";
-  }
-
-  if (showProjects) {
-    groupId.project_id = "$project_id";
-    groupId.project_name = "$project_name";
-  }
-
-  pipeline.push({
-    $group: {
-      _id: groupId,
-      total_time_logged: { $push: "$time_spent.time_logged" }
+    for (const userId of users) {
+      if (usersInProject.includes(userId)) {
+        if (!userProjectMap.has(userId)) {
+          userProjectMap.set(userId, new Set());
+        }
+        userProjectMap.get(userId)!.add(project.id);
+      }
     }
-  });
+  }
 
-  pipeline.push({
-    $project: {
-      _id: 0,
-      user_id: "$_id.user_id",
-      user_name: "$_id.user_name",
-      date: "$_id.date",
-      task_id: "$_id.task_id",
-      task_title: "$_id.task_title",
-      project_id: "$_id.project_id",
-      project_name: "$_id.project_name",
-      total_time_logged: 1
+  const logs: any[] = [];
+
+  for (const userId of users) {
+    const userProjects = userProjectMap.get(userId);
+
+    if (!userProjects || userProjects.size === 0) {
+      logs.push({
+        user_id: userId,
+        message: "No matching project found"
+      });
+      continue;
     }
-  });
 
-  pipeline.push({ $sort: { user_name: 1, date: 1 } });
+    const matchFilter: any = {
+      user_id: userId,
+      project_id: { $in: Array.from(userProjects) },
+      time_spent: {
+        $elemMatch: {
+          date: { $gte: from, $lte: to }
+        }
+      }
+    };
 
-  const results = await Task.aggregate(pipeline);
+    const pipeline: any[] = [
+      { $match: matchFilter },
+      { $unwind: "$time_spent" },
+      {
+        $match: {
+          "time_spent.date": { $gte: from, $lte: to }
+        }
+      },
+      {
+        $project: {
+          user_id: 1,
+          user_name: 1,
+          project_id: 1,
+          project_name: 1,
+          task_id: "$id",
+          task_title: "$title",
+          date: "$time_spent.date",
+          time_logged: "$time_spent.time_logged"
+        }
+      },
+      {
+        $group: {
+          _id: {
+            user_id: "$user_id",
+            date: "$date",
+            ...(includeTasks && { task_id: "$task_id", task_title: "$task_title" }),
+            ...(includeProject && { project_id: "$project_id", project_name: "$project_name" })
+          },
+          time_logs: { $push: "$time_logged" }
+        }
+      }
+    ];
+
+    const userLogs = await Task.aggregate(pipeline);
+
+    if (userLogs.length === 0) {
+      logs.push({
+        user_id: userId,
+        message: "No time logs found in selected date range"
+      });
+    } else {
+      logs.push(...userLogs);
+    }
+  }
 
   return {
     success: true,
-    data: results
+    data: logs
   };
 };
 
-export { getUserTimeReportService };
+export { getUserTimeLogService };

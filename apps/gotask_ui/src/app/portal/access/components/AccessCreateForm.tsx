@@ -14,8 +14,9 @@ import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import AccessHeading from "./AccessHeading";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import { useAccessOptions, createAccessRole } from "../services/accessService";
-import {  AccessRole } from "../interfaces/accessInterfaces";
+import { AccessRole } from "../interfaces/accessInterfaces";
 import { useTranslations } from "next-intl";
+import CustomSnackbar from "../../../component/snackBar/snackbar";
 
 const AccessCreateForm: React.FC = () => {
   const t = useTranslations();
@@ -24,6 +25,11 @@ const AccessCreateForm: React.FC = () => {
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
   const [currentModule, setCurrentModule] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error" | "warning" | "info";
+  }>({ open: false, message: "", severity: "info" });
   const router = useRouter();
 
   const { accessOptions, isLoading, error } = useAccessOptions();
@@ -45,9 +51,17 @@ const AccessCreateForm: React.FC = () => {
     });
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   const handleSubmit = async () => {
     if (!accessName.trim()) {
-      alert(t("Access.accessNameRequired"));
+      setSnackbar({
+        open: true,
+        message: t("Access.accessNameRequired"),
+        severity: "error",
+      });
       return;
     }
 
@@ -57,7 +71,11 @@ const AccessCreateForm: React.FC = () => {
     })).filter(app => app.actions.length > 0);
 
     if (application.length === 0) {
-      alert(t("Access.atLeastOnePermissionRequired")); // Add this key in your translation file
+      setSnackbar({
+        open: true,
+        message: t("Access.atLeastOnePermissionRequired"),
+        severity: "error",
+      });
       return;
     }
 
@@ -73,13 +91,28 @@ const AccessCreateForm: React.FC = () => {
       const response = await createAccessRole(payload);
       console.log("createAccessRole response:", response);
       if (response.success) {
-        router.push("/portal/access");
+        setSnackbar({
+          open: true,
+          message: t("Access.successmessage"),
+          severity: "success",
+        });
+        setTimeout(() => {
+          router.push("/portal/access");
+        }, 500); 
       } else {
-        alert(response.message);
+        setSnackbar({
+          open: true,
+          message: response.message || t("Access.errormessage"),
+          severity: "error",
+        });
       }
     } catch (err) {
       console.error("Failed to create access role:", err);
-      alert(t("Access.errormessage"));
+      setSnackbar({
+        open: true,
+        message: t("Access.errormessage"),
+        severity: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -201,6 +234,13 @@ const AccessCreateForm: React.FC = () => {
           </Button>
         )}
       </Box>
+
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleSnackbarClose}
+      />
     </Box>
   );
 };

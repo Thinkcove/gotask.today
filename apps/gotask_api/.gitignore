@@ -138,3 +138,8 @@ lib
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# sonar file
+sonar-project.properties
+.sonar_lock
+report-task.txt

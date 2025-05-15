@@ -10,7 +10,7 @@ interface SearchBarProps {
   sx?: SxProps<Theme>;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, placeholder = "Search", sx }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, placeholder, sx }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const clear = () => {

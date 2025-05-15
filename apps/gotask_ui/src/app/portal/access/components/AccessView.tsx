@@ -42,7 +42,7 @@ const AccessView: React.FC = () => {
   const { role: accessRole, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(id as string);
   const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
 
-  // ✅ Snackbar state
+  //  Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "warning" | "info">("success");
@@ -76,7 +76,10 @@ const AccessView: React.FC = () => {
       const res = await deleteAccessRole(accessRole.id);
       if (res.success) {
         showSnackbar(res.message || t("updatesuccess"), "success");
-        router.push("/portal/access");
+        
+        setTimeout(() => {
+          router.push("/portal/access");
+        }, 500); 
       } else {
         showSnackbar(res.message || t("updateerror"), "error");
       }

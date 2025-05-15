@@ -128,3 +128,15 @@ export const validatePhone = (phone: string) => {
   const phoneRegex = /^\+?[1-9](?:\d\s?){7,14}$/;
   return phoneRegex.test(phone);
 };
+
+//extracthours
+export const extractHours = (timeStrings: string[]) =>
+  timeStrings.reduce((sum, entry) => {
+    const match = entry.match(/(\d+)d(\d+)h/);
+    if (match) {
+      const days = parseInt(match[1], 10);
+      const hours = parseInt(match[2], 10);
+      return sum + days * 8 + hours;
+    }
+    return sum;
+  }, 0);

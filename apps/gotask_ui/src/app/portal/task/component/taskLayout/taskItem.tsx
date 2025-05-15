@@ -6,7 +6,7 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import { getVariationColor } from "@/app/common/constants/task";
 import { TuneRounded } from "@mui/icons-material";
 
-interface Task {
+export interface Task {
   id: string;
   status: string;
   due_date: string;

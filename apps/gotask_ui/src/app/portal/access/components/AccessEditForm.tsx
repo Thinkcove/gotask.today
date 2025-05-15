@@ -110,7 +110,7 @@ export default function AccessEditForm() {
         showSnackbar(t("updatesuccess"), "success");
         setTimeout(() => {
           router.push("/portal/access");
-        }, 1000);
+        }, 500);
       } else {
         showSnackbar(res.message || t("updateerror"), "error");
       }

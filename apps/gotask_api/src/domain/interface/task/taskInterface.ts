@@ -199,13 +199,11 @@ const addTimeSpentToTask = async (
     const entryDate = new Date(entry.date);
     const dueDate = new Date(task.due_date);
 
-
     if (entryDate > dueDate) {
       const diffMs = entryDate.getTime() - dueDate.getTime();
       const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); // calendar days
       const delayHoursForThisEntry = diffDays * 8; // 8 working hours per day
       delayHours += delayHoursForThisEntry;
-
     }
 
     task.time_spent.unshift({
@@ -230,7 +228,6 @@ const addTimeSpentToTask = async (
   await task.save();
   return task;
 };
-
 
 export {
   createNewTask,

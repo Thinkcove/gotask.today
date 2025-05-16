@@ -143,3 +143,6 @@ lib
 sonar-project.properties
 .sonar_lock
 report-task.txt
+
+#deployment script file
+deploy-dev-api.sh

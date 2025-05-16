@@ -24,7 +24,6 @@ export const getAccessOptions = async (): Promise<{
   }
   try {
     const data = await getData(`${env.API_BASE_URL}/access/options`, token);
-    console.log("getAccessOptions data:", data); // Debug log
     return { success: true, data };
   } catch (error: any) {
     console.error("getAccessOptions error:", error.response || error.message);
@@ -42,7 +41,6 @@ const fetchAccessOptions = async () => {
     throw new Error("Please login again.");
   }
   const data = await getData(`${env.API_BASE_URL}/access/options`, token);
-  console.log("fetchAccessOptions data:", data); // Debug log
   return data;
 };
 
@@ -50,9 +48,6 @@ export const useAccessOptions = () => {
   const { data, error, isLoading } = useSWR([`fetchAccessOptions`], fetchAccessOptions, {
     revalidateOnFocus: false
   });
-
-  console.log("useAccessOptions data:", data); // Debug log
-
   return {
     accessOptions: Array.isArray(data) ? data : [],
     isLoading,
@@ -74,7 +69,6 @@ export const createAccessRole = async (
       accessData as unknown as Record<string, unknown>,
       token
     );
-    console.log("createAccessRole data:", data); // Debug log
     return { success: true, data };
   } catch (error: any) {
     console.error("createAccessRole error:", error.response || error.message);
@@ -92,7 +86,6 @@ const fetchAccessRoles = async () => {
     throw new Error("Please login again.");
   }
   const data = await getData(`${env.API_BASE_URL}/access`, token);
-  console.log("fetchAccessRoles data:", data); // Debug log
   return data;
 };
 
@@ -136,7 +129,6 @@ export const updateAccessRole = async (
       cleanedPayload as unknown as Record<string, unknown>,
       token
     );
-    console.log("updateAccessRole data:", data); // Debug log
     return { success: true, data };
   } catch (error: any) {
     console.error("updateAccessRole error:", error.response || error.message);
@@ -157,7 +149,6 @@ export const deleteAccessRole = async (
   }
   try {
     await deleteData(`${env.API_BASE_URL}/access/${id}`, token);
-    console.log("deleteAccessRole success for id:", id); // Debug log
     return { success: true, message: "Access role deleted successfully." };
   } catch (error: any) {
     console.error("deleteAccessRole error:", error.response || error.message);
@@ -178,7 +169,6 @@ export const getAccessRoleById = async (
   }
   try {
     const data = await getData(`${env.API_BASE_URL}/access/${id}`, token);
-    console.log("getAccessRoleById data:", data); // Debug log
     return { success: true, data };
   } catch (error: any) {
     console.error("getAccessRoleById error:", error.response || error.message);
@@ -196,7 +186,6 @@ const fetchAccessRoleById = async ([, id]: [string, string]) => {
     throw new Error("Please login again.");
   }
   const data = await getData(`${env.API_BASE_URL}/access/${id}`, token);
-  console.log("fetchAccessRoleById data:", data); // Debug log
   return data;
 };
 
@@ -204,9 +193,6 @@ export const useAccessRoleById = (id: string) => {
   const { data, error, isLoading } = useSWR([`fetchAccessRoleById`, id], fetchAccessRoleById, {
     revalidateOnFocus: false
   });
-
-  console.log("useAccessRoleById data:", data); // Debug log
-
   return {
     role: data,
     isLoading,

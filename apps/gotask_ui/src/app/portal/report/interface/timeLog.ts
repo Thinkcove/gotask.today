@@ -1,6 +1,7 @@
 export interface TimeLogEntry {
   user_name: string;
   project_name?: string;
+  project_id?: string;
   task_title?: string;
   date: string;
   total_time_logged: string[];
@@ -11,7 +12,7 @@ export interface TimeLogGridProps {
   fromDate: string;
   toDate: string;
   showTasks: boolean;
-  showProjects: boolean;
+  selectedProjects: string[];
 }
 
 export interface User {

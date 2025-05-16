@@ -17,7 +17,7 @@ export const useUserTimeLogReport = (
     toDate: string;
     userIds: string[];
     showTasks: boolean;
-    showProjects: boolean;
+    selectedProjects?: string[];
   },
   shouldFetch: boolean
 ) => {

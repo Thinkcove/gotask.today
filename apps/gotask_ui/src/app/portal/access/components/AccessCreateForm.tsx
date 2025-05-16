@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  TextField,
-  Typography,
-  Button,
-  CircularProgress,
-  Box,
-} from "@mui/material";
+import { TextField, Typography, Button, CircularProgress, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
@@ -37,7 +31,8 @@ const AccessCreateForm: React.FC = () => {
   const validModules = ["User Management", "Task Management", "Project Management"];
 
   if (accessOptions.length > 0 && !currentModule) {
-    const firstValidModule = accessOptions.find(opt => validModules.includes(opt.access))?.access || validModules[0];
+    const firstValidModule =
+      accessOptions.find((opt) => validModules.includes(opt.access))?.access || validModules[0];
     setCurrentModule(firstValidModule);
   }
 
@@ -60,21 +55,23 @@ const AccessCreateForm: React.FC = () => {
       setSnackbar({
         open: true,
         message: t("Access.accessNameRequired"),
-        severity: "error",
+        severity: "error"
       });
       return;
     }
 
-    const application = Object.entries(selectedPermissions).map(([access, actions]) => ({
-      access,
-      actions,
-    })).filter(app => app.actions.length > 0);
+    const application = Object.entries(selectedPermissions)
+      .map(([access, actions]) => ({
+        access,
+        actions
+      }))
+      .filter((app) => app.actions.length > 0);
 
     if (application.length === 0) {
       setSnackbar({
         open: true,
         message: t("Access.atLeastOnePermissionRequired"),
-        severity: "error",
+        severity: "error"
       });
       return;
     }
@@ -83,27 +80,26 @@ const AccessCreateForm: React.FC = () => {
       name: accessName.trim(),
       application,
       id: "",
-      createdAt: "",
+      createdAt: ""
     };
 
     try {
       setIsSubmitting(true);
       const response = await createAccessRole(payload);
-      console.log("createAccessRole response:", response);
       if (response.success) {
         setSnackbar({
           open: true,
           message: t("Access.successmessage"),
-          severity: "success",
+          severity: "success"
         });
         setTimeout(() => {
           router.push("/portal/access");
-        }, 500); 
+        }, 500);
       } else {
         setSnackbar({
           open: true,
           message: response.message || t("Access.errormessage"),
-          severity: "error",
+          severity: "error"
         });
       }
     } catch (err) {
@@ -111,7 +107,7 @@ const AccessCreateForm: React.FC = () => {
       setSnackbar({
         open: true,
         message: t("Access.errormessage"),
-        severity: "error",
+        severity: "error"
       });
     } finally {
       setIsSubmitting(false);
@@ -129,7 +125,7 @@ const AccessCreateForm: React.FC = () => {
         borderRadius: 2,
         boxShadow: 3,
         p: 2,
-        overflow: "hidden",
+        overflow: "hidden"
       }}
     >
       <Box sx={{ flex: 1 }}>
@@ -148,12 +144,12 @@ const AccessCreateForm: React.FC = () => {
               "& .MuiOutlinedInput-root": {
                 borderRadius: 1,
                 "&:hover fieldset": {
-                  borderColor: "#741B92",
+                  borderColor: "#741B92"
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "#741B92",
-                },
-              },
+                  borderColor: "#741B92"
+                }
+              }
             }}
           />
         </Box>
@@ -194,7 +190,7 @@ const AccessCreateForm: React.FC = () => {
           borderColor: "divider",
           display: "flex",
           justifyContent: "flex-end",
-          gap: 1,
+          gap: 1
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
@@ -207,8 +203,8 @@ const AccessCreateForm: React.FC = () => {
               borderRadius: 1,
               textTransform: "none",
               "&:hover": {
-                bgcolor: "#f5f5f5",
-              },
+                bgcolor: "#f5f5f5"
+              }
             }}
           >
             {t("Access.cancel")}
@@ -226,8 +222,8 @@ const AccessCreateForm: React.FC = () => {
               textTransform: "none",
               bgcolor: "#741B92",
               "&:hover": {
-                bgcolor: "#5e1675",
-              },
+                bgcolor: "#5e1675"
+              }
             }}
           >
             {isSubmitting ? <CircularProgress size={20} /> : t("Access.createaccessnew")}

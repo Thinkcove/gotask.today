@@ -222,7 +222,7 @@
     "spent": "Spent:",
     "estimated": "Estimated:",
     "timetrackingclick": "Click the bar to update time tracking",
-    "timetrackingdisabled":"Today’s entry has already been recorded",
+    "timetrackingdisabled": "Today’s entry has already been recorded",
     "allfieldfill": "Please fill in all fields: date, start time, and end time are required.",
     "endstarttime": "End time must be after start time.",
     "failedentry": "Failed to save time entry. Please try again.",
@@ -235,7 +235,7 @@
     "starttime": " Start Time",
     "selectstart": "Select start time",
     "endtime": "End Time",
-    "placeholderselecttime":"Select end time",
+    "placeholderselecttime": "Select end time",
     "popupcancel": "Cancel",
     "popupsave": "Save",
     "taskname": "Task",
@@ -306,6 +306,7 @@
     "from": "From",
     "to": "To",
     "userlist": "User",
+    "projectlist": "Project",
     "nousers": "No users available",
     "showtasks": "Task",
     "notask": "No Task",
@@ -313,6 +314,7 @@
     "noproject": "No Project",
     "loghelper": "Please select a date and users to see their work log",
     "totalworklog": "Total Work Log",
-    "error": "Error loading data"
+    "error": "Error loading data",
+    "all": "All"
   }
 }

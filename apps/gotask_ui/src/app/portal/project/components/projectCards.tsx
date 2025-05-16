@@ -64,7 +64,6 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
                 <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
                   {project.name}
                 </Typography>
-                <StatusIndicator status={project.status} getColor={getStatusColor} />
               </Box>
 
               {/* Project Description */}
@@ -110,7 +109,8 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
 
               {/* View Details Button */}
               {canAccess(APPLICATIONS.PROJECT, ACTIONS.VIEW) && (
-                <Box display="flex" justifyContent="flex-end">
+                <Box display="flex" justifyContent="space-between">
+                  <StatusIndicator status={project.status} getColor={getStatusColor} />
                   <Box
                     sx={{
                       display: "flex",

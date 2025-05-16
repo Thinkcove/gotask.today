@@ -12,6 +12,7 @@ import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 import { GroupedLogs, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { extractHours } from "@/app/common/utils/common";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -33,7 +34,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
   fromDate,
   toDate,
   showTasks,
-  showProjects
+  selectedProjects = []
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const dateRange = getDateRange(fromDate, toDate);
@@ -45,17 +46,6 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
     const date = isValid(parseISO(entry.date)) ? format(parseISO(entry.date), "yyyy-MM-dd") : null;
 
     if (!date) return acc;
-
-    const extractHours = (timeStrings: string[]) =>
-      timeStrings.reduce((sum, entry) => {
-        const match = entry.match(/(\d+)d(\d+)h/);
-        if (match) {
-          const days = parseInt(match[1], 10);
-          const hours = parseInt(match[2], 10);
-          return sum + days * 24 + hours;
-        }
-        return sum;
-      }, 0);
 
     const timeLogged = extractHours(entry.total_time_logged || []);
     const key = [user, project, task].join("|");
@@ -83,7 +73,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
   const totalTimePerUser: Record<string, number> = {};
   Object.entries(groupedByUser).forEach(([user, projects]) => {
     totalTimePerUser[user] = 0;
-
+    
     Object.values(projects).forEach((tasks) => {
       tasks.forEach((task) => {
         (Object.values(task.dailyLogs) as number[]).forEach((hours) => {
@@ -93,162 +83,176 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
     });
   });
 
+  const singleProjectName =
+    selectedProjects.length === 1
+      ? data.find((d) => d.project_id === selectedProjects[0])?.project_name ||
+        transreport("noproject")
+      : null;
+
   return (
-    <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
-      <Table stickyHeader size="small" sx={{ minWidth: 1000 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
-              {transreport("userlist")}
-            </TableCell>
-            <TableCell
-              rowSpan={2}
-              sx={{
-                ...headerCellStyle,
-                top: 0,
-                background: "linear-gradient( #D6C4E4 100%)"
-              }}
-            >
-              {transreport("totalworklog")}
-            </TableCell>
-            {showProjects && (
+    <>
+      {singleProjectName && (
+        <div style={{ padding: "10px", fontWeight: "bold", fontSize: "1.1rem" }}>
+          {transreport("showproject")}: {singleProjectName}
+        </div>
+      )}
+
+      <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
+        <Table stickyHeader size="small" sx={{ minWidth: 1000 }}>
+          <TableHead>
+            <TableRow>
               <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
-                {transreport("showproject")}
+                {transreport("userlist")}
               </TableCell>
-            )}
-            {showTasks && (
-              <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
-                {transreport("showtasks")}
-              </TableCell>
-            )}
-            {Object.entries(
-              dateRange.reduce(
-                (acc, date) => {
-                  const key = format(date, "MMMM yyyy");
-                  if (!acc[key]) acc[key] = [];
-                  acc[key].push(date);
-                  return acc;
-                },
-                {} as Record<string, Date[]>
-              )
-            ).map(([monthYear, dates]) => (
               <TableCell
-                key={monthYear}
-                colSpan={dates.length}
-                align="center"
+                rowSpan={2}
                 sx={{
                   ...headerCellStyle,
-                  zIndex: 3,
-                  backgroundColor: "#e0e0e0"
+                  top: 0,
+                  background: "linear-gradient( #D6C4E4 100%)"
                 }}
               >
-                {monthYear}
+                {transreport("totalworklog")}
               </TableCell>
-            ))}
-          </TableRow>
+              {selectedProjects.length > 0 && (
+                <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
+                  {transreport("showproject")}
+                </TableCell>
+              )}
+              {showTasks && (
+                <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
+                  {transreport("showtasks")}
+                </TableCell>
+              )}
+              {Object.entries(
+                dateRange.reduce(
+                  (acc, date) => {
+                    const key = format(date, "MMMM yyyy");
+                    if (!acc[key]) acc[key] = [];
+                    acc[key].push(date);
+                    return acc;
+                  },
+                  {} as Record<string, Date[]>
+                )
+              ).map(([monthYear, dates]) => (
+                <TableCell
+                  key={monthYear}
+                  colSpan={dates.length}
+                  align="center"
+                  sx={{
+                    ...headerCellStyle,
+                    zIndex: 3,
+                    backgroundColor: "#e0e0e0"
+                  }}
+                >
+                  {monthYear}
+                </TableCell>
+              ))}
+            </TableRow>
 
-          <TableRow>
-            {dateRange.map((date) => (
-              <TableCell
-                key={date.toISOString()}
-                sx={{
-                  ...headerCellStyle,
-                  top: 47,
-                  fontSize: "0.875rem",
-                  fontWeight: 500,
-                  backgroundColor: "#f9f9f9",
-                  zIndex: 2
-                }}
-              >
-                {format(date, "dd EEE")}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
+            <TableRow>
+              {dateRange.map((date) => (
+                <TableCell
+                  key={date.toISOString()}
+                  sx={{
+                    ...headerCellStyle,
+                    top: 47,
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    backgroundColor: "#f9f9f9",
+                    zIndex: 2
+                  }}
+                >
+                  {format(date, "dd EEE")}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
 
-        <TableBody>
-          {Object.entries(groupedByUser).map(([user, projects]) => {
-            const projectEntries = Object.entries(projects);
-            let userRowRendered = false;
+          <TableBody>
+            {Object.entries(groupedByUser).map(([user, projects]) => {
+              const projectEntries = Object.entries(projects);
+              let userRowRendered = false;
 
-            return projectEntries.flatMap(([project, tasks]) =>
-              tasks.map((taskEntry, taskIdx) => (
-                <TableRow key={`${user}-${project}-${taskIdx}`}>
-                  {!userRowRendered && (
-                    <>
+              return projectEntries.flatMap(([project, tasks]) =>
+                tasks.map((taskEntry, taskIdx) => (
+                  <TableRow key={`${user}-${project}-${taskIdx}`}>
+                    {!userRowRendered && (
+                      <>
+                        <TableCell
+                          rowSpan={projectEntries.reduce((acc, [, t]) => acc + t.length, 0)}
+                          sx={{
+                            verticalAlign: "center",
+                            padding: "10px",
+                            textAlign: "left" as const,
+                            border: "1px solid #eee"
+                          }}
+                        >
+                          {user}
+                        </TableCell>
+                        <TableCell
+                          rowSpan={projectEntries.reduce((acc, [, t]) => acc + t.length, 0)}
+                          sx={{
+                            verticalAlign: "center",
+                            padding: "10px",
+                            textAlign: "center" as const,
+                            border: "1px solid #eee",
+                            fontWeight: 600,
+                            background: "linear-gradient( #D6C4E4 100%)"
+                          }}
+                        >
+                          {totalTimePerUser[user]}h
+                        </TableCell>
+                      </>
+                    )}
+                    {selectedProjects.length > 0 && taskIdx === 0 && (
                       <TableCell
-                        rowSpan={projectEntries.reduce((acc, [, t]) => acc + t.length, 0)}
-                        sx={{
-                          verticalAlign: "center",
-                          padding: "10px",
-                          textAlign: "left" as const,
-                          border: "1px solid #eee"
-                        }}
-                      >
-                        {user}
-                      </TableCell>
-                      <TableCell
-                        rowSpan={projectEntries.reduce((acc, [, t]) => acc + t.length, 0)}
-                        sx={{
-                          verticalAlign: "center",
-                          padding: "10px",
-                          textAlign: "center" as const,
-                          border: "1px solid #eee",
-                          fontWeight: 600,
-                          background: "linear-gradient( #D6C4E4 100%)"
-                        }}
-                      >
-                        {totalTimePerUser[user]}h
-                      </TableCell>
-                    </>
-                  )}
-                  {showProjects && taskIdx === 0 && (
-                    <TableCell
-                      rowSpan={tasks.length}
-                      sx={{
-                        padding: "10px",
-                        textAlign: "center" as const,
-                        border: "1px solid #eee"
-                      }}
-                    >
-                      {project}
-                    </TableCell>
-                  )}
-                  {showTasks && (
-                    <TableCell
-                      sx={{
-                        padding: "10px",
-                        textAlign: "left",
-                        border: "1px solid #eee"
-                      }}
-                    >
-                      {taskEntry.task}
-                    </TableCell>
-                  )}
-                  {dateRange.map((date) => {
-                    const key = format(date, "yyyy-MM-dd");
-                    const value = taskEntry.dailyLogs[key];
-                    return (
-                      <TableCell
-                        key={key}
+                        rowSpan={tasks.length}
                         sx={{
                           padding: "10px",
                           textAlign: "center" as const,
                           border: "1px solid #eee"
                         }}
                       >
-                        {value ? `${value}h` : ""}
+                        {project}
                       </TableCell>
-                    );
-                  })}
-                  {(userRowRendered = true)}
-                </TableRow>
-              ))
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                    )}
+                    {showTasks && (
+                      <TableCell
+                        sx={{
+                          padding: "10px",
+                          textAlign: "left",
+                          border: "1px solid #eee"
+                        }}
+                      >
+                        {taskEntry.task}
+                      </TableCell>
+                    )}
+                    {dateRange.map((date) => {
+                      const key = format(date, "yyyy-MM-dd");
+                      const value = taskEntry.dailyLogs[key];
+                      return (
+                        <TableCell
+                          key={key}
+                          sx={{
+                            padding: "10px",
+                            textAlign: "center" as const,
+                            border: "1px solid #eee"
+                          }}
+                        >
+                          {value ? `${value}h` : ""}
+                        </TableCell>
+                      );
+                    })}
+                    {(userRowRendered = true)}
+                  </TableRow>
+                ))
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 

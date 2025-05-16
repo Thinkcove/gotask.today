@@ -3,8 +3,8 @@ import { Typography, Paper, Box, Divider } from "@mui/material";
 import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
 import { ReadMoreTwoTone } from "@mui/icons-material";
-import TaskItem from "./taskItem";
-import { IGroup, ITask } from "../../interface/taskInterface";
+import TaskItem, { Task } from "./taskItem";
+import { IGroup } from "../../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -67,7 +67,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
       <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 400 }}>
         {group.tasks.length > 0 ? (
           <>
-            {group.tasks.slice(0, 3).map((task: ITask) => (
+            {group.tasks.slice(0, 3).map((task: Task) => (
               <TaskItem
                 key={task.id}
                 task={task}

@@ -6,14 +6,14 @@ class ReportController extends BaseController {
   // timeReport
   async getUserTimeReport(requestHelper: RequestHelper, handler: any) {
     try {
-      const { fromDate, toDate, userIds, showTasks, showProjects } = requestHelper.getPayload();
+      const { fromDate, toDate, userIds, showTasks, selectedProjects } = requestHelper.getPayload();
 
       const result = await getUserTimeReportService(
         fromDate,
         toDate,
         userIds,
         showTasks,
-        showProjects
+        selectedProjects
       );
 
       return this.sendResponse(handler, result);

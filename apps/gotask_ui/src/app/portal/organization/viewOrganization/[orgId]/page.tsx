@@ -3,28 +3,24 @@ import React from "react";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
 import env from "@/app/common/env";
-import { CircularProgress, Box } from "@mui/material";
 import OrgDetail from "./orgDetail";
 import { getData } from "@/app/common/utils/apiData";
-import { fetchToken } from "@/app/common/utils/authToken";
+import { withAuth } from "@/app/common/utils/authToken";
+
+const fetchOrg = async (url: string) => {
+  return await withAuth(async (token: string) => {
+    return await getData(url, token);
+  });
+};
 
 const ViewAction: React.FC = () => {
   const { orgId } = useParams();
-  const token = fetchToken();
-  const { data, mutate } = useSWR(
-    token ? `${env.API_BASE_URL}/getOrgById/${orgId}` : null,
-    (url) => getData(url, token ?? undefined),
-    { revalidateOnFocus: false }
-  );
-  const selectedTask = data?.data || null;
-
-  return selectedTask ? (
-    <OrgDetail org={selectedTask} mutate={mutate} />
-  ) : (
-    <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-      <CircularProgress />
-    </Box>
-  );
+  const url = `${env.API_BASE_URL}/getOrgById/${orgId}`;
+  const { data, mutate } = useSWR(orgId ? url : null, fetchOrg, {
+    revalidateOnFocus: false
+  });
+  const selectedOrg = data?.data || null;
+  return selectedOrg && <OrgDetail org={selectedOrg} mutate={mutate} />;
 };
 
 export default ViewAction;

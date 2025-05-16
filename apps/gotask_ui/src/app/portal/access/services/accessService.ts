@@ -1,10 +1,10 @@
 import env from "@/app/common/env";
 import { getData, postData, putData, deleteData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
-import { fetchToken } from "@/app/common/utils/authToken";
+import { withAuth } from "@/app/common/utils/authToken";
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 
-// Interface for AccessData to ensure mapping compatibility
+// Interface for AccessData
 interface AccessData {
   id: string;
   name: string;
@@ -18,32 +18,29 @@ export const getAccessOptions = async (): Promise<{
   data?: AccessOption[];
   message?: string;
 }> => {
-  const token = fetchToken();
-  if (!token) {
-    return { success: false, message: "Please login again." };
-  }
-  try {
+  const result = await withAuth(async (token) => {
     const data = await getData(`${env.API_BASE_URL}/access/options`, token);
-    console.log("getAccessOptions data:", data); // Debug log
     return { success: true, data };
-  } catch (error: any) {
-    console.error("getAccessOptions error:", error.response || error.message);
-    return {
-      success: false,
-      message: error.response?.message || error.message || "Failed to fetch access options."
-    };
+  });
+
+  if ("error" in result) {
+    return { success: false, message: result.error };
   }
+
+  return result;
 };
 
 // SWR hook for access options
 const fetchAccessOptions = async () => {
-  const token = fetchToken();
-  if (!token) {
-    throw new Error("Please login again.");
+  const result = await withAuth(async (token) => {
+    return await getData(`${env.API_BASE_URL}/access/options`, token);
+  });
+
+  if ("error" in result) {
+    return [];
   }
-  const data = await getData(`${env.API_BASE_URL}/access/options`, token);
-  console.log("fetchAccessOptions data:", data); // Debug log
-  return data;
+
+  return result;
 };
 
 export const useAccessOptions = () => {
@@ -51,12 +48,10 @@ export const useAccessOptions = () => {
     revalidateOnFocus: false
   });
 
-  console.log("useAccessOptions data:", data); // Debug log
-
   return {
     accessOptions: Array.isArray(data) ? data : [],
     isLoading,
-    error: error ? error.message || "Failed to fetch access options" : null
+    error: error ? error.message : null
   };
 };
 
@@ -64,36 +59,33 @@ export const useAccessOptions = () => {
 export const createAccessRole = async (
   accessData: AccessRole
 ): Promise<{ success: boolean; data?: AccessRole; message?: string }> => {
-  const token = fetchToken();
-  if (!token) {
-    return { success: false, message: "Please login again." };
-  }
-  try {
+  const result = await withAuth(async (token) => {
     const data = await postData(
       `${env.API_BASE_URL}/access/create`,
       accessData as unknown as Record<string, unknown>,
       token
     );
-    console.log("createAccessRole data:", data); // Debug log
     return { success: true, data };
-  } catch (error: any) {
-    console.error("createAccessRole error:", error.response || error.message);
-    return {
-      success: false,
-      message: error.response?.message || error.message || "Failed to create access role."
-    };
+  });
+
+  if ("error" in result) {
+    return { success: false, message: result.error };
   }
+
+  return result;
 };
 
-// Fetch all access roles with SWR
+// Fetch all access roles
 const fetchAccessRoles = async () => {
-  const token = fetchToken();
-  if (!token) {
-    throw new Error("Please login again.");
+  const result = await withAuth(async (token) => {
+    return await getData(`${env.API_BASE_URL}/access`, token);
+  });
+
+  if ("error" in result) {
+    return [];
   }
-  const data = await getData(`${env.API_BASE_URL}/access`, token);
-  console.log("fetchAccessRoles data:", data); // Debug log
-  return data;
+
+  return result;
 };
 
 export const useAllAccessRoles = () => {
@@ -105,14 +97,14 @@ export const useAllAccessRoles = () => {
     data?.map((role: AccessRole) => ({
       id: role.id,
       name: role.name,
-      accesses: role.application || [], // Map application to accesses
+      accesses: role.application || [],
       createdAt: role.createdAt
     })) || [];
 
   return {
     accessRoles: mappedData,
     isLoading,
-    error: error ? error.message || "Failed to fetch access roles" : null
+    error: error ? error.message : null
   };
 };
 
@@ -121,83 +113,70 @@ export const updateAccessRole = async (
   id: string,
   accessData: Omit<AccessRole, "id">
 ): Promise<{ success: boolean; data?: AccessRole; message?: string }> => {
-  const token = fetchToken();
-  if (!token) {
-    return { success: false, message: "Please login again." };
-  }
-  try {
-    const cleanedApplication = accessData.application?.map(({ ...rest }) => rest);
+  const result = await withAuth(async (token) => {
     const cleanedPayload = {
       name: accessData.name,
-      application: cleanedApplication
+      application: accessData.application?.map(({ ...rest }) => rest)
     };
+
     const data = await putData(
       `${env.API_BASE_URL}/access/${id}`,
       cleanedPayload as unknown as Record<string, unknown>,
       token
     );
-    console.log("updateAccessRole data:", data); // Debug log
     return { success: true, data };
-  } catch (error: any) {
-    console.error("updateAccessRole error:", error.response || error.message);
-    return {
-      success: false,
-      message: error.response?.message || error.message || "Failed to update access role."
-    };
+  });
+
+  if ("error" in result) {
+    return { success: false, message: result.error };
   }
+
+  return result;
 };
 
 // Delete an access role
 export const deleteAccessRole = async (
   id: string
 ): Promise<{ success: boolean; message: string }> => {
-  const token = fetchToken();
-  if (!token) {
-    return { success: false, message: "Please login again." };
-  }
-  try {
+  const result = await withAuth(async (token) => {
     await deleteData(`${env.API_BASE_URL}/access/${id}`, token);
-    console.log("deleteAccessRole success for id:", id); // Debug log
     return { success: true, message: "Access role deleted successfully." };
-  } catch (error: any) {
-    console.error("deleteAccessRole error:", error.response || error.message);
-    return {
-      success: false,
-      message: error.response?.message || error.message || "Failed to delete access role."
-    };
+  });
+
+  if ("error" in result) {
+    return { success: false, message: result.error };
   }
+
+  return result;
 };
 
 // Fetch access role by ID
 export const getAccessRoleById = async (
   id: string
 ): Promise<{ success: boolean; data?: AccessRole; message?: string }> => {
-  const token = fetchToken();
-  if (!token) {
-    return { success: false, message: "Please login again." };
-  }
-  try {
+  const result = await withAuth(async (token) => {
     const data = await getData(`${env.API_BASE_URL}/access/${id}`, token);
-    console.log("getAccessRoleById data:", data); // Debug log
     return { success: true, data };
-  } catch (error: any) {
-    console.error("getAccessRoleById error:", error.response || error.message);
-    return {
-      success: false,
-      message: error.response?.message || error.message || "Failed to fetch access role by ID."
-    };
+  });
+
+  if ("error" in result) {
+    return { success: false, message: result.error };
   }
+
+  return result;
 };
 
 // SWR hook for access role by ID
 const fetchAccessRoleById = async ([, id]: [string, string]) => {
-  const token = fetchToken();
-  if (!token) {
-    throw new Error("Please login again.");
+  const result = await withAuth(async (token) => {
+    return await getData(`${env.API_BASE_URL}/access/${id}`, token);
+  });
+
+  if ("error" in result) {
+    return null;
   }
-  const data = await getData(`${env.API_BASE_URL}/access/${id}`, token);
-  console.log("fetchAccessRoleById data:", data); // Debug log
-  return data;
+
+  return result;
 };
 
 export const useAccessRoleById = (id: string) => {
@@ -205,11 +184,9 @@ export const useAccessRoleById = (id: string) => {
     revalidateOnFocus: false
   });
 
-  console.log("useAccessRoleById data:", data); // Debug log
-
   return {
     role: data,
     isLoading,
-    error: error ? error.message || "Failed to fetch access role" : null
+    error: error ? error.message : null
   };
 };

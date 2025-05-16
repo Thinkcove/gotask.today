@@ -24,32 +24,55 @@ interface FiltersPanelProps {
   fromDate: string;
   toDate: string;
   userIds: string[];
+  projectIds: string[];
   setFromDate: (date: string) => void;
   setToDate: (date: string) => void;
   setUserIds: (ids: string[]) => void;
   usersList: User[];
+  setProjectIds: (ids: string[]) => void;
+  projectsList: User[];
   showTasks: boolean;
-  showProjects: boolean;
   setShowTasks: (value: boolean) => void;
-  setShowProjects: (value: boolean) => void;
 }
 
 const FiltersPanel: React.FC<FiltersPanelProps> = ({
   fromDate,
   toDate,
   userIds,
+  projectIds,
   setFromDate,
   setToDate,
   setUserIds,
   usersList,
+  setProjectIds,
+  projectsList,
   showTasks,
-  showProjects,
-  setShowTasks,
-  setShowProjects
+  setShowTasks
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const handleUserChange = (event: SelectChangeEvent<string[]>) => {
     setUserIds(event.target.value as string[]);
+  };
+
+  const ALL_PROJECTS_ID = "ALL";
+
+  const handleProjectChange = (event: SelectChangeEvent<string[]>) => {
+    const value = event.target.value as string[];
+
+    const isAllSelected = value.includes(ALL_PROJECTS_ID);
+    const allProjectIds = projectsList.map((p) => p.id);
+
+    if (isAllSelected) {
+      // If already all selected, deselect all
+      const allSelected = allProjectIds.every((id) => value.includes(id));
+      if (allSelected) {
+        setProjectIds([]);
+      } else {
+        setProjectIds(allProjectIds);
+      }
+    } else {
+      setProjectIds(value);
+    }
   };
 
   return (
@@ -148,22 +171,61 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
             )}
           </Select>
         </FormControl>
+        <FormControl fullWidth>
+          <InputLabel id="project-id-label"> {transreport("projectlist")}</InputLabel>
+          <Select
+            labelId="project-id-label"
+            id="project-ids"
+            multiple
+            value={projectIds}
+            onChange={handleProjectChange}
+            input={<OutlinedInput label={transreport("projectlist")} />}
+            renderValue={(selected) => {
+              if (selected.includes(ALL_PROJECTS_ID)) {
+                return <Chip label={transreport("all")} />;
+              }
+              return (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((id) => {
+                    const project = projectsList.find((p) => p.id === id);
+                    return (
+                      <Chip
+                        key={id}
+                        label={project?.name || id}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onDelete={(e) => {
+                          e.stopPropagation();
+                          const updated = projectIds.filter((pid) => pid !== id);
+                          setProjectIds(updated);
+                        }}
+                      />
+                    );
+                  })}
+                </Box>
+              );
+            }}
+          >
+            <MenuItem value={ALL_PROJECTS_ID}>
+              <Checkbox
+                checked={projectsList.length > 0 && projectIds.length === projectsList.length}
+              />
+              <ListItemText primary={transreport("all")} />
+            </MenuItem>
 
+            {projectsList.map((project) => (
+              <MenuItem key={project.id} value={project.id}>
+                <Checkbox checked={projectIds.includes(project.id)} />
+                <ListItemText primary={project.name} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <Stack direction="row" spacing={2}>
           <FormControlLabel
             control={
               <Checkbox checked={showTasks} onChange={(e) => setShowTasks(e.target.checked)} />
             }
             label={transreport("showtasks")}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={showProjects}
-                onChange={(e) => setShowProjects(e.target.checked)}
-              />
-            }
-            label={transreport("showproject")}
           />
         </Stack>
       </Stack>

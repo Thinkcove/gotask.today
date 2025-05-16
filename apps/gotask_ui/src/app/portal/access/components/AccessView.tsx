@@ -25,7 +25,8 @@ import {
 } from "../services/accessService";
 import AccessPermissionsContainer from "./AccessPermissionsContainer";
 import AccessHeading from "./AccessHeading";
-import CustomSnackbar from "../../../component/snackBar/snackbar"; 
+import CustomSnackbar from "../../../component/snackBar/snackbar";
+import CommonDialog from "../../../component/dialog/commonDialog"; // ✅ Import your dialog
 
 const AccessView: React.FC = () => {
   const t = useTranslations("Access");
@@ -38,22 +39,40 @@ const AccessView: React.FC = () => {
 
   const [currentTab, setCurrentTab] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // ✅ Dialog state
 
-  const { role: accessRole, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(id as string);
-  const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
+  const {
+    role: accessRole,
+    isLoading: isRoleLoading,
+    error: roleError,
+  } = useAccessRoleById(id as string);
+  const {
+    accessOptions,
+    isLoading: isOptionsLoading,
+    error: optionsError,
+  } = useAccessOptions();
 
-  //  Snackbar state
+  // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "warning" | "info">("success");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    "success" | "error" | "warning" | "info"
+  >("success");
 
-  const showSnackbar = (message: string, severity: "success" | "error" | "warning" | "info" = "success") => {
+  const showSnackbar = (
+    message: string,
+    severity: "success" | "error" | "warning" | "info" = "success"
+  ) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
   };
 
-  const validModules = ["User Management", "Task Management", "Project Management"];
+  const validModules = [
+    "User Management",
+    "Task Management",
+    "Project Management",
+  ];
 
   if (accessOptions.length > 0 && !currentTab && accessRole) {
     const firstValidModule =
@@ -65,21 +84,17 @@ const AccessView: React.FC = () => {
     setCurrentTab(firstValidModule);
   }
 
-  const handleDelete = async () => {
+  const confirmDelete = async () => {
     if (!accessRole || isDeleting) return;
-
-    const confirmed = window.confirm(t("deleteconfirm"));
-    if (!confirmed) return;
 
     try {
       setIsDeleting(true);
       const res = await deleteAccessRole(accessRole.id);
       if (res.success) {
         showSnackbar(res.message || t("updatesuccess"), "success");
-        
         setTimeout(() => {
           router.push("/portal/access");
-        }, 500); 
+        }, 500);
       } else {
         showSnackbar(res.message || t("updateerror"), "error");
       }
@@ -88,6 +103,7 @@ const AccessView: React.FC = () => {
       showSnackbar(t("updateerror"), "error");
     } finally {
       setIsDeleting(false);
+      setOpenDeleteDialog(false); // ✅ Close dialog after action
     }
   };
 
@@ -102,7 +118,15 @@ const AccessView: React.FC = () => {
 
   if (isRoleLoading || isOptionsLoading) {
     return (
-      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -110,7 +134,15 @@ const AccessView: React.FC = () => {
 
   if (roleError || optionsError) {
     return (
-      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="body1" color="error">
           {roleError || optionsError}
         </Typography>
@@ -120,7 +152,15 @@ const AccessView: React.FC = () => {
 
   if (!accessRole) {
     return (
-      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="body1" color="text.secondary">
           {t("noaccessavailable")}
         </Typography>
@@ -151,7 +191,12 @@ const AccessView: React.FC = () => {
           flexDirection={isMobile ? "column" : "row"}
           gap={isMobile ? 2 : 0}
         >
-          <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-start">
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="flex-start"
+          >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
               <Tooltip title={t("cancel")}>
                 <IconButton onClick={() => router.back()} color="primary">
@@ -162,11 +207,18 @@ const AccessView: React.FC = () => {
             <AccessHeading title={accessRole.name} />
           </Stack>
 
-          <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="flex-end"
+          >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
               <Tooltip title={t("editaccess")}>
                 <IconButton
-                  onClick={() => router.push(`/portal/access/pages/edit/${accessRole.id}`)}
+                  onClick={() =>
+                    router.push(`/portal/access/pages/edit/${accessRole.id}`)
+                  }
                   color="primary"
                 >
                   <Edit />
@@ -175,7 +227,11 @@ const AccessView: React.FC = () => {
             )}
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.DELETE) && (
               <Tooltip title={t("deleteaccess")}>
-                <IconButton onClick={handleDelete} color="error" disabled={isDeleting}>
+                <IconButton
+                  onClick={() => setOpenDeleteDialog(true)}
+                  color="error"
+                  disabled={isDeleting}
+                >
                   <Delete />
                 </IconButton>
               </Tooltip>
@@ -184,7 +240,10 @@ const AccessView: React.FC = () => {
         </Box>
 
         <Box sx={{ width: "100%", maxWidth: 500, mb: 3 }}>
-          <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
+          <Typography
+            variant="body2"
+            sx={{ mb: 1, color: "#333", fontWeight: 500 }}
+          >
             {t("accessName")}
           </Typography>
           <TextField
@@ -228,7 +287,20 @@ const AccessView: React.FC = () => {
         )}
       </Box>
 
-      {/* ✅ Use reusable Snackbar */}
+      {/* ✅ Confirmation Dialog */}
+      <CommonDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onSubmit={confirmDelete}
+        title={t("deleteaccess")}
+        submitLabel={t("delete")}
+      >
+        <Typography variant="body1" color="text.secondary">
+          {t("deleteconfirm")}
+        </Typography>
+      </CommonDialog>
+
+      {/* ✅ Reusable Snackbar */}
       <CustomSnackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}

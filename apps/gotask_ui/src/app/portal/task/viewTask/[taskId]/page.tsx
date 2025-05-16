@@ -3,28 +3,24 @@ import React from "react";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
 import env from "@/app/common/env";
-import { CircularProgress, Box } from "@mui/material";
-import { fetchToken } from "@/app/common/utils/authToken";
+import { withAuth } from "@/app/common/utils/authToken";
 import { getData } from "@/app/common/utils/apiData";
 import TaskDetail from "./taskDetail";
 
+const fetchTask = async (url: string) => {
+  return await withAuth(async (token: string) => {
+    return await getData(url, token);
+  });
+};
+
 const ViewAction: React.FC = () => {
   const { taskId } = useParams();
-  const token = fetchToken();
-  const { data } = useSWR(
-    token ? `${env.API_BASE_URL}/getTaskById/${taskId}` : null,
-    (url) => getData(url, token ?? undefined),
-    { revalidateOnFocus: false }
-  );
-  const selectedTask = data?.data || null;
-
-  return selectedTask ? (
-    <TaskDetail task={selectedTask} />
-  ) : (
-    <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-      <CircularProgress />
-    </Box>
-  );
+  const url = `${env.API_BASE_URL}/getTaskById/${taskId}`;
+  const { data } = useSWR(taskId ? url : null, fetchTask, {
+    revalidateOnFocus: false
+  });
+  const selectedTask = data?.data || [];
+  return selectedTask && <TaskDetail task={selectedTask} />;
 };
 
 export default ViewAction;

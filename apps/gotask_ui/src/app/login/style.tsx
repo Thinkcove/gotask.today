@@ -18,7 +18,14 @@ export const LoginCard = styled(Paper)({
   maxWidth: "420px",
   width: "100%",
   color: "#333",
-  border: "2px solid #741B92"
+  border: "2px solid #741B92",
+
+  // 💡 Prevent card height from jumping
+  minHeight: "520px",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  transition: "all 0.3s ease"
 });
 
 export const StyledButton = styled(Button)({

@@ -19,7 +19,7 @@ const ProjectList = () => {
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: projects, error, mutate: ProjectUpdate } = useSWR("fetch-projects", fetcher);
+  const { data: projects, mutate: ProjectUpdate } = useSWR("fetch-projects", fetcher);
 
   const filteredProjects =
     projects?.filter((pro: Project) => pro.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -48,7 +48,7 @@ const ProjectList = () => {
           placeholder={transproject("searchplaceholder")}
         />
       </Box>
-      <ProjectCards projects={filteredProjects} error={error} />
+      <ProjectCards projects={filteredProjects} />
 
       {/* Add Project Button */}
       {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (

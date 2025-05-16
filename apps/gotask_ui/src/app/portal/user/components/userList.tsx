@@ -19,7 +19,7 @@ const UserList = () => {
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: users, error, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
+  const { data: users, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
 
   const filteredUsers =
     users?.filter((user: User) => user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -44,7 +44,7 @@ const UserList = () => {
           placeholder={transuser("searchplaceholder")}
         />
       </Box>
-      <UserCards users={filteredUsers} error={error} />
+      <UserCards users={filteredUsers} />
 
       {/* Add User Button */}
       {canAccess(APPLICATIONS.USER, ACTIONS.CREATE) && (

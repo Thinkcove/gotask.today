@@ -17,24 +17,12 @@ import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
 interface ProjectCardProps {
   projects: Project[] | null;
-  error: { [key: string]: string };
 }
 
-const ProjectCards: React.FC<ProjectCardProps> = ({ projects, error }) => {
+const ProjectCards: React.FC<ProjectCardProps> = ({ projects}) => {
   const { canAccess } = useUserPermission();
   const router = useRouter();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-
-  // Error state
-  if (error) {
-    return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <Typography variant="body1" color="error">
-          {transproject("errorloading")} {error.message || "Unknown error"}
-        </Typography>
-      </Box>
-    );
-  }
 
   // Handle loading state
   if (!projects) {

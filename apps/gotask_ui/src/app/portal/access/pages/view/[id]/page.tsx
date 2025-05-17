@@ -1,13 +1,13 @@
 "use client";
-
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
 import AccessView from "../../../components/AccessView";
-import { useTranslations } from "next-intl"; 
-import { LOCALIZATION } from "../../../../../common/constants/localization"; 
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "../../../../../common/constants/localization";
+import ModuleHeader from "@/app/component/appBar/moduleHeader";
 
 const AccessViewPage = () => {
-  const transAccess = useTranslations(LOCALIZATION.TRANSITION.ACCESS); 
+  const transAccess = useTranslations(LOCALIZATION.TRANSITION.ACCESS);
 
   return (
     <Box
@@ -17,30 +17,11 @@ const AccessViewPage = () => {
         height: "100vh",
         m: 0,
         p: 0,
-        overflow: "hidden",
+        overflow: "hidden"
       }}
     >
       {/* Header Section */}
-      <Box
-        sx={{
-          backgroundColor: "#741B92",
-          color: "white",
-          p: 1.5,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "600",
-            textTransform: "capitalize",
-          }}
-        >
-          {transAccess("viewdetail")} {/* Using translation key from en.json */}
-        </Typography>
-      </Box>
+      <ModuleHeader name={transAccess("viewdetail")} />
 
       {/* Content Section */}
       <Box sx={{ flex: 1, overflow: "hidden" }}>

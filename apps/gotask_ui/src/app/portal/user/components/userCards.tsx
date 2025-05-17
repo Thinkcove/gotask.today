@@ -14,24 +14,13 @@ import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
 interface UserCardProps {
   users: User[] | null;
-  error: { [key: string]: string };
 }
 
-const UserCards: React.FC<UserCardProps> = ({ users, error }) => {
+const UserCards: React.FC<UserCardProps> = ({ users}) => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const router = useRouter();
-
-  if (error) {
-    return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <Typography variant="body1" color="error">
-          {transuser("errorload")}
-        </Typography>
-      </Box>
-    );
-  }
-
+  
   if (!users) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>

@@ -84,8 +84,8 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
                 label={transtask("detailseverity")}
-                value={task.severity.toUpperCase()}
-                sx={{ color: getSeverityColor(task.severity) }}
+                value={task.severity}
+                sx={{ color: getSeverityColor(task.severity), textTransform: "capitalize" }}
               />
             </Grid>
             <Grid item xs={4} sm={6} md={4}>

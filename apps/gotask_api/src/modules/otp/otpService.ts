@@ -1,15 +1,13 @@
-import { User } from "../../domain/model/user/user";
+import { User, IUser } from "../../domain/model/user/user";
+import { Otp, IOtp } from "../../domain/model/otp/Otp"
 import { sendEmail } from "../../constants/utils/emailService";
-import { generateOTP } from "../../constants/utils/otpGenerator";
+import { generateOTPWithExpiry } from "../../constants/utils/otpGenerator";
 import UserMessages from "../../constants/apiMessages/userMessage";
 import OtpMessages from "../../constants/apiMessages/OtpMessages";
-import { IUser } from "../../domain/model/user/user";
 import jwt from "jsonwebtoken";
 import { getRoleByIdService } from "../role/roleService";
+import { getOtpEmailTemplate } from "../../constants/utils/otpEmailTemplate";
 
-/**
- * Send OTP to the user's registered email address (user_id is used as email)
- */
 const sendOtpService = async (
   user_id: string
 ): Promise<{ success: boolean; message: string }> => {
@@ -23,17 +21,20 @@ const sendOtpService = async (
       };
     }
 
-    const otp = generateOTP();
-    const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
+    const { otp, otpExpiry } = generateOTPWithExpiry(5);
 
-    user.otp = otp;
-    user.otpExpiry = otpExpires;
-    await user.save();
+    await Otp.findOneAndUpdate(
+      { user: user._id },
+      { otp, otpExpiry },
+      { upsert: true, new: true }
+    );
+
+    const emailContent = getOtpEmailTemplate(user.name, otp);
 
     await sendEmail({
       to: user.user_id,
-      subject: "Your OTP Code",
-      text: `Hello ${user.name},\n\nYour OTP is: ${otp}\nThis OTP will expire in 5 minutes.\n\nThank you.`
+      subject: emailContent.subject,
+      text: emailContent.text
     });
 
     return {
@@ -48,9 +49,6 @@ const sendOtpService = async (
   }
 };
 
-/**
- * Verify the OTP and return JWT if successful
- */
 const verifyOtpService = async (
   user_id: string,
   enteredOtp: string
@@ -62,7 +60,16 @@ const verifyOtpService = async (
   try {
     const user = await User.findOne({ user_id }).populate("roleId") as IUser;
 
-    if (!user || !user.otp || !user.otpExpiry) {
+    if (!user) {
+      return {
+        success: false,
+        message: UserMessages.FETCH.NOT_FOUND
+      };
+    }
+
+    const otpDoc = await Otp.findOne({ user: user._id }) as IOtp | null;
+
+    if (!otpDoc) {
       return {
         success: false,
         message: OtpMessages.VERIFY.NOT_FOUND
@@ -71,24 +78,21 @@ const verifyOtpService = async (
 
     const now = new Date();
 
-    if (user.otp !== enteredOtp) {
+    if (otpDoc.otp !== enteredOtp) {
       return {
         success: false,
         message: OtpMessages.VERIFY.INVALID
       };
     }
 
-    if (user.otpExpiry < now) {
+    if (otpDoc.otpExpiry < now) {
       return {
         success: false,
         message: OtpMessages.VERIFY.EXPIRED
       };
     }
 
-    // Clear OTP after verification
-    user.otp = null;
-    user.otpExpiry = null;
-    await user.save();
+    await Otp.deleteOne({ user: user._id });
 
     const roleId = user.roleId?.id?.toString();
     if (!roleId) {
@@ -118,7 +122,7 @@ const verifyOtpService = async (
       { expiresIn: "1h" }
     );
 
-    const { password, otp, otpExpiry, ...sanitizedUser } = user.toObject();
+    const { password, ...sanitizedUser } = user.toObject();
     sanitizedUser.role = enrichedRole;
 
     return {

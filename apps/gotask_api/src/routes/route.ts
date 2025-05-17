@@ -6,7 +6,7 @@ import * as AccessRoutes from "../modules/access/accessRoutes";
 import * as RoleRoutes from "../modules/role/roleRoutes";
 import * as OrganizationRoutes from "../modules/organization/organizationRoute";
 import * as ReportRoutes from "../modules/report/reportRoute";
-import * as OtpRoutes from "../modules/otp-m/otpRoutes";
+import * as OtpRoutes from "../modules/otp/otpRoutes";
 
 
 const routes: ServerRoute[] = [

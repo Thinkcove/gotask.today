@@ -12,8 +12,6 @@ export interface IUser extends Document {
   roleId: Types.ObjectId;
   organization?: string[];
   projects?: string[];
-  otp?: string | null;
-  otpExpiry?: Date | null;
 }
 
 // User Schema
@@ -37,16 +35,6 @@ const UserSchema = new Schema<IUser>(
       type: [String],
       default: []
     },
-
-    // OTP and expiry fields
-    otp: {
-      type: String,
-      default: null
-    },
-    otpExpiry: {
-      type: Date,
-      default: null
-    }
   },
   {
     timestamps: true

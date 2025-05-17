@@ -7,10 +7,12 @@ import { useUser } from "../userContext";
 import env from "../common/env";
 import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation"; // ✅ App Router
 
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
   const { setUser } = useUser();
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -57,17 +59,18 @@ const OtpLogin = () => {
       });
       const data = await res.json();
 
-      if (res.ok && data.success) {
-        // Save user WITHOUT token
-        localStorage.setItem("user", JSON.stringify(data.user));
-        // Save token separately (your fetchToken() expects token saved separately)
-        localStorage.setItem("token", data.token);
-        
-        // Update context with user + token
-        setUser({ ...data.user, token: data.token });
+      if (res.ok && data.success && data.data) {
+        const { user, token } = data.data;
 
-        // Redirect to dashboard
-        window.location.href = "/portal/dashboard";
+        // ✅ Save user and token
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", token);
+
+        // ✅ Update context
+        setUser({ ...user, token });
+
+        // ✅ Redirect to dashboard
+        router.push("/portal/dashboard");
       } else {
         setError(data.error || data.message || translogin("otperror"));
       }
@@ -79,7 +82,6 @@ const OtpLogin = () => {
 
   return (
     <>
-
       <StyledTextField
         fullWidth
         label={translogin("labelemail")}

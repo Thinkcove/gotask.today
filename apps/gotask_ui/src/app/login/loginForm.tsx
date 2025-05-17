@@ -1,49 +1,45 @@
 "use client";
-import React, { useState } from "react";
-import { Tabs, Tab, Box, Typography } from "@mui/material";
+
+import React from "react";
+import { Typography, Box } from "@mui/material";
 import { BackgroundContainer, LoginCard } from "./style";
-import EmailLogin from "../login/EmailLogin";
 import OtpLogin from "./OtpLogin";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "../common/constants/localization";
 
 const LoginForm = () => {
-  const [activeTab, setActiveTab] = useState(0);
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
 
   return (
     <BackgroundContainer>
-      <LoginCard>
-        <Typography variant="h4" gutterBottom style={{ fontWeight: "bold" }}>
+      <LoginCard
+        sx={{
+          padding: 3,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
+        }}
+      >
+        <Typography
+          variant="h4"
+          gutterBottom
+          style={{ fontWeight: "bold", marginTop: "8px" }}
+        >
           {translogin("gotask")}
         </Typography>
-        <Typography variant="subtitle1" gutterBottom>
+
+        <Typography
+          variant="subtitle1"
+          gutterBottom
+          style={{ marginBottom: "5px" }} 
+        >
           {translogin("worksmarter")}
         </Typography>
 
-        <Tabs
-          value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
-          variant="fullWidth"
-          indicatorColor="primary"
-          textColor="primary"
-        >
-          <Tab label={translogin("emailpassword")} />
-          <Tab label={translogin("otplogin")} />
-        </Tabs>
-       
-<Box flexGrow={1}>
-  <Box
-    minHeight="220px"
-    display="flex"
-    flexDirection="column"
-    justifyContent="center"
-  >
-    {activeTab === 0 && <EmailLogin />}
-    {activeTab === 1 && <OtpLogin />}
-  </Box>
-</Box>
-
+        <Box width="100%" mt={8}>
+          <OtpLogin />
+        </Box>
       </LoginCard>
     </BackgroundContainer>
   );

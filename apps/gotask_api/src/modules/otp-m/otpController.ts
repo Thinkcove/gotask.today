@@ -23,7 +23,7 @@ class OtpController extends BaseController {
     }
   }
 
-  // Verify OTP
+  // Verify OTP and return JWT
   async verifyOtp(requestHelper: RequestHelper, handler: any) {
     try {
       const { user_id, otp } = requestHelper.getPayload();

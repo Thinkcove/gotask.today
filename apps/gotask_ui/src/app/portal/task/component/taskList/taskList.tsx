@@ -5,7 +5,6 @@ import { useProjectGroupTask, useUserGroupTask } from "../../service/taskAction"
 import TaskToggle from "../taskLayout/taskToggle";
 import { useRouter } from "next/navigation";
 import { IGroup, TaskFilterType } from "../../interface/taskInterface";
-import ViewMoreList from "./viewMoreList";
 import TaskFilterDrawer, { TaskFilterDrawerRef } from "../taskFilter/filterDrawer";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -280,19 +279,6 @@ const TaskList: React.FC = () => {
           onClick={() => router.push("/portal/task/createTask")}
         />
       )}
-
-      <ViewMoreList
-        open={Boolean(selectedGroupId)}
-        selectedGroupId={selectedGroupId}
-        drawerTasks={allTasks}
-        isLoadingDrawer={isLoading && page === 1}
-        onClose={() => {
-          setSelectedGroupId("");
-          setSearchParams({});
-        }}
-        onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
-        view={view}
-      />
 
       <TaskFilterDrawer
         ref={filterDrawerRef}

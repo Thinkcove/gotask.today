@@ -41,7 +41,7 @@ const TaskCard: React.FC<Props> = ({ task, view, onClick }) => {
     >
       {/* Title + Status */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-        <Typography variant="h6" fontWeight={600}>
+        <Typography variant="h6" fontWeight={600} textTransform={"capitalize"}>
           {task.title}
         </Typography>
         <Chip
@@ -54,13 +54,6 @@ const TaskCard: React.FC<Props> = ({ task, view, onClick }) => {
           }}
         />
       </Stack>
-
-      {/* Description */}
-      {task.description && (
-        <Typography variant="body2" color="text.secondary" mb={2}>
-          {task.description}
-        </Typography>
-      )}
 
       {/* Info Grid */}
       <Stack spacing={1.5} mb={2}>

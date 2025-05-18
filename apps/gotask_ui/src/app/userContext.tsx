@@ -41,16 +41,30 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const token = fetchToken();
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  const token = fetchToken();
 
-    if (storedUser && token) {
-      setUser({ ...JSON.parse(storedUser), token });
-    } else {
+  if (storedUser && token) {
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser && typeof parsedUser === "object") {
+        setUser({ ...parsedUser, token });
+      } else {
+        // Invalid parsed user fallback
+        localStorage.removeItem("user");
+        router.push("/login");
+      }
+    } catch {
+      // JSON.parse failed, clear and redirect
+      localStorage.removeItem("user");
       router.push("/login");
     }
-  }, [router]);
+  } else {
+    router.push("/login");
+  }
+}, [router]);
+
 
   const logout = () => {
     localStorage.removeItem("user");

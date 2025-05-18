@@ -30,6 +30,9 @@ export const API_PATHS = {
 
   //loginRoute
   LOGIN: "/user/login",
+  OTP_LOGIN: "/api/user/otp-login",
+  SEND_OTP: "/otp/send",
+  VERIFY_OTP: "/otp/verify",
 
   //accessroutes
   CREATE_ACCESS: "/access/create", // Path for creating access

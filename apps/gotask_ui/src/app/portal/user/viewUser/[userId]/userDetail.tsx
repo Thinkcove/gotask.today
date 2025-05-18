@@ -141,14 +141,20 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 {transuser("organization")}
               </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap">
-                {user.orgDetails?.map((orgId) => (
-                  <Chip
-                    key={orgId.id}
-                    label={orgId.name}
-                    variant="outlined"
-                    sx={{ textTransform: "capitalize" }}
-                  />
-                ))}
+                {user.orgDetails && user.orgDetails.length > 0 ? (
+                  user.orgDetails.map((orgId) => (
+                    <Chip
+                      key={orgId.id}
+                      label={orgId.name}
+                      variant="outlined"
+                      sx={{ textTransform: "capitalize" }}
+                    />
+                  ))
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    {transuser("noorganzationuser")}
+                  </Typography>
+                )}
               </Stack>
             </Grid>
           </Grid>

@@ -4,7 +4,6 @@ import AddIcon from "@mui/icons-material/Add";
 import { useProjectGroupTask, useUserGroupTask } from "../../service/taskAction";
 import TaskToggle from "../taskLayout/taskToggle";
 import { useRouter } from "next/navigation";
-import TaskCard from "../taskLayout/taskCard";
 import { IGroup, TaskFilterType } from "../../interface/taskInterface";
 import ViewMoreList from "./viewMoreList";
 import TaskFilterDrawer, { TaskFilterDrawerRef } from "../taskFilter/filterDrawer";
@@ -19,6 +18,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import TaskBoardRow from "../taskLayout/taskCard";
 
 const TaskList: React.FC = () => {
   const { canAccess } = useUserPermission();
@@ -263,14 +263,10 @@ const TaskList: React.FC = () => {
 
           {allTasks.map((group) => (
             <Grid item xs={12} sm={6} md={4} key={group.id}>
-              <TaskCard
+              <TaskBoardRow
                 view={view}
                 group={group}
                 onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
-                onViewMore={(id) => {
-                  setSelectedGroupId(id);
-                  setSearchParams({ search_vals: [[id]], search_vars: [["id"]] });
-                }}
               />
             </Grid>
           ))}

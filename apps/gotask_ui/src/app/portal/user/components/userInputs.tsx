@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Grid } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { IUserField } from "../interfaces/userInterface";
@@ -27,11 +27,6 @@ const UserInput = ({
   const { getOrganizations } = useAllOrganizations();
   const { getRoles } = useAllRoles();
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
-
-  // Initialize selectedOrganizationIds directly from formData.organization
-  const [selectedOrganizationIds, setSelectedOrganizationIds] = useState<string[]>(
-    formData.organization || [] // Initialize with the formData.organization value
-  );
 
   return (
     <Grid container spacing={1}>
@@ -89,14 +84,8 @@ const UserInput = ({
           type="multiselect"
           placeholder={transuser("placeholderorganization")}
           options={getOrganizations}
-          value={selectedOrganizationIds}
-          onChange={(ids) => {
-            const selectedIds = ids as string[]; // Ensure selectedIds is an array of strings
-            setSelectedOrganizationIds(selectedIds);
-
-            // Set formData.organization to the selected array
-            handleChange("organization", selectedIds);
-          }}
+          value={formData.organization}
+          onChange={(ids) => handleChange("organization", ids as string[])}
           disabled={isReadOnly("organization")}
         />
       </Grid>

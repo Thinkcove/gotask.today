@@ -34,7 +34,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
           height: dotSize,
           borderRadius: "50%",
           backgroundColor: getColor(status),
-          mr: 1.5
+          mr: 1
         }}
       />
       <Typography

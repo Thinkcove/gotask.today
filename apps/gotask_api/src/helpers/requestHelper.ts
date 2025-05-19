@@ -26,6 +26,10 @@ class RequestHelper {
   getQueryParam<T = any>(key: string): T | undefined {
     return this.request.query?.[key] as T;
   }
+
+  getQuery() {
+    return this.request.query;
+  }
 }
 
 export default RequestHelper;

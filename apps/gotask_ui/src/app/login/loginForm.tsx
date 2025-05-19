@@ -37,7 +37,7 @@ const LoginForm = () => {
           {translogin("worksmarter")}
         </Typography>
 
-        <Box width="100%" mt={8}>
+        <Box width="100%" mt={2}>
           <OtpLogin />
         </Box>
       </LoginCard>

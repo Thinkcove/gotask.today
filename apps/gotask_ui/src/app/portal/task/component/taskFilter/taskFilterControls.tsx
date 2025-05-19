@@ -18,9 +18,9 @@ const TaskFilterControls: React.FC<TaskFilterControlsProps> = ({
   onClearAll,
   onOpenFilter
 }) => {
-   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
-    <Box sx={{ display: "flex", justifyContent: "flex-end", pr: 3, gap: 2 }}>
+    <Box sx={{ display: "flex", gap: 2 }}>
       {activeFilterCount > 0 && isFiltered && (
         <Button
           variant="outlined"

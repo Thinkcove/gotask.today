@@ -7,9 +7,10 @@ interface Props {
   view: "projects" | "users";
   group: IGroup;
   onTaskClick: (id: string) => void;
+  excludedFields: string[];
 }
 
-const TaskListGrouped: React.FC<Props> = ({ group, view, onTaskClick }) => {
+const TaskListGrouped: React.FC<Props> = ({ group, view, onTaskClick, excludedFields }) => {
   return (
     <Box sx={{ mb: 3 }}>
       <Box
@@ -30,7 +31,13 @@ const TaskListGrouped: React.FC<Props> = ({ group, view, onTaskClick }) => {
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
         {group.tasks.map((task: ITask) => (
-          <TaskCard key={task.id} task={task} view={view} onClick={() => onTaskClick(task.id)} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            view={view}
+            onClick={() => onTaskClick(task.id)}
+            excludedFields={excludedFields}
+          />
         ))}
       </Box>
     </Box>

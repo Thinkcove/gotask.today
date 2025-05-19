@@ -28,6 +28,13 @@ interface User {
   status: boolean;
   token: string;
   role: Role;
+  preferences?: Preference[]; // <- Add this line
+}
+
+interface Preference {
+  module_name: string;
+  exclude_fields: string[];
+  _id: string;
 }
 
 interface UserContextType {
@@ -41,33 +48,34 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-useEffect(() => {
-  const storedUser = localStorage.getItem("user");
-  const token = fetchToken();
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const storedPreferences = localStorage.getItem("userPreferences");
+    const token = fetchToken();
 
-  if (storedUser && token) {
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      if (parsedUser && typeof parsedUser === "object") {
-        setUser({ ...parsedUser, token });
-      } else {
-        // Invalid parsed user fallback
+    if (storedUser && token) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        const parsedPreferences = storedPreferences ? JSON.parse(storedPreferences) : [];
+
+        if (parsedUser && typeof parsedUser === "object") {
+          setUser({ ...parsedUser, token, preferences: parsedPreferences });
+        } else {
+          localStorage.removeItem("user");
+          localStorage.removeItem("userPreferences");
+          router.push("/login");
+        }
+      } catch {
         localStorage.removeItem("user");
+        localStorage.removeItem("userPreferences");
         router.push("/login");
       }
-    } catch {
-      // JSON.parse failed, clear and redirect
-      localStorage.removeItem("user");
-      router.push("/login");
     }
-  } else {
-    router.push("/login");
-  }
-}, [router]);
-
+  }, [router]);
 
   const logout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("userPreferences");
     removeToken();
     setUser(null);
     window.location.href = "/login"; // Redirect to login

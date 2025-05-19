@@ -9,6 +9,7 @@ interface Props {
   task: ITask;
   view: "projects" | "users";
   onClick: () => void;
+  excludedFields: string[];
 }
 
 const severityColor = {
@@ -18,7 +19,7 @@ const severityColor = {
   critical: "error.dark" // or any distinct color you prefer
 } as const;
 
-const TaskCard: React.FC<Props> = ({ task, view, onClick }) => {
+const TaskCard: React.FC<Props> = ({ task, view, onClick, excludedFields }) => {
   const allowedSeverities = Object.keys(severityColor);
   const safeSeverity = (
     allowedSeverities.includes(task.severity) ? task.severity : "low"
@@ -41,54 +42,65 @@ const TaskCard: React.FC<Props> = ({ task, view, onClick }) => {
     >
       {/* Title + Status */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-        <Typography variant="h6" fontWeight={600} textTransform={"capitalize"}>
+        <Typography variant="h6" fontWeight={400} textTransform={"capitalize"}>
           {task.title}
         </Typography>
-        <Chip
-          size="small"
-          label={task.status.replace(/-/g, " ").toUpperCase()}
-          sx={{
-            backgroundColor: getStatusColor(task.status),
-            color: "#fff",
-            fontWeight: 600
-          }}
-        />
+        {!excludedFields.includes("status") && (
+          <Chip
+            size="small"
+            label={task.status.replace(/-/g, " ").toUpperCase()}
+            sx={{
+              backgroundColor: getStatusColor(task.status),
+              color: "#fff",
+              fontWeight: 600
+            }}
+          />
+        )}
       </Stack>
 
       {/* Info Grid */}
       <Stack spacing={1.5} mb={2}>
-        <InfoRow icon={<CalendarToday />} label="Due Date" value={formatDate(task.due_date)} />
-        <InfoRow
-          icon={<Tune sx={{ color: getVariationColor(variationStr) }} />}
-          label="Variation"
-          value={variationStr}
-        />
-
-        <InfoRow
-          icon={view === "projects" ? <Person /> : <Work />}
-          label={view === "projects" ? "Assignee" : "Project"}
-          value={view === "projects" ? task.user_name : task.project_name}
-        />
-        <InfoRow
-          icon={<WarningAmber sx={{ color: severityColor[safeSeverity] }} />}
-          label="Severity"
-          value={task.severity?.toUpperCase() ?? "N/A"}
-        />
+        {!excludedFields.includes("due_date") && (
+          <InfoRow icon={<CalendarToday />} label="Due Date" value={formatDate(task.due_date)} />
+        )}
+        {!excludedFields.includes("variation") && (
+          <InfoRow
+            icon={<Tune sx={{ color: getVariationColor(variationStr) }} />}
+            label="Variation"
+            value={variationStr}
+          />
+        )}
+        {!excludedFields.includes("user_name") ||
+          (!excludedFields.includes("project_name") && (
+            <InfoRow
+              icon={view === "projects" ? <Person /> : <Work />}
+              label={view === "projects" ? "Assignee" : "Project"}
+              value={view === "projects" ? task.user_name : task.project_name}
+            />
+          ))}
+        {!excludedFields.includes("severity") && (
+          <InfoRow
+            icon={<WarningAmber sx={{ color: severityColor[safeSeverity] }} />}
+            label="Severity"
+            value={task.severity?.toUpperCase() ?? "N/A"}
+          />
+        )}
       </Stack>
 
-      <Divider sx={{ my: 2 }} />
+      {view !== "projects" && <Divider sx={{ my: 2 }} />}
 
       {/* Time Details */}
       <Stack direction="row" flexWrap="wrap" gap={2}>
-        <TimeBadge label="Estimated" value={task.estimated_time ?? "—"} />
-        <TimeBadge label="Spent" value={task.time_spent_total ?? "—"} />
-        <TimeBadge label="Remaining" value={task.remaining_time ?? "—"} />
+        {!excludedFields.includes("estimated_time") && (
+          <TimeBadge label="Estimated" value={task.estimated_time ?? "—"} />
+        )}
+        {!excludedFields.includes("time_spent_total") && (
+          <TimeBadge label="Spent" value={task.time_spent_total ?? "—"} />
+        )}
+        {!excludedFields.includes("remaining_time") && (
+          <TimeBadge label="Remaining" value={task.remaining_time ?? "—"} />
+        )}
       </Stack>
-
-      {/* Footer: Created / Updated */}
-      <Typography variant="caption" color="text.secondary" mt={3} display="block">
-        Created: {formatDate(task.created_on)} | Updated: {formatDate(task.updated_on)}
-      </Typography>
     </Paper>
   );
 };

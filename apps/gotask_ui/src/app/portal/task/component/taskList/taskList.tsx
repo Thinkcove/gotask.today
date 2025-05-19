@@ -17,7 +17,9 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
-import TaskBoardRow from "../taskLayout/taskCard";
+import TaskListGrouped from "../taskLayout/taskCard";
+import FieldPreference from "@/app/component/manageField/fieldPreference";
+import { useExcludedFields } from "@/app/common/utils/authPreference";
 
 const TaskList: React.FC = () => {
   const { canAccess } = useUserPermission();
@@ -35,7 +37,6 @@ const TaskList: React.FC = () => {
   const [page, setPage] = useState(1);
   const [allTasks, setAllTasks] = useState<IGroup[]>([]);
   const [hasMoreData, setHasMoreData] = useState(true);
-  const [selectedGroupId, setSelectedGroupId] = useState("");
 
   const [searchText, setSearchText] = useState("");
   const [searchParams, setSearchParams] = useState<{
@@ -217,6 +218,22 @@ const TaskList: React.FC = () => {
     setSearchParams(newParams);
     resetTaskState();
   };
+  const MODULE_NAME = view === "projects" ? "Task By Project" : "Task By User";
+  const ALL_TASK_FIELDS = [
+    "title",
+    "due_date",
+    "variation",
+    "user_name",
+    "project_name",
+    "severity",
+    "estimated_time",
+    "time_spent_total",
+    "remaining_time",
+    "created_on",
+    "updated_on"
+  ];
+
+  const excludedFields = useExcludedFields(MODULE_NAME);
 
   return (
     <Box>
@@ -226,7 +243,7 @@ const TaskList: React.FC = () => {
           alignItems: "center",
           justifyContent: "space-between",
           gap: 2,
-          px: 3,
+          px: 2,
           mt: 2,
           py: 1,
           flexWrap: "nowrap"
@@ -238,12 +255,36 @@ const TaskList: React.FC = () => {
         <TaskToggle view={view} setView={setView} />
       </Box>
 
-      <TaskFilterControls
-        activeFilterCount={activeFilterCount}
-        isFiltered={isFiltered()}
-        onClearAll={handleClearAll}
-        onOpenFilter={() => setFilterDrawerOpen(true)}
-      />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          width: "100%",
+          px: 2,
+          pt: 1
+        }}
+      >
+        <Box>
+          <FieldPreference
+            allFields={ALL_TASK_FIELDS}
+            excludedFields={excludedFields} // passes empty initially
+            // onSave={(newExcluded) => {
+            //   setExcludedFields(newExcluded);
+            //   // Optionally: persist this to backend
+            // }}
+          />
+        </Box>
+
+        <Box>
+          <TaskFilterControls
+            activeFilterCount={activeFilterCount}
+            isFiltered={isFiltered()}
+            onClearAll={handleClearAll}
+            onOpenFilter={() => setFilterDrawerOpen(true)}
+          />
+        </Box>
+      </Box>
 
       <Box
         ref={scrollRef}
@@ -262,10 +303,11 @@ const TaskList: React.FC = () => {
 
           {allTasks.map((group) => (
             <Grid item xs={12} sm={6} md={4} key={group.id}>
-              <TaskBoardRow
+              <TaskListGrouped
                 view={view}
                 group={group}
                 onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
+                excludedFields={excludedFields}
               />
             </Grid>
           ))}

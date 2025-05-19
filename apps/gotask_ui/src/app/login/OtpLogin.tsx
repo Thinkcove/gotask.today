@@ -7,7 +7,8 @@ import { useUser } from "../userContext";
 import env from "../common/env";
 import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation"; // ✅ App Router
+import { useRouter } from "next/navigation";
+import { postData } from "../common/utils/apiData";
 
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
@@ -31,7 +32,7 @@ const OtpLogin = () => {
       const res = await fetch(`${env.API_BASE_URL}/otp/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: email }),
+        body: JSON.stringify({ user_id: email })
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -55,21 +56,27 @@ const OtpLogin = () => {
       const res = await fetch(`${env.API_BASE_URL}/otp/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: email, otp }),
+        body: JSON.stringify({ user_id: email, otp })
       });
       const data = await res.json();
 
       if (res.ok && data.success && data.data) {
         const { user, token } = data.data;
 
-        // ✅ Save user and token
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
 
-        // ✅ Update context
         setUser({ ...user, token });
+        const preferences = await postData(
+          `${env.API_BASE_URL}/getPreference`,
+          { user_id: user.id },
+          token
+        );
 
-        // ✅ Redirect to dashboard
+        if (preferences?.data?.preferences) {
+          localStorage.setItem("userPreferences", JSON.stringify(preferences.data.preferences));
+        }
+
         router.push("/portal/dashboard");
       } else {
         setError(data.error || data.message || translogin("otperror"));
@@ -116,8 +123,8 @@ const OtpLogin = () => {
         {loading
           ? translogin("loading")
           : otpSent
-          ? translogin("verifyotp")
-          : translogin("sendotp")}
+            ? translogin("verifyotp")
+            : translogin("sendotp")}
       </StyledButton>
     </>
   );

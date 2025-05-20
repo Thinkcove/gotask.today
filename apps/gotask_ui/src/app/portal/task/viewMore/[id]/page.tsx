@@ -1,16 +1,14 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-import { useParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import { useProjectGroupTask, useUserGroupTask } from "../../service/taskAction";
 import ViewMoreList from "../../component/taskList/viewMoreList";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import { Box, CircularProgress } from "@mui/material";
 
 const ViewMoreAction: React.FC = () => {
   const searchParams = useSearchParams();
   const { id } = useParams();
   const view = searchParams.get("view") as "projects" | "users" | null;
-  // validate inputs
-  if (!id || !view) return null;
 
   const { tasksByProjects, isLoading: isLoadingProjects } = useProjectGroupTask(
     1,
@@ -28,6 +26,14 @@ const ViewMoreAction: React.FC = () => {
     [[id as string]],
     [["id"]]
   );
+
+  if (!id || !view)
+    return (
+      <Box display="flex" justifyContent="center">
+        <CircularProgress />
+      </Box>
+    );
+
   const drawerTasks = view === "projects" ? tasksByProjects : tasksByUsers;
   const isLoading = view === "projects" ? isLoadingProjects : isLoadingUsers;
 

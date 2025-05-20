@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, CircularProgress, Typography, IconButton, Grid } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import TaskItem, { Task } from "../taskLayout/taskItem";
 import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
@@ -45,7 +44,7 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
                     p: 2,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
+                    justifyContent: "center"
                   }}
                 >
                   {/* Back Button (left-aligned but doesn't affect centering) */}

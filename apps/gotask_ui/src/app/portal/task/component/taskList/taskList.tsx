@@ -35,7 +35,6 @@ const TaskList: React.FC = () => {
   const [page, setPage] = useState(1);
   const [allTasks, setAllTasks] = useState<IGroup[]>([]);
   const [hasMoreData, setHasMoreData] = useState(true);
-  const [selectedGroupId, setSelectedGroupId] = useState("");
 
   const [searchText, setSearchText] = useState("");
   const [searchParams, setSearchParams] = useState<{
@@ -267,7 +266,6 @@ const TaskList: React.FC = () => {
                 group={group}
                 onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
                 onViewMore={(id) => {
-                  setSelectedGroupId(id);
                   router.push(`/portal/task/viewMore/${id}?view=${view}`);
                 }}
               />

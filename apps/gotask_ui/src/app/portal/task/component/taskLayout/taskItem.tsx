@@ -4,6 +4,8 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import { CalendarToday, Description, Person } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import TimeBadge from "@/app/component/badge/timeBadge";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 export interface Task {
   id: string;
@@ -42,6 +44,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   formatDate
 }) => {
   const { canAccess } = useUserPermission();
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const allowedSeverities = Object.keys(severityColor);
   const safeSeverity = (
     allowedSeverities.includes(task.severity) ? task.severity : "low"
@@ -116,11 +119,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
       {/* Time Info */}
       <Stack direction="row" gap={1.5} flexWrap="wrap">
-        <TimeBadge label="Estimated" value={task.estimated_time ?? "0d0h"} />
-        <TimeBadge label="Spent" value={task.time_spent_total ?? "0d0h"} />
-        <TimeBadge label="Remaining" value={task.remaining_time ?? "0d0h"} />
-
-        <TimeBadge label="Variation" value={task.variation ?? "—"} />
+        <TimeBadge label={transtask("estimatedt")} value={task.estimated_time ?? "-"} />
+        <TimeBadge label={transtask("spentt")} value={task.time_spent_total ?? "-"} />
+        <TimeBadge label={transtask("remainingt")} value={task.remaining_time ?? "-"} />
+        <TimeBadge label={transtask("variationt")} value={task.variation ?? "—"} />
       </Stack>
     </Box>
   );

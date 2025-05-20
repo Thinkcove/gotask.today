@@ -1,5 +1,5 @@
 import { User, IUser } from "../../domain/model/user/user";
-import { Otp, IOtp } from "../../domain/model/otp/Otp"
+import { Otp, IOtp } from "../../domain/model/otp/Otp";
 import { sendEmail } from "../../constants/utils/emailService";
 import { generateOTPWithExpiry } from "../../constants/utils/otpGenerator";
 import UserMessages from "../../constants/apiMessages/userMessage";
@@ -8,11 +8,9 @@ import jwt from "jsonwebtoken";
 import { getRoleByIdService } from "../role/roleService";
 import { getOtpEmailTemplate } from "../../constants/utils/otpEmailTemplate";
 
-const sendOtpService = async (
-  user_id: string
-): Promise<{ success: boolean; message: string }> => {
+const sendOtpService = async (user_id: string): Promise<{ success: boolean; message: string }> => {
   try {
-    const user = await User.findOne({ user_id }) as IUser;
+    const user = (await User.findOne({ user_id })) as IUser;
 
     if (!user) {
       return {
@@ -23,11 +21,7 @@ const sendOtpService = async (
 
     const { otp, otpExpiry } = generateOTPWithExpiry(5);
 
-    await Otp.findOneAndUpdate(
-      { user: user._id },
-      { otp, otpExpiry },
-      { upsert: true, new: true }
-    );
+    await Otp.findOneAndUpdate({ user: user._id }, { otp, otpExpiry }, { upsert: true, new: true });
 
     const emailContent = getOtpEmailTemplate(user.name, otp);
 
@@ -58,7 +52,7 @@ const verifyOtpService = async (
   data?: { token: string; user: Partial<IUser> };
 }> => {
   try {
-    const user = await User.findOne({ user_id }).populate("roleId") as IUser;
+    const user = (await User.findOne({ user_id }).populate("roleId")) as IUser;
 
     if (!user) {
       return {
@@ -67,7 +61,7 @@ const verifyOtpService = async (
       };
     }
 
-    const otpDoc = await Otp.findOne({ user: user._id }) as IOtp | null;
+    const otpDoc = (await Otp.findOne({ user: user._id })) as IOtp | null;
 
     if (!otpDoc) {
       return {
@@ -122,7 +116,7 @@ const verifyOtpService = async (
       { expiresIn: "1h" }
     );
 
-    const { password, ...sanitizedUser } = user.toObject();
+    const { ...sanitizedUser } = user.toObject();
     sanitizedUser.role = enrichedRole;
 
     return {
@@ -141,7 +135,4 @@ const verifyOtpService = async (
   }
 };
 
-export {
-  sendOtpService,
-  verifyOtpService
-};
+export { sendOtpService, verifyOtpService };

@@ -34,13 +34,14 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
           height: dotSize,
           borderRadius: "50%",
           backgroundColor: getColor(status),
-          mr: 1.5
+          mr: 1
         }}
       />
       <Typography
         sx={{
           color,
-          textTransform: capitalize ? "capitalize" : "none"
+          textTransform: capitalize ? "capitalize" : "none",
+          textWrap:"nowrap"
         }}
       >
         {status}

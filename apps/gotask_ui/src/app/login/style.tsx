@@ -6,11 +6,11 @@ export const BackgroundContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  background: "linear-gradient(135deg, #f3e7ff, #e3d1f8)",
+  background: "linear-gradient(135deg, #f3e7ff, #e3d1f8)"
 });
 
 export const LoginCard = styled(Paper)({
-  padding: "36px 28px", // reduced padding
+  padding: "50px",
   borderRadius: "20px",
   background: "#ffffff",
   boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
@@ -18,15 +18,8 @@ export const LoginCard = styled(Paper)({
   maxWidth: "420px",
   width: "100%",
   color: "#333",
-  border: "2px solid #741B92",
-
-  height: "420px", // fixed height (instead of minHeight)
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start", // align top content
-  transition: "all 0.3s ease",
+  border: "2px solid #741B92"
 });
-
 
 export const StyledButton = styled(Button)({
   marginTop: "20px",
@@ -41,8 +34,8 @@ export const StyledButton = styled(Button)({
   transition: "transform 0.3s, box-shadow 0.3s",
   "&:hover": {
     transform: "scale(1.05)",
-    boxShadow: "0px 0px 15px #741B92",
-  },
+    boxShadow: "0px 0px 15px #741B92"
+  }
 });
 
 export const StyledTextField = styled(TextField)({
@@ -52,10 +45,10 @@ export const StyledTextField = styled(TextField)({
   marginTop: "8px",
   "& .MuiOutlinedInput-root": {
     "&:hover fieldset": {
-      borderColor: "#741B92",
+      borderColor: "#741B92"
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#741B92",
-    },
-  },
+      borderColor: "#741B92"
+    }
+  }
 });

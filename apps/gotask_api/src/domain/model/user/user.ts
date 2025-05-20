@@ -34,7 +34,7 @@ const UserSchema = new Schema<IUser>(
     projects: {
       type: [String],
       default: []
-    },
+    }
   },
   {
     timestamps: true

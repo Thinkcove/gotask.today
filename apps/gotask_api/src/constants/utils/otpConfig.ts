@@ -6,10 +6,7 @@ interface OtpConfig {
   expiryInMinutes: number;
 }
 
-export const getOtpConfig = (
-  customerType: CustomerType,
-  platform: PlatformType
-): OtpConfig => {
+export const getOtpConfig = (customerType: CustomerType, platform: PlatformType): OtpConfig => {
   if (customerType === "ENTERPRISE") {
     return platform === "APP"
       ? { length: 8, expiryInMinutes: 10 }
@@ -17,7 +14,5 @@ export const getOtpConfig = (
   }
 
   // Default or INDIVIDUAL
-  return platform === "APP"
-    ? { length: 6, expiryInMinutes: 5 }
-    : { length: 4, expiryInMinutes: 3 };
+  return platform === "APP" ? { length: 6, expiryInMinutes: 5 } : { length: 4, expiryInMinutes: 3 };
 };

@@ -23,6 +23,7 @@ export const LoginCard = styled(Paper)({
 
 export const StyledButton = styled(Button)({
   marginTop: "20px",
+  marginBottom: "8px", // 🔽 added to reduce gap below
   padding: "12px",
   fontSize: "1rem",
   fontWeight: "bold",
@@ -41,6 +42,7 @@ export const StyledTextField = styled(TextField)({
   input: { color: "#333" },
   label: { color: "#555" },
   fieldset: { borderColor: "rgba(0, 0, 0, 0.3)" },
+  marginTop: "8px",
   "& .MuiOutlinedInput-root": {
     "&:hover fieldset": {
       borderColor: "#741B92"

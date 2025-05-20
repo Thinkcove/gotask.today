@@ -21,10 +21,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
     <Paper
       elevation={2}
       sx={{
-        p: 2,
+        p: 1.5,
         borderRadius: 3,
         transition: "0.3s",
-        height: 400,
+        height: "auto",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between"
@@ -67,7 +67,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
       <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 400 }}>
         {group.tasks.length > 0 ? (
           <>
-            {group.tasks.slice(0, 3).map((task: Task) => (
+            {group.tasks.slice(0, 5).map((task: Task) => (
               <TaskItem
                 key={task.id}
                 task={task}

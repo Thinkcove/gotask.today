@@ -4,7 +4,29 @@
     "worksmarter": "Work smarter, own your time.",
     "labelemail": "Email",
     "labelpassword": "password",
-    "seterror": "Both fields are required"
+    "labelotp": "OTP",
+    "sendotp": "Send OTP",
+    "verifyotp": "Verify OTP",
+    "resendotp": "Resend OTP",
+    "seterror": "Both fields are required",
+    "otpsent": "OTP has been sent to your email.",
+    "otpverified": "OTP verified successfully.",
+    "otperror": "Invalid or expired OTP.",
+    "emailrequired": "Please enter your email to receive OTP.",
+    "switchtootp": "Use OTP instead",
+    "switchtopassword": "Use Password instead",
+    "login": "Login",
+    "loggingin": "Logging in...",
+    "sendingsms": "Sending OTP...",
+    "verifying": "Verifying...",
+    "invalidlogin": "Invalid email or password",
+    "emailpassword": "Email Login",
+    "otplogin": "OTP Login",
+    "otpinput": "Enter OTP",
+    "otprequired": "Please enter the OTP.",
+    "genericerror": "Something went wrong. Please try again.",
+    "otpfail": "Failed to send OTP. Please try again.",
+    "loading": "Loading..."
   },
   "Access": {
     "access": "Access",
@@ -246,7 +268,11 @@
     "detailseverity": "Severity",
     "detaildue": "Due Date",
     "detailcreated": "Created Date",
-    "searchplaceholder": "Search Tasks"
+    "searchplaceholder": "Search Tasks",
+    "estimatedt": "Estimated",
+    "spentt": "Spent",
+    "remainingt": "Remaining",
+    "variationt": "Variation"
   },
   "User": {
     "username": "User name is required",

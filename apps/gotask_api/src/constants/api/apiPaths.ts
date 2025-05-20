@@ -30,6 +30,9 @@ export const API_PATHS = {
 
   //loginRoute
   LOGIN: "/user/login",
+  OTP_LOGIN: "/api/user/otp-login",
+  SEND_OTP: "/otp/send",
+  VERIFY_OTP: "/otp/verify",
 
   //accessroutes
   CREATE_ACCESS: "/access/create", // Path for creating access
@@ -58,5 +61,9 @@ export const API_PATHS = {
   UPDATE_ORGANIZATION: "/updateOrg/{id}",
 
   //userreport
-  GET_USER_TIME_LOG: "/timeReport"
+  GET_USER_TIME_LOG: "/timeReport",
+
+  //userpreference
+  SET_USER_PREFERENCES: "/setPreference",
+  GET_USER_PREFERENCES: "/getPreference"
 };

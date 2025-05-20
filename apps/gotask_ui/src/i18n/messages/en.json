@@ -268,7 +268,9 @@
     "detailseverity": "Severity",
     "detaildue": "Due Date",
     "detailcreated": "Created Date",
-    "searchplaceholder": "Search Tasks"
+    "searchplaceholder": "Search Tasks",
+  "userSuggestions": "Mention a user"
+ 
   },
   "User": {
     "username": "User name is required",

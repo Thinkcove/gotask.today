@@ -15,6 +15,8 @@ import {
 import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
+import { extractMentions } from "../../constants/utils/parseMentions";
+import { User } from "../../domain/model/user/user";
 
 // Create a new task
 const createTask = async (
@@ -390,7 +392,26 @@ const createComment = async (
   commentData: ITaskComment
 ): Promise<{ success: boolean; data?: ITaskComment; message?: string }> => {
   try {
+    const { comment } = commentData;
+
+    // Step 1: Extract mentioned usernames like "@user1"
+    const mentionedUsernames = extractMentions(comment); // ["user1", "john", ...]
+
+    // Step 2: Find users by user_id
+    const mentionedUsers = await User.find({
+      user_id: { $in: mentionedUsernames },
+      status: true
+    }).select("id user_id");
+
+    // Step 3: Extract internal UUIDs to store in `mentions` field
+    const mentions = mentionedUsers.map((user) => user.id);
+
+    // Step 4: Attach to commentData
+    commentData.mentions = mentions;
+
+    // Step 5: Create comment in DB
     const newComment = await createCommentInTask(commentData);
+
     return {
       success: true,
       data: newComment
@@ -398,7 +419,7 @@ const createComment = async (
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || TaskMessages.COMMENT.CREATE_FAILED
+      message: error.message || "Failed to create comment"
     };
   }
 };

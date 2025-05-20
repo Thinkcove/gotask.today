@@ -133,23 +133,25 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
 
 // Create a comment in task
 const createCommentInTask = async (commentData: ITaskComment): Promise<ITaskComment> => {
-  const { task_id, user_id, comment, user_name } = commentData;
+  const { task_id, user_id, comment, user_name, mentions } = commentData;
 
   const task = await Task.findOne({ id: task_id });
   if (!task) throw new Error("Task not found");
 
-  const newComment = new TaskComment({ task_id, user_id, comment, user_name });
+  // 🟢 Create the comment with mentions
+  const newComment = new TaskComment({ task_id, user_id, comment, user_name, mentions });
   await newComment.save();
 
   if (!task.comment) {
     task.comment = [];
   }
 
-  task.comment.unshift(newComment);
+  task.comment.unshift(newComment); // Add to top of the comment array
   await task.save();
 
   return newComment;
 };
+
 
 // Update comment in task
 const updateCommentInTask = async (

@@ -7,7 +7,7 @@ import * as RoleRoutes from "../modules/role/roleRoutes";
 import * as OrganizationRoutes from "../modules/organization/organizationRoute";
 import * as ReportRoutes from "../modules/report/reportRoute";
 import * as OtpRoutes from "../modules/otp/otpRoutes";
-
+import * as UserPreferenceRoutes from "../modules/userPreference/userPreferenceRoutes";
 
 const routes: ServerRoute[] = [
   ...ProjectRoutes.default,
@@ -18,5 +18,6 @@ const routes: ServerRoute[] = [
   ...OrganizationRoutes.default,
   ...ReportRoutes.default,
   ...OtpRoutes.default,
+  ...UserPreferenceRoutes.default
 ];
 export default routes;

@@ -61,5 +61,9 @@ export const API_PATHS = {
   UPDATE_ORGANIZATION: "/updateOrg/{id}",
 
   //userreport
-  GET_USER_TIME_LOG: "/timeReport"
+  GET_USER_TIME_LOG: "/timeReport",
+
+  //userpreference
+  SET_USER_PREFERENCES: "/setPreference",
+  GET_USER_PREFERENCES: "/getPreference"
 };

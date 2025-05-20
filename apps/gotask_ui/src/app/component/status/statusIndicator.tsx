@@ -40,7 +40,8 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
       <Typography
         sx={{
           color,
-          textTransform: capitalize ? "capitalize" : "none"
+          textTransform: capitalize ? "capitalize" : "none",
+          textWrap:"nowrap"
         }}
       >
         {status}

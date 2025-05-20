@@ -1,14 +1,9 @@
-import { Box, Typography, Tooltip, Stack, Chip } from "@mui/material";
-import CalendarMonth from "@mui/icons-material/CalendarMonth";
-import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
+import { Box, Typography, Stack, Chip, Divider } from "@mui/material";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
-import { getVariationColor } from "@/app/common/constants/task";
-import { CalendarToday, Person, Tune, TuneRounded, WarningAmber, Work } from "@mui/icons-material";
+import { CalendarToday, Description, Person } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import TimeBadge from "@/app/component/badge/timeBadge";
-import LabeledInfoRow from "@/app/component/badge/labeledInfoRow";
-import { ITask } from "../../interface/taskInterface";
 
 export interface Task {
   id: string;
@@ -31,12 +26,14 @@ interface TaskItemProps {
   getStatusColor: (status: string) => string;
   formatDate: (date: string) => string;
 }
+
 const severityColor = {
-  low: "success.main",
-  medium: "warning.main",
-  high: "error.main",
-  critical: "error.dark" // or any distinct color you prefer
+  low: "#81c784",
+  medium: "#ffb74d",
+  high: "#e57373",
+  critical: "#c62828"
 } as const;
+
 const TaskItem: React.FC<TaskItemProps> = ({
   task,
   onTaskClick,
@@ -50,89 +47,81 @@ const TaskItem: React.FC<TaskItemProps> = ({
     allowedSeverities.includes(task.severity) ? task.severity : "low"
   ) as keyof typeof severityColor;
 
-  const rawVariation = (task as Task).variation;
-  const variationStr = typeof rawVariation === "string" ? rawVariation : "0d0h";
   return (
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        backgroundColor: "#ffffff",
+        backgroundColor: "#fff",
         borderRadius: 2,
-        border: "1px solid rgba(0, 0, 0, 0.12)",
-        boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
+        border: "1px solid #e0e0e0",
+        boxShadow: "0px 2px 6px rgba(0,0,0,0.04)",
         px: 1,
-        py: 1.5,
-        mb: 1.5,
+        py: 2,
+        mb: 2,
         cursor: canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? "pointer" : "default",
-        transition: "box-shadow 0.2s ease-in-out",
+        transition: "box-shadow 0.2s ease",
         "&:hover": {
-          boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)"
+          boxShadow: "0 4px 16px rgba(0,0,0,0.1)"
         }
       }}
       onClick={canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? () => onTaskClick(task.id) : undefined}
     >
-      {/* Left Section */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        {/* Task Title */}
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6" fontWeight={400} textTransform={"capitalize"} fontSize="1rem">
-            {task.title}
-          </Typography>
+      {/* Title and Status */}
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+        <Typography
+          variant="subtitle1"
+          fontWeight={400}
+          textTransform={"capitalize"}
+          fontSize="1rem"
+        >
+          {task.title}
+        </Typography>
+        <StatusIndicator status={task.status} getColor={getStatusColor} />
+      </Stack>
 
-          <StatusIndicator status={task.status} getColor={getStatusColor} />
+      {/* Info Row */}
+      <Stack
+        direction="row"
+        gap={1.5}
+        flexWrap="wrap"
+        alignItems="center"
+        divider={<Divider orientation="vertical" flexItem />}
+        mb={1.5}
+      >
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <CalendarToday sx={{ fontSize: 18, color: "text.secondary" }} />
+          <Typography variant="body2">{formatDate(task.due_date)}</Typography>
         </Stack>
-        {/* Variation Detail */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}>
-          <TuneRounded sx={{ fontSize: 16, color: getVariationColor(task.variation) }} />
-          <Typography
-            variant="caption"
-            sx={{
-              fontWeight: 500,
-              color: getVariationColor(task.variation),
-              textTransform: "capitalize"
-            }}
-          >
-            Variation: {task.variation ? task.variation : "0d0h"}
-          </Typography>
-        </Box>
-
-        <Stack spacing={1.5} mb={2}>
-          <LabeledInfoRow
-            icon={<CalendarToday />}
-            label="Due Date"
-            value={formatDate(task.due_date)}
-          />
-          <LabeledInfoRow
-            icon={<Tune sx={{ color: getVariationColor(variationStr) }} />}
-            label="Variation"
-            value={variationStr}
-          />
-
-          <LabeledInfoRow
-            icon={view === "projects" ? <Person /> : <Work />}
-            label={view === "projects" ? "Assignee" : "Project"}
-            value={view === "projects" ? task.user_name : task.project_name}
-          />
-          <LabeledInfoRow
-            icon={<WarningAmber sx={{ color: severityColor[safeSeverity] }} />}
-            label="Severity"
-            value={task.severity?.toUpperCase() ?? "N/A"}
-          />
-        </Stack>
-        <Stack direction="row" flexWrap="wrap" gap={2}>
-          {view !== "projects" && (
-            <>
-              <TimeBadge label="Estimated" value={task.estimated_time ?? "0d0h"} />
-              <TimeBadge label="Spent" value={task.time_spent_total ?? "0d0h"} />
-              <TimeBadge label="Remaining" value={task.remaining_time ?? "0d0h"} />
-            </>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          {view === "projects" ? (
+            <Person sx={{ fontSize: 18, color: "text.secondary" }} />
+          ) : (
+            <Description sx={{ fontSize: 18, color: "text.secondary" }} />
           )}
 
-          {view === "projects" && <TimeBadge label="Variation" value={task.variation ?? "—"} />}
+          <Typography variant="body2">
+            {view === "projects" ? task.user_name : task.project_name}
+          </Typography>
         </Stack>
-      </Box>
+        <Chip
+          size="small"
+          label={task.severity.toUpperCase()}
+          sx={{
+            backgroundColor: severityColor[safeSeverity],
+            color: "#fff",
+            height: 24,
+            fontWeight: 500
+          }}
+        />
+      </Stack>
+
+      {/* Time Info */}
+      <Stack direction="row" gap={1.5} flexWrap="wrap">
+        <TimeBadge label="Estimated" value={task.estimated_time ?? "0d0h"} />
+        <TimeBadge label="Spent" value={task.time_spent_total ?? "0d0h"} />
+        <TimeBadge label="Remaining" value={task.remaining_time ?? "0d0h"} />
+
+        <TimeBadge label="Variation" value={task.variation ?? "—"} />
+      </Stack>
     </Box>
   );
 };

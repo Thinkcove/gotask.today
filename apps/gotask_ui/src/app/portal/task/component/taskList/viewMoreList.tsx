@@ -1,13 +1,13 @@
 import React from "react";
-import { Box, Drawer, CircularProgress, Typography, IconButton } from "@mui/material";
+import { Box, CircularProgress, Typography, IconButton, Grid } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import TaskItem, { Task } from "../taskLayout/taskItem";
 import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
 import { IGroup } from "../../interface/taskInterface";
+import { ArrowBack } from "@mui/icons-material";
 
 interface ViewMoreListProps {
-  open: boolean;
   selectedGroupId: string;
   drawerTasks: IGroup[];
   isLoadingDrawer: boolean;
@@ -17,7 +17,6 @@ interface ViewMoreListProps {
 }
 
 const ViewMoreList: React.FC<ViewMoreListProps> = ({
-  open,
   selectedGroupId,
   drawerTasks,
   isLoadingDrawer,
@@ -26,16 +25,8 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
   view
 }) => {
   return (
-    <Drawer anchor="right" open={open} onClose={() => {}}>
-      <Box
-        sx={{
-          width: { xs: "100%", sm: "100%", md: "900px" },
-          maxWidth: 450,
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh"
-        }}
-      >
+    <Box sx={{ display: "flex", width: "100%" }}>
+      <Box sx={{ flex: 1 }}>
         {isLoadingDrawer ? (
           <Box display="flex" justifyContent="center" mt={2}>
             <CircularProgress />
@@ -43,7 +34,8 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
         ) : (
           drawerTasks.map((group: IGroup) =>
             group.id === selectedGroupId ? (
-              <Box key={group.id} sx={{ flex: 1 }}>
+              <Box key={group.id} sx={{ display: "flex", flexDirection: "column" }}>
+                {/* Header */}
                 <Box
                   sx={{
                     position: "sticky",
@@ -53,36 +45,57 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
                     p: 2,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between"
+                    justifyContent: "center",
                   }}
                 >
-                  <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ color: "#741B92" }}>
+                  {/* Back Button (left-aligned but doesn't affect centering) */}
+                  <IconButton
+                    color="primary"
+                    onClick={onClose}
+                    sx={{ position: "absolute", left: 16 }}
+                  >
+                    <ArrowBack />
+                  </IconButton>
+
+                  {/* Centered Title */}
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    sx={{ color: "#741B92", textAlign: "center" }}
+                  >
                     {view === "projects" ? group.project_name : group.user_name}
                   </Typography>
-                  <IconButton onClick={onClose} sx={{ color: "black", p: 0 }}>
-                    <CloseIcon />
-                  </IconButton>
                 </Box>
-                <Box sx={{ overflowY: "auto", maxHeight: "calc(100vh - 100px)" }}>
-                  {group.tasks.map((task: Task) => (
-                    <Box key={task.id} sx={{ px: 1 }}>
-                      <TaskItem
-                        key={task.id}
-                        task={task}
-                        onTaskClick={onTaskClick}
-                        view={view}
-                        getStatusColor={getStatusColor}
-                        formatDate={formatDate}
-                      />
-                    </Box>
-                  ))}
+
+                {/* Task List with Responsive Grid */}
+                <Box
+                  sx={{
+                    overflowY: "auto",
+                    maxHeight: "calc(100vh - 100px)",
+                    px: 2,
+                    py: 2
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    {group.tasks.map((task: Task) => (
+                      <Grid item key={task.id} xs={12} sm={6} md={4} lg={4} xl={3}>
+                        <TaskItem
+                          task={task}
+                          onTaskClick={onTaskClick}
+                          view={view}
+                          getStatusColor={getStatusColor}
+                          formatDate={formatDate}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
                 </Box>
               </Box>
             ) : null
           )
         )}
       </Box>
-    </Drawer>
+    </Box>
   );
 };
 

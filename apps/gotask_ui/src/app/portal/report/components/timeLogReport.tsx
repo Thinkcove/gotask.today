@@ -15,6 +15,7 @@ import { Project } from "../../task/interface/taskInterface";
 
 const TimeLogReport = () => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
+
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [showTasks, setShowTasks] = useState(false);
@@ -26,22 +27,20 @@ const TimeLogReport = () => {
   const payload = {
     fromDate,
     toDate,
-    userIds,
+    userIds: userIds.length > 0 ? userIds : [], // ✅ Optional
     showTasks,
-    selectedProjects: projectIds
+    selectedProjects: projectIds.length > 0 ? projectIds : [] // ✅ Optional
   };
 
-  const { data, isLoading, isError } = useUserTimeLogReport(
-    payload,
-    !!(fromDate && toDate && userIds.length)
-  );
+  const shouldFetch = !!(fromDate && toDate); // ✅ Only require fromDate & toDate
+
+  const { data, isLoading, isError } = useUserTimeLogReport(payload, shouldFetch);
 
   const { data: fetchedUserData } = useSWR("fetchuser", fetchUser, {
     revalidateOnFocus: false
   });
 
   const usersListArray = fetchedUserData?.data;
-
   if (usersListArray && usersList.length === 0) {
     setUsersList(usersListArray);
   }
@@ -51,7 +50,6 @@ const TimeLogReport = () => {
   });
 
   const projectsListArray = fetchedProjectData?.data;
-
   if (projectsListArray && projectsList.length === 0) {
     setProjectsList(projectsListArray);
   }
@@ -77,26 +75,27 @@ const TimeLogReport = () => {
         </Grid>
         <Grid item xs={12} md={9}>
           {isLoading && <CircularProgress />}
-          {isError && <Typography color="error"> {transreport("error")}</Typography>}
-          {!fromDate || !toDate || userIds.length === 0 ? (
-            <Grid item xs={12}>
-              <EmptyState imageSrc={NoReportImage} message={transreport("loghelper")} />
-            </Grid>
-          ) : isLoading ? (
-            <CircularProgress />
-          ) : isError ? (
+
+          {isError && (
             <Typography color="error">{transreport("error")}</Typography>
-          ) : (
-            data && (
-              <TimeLogCalendarGrid
-                data={data}
-                fromDate={fromDate}
-                toDate={toDate}
-                showTasks={showTasks}
-                selectedProjects={projectIds}
-              />
-            )
           )}
+
+          {!fromDate || !toDate ? ( // ✅ Only check fromDate and toDate
+            <Grid item xs={12}>
+              <EmptyState
+                imageSrc={NoReportImage}
+                message={transreport("loghelper")}
+              />
+            </Grid>
+          ) : data ? (
+            <TimeLogCalendarGrid
+              data={data}
+              fromDate={fromDate}
+              toDate={toDate}
+              showTasks={showTasks}
+              selectedProjects={projectIds}
+            />
+          ) : null}
         </Grid>
       </Grid>
     </Box>

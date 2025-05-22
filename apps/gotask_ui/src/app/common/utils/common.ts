@@ -151,5 +151,5 @@ export const formatTimeValue = (raw: string): string => {
   if (days === 0 && hours === 0) return "—";
   if (days === 0) return `${hours}h`;
   if (hours === 0) return `${days}d`;
-  return `${days}d${hours}h`;
+  return `${days}d ${hours}h`;
 };

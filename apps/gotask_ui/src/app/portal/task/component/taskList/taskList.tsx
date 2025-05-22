@@ -269,6 +269,7 @@ const TaskList: React.FC = () => {
                     ...(moreDays && { moreDays }),
                     ...(lessDays && { lessDays }),
                     dateVar,
+                    page: page.toString(),
                     ...(searchText && { searchText })
                   });
 

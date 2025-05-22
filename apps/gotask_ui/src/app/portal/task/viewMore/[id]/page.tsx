@@ -15,6 +15,8 @@ const ViewMoreAction: React.FC = () => {
   const moreDays = searchParams.get("moreDays") || undefined;
   const lessDays = searchParams.get("lessDays") || undefined;
   const dateVar = searchParams.get("dateVar") || "due_date";
+  const pageStr = searchParams.get("page");
+  const page = pageStr ? parseInt(pageStr) : 1;
 
   const filterStr = searchParams.get("filters");
   const parsedFilters = filterStr
@@ -25,7 +27,7 @@ const ViewMoreAction: React.FC = () => {
   const search_vars: string[][] = parsedFilters.search_vars || [];
 
   const hookArgs = [
-    1,
+    page,
     6,
     search_vals,
     search_vars,

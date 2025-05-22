@@ -1,7 +1,5 @@
-// components/TimeBadge.tsx
-
 import React from "react";
-import { Chip } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { formatTimeValue } from "@/app/common/utils/common";
 
@@ -14,12 +12,18 @@ const TimeBadge: React.FC<TimeBadgeProps> = ({ label, value }) => {
   const formattedValue = formatTimeValue(value);
 
   return (
-    <Chip
-      icon={<AccessTimeIcon fontSize="small" />}
-      label={`${label}: ${formattedValue}`}
-      variant="outlined"
-      sx={{ borderRadius: 1 }}
-    />
+    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+      <AccessTimeIcon sx={{ fontSize: 14, color: "text.disabled" }} />
+      <Typography variant="caption" sx={{ color: "text.secondary", fontSize: "0.7rem" }}>
+        {label}:
+      </Typography>
+      <Typography
+        variant="caption"
+        sx={{ fontWeight: 500, fontSize: "0.72rem", color: "text.primary" }}
+      >
+        {formattedValue}
+      </Typography>
+    </Box>
   );
 };
 

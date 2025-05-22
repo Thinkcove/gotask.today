@@ -6,6 +6,7 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import TimeBadge from "@/app/component/badge/timeBadge";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { getSeverityColor } from "@/app/common/constants/task";
 
 export interface Task {
   id: string;
@@ -29,13 +30,6 @@ interface TaskItemProps {
   formatDate: (date: string) => string;
 }
 
-const severityColor = {
-  low: "#81c784",
-  medium: "#ffb74d",
-  high: "#e57373",
-  critical: "#c62828"
-} as const;
-
 const TaskItem: React.FC<TaskItemProps> = ({
   task,
   onTaskClick,
@@ -45,10 +39,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
 }) => {
   const { canAccess } = useUserPermission();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const allowedSeverities = Object.keys(severityColor);
-  const safeSeverity = (
-    allowedSeverities.includes(task.severity) ? task.severity : "low"
-  ) as keyof typeof severityColor;
 
   return (
     <Box
@@ -105,16 +95,27 @@ const TaskItem: React.FC<TaskItemProps> = ({
             {view === "projects" ? task.user_name : task.project_name}
           </Typography>
         </Stack>
-        <Chip
-          size="small"
-          label={task.severity.toUpperCase()}
-          sx={{
-            backgroundColor: severityColor[safeSeverity],
-            color: "#fff",
-            height: 24,
-            fontWeight: 500
-          }}
-        />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            sx={{
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              background: `radial-gradient(circle, ${getSeverityColor(task.severity)} 30%, #fff 100%)`,
+              boxShadow: `0 0 6px ${getSeverityColor(task.severity)}`
+            }}
+          />
+          <Box
+            sx={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: getSeverityColor(task.severity),
+              textTransform: "uppercase"
+            }}
+          >
+            {task.severity}
+          </Box>
+        </Box>
       </Stack>
 
       {/* Time Info */}

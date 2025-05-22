@@ -10,22 +10,34 @@ const ViewMoreAction: React.FC = () => {
   const { id } = useParams();
   const view = searchParams.get("view") as "projects" | "users" | null;
 
-  const { tasksByProjects, isLoading: isLoadingProjects } = useProjectGroupTask(
+  const minDate = searchParams.get("minDate") || undefined;
+  const maxDate = searchParams.get("maxDate") || undefined;
+  const moreDays = searchParams.get("moreDays") || undefined;
+  const lessDays = searchParams.get("lessDays") || undefined;
+  const dateVar = searchParams.get("dateVar") || "due_date";
+
+  const filterStr = searchParams.get("filters");
+  const parsedFilters = filterStr
+    ? JSON.parse(decodeURIComponent(filterStr))
+    : { search_vals: [], search_vars: [] };
+
+  const search_vals: string[][] = parsedFilters.search_vals || [];
+  const search_vars: string[][] = parsedFilters.search_vars || [];
+
+  const hookArgs = [
     1,
     6,
-    1,
-    10,
-    [[id as string]],
-    [["id"]]
-  );
-  const { tasksByUsers, isLoading: isLoadingUsers } = useUserGroupTask(
-    1,
-    6,
-    1,
-    10,
-    [[id as string]],
-    [["id"]]
-  );
+    search_vals,
+    search_vars,
+    minDate,
+    maxDate,
+    dateVar,
+    moreDays,
+    lessDays
+  ] as const;
+
+  const { tasksByProjects, isLoading: isLoadingProjects } = useProjectGroupTask(...hookArgs);
+  const { tasksByUsers, isLoading: isLoadingUsers } = useUserGroupTask(...hookArgs);
 
   if (!id || !view)
     return (
@@ -39,7 +51,7 @@ const ViewMoreAction: React.FC = () => {
 
   return (
     <>
-      <ModuleHeader name="View More Tasks" />
+      <ModuleHeader name="Task" />
       <ViewMoreList
         selectedGroupId={id as string}
         drawerTasks={drawerTasks}

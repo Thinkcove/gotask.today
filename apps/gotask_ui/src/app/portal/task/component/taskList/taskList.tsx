@@ -61,8 +61,6 @@ const TaskList: React.FC = () => {
   const projectData = useProjectGroupTask(
     page,
     6,
-    1,
-    10,
     search_vals,
     search_vars,
     minDate,
@@ -75,8 +73,6 @@ const TaskList: React.FC = () => {
   const userData = useUserGroupTask(
     page,
     6,
-    1,
-    10,
     search_vals,
     search_vars,
     minDate,
@@ -266,7 +262,24 @@ const TaskList: React.FC = () => {
                 group={group}
                 onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
                 onViewMore={(id) => {
-                  router.push(`/portal/task/viewMore/${id}?view=${view}`);
+                  const params = new URLSearchParams({
+                    view,
+                    ...(minDate && { minDate }),
+                    ...(maxDate && { maxDate }),
+                    ...(moreDays && { moreDays }),
+                    ...(lessDays && { lessDays }),
+                    dateVar,
+                    ...(searchText && { searchText })
+                  });
+
+                  const filters = {
+                    search_vals: filtersOnly.search_vals || [],
+                    search_vars: filtersOnly.search_vars || []
+                  };
+
+                  params.append("filters", encodeURIComponent(JSON.stringify(filters)));
+
+                  router.push(`/portal/task/viewMore/${id}?${params.toString()}`);
                 }}
               />
             </Grid>

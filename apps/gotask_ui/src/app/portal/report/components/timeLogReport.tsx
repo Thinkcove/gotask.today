@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Grid, CircularProgress, Typography } from "@mui/material";
+import { Box, Grid, CircularProgress, Typography, Button } from "@mui/material";
 import { useUserTimeLogReport } from "../services/reportService";
 import { fetchProject, fetchUser } from "../../task/service/taskAction";
 import useSWR from "swr";
@@ -27,12 +27,12 @@ const TimeLogReport = () => {
   const payload = {
     fromDate,
     toDate,
-    userIds: userIds.length > 0 ? userIds : [], // ✅ Optional
+    userIds: userIds.length > 0 ? userIds : [],
     showTasks,
-    selectedProjects: projectIds.length > 0 ? projectIds : [] // ✅ Optional
+    selectedProjects: projectIds.length > 0 ? projectIds : []
   };
 
-  const shouldFetch = !!(fromDate && toDate); // ✅ Only require fromDate & toDate
+  const shouldFetch = !!(fromDate && toDate);
 
   const { data, isLoading, isError } = useUserTimeLogReport(payload, shouldFetch);
 
@@ -40,19 +40,27 @@ const TimeLogReport = () => {
     revalidateOnFocus: false
   });
 
-  const usersListArray = fetchedUserData?.data;
-  if (usersListArray && usersList.length === 0) {
-    setUsersList(usersListArray);
-  }
-
   const { data: fetchedProjectData } = useSWR("fetchproject", fetchProject, {
     revalidateOnFocus: false
   });
 
-  const projectsListArray = fetchedProjectData?.data;
-  if (projectsListArray && projectsList.length === 0) {
-    setProjectsList(projectsListArray);
+  // Set users list only once when SWR data is fetched
+  if (fetchedUserData?.data && usersList.length === 0) {
+    setUsersList(fetchedUserData.data);
   }
+
+  // Set project list only once when SWR data is fetched
+  if (fetchedProjectData?.data && projectsList.length === 0) {
+    setProjectsList(fetchedProjectData.data);
+  }
+
+  const handleResetFilters = () => {
+    setFromDate("");
+    setToDate("");
+    setUserIds([]);
+    setProjectIds([]);
+    setShowTasks(false);
+  };
 
   return (
     <Box sx={{ p: 3 }}>
@@ -72,7 +80,17 @@ const TimeLogReport = () => {
             setProjectIds={setProjectIds}
             projectsList={projectsList}
           />
+          <Button
+            variant="outlined"
+            color="primary"
+            sx={{ mt: 2 }}
+            onClick={handleResetFilters}
+            fullWidth
+          >
+            {transreport("reset")}
+          </Button>
         </Grid>
+
         <Grid item xs={12} md={9}>
           {isLoading && <CircularProgress />}
 
@@ -80,7 +98,7 @@ const TimeLogReport = () => {
             <Typography color="error">{transreport("error")}</Typography>
           )}
 
-          {!fromDate || !toDate ? ( // ✅ Only check fromDate and toDate
+          {!fromDate || !toDate ? (
             <Grid item xs={12}>
               <EmptyState
                 imageSrc={NoReportImage}

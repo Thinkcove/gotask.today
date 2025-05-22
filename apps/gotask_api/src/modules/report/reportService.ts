@@ -9,16 +9,18 @@ const getUserTimeReportService = async (
   selectedProjects?: string[]
 ) => {
   const dateMatch = { $gte: fromDate, $lte: toDate };
-
   const pipeline: PipelineStage[] = [];
 
-  // Filter by user and date
-  pipeline.push({
-    $match: {
-      user_id: { $in: userIds },
-      time_spent: { $elemMatch: { date: dateMatch } }
-    }
-  });
+  // Conditionally apply userId filter only if userIds are provided
+  const userMatch: Record<string, any> = {
+    time_spent: { $elemMatch: { date: dateMatch } }
+  };
+
+  if (userIds && userIds.length > 0) {
+    userMatch.user_id = { $in: userIds };
+  }
+
+  pipeline.push({ $match: userMatch });
 
   pipeline.push({ $unwind: "$time_spent" });
 
@@ -28,7 +30,7 @@ const getUserTimeReportService = async (
     }
   });
 
-  // Apply project filter if provided
+  // Conditionally apply project filter
   if (selectedProjects && selectedProjects.length > 0) {
     pipeline.push({
       $match: {
@@ -103,7 +105,6 @@ const getUserTimeReportService = async (
   }
 
   pipeline.push({ $project: finalProject });
-
   pipeline.push({ $sort: { user_name: 1, date: 1 } });
 
   const results = await Task.aggregate(pipeline);

@@ -97,7 +97,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
         </div>
       )}
 
-      <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
+      <TableContainer component={Paper} sx={{ maxHeight: 640 }}>
         <Table stickyHeader size="small" sx={{ minWidth: 1000 }}>
           <TableHead>
             <TableRow>

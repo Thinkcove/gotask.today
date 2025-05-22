@@ -16,31 +16,31 @@ const OtpSchema = new Schema<IOtp>(
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
     otp: {
       type: String,
-      required: true,
+      required: true
     },
     otpExpiry: {
       type: Date,
-      required: true,
+      required: true
     },
     isUsed: {
       type: Boolean,
-      default: false,
+      default: false
     },
     attemptsLeft: {
       type: Number,
-      default: 5,
+      default: 5
     },
     resendCooldownExpiresAt: {
       type: Date,
-      default: () => new Date(0),
-    },
+      default: () => new Date(0)
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

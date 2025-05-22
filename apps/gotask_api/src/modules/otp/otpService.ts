@@ -15,7 +15,7 @@ const sendOtpService = async (
   user_id: string
 ): Promise<{ success: boolean; message: string; details?: any }> => {
   try {
-    const user = await User.findOne({ user_id }) as IUser;
+    const user = (await User.findOne({ user_id })) as IUser;
     if (!user) {
       return { success: false, message: UserMessages.FETCH.NOT_FOUND };
     }
@@ -25,7 +25,7 @@ const sendOtpService = async (
     }
 
     const query = { user: user._id };
-    const existingOtp = await Otp.findOne(query) as IOtp | null;
+    const existingOtp = (await Otp.findOne(query)) as IOtp | null;
     const now = new Date();
 
     if (
@@ -84,7 +84,7 @@ const verifyOtpService = async (
   details?: any;
 }> => {
   try {
-    const user = await User.findOne({ user_id }).populate("roleId") as IUser;
+    const user = (await User.findOne({ user_id }).populate("roleId")) as IUser;
     if (!user) {
       return { success: false, message: UserMessages.FETCH.NOT_FOUND };
     }
@@ -94,7 +94,7 @@ const verifyOtpService = async (
     }
 
     const query = { user: user._id };
-    const otpDoc = await Otp.findOne(query) as IOtp | null;
+    const otpDoc = (await Otp.findOne(query)) as IOtp | null;
     const now = new Date();
 
     if (!otpDoc) {
@@ -147,7 +147,7 @@ const verifyOtpService = async (
       { expiresIn: "1h" }
     );
 
-    const { password, ...sanitizedUser } = user.toObject();
+    const { ...sanitizedUser } = user.toObject();
     sanitizedUser.role = roleResult.data;
 
     return {
@@ -165,7 +165,4 @@ const verifyOtpService = async (
   }
 };
 
-export {
-  sendOtpService,
-  verifyOtpService
-};
+export { sendOtpService, verifyOtpService };

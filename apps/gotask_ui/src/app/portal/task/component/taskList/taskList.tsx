@@ -6,7 +6,6 @@ import TaskToggle from "../taskLayout/taskToggle";
 import { useRouter } from "next/navigation";
 import TaskCard from "../taskLayout/taskCard";
 import { IGroup, TaskFilterType } from "../../interface/taskInterface";
-import ViewMoreList from "./viewMoreList";
 import TaskFilterDrawer, { TaskFilterDrawerRef } from "../taskFilter/filterDrawer";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -36,7 +35,6 @@ const TaskList: React.FC = () => {
   const [page, setPage] = useState(1);
   const [allTasks, setAllTasks] = useState<IGroup[]>([]);
   const [hasMoreData, setHasMoreData] = useState(true);
-  const [selectedGroupId, setSelectedGroupId] = useState("");
 
   const [searchText, setSearchText] = useState("");
   const [searchParams, setSearchParams] = useState<{
@@ -63,8 +61,6 @@ const TaskList: React.FC = () => {
   const projectData = useProjectGroupTask(
     page,
     6,
-    1,
-    10,
     search_vals,
     search_vars,
     minDate,
@@ -77,8 +73,6 @@ const TaskList: React.FC = () => {
   const userData = useUserGroupTask(
     page,
     6,
-    1,
-    10,
     search_vals,
     search_vars,
     minDate,
@@ -268,8 +262,25 @@ const TaskList: React.FC = () => {
                 group={group}
                 onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
                 onViewMore={(id) => {
-                  setSelectedGroupId(id);
-                  setSearchParams({ search_vals: [[id]], search_vars: [["id"]] });
+                  const params = new URLSearchParams({
+                    view,
+                    ...(minDate && { minDate }),
+                    ...(maxDate && { maxDate }),
+                    ...(moreDays && { moreDays }),
+                    ...(lessDays && { lessDays }),
+                    dateVar,
+                    page: page.toString(),
+                    ...(searchText && { searchText })
+                  });
+
+                  const filters = {
+                    search_vals: filtersOnly.search_vals || [],
+                    search_vars: filtersOnly.search_vars || []
+                  };
+
+                  params.append("filters", encodeURIComponent(JSON.stringify(filters)));
+
+                  router.push(`/portal/task/viewMore/${id}?${params.toString()}`);
                 }}
               />
             </Grid>
@@ -284,19 +295,6 @@ const TaskList: React.FC = () => {
           onClick={() => router.push("/portal/task/createTask")}
         />
       )}
-
-      <ViewMoreList
-        open={Boolean(selectedGroupId)}
-        selectedGroupId={selectedGroupId}
-        drawerTasks={allTasks}
-        isLoadingDrawer={isLoading && page === 1}
-        onClose={() => {
-          setSelectedGroupId("");
-          setSearchParams({});
-        }}
-        onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
-        view={view}
-      />
 
       <TaskFilterDrawer
         ref={filterDrawerRef}

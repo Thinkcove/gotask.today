@@ -42,12 +42,14 @@ export const getProgressValue = (status: string) => {
 
 export const getSeverityColor = (severity: string) => {
   switch (severity) {
+    case "critical":
+      return "#ef5350"; // Light Red
     case "high":
-      return "#D32F2F"; // Red
+      return "#ff8a65"; // Red
     case "medium":
-      return "#FFA000"; // Orange
+      return "#ffd54f"; // Orange
     case "low":
-      return "#388E3C"; // Green
+      return "#a5d6a7"; // Green
     default:
       return "#757575"; // Grey
   }

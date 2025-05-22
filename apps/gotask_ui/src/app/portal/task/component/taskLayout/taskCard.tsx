@@ -21,10 +21,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
     <Paper
       elevation={2}
       sx={{
-        p: 2,
+        p: 1.5,
         borderRadius: 3,
         transition: "0.3s",
-        height: 400,
+        height: "auto",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between"
@@ -44,7 +44,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
           {view === "projects" ? group.project_name : group.user_name}
         </Typography>
 
-        {group.tasks.length > 3 && (
+        {group.tasks.length > 4 && (
           <Box
             sx={{
               display: "flex",
@@ -55,7 +55,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
             onClick={() => onViewMore(group.id)}
           >
             <Typography variant="subtitle1" sx={{ color: "#741B92" }} fontWeight="bold">
-              {transtask("viewmore", { count: group.tasks.length - 3 })}
+              {transtask("viewmore", { count: group.tasks.length - 4 })}
             </Typography>
             <ReadMoreTwoTone sx={{ color: "#741B92" }} />
           </Box>
@@ -67,7 +67,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
       <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 400 }}>
         {group.tasks.length > 0 ? (
           <>
-            {group.tasks.slice(0, 3).map((task: Task) => (
+            {group.tasks.slice(0, 4).map((task: Task) => (
               <TaskItem
                 key={task.id}
                 task={task}

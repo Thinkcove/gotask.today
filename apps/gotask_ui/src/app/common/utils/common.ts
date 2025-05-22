@@ -140,3 +140,16 @@ export const extractHours = (timeStrings: string[]) =>
     }
     return sum;
   }, 0);
+
+export const formatTimeValue = (raw: string): string => {
+  const dayMatch = raw.match(/(\d+)d/);
+  const hourMatch = raw.match(/(\d+)h/);
+
+  const days = dayMatch ? parseInt(dayMatch[1], 10) : 0;
+  const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+
+  if (days === 0 && hours === 0) return "—";
+  if (days === 0) return `${hours}h`;
+  if (hours === 0) return `${days}d`;
+  return `${days}d ${hours}h`;
+};

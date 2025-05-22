@@ -66,8 +66,6 @@ export interface ITaskComment {
 export type TaskPayload = {
   page?: number;
   page_size?: number;
-  task_page?: number;
-  task_page_size?: number;
   search_vals?: string[][];
   search_vars?: string[][];
   min_date?: string;

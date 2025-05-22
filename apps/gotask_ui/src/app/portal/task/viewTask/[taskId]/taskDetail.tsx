@@ -10,6 +10,14 @@ import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
+import CommentHistory from "../../editTask/commentsHistory";
+
+type Comment = {
+  id: string;
+  user_name: string;
+  comment: string;
+  createdAt?: string;
+};
 
 interface TaskDetailViewProps {
   task: ITask;
@@ -17,13 +25,13 @@ interface TaskDetailViewProps {
 
 const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-
   const router = useRouter();
+  const { canAccess } = useUserPermission();
 
   const handleBack = () => {
     setTimeout(() => router.back(), 2000);
   };
-  const { canAccess } = useUserPermission();
+
   return (
     <>
       <ModuleHeader name={transtask("tasks")} />
@@ -39,7 +47,9 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
             borderRadius: 4,
             p: 4,
             bgcolor: "#f9fafb",
-            border: "1px solid #e0e0e0"
+            border: "1px solid #e0e0e0",
+            maxHeight: 820 // set max height here
+            // overflowY: "auto" // add scrollbar if content overflows
           }}
         >
           {/* Header */}
@@ -65,36 +75,34 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
               )}
             </Box>
           </Box>
-
           {/* Task Description */}
           <Grid container spacing={2} flexDirection="column" mb={3}>
-            <Grid item xs={12} sm={12} md={12}>
+            <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={transtask("detaildesc")} value={task.description || "-"} />
             </Grid>
           </Grid>
-
           {/* Meta Info */}
           <Grid container spacing={2} mb={3}>
-            <Grid item xs={4} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={transtask("detailuser")} value={task.user_name} />
             </Grid>
-            <Grid item xs={4} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={transtask("detailproject")} value={task.project_name} />
             </Grid>
-            <Grid item xs={4} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label={transtask("detailseverity")}
                 value={task.severity}
                 sx={{ color: getSeverityColor(task.severity), textTransform: "capitalize" }}
               />
             </Grid>
-            <Grid item xs={4} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label={transtask("detailcreated")}
                 value={new Date(task.created_on).toLocaleDateString()}
               />
             </Grid>
-            <Grid item xs={4} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label={transtask("detaildue")}
                 value={new Date(task.due_date).toLocaleDateString()}
@@ -102,7 +110,10 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
             </Grid>
           </Grid>
 
-          <Divider sx={{ mt: 2 }} />
+          <Divider sx={{ mt: 2, mb: 2 }} />
+          {Array.isArray(task?.comment) && task.comment.length > 0 && (
+            <CommentHistory comments={task.comment} />
+          )}
         </Box>
       </Box>
     </>

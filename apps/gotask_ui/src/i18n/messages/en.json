@@ -272,7 +272,9 @@
     "estimatedt": "Estimated",
     "spentt": "Spent",
     "remainingt": "Remaining",
-    "variationt": "Variation"
+    "variationt": "Variation",
+    "viewMore": "View more",
+    "comment": "Comments"
   },
   "User": {
     "username": "User name is required",
@@ -342,7 +344,6 @@
     "loghelper": "Please select a date and users to see their work log",
     "totalworklog": "Total Work Log",
     "error": "Error loading data",
-    "all": "All",
-    "reset": "Reset Filters" 
+    "all": "All"
   }
 }

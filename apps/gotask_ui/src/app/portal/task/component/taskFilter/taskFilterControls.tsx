@@ -1,7 +1,7 @@
 // components/TaskFilterControls.tsx
 import React from "react";
-import { Button, Box } from "@mui/material";
-import { FilterAltOutlined } from "@mui/icons-material";
+import { Button, Box, Typography, Badge } from "@mui/material";
+import { FilterAltOutlined, Clear } from "@mui/icons-material";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -18,37 +18,36 @@ const TaskFilterControls: React.FC<TaskFilterControlsProps> = ({
   onClearAll,
   onOpenFilter
 }) => {
-   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+
   return (
-    <Box sx={{ display: "flex", justifyContent: "flex-end", pr: 3, gap: 2 }}>
-      {activeFilterCount > 0 && isFiltered && (
-        <Button
-          variant="outlined"
-          onClick={onClearAll}
-          sx={{
-            bgcolor: "white",
-            textTransform: "none",
-            borderColor: "white",
-            color: "#741B92"
-          }}
-        >
-          {transtask("clearall")}
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        gap: 2,
+        px: 3,
+        mt: 2,
+        mb: 1,
+        flexWrap: "wrap"
+      }}
+    >
+      {isFiltered && (
+        <Button variant="text" color="error" startIcon={<Clear />} onClick={onClearAll}>
+          {transtask("clearall") || "Clear All"}
         </Button>
       )}
-      <Button
-        variant="contained"
-        onClick={onOpenFilter}
-        endIcon={<FilterAltOutlined fontSize="small" />}
-        sx={{
-          bgcolor: "#741B92",
-          color: "#fff",
-          textTransform: "none",
-          "&:hover": { bgcolor: "#5e1574" }
-        }}
+
+      <Badge
+        badgeContent={activeFilterCount > 0 ? activeFilterCount : null}
+        color="primary"
+        overlap="circular"
       >
-        {transtask("filters")}
-        {activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-      </Button>
+        <Button variant="outlined" startIcon={<FilterAltOutlined />} onClick={onOpenFilter}>
+          {transtask("filters") || "Filters"}
+        </Button>
+      </Badge>
     </Box>
   );
 };

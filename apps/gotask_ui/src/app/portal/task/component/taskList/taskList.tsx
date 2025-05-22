@@ -3,7 +3,7 @@ import { Grid, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useProjectGroupTask, useUserGroupTask } from "../../service/taskAction";
 import TaskToggle from "../taskLayout/taskToggle";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import TaskCard from "../taskLayout/taskCard";
 import { IGroup, TaskFilterType } from "../../interface/taskInterface";
 import ViewMoreList from "./viewMoreList";
@@ -25,6 +25,17 @@ const TaskList: React.FC = () => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [view, setView] = useState<"projects" | "users">("projects");
   const router = useRouter();
+  const searchParam = useSearchParams();
+  const dashboardStatus = searchParam.get("status") || "";
+  const initialSearchParams = (() => {
+    if (dashboardStatus) {
+      return {
+        search_vals: [[dashboardStatus]],
+        search_vars: [["status"]]
+      };
+    }
+    return {};
+  })();
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const isFetchingRef = useRef(false);
@@ -42,7 +53,7 @@ const TaskList: React.FC = () => {
   const [searchParams, setSearchParams] = useState<{
     search_vals?: string[][];
     search_vars?: string[][];
-  }>({});
+  }>(initialSearchParams);
   const [filtersOnly, setFiltersOnly] = useState<{
     search_vals?: string[][];
     search_vars?: string[][];

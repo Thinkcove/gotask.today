@@ -14,9 +14,16 @@ interface Props {
   statusCounts: Record<string, number>;
   statuses: StatusItem[];
   chartTitle: string;
+  onStatusClick?: (status: string) => void;
 }
 
-const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitle }) => {
+const StatusChart: React.FC<Props> = ({
+  title,
+  statusCounts,
+  statuses,
+  chartTitle,
+  onStatusClick
+}) => {
   const transstatuschart = useTranslations(LOCALIZATION.TRANSITION.STATUSCHART);
 
   const total = Object.values(statusCounts).reduce((sum, value) => sum + value, 0);
@@ -24,8 +31,21 @@ const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitl
   const barChartData = statuses.map((status) => ({
     name: status.label,
     value: statusCounts[status.label.toLowerCase().replace(/\s/g, "-")] || 0,
-    color: status.color
+    color: status.color,
+    statusKey: status.label.toLowerCase().replace(/\s/g, "-")
   }));
+
+  const handleBarClick = (data: { statusKey: string }, index: any) => {
+    if (onStatusClick) {
+      onStatusClick(data.statusKey);
+    }
+  };
+
+  const handleStatusItemClick = (statusKey: string) => {
+    if (onStatusClick) {
+      onStatusClick(statusKey);
+    }
+  };
 
   return (
     <Box
@@ -66,20 +86,34 @@ const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitl
             <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
             <XAxis dataKey="name" axisLine={false} />
             <YAxis axisLine={false} tickLine={false} />
-            <Bar dataKey="value" fill="#8849AE" radius={[10, 10, 0, 0]} />
+            <Bar
+              dataKey="value"
+              fill="#8849AE"
+              radius={[10, 10, 0, 0]}
+              onClick={handleBarClick}
+              cursor={onStatusClick ? "pointer" : "default"}
+            />
           </BarChart>
         </ResponsiveContainer>
       </Box>
 
       <Stack spacing={2} mt={2}>
         {statuses.map((status, index) => {
-          const value = statusCounts[status.label.toLowerCase().replace(/\s/g, "-")] || 0;
+          const statusKey = status.label.toLowerCase().replace(/\s/g, "-");
+          const value = statusCounts[statusKey] || 0;
           const percent = total ? Math.round((value / total) * 100) : 0;
 
           return (
             <Box
               key={index}
-              sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                cursor: onStatusClick ? "pointer" : "default",
+                "&:hover": onStatusClick ? { bgcolor: "#f5f5f5", borderRadius: 1 } : {}
+              }}
+              onClick={() => handleStatusItemClick(statusKey)}
             >
               <Typography variant="body1" sx={{ color: "#333", fontWeight: 600 }}>
                 {status.label}

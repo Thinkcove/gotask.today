@@ -20,6 +20,8 @@ import SecurityIcon from "@mui/icons-material/Security";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import SettingsIcon from "@mui/icons-material/Settings";
+
 import menuItemsData from "./menuItems.json";
 import { useRouter, usePathname } from "next/navigation";
 import { Theme } from "@mui/material/styles";
@@ -36,7 +38,8 @@ const iconMap: Record<string, React.ReactNode> = {
   SecurityIcon: <SecurityIcon />,
   VpnKeyIcon: <VpnKeyIcon />,
   AssignmentIcon: <AssignmentIcon />,
-  BarChartIcon: <BarChartIcon />
+  BarChartIcon: <BarChartIcon />,
+  SettingsIcon: <SettingsIcon />
 };
 
 const drawerWidth = 260;

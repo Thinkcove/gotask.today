@@ -42,9 +42,14 @@
     "access": "Task Management"
   },
   {
-    "text": "User Report",
+    "text": "Report",
     "icon": "BarChartIcon",
     "path": "/portal/report",
     "access": "User Report"
+  },
+  {
+    "text": "User Preference",
+    "icon": "SettingsIcon",
+    "path": "/portal/preference"
   }
 ]

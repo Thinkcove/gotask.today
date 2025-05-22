@@ -20,6 +20,12 @@ interface Role {
   accessDetails: AccessDetail[];
 }
 
+interface Preference {
+  module_name: string;
+  exclude_fields: string[];
+  _id: string;
+}
+
 interface User {
   id: string;
   name: string;
@@ -28,6 +34,7 @@ interface User {
   status: boolean;
   token: string;
   role: Role;
+  preferences?: Preference[];
 }
 
 interface UserContextType {
@@ -41,30 +48,27 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-useEffect(() => {
-  const storedUser = localStorage.getItem("user");
-  const token = fetchToken();
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const token = fetchToken();
 
-  if (storedUser && token) {
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      if (parsedUser && typeof parsedUser === "object") {
-        setUser({ ...parsedUser, token });
-      } else {
-        // Invalid parsed user fallback
+    if (storedUser && token) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser && typeof parsedUser === "object") {
+          setUser({ ...parsedUser, token });
+        } else {
+          localStorage.removeItem("user");
+          router.push("/login");
+        }
+      } catch {
         localStorage.removeItem("user");
         router.push("/login");
       }
-    } catch {
-      // JSON.parse failed, clear and redirect
-      localStorage.removeItem("user");
+    } else {
       router.push("/login");
     }
-  } else {
-    router.push("/login");
-  }
-}, [router]);
-
+  }, [router]);
 
   const logout = () => {
     localStorage.removeItem("user");

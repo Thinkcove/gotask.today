@@ -56,8 +56,6 @@ class TaskController extends BaseController {
       const {
         page,
         page_size,
-        task_page,
-        task_page_size,
         search_vals,
         search_vars,
         min_date,
@@ -70,8 +68,6 @@ class TaskController extends BaseController {
       const result = await getTasksByProject(
         Number(page),
         Number(page_size),
-        Number(task_page),
-        Number(task_page_size),
         search_vals,
         search_vars,
         min_date,
@@ -93,8 +89,6 @@ class TaskController extends BaseController {
       const {
         page,
         page_size,
-        task_page,
-        task_page_size,
         search_vals,
         search_vars,
         min_date,
@@ -107,8 +101,6 @@ class TaskController extends BaseController {
       const result = await getTasksByUser(
         Number(page),
         Number(page_size),
-        Number(task_page),
-        Number(task_page_size),
         search_vals,
         search_vars,
         min_date,

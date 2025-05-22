@@ -1,10 +1,12 @@
-import { Box, Typography, Tooltip } from "@mui/material";
-import CalendarMonth from "@mui/icons-material/CalendarMonth";
-import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
+import { Box, Typography, Stack, Divider } from "@mui/material";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
-import { getVariationColor } from "@/app/common/constants/task";
-import { TuneRounded } from "@mui/icons-material";
+import { CalendarToday, Description, Person } from "@mui/icons-material";
+import StatusIndicator from "@/app/component/status/statusIndicator";
+import TimeBadge from "@/app/component/badge/timeBadge";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { getSeverityColor } from "@/app/common/constants/task";
 
 export interface Task {
   id: string;
@@ -14,6 +16,10 @@ export interface Task {
   user_name: string;
   project_name: string;
   variation: string;
+  estimated_time: string;
+  time_spent_total: string;
+  remaining_time: string;
+  severity: string;
 }
 
 interface TaskItemProps {
@@ -32,109 +38,93 @@ const TaskItem: React.FC<TaskItemProps> = ({
   formatDate
 }) => {
   const { canAccess } = useUserPermission();
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+
   return (
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        backgroundColor: "#ffffff",
+        backgroundColor: "#fff",
         borderRadius: 2,
-        border: "1px solid rgba(0, 0, 0, 0.12)",
-        boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
-        px: 2,
-        py: 1.5,
-        mb: 1.5,
+        border: "1px solid #e0e0e0",
+        boxShadow: "0px 2px 6px rgba(0,0,0,0.04)",
+        px: 1,
+        py: 2,
+        mb: 2,
         cursor: canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? "pointer" : "default",
-        transition: "box-shadow 0.2s ease-in-out",
+        transition: "box-shadow 0.2s ease",
         "&:hover": {
-          boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)"
+          boxShadow: "0 4px 16px rgba(0,0,0,0.1)"
         }
       }}
       onClick={canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? () => onTaskClick(task.id) : undefined}
     >
-      {/* Left Section */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        {/* Task Title */}
-        <Tooltip title={task.title} arrow>
-          <Typography
-            variant="subtitle2"
-            sx={{
-              textTransform: "capitalize",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              maxWidth: 250,
-              display: "block"
-            }}
-          >
-            {task.title}
+      {/* Title and Status */}
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+        <Typography
+          variant="subtitle1"
+          fontWeight={400}
+          textTransform={"capitalize"}
+          fontSize="1rem"
+        >
+          {task.title}
+        </Typography>
+        <StatusIndicator status={task.status} getColor={getStatusColor} />
+      </Stack>
+
+      {/* Info Row */}
+      <Stack
+        direction="row"
+        gap={1.5}
+        flexWrap="wrap"
+        alignItems="center"
+        divider={<Divider orientation="vertical" flexItem />}
+        mb={1.5}
+      >
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <CalendarToday sx={{ fontSize: 18, color: "text.secondary" }} />
+          <Typography variant="body2">{formatDate(task.due_date)}</Typography>
+        </Stack>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          {view === "projects" ? (
+            <Person sx={{ fontSize: 18, color: "text.secondary" }} />
+          ) : (
+            <Description sx={{ fontSize: 18, color: "text.secondary" }} />
+          )}
+
+          <Typography variant="body2">
+            {view === "projects" ? task.user_name : task.project_name}
           </Typography>
-        </Tooltip>
-
-        {/* Variation Detail */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}>
-          <TuneRounded sx={{ fontSize: 16, color: getVariationColor(task.variation) }} />
-          <Typography
-            variant="caption"
-            sx={{
-              fontWeight: 500,
-              color: getVariationColor(task.variation),
-              textTransform: "capitalize"
-            }}
-          >
-            Variation: {task.variation ? task.variation : "0d0h"}
-          </Typography>
-        </Box>
-
-        {/* Metadata: Due Date + Status */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 0.5 }}>
-          {/* Due Date */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <CalendarMonth sx={{ fontSize: 16, color: "#888" }} />
-            <Typography variant="caption" color="text.secondary">
-              {formatDate(task.due_date)}
-            </Typography>
-          </Box>
-
-          {/* Status */}
+        </Stack>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Box
             sx={{
-              px: 1,
-              py: 0.2,
-              borderRadius: 1,
-              backgroundColor: getStatusColor(task.status),
-              fontSize: "0.7rem",
-              color: "#fff"
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              background: `radial-gradient(circle, ${getSeverityColor(task.severity)} 30%, #fff 100%)`,
+              boxShadow: `0 0 6px ${getSeverityColor(task.severity)}`
+            }}
+          />
+          <Box
+            sx={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: getSeverityColor(task.severity),
+              textTransform: "uppercase"
             }}
           >
-            {task.status.replace(/-/g, " ").toUpperCase()}
+            {task.severity}
           </Box>
         </Box>
-      </Box>
+      </Stack>
 
-      {/* Right Section */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "flex-end",
-          textAlign: "right"
-        }}
-      >
-        {view === "projects" ? (
-          <Tooltip title={task.user_name} arrow>
-            <AlphabetAvatar userName={task.user_name} />
-          </Tooltip>
-        ) : (
-          <Tooltip title={task.project_name} arrow>
-            <Typography variant="caption" color="text.secondary">
-              {task.project_name}
-            </Typography>
-          </Tooltip>
-        )}
-      </Box>
+      {/* Time Info */}
+      <Stack direction="row" gap={1.5} flexWrap="wrap">
+        <TimeBadge label={transtask("estimatedt")} value={task.estimated_time ?? "-"} />
+        <TimeBadge label={transtask("spentt")} value={task.time_spent_total ?? "-"} />
+        <TimeBadge label={transtask("remainingt")} value={task.remaining_time ?? "-"} />
+        <TimeBadge label={transtask("variationt")} value={task.variation ?? "—"} />
+      </Stack>
     </Box>
   );
 };

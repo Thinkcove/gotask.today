@@ -67,7 +67,7 @@ TaskRoutes.push({
   handler: (request: Request, handler: ResponseToolkit) =>
     taskController.getTaskByProject(new RequestHelper(request), handler),
   config: {
-    notes: "Retrieve tasks by project ID",
+    notes: "Retrieve tasks by project",
     tags
   }
 });
@@ -79,7 +79,7 @@ TaskRoutes.push({
   handler: (request: Request, handler: ResponseToolkit) =>
     taskController.getTaskByUser(new RequestHelper(request), handler),
   config: {
-    notes: "Retrieve tasks by user ID",
+    notes: "Retrieve tasks by user",
     tags
   }
 });

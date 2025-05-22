@@ -8,8 +8,6 @@ import { withAuth } from "@/app/common/utils/authToken";
 export const useProjectGroupTask = (
   page?: number,
   pageSize?: number,
-  taskPage?: number,
-  taskPageSize?: number,
   search_vals?: string[][],
   search_vars?: string[][],
   min_date?: string,
@@ -23,8 +21,6 @@ export const useProjectGroupTask = (
       const payload: TaskPayload = {
         page,
         page_size: pageSize,
-        task_page: taskPage,
-        task_page_size: taskPageSize,
         ...(search_vals && search_vars && { search_vals, search_vars }),
         ...(min_date &&
           max_date && {
@@ -43,8 +39,6 @@ export const useProjectGroupTask = (
       `fetch-project-tasks`,
       page,
       pageSize,
-      taskPage,
-      taskPageSize,
       search_vals,
       search_vars,
       min_date,
@@ -70,8 +64,6 @@ export const useProjectGroupTask = (
 export const useUserGroupTask = (
   page?: number,
   pageSize?: number,
-  taskPage?: number,
-  taskPageSize?: number,
   search_vals?: string[][],
   search_vars?: string[][],
   min_date?: string,
@@ -85,8 +77,6 @@ export const useUserGroupTask = (
       const payload: TaskPayload = {
         page,
         page_size: pageSize,
-        task_page: taskPage,
-        task_page_size: taskPageSize,
         ...(search_vals && search_vars && { search_vals, search_vars }),
         ...(min_date &&
           max_date && {
@@ -105,8 +95,6 @@ export const useUserGroupTask = (
       `fetch-user-tasks`,
       page,
       pageSize,
-      taskPage,
-      taskPageSize,
       search_vals,
       search_vars,
       min_date,

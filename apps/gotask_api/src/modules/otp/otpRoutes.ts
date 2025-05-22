@@ -3,15 +3,10 @@ import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
 import OtpController from "./otpController";
-import { permission } from "../../middleware/permission";
-import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
-import authStrategy from "../../constants/auth/authStrategy";
 
 const otpController = new OtpController();
 const tags = [API, "OTP"];
 const OtpRoutes = [];
-
-const appName = APPLICATIONS.USER;
 
 // Route: Send OTP
 OtpRoutes.push({

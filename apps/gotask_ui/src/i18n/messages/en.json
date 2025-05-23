@@ -344,6 +344,7 @@
     "loghelper": "Please select a date and users to see their work log",
     "totalworklog": "Total Work Log",
     "error": "Error loading data",
-    "all": "All"
+    "all": "All",
+    "reset": "Reset Filter"
   }
 }

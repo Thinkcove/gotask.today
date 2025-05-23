@@ -62,7 +62,9 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
                     fontWeight="bold"
                     sx={{ color: "#741B92", textAlign: "center" }}
                   >
-                    {view === "projects" ? group.project_name : group.user_name}
+                    {view === "projects"
+                      ? `Detail view of project: ${group.project_name}`
+                      : `Detail view of user: ${group.user_name}`}
                   </Typography>
                 </Box>
 

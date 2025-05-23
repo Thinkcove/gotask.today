@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Typography, Grid, Box, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { Tune } from "@mui/icons-material";
 import { useUser } from "@/app/userContext";

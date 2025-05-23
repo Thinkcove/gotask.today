@@ -1,6 +1,6 @@
 import React from "react";
-import PreferenceCards from "./preferenceCard";
 import { Box } from "@mui/material";
+import PreferenceCards from "./preferenceCard";
 
 const PreferenceList = () => {
   return (

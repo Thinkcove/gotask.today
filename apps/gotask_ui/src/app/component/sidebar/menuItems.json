@@ -48,8 +48,8 @@
     "access": "User Report"
   },
   {
-    "text": "User Preference",
+    "text": "Settings",
     "icon": "SettingsIcon",
-    "path": "/portal/preference"
+    "path": "/portal/settings"
   }
 ]

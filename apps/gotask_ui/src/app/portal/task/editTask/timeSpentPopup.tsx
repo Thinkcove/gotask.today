@@ -8,7 +8,7 @@ import { KeyedMutator } from "swr";
 import { ITask, TimeEntry, TimeOption } from "../interface/taskInterface";
 import { isEndTimeAfterStartTime } from "@/app/common/utils/common";
 import { timeOptions as importedTimeOptions } from "../../../common/constants/timeOptions";
-import { TIME_GUIDE_DESCRIPTION } from "@/app/common/constants/timeTask";
+import { TIME_GUIDE_DESCRIPTION } from "../../../common/constants/timeTask";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -62,7 +62,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
       const dueDateObj = new Date(dueDate);
       const entryDateObj = new Date(value);
       if (!isNaN(dueDateObj.getTime()) && entryDateObj < dueDateObj) {
-        updatedErrors[index] ="Cannot register time before the due date.";
+        updatedErrors[index] = "Cannot register time before the due date.";
       }
 
       setDateErrors(updatedErrors);
@@ -147,12 +147,13 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
         left: "50%",
         transform: "translate(-50%, -50%)",
         background: "#fff",
-        padding: 3,
+        padding: 2.5,
         borderRadius: 2,
         boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
         zIndex: 1200,
-        minWidth: 320,
-        maxWidth: 550,
+        minWidth: 250,
+        maxWidth: 380,
+        width: "90vw",
         maxHeight: "90vh",
         overflowY: "auto",
         display: "flex",
@@ -203,7 +204,9 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
             }}
           >
             <Box sx={{ width: "100%" }}>
-              <Typography variant="body2">{transtask("date")}</Typography>
+              <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+                {transtask("date")}
+              </Typography>
               <TextField
                 type="date"
                 value={entry.date}
@@ -219,7 +222,7 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
 
             <Box sx={{ display: "flex", gap: 2, width: "100%" }}>
               <Box sx={{ width: "50%" }}>
-                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
                   {transtask("starttime")}
                 </Typography>
                 <Autocomplete
@@ -250,11 +253,17 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                       {option.label}
                     </li>
                   )}
+                  ListboxProps={{
+                    style: {
+                      maxHeight: "120px", // Show ~3 items (adjust height as needed)
+                      overflowY: "auto" // Enable scrolling
+                    }
+                  }}
                 />
               </Box>
 
               <Box sx={{ width: "50%" }}>
-                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
                   {transtask("endtime")}
                 </Typography>
                 <Autocomplete
@@ -274,7 +283,11 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                     }
                   }}
                   renderInput={(params) => (
-                    <TextField {...params} variant="outlined" placeholder={transtask("placeholderselecttime")} />
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      placeholder={transtask("placeholderselecttime")}
+                    />
                   )}
                   sx={{ width: "100%" }}
                   getOptionLabel={(option: TimeOption) => option.label}
@@ -286,6 +299,12 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
                       {option.label}
                     </li>
                   )}
+                  ListboxProps={{
+                    style: {
+                      maxHeight: "120px", // Show ~3 items (adjust height as needed)
+                      overflowY: "auto" // Enable scrolling
+                    }
+                  }}
                 />
               </Box>
 

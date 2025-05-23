@@ -1,6 +1,7 @@
 "use client";
+
 import React, { useState } from "react";
-import { Box, Grid, CircularProgress, Typography } from "@mui/material";
+import { Box, Grid, CircularProgress, Typography, Button } from "@mui/material";
 import { useUserTimeLogReport } from "../services/reportService";
 import { fetchProject, fetchUser } from "../../task/service/taskAction";
 import useSWR from "swr";
@@ -13,87 +14,174 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { Project } from "../../task/interface/taskInterface";
 
+const getInitialFilters = () => {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("timelog_filters");
+    return saved
+      ? JSON.parse(saved)
+      : {
+          fromDate: "",
+          toDate: "",
+          showTasks: false,
+          userIds: [],
+          projectIds: [],
+        };
+  }
+  return {
+    fromDate: "",
+    toDate: "",
+    showTasks: false,
+    userIds: [],
+    projectIds: [],
+  };
+};
+
 const TimeLogReport = () => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
 
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [showTasks, setShowTasks] = useState(false);
-  const [userIds, setUserIds] = useState<string[]>([]);
-  const [usersList, setUsersList] = useState<User[]>([]);
-  const [projectIds, setProjectIds] = useState<string[]>([]);
-  const [projectsList, setProjectsList] = useState<Project[]>([]);
+  const [filters, setFilters] = useState(getInitialFilters);
 
-  const payload = {
-    fromDate,
-    toDate,
-    userIds: userIds.length > 0 ? userIds : [], // ✅ Optional
-    showTasks,
-    selectedProjects: projectIds.length > 0 ? projectIds : [] // ✅ Optional
+  const isClient = typeof window !== "undefined";
+
+  const {
+    data: fetchedUserData,
+    error: userError,
+    isLoading: isUserLoading,
+  } = useSWR(isClient ? "fetchuser" : null, fetchUser, {
+    revalidateOnFocus: false,
+  });
+
+  const {
+    data: fetchedProjectData,
+    error: projectError,
+    isLoading: isProjectLoading,
+  } = useSWR(isClient ? "fetchproject" : null, fetchProject, {
+    revalidateOnFocus: false,
+  });
+
+  
+  const usersList: User[] = fetchedUserData?.data || [];
+  const projectsList: Project[] = fetchedProjectData?.data || [];
+
+  const updateFilter = (updated: Partial<typeof filters>) => {
+    const newFilters = { ...filters, ...updated };
+    setFilters(newFilters);
+    if (isClient) {
+      localStorage.setItem("timelog_filters", JSON.stringify(newFilters));
+    }
   };
 
-  const shouldFetch = !!(fromDate && toDate); // ✅ Only require fromDate & toDate
+  const resetFilters = () => {
+    const cleared = {
+      fromDate: "",
+      toDate: "",
+      showTasks: false,
+      userIds: [],
+      projectIds: [],
+    };
+    setFilters(cleared);
+    if (isClient) {
+      localStorage.setItem("timelog_filters", JSON.stringify(cleared));
+    }
+  };
 
-  const { data, isLoading, isError } = useUserTimeLogReport(payload, shouldFetch);
+  const payload = {
+    fromDate: filters.fromDate,
+    toDate: filters.toDate,
+    userIds: filters.userIds.length > 0 ? filters.userIds : [],
+    showTasks: filters.showTasks,
+    selectedProjects: filters.projectIds.length > 0 ? filters.projectIds : [],
+  };
 
-  const { data: fetchedUserData } = useSWR("fetchuser", fetchUser, {
-    revalidateOnFocus: false
-  });
+  const shouldFetch = filters.fromDate !== "" && filters.toDate !== "";
 
-  const usersListArray = fetchedUserData?.data;
-  if (usersListArray && usersList.length === 0) {
-    setUsersList(usersListArray);
+  const {
+    data: reportData,
+    isLoading: isReportLoading,
+    isError: isReportError,
+  } = useUserTimeLogReport(payload, shouldFetch);
+
+  if (userError) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography color="error">
+          {transreport("errorFetchingUsers")}
+        </Typography>
+      </Box>
+    );
   }
 
-  const { data: fetchedProjectData } = useSWR("fetchproject", fetchProject, {
-    revalidateOnFocus: false
-  });
+  if (projectError) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography color="error">
+          {transreport("errorFetchingProjects")}
+        </Typography>
+      </Box>
+    );
+  }
 
-  const projectsListArray = fetchedProjectData?.data;
-  if (projectsListArray && projectsList.length === 0) {
-    setProjectsList(projectsListArray);
+  if (isUserLoading || isProjectLoading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={5}>
+              <CircularProgress />
+            </Box>
+    );
   }
 
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={3}>
-          <FiltersPanel
-            fromDate={fromDate}
-            toDate={toDate}
-            userIds={userIds}
-            setFromDate={setFromDate}
-            setToDate={setToDate}
-            setUserIds={setUserIds}
-            usersList={usersList}
-            showTasks={showTasks}
-            setShowTasks={setShowTasks}
-            projectIds={projectIds}
-            setProjectIds={setProjectIds}
-            projectsList={projectsList}
-          />
-        </Grid>
-        <Grid item xs={12} md={9}>
-          {isLoading && <CircularProgress />}
+          {isClient && (
+            <FiltersPanel
+              fromDate={filters.fromDate}
+              toDate={filters.toDate}
+              userIds={filters.userIds}
+              setFromDate={(val) => updateFilter({ fromDate: val })}
+              setToDate={(val) => updateFilter({ toDate: val })}
+              setUserIds={(val) => updateFilter({ userIds: val })}
+              usersList={usersList}
+              showTasks={filters.showTasks}
+              setShowTasks={(val) => updateFilter({ showTasks: val })}
+              projectIds={filters.projectIds}
+              setProjectIds={(val) => updateFilter({ projectIds: val })}
+              projectsList={projectsList}
+            />
+          )}
 
-          {isError && (
+          <Button
+            variant="outlined"
+            color="primary"
+            sx={{ mt: 2 }}
+            onClick={resetFilters}
+            fullWidth
+          >
+            {transreport("reset")}
+          </Button>
+        </Grid>
+
+        <Grid item xs={12} md={9}>
+          {isReportLoading && <CircularProgress />}
+
+          {isReportError && (
             <Typography color="error">{transreport("error")}</Typography>
           )}
 
-          {!fromDate || !toDate ? ( // ✅ Only check fromDate and toDate
+          {!filters.fromDate || !filters.toDate ? (
             <Grid item xs={12}>
               <EmptyState
                 imageSrc={NoReportImage}
                 message={transreport("loghelper")}
               />
             </Grid>
-          ) : data ? (
+          ) : reportData ? (
             <TimeLogCalendarGrid
-              data={data}
-              fromDate={fromDate}
-              toDate={toDate}
-              showTasks={showTasks}
-              selectedProjects={projectIds}
+              data={reportData}
+              fromDate={filters.fromDate}
+              toDate={filters.toDate}
+              showTasks={filters.showTasks}
+              selectedProjects={filters.projectIds}
             />
           ) : null}
         </Grid>

@@ -62,9 +62,9 @@ const TimeSpentPopup: React.FC<TimeSpentPopupProps> = ({
       const dueDateObj = new Date(dueDate);
       const entryDateObj = new Date(value);
       if (!isNaN(dueDateObj.getTime()) && entryDateObj < dueDateObj) {
-        updatedErrors[index] = "Cannot register time before the due date.";
+        updatedErrors[index] = transtask("duedate");
       }
-
+      
       setDateErrors(updatedErrors);
       setTimeEntries(updated);
       return;

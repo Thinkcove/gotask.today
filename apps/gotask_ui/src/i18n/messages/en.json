@@ -272,7 +272,8 @@
     "estimatedt": "Estimated",
     "spentt": "Spent",
     "remainingt": "Remaining",
-    "variationt": "Variation"
+    "variationt": "Variation",
+    "duedate":"Cannot register time before the due date"
   },
   "User": {
     "username": "User name is required",

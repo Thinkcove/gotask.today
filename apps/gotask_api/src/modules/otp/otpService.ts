@@ -144,7 +144,7 @@ const verifyOtpService = async (
         role: roleResult.data
       },
       process.env.AUTH_KEY as string,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
     const { ...sanitizedUser } = user.toObject();

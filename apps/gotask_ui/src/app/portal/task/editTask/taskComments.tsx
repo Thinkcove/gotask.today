@@ -5,6 +5,7 @@ import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { ITaskComment } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import CommentHistory from "./commentsHistory";
 
 interface TaskCommentsProps {
   comments: ITaskComment[];
@@ -69,38 +70,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
 
       {/* Previous Comments */}
 
-      {comments.length > 0 && (
-        <Box mt={2}>
-          <Box sx={{ display: "flex", gap: 1, color: "#741B92" }}>
-            <Typography fontWeight="bold">{transtask("comments")}</Typography>
-            <SpeakerNotesOutlined />
-          </Box>
-          {comments.map((comment) => (
-            <Box
-              key={comment.id}
-              display="flex"
-              alignItems="flex-start"
-              gap={2}
-              py={2}
-              pr={2}
-              my={1}
-            >
-              <Avatar sx={{ backgroundColor: "#741B92" }}>{comment.user_name.charAt(0)}</Avatar>
-              <Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    {comment.user_name} -
-                  </Typography>
-                  <Typography variant="subtitle2">
-                    {new Date(comment.createdAt ?? new Date().toISOString()).toLocaleString()}
-                  </Typography>
-                </Box>
-                <Typography variant="body2">{comment.comment}</Typography>
-              </Box>
-            </Box>
-          ))}
-        </Box>
-      )}
+      {comments.length > 0 && <CommentHistory comments={comments} />}
     </Box>
   );
 };

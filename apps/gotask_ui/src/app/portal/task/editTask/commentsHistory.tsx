@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Box, Avatar, Typography, Button } from "@mui/material";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
@@ -11,66 +11,177 @@ interface CommentHistoryProps {
 
 const CommentHistory: React.FC<CommentHistoryProps> = ({ comments }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const [visibleCount, setVisibleCount] = useState(3);
-  const [enableScrollLoad, setEnableScrollLoad] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const handleScroll = () => {
-    const container = scrollRef.current;
-    if (!container || !enableScrollLoad) return;
-
-    const nearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 10;
-
-    if (nearBottom && visibleCount < comments.length) {
-      setVisibleCount((prev) => Math.min(prev + 3, comments.length));
-    }
-  };
-
-  const handleViewMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 3, comments.length));
-    setEnableScrollLoad(true);
-  };
+  const [showAll, setShowAll] = useState(false);
 
   if (comments.length === 0) return null;
 
+  const displayedComments = showAll ? comments : comments.slice(0, 3);
+  const hasMoreComments = comments.length > 3;
+
   return (
-    <Box mt={2}>
-      <Box sx={{ display: "flex", gap: 1, color: "#741B92" }}>
+    <Box
+      sx={{
+        mt: 2,
+        width: "100%",
+        boxSizing: "border-box",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        maxHeight: "100%"
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1,
+          color: "#741B92",
+          alignItems: "center",
+          mb: 2
+        }}
+      >
         <Typography fontWeight="bold">{transtask("comment")}</Typography>
         <SpeakerNotesOutlined />
       </Box>
 
       <Box
-        ref={scrollRef}
-        onScroll={handleScroll}
         sx={{
-          maxHeight: enableScrollLoad ? 300 : "auto", // Limit height when scroll enabled
-          overflowY: enableScrollLoad ? "auto" : "visible",
-          pr: 1,
-          mt: 1
+          maxHeight: { xs: 300, sm: 400, md: 500 }, // Simple max height
+          overflowY: "auto", // Simple scroll
+          overflowX: "hidden",
+          pr: { xs: 0, sm: 1 },
+          width: "100%",
+          boxSizing: "border-box",
+          // Custom scrollbar styling (optional)
+          "&::-webkit-scrollbar": {
+            width: "6px"
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#f1f1f1",
+            borderRadius: "3px"
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "#741B92",
+            borderRadius: "3px",
+            opacity: 0.7
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            background: "#5a1472"
+          }
         }}
       >
-        {comments.slice(0, visibleCount).map((comment) => (
-          <Box key={comment.id} display="flex" alignItems="flex-start" gap={2} py={2} pr={2} my={1}>
-            <Avatar sx={{ backgroundColor: "#741B92" }}>{comment.user_name.charAt(0)}</Avatar>
-            <Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Typography variant="subtitle1" fontWeight="bold">
+        {displayedComments.map((comment) => (
+          <Box
+            key={comment.id}
+            sx={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: { xs: 1, sm: 2 },
+              py: { xs: 1.5, sm: 2 },
+              pr: { xs: 0, sm: 2 },
+              my: 1,
+              width: "100%",
+              boxSizing: "border-box",
+              overflow: "hidden"
+            }}
+          >
+            <Avatar
+              sx={{
+                backgroundColor: "#741B92",
+                width: { xs: 32, sm: 40 },
+                height: { xs: 32, sm: 40 },
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+                flexShrink: 0
+              }}
+            >
+              {comment.user_name.charAt(0)}
+            </Avatar>
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                overflow: "hidden"
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  flexWrap: { xs: "wrap", sm: "nowrap" },
+                  mb: 0.5
+                }}
+              >
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  sx={{
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                    lineHeight: 1.2,
+                    minWidth: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: { xs: "normal", sm: "nowrap" }
+                  }}
+                >
                   {comment.user_name} -
                 </Typography>
-                <Typography variant="subtitle2">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                    color: "text.secondary",
+                    flexShrink: 0
+                  }}
+                >
                   {new Date(comment.createdAt ?? new Date().toISOString()).toLocaleString()}
                 </Typography>
               </Box>
-              <Typography variant="body2">{comment.comment}</Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: { xs: "0.875rem", sm: "0.875rem" },
+                  lineHeight: 1.4,
+                  wordBreak: "break-word",
+                  overflowWrap: "break-word",
+                  hyphens: "auto"
+                }}
+              >
+                {comment.comment}
+              </Typography>
             </Box>
           </Box>
         ))}
       </Box>
 
-      {comments.length > visibleCount && !enableScrollLoad && (
-        <Button onClick={handleViewMore} size="small" sx={{ textTransform: "none", ml: 6, mt: 1 }}>
-          {transtask("viewMore", { default: "View more" })}
+      {hasMoreComments && !showAll && (
+        <Button
+          onClick={() => setShowAll(true)}
+          size="small"
+          sx={{
+            textTransform: "none",
+            ml: { xs: 0, sm: 6 },
+            mt: 1,
+            fontSize: { xs: "0.875rem", sm: "0.875rem" },
+            alignSelf: "flex-start"
+          }}
+        >
+          {transtask("viewMore", { default: "View more" })} ({comments.length - 3} more)
+        </Button>
+      )}
+
+      {showAll && hasMoreComments && (
+        <Button
+          onClick={() => setShowAll(false)}
+          size="small"
+          sx={{
+            textTransform: "none",
+            ml: { xs: 0, sm: 6 },
+            mt: 1,
+            fontSize: { xs: "0.875rem", sm: "0.875rem" },
+            alignSelf: "flex-start"
+          }}
+        >
+          {transtask("showLess", { default: "Show less" })}
         </Button>
       )}
     </Box>

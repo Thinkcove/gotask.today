@@ -38,18 +38,20 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
       <Box
         sx={{
           minHeight: "100vh",
-          p: 3,
+          p: { xs: 1, sm: 2, md: 3 }, // Responsive padding
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
       >
         <Box
           sx={{
             borderRadius: 4,
-            p: 4,
+            p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
             bgcolor: "#f9fafb",
             border: "1px solid #e0e0e0",
-            maxHeight: 820 // set max height here
-            // overflowY: "auto" // add scrollbar if content overflows
+            maxHeight: { xs: "auto", md: 820 }, // Remove max height on mobile
+            width: "100%", // Ensure full width
+            boxSizing: "border-box", // Include padding in width calculation
+            overflow: "hidden" // Prevent content from breaking out
           }}
         >
           {/* Header */}
@@ -57,9 +59,24 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
             <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
               <ArrowBack />
             </IconButton>
-            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-              <Box>
-                <Typography variant="h5" fontWeight={500} sx={{ textTransform: "capitalize" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+                flexDirection: { xs: "column", sm: "row" }, // Stack on mobile
+                alignItems: { xs: "flex-start", sm: "center" }
+              }}
+            >
+              <Box sx={{ mb: { xs: 1, sm: 0 } }}>
+                <Typography
+                  variant="h5"
+                  fontWeight={500}
+                  sx={{
+                    textTransform: "capitalize",
+                    fontSize: { xs: "1.25rem", sm: "1.5rem" } // Responsive font size
+                  }}
+                >
                   {task?.title}
                 </Typography>
                 <StatusIndicator status={task.status} getColor={getStatusColor} />
@@ -69,18 +86,21 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
                   edge="start"
                   color="primary"
                   onClick={() => router.push(`/portal/task/editTask/${task.id}`)}
+                  sx={{ alignSelf: { xs: "flex-end", sm: "center" } }}
                 >
                   <Edit />
                 </IconButton>
               )}
             </Box>
           </Box>
+
           {/* Task Description */}
           <Grid container spacing={2} flexDirection="column" mb={3}>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12}>
               <LabelValueText label={transtask("detaildesc")} value={task.description || "-"} />
             </Grid>
           </Grid>
+
           {/* Meta Info */}
           <Grid container spacing={2} mb={3}>
             <Grid item xs={12} sm={6} md={4}>
@@ -111,8 +131,19 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
           </Grid>
 
           <Divider sx={{ mt: 2, mb: 2 }} />
+
+          {/* Comment History - Contained within card */}
           {Array.isArray(task?.comment) && task.comment.length > 0 && (
-            <CommentHistory comments={task.comment} />
+            <Box
+              sx={{
+                width: "100%",
+                boxSizing: "border-box",
+                overflow: "hidden", // Prevent horizontal overflow
+                wordBreak: "break-word" // Break long words if needed
+              }}
+            >
+              <CommentHistory comments={task.comment} />
+            </Box>
           )}
         </Box>
       </Box>

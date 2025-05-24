@@ -1,7 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Grid, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { useProjectGroupTask, useUserGroupTask } from "../../service/taskAction";
+import {
+  useAllProjects,
+  useAllUsers,
+  useProjectGroupTask,
+  useUserGroupTask
+} from "../../service/taskAction";
 import TaskToggle from "../taskLayout/taskToggle";
 import { useRouter } from "next/navigation";
 import TaskCard from "../taskLayout/taskCard";
@@ -12,7 +17,7 @@ import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import NoTasksImage from "@assets/placeholderImages/notask.svg";
 import TaskErrorImage from "@assets/placeholderImages/taskerror.svg";
-import TaskFilterControls from "../taskFilter/taskFilterControls";
+import TaskFilters from "../taskFilter/taskFilter";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
@@ -155,27 +160,7 @@ const TaskList: React.FC = () => {
     resetTaskState();
   };
 
-  const handleClearAll = () => {
-    setFiltersOnly({});
-    setMinDate(undefined);
-    setMaxDate(undefined);
-    setDateVar("due_date");
-    setMoreDays(undefined);
-    setLessDays(undefined);
-    const newParams = searchText.trim()
-      ? { search_vals: [[searchText]], search_vars: [["title"]] }
-      : {};
-    setSearchParams(newParams);
-    resetTaskState();
-    filterDrawerRef.current?.resetFilters();
-  };
-
   const isSearched = searchText.trim() !== "";
-  const activeFilterCount =
-    (filtersOnly.search_vals ?? []).filter((arr) => arr.length > 0).length +
-    (minDate && maxDate ? 1 : 0) +
-    (moreDays ? 1 : 0) +
-    (lessDays ? 1 : 0);
 
   const isFiltered = () =>
     (filtersOnly.search_vals ?? []).some((arr) => arr.length > 0) ||
@@ -212,6 +197,116 @@ const TaskList: React.FC = () => {
     setSearchParams(newParams);
     resetTaskState();
   };
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [severityFilter, setSeverityFilter] = useState<string[]>([]);
+  const [projectFilter, setProjectFilter] = useState<string[]>([]);
+  const [userFilter, setUserFilter] = useState<string[]>([]);
+  const [dateFrom, setDateFrom] = useState<string>("");
+  const [dateTo, setDateTo] = useState<string>("");
+  const [variationType, setVariationType] = useState<"more" | "less" | "">("");
+  const [variationDays, setVariationDays] = useState<number>(0);
+  const { getAllProjects: allProjects } = useAllProjects();
+  const { getAllUsers: allUsers } = useAllUsers();
+  const updateSearchParamsFromFilters = (
+    status: string[],
+    severity: string[],
+    projects: string[],
+    users: string[],
+    searchTextValue: string
+  ) => {
+    const search_vals: string[][] = [];
+    const search_vars: string[][] = [];
+
+    if (status.length) {
+      status.forEach((v) => {
+        search_vals.push([v]);
+        search_vars.push(["status"]);
+      });
+    }
+    if (severity.length) {
+      severity.forEach((v) => {
+        search_vals.push([v]);
+        search_vars.push(["severity"]);
+      });
+    }
+    if (projects.length) {
+      projects.forEach((v) => {
+        search_vals.push([v]);
+        search_vars.push(["project_name"]);
+      });
+    }
+    if (users.length) {
+      users.forEach((v) => {
+        search_vals.push([v]);
+        search_vars.push(["user_name"]);
+      });
+    }
+
+    if (searchTextValue.trim()) {
+      search_vals.push([searchTextValue]);
+      search_vars.push(["title"]);
+    }
+
+    setSearchParams({ search_vals, search_vars });
+    resetTaskState();
+  };
+
+  const handleStatusChange = (val: string[]) => {
+    setStatusFilter(val);
+    updateSearchParamsFromFilters(val, severityFilter, projectFilter, userFilter, searchText);
+  };
+  const handleSeverityChange = (val: string[]) => {
+    setSeverityFilter(val);
+    updateSearchParamsFromFilters(statusFilter, val, projectFilter, userFilter, searchText);
+  };
+  const handleProjectChange = (val: string[]) => {
+    setProjectFilter(val);
+    updateSearchParamsFromFilters(statusFilter, severityFilter, val, userFilter, searchText);
+  };
+  const handleUserChange = (val: string[]) => {
+    setUserFilter(val);
+    updateSearchParamsFromFilters(statusFilter, severityFilter, projectFilter, val, searchText);
+  };
+
+  const handleDateChange = (from: string, to: string) => {
+    setMinDate(from || undefined);
+    setMaxDate(to || undefined);
+    setDateVar("due_date");
+
+    const newParams = {
+      ...filtersOnly,
+      ...(searchText.trim()
+        ? {
+            search_vals: [...(filtersOnly.search_vals || []), [searchText]],
+            search_vars: [...(filtersOnly.search_vars || []), ["title"]]
+          }
+        : {})
+    };
+
+    setSearchParams(newParams);
+    resetTaskState();
+  };
+
+  const handleVariationChange = (type: "more" | "less", days: number) => {
+    const more = type === "more" ? `${days}d` : undefined;
+    const less = type === "less" ? `-${days}d` : undefined;
+
+    setMoreDays(more);
+    setLessDays(less);
+
+    const newParams = {
+      ...filtersOnly,
+      ...(searchText.trim()
+        ? {
+            search_vals: [...(filtersOnly.search_vals || []), [searchText]],
+            search_vars: [...(filtersOnly.search_vars || []), ["title"]]
+          }
+        : {})
+    };
+
+    setSearchParams(newParams);
+    resetTaskState();
+  };
 
   return (
     <Box>
@@ -233,11 +328,39 @@ const TaskList: React.FC = () => {
         <TaskToggle view={view} setView={setView} />
       </Box>
 
-      <TaskFilterControls
-        activeFilterCount={activeFilterCount}
-        isFiltered={isFiltered()}
-        onClearAll={handleClearAll}
-        onOpenFilter={() => setFilterDrawerOpen(true)}
+      <TaskFilters
+        statusFilter={statusFilter}
+        severityFilter={severityFilter}
+        projectFilter={projectFilter}
+        userFilter={userFilter}
+        allProjects={allProjects.map((p: any) => p.name)}
+        allUsers={allUsers.map((u: any) => u.name)}
+        variationType={variationType}
+        variationDays={variationDays}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        onStatusChange={handleStatusChange}
+        onSeverityChange={handleSeverityChange}
+        onProjectChange={handleProjectChange}
+        onUserChange={handleUserChange}
+        onDateChange={(from, to) => {
+          setDateFrom(from);
+          setDateTo(to);
+          handleDateChange(from, to);
+        }}
+        onVariationChange={(type, days) => {
+          setVariationType(type);
+          setVariationDays(days);
+          handleVariationChange(type, days);
+        }}
+        onClearFilters={() => {
+          setStatusFilter([]);
+          setSeverityFilter([]);
+          setProjectFilter([]);
+          setUserFilter([]);
+          updateSearchParamsFromFilters([], [], [], [], searchText);
+        }}
+        transtask={transtask}
       />
 
       <Box

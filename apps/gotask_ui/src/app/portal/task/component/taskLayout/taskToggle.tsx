@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Switch } from "@mui/material";
+import { Box } from "@mui/material";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -11,26 +11,45 @@ interface TaskToggleProps {
 const TaskToggle: React.FC<TaskToggleProps> = ({ view, setView }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="center">
-      <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
-        <Box display="flex" alignItems="center" gap={0.5}>
-          <Typography fontWeight="bold" color="#333">
-            {view === "projects" ? transtask("projects") : transtask("assignees")}
-          </Typography>
-          <Switch
-            checked={view === "users"}
-            onChange={() => setView(view === "projects" ? "users" : "projects")}
-            sx={{
-              "& .MuiSwitch-switchBase": { color: "#fff" },
-              "& .MuiSwitch-switchBase.Mui-checked": { color: "#741B92" },
-              "& .MuiSwitch-track": { backgroundColor: "#B1AAAA", opacity: 1 },
-              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                backgroundColor: "#741B92"
-              }
-            }}
-          />
+    <Box
+      sx={{
+        display: "flex",
+        gap: 4,
+        position: "relative",
+        borderBottom: "2px solid #eee",
+        width: "fit-content",
+        marginBottom: "4px"
+      }}
+    >
+      {["projects", "assignees"].map((key) => (
+        <Box
+          key={key}
+          onClick={() => setView(key as "projects" | "users")}
+          sx={{
+            cursor: "pointer",
+            fontSize: "0.875rem",
+            fontWeight: view === key ? 600 : 400,
+            color: view === key ? "#741B92" : "#555",
+            paddingBottom: "4px",
+            transition: "color 0.2s"
+          }}
+        >
+          {transtask(key)}
         </Box>
-      </Box>
+      ))}
+
+      {/* Animated underline */}
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: 0,
+          left: view === "projects" ? 0 : "calc(100% / 2)",
+          width: "50%",
+          height: "2px",
+          backgroundColor: "#741B92",
+          transition: "left 0.3s ease"
+        }}
+      />
     </Box>
   );
 };

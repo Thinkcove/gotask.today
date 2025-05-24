@@ -12,13 +12,6 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import CommentHistory from "../../editTask/commentsHistory";
 
-type Comment = {
-  id: string;
-  user_name: string;
-  comment: string;
-  createdAt?: string;
-};
-
 interface TaskDetailViewProps {
   task: ITask;
 }
@@ -103,26 +96,26 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
 
           {/* Meta Info */}
           <Grid container spacing={2} mb={3}>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={4} sm={6} md={4}>
               <LabelValueText label={transtask("detailuser")} value={task.user_name} />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={4} sm={6} md={4}>
               <LabelValueText label={transtask("detailproject")} value={task.project_name} />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
                 label={transtask("detailseverity")}
                 value={task.severity}
                 sx={{ color: getSeverityColor(task.severity), textTransform: "capitalize" }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
                 label={transtask("detailcreated")}
                 value={new Date(task.created_on).toLocaleDateString()}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
                 label={transtask("detaildue")}
                 value={new Date(task.due_date).toLocaleDateString()}

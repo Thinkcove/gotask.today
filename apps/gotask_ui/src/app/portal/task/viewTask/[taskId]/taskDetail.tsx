@@ -89,7 +89,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
 
           {/* Task Description */}
           <Grid container spacing={2} flexDirection="column" mb={3}>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={12} md={12}>
               <LabelValueText label={transtask("detaildesc")} value={task.description || "-"} />
             </Grid>
           </Grid>

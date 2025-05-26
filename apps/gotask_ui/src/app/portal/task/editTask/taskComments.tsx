@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Box, Button, Avatar, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import FormField from "@/app/component/formField";
-import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { ITaskComment } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";

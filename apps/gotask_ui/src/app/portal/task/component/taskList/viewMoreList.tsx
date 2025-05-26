@@ -9,7 +9,6 @@ interface ViewMoreListProps {
   selectedGroupId: string;
   drawerTasks: IGroup[];
   isLoadingDrawer: boolean;
-  onClose: () => void;
   onTaskClick: (id: string) => void;
   view: string;
 }
@@ -18,7 +17,6 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
   selectedGroupId,
   drawerTasks,
   isLoadingDrawer,
-  onClose,
   onTaskClick,
   view
 }) => {

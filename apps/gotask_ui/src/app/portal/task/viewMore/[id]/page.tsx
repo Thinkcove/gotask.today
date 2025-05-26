@@ -41,13 +41,17 @@ const ViewMoreAction: React.FC = () => {
   const dateVar = searchParams.get("dateVar") || "due_date";
   const page = parseInt(searchParams.get("page") || "1");
 
-  const filterStr = searchParams.get("filters");
-  const parsedFilters = filterStr
-    ? JSON.parse(decodeURIComponent(filterStr))
-    : { search_vals: [], search_vars: [] };
+  const { search_vals, search_vars } = useMemo(() => {
+    const filterStr = searchParams.get("filters");
+    const parsedFilters = filterStr
+      ? JSON.parse(decodeURIComponent(filterStr))
+      : { search_vals: [], search_vars: [] };
 
-  const search_vals: string[][] = parsedFilters.search_vals || [];
-  const search_vars: string[][] = parsedFilters.search_vars || [];
+    return {
+      search_vals: parsedFilters.search_vals || [],
+      search_vars: parsedFilters.search_vars || []
+    };
+  }, [searchParams]);
 
   const statusFilter = safeParseArrayParam(searchParams.get("status"));
   const severityFilter = safeParseArrayParam(searchParams.get("severity"));
@@ -177,6 +181,7 @@ const ViewMoreAction: React.FC = () => {
       </Box>
     );
   }
+
   const hideProjectFilter = view === "projects";
   const name = `List view of ${
     drawerTasks.find((group: IGroup) => group.id === id)?.[
@@ -224,7 +229,6 @@ const ViewMoreAction: React.FC = () => {
         selectedGroupId={id as string}
         drawerTasks={drawerTasks}
         isLoadingDrawer={isLoading && !drawerTasks?.length}
-        onClose={() => window.history.back()}
         onTaskClick={(taskId) => (window.location.href = `/portal/task/viewTask/${taskId}`)}
         view={view}
       />

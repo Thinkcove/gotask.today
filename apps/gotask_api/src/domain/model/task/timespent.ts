@@ -5,6 +5,7 @@ export interface ITimeSpentEntry {
   time_logged: string; // e.g., "1d2h"
   start_time: string;
   end_time: string;
+  hours: number;
 }
 
 export const TimeSpentEntrySchema = new Schema<ITimeSpentEntry>(

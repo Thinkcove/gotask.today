@@ -105,4 +105,17 @@ UserRoutes.push({
   }
 });
 
+UserRoutes.push({
+  path: API_PATHS.PROCESS_USER_QUERY,
+  method: API_METHODS.POST,
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+    userController.processQuery(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Process user-related query",
+    tags,
+    auth: { strategy: authStrategy.SIMPLE }
+  }
+});
+
 export default UserRoutes;

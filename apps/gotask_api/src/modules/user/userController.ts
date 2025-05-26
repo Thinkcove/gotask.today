@@ -1,20 +1,13 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
 import jwt from "jsonwebtoken";
-import {
-  createUser,
-  getAllUsers,
-  getUserByEmail,
-  getUserById,
-  updateUser,
-  deleteUser
-} from "./userService";
+import userService from "./userService";
 import { getRoleByIdService } from "../role/roleService";
 import UserMessages from "../../constants/apiMessages/userMessage";
 import { comparePassword } from "../../constants/utils/common";
+import { ExtendedParsedQuery } from "../../domain/interface/query/queryInterface";
 
 class UserController extends BaseController {
-  // Create a new user
   async createUser(requestHelper: RequestHelper, handler: any) {
     try {
       const userData = requestHelper.getPayload();
@@ -22,59 +15,53 @@ class UserController extends BaseController {
       if (!name || !user_id || !roleId || !password || typeof status === "undefined") {
         throw new Error(UserMessages.CREATE.MISSING_FIELDS);
       }
-      // Call the service to create the user
-      const newUser = await createUser(userData);
+      const newUser = await userService.createUser(userData);
       return this.sendResponse(handler, newUser);
     } catch (error) {
       return this.replyError(error);
     }
   }
 
-  // Get all users
   async getAllUsers(_requestHelper: RequestHelper, handler: any) {
     try {
-      const users = await getAllUsers();
+      const users = await userService.getAllUsers();
       return this.sendResponse(handler, users);
     } catch (error) {
       return this.replyError(error);
     }
   }
 
-  // Get user by id
   async getUserById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const user = await getUserById(id);
+      const user = await userService.getUserById(id);
       return this.sendResponse(handler, user);
     } catch (error) {
       return this.replyError(error);
     }
   }
 
-  // Update user
   async updateUser(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
       const updatedData = requestHelper.getPayload();
-      const updatedUser = await updateUser(id, updatedData);
+      const updatedUser = await userService.updateUser(id, updatedData);
       return this.sendResponse(handler, updatedUser);
     } catch (error) {
       return this.replyError(error);
     }
   }
 
-  // Delete user
   async deleteUser(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const deletedUser = await deleteUser(id);
+      const deletedUser = await userService.deleteUser(id);
       return this.sendResponse(handler, deletedUser);
     } catch (error) {
       return this.replyError(error);
     }
   }
 
-  // User login
   async loginUser(requestHelper: RequestHelper, handler: any) {
     try {
       const { user_id, password } = requestHelper.getPayload();
@@ -84,7 +71,7 @@ class UserController extends BaseController {
           error: UserMessages.LOGIN.MISSING_FIELDS
         });
       }
-      const { success, data: user, message } = await getUserByEmail(user_id, true);
+      const { success, data: user, message } = await userService.getUserByEmail(user_id, true);
       if (!success || !user) {
         return this.sendResponse(handler, {
           success: false,
@@ -98,7 +85,6 @@ class UserController extends BaseController {
           error: UserMessages.LOGIN.INVALID_CREDENTIALS
         });
       }
-      // Fetch full role with access details using UUID
       const roleId = user.roleId?.id?.toString();
       if (!roleId) {
         return this.sendResponse(handler, {
@@ -114,7 +100,6 @@ class UserController extends BaseController {
         });
       }
       const enrichedRole = roleResult.data;
-      // Generate JWT with full role
       const token = jwt.sign(
         {
           id: user.id,
@@ -125,7 +110,6 @@ class UserController extends BaseController {
         { expiresIn: "1h" }
       );
 
-      // Clean user object before returning
       const { ...sanitizedUser } = user.toObject();
       sanitizedUser.role = enrichedRole;
 
@@ -141,6 +125,30 @@ class UserController extends BaseController {
       return this.sendResponse(handler, {
         success: false,
         error: error.message || UserMessages.LOGIN.INVALID_CREDENTIALS
+      });
+    }
+  }
+
+  async processQuery(requestHelper: RequestHelper, handler: any) {
+    try {
+      const payload = requestHelper.getPayload();
+      const query = payload?.query;
+      const parsedQuery = payload?.parsedQuery as ExtendedParsedQuery;
+
+      if (!query || !parsedQuery) {
+        return this.sendResponse(handler, {
+          success: false,
+          message: UserMessages.QUERY.MISSING_FIELDS
+        });
+      }
+
+      const result = await userService.processQuery(query, parsedQuery);
+      return this.sendResponse(handler, result);
+    } catch (error: any) {
+      console.error("Process query error:", error);
+      return this.sendResponse(handler, {
+        success: false,
+        message: error.message || UserMessages.QUERY.FAILED
       });
     }
   }

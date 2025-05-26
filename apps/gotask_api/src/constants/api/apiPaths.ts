@@ -27,6 +27,7 @@ export const API_PATHS = {
   GET_USER_BY_ID: "/getUserById/{id}",
   UPDATE_USER: "/updateUser/{id}",
   DELETE_USER: "/deleteUser/{id}",
+  PROCESS_USER_QUERY: "/api/user/query",
 
   //loginRoute
   LOGIN: "/user/login",
@@ -65,5 +66,31 @@ export const API_PATHS = {
 
   //userpreference
   SET_USER_PREFERENCES: "/setPreference",
-  GET_USER_PREFERENCES: "/getPreference"
+  GET_USER_PREFERENCES: "/getPreference",
+
+  // Added attendance paths
+  CREATE_ATTENDANCE: "/api/attendance",
+  UPLOAD_ATTENDANCE: "/api/attendance/upload",
+  PROCESS_ATTENDANCE_QUERY: "/api/attendance/query",
+  PROCESS_EMPLOYEE_ATTENDANCE_QUERY: "/api/attendance/employee/query",
+
+  // Added query paths (for queryRoutes.ts)
+  PROCESS_QUERY: "/api/query",
+  GET_QUERY_HISTORY: "/api/query/history",
+  CLEAR_QUERY_HISTORY: "/api/query/history/clear",
+  DELETE_CONVERSATION: "/api/query/conversation/{id}",
+
+  // Added queryTask path (for queryTaskRoutes.ts)
+  PROCESS_TASK_QUERY: "/api/tasks/query",
+  CREATE_QUERY_TASK: "/api/tasks/create",
+  GET_QUERY_TASKS: "/api/tasks/all",
+  GET_QUERY_TASK_BY_ID: "/api/tasks/{id}",
+  GET_QUERY_TASKS_BY_PROJECT: "/api/tasks/grouped-by-project",
+  GET_QUERY_TASK_BY_USER: "/api/task/{id}",
+  GET_QUERY_TASK_COUNT_BY_STATUS: "/api/tasks/status-count",
+  UPDATE_QUERY_TASK: "/api/task/{id}",
+  CREATE_QUERY_TASK_COMMENT: "/api/task/createcomment",
+  UPDATE_QUERY_COMMENT: "/api/task/update/{id}",
+  DELETE_QUERY_TASK: "/api/task/delete/{id}",
+  ADD_QUERY_TIME_SPEND: "/api/tasklog/{id}"
 };

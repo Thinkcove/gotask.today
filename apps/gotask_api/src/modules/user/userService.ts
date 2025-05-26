@@ -13,6 +13,7 @@ import { Role } from "../../domain/model/role/role";
 import { getRoleByIdService } from "../role/roleService";
 import { findRoleByIds } from "../../domain/interface/role/roleInterface";
 import { Organization } from "../../domain/model/organization/organization";
+import { ExtendedParsedQuery } from "../../domain/interface/query/queryInterface";
 
 // CREATE USER
 const createUser = async (
@@ -34,18 +35,15 @@ const createUser = async (
       };
     }
 
-    // Create user
     const newUser = await createNewUser(userData);
 
-    // Now update organization(s) users array
     if (userData.organization && userData.organization.length > 0) {
       await Organization.updateMany(
-        { id: { $in: userData.organization } }, // Match multiple organizations by their id (UUID)
-        { $addToSet: { users: newUser.id } } // Add user ID only if not already in array
+        { id: { $in: userData.organization } },
+        { $addToSet: { users: newUser.id } }
       );
     }
 
-    // Populate role name
     const populatedUser = await newUser.populate("roleId", "name");
 
     return {
@@ -68,10 +66,8 @@ const getAllUsers = async (): Promise<{
   message?: string;
 }> => {
   try {
-    // Fetch all users
     const users = await findAllUsers();
 
-    // Gather all unique role IDs and organization IDs (filter out undefined values)
     const allRoleIds = Array.from(
       new Set(users.map((user) => user.roleId?.toString()).filter(Boolean))
     );
@@ -79,34 +75,29 @@ const getAllUsers = async (): Promise<{
     const allOrganizationIds = Array.from(
       new Set(users.flatMap((user) => user.organization?.filter((id) => id !== undefined) || []))
     );
-    // Fetch roles and organizations in parallel
+
     const [roles, organizations] = await Promise.all([
-      findRoleByIds(allRoleIds), // Fetch roles by IDs
-      findOrganizationsByIds(allOrganizationIds) // Fetch organizations by IDs
+      findRoleByIds(allRoleIds),
+      findOrganizationsByIds(allOrganizationIds)
     ]);
 
-    // Map roles by their IDs for quick lookup
     const roleMap = new Map(roles.map((role: any) => [role._id.toString(), role]));
 
-    // Map organization IDs to organization objects for easy lookup
     const organizationMap = new Map(
       organizations.map((organization: any) => [organization.id, organization])
     );
 
-    // Attach enriched data (role and organization details) to each user
     const enrichedUsers = users.map((user) => {
       const userObj = user.toObject();
-      // Enrich organizations
       const userOrganizations = (user.organization || [])
-        .map((id: string) => organizationMap.get(id)) // Map to organization details
-        .filter(Boolean); // Filter out undefined or null values
+        .map((id: string) => organizationMap.get(id))
+        .filter(Boolean);
 
-      // Enrich role
-      const userRole = roleMap.get(user.roleId?.toString() || ""); // Map the single role by ID
+      const userRole = roleMap.get(user.roleId?.toString() || "");
       return {
         ...userObj,
-        organizations: userOrganizations, // Attach organization details
-        role: userRole || null // Attach role details (single role)
+        organizations: userOrganizations,
+        role: userRole || null
       };
     });
 
@@ -126,7 +117,6 @@ const getAllUsers = async (): Promise<{
 // GET USER BY ID
 const getUserById = async (id: string) => {
   try {
-    // Find user and populate basic role info
     const user = await User.findOne({ id }).populate("roleId");
 
     if (!user) {
@@ -136,7 +126,6 @@ const getUserById = async (id: string) => {
       };
     }
 
-    // Extract UUID role ID from populated roleId
     const roleId = user.roleId?.id?.toString();
     if (!roleId) {
       return {
@@ -145,7 +134,6 @@ const getUserById = async (id: string) => {
       };
     }
 
-    // Fetch enriched role details (with access)
     const roleResult = await getRoleByIdService(roleId);
     if (!roleResult.success || !roleResult.data) {
       return {
@@ -156,46 +144,30 @@ const getUserById = async (id: string) => {
 
     const enrichedRole = roleResult.data;
 
-    // Convert user to plain object and remove sensitive fields
     const userObj = user.toObject() as any;
     delete userObj.password;
 
-    // --- New Project Enrichment Logic ---
-
-    // Extract project IDs from user
     const projectIds = (userObj.projects || []).filter(
       (id: string | undefined) => id !== undefined
     );
 
     let projectDetails = [];
     if (projectIds.length > 0) {
-      // Fetch project details
       const projects = await findProjectsByIds(projectIds);
-
-      // Map projects for quick lookup
       const projectMap = new Map(projects.map((project: any) => [project.id, project]));
-
-      // Map enriched project details
-      projectDetails = projectIds.map((id: string) => projectMap.get(id)).filter(Boolean); // Remove undefineds if any
+      projectDetails = projectIds.map((id: string) => projectMap.get(id)).filter(Boolean);
     }
 
-    // Extract org  IDs from user
     const orgIds = (userObj.organization || []).filter(
       (id: string | undefined) => id !== undefined
     );
     let orgDetails = [];
     if (orgIds.length > 0) {
-      // Fetch organization details
       const organizations = await findOrganizationsByIds(orgIds);
-
-      // Map organization for quick lookup
       const organizationMap = new Map(organizations.map((org: any) => [org.id, org]));
-
-      // Map enriched organization details
-      orgDetails = orgIds.map((id: string) => organizationMap.get(id)).filter(Boolean); // Remove undefineds if any
+      orgDetails = orgIds.map((id: string) => organizationMap.get(id)).filter(Boolean);
     }
 
-    // Attach enriched data
     userObj.role = enrichedRole;
     userObj.projectDetails = projectDetails;
     userObj.orgDetails = orgDetails;
@@ -235,7 +207,6 @@ const updateUser = async (
       };
     }
 
-    // After updating user, if organization IDs are provided
     if (updateData.organization && updateData.organization.length > 0) {
       await Organization.updateMany(
         { id: { $in: updateData.organization } },
@@ -288,7 +259,7 @@ const getUserByEmail = async (
     let query = User.findOne({ user_id });
 
     if (populateRole) {
-      query = query.populate("roleId"); // Just populate the roleId, no nested populate
+      query = query.populate("roleId");
     }
 
     const user = await query;
@@ -312,4 +283,73 @@ const getUserByEmail = async (
   }
 };
 
-export { createUser, getAllUsers, getUserById, updateUser, deleteUser, getUserByEmail };
+// PROCESS USER QUERY
+const processQuery = async (
+  query: string,
+  parsedQuery: ExtendedParsedQuery
+): Promise<{ success: boolean; data?: any; message?: string }> => {
+  try {
+    if (!query || !parsedQuery) {
+      return {
+        success: false,
+        message: UserMessages.QUERY.MISSING_FIELDS
+      };
+    }
+
+    const queryConditions: any = {};
+
+    if (parsedQuery.empcode) {
+      queryConditions.user_id = parsedQuery.empcode;
+    }
+
+    if (parsedQuery.empname) {
+      queryConditions.username = { $regex: `^${parsedQuery.empname}$`, $options: "i" };
+    }
+
+    const users = await User.find(queryConditions).populate("roleId", "name").lean();
+
+    if (!users || users.length === 0) {
+      return {
+        success: false,
+        message: UserMessages.QUERY.NOT_FOUND
+      };
+    }
+
+    const organizationIds = Array.from(
+      new Set(users.flatMap((user) => user.organization || []).filter((id) => id))
+    );
+    const organizations = organizationIds.length
+      ? await findOrganizationsByIds(organizationIds)
+      : [];
+    const organizationMap = new Map(organizations.map((org: any) => [org.id, org]));
+
+    const enrichedUsers = users.map((user) => ({
+      ...user,
+      organizations: (user.organization || [])
+        .map((id: string) => organizationMap.get(id))
+        .filter(Boolean)
+    }));
+
+    return {
+      success: true,
+      data: enrichedUsers,
+      message: UserMessages.QUERY.SUCCESS
+    };
+  } catch (error: any) {
+    console.error("Process query error:", error);
+    return {
+      success: false,
+      message: error.message || UserMessages.QUERY.FAILED
+    };
+  }
+};
+
+export default {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getUserByEmail,
+  processQuery
+};

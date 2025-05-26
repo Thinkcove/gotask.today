@@ -34,6 +34,12 @@ const UserMessages = {
   },
   EMAIL: {
     NOT_FOUND: "User with this email not found"
+  },
+  QUERY: {
+    FAILED: "Failed to find the user",
+    MISSING_FIELDS: "Missing required fields",
+    NOT_FOUND: "Query was unsopported",
+    SUCCESS: "User found Successfully"
   }
 };
 

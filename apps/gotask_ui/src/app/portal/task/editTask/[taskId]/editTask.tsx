@@ -213,7 +213,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             <History />
           </Box>
         )}
-        {formData.status !== TASK_STATUS.TO_DO && (
+        {data.status !== TASK_STATUS.TO_DO && (
           <TimeProgressBar
             estimatedTime={data.estimated_time || "0h"}
             timeSpentTotal={data.time_spent_total || "0h"}

@@ -11,7 +11,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import CommentHistory from "../../editTask/commentsHistory";
-import { formatTimeValue } from "@/app/common/utils/common";
+import { formatDate, formatTimeValue } from "@/app/common/utils/common";
 
 interface TaskDetailViewProps {
   task: ITask;
@@ -25,18 +25,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
 
   const handleBack = () => {
     router.back();
-  };
-
-  // Helper function to format date safely
-  const formatDate = (dateString: string | undefined | null) => {
-    if (!dateString) return "-";
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return "-";
-      return date.toLocaleDateString();
-    } catch (error) {
-      return "-";
-    }
   };
 
   // Loading state

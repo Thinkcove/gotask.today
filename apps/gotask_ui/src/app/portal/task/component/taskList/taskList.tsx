@@ -373,16 +373,10 @@ const TaskList: React.FC = () => {
                     page: page.toString()
                   });
 
-                  const filters = {
-                    search_vals: searchParams.search_vals || [],
-                    search_vars: searchParams.search_vars || []
-                  };
-
-                  params.append("filters", encodeURIComponent(JSON.stringify(filters)));
-                  params.append("status", JSON.stringify(statusFilter));
-                  params.append("severity", JSON.stringify(severityFilter));
-                  params.append("projects", JSON.stringify(projectFilter));
-                  params.append("users", JSON.stringify(userFilter));
+                  statusFilter.forEach((val) => params.append("status", val));
+                  severityFilter.forEach((val) => params.append("severity", val));
+                  projectFilter.forEach((val) => params.append("project_name", val));
+                  userFilter.forEach((val) => params.append("user_name", val));
 
                   router.push(`/portal/task/viewMore/${id}?${params.toString()}`);
                 }}

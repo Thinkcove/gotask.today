@@ -17,16 +17,6 @@ import { IGroup, Project, User } from "../../interface/taskInterface";
 import ViewMoreList from "../../component/taskList/viewMoreList";
 import ViewMoreHeader from "../../component/taskList/viewMoreHeader";
 
-const safeParseArrayParam = (param: string | null): string[] => {
-  try {
-    if (!param) return [];
-    const parsed = JSON.parse(param);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-};
-
 const ViewMoreAction: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -41,22 +31,38 @@ const ViewMoreAction: React.FC = () => {
   const dateVar = searchParams.get("dateVar") || "due_date";
   const page = parseInt(searchParams.get("page") || "1");
 
-  const { search_vals, search_vars } = useMemo(() => {
-    const filterStr = searchParams.get("filters");
-    const parsedFilters = filterStr
-      ? JSON.parse(decodeURIComponent(filterStr))
-      : { search_vals: [], search_vars: [] };
+  const getArrayParam = (name: string): string[] => {
+    const values = searchParams.getAll(name);
+    return values.filter(Boolean);
+  };
 
-    return {
-      search_vals: parsedFilters.search_vals || [],
-      search_vars: parsedFilters.search_vars || []
-    };
-  }, [searchParams]);
+  const statusFilter = getArrayParam("status");
+  const severityFilter = getArrayParam("severity");
+  const projectFilter = getArrayParam("project_name");
+  const userFilter = getArrayParam("user_name");
 
-  const statusFilter = safeParseArrayParam(searchParams.get("status"));
-  const severityFilter = safeParseArrayParam(searchParams.get("severity"));
-  const projectFilter = safeParseArrayParam(searchParams.get("projects"));
-  const userFilter = safeParseArrayParam(searchParams.get("users"));
+  const search_vals: string[][] = [];
+  const search_vars: string[][] = [];
+
+  statusFilter.forEach((v) => {
+    search_vals.push([v]);
+    search_vars.push(["status"]);
+  });
+
+  severityFilter.forEach((v) => {
+    search_vals.push([v]);
+    search_vars.push(["severity"]);
+  });
+
+  projectFilter.forEach((v) => {
+    search_vals.push([v]);
+    search_vars.push(["project_name"]);
+  });
+
+  userFilter.forEach((v) => {
+    search_vals.push([v]);
+    search_vars.push(["user_name"]);
+  });
 
   const variationType = moreDays ? "more" : lessDays ? "less" : "";
   const variationDays = moreDays
@@ -90,19 +96,15 @@ const ViewMoreAction: React.FC = () => {
   const drawerTasks = view === "projects" ? tasksByProjects : tasksByUsers;
   const isLoading = view === "projects" ? isLoadingProjects : isLoadingUsers;
 
-  const updateQueryParam = (key: string, value: string | string[] | undefined) => {
+  const updateQueryParam = (key: string, value: string[] | string | undefined) => {
     const params = new URLSearchParams(window.location.search);
 
+    params.delete(key);
+
     if (Array.isArray(value)) {
-      if (value.length > 0) {
-        params.set(key, JSON.stringify(value));
-      } else {
-        params.delete(key);
-      }
+      value.forEach((v) => params.append(key, v));
     } else if (value) {
       params.set(key, value);
-    } else {
-      params.delete(key);
     }
 
     window.history.replaceState(null, "", `?${params.toString()}`);
@@ -130,43 +132,18 @@ const ViewMoreAction: React.FC = () => {
     projects: string[],
     users: string[]
   ) => {
-    const search_vals: string[][] = [];
-    const search_vars: string[][] = [];
-
-    status.forEach((v) => {
-      search_vals.push([v]);
-      search_vars.push(["status"]);
-    });
-
-    severity.forEach((v) => {
-      search_vals.push([v]);
-      search_vars.push(["severity"]);
-    });
-
-    projects.forEach((v) => {
-      search_vals.push([v]);
-      search_vars.push(["project_name"]);
-    });
-
-    users.forEach((v) => {
-      search_vals.push([v]);
-      search_vars.push(["user_name"]);
-    });
-
-    updateQueryParam("filters", encodeURIComponent(JSON.stringify({ search_vals, search_vars })));
     updateQueryParam("status", status);
     updateQueryParam("severity", severity);
-    updateQueryParam("projects", projects);
-    updateQueryParam("users", users);
+    updateQueryParam("project_name", projects);
+    updateQueryParam("user_name", users);
   };
 
   const clearAllFilters = () => {
     [
-      "filters",
       "status",
       "severity",
-      "projects",
-      "users",
+      "project_name",
+      "user_name",
       "minDate",
       "maxDate",
       "moreDays",
@@ -192,15 +169,14 @@ const ViewMoreAction: React.FC = () => {
   return (
     <>
       <ModuleHeader name="Task" />
-
       <ViewMoreHeader name={name} onClose={() => window.history.back()} />
       <Box sx={{ pt: 2 }}>
         <TaskFilters
           statusFilter={statusFilter}
           severityFilter={severityFilter}
           projectFilter={projectFilter}
-          hideProjectFilter={hideProjectFilter}
           userFilter={userFilter}
+          hideProjectFilter={hideProjectFilter}
           allProjects={allProjects.map((p: Project) => p.name)}
           allUsers={allUsers.map((u: User) => u.name)}
           variationType={variationType}

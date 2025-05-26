@@ -272,7 +272,9 @@
     "estimatedt": "Estimated",
     "spentt": "Spent",
     "remainingt": "Remaining",
-    "variationt": "Variation"
+    "variationt": "Variation",
+    "viewMore": "View more",
+    "comment": "Comments"
   },
   "User": {
     "username": "User name is required",

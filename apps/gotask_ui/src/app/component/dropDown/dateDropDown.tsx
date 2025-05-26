@@ -36,8 +36,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
       borderColor: theme.palette.grey[500]
     },
     "&.Mui-focused fieldset": {
-      borderColor: theme.palette.primary.main,
-      boxShadow: `0 0 0 3px ${theme.palette.primary.light}`
+      borderColor: theme.palette.primary.main
     }
   },
   "& .MuiInputLabel-root": {

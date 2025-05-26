@@ -23,6 +23,7 @@ interface Props {
   onVariationChange: (type: "more" | "less", days: number) => void;
   onClearFilters: () => void;
   transtask: (key: string) => string;
+  hideProjectFilter?: boolean;
 }
 
 const TaskFilters: React.FC<Props> = ({
@@ -43,14 +44,15 @@ const TaskFilters: React.FC<Props> = ({
   onDateChange,
   onVariationChange,
   onClearFilters,
-  transtask
+  transtask,
+  hideProjectFilter
 }) => {
   const variationRef = useRef<HTMLDivElement | null>(null);
   const [variationPopoverOpen, setVariationPopoverOpen] = useState(false);
   const appliedFilterCount =
     (statusFilter.length > 0 ? 1 : 0) +
     (severityFilter.length > 0 ? 1 : 0) +
-    (projectFilter.length > 0 ? 1 : 0) +
+    (!hideProjectFilter && projectFilter.length > 0 ? 1 : 0) +
     (userFilter.length > 0 ? 1 : 0) +
     (variationType !== "" ? 1 : 0) +
     (variationDays > 0 ? 1 : 0) +
@@ -89,12 +91,14 @@ const TaskFilters: React.FC<Props> = ({
         selected={severityFilter}
         onChange={onSeverityChange}
       />
-      <FilterDropdown
-        label={transtask("filterproject")}
-        options={allProjects}
-        selected={projectFilter}
-        onChange={onProjectChange}
-      />
+      {!hideProjectFilter && (
+        <FilterDropdown
+          label={transtask("filterproject")}
+          options={allProjects}
+          selected={projectFilter}
+          onChange={onProjectChange}
+        />
+      )}
       <FilterDropdown
         label={transtask("filteruser")}
         options={allUsers}

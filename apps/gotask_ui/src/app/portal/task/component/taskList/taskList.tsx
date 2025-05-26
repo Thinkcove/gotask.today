@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Grid, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {
@@ -10,8 +10,7 @@ import {
 import TaskToggle from "../taskLayout/taskToggle";
 import { useRouter } from "next/navigation";
 import TaskCard from "../taskLayout/taskCard";
-import { IGroup, TaskFilterType } from "../../interface/taskInterface";
-import TaskFilterDrawer, { TaskFilterDrawerRef } from "../taskFilter/filterDrawer";
+import { IGroup, Project, User } from "../../interface/taskInterface";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
@@ -35,7 +34,6 @@ const TaskList: React.FC = () => {
   const appendedPages = useRef<Set<string>>(new Set());
   const previousView = useRef(view);
   const scrollFrameRef = useRef<number | null>(null);
-  const filterDrawerRef = useRef<TaskFilterDrawerRef>(null);
 
   const [page, setPage] = useState(1);
   const [allTasks, setAllTasks] = useState<IGroup[]>([]);
@@ -46,17 +44,21 @@ const TaskList: React.FC = () => {
     search_vals?: string[][];
     search_vars?: string[][];
   }>({});
-  const [filtersOnly, setFiltersOnly] = useState<{
-    search_vals?: string[][];
-    search_vars?: string[][];
-  }>({});
-  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [minDate, setMinDate] = useState<string | undefined>();
   const [maxDate, setMaxDate] = useState<string | undefined>();
   const [dateVar, setDateVar] = useState<string>("due_date");
   const [moreDays, setMoreDays] = useState<string | undefined>();
   const [lessDays, setLessDays] = useState<string | undefined>();
-
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [severityFilter, setSeverityFilter] = useState<string[]>([]);
+  const [projectFilter, setProjectFilter] = useState<string[]>([]);
+  const [userFilter, setUserFilter] = useState<string[]>([]);
+  const [dateFrom, setDateFrom] = useState<string>("");
+  const [dateTo, setDateTo] = useState<string>("");
+  const [variationType, setVariationType] = useState<"more" | "less" | "">("");
+  const [variationDays, setVariationDays] = useState<number>(0);
+  const { getAllProjects: allProjects } = useAllProjects();
+  const { getAllUsers: allUsers } = useAllUsers();
   // Memoize params to avoid recomputation
   const search_vals = searchParams.search_vals;
   const search_vars = searchParams.search_vars;
@@ -144,18 +146,23 @@ const TaskList: React.FC = () => {
       scrollFrameRef.current = null;
     });
   };
-
   const handleSearchChange = (val: string) => {
     setSearchText(val);
+    const trimmedVal = val.trim();
+
     const newParams = {
-      ...filtersOnly,
-      ...(val.trim()
+      ...searchParams,
+      ...(trimmedVal
         ? {
-            search_vals: [...(filtersOnly.search_vals || []), [val]],
-            search_vars: [...(filtersOnly.search_vars || []), ["title"]]
+            search_vals: [[trimmedVal]],
+            search_vars: [["title"]]
           }
-        : {})
+        : {
+            search_vals: [],
+            search_vars: []
+          })
     };
+
     setSearchParams(newParams);
     resetTaskState();
   };
@@ -163,7 +170,7 @@ const TaskList: React.FC = () => {
   const isSearched = searchText.trim() !== "";
 
   const isFiltered = () =>
-    (filtersOnly.search_vals ?? []).some((arr) => arr.length > 0) ||
+    (searchParams.search_vals ?? []).some((arr) => arr.length > 0) ||
     (!!minDate && !!maxDate) ||
     !!moreDays ||
     !!lessDays;
@@ -178,35 +185,6 @@ const TaskList: React.FC = () => {
     );
   }
 
-  const handleApplyTaskFilters = (filters: TaskFilterType) => {
-    setFiltersOnly(filters);
-    setMoreDays(filters.more_variation || undefined);
-    setLessDays(filters.less_variation || undefined);
-    setMinDate(filters.min_date || undefined);
-    setMaxDate(filters.max_date || undefined);
-    setDateVar(filters.date_var || "due_date");
-    const newParams = {
-      ...filters,
-      ...(searchText.trim()
-        ? {
-            search_vals: [...(filters.search_vals || []), [searchText]],
-            search_vars: [...(filters.search_vars || []), ["title"]]
-          }
-        : {})
-    };
-    setSearchParams(newParams);
-    resetTaskState();
-  };
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [severityFilter, setSeverityFilter] = useState<string[]>([]);
-  const [projectFilter, setProjectFilter] = useState<string[]>([]);
-  const [userFilter, setUserFilter] = useState<string[]>([]);
-  const [dateFrom, setDateFrom] = useState<string>("");
-  const [dateTo, setDateTo] = useState<string>("");
-  const [variationType, setVariationType] = useState<"more" | "less" | "">("");
-  const [variationDays, setVariationDays] = useState<number>(0);
-  const { getAllProjects: allProjects } = useAllProjects();
-  const { getAllUsers: allUsers } = useAllUsers();
   const updateSearchParamsFromFilters = (
     status: string[],
     severity: string[],
@@ -274,11 +252,11 @@ const TaskList: React.FC = () => {
     setDateVar("due_date");
 
     const newParams = {
-      ...filtersOnly,
+      ...searchParams,
       ...(searchText.trim()
         ? {
-            search_vals: [...(filtersOnly.search_vals || []), [searchText]],
-            search_vars: [...(filtersOnly.search_vars || []), ["title"]]
+            search_vals: [...(searchParams.search_vals || []), [searchText]],
+            search_vars: [...(searchParams.search_vars || []), ["title"]]
           }
         : {})
     };
@@ -295,11 +273,11 @@ const TaskList: React.FC = () => {
     setLessDays(less);
 
     const newParams = {
-      ...filtersOnly,
+      ...searchParams,
       ...(searchText.trim()
         ? {
-            search_vals: [...(filtersOnly.search_vals || []), [searchText]],
-            search_vars: [...(filtersOnly.search_vars || []), ["title"]]
+            search_vals: [...(searchParams.search_vals || []), [searchText]],
+            search_vars: [...(searchParams.search_vars || []), ["title"]]
           }
         : {})
     };
@@ -333,8 +311,8 @@ const TaskList: React.FC = () => {
         severityFilter={severityFilter}
         projectFilter={projectFilter}
         userFilter={userFilter}
-        allProjects={allProjects.map((p: any) => p.name)}
-        allUsers={allUsers.map((u: any) => u.name)}
+        allProjects={allProjects.map((p: Project) => p.name)}
+        allUsers={allUsers.map((u: User) => u.name)}
         variationType={variationType}
         variationDays={variationDays}
         dateFrom={dateFrom}
@@ -392,16 +370,19 @@ const TaskList: React.FC = () => {
                     ...(moreDays && { moreDays }),
                     ...(lessDays && { lessDays }),
                     dateVar,
-                    page: page.toString(),
-                    ...(searchText && { searchText })
+                    page: page.toString()
                   });
 
                   const filters = {
-                    search_vals: filtersOnly.search_vals || [],
-                    search_vars: filtersOnly.search_vars || []
+                    search_vals: searchParams.search_vals || [],
+                    search_vars: searchParams.search_vars || []
                   };
 
                   params.append("filters", encodeURIComponent(JSON.stringify(filters)));
+                  params.append("status", JSON.stringify(statusFilter));
+                  params.append("severity", JSON.stringify(severityFilter));
+                  params.append("projects", JSON.stringify(projectFilter));
+                  params.append("users", JSON.stringify(userFilter));
 
                   router.push(`/portal/task/viewMore/${id}?${params.toString()}`);
                 }}
@@ -418,13 +399,6 @@ const TaskList: React.FC = () => {
           onClick={() => router.push("/portal/task/createTask")}
         />
       )}
-
-      <TaskFilterDrawer
-        ref={filterDrawerRef}
-        open={filterDrawerOpen}
-        onClose={() => setFilterDrawerOpen(false)}
-        onApplyFilters={handleApplyTaskFilters}
-      />
     </Box>
   );
 };

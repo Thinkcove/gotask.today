@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 import {
   TextField,
-  MenuItem,
-  Select,
   FormControl,
   Box,
   Typography,
   FormHelperText,
   InputAdornment,
-  Checkbox
+  Checkbox,
+  Autocomplete
 } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ArrowDropDown, CalendarMonth, Edit, Visibility, VisibilityOff } from "@mui/icons-material";
+import { CalendarMonth, Edit, Visibility, VisibilityOff } from "@mui/icons-material";
 
 export interface SelectOption {
   name: string;
@@ -52,6 +51,9 @@ const FormField: React.FC<FormFieldProps> = ({
 }) => {
   // State to handle password visibility
   const [passwordVisible, setPasswordVisible] = useState(true);
+  const normalizedOptions: SelectOption[] = (options || []).map((opt) =>
+    typeof opt === "string" ? { id: opt, name: opt } : opt
+  );
 
   return (
     <FormControl fullWidth margin="normal" error={!!error}>
@@ -153,38 +155,34 @@ const FormField: React.FC<FormFieldProps> = ({
         )}
 
         {type === "select" && (
-          <Select
-            value={value}
-            onChange={(e) => onChange?.(e.target.value)}
-            displayEmpty
-            variant="standard"
-            fullWidth
-            error={!!error}
-            disabled={disabled}
-            disableUnderline
-            IconComponent={ArrowDropDown}
-            sx={{
-              "& .MuiSelect-select": {
-                color: value ? "inherit" : "#9C8585", // Apply color only when placeholder is visible
-                opacity: 1
-              }
+          <Autocomplete
+            options={normalizedOptions}
+            getOptionLabel={(option) => option.name}
+            value={normalizedOptions.find((opt) => opt.id === value) || null}
+            onChange={(_, newValue) => {
+              onChange?.(newValue?.id || "");
             }}
-          >
-            <MenuItem value="" disabled>
-              {placeholder}
-            </MenuItem>
-            {options?.map((option, index) =>
-              typeof option === "string" ? (
-                <MenuItem key={index} value={option}>
-                  {option}
-                </MenuItem>
-              ) : (
-                <MenuItem key={index} value={option.id}>
-                  {option.name}
-                </MenuItem>
-              )
+            isOptionEqualToValue={(option, val) => option.id === val.id}
+            disabled={disabled}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={placeholder}
+                variant="standard"
+                error={!!error}
+                fullWidth
+                InputProps={{
+                  ...params.InputProps,
+                  disableUnderline: true
+                }}
+                sx={{
+                  "& input": {
+                    color: value ? "inherit" : "#9C8585"
+                  }
+                }}
+              />
             )}
-          </Select>
+          />
         )}
 
         {type === "date" && (
@@ -215,56 +213,45 @@ const FormField: React.FC<FormFieldProps> = ({
         )}
 
         {type === "multiselect" && (
-          <Select
+          <Autocomplete
             multiple
-            value={Array.isArray(value) ? value : []}
-            onChange={(e) =>
-              onChange?.(
-                typeof e.target.value === "string" ? e.target.value.split(",") : e.target.value
-              )
+            disableCloseOnSelect
+            options={normalizedOptions} // Make sure this is always SelectOption[]
+            getOptionLabel={(option) => option.name}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            value={
+              Array.isArray(value) ? normalizedOptions.filter((opt) => value.includes(opt.id)) : []
             }
-            displayEmpty
-            variant="standard"
-            fullWidth
-            error={!!error}
-            disabled={disabled}
-            disableUnderline
-            IconComponent={ArrowDropDown}
-            renderValue={(selected) =>
-              (selected as string[]).length === 0
-                ? placeholder
-                : (selected as string[])
-                    .map((val) => {
-                      const found =
-                        (options as SelectOption[])?.find((opt) => opt.id === val)?.name || val;
-                      return found;
-                    })
-                    .join(", ")
-            }
-            sx={{
-              "& .MuiSelect-select": {
-                color: Array.isArray(value) && value.length === 0 ? "#9C8585" : "inherit",
-                opacity: 1
-              }
+            onChange={(_, newValue) => {
+              onChange?.(newValue.map((item) => item.id));
             }}
-          >
-            <MenuItem disabled value="">
-              {placeholder}
-            </MenuItem>
-            {options?.map((option, index) => {
-              const val = typeof option === "string" ? option : option.id;
-              const label = typeof option === "string" ? option : option.name;
-              return (
-                <MenuItem key={index} value={val}>
-                  <Checkbox
-                    checked={Array.isArray(value) && value.includes(val)}
-                    sx={{ padding: "0 8px 0 0" }}
-                  />
-                  {label}
-                </MenuItem>
-              );
-            })}
-          </Select>
+            disabled={disabled}
+            filterSelectedOptions
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox checked={selected} sx={{ marginRight: 1 }} />
+                {option.name}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={placeholder}
+                variant="standard"
+                error={!!error}
+                fullWidth
+                InputProps={{
+                  ...params.InputProps,
+                  disableUnderline: true
+                }}
+                sx={{
+                  "& input": {
+                    color: Array.isArray(value) && value.length === 0 ? "#9C8585" : "inherit"
+                  }
+                }}
+              />
+            )}
+          />
         )}
       </Box>
       {error && <FormHelperText>{error}</FormHelperText>}

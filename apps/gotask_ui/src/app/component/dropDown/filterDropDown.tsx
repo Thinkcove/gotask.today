@@ -19,7 +19,7 @@ const StyledPopper = styled(Popper)(({ theme }) => ({
 }));
 
 // Autocomplete with light border, subtle focus effect, and clean chips
-const StyledAutocomplete = styled(Autocomplete)<{}>(({ theme }) => ({
+const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
   minWidth: 220,
   maxWidth: 220,
   ".MuiAutocomplete-inputRoot": {
@@ -77,9 +77,10 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       filterSelectedOptions
       getOptionLabel={(option) => option as string}
       renderTags={(value: unknown[], getTagProps) =>
-        (value as string[]).map((option, index) => (
-          <Chip label={option} variant="outlined" size="small" {...getTagProps({ index })} />
-        ))
+        (value as string[]).map((option, index) => {
+          const { key, ...chipProps } = getTagProps({ index });
+          return <Chip key={key} label={option} variant="outlined" size="small" {...chipProps} />;
+        })
       }
       renderInput={(params) => (
         <TextField

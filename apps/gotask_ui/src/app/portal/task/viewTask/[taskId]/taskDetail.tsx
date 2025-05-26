@@ -11,7 +11,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import CommentHistory from "../../editTask/commentsHistory";
-import { formatDate, formatTimeValue } from "@/app/common/utils/common";
+import { formatTimeValue } from "@/app/common/utils/common";
 
 interface TaskDetailViewProps {
   task: ITask;
@@ -161,16 +161,16 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
                 label={transtask("detailcreated")}
-                value={formatDate(task.created_on)}
+                value={new Date(task.created_on).toLocaleDateString()}
               />
             </Grid>
             <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText label={transtask("detaildue")} value={formatDate(task.due_date)} />
+              <LabelValueText
+                label={transtask("detaildue")}
+                value={new Date(task.due_date).toLocaleDateString()}
+              />
             </Grid>
-          </Grid>
 
-          {/* Time Tracking Info */}
-          <Grid container spacing={2} mb={3}>
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
                 label={transtask("estimatedt")}

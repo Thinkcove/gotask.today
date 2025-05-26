@@ -375,8 +375,14 @@ const TaskList: React.FC = () => {
 
                   statusFilter.forEach((val) => params.append("status", val));
                   severityFilter.forEach((val) => params.append("severity", val));
-                  projectFilter.forEach((val) => params.append("project_name", val));
-                  userFilter.forEach((val) => params.append("user_name", val));
+
+                  if (view !== "projects") {
+                    projectFilter.forEach((val) => params.append("project_name", val));
+                  }
+
+                  if (view !== "users") {
+                    userFilter.forEach((val) => params.append("user_name", val));
+                  }
 
                   router.push(`/portal/task/viewMore/${id}?${params.toString()}`);
                 }}

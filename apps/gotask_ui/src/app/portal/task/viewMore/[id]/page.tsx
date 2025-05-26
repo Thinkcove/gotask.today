@@ -160,6 +160,8 @@ const ViewMoreAction: React.FC = () => {
   }
 
   const hideProjectFilter = view === "projects";
+  const hideUserFilter = view !== "projects";
+
   const name = `List view of ${
     drawerTasks.find((group: IGroup) => group.id === id)?.[
       view === "projects" ? "project_name" : "user_name"
@@ -177,6 +179,7 @@ const ViewMoreAction: React.FC = () => {
           projectFilter={projectFilter}
           userFilter={userFilter}
           hideProjectFilter={hideProjectFilter}
+          hideUserFilter={hideUserFilter}
           allProjects={allProjects.map((p: Project) => p.name)}
           allUsers={allUsers.map((u: User) => u.name)}
           variationType={variationType}

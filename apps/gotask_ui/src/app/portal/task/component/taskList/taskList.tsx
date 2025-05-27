@@ -22,8 +22,11 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { useTaskFilters } from "@/app/taskFilterContext";
 
 const TaskList: React.FC = () => {
+  const { setFilters } = useTaskFilters();
+
   const { canAccess } = useUserPermission();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [view, setView] = useState<"projects" | "users">("projects");
@@ -285,7 +288,23 @@ const TaskList: React.FC = () => {
     setSearchParams(newParams);
     resetTaskState();
   };
+  const handleViewMore = (id: string) => {
+    setFilters({
+      view,
+      minDate,
+      maxDate,
+      moreDays,
+      lessDays,
+      dateVar,
+      page,
+      statusFilter,
+      severityFilter,
+      projectFilter,
+      userFilter
+    });
 
+    router.push(`/portal/task/viewMore/${id}`);
+  };
   return (
     <Box>
       <Box
@@ -362,30 +381,7 @@ const TaskList: React.FC = () => {
                 view={view}
                 group={group}
                 onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
-                onViewMore={(id) => {
-                  const params = new URLSearchParams({
-                    view,
-                    ...(minDate && { minDate }),
-                    ...(maxDate && { maxDate }),
-                    ...(moreDays && { moreDays }),
-                    ...(lessDays && { lessDays }),
-                    dateVar,
-                    page: page.toString()
-                  });
-
-                  statusFilter.forEach((val) => params.append("status", val));
-                  severityFilter.forEach((val) => params.append("severity", val));
-
-                  if (view !== "projects") {
-                    projectFilter.forEach((val) => params.append("project_name", val));
-                  }
-
-                  if (view !== "users") {
-                    userFilter.forEach((val) => params.append("user_name", val));
-                  }
-
-                  router.push(`/portal/task/viewMore/${id}?${params.toString()}`);
-                }}
+                onViewMore={handleViewMore}
               />
             </Grid>
           ))}

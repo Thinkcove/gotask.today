@@ -37,7 +37,7 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
                 <Box
                   sx={{
                     overflowY: "auto",
-                    maxHeight: "calc(100vh - 100px)",
+                    maxHeight: "calc(100vh - 250px)",
                     px: 2,
                     py: 2
                   }}

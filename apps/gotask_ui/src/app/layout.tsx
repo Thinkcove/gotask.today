@@ -7,6 +7,7 @@ import AuthenticatedLayout from "./authenticatedLayout";
 import { theme } from "./theme/theme";
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { TaskFilterProvider } from "./taskFilterContext";
 
 export const metadata: Metadata = {
   title: "Go Task Today",
@@ -21,12 +22,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang={locale}>
       <body style={{ overflow: "hidden" }}>
         <UserProvider>
-          <NextIntlClientProvider messages = {messages}>
+          <NextIntlClientProvider messages={messages}>
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <AppRouterCacheProvider options={{ enableCssLayer: true }}>
                 <SWRProvider>
-                  <AuthenticatedLayout>{children}</AuthenticatedLayout>
+                  <AuthenticatedLayout>
+                    <TaskFilterProvider>{children}</TaskFilterProvider>
+                  </AuthenticatedLayout>
                 </SWRProvider>
               </AppRouterCacheProvider>
             </ThemeProvider>
@@ -36,4 +39,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-

@@ -152,8 +152,18 @@ const TaskFilters: React.FC<Props> = ({
         </Box>
       </Popover>
       {appliedFilterCount > 0 && (
-        <Button variant="outlined" onClick={onClearFilters}>
-          {`Clear Filters (${appliedFilterCount})`}
+        <Button
+          variant="outlined"
+          onClick={onClearFilters}
+          sx={{
+            textTransform: "none",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: 350
+          }}
+        >
+          {`Clear All (${appliedFilterCount})`}
         </Button>
       )}
     </Box>

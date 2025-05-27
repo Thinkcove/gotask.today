@@ -20,7 +20,7 @@ export interface IGroup {
   tasks: [];
 }
 export interface ITask {
-  variation(time_spent_total: string | undefined, variation: number | string): string;
+  variation?: string;
   id: string;
   title: string;
   description: string;

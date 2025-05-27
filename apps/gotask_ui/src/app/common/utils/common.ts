@@ -142,6 +142,8 @@ export const extractHours = (timeStrings: string[]) =>
   }, 0);
 
 export const formatTimeValue = (raw: string): string => {
+  if (!raw || typeof raw !== "string") return "—";
+
   const dayMatch = raw.match(/(\d+)d/);
   const hourMatch = raw.match(/(\d+)h/);
 

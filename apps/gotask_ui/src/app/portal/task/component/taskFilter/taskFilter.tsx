@@ -1,7 +1,8 @@
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import DueDateDropdown from "@/app/component/dropDown/dateDropDown";
 import FilterDropdown from "@/app/component/dropDown/filterDropDown";
-import { Box, Button, Popover, Slider, Typography } from "@mui/material";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { Box, Button, IconButton, Popover, Slider, Typography } from "@mui/material";
 import React, { useRef, useState } from "react";
 
 interface Props {
@@ -50,6 +51,7 @@ const TaskFilters: React.FC<Props> = ({
   hideUserFilter
 }) => {
   const variationRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const [variationPopoverOpen, setVariationPopoverOpen] = useState(false);
   const appliedFilterCount =
     (statusFilter.length > 0 ? 1 : 0) +
@@ -60,111 +62,166 @@ const TaskFilters: React.FC<Props> = ({
     (variationDays > 0 ? 1 : 0) +
     (dateFrom !== "" ? 1 : 0) +
     (dateTo !== "" ? 1 : 0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
+  const updateScrollButtons = () => {
+    const el = scrollRef.current;
+    if (el) {
+      setCanScrollLeft(el.scrollLeft > 0);
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth);
+    }
+  };
+
+  const handleScroll = () => updateScrollButtons();
+  const handleMouseEvents = () => updateScrollButtons();
+
+  const scrollBy = (direction: "left" | "right") => {
+    const el = scrollRef.current;
+    if (el) {
+      el.scrollBy({ left: direction === "left" ? -200 : 200, behavior: "smooth" });
+      setTimeout(updateScrollButtons, 300);
+    }
+  };
   return (
-    <Box
-      sx={{
-        px: 3,
-        pt: 2,
-        pb: 2,
-        display: "flex",
-        gap: 2,
-        flexWrap: "nowrap", // Prevent wrapping
-        overflowX: "auto", // Enable horizontal scroll when overflow
-        // Optional: hide scrollbar for better UI
-        "&::-webkit-scrollbar": {
-          height: 6
-        },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#aaa",
-          borderRadius: 3
-        }
-      }}
-    >
-      <FilterDropdown
-        label={transtask("filterstatus")}
-        options={Object.values(TASK_STATUS)}
-        selected={statusFilter}
-        onChange={onStatusChange}
-      />
-      <FilterDropdown
-        label={transtask("filterseverity")}
-        options={Object.values(TASK_SEVERITY)}
-        selected={severityFilter}
-        onChange={onSeverityChange}
-      />
-      {!hideProjectFilter && (
-        <FilterDropdown
-          label={transtask("filterproject")}
-          options={allProjects}
-          selected={projectFilter}
-          onChange={onProjectChange}
-        />
-      )}
-      {!hideUserFilter && (
-        <FilterDropdown
-          label={transtask("filteruser")}
-          options={allUsers}
-          selected={userFilter}
-          onChange={onUserChange}
-        />
-      )}
-      <DueDateDropdown dateFrom={dateFrom} dateTo={dateTo} onDateChange={onDateChange} />
-      {/* Variation Dropdown + Popover */}
-      <Box ref={variationRef}>
-        <FilterDropdown
-          label="Variation"
-          options={["more", "less"]}
-          selected={variationType ? [variationType] : []}
-          onChange={(val) => {
-            const type = val[0] as "more" | "less";
-            onVariationChange(type, variationDays);
-            setVariationPopoverOpen(true);
-          }}
-          singleSelect
-        />
-      </Box>
-      <Popover
-        open={variationPopoverOpen}
-        anchorEl={variationRef.current}
-        onClose={() => setVariationPopoverOpen(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "left" }}
-      >
-        <Box sx={{ p: 2, width: 200 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            Days Variation
-          </Typography>
-          <Slider
-            value={variationDays}
-            onChange={(_, value) => {
-              if (variationType === "more" || variationType === "less") {
-                onVariationChange(variationType, value as number);
-              }
-            }}
-            step={1}
-            marks
-            min={1}
-            max={30}
-            valueLabelDisplay="auto"
-            size="small"
-          />
-        </Box>
-      </Popover>
-      {appliedFilterCount > 0 && (
-        <Button
-          variant="outlined"
-          onClick={onClearFilters}
+    <Box sx={{ position: "relative" }}>
+      {canScrollLeft && (
+        <IconButton
+          onClick={() => scrollBy("left")}
           sx={{
-            textTransform: "none",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: 350
+            position: "absolute",
+            left: 0,
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 2,
+            backgroundColor: "white",
+            boxShadow: 1
           }}
         >
-          {`Clear All (${appliedFilterCount})`}
-        </Button>
+          <ChevronLeft />
+        </IconButton>
+      )}
+
+      <Box
+        ref={scrollRef}
+        onScroll={handleScroll}
+        onMouseEnter={handleMouseEvents}
+        onMouseMove={handleMouseEvents}
+        sx={{
+          px: 3,
+          pt: 2,
+          pb: 2,
+          display: "flex",
+          gap: 2,
+          flexWrap: "nowrap",
+          overflowX: "auto",
+          scrollbarWidth: "none",
+          "&::-webkit-scrollbar": {
+            display: "none"
+          }
+        }}
+      >
+        <FilterDropdown
+          label={transtask("filterstatus")}
+          options={Object.values(TASK_STATUS)}
+          selected={statusFilter}
+          onChange={onStatusChange}
+        />
+        <FilterDropdown
+          label={transtask("filterseverity")}
+          options={Object.values(TASK_SEVERITY)}
+          selected={severityFilter}
+          onChange={onSeverityChange}
+        />
+        {!hideProjectFilter && (
+          <FilterDropdown
+            label={transtask("filterproject")}
+            options={allProjects}
+            selected={projectFilter}
+            onChange={onProjectChange}
+          />
+        )}
+        {!hideUserFilter && (
+          <FilterDropdown
+            label={transtask("filteruser")}
+            options={allUsers}
+            selected={userFilter}
+            onChange={onUserChange}
+          />
+        )}
+        <DueDateDropdown dateFrom={dateFrom} dateTo={dateTo} onDateChange={onDateChange} />
+        {/* Variation Dropdown + Popover */}
+        <Box ref={variationRef}>
+          <FilterDropdown
+            label="Variation"
+            options={["more", "less"]}
+            selected={variationType ? [variationType] : []}
+            onChange={(val) => {
+              const type = val[0] as "more" | "less";
+              onVariationChange(type, variationDays);
+              setVariationPopoverOpen(true);
+            }}
+            singleSelect
+          />
+        </Box>
+        <Popover
+          open={variationPopoverOpen}
+          anchorEl={variationRef.current}
+          onClose={() => setVariationPopoverOpen(false)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          transformOrigin={{ vertical: "top", horizontal: "left" }}
+        >
+          <Box sx={{ p: 2, width: 200 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Days Variation
+            </Typography>
+            <Slider
+              value={variationDays}
+              onChange={(_, value) => {
+                if (variationType === "more" || variationType === "less") {
+                  onVariationChange(variationType, value as number);
+                }
+              }}
+              step={1}
+              marks
+              min={1}
+              max={30}
+              valueLabelDisplay="auto"
+              size="small"
+            />
+          </Box>
+        </Popover>
+        {appliedFilterCount > 0 && (
+          <Button
+            variant="outlined"
+            onClick={onClearFilters}
+            sx={{
+              textTransform: "none",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: 350
+            }}
+          >
+            {`Clear All (${appliedFilterCount})`}
+          </Button>
+        )}
+      </Box>
+      {canScrollRight && (
+        <IconButton
+          onClick={() => scrollBy("right")}
+          sx={{
+            position: "absolute",
+            right: 0,
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 2,
+            backgroundColor: "white",
+            boxShadow: 1
+          }}
+        >
+          <ChevronRight />
+        </IconButton>
       )}
     </Box>
   );

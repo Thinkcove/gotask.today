@@ -2,7 +2,7 @@
 
 import { Box, CircularProgress } from "@mui/material";
 import { useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import {
@@ -16,29 +16,32 @@ import TaskFilters from "../../component/taskFilter/taskFilter";
 import { IGroup, Project, User } from "../../interface/taskInterface";
 import ViewMoreList from "../../component/taskList/viewMoreList";
 import ViewMoreHeader from "../../component/taskList/viewMoreHeader";
-import { useTaskFilters } from "@/app/taskFilterContext";
 
 const ViewMoreAction: React.FC = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { id } = useParams();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const { filters, setFilters, clearFilters } = useTaskFilters();
 
-  const {
-    view,
-    minDate = "",
-    maxDate = "",
-    moreDays = "",
-    lessDays = "",
-    dateVar = "due_date",
-    page = 1,
-    statusFilter = [],
-    severityFilter = [],
-    projectFilter = [],
-    userFilter = []
-  } = filters;
+  const view = searchParams.get("view") as "projects" | "users" | null;
+  const minDate = searchParams.get("minDate") || "";
+  const maxDate = searchParams.get("maxDate") || "";
+  const moreDays = searchParams.get("moreDays") || "";
+  const lessDays = searchParams.get("lessDays") || "";
+  const dateVar = searchParams.get("dateVar") || "due_date";
+  const page = parseInt(searchParams.get("page") || "1");
 
-  // Wrap search_vals and search_vars inside useMemo to avoid re-creating arrays on every render
-  const [search_vals, search_vars] = useMemo(() => {
+  const getArrayParam = (name: string): string[] => {
+    const values = searchParams.getAll(name);
+    return values.filter(Boolean);
+  };
+
+  const statusFilter = getArrayParam("status");
+  const severityFilter = getArrayParam("severity");
+  const projectFilter = getArrayParam("project_name");
+  const userFilter = getArrayParam("user_name");
+
+  const { search_vals, search_vars } = useMemo(() => {
     const vals: string[][] = [];
     const vars: string[][] = [];
 
@@ -62,7 +65,7 @@ const ViewMoreAction: React.FC = () => {
       vars.push(["user_name"]);
     });
 
-    return [vals, vars];
+    return { search_vals: vals, search_vars: vars };
   }, [statusFilter, severityFilter, projectFilter, userFilter]);
 
   const variationType = moreDays ? "more" : lessDays ? "less" : "";
@@ -96,6 +99,61 @@ const ViewMoreAction: React.FC = () => {
 
   const drawerTasks = view === "projects" ? tasksByProjects : tasksByUsers;
   const isLoading = view === "projects" ? isLoadingProjects : isLoadingUsers;
+
+  const updateQueryParam = (key: string, value: string[] | string | undefined) => {
+    const params = new URLSearchParams(window.location.search);
+
+    params.delete(key);
+
+    if (Array.isArray(value)) {
+      value.forEach((v) => params.append(key, v));
+    } else if (value) {
+      params.set(key, value);
+    }
+
+    window.history.replaceState(null, "", `?${params.toString()}`);
+    router.refresh();
+  };
+
+  const updateDateRange = (from: string, to: string) => {
+    updateQueryParam("minDate", from);
+    updateQueryParam("maxDate", to);
+  };
+
+  const updateVariation = (type: "more" | "less", days: number) => {
+    if (type === "more") {
+      updateQueryParam("moreDays", `${days}`);
+      updateQueryParam("lessDays", undefined);
+    } else {
+      updateQueryParam("lessDays", `-${days}`);
+      updateQueryParam("moreDays", undefined);
+    }
+  };
+
+  const updateSearchFilters = (
+    status: string[],
+    severity: string[],
+    projects: string[],
+    users: string[]
+  ) => {
+    updateQueryParam("status", status);
+    updateQueryParam("severity", severity);
+    updateQueryParam("project_name", projects);
+    updateQueryParam("user_name", users);
+  };
+
+  const clearAllFilters = () => {
+    [
+      "status",
+      "severity",
+      "project_name",
+      "user_name",
+      "minDate",
+      "maxDate",
+      "moreDays",
+      "lessDays"
+    ].forEach((key) => updateQueryParam(key, undefined));
+  };
 
   if (!id || !view) {
     return (
@@ -132,19 +190,21 @@ const ViewMoreAction: React.FC = () => {
           variationDays={variationDays}
           dateFrom={minDate}
           dateTo={maxDate}
-          onStatusChange={(val) => setFilters({ ...filters, statusFilter: val })}
-          onSeverityChange={(val) => setFilters({ ...filters, severityFilter: val })}
-          onProjectChange={(val) => setFilters({ ...filters, projectFilter: val })}
-          onUserChange={(val) => setFilters({ ...filters, userFilter: val })}
-          onDateChange={(from, to) => setFilters({ ...filters, minDate: from, maxDate: to })}
-          onVariationChange={(type, days) =>
-            setFilters({
-              ...filters,
-              moreDays: type === "more" ? `${days}` : "",
-              lessDays: type === "less" ? `-${days}` : ""
-            })
+          onStatusChange={(val) =>
+            updateSearchFilters(val, severityFilter, projectFilter, userFilter)
           }
-          onClearFilters={clearFilters}
+          onSeverityChange={(val) =>
+            updateSearchFilters(statusFilter, val, projectFilter, userFilter)
+          }
+          onProjectChange={(val) =>
+            updateSearchFilters(statusFilter, severityFilter, val, userFilter)
+          }
+          onUserChange={(val) =>
+            updateSearchFilters(statusFilter, severityFilter, projectFilter, val)
+          }
+          onDateChange={updateDateRange}
+          onVariationChange={updateVariation}
+          onClearFilters={clearAllFilters}
           transtask={transtask}
         />
       </Box>

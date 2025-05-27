@@ -68,6 +68,11 @@ const deleteUserId = async (id: string): Promise<IUser[] | null> => {
   return await User.findOneAndDelete({ id });
 };
 
+// Find users by project ID
+const findUsersByProjectId = async (projectId: string): Promise<IUser[]> => {
+  return await User.find({ projects: projectId }).sort({ updatedAt: -1 }).exec();
+};
+
 export {
   createNewUser,
   findAllUsers,
@@ -77,5 +82,6 @@ export {
   findUsersByIds,
   findProjectsByIds,
   findUser,
-  deleteUserId
+  deleteUserId,
+  findUsersByProjectId
 };

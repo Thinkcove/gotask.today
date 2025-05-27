@@ -34,6 +34,11 @@ const UserMessages = {
   },
   EMAIL: {
     NOT_FOUND: "User with this email not found"
+  },
+
+  PROJECT: {
+    ID_REQUIRED: "Project ID is required and cannot be empty",
+    FETCH_FAILED: "Failed to fetch users by project ID"
   }
 };
 

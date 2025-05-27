@@ -7,7 +7,8 @@ import {
   getUserByEmail,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
+  getUsersByProjectId
 } from "./userService";
 import { getRoleByIdService } from "../role/roleService";
 import UserMessages from "../../constants/apiMessages/userMessage";
@@ -142,6 +143,21 @@ class UserController extends BaseController {
         success: false,
         error: error.message || UserMessages.LOGIN.INVALID_CREDENTIALS
       });
+    }
+  }
+
+  // controllers/userController.ts
+
+  async getUsersByProjectId(requestHelper: RequestHelper, handler: any) {
+    try {
+      const projectId = requestHelper.getParam("project_id");
+      if (!projectId) {
+        throw new Error("Project ID is required");
+      }
+      const response = await getUsersByProjectId(projectId);
+      return this.sendResponse(handler, response);
+    } catch (error) {
+      return this.replyError(error);
     }
   }
 }

@@ -105,4 +105,16 @@ UserRoutes.push({
   }
 });
 
+// route : Get users by Project Id
+UserRoutes.push({
+  path: API_PATHS.GET_USERS_BY_PROJECT_ID,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.getUsersByProjectId(new RequestHelper(request), handler),
+  config: {
+    notes: "Get Users by Project ID",
+    tags
+  }
+});
+
 export default UserRoutes;

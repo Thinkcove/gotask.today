@@ -13,7 +13,6 @@ import { Role } from "../../domain/model/role/role";
 import { getRoleByIdService } from "../role/roleService";
 import { findRoleByIds } from "../../domain/interface/role/roleInterface";
 import { Organization } from "../../domain/model/organization/organization";
-import { ExtendedParsedQuery } from "../../domain/interface/query/queryInterface";
 
 // CREATE USER
 const createUser = async (
@@ -286,7 +285,7 @@ const getUserByEmail = async (
 // PROCESS USER QUERY
 const processQuery = async (
   query: string,
-  parsedQuery: ExtendedParsedQuery
+  parsedQuery: Record<string, any>
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
     if (!query || !parsedQuery) {

@@ -13,47 +13,11 @@ export interface ParsedQuery {
   timeRange?: string | null;
 }
 
-export interface ExtendedParsedQuery extends ParsedQuery {
-  user_id?: string | null;
-  name?: string | null;
-  date?: string | undefined;
-  hoursLate?: boolean;
-  employeeDetails?: boolean;
-  averageOutTime?: boolean;
-  averageInTime?: boolean;
-  dateRange?: { start: Date; end: Date } | undefined;
-  workinghours?: boolean;
-  after10am?: boolean;
-  latelogoff?: boolean;
-  projectDetails?: boolean;
-  organizationDetails?: boolean;
-  organizationName?: string | null;
-  taskDetails?: boolean;
-  hoursSpent?: boolean;
-  dueDate?: boolean;
-  overdueWork?: boolean;
-  isFinished?: boolean;
-  projectStatus?: boolean;
-  employeeCount?: boolean;
-  employees?: boolean;
-  employeeHours?: boolean;
-  listProjects?: boolean;
-  workAfterDue?: boolean;
-  isAttendanceQuery?: boolean;
-  taskStatus?: boolean;
-  taskSeverity?: boolean;
-  assignedEmployees?: boolean;
-  openTasks?: boolean;
-  completedTasks?: boolean;
-  projectAssignedHours?: boolean;
-  taskName?: string | undefined;
-}
-
 export interface IQueryHistory extends Document {
   id: string;
   query: string;
   timestamp: Date;
-  parsedQuery: ExtendedParsedQuery;
+  parsedQuery: Record<string, any>;
   response: string;
   conversationId: string;
   type: string;

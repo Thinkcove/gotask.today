@@ -106,7 +106,7 @@ UserRoutes.push({
 });
 
 UserRoutes.push({
-  path: API_PATHS.PROCESS_USER_QUERY,
+  path: "/api/user/query",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     userController.processQuery(new RequestHelper(request), handler)

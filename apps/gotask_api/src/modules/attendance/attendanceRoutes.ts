@@ -14,7 +14,7 @@ const tags = [API, "Attendance"];
 const AttendanceRoutes = [];
 
 AttendanceRoutes.push({
-  path: API_PATHS.CREATE_ATTENDANCE,
+  path: "/api/attendance",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
     attendanceController.createAttendance(new RequestHelper(request), handler)
@@ -27,51 +27,7 @@ AttendanceRoutes.push({
 });
 
 AttendanceRoutes.push({
-  path: API_PATHS.UPLOAD_ATTENDANCE,
-  method: API_METHODS.POST,
-  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
-    attendanceController.uploadAttendance(new RequestHelper(request), handler)
-  ),
-  config: {
-    notes: "Upload attendance from Excel file",
-    tags,
-    auth: { strategy: authStrategy.SIMPLE },
-    payload: {
-      maxBytes: 10485760, // 10MB
-      output: "file",
-      parse: true,
-      multipart: {
-        output: "file"
-      }
-    },
-    pre: [
-      {
-        method: async (request: Request, h: ResponseToolkit) => {
-          const payload = request.payload as any;
-          if (!payload || !payload.file) {
-            throw new Error("No file uploaded");
-          }
-
-          const uploadDir = path.join(__dirname, "../../../Uploads");
-          await fs.mkdir(uploadDir, { recursive: true });
-
-          const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-          const filePath = path.join(uploadDir, `attendance-${uniqueSuffix}.xlsx`);
-
-          await fs.writeFile(filePath, payload.file);
-
-          payload.file = { path: filePath };
-
-          return h.continue;
-        },
-        assign: "fileHandler"
-      }
-    ]
-  }
-});
-
-AttendanceRoutes.push({
-  path: API_PATHS.PROCESS_ATTENDANCE_QUERY,
+  path: "/api/attendance/query",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     attendanceController.processAttendanceQuery(new RequestHelper(request), handler)
@@ -84,7 +40,7 @@ AttendanceRoutes.push({
 });
 
 AttendanceRoutes.push({
-  path: API_PATHS.PROCESS_EMPLOYEE_ATTENDANCE_QUERY,
+  path: "/api/attendance/employee/query",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     attendanceController.processEmployeeAttendanceQuery(new RequestHelper(request), handler)

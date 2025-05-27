@@ -5,7 +5,6 @@ import userService from "./userService";
 import { getRoleByIdService } from "../role/roleService";
 import UserMessages from "../../constants/apiMessages/userMessage";
 import { comparePassword } from "../../constants/utils/common";
-import { ExtendedParsedQuery } from "../../domain/interface/query/queryInterface";
 
 class UserController extends BaseController {
   async createUser(requestHelper: RequestHelper, handler: any) {
@@ -133,7 +132,7 @@ class UserController extends BaseController {
     try {
       const payload = requestHelper.getPayload();
       const query = payload?.query;
-      const parsedQuery = payload?.parsedQuery as ExtendedParsedQuery;
+      const parsedQuery = payload?.parsedQuery as Record<string, any>;
 
       if (!query || !parsedQuery) {
         return this.sendResponse(handler, {

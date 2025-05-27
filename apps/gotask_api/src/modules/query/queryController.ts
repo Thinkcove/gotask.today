@@ -1,5 +1,6 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import BaseController from "../../common/baseController";
+import { QUERY_LIMIT } from "../../constants/commonConstants/queryConstants";
 import RequestHelper from "../../helpers/requestHelper";
 import {
   processQuery,
@@ -26,7 +27,7 @@ class QueryController extends BaseController {
   async getQueryHistory(requestHelper: RequestHelper, handler: any) {
     try {
       const { limit } = requestHelper.getQuery();
-      const result = await getQueryHistory(limit ? parseInt(limit) : 10);
+      const result = await getQueryHistory(limit ? parseInt(limit) : QUERY_LIMIT.HISTORY_LIMIT);
       return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error, handler);

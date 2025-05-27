@@ -9,7 +9,6 @@ import {
   IAttendance
 } from "../../domain/interface/attendance/attendanceInterface";
 import { User } from "../../domain/model/user/user";
-import { ExtendedParsedQuery } from "../../domain/interface/query/queryInterface";
 import { Attendance } from "../../domain/model/attendance/attendanceModel";
 import { AttendanceMessages } from "../../constants/apiMessages/attendanceMessage";
 
@@ -74,329 +73,9 @@ export const addAttendance = async (
   }
 };
 
-// export const uploadAttendance = async (
-//   filePath: string
-// ): Promise<{
-//   success: boolean;
-//   data?: { inserted: number; skipped: number; errors: string[] };
-//   message?: string;
-// }> => {
-//   try {
-//     if (!fs.existsSync(filePath)) {
-//       return {
-//         success: false,
-//         message: `File not found: ${filePath}`,
-//         data: { inserted: 0, skipped: 0, errors: [`File not found: ${filePath}`] }
-//       };
-//     }
-
-//     const workbook = XLSX.readFile(filePath);
-//     const sheetName = workbook.SheetNames[0];
-//     const worksheet = workbook.Sheets[sheetName];
-//     const rows: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-//     if (rows.length < 2) {
-//       return {
-//         success: false,
-//         message: "XLSX file is empty or has no data rows",
-//         data: { inserted: 0, skipped: 0, errors: ["No data rows found"] }
-//       };
-//     }
-
-//     const headers = rows[0] as string[];
-//     const dataRows = rows.slice(1);
-
-//     const records: IAttendance[] = [];
-//     const errors: string[] = [];
-
-//     for (let i = 0; i < dataRows.length; i++) {
-//       const row = dataRows[i];
-//       try {
-//         const rowData: { [key: string]: any } = {};
-//         headers.forEach((header, index) => {
-//           rowData[header] = row[index] !== undefined ? String(row[index]).trim() : "";
-//         });
-
-//         if (
-//           !rowData.empcode ||
-//           !rowData.empname ||
-//           !rowData.date ||
-//           !rowData.inTime ||
-//           !rowData.outTime
-//         ) {
-//           errors.push(`Missing fields for empcode ${rowData.empcode || "unknown"} at row ${i + 2}`);
-//           continue;
-//         }
-
-//         const date = moment(rowData.date, ["YYYY-MM-DD", "DD-MM-YYYY"], true);
-//         if (!date.isValid()) {
-//           errors.push(`Invalid date format for empcode ${rowData.empcode} at row ${i + 2}`);
-//           continue;
-//         }
-
-//         const inTimeMoment = moment(rowData.inTime, ["HH:mm:ss", "HH:mm"], true);
-//         if (!inTimeMoment.isValid()) {
-//           errors.push(`Invalid inTime format for empcode ${rowData.empcode} at row ${i + 2}`);
-//           continue;
-//         }
-
-//         const outTimeMoment = moment(rowData.outTime, ["HH:mm:ss", "HH:mm"], true);
-//         if (!outTimeMoment.isValid()) {
-//           errors.push(`Invalid outTime format for empcode ${rowData.empcode} at row ${i + 2}`);
-//           continue;
-//         }
-
-//         const user = await User.findOne({
-//           user_id: rowData.empcode,
-//           name: { $regex: `^${rowData.empname}$`, $options: "i" }
-//         }).lean();
-//         if (!user) {
-//           errors.push(
-//             `Invalid empcode ${rowData.empcode} or empname ${rowData.empname} at row ${i + 2}`
-//           );
-//           continue;
-//         }
-
-//         const standardInTime = moment("09:00", "HH:mm");
-//         const minutesLate = inTimeMoment.isAfter(standardInTime)
-//           ? inTimeMoment.diff(standardInTime, "minutes")
-//           : 0;
-//         const status = minutesLate > 0 ? "Late" : rowData.inTime === "00:00" ? "Absent" : "Present";
-
-//         const attendanceData: IAttendance = {
-//           id: uuidv4(),
-//           empcode: rowData.empcode,
-//           empname: user.name,
-//           date: date.startOf("day").toDate(),
-//           inTime: rowData.inTime,
-//           outTime: rowData.outTime,
-//           status,
-//           minutesLate
-//         } as IAttendance;
-
-//         records.push(attendanceData);
-//       } catch (err) {
-//         errors.push(
-//           `Error processing row ${i + 2} for empcode ${rowData.empcode || "unknown"}: ${(err as Error).message}`
-//         );
-//       }
-//     }
-
-//     if (records.length === 0 && errors.length > 0) {
-//       return {
-//         success: false,
-//         data: { inserted: 0, skipped: 0, errors },
-//         message: "No valid attendance records processed"
-//       };
-//     }
-
-//     let insertedCount = 0;
-//     let skippedCount = 0;
-//     for (const record of records) {
-//       try {
-//         const existingRecord = await Attendance.findOne({
-//           empcode: record.empcode,
-//           date: record.date
-//         }).lean();
-//         if (existingRecord) {
-//           errors.push(
-//             `Attendance record already exists for ${record.empcode} on ${moment(record.date).format("YYYY-MM-DD")}`
-//           );
-//           skippedCount++;
-//           continue;
-//         }
-
-//         await Attendance.create(record);
-//         insertedCount++;
-//       } catch (err) {
-//         errors.push(
-//           `Error inserting record for empcode ${record.empcode}: ${(err as Error).message}`
-//         );
-//         skippedCount++;
-//       }
-//     }
-
-//     return {
-//       success: true,
-//       data: { inserted: insertedCount, skipped: skippedCount, errors },
-//       message: "Attendance records processed successfully"
-//     };
-//   } catch (error: any) {
-//     return {
-//       success: false,
-//       message: error.message || AttendanceMessages.UPLOAD.FAILED,
-//       data: { inserted: 0, skipped: 0, errors: [error.message || AttendanceMessages.UPLOAD.FAILED] }
-//     };
-//   }
-// };
-
-export const uploadAttendance = async (
-  filePath: string
-): Promise<{
-  success: boolean;
-  data?: { inserted: number; skipped: number; errors: string[] };
-  message?: string;
-}> => {
-  try {
-    if (!fs.existsSync(filePath)) {
-      return {
-        success: false,
-        message: `File not found: ${filePath}`,
-        data: { inserted: 0, skipped: 0, errors: [`File not found: ${filePath}`] }
-      };
-    }
-
-    const workbook = XLSX.readFile(filePath);
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const rows: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-    if (rows.length < 2) {
-      return {
-        success: false,
-        message: "XLSX file is empty or has no data rows",
-        data: { inserted: 0, skipped: 0, errors: ["No data rows found"] }
-      };
-    }
-
-    const headers = rows[0] as string[];
-    const dataRows = rows.slice(1);
-
-    const records: IAttendance[] = [];
-    const errors: string[] = [];
-
-    for (let i = 0; i < dataRows.length; i++) {
-      const row = dataRows[i];
-      let rowData: { [key: string]: any } = {}; // Declare outside try
-      try {
-        headers.forEach((header, index) => {
-          rowData[header] = row[index] !== undefined ? String(row[index]).trim() : "";
-        });
-
-        if (
-          !rowData.empcode ||
-          !rowData.empname ||
-          !rowData.date ||
-          !rowData.inTime ||
-          !rowData.outTime
-        ) {
-          errors.push(`Missing fields for empcode ${rowData.empcode || "unknown"} at row ${i + 2}`);
-          continue;
-        }
-
-        const date = moment(rowData.date, ["YYYY-MM-DD", "DD-MM-YYYY"], true);
-        if (!date.isValid()) {
-          errors.push(`Invalid date format for empcode ${rowData.empcode} at row ${i + 2}`);
-          continue;
-        }
-
-        const inTimeMoment = moment(rowData.inTime, ["HH:mm:ss", "HH:mm"], true);
-        if (!inTimeMoment.isValid()) {
-          errors.push(`Invalid inTime format for empcode ${rowData.empcode} at row ${i + 2}`);
-          continue;
-        }
-
-        const outTimeMoment = moment(rowData.outTime, ["HH:mm:ss", "HH:mm"], true);
-        if (!outTimeMoment.isValid()) {
-          errors.push(`Invalid outTime format for empcode ${rowData.empcode} at row ${i + 2}`);
-          continue;
-        }
-
-        const user = await User.findOne({
-          user_id: rowData.empcode,
-          name: { $regex: `^${rowData.empname}$`, $options: "i" }
-        }).lean();
-        if (!user) {
-          errors.push(
-            `Invalid empcode ${rowData.empcode} or empname ${rowData.empname} at row ${i + 2}`
-          );
-          continue;
-        }
-
-        const standardInTime = moment("09:00", "HH:mm");
-        const minutesLate = inTimeMoment.isAfter(standardInTime)
-          ? inTimeMoment.diff(standardInTime, "minutes")
-          : 0;
-        const status = minutesLate > 0 ? "Late" : rowData.inTime === "00:00" ? "Absent" : "Present";
-
-        const attendanceData: IAttendance = {
-          id: uuidv4(),
-          empcode: rowData.empcode,
-          empname: user.name,
-          date: date.startOf("day").toDate(),
-          inTime: rowData.inTime,
-          outTime: rowData.outTime,
-          status,
-          minutesLate
-        } as IAttendance;
-
-        records.push(attendanceData);
-      } catch (err) {
-        errors.push(
-          `Error processing row ${i + 2} for empcode ${
-            rowData.empcode || "unknown"
-          }: ${(err as Error).message}`
-        );
-      }
-    }
-
-    if (records.length === 0 && errors.length > 0) {
-      return {
-        success: false,
-        data: { inserted: 0, skipped: 0, errors },
-        message: "No valid attendance records processed"
-      };
-    }
-
-    let insertedCount = 0;
-    let skippedCount = 0;
-    for (const record of records) {
-      try {
-        const existingRecord = await Attendance.findOne({
-          empcode: record.empcode,
-          date: record.date
-        }).lean();
-        if (existingRecord) {
-          errors.push(
-            `Attendance record already exists for ${record.empcode} on ${moment(record.date).format(
-              "YYYY-MM-DD"
-            )}`
-          );
-          skippedCount++;
-          continue;
-        }
-
-        await Attendance.create(record);
-        insertedCount++;
-      } catch (err) {
-        errors.push(
-          `Error inserting record for empcode ${record.empcode}: ${(err as Error).message}`
-        );
-        skippedCount++;
-      }
-    }
-
-    return {
-      success: true,
-      data: { inserted: insertedCount, skipped: skippedCount, errors },
-      message: "Attendance records processed successfully"
-    };
-  } catch (error: any) {
-    return {
-      success: false,
-      message: error.message || AttendanceMessages.UPLOAD.FAILED,
-      data: {
-        inserted: 0,
-        skipped: 0,
-        errors: [error.message || AttendanceMessages.UPLOAD.FAILED]
-      }
-    };
-  }
-};
-
 export const processQuery = async (
   query: string,
-  parsedQuery: ExtendedParsedQuery
+  parsedQuery: Record<string, any>
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
     if (parsedQuery.keywords?.includes("absent")) {
@@ -550,46 +229,90 @@ export const processQuery = async (
 
 export const processEmployeeQuery = async (
   query: string,
-  parsedQuery: ExtendedParsedQuery
+  parsedQuery: Record<string, any>
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
+    // Log raw query and parsed query
+    console.log("Raw Query:", query);
+    console.log("Parsed Query:", JSON.stringify(parsedQuery, null, 2));
+
     let name: string | undefined;
     let empcode: string | undefined;
 
+    // Step 1: Get empname or empcode
     if (parsedQuery.empname) {
-      const nameParts = parsedQuery.empname.trim().split(/\s+from\s+/i);
-      name = nameParts[0].trim();
-      const user = await User.findOne({ username: { $regex: `^${name}$`, $options: "i" } }).lean();
-      if (!user) {
+      name = parsedQuery.empname
+        .trim()
+        .split(/\s+from\s+/i)[0]
+        .trim();
+      console.log(`Looking up Attendance for empname: ${name}`);
+      const attendanceRecords = await findAttendancesByQuery({
+        empname: { $regex: `^${name}$`, $options: "i" }
+      });
+      console.log(`Attendance records for empname: ${attendanceRecords.length}`);
+      if (!attendanceRecords.length) {
         return { success: false, message: `No attendance record found for employee ${name}` };
       }
-      empcode = user.user_id;
-      name = user.name;
+      empcode = attendanceRecords[0].empcode;
+      // Validate empname against User.username
+      const user = await User.findOne({ username: { $regex: `^${name}$`, $options: "i" } }).lean();
+      console.log(`User found for username ${name}: ${!!user}`);
+      if (!user) {
+        return { success: false, message: `No user found with username ${name}` };
+      }
     } else if (parsedQuery.empcode) {
       empcode = parsedQuery.empcode.trim();
-      const user = await User.findOne({ user_id: empcode }).lean();
-      if (!user) {
+      console.log(`Looking up Attendance for empcode: ${empcode}`);
+      const attendanceRecords = await findAttendancesByQuery({ empcode });
+      console.log(`Attendance records for empcode: ${attendanceRecords.length}`);
+      if (!attendanceRecords.length) {
         return { success: false, message: `No attendance record found for empcode ${empcode}` };
       }
-      name = user.name;
-      empcode = user.user_id;
-    }
-
-    if (!empcode || !name) {
+      name = attendanceRecords[0].empname;
+      // Validate empname against User.username
+      const user = await User.findOne({ username: { $regex: `^${name}$`, $options: "i" } }).lean();
+      console.log(`User found for username ${name}: ${!!user}`);
+      if (!user) {
+        return { success: false, message: `No user found with username ${name}` };
+      }
+    } else {
+      console.log("No empname or empcode provided");
       return { success: false, message: `No valid employee identifier provided` };
     }
 
+    // Step 2: Handle dates
     let startDate: moment.Moment;
     let endDate: moment.Moment;
     if (parsedQuery.dateRange) {
-      startDate = moment(parsedQuery.dateRange.start).isValid()
-        ? moment(parsedQuery.dateRange.start).startOf("day")
-        : moment(`${parsedQuery.dateRange.start}-2025`, "DD MMMM YYYY").startOf("day");
-      endDate = moment(parsedQuery.dateRange.end).isValid()
-        ? moment(parsedQuery.dateRange.end).endOf("day")
-        : moment(`${parsedQuery.dateRange.end}-2025`, "DD MMMM YYYY").endOf("day");
-    } else if (parsedQuery.dates && parsedQuery.dates[0]) {
-      startDate = moment(parsedQuery.dates[0]).startOf("day");
+      startDate = moment(
+        parsedQuery.dateRange.start,
+        ["DD MMMM YYYY", "DD-MM-YYYY", "MMMM DD"],
+        true
+      ).startOf("day");
+      endDate = moment(
+        parsedQuery.dateRange.end,
+        ["DD MMMM YYYY", "DD-MM-YYYY", "MMMM DD"],
+        true
+      ).endOf("day");
+      if (!startDate.isValid())
+        startDate = moment(`${parsedQuery.dateRange.start}-2025`, [
+          "DD MMMM YYYY",
+          "DD-MM-YYYY"
+        ]).startOf("day");
+      if (!endDate.isValid())
+        endDate = moment(`${parsedQuery.dateRange.end}-2025`, ["DD MMMM YYYY", "DD-MM-YYYY"]).endOf(
+          "day"
+        );
+    } else if (parsedQuery.dates?.[0]) {
+      startDate = moment(
+        parsedQuery.dates[0],
+        ["DD MMMM YYYY", "DD-MM-YYYY", "MMMM DD"],
+        true
+      ).startOf("day");
+      if (!startDate.isValid())
+        startDate = moment(`${parsedQuery.dates[0]}-2025`, ["DD MMMM YYYY", "DD-MM-YYYY"]).startOf(
+          "day"
+        );
       endDate = startDate;
     } else if (parsedQuery.timeRange === "last week") {
       startDate = moment().subtract(1, "week").startOf("week");
@@ -599,203 +322,333 @@ export const processEmployeeQuery = async (
       endDate = moment().endOf("month");
     }
 
+    console.log(`Date range: ${startDate.format("YYYY-MM-DD")} to ${endDate.format("YYYY-MM-DD")}`);
+    if (!startDate.isValid() || !endDate.isValid()) {
+      console.log("Invalid date format");
+      return { success: false, message: `Invalid date format provided` };
+    }
+
     const dateStr = parsedQuery.dateRange
       ? `from ${startDate.format("DD MMMM YYYY")} to ${endDate.format("DD MMMM YYYY")}`
-      : parsedQuery.dates && parsedQuery.dates[0]
-        ? moment(parsedQuery.dates[0]).format("DD MMMM YYYY")
+      : parsedQuery.dates?.[0]
+        ? startDate.format("DD MMMM YYYY")
         : parsedQuery.timeRange || "the specified period";
 
-    const queryFilter: any = { empcode };
-    if (parsedQuery.dateRange) {
-      queryFilter.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
-    } else if (parsedQuery.dates && parsedQuery.dates[0]) {
-      queryFilter.date = { $gte: startDate.toDate(), $lte: startDate.endOf("day").toDate() };
-    } else if (parsedQuery.timeRange === "last week") {
+    // Step 3: Query attendance
+    const queryFilter: any = { empcode, empname: name };
+    if (parsedQuery.dateRange || parsedQuery.dates?.[0] || parsedQuery.timeRange === "last week") {
       queryFilter.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
     }
 
+    console.log("Query filter:", JSON.stringify(queryFilter, null, 2));
     const attendanceRecords = await findAttendancesByQuery(queryFilter);
+    console.log(`Final attendance records: ${attendanceRecords.length}`);
 
     if (!attendanceRecords.length) {
-      return { success: false, message: `No attendance records found for ${name} for ${dateStr}` };
+      return {
+        success: false,
+        message: `No attendance records found for ${name || empcode} for ${dateStr}`
+      };
     }
 
     const keywords = parsedQuery.keywords || [];
+    console.log("Keywords:", keywords);
 
-    if (keywords.includes("average") || parsedQuery.averageInTime || parsedQuery.averageOutTime) {
-      const query: any = {
-        empcode,
-        status: { $ne: "Absent" },
-        inTime: { $ne: "00:00" },
-        outTime: { $ne: "00:00" }
-      };
-
-      if (parsedQuery.dateRange) {
-        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
-      } else if (parsedQuery.dates && parsedQuery.dates[0]) {
-        query.date = { $gte: startDate.toDate(), $lte: startDate.endOf("day").toDate() };
-      } else if (parsedQuery.timeRange === "last week") {
-        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
-      }
-
-      const records = await findAttendancesByQuery(query);
-      if (!records.length) {
+    // Query Handlers
+    // 1. Working hours (e.g., "What is the working hours of Supriya on 21 april?")
+    if (keywords.includes("workinghours")) {
+      const record = attendanceRecords[0];
+      if (!record.inTime || !record.outTime) {
         return {
           success: false,
-          message: `${name} has no valid attendance records for ${dateStr}.`
+          message: `${name || empcode} has incomplete attendance data on ${dateStr}`
         };
       }
-
-      let avgInTime = "N/A";
-      let avgOutTime = "N/A";
-
-      if (parsedQuery.averageInTime || keywords.includes("average")) {
-        const inTimes = records
-          .map(
-            (r: any) =>
-              moment.utc(r.inTime, ["HH:mm:ss", "HH:mm"]).hour() +
-              moment.utc(r.inTime, ["HH:mm:ss", "HH:mm"]).minute() / 60
-          )
-          .filter((t: any) => !isNaN(t));
-        avgInTime = inTimes.length
-          ? moment
-              .utc((inTimes.reduce((a: any, b: any) => a + b, 0) / inTimes.length) * 60 * 60 * 1000)
-              .format("h:mm A")
-          : "N/A";
-      }
-
-      if (parsedQuery.averageOutTime) {
-        const outTimes = records
-          .map(
-            (r: any) =>
-              moment.utc(r.outTime, ["HH:mm:ss", "HH:mm"]).hour() +
-              moment.utc(r.outTime, ["HH:mm:ss", "HH:mm"]).minute() / 60
-          )
-          .filter((t: any) => !isNaN(t));
-        avgOutTime = outTimes.length
-          ? moment
-              .utc(
-                (outTimes.reduce((a: any, b: any) => a + b, 0) / outTimes.length) * 60 * 60 * 1000
-              )
-              .format("h:mm A")
-          : "N/A";
-      }
-
-      if (parsedQuery.averageInTime && !parsedQuery.averageOutTime) {
+      const inTime = moment(record.inTime, ["HH:mm:ss", "HH:mm"]);
+      const outTime = moment(record.outTime, ["HH:mm:ss", "HH:mm"]);
+      if (!inTime.isValid() || !outTime.isValid()) {
         return {
-          success: true,
-          message: `${name}'s average in-time is ${avgInTime} for ${dateStr}.`
+          success: false,
+          message: `Invalid time format for ${name || empcode} on ${dateStr}`
         };
       }
-      if (parsedQuery.averageOutTime && !parsedQuery.averageInTime) {
-        return {
-          success: true,
-          message: `${name}'s average out-time is ${avgOutTime} for ${dateStr}.`
-        };
-      }
+      const hoursWorked = outTime.diff(inTime, "hours", true).toFixed(2);
       return {
         success: true,
-        message: `${name}'s average in-time is ${avgInTime} and out-time is ${avgOutTime} for ${dateStr}.`
+        message: `${name || empcode} worked ${hoursWorked} hours on ${dateStr}`
       };
     }
 
-    if (keywords.includes("intime") && keywords.includes("outtime")) {
-      const record = attendanceRecords[0];
-      if (!record.inTime && !record.outTime) {
-        return {
-          success: false,
-          message: `${name} has no in-time or out-time recorded on ${dateStr}`
-        };
-      }
-      const inTime = record.inTime || "Not recorded";
-      const outTime = record.outTime || "Not recorded";
-      return {
-        success: true,
-        message: `${name}'s in-time on ${dateStr} was ${inTime}, out-time was ${outTime}`
-      };
-    } else if (keywords.includes("intime")) {
-      const record = attendanceRecords[0];
-      if (!record.inTime) {
-        return { success: false, message: `${name} has no in-time recorded on ${dateStr}` };
-      }
-      return { success: true, message: `${name}'s in-time on ${dateStr} was ${record.inTime}` };
-    } else if (keywords.includes("outtime")) {
-      const record = attendanceRecords[0];
-      if (!record.outTime) {
-        return { success: false, message: `${name} has no out-time recorded on ${dateStr}` };
-      }
-      return { success: true, message: `${name}'s out-time on ${dateStr} was ${record.outTime}` };
-    } else if (keywords.includes("late") || parsedQuery.hoursLate) {
-      const record = attendanceRecords[0];
-      if (record.minutesLate === undefined || record.minutesLate === null) {
-        return { success: false, message: `${name} has no late minutes recorded on ${dateStr}` };
-      }
-      return {
-        success: true,
-        message: `${name} was ${record.minutesLate} minutes late on ${dateStr}`
-      };
-    } else if (keywords.includes("absent")) {
-      const record = attendanceRecords[0];
-      if (!record.status) {
-        return {
-          success: false,
-          message: `${name} has no attendance status recorded on ${dateStr}`
-        };
-      }
-      const isAbsent = record.status.toLowerCase() === "absent";
-      return {
-        success: true,
-        message: `${name} was ${isAbsent ? "absent" : "not absent"} on ${dateStr}`
-      };
-    } else if (keywords.includes("attendance")) {
-      let response = `Attendance for ${name} ${dateStr}:\n`;
+    // 2. Info (e.g., "Supriya info")
+    if (keywords.includes("info")) {
+      let response = `Attendance info for ${name || empcode} ${dateStr}:\n`;
       attendanceRecords.forEach((record: any) => {
         const recordDate = moment(record.date).format("DD MMMM YYYY");
         response += `${recordDate}: Status=${record.status || "Not recorded"}, In=${record.inTime || "Not recorded"}, Out=${record.outTime || "Not recorded"}, Minutes Late=${record.minutesLate ?? "0"}\n`;
       });
       return { success: true, message: response.trim() };
-    } else if (keywords.includes("workinghours")) {
+    }
+
+    // 3. Absent (e.g., "2326 absent on 15th April 2025")
+    if (keywords.includes("absent")) {
       const record = attendanceRecords[0];
-      if (!record.inTime || !record.outTime) {
-        return { success: false, message: `${name} has incomplete attendance data on ${dateStr}` };
+      if (!record.status) {
+        return {
+          success: false,
+          message: `${name || empcode} has no attendance status recorded on ${dateStr}`
+        };
       }
-      const inTime = moment(record.inTime, ["HH:mm:ss", "HH:mm"]);
-      const outTime = moment(record.outTime, ["HH:mm:ss", "HH:mm"]);
-      const hoursWorked = outTime.diff(inTime, "hours", true).toFixed(2);
-      return { success: true, message: `${name} worked ${hoursWorked} hours on ${dateStr}` };
-    } else if (keywords.includes("after10am")) {
+      const isAbsent = record.status.toLowerCase() === "absent";
+      return {
+        success: true,
+        message: `${name || empcode} was ${isAbsent ? "absent" : "not absent"} on ${dateStr}`
+      };
+    }
+
+    // 4. Average in-time and out-time (e.g., "Supriya's average intime and average outtime")
+    if (
+      (parsedQuery.averageInTime && parsedQuery.averageOutTime) ||
+      (keywords.includes("average") && keywords.includes("intime") && keywords.includes("outtime"))
+    ) {
+      const query: any = {
+        empcode,
+        empname: name,
+        status: { $ne: "Absent" },
+        inTime: { $ne: "00:00" },
+        outTime: { $ne: "00:00" }
+      };
+      if (
+        parsedQuery.dateRange ||
+        parsedQuery.dates?.[0] ||
+        parsedQuery.timeRange === "last week"
+      ) {
+        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
+      }
+      const records = await findAttendancesByQuery(query);
+      if (!records.length) {
+        return {
+          success: false,
+          message: `${name || empcode} has no valid attendance records for ${dateStr}`
+        };
+      }
+      const inTimes = records
+        .map((r: any) => {
+          const time = moment.utc(r.inTime, ["HH:mm:ss", "HH:mm"]);
+          return time.isValid() ? time.hour() * 3600 + time.minute() * 60 + time.second() : NaN;
+        })
+        .filter((t: number) => !isNaN(t));
+      const outTimes = records
+        .map((r: any) => {
+          const time = moment.utc(r.outTime, ["HH:mm:ss", "HH:mm"]);
+          return time.isValid() ? time.hour() * 3600 + time.minute() * 60 + time.second() : NaN;
+        })
+        .filter((t: number) => !isNaN(t));
+      const avgInTime = inTimes.length
+        ? moment
+            .utc((inTimes.reduce((a: number, b: number) => a + b, 0) / inTimes.length) * 1000)
+            .format("h:mm A")
+        : "N/A";
+      const avgOutTime = outTimes.length
+        ? moment
+            .utc((outTimes.reduce((a: number, b: number) => a + b, 0) / outTimes.length) * 1000)
+            .format("h:mm A")
+        : "N/A";
+      return {
+        success: true,
+        message: `${name || empcode}'s average in-time is ${avgInTime} and out-time is ${avgOutTime} for ${dateStr}`
+      };
+    }
+
+    // 5 & 6. Attendance/Show (e.g., "2334 attendance for 23th March", "Show 2334 attendance for 23th March")
+    if (keywords.includes("attendance") || keywords.includes("show")) {
+      let response = `Attendance for ${name || empcode} ${dateStr}:\n`;
+      attendanceRecords.forEach((record: any) => {
+        const recordDate = moment(record.date).format("DD MMMM YYYY");
+        response += `${recordDate}: Status=${record.status || "Not recorded"}, In=${record.inTime || "Not recorded"}, Out=${record.outTime || "Not recorded"}, Minutes Late=${record.minutesLate ?? "0"}\n`;
+      });
+      return { success: true, message: response.trim() };
+    }
+
+    // 7. Minutes late (e.g., "How many minutes Sophiya late on 13-04-2025")
+    if (keywords.includes("late") || parsedQuery.hoursLate) {
+      const record = attendanceRecords[0];
+      if (record.minutesLate === undefined || record.minutesLate === null) {
+        return {
+          success: false,
+          message: `${name || empcode} has no late minutes recorded on ${dateStr}`
+        };
+      }
+      return {
+        success: true,
+        message: `${name || empcode} was ${record.minutesLate} minutes late on ${dateStr}`
+      };
+    }
+
+    // 8. In-time and out-time (e.g., "what is Sophiya's outtime and intime on 12-04-2025?")
+    if (keywords.includes("intime") && keywords.includes("outtime")) {
+      const record = attendanceRecords[0];
+      const inTime = record.inTime || "Not recorded";
+      const outTime = record.outTime || "Not recorded";
+      return {
+        success: true,
+        message: `${name || empcode}'s in-time on ${dateStr} was ${inTime}, out-time was ${outTime}`
+      };
+    }
+
+    // 9. Average out-time (e.g., "what is average outtime of 2334?")
+    if (parsedQuery.averageOutTime && !parsedQuery.averageInTime) {
+      const query: any = {
+        empcode,
+        empname: name,
+        status: { $ne: "Absent" },
+        outTime: { $ne: "00:00" }
+      };
+      if (
+        parsedQuery.dateRange ||
+        parsedQuery.dates?.[0] ||
+        parsedQuery.timeRange === "last week"
+      ) {
+        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
+      }
+      const records = await findAttendancesByQuery(query);
+      if (!records.length) {
+        return {
+          success: false,
+          message: `${name || empcode} has no valid out-time records for ${dateStr}`
+        };
+      }
+      const outTimes = records
+        .map((r: any) => {
+          const time = moment.utc(r.outTime, ["HH:mm:ss", "HH:mm"]);
+          return time.isValid() ? time.hour() * 3600 + time.minute() * 60 + time.second() : NaN;
+        })
+        .filter((t: number) => !isNaN(t));
+      const avgOutTime = outTimes.length
+        ? moment
+            .utc((outTimes.reduce((a: number, b: number) => a + b, 0) / outTimes.length) * 1000)
+            .format("h:mm A")
+        : "N/A";
+      return {
+        success: true,
+        message: `${name || empcode}'s average out-time is ${avgOutTime} for ${dateStr}`
+      };
+    }
+
+    // 10. Average in-time (e.g., "what is 2334 average intime?")
+    if (parsedQuery.averageInTime && !parsedQuery.averageOutTime) {
+      const query: any = {
+        empcode,
+        empname: name,
+        status: { $ne: "Absent" },
+        inTime: { $ne: "00:00" }
+      };
+      if (
+        parsedQuery.dateRange ||
+        parsedQuery.dates?.[0] ||
+        parsedQuery.timeRange === "last week"
+      ) {
+        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
+      }
+      const records = await findAttendancesByQuery(query);
+      if (!records.length) {
+        return {
+          success: false,
+          message: `${name || empcode} has no valid in-time records for ${dateStr}`
+        };
+      }
+      const inTimes = records
+        .map((r: any) => {
+          const time = moment.utc(r.inTime, ["HH:mm:ss", "HH:mm"]);
+          return time.isValid() ? time.hour() * 3600 + time.minute() * 60 + time.second() : NaN;
+        })
+        .filter((t: number) => !isNaN(t));
+      const avgInTime = inTimes.length
+        ? moment
+            .utc((inTimes.reduce((a: number, b: number) => a + b, 0) / inTimes.length) * 1000)
+            .format("h:mm A")
+        : "N/A";
+      return {
+        success: true,
+        message: `${name || empcode}'s average in-time is ${avgInTime} for ${dateStr}`
+      };
+    }
+
+    // 11. Out-time (e.g., "what is 2326 outtime on 12-04-2025?")
+    if (keywords.includes("outtime") && !keywords.includes("intime")) {
+      const record = attendanceRecords[0];
+      if (!record.outTime) {
+        return {
+          success: false,
+          message: `${name || empcode} has no out-time recorded on ${dateStr}`
+        };
+      }
+      return {
+        success: true,
+        message: `${name || empcode}'s out-time on ${dateStr} was ${record.outTime}`
+      };
+    }
+
+    // 12. In-time (e.g., "Supriya's intime on 12-04-2025")
+    if (keywords.includes("intime") && !keywords.includes("outtime")) {
       const record = attendanceRecords[0];
       if (!record.inTime) {
-        return { success: false, message: `${name} has no in-time recorded on ${dateStr}` };
+        return {
+          success: false,
+          message: `${name || empcode} has no in-time recorded on ${dateStr}`
+        };
+      }
+      return {
+        success: true,
+        message: `${name || empcode}'s in-time on ${dateStr} was ${record.inTime}`
+      };
+    }
+
+    // Existing queries (e.g., after10am, latelogoff)
+    if (keywords.includes("after10am")) {
+      const record = attendanceRecords[0];
+      if (!record.inTime) {
+        return {
+          success: false,
+          message: `${name || empcode} has no in-time recorded on ${dateStr}`
+        };
       }
       const inTime = moment(record.inTime, ["HH:mm:ss", "HH:mm"]);
       const isLate = inTime.isAfter(moment("10:00", "HH:mm"));
       return {
         success: true,
-        message: `${name} ${isLate ? "logged in after 10:00 AM" : "did not log in after 10:00 AM"} on ${dateStr}`
+        message: `${name || empcode} ${isLate ? "logged in after 10:00 AM" : "did not log in after 10:00 AM"} on ${dateStr}`
       };
-    } else if (keywords.includes("latelogoff")) {
+    }
+
+    if (keywords.includes("latelogoff")) {
       const record = attendanceRecords[0];
       if (!record.outTime) {
-        return { success: false, message: `${name} has no out-time recorded on ${dateStr}` };
+        return {
+          success: false,
+          message: `${name || empcode} has no out-time recorded on ${dateStr}`
+        };
       }
       const outTime = moment(record.outTime, ["HH:mm:ss", "HH:mm"]);
       const isLate = outTime.isAfter(moment("19:00", "HH:mm"));
       return {
         success: true,
-        message: `${name} ${isLate ? "logged off after 7:00 PM" : "did not log off after 7:00 PM"} on ${dateStr}`
+        message: `${name || empcode} ${isLate ? "logged off after 7:00 PM" : "did not log off after 7:00 PM"} on ${dateStr}`
       };
     }
 
-    return { success: false, message: `Please specify a valid attendance query for ${name}` };
+    console.log("No matching query handler");
+    return {
+      success: false,
+      message: `Please specify a valid attendance query for ${name || empcode}`
+    };
   } catch (error: any) {
-    return { success: false, message: error.message || AttendanceMessages.QUERY.FAILED };
+    console.error("Error in processEmployeeQuery:", error.message, error.stack);
+    return { success: false, message: `Failed to process query: ${error.message}` };
   }
 };
 
 export default {
   addAttendance,
-  uploadAttendance,
   processQuery,
   processEmployeeQuery
 };

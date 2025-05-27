@@ -12,7 +12,7 @@ const tags = [API, "Query Task"];
 const QueryTaskRoutes = [];
 
 QueryTaskRoutes.push({
-  path: API_PATHS.CREATE_QUERY_TASK,
+  path: "/api/tasks/create",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.createTask(new RequestHelper(request), handler)
@@ -25,7 +25,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.DELETE_QUERY_TASK,
+  path: "/api/task/delete/{id}",
   method: API_METHODS.DELETE,
   handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.deleteTask(new RequestHelper(request), handler)
@@ -38,7 +38,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.GET_QUERY_TASKS,
+  path: "/api/tasks/all",
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.getAllTasks(new RequestHelper(request), handler)
@@ -51,7 +51,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.GET_QUERY_TASK_BY_ID,
+  path: "/api/tasks/{id}",
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.getTaskById(new RequestHelper(request), handler)
@@ -64,7 +64,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.GET_QUERY_TASKS_BY_PROJECT,
+  path: "/api/tasks/grouped-by-project",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.getTasksByProject(new RequestHelper(request), handler)
@@ -77,7 +77,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.GET_QUERY_TASK_BY_USER,
+  path: "/api/task/{id}",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.getTasksByUser(new RequestHelper(request), handler)
@@ -90,7 +90,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.GET_QUERY_TASK_COUNT_BY_STATUS,
+  path: "/api/tasks/status-count",
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.getTaskCountByStatus(new RequestHelper(request), handler)
@@ -103,7 +103,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.UPDATE_QUERY_TASK,
+  path: "/api/task/{id}",
   method: API_METHODS.PUT,
   handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.updateTask(new RequestHelper(request), handler)
@@ -116,7 +116,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.CREATE_QUERY_TASK_COMMENT,
+  path: "/api/task/createcomment",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.createComment(new RequestHelper(request), handler)
@@ -129,7 +129,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.UPDATE_QUERY_COMMENT,
+  path: "/api/task/update/{id}",
   method: API_METHODS.PUT,
   handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.updateComment(new RequestHelper(request), handler)
@@ -142,7 +142,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.ADD_QUERY_TIME_SPEND,
+  path: "/api/tasklog/{id}",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.addTimeSpent(new RequestHelper(request), handler)
@@ -155,7 +155,7 @@ QueryTaskRoutes.push({
 });
 
 QueryTaskRoutes.push({
-  path: API_PATHS.PROCESS_TASK_QUERY,
+  path: "/api/tasks/query",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     queryTaskController.processTaskQuery(new RequestHelper(request), handler)

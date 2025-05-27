@@ -1,11 +1,12 @@
 import moment from "moment";
+import momentTimezone from "moment-timezone";
 import natural, { Sentence } from "natural";
 import mongoose, { Types } from "mongoose";
 import {
   createQueryHistory,
   deleteAllQueryHistory,
   deleteQueryHistoryByConversationId,
-  ExtendedParsedQuery,
+  ParsedQuery,
   findQueryHistory,
   IQueryHistory
 } from "../../domain/interface/query/queryInterface";
@@ -19,6 +20,10 @@ import { QueryMessages } from "../../constants/apiMessages/queryMessages";
 declare module "moment" {
   interface Duration {
     format(template: string, options?: { trim?: boolean | string }): string;
+  }
+  interface Moment {
+    tz(zone: string): Moment;
+    tz(zone: string, formats: string[], strict?: boolean): Moment;
   }
 }
 
@@ -135,17 +140,20 @@ function identifyDateTokens(query: string, tokens: string[]): Set<string> {
 
 export const parseQuery = async (
   query: string
-): Promise<{ success: boolean; data?: ExtendedParsedQuery; message?: string }> => {
+): Promise<{ success: boolean; data?: Record<string, any>; message?: string }> => {
   try {
-    const result: ExtendedParsedQuery = {
+    const result: Record<string, any> = {
       keywords: [],
       dates: [],
       empcode: null,
       empname: null,
+      id: null,
+      project_id: null,
+      project_name: null,
+      timeRange: null,
       user_id: null,
       name: null,
-      id: null,
-      timeRange: null,
+      date: undefined,
       hoursLate: false,
       employeeDetails: false,
       averageOutTime: false,
@@ -158,8 +166,6 @@ export const parseQuery = async (
       organizationDetails: false,
       organizationName: null,
       taskDetails: false,
-      project_id: undefined,
-      project_name: undefined,
       hoursSpent: false,
       dueDate: false,
       overdueWork: false,
@@ -222,7 +228,7 @@ export const parseQuery = async (
       const normalizedToken = token.toLowerCase().replace(/'s$/, "");
       const keyword = keywordMap[normalizedToken];
       if (keyword && !keywordsFound.has(keyword)) {
-        result.keywords?.push(keyword);
+        result.keywords.push(keyword);
         keywordsFound.add(keyword);
       }
     });
@@ -234,7 +240,7 @@ export const parseQuery = async (
       result.project_name = projectNameMatch[1].trim();
       result.assignedEmployees = true;
       if (!keywordsFound.has("project")) {
-        result.keywords?.push("project");
+        result.keywords.push("project");
         keywordsFound.add("project");
       }
     } else {
@@ -357,7 +363,7 @@ export const parseQuery = async (
       }
     }
 
-    const empcodeMatch = query.match(/\b(\d{4,})\b/);
+    const empcodeMatch = query.match(/\b(\d{4,})\b/i);
     if (empcodeMatch && !dateTokens.has(empcodeMatch[1])) {
       result.empcode = empcodeMatch[1];
     }
@@ -384,7 +390,7 @@ export const parseQuery = async (
     ) {
       result.after10am = true;
       if (!keywordsFound.has("after10am")) {
-        result.keywords?.push("after10am");
+        result.keywords.push("after10am");
         keywordsFound.add("after10am");
       }
     }
@@ -396,7 +402,7 @@ export const parseQuery = async (
     ) {
       result.workinghours = true;
       if (!keywordsFound.has("workinghours")) {
-        result.keywords?.push("workinghours");
+        result.keywords.push("workinghours");
         keywordsFound.add("workinghours");
       }
     }
@@ -409,7 +415,7 @@ export const parseQuery = async (
     ) {
       result.latelogoff = true;
       if (!keywordsFound.has("latelogoff")) {
-        result.keywords?.push("latelogoff");
+        result.keywords.push("latelogoff");
         keywordsFound.add("latelogoff");
       }
     }
@@ -417,7 +423,7 @@ export const parseQuery = async (
     if (lowerQuery.includes("project details") || lowerQuery.includes("project info")) {
       result.projectDetails = true;
       if (!keywordsFound.has("project")) {
-        result.keywords?.push("project");
+        result.keywords.push("project");
         keywordsFound.add("project");
       }
     }
@@ -425,7 +431,7 @@ export const parseQuery = async (
     if (lowerQuery.includes("organization details") || lowerQuery.includes("org info")) {
       result.organizationDetails = true;
       if (!keywordsFound.has("organization")) {
-        result.keywords?.push("organization");
+        result.keywords.push("organization");
         keywordsFound.add("organization");
       }
     }
@@ -439,7 +445,7 @@ export const parseQuery = async (
     ) {
       result.taskDetails = true;
       if (!keywordsFound.has("task")) {
-        result.keywords?.push("task");
+        result.keywords.push("task");
         keywordsFound.add("task");
       }
     }
@@ -453,7 +459,7 @@ export const parseQuery = async (
     ) {
       result.openTasks = true;
       if (!keywordsFound.has("open")) {
-        result.keywords?.push("open");
+        result.keywords.push("open");
         keywordsFound.add("open");
       }
     }
@@ -466,7 +472,7 @@ export const parseQuery = async (
     ) {
       result.hoursLate = true;
       if (!keywordsFound.has("late")) {
-        result.keywords?.push("late");
+        result.keywords.push("late");
         keywordsFound.add("late");
       }
     }
@@ -499,11 +505,10 @@ export const parseQuery = async (
     ) {
       result.hoursSpent = true;
       if (!keywordsFound.has("hours")) {
-        result.keywords?.push("hours");
+        result.keywords.push("hours");
         keywordsFound.add("hours");
       }
     }
-
     if (
       lowerQuery.includes("due date") ||
       lowerQuery.includes("deadline") ||
@@ -512,7 +517,7 @@ export const parseQuery = async (
     ) {
       result.dueDate = true;
       if (!keywordsFound.has("due")) {
-        result.keywords?.push("due");
+        result.keywords.push("due");
         keywordsFound.add("due");
       }
     }
@@ -525,7 +530,7 @@ export const parseQuery = async (
     ) {
       result.overdueWork = true;
       if (!keywordsFound.has("overdue")) {
-        result.keywords?.push("overdue");
+        result.keywords.push("overdue");
         keywordsFound.add("overdue");
       }
     }
@@ -539,7 +544,7 @@ export const parseQuery = async (
     ) {
       result.isFinished = true;
       if (!keywordsFound.has("finished")) {
-        result.keywords?.push("finished");
+        result.keywords.push("finished");
         keywordsFound.add("finished");
       }
     }
@@ -548,7 +553,7 @@ export const parseQuery = async (
       result.projectStatus = true;
       result.taskStatus = true;
       if (!keywordsFound.has("status")) {
-        result.keywords?.push("status");
+        result.keywords.push("status");
         keywordsFound.add("status");
       }
     }
@@ -560,7 +565,7 @@ export const parseQuery = async (
     ) {
       result.employeeCount = true;
       if (!keywordsFound.has("employees")) {
-        result.keywords?.push("employees");
+        result.keywords.push("employees");
         keywordsFound.add("employees");
       }
     }
@@ -574,7 +579,7 @@ export const parseQuery = async (
     ) {
       result.assignedEmployees = true;
       if (!keywordsFound.has("employees")) {
-        result.keywords?.push("employees");
+        result.keywords.push("employees");
         keywordsFound.add("employees");
       }
     }
@@ -588,7 +593,7 @@ export const parseQuery = async (
     ) {
       result.employeeHours = true;
       if (!keywordsFound.has("hours")) {
-        result.keywords?.push("hours");
+        result.keywords.push("hours");
         keywordsFound.add("hours");
       }
     }
@@ -600,20 +605,20 @@ export const parseQuery = async (
     ) {
       result.listProjects = true;
       if (!keywordsFound.has("list")) {
-        result.keywords?.push("list");
+        result.keywords.push("list");
         keywordsFound.add("list");
       }
     }
 
     if (
       lowerQuery.includes("working after the due date") ||
-      lowerQuery.includes("work after due date") ||
+      lowerQuery.includes("work after due") ||
       lowerQuery.includes("who is working after due") ||
       lowerQuery.includes("hours after due")
     ) {
       result.workAfterDue = true;
       if (!keywordsFound.has("after")) {
-        result.keywords?.push("after");
+        result.keywords.push("after");
         keywordsFound.add("after");
       }
     }
@@ -625,7 +630,7 @@ export const parseQuery = async (
     ) {
       result.completedTasks = true;
       if (!keywordsFound.has("finished")) {
-        result.keywords?.push("finished");
+        result.keywords.push("finished");
         keywordsFound.add("finished");
       }
     }
@@ -633,7 +638,7 @@ export const parseQuery = async (
     if (lowerQuery.includes("severity") || lowerQuery.includes("priority")) {
       result.taskSeverity = true;
       if (!keywordsFound.has("severity")) {
-        result.keywords?.push("severity");
+        result.keywords.push("severity");
         keywordsFound.add("severity");
       }
     }
@@ -641,11 +646,10 @@ export const parseQuery = async (
     if (lowerQuery.includes("assigned hours") || lowerQuery.includes("hours assigned")) {
       result.projectAssignedHours = true;
       if (!keywordsFound.has("hours")) {
-        result.keywords?.push("hours");
+        result.keywords.push("hours");
         keywordsFound.add("hours");
       }
     }
-
     const dateRangeRegex =
       /\bfrom\s+(\d{1,2}(?:st|nd|rd|th)?\s+[a-zA-Z]+(?:\s+\d{4})?)\s+to\s+(\d{1,2}(?:st|nd|rd|th)?\s+[a-zA-Z]+(?:\s+\d{4})?)\b/i;
     const dateRangeMatch = query.match(dateRangeRegex);
@@ -659,9 +663,10 @@ export const parseQuery = async (
       for (const format of dateFormats) {
         startDate = moment(startDateStr, format, true);
         endDate = moment(endDateStr, format, true);
-        if (startDate.isValid() && endDate.isValid()) break;
+        if (startDate.isValid() && endDate.isValid()) {
+          break;
+        }
       }
-
       if (!startDate?.isValid() || !endDate?.isValid()) {
         const year = moment().year();
         startDate = moment(`${startDateStr} ${year}`, "D MMMM YYYY");
@@ -696,7 +701,9 @@ export const parseQuery = async (
       let parsedDate;
       for (const format of dateFormats) {
         parsedDate = moment(dateStr, format, true);
-        if (parsedDate.isValid()) break;
+        if (parsedDate.isValid()) {
+          break;
+        }
       }
       if (!parsedDate || !parsedDate.isValid()) {
         const yearMatch = dateStr.match(/\d{4}/);
@@ -709,7 +716,7 @@ export const parseQuery = async (
         }
       }
       if (parsedDate && parsedDate.isValid()) {
-        result.dates?.push(parsedDate.startOf("day").toDate());
+        result.dates.push(parsedDate.startOf("day").toDate());
       }
     }
 
@@ -740,7 +747,7 @@ export const parseQuery = async (
       let dayDiff = targetDayIndex - currentDayIndex - 7;
       const targetDate = today.clone().add(dayDiff, "days");
       if (targetDate.isValid()) {
-        result.dates?.push(targetDate.toDate());
+        result.dates.push(targetDate.toDate());
       }
     } else if (thisDayMatch) {
       const dayName = thisDayMatch[1].toLowerCase();
@@ -757,12 +764,14 @@ export const parseQuery = async (
       const today = moment().startOf("day");
       const currentDayIndex = today.day();
       let dayDiff = targetDayIndex - currentDayIndex;
-      if (dayDiff < 0) dayDiff += 7;
+      if (dayDiff < 0) {
+        dayDiff += 7;
+      }
       const targetDate = today.clone().add(dayDiff, "days");
       if (targetDate.isValid()) {
-        result.dates?.push(targetDate.toDate());
+        result.dates.push(targetDate.toDate());
       }
-    } else if (dayOfWeekMatch && !result.dates?.length && !result.dateRange) {
+    } else if (dayOfWeekMatch && !result.dates.length && !result.dateRange) {
       const dayName = dayOfWeekMatch[1].toLowerCase();
       const daysOfWeek = [
         "sunday",
@@ -777,10 +786,12 @@ export const parseQuery = async (
       const today = moment().startOf("day");
       const currentDayIndex = today.day();
       let dayDiff = targetDayIndex - currentDayIndex;
-      if (dayDiff <= 0) dayDiff += 7;
+      if (dayDiff <= 0) {
+        dayDiff += 7;
+      }
       const targetDate = today.clone().add(dayDiff, "days");
       if (targetDate.isValid()) {
-        result.dates?.push(targetDate.toDate());
+        result.dates.push(targetDate.toDate());
       }
     }
 
@@ -792,252 +803,401 @@ export const parseQuery = async (
 
 export const processEmployeeQuery = async (
   query: string,
-  parsedQuery: ExtendedParsedQuery
+  parsedQuery: Record<string, any>
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
+    console.log("processEmployeeQuery called");
+    console.log("Raw Query:", query);
+    console.log("Parsed Query:", JSON.stringify(parsedQuery, null, 2));
+
     let name: string | undefined;
     let empcode: string | undefined;
 
     if (parsedQuery.empname) {
-      const nameParts = parsedQuery.empname.trim().split(/\s+from\s+/i);
-      name = nameParts[0].trim();
+      name = parsedQuery.empname
+        .trim()
+        .split(/\s+from\s+/i)[0]
+        .trim();
+      console.log(`Querying Attendance for empname: ${name}`);
+      const attendanceRecords = await Attendance.find({
+        empname: { $regex: `^${name}$`, $options: "i" }
+      }).lean();
+      console.log(`Attendance records for empname: ${attendanceRecords.length}`);
+      if (!attendanceRecords.length) {
+        return { success: false, message: `No attendance record found for employee ${name}` };
+      }
+      empcode = attendanceRecords[0].empcode;
       const user = await User.findOne({
         username: { $regex: `^${name}$`, $options: "i" }
       }).lean();
+      console.log(`User found for username ${name}: ${!!user}`);
       if (!user) {
-        return { success: false, message: `No attendance record found for employee ${name}` };
+        console.warn(`No user found with username ${name}, proceeding with Attendance data`);
       }
-      empcode = user.user_id;
-      name = user.name;
     } else if (parsedQuery.empcode) {
       empcode = parsedQuery.empcode.trim();
-      const user = await User.findOne({ user_id: empcode }).lean();
-      if (!user) {
-        return { success: false, message: `No attendance record found for empcode ${empcode}` };
+      console.log(`Querying Attendance for empcode: ${empcode}`);
+      const attendanceRecords = await Attendance.find({ empcode }).lean();
+      console.log(`Attendance records for empcode: ${attendanceRecords.length}`);
+      if (!attendanceRecords.length) {
+        return {
+          success: false,
+          message: `No attendance record found for empcode ${empcode}`
+        };
       }
-      name = user.name;
-      empcode = user.user_id;
-    }
-
-    if (!empcode || !name) {
-      return { success: false, message: `No valid employee identifier provided` };
+      name = attendanceRecords[0].empname;
+      const user = await User.findOne({
+        username: { $regex: `^${name}$`, $options: "i" }
+      }).lean();
+      console.log(`User found for username ${name}: ${!!user}`);
+      if (!user) {
+        console.warn(`No user found with username ${name}, proceeding with Attendance data`);
+      }
+    } else {
+      console.log("No empname or empcode provided");
+      return { success: false, message: "No valid employee identifier provided" };
     }
 
     let startDate: moment.Moment;
     let endDate: moment.Moment;
     if (parsedQuery.dateRange) {
-      startDate = moment(parsedQuery.dateRange.start).isValid()
-        ? moment(parsedQuery.dateRange.start).startOf("day")
-        : moment(`${parsedQuery.dateRange.start}-2025`, "DD MMMM YYYY").startOf("day");
-      endDate = moment(parsedQuery.dateRange.end).isValid()
-        ? moment(parsedQuery.dateRange.end).endOf("day")
-        : moment(`${parsedQuery.dateRange.end}-2025`, "DD MMMM YYYY").endOf("day");
+      startDate = momentTimezone.tz(parsedQuery.dateRange.start, "Asia/Kolkata").startOf("day");
+      endDate = momentTimezone.tz(parsedQuery.dateRange.end, "Asia/Kolkata").endOf("day");
     } else if (parsedQuery.dates && parsedQuery.dates[0]) {
-      startDate = moment(parsedQuery.dates[0]).startOf("day");
-      endDate = startDate;
+      startDate = momentTimezone.tz(parsedQuery.dates[0], "Asia/Kolkata").startOf("day");
+      endDate = startDate.clone().endOf("day");
     } else if (parsedQuery.timeRange === "last week") {
-      startDate = moment().subtract(1, "week").startOf("week");
-      endDate = moment().subtract(1, "week").endOf("week");
+      startDate = momentTimezone.tz("Asia/Kolkata").subtract(1, "week").startOf("week");
+      endDate = momentTimezone.tz("Asia/Kolkata").subtract(1, "week").endOf("week");
     } else {
-      startDate = moment().startOf("month");
-      endDate = moment().endOf("month");
+      startDate = momentTimezone.tz("Asia/Kolkata").startOf("month");
+      endDate = momentTimezone.tz("Asia/Kolkata").endOf("month");
     }
+
+    if (!startDate.isValid() || !endDate.isValid()) {
+      console.log("Invalid date format, attempting fallback parsing");
+      if (parsedQuery.dateRange) {
+        startDate = momentTimezone
+          .tz(`${parsedQuery.dateRange.start} 2023`, ["DD MMMM YYYY", "DD-MM-YYYY"], "Asia/Kolkata")
+          .startOf("day");
+        endDate = momentTimezone
+          .tz(`${parsedQuery.dateRange.end} 2023`, ["DD MMMM YYYY", "DD-MM-YYYY"], "Asia/Kolkata")
+          .endOf("day");
+      } else if (parsedQuery.dates && parsedQuery.dates[0]) {
+        startDate = momentTimezone
+          .tz(moment(parsedQuery.dates[0]).format("DD-MM-YYYY"), ["DD-MM-YYYY"], "Asia/Kolkata")
+          .startOf("day");
+        endDate = startDate.clone().endOf("day");
+      }
+      if (!startDate.isValid() || !endDate.isValid()) {
+        return { success: false, message: "Invalid date format provided" };
+      }
+    }
+
+    console.log(`Date range: ${startDate.format("YYYY-MM-DD")} to ${endDate.format("YYYY-MM-DD")}`);
 
     const dateStr = parsedQuery.dateRange
       ? `from ${startDate.format("DD MMMM YYYY")} to ${endDate.format("DD MMMM YYYY")}`
       : parsedQuery.dates && parsedQuery.dates[0]
-        ? moment(parsedQuery.dates[0]).format("DD MMMM YYYY")
+        ? startDate.format("DD MMMM YYYY")
         : parsedQuery.timeRange || "the specified period";
 
-    const queryFilter: any = { empcode };
-    if (parsedQuery.dateRange) {
-      queryFilter.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
-    } else if (parsedQuery.dates && parsedQuery.dates[0]) {
-      queryFilter.date = {
-        $gte: startDate.toDate(),
-        $lte: startDate.endOf("day").toDate()
-      };
-    } else if (parsedQuery.timeRange === "last week") {
+    const queryFilter: any = { empcode, empname: { $regex: `^${name}$`, $options: "i" } };
+    if (parsedQuery.dateRange || parsedQuery.dates?.[0] || parsedQuery.timeRange === "last week") {
       queryFilter.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
     }
 
+    console.log("Query filter:", JSON.stringify(queryFilter, null, 2));
     const attendanceRecords = await Attendance.find(queryFilter).sort({ date: 1 }).lean();
+    console.log(`Final attendance records: ${attendanceRecords.length}`);
 
     if (!attendanceRecords.length) {
-      return { success: false, message: `No attendance records found for ${name} for ${dateStr}` };
+      return {
+        success: false,
+        message: `No attendance records found for ${name || empcode} for ${dateStr}`
+      };
     }
 
     const keywords = parsedQuery.keywords || [];
+    console.log("Keywords:", keywords);
 
-    if (keywords.includes("average") || parsedQuery.averageInTime || parsedQuery.averageOutTime) {
-      const query: any = {
-        empcode,
-        status: { $ne: "Absent" },
-        inTime: { $ne: "00:00" },
-        outTime: { $ne: "00:00" }
-      };
-
-      if (parsedQuery.dateRange) {
-        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
-      } else if (parsedQuery.dates && parsedQuery.dates[0]) {
-        query.date = {
-          $gte: startDate.toDate(),
-          $lte: startDate.endOf("day").toDate()
-        };
-      } else if (parsedQuery.timeRange === "last week") {
-        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
-      }
-
-      const records = await Attendance.find(query).lean();
-      if (!records.length) {
+    if (keywords.includes("workinghours")) {
+      const record = attendanceRecords[0];
+      if (!record.inTime || !record.outTime) {
         return {
           success: false,
-          message: `${name} has no valid attendance records for ${dateStr}.`
+          message: `${name || empcode} has incomplete attendance data on ${dateStr}`
         };
       }
-
-      let avgInTime = "N/A";
-      let avgOutTime = "N/A";
-
-      if (parsedQuery.averageInTime || keywords.includes("average")) {
-        const inTimes = records
-          .map(
-            (r) =>
-              moment.utc(r.inTime, ["HH:mm:ss", "HH:mm"]).hour() +
-              moment.utc(r.inTime, ["HH:mm:ss", "HH:mm"]).minute() / 60
-          )
-          .filter((t) => !isNaN(t));
-        avgInTime = inTimes.length
-          ? moment
-              .utc((inTimes.reduce((a, b) => a + b, 0) / inTimes.length) * 60 * 60 * 1000)
-              .format("h:mm A")
-          : "N/A";
-      }
-
-      if (parsedQuery.averageOutTime) {
-        const outTimes = records
-          .map(
-            (r) =>
-              moment.utc(r.outTime, ["HH:mm:ss", "HH:mm"]).hour() +
-              moment.utc(r.outTime, ["HH:mm:ss", "HH:mm"]).minute() / 60
-          )
-          .filter((t) => !isNaN(t));
-        avgOutTime = outTimes.length
-          ? moment
-              .utc((outTimes.reduce((a, b) => a + b, 0) / outTimes.length) * 60 * 60 * 1000)
-              .format("h:mm A")
-          : "N/A";
-      }
-
-      if (parsedQuery.averageInTime && !parsedQuery.averageOutTime) {
+      const inTime = moment(record.inTime, ["HH:mm:ss", "HH:mm"]);
+      const outTime = moment(record.outTime, ["HH:mm:ss", "HH:mm"]);
+      if (!inTime.isValid() || !outTime.isValid()) {
         return {
-          success: true,
-          message: `${name}'s average in-time is ${avgInTime} for ${dateStr}.`
+          success: false,
+          message: `Invalid time format for ${name || empcode} on ${dateStr}`
         };
       }
-      if (parsedQuery.averageOutTime && !parsedQuery.averageInTime) {
-        return {
-          success: true,
-          message: `${name}'s average out-time is ${avgOutTime} for ${dateStr}.`
-        };
-      }
+      const hoursWorked = outTime.diff(inTime, "hours", true).toFixed(2);
       return {
         success: true,
-        message: `${name}'s average in-time is ${avgInTime} and out-time is ${avgOutTime} for ${dateStr}.`
+        message: `${name || empcode} worked ${hoursWorked} hours on ${dateStr}`
       };
     }
 
-    if (keywords.includes("intime") && keywords.includes("outtime")) {
-      const record = attendanceRecords[0];
-      if (!record.inTime && !record.outTime) {
-        return {
-          success: false,
-          message: `${name} has no in-time or out-time recorded on ${dateStr}`
-        };
-      }
-      const inTime = record.inTime || "Not recorded";
-      const outTime = record.outTime || "Not recorded";
-      return {
-        success: true,
-        message: `${name}'s in-time on ${dateStr} was ${inTime}, out-time was ${outTime}`
-      };
-    } else if (keywords.includes("intime")) {
-      const record = attendanceRecords[0];
-      if (!record.inTime) {
-        return { success: false, message: `${name} has no in-time recorded on ${dateStr}` };
-      }
-      return { success: true, message: `${name}'s in-time on ${dateStr} was ${record.inTime}` };
-    } else if (keywords.includes("outtime")) {
-      const record = attendanceRecords[0];
-      if (!record.outTime) {
-        return { success: false, message: `${name} has no out-time recorded on ${dateStr}` };
-      }
-      return { success: true, message: `${name}'s out-time on ${dateStr} was ${record.outTime}` };
-    } else if (keywords.includes("late") || parsedQuery.hoursLate) {
-      const record = attendanceRecords[0];
-      if (record.minutesLate === undefined || record.minutesLate === null) {
-        return { success: false, message: `${name} has no late minutes recorded on ${dateStr}` };
-      }
-      return {
-        success: true,
-        message: `${name} was ${record.minutesLate} minutes late on ${dateStr}`
-      };
-    } else if (keywords.includes("absent")) {
+    if (keywords.includes("details")) {
+      let response = `Attendance info for ${name || empcode} ${dateStr}:\n`;
+      attendanceRecords.forEach((record: any) => {
+        const recordDate = momentTimezone.tz(record.date, "Asia/Kolkata").format("DD MMMM YYYY");
+        response += `${recordDate}: Status=${record.status || "Not recorded"}, In=${record.inTime || "Not recorded"}, Out=${record.outTime || "Not recorded"}, Minutes Late=${record.minutesLate ?? "0"}\n`;
+      });
+      return { success: true, message: response.trim() };
+    }
+
+    if (keywords.includes("absent")) {
       const record = attendanceRecords[0];
       if (!record.status) {
         return {
           success: false,
-          message: `${name} has no attendance status recorded on ${dateStr}`
+          message: `${name || empcode} has no attendance status recorded on ${dateStr}`
         };
       }
       const isAbsent = record.status.toLowerCase() === "absent";
       return {
         success: true,
-        message: `${name} was ${isAbsent ? "absent" : "not absent"} on ${dateStr}`
+        message: `${name || empcode} was ${isAbsent ? "absent" : "not absent"} on ${dateStr}`
       };
-    } else if (keywords.includes("attendance")) {
-      let response = `Attendance for ${name} ${dateStr}:\n`;
+    }
+
+    if (
+      (parsedQuery.averageInTime && parsedQuery.averageOutTime) ||
+      (keywords.includes("average") && keywords.includes("intime") && keywords.includes("outtime"))
+    ) {
+      const query: any = {
+        empcode,
+        empname: { $regex: `^${name}$`, $options: "i" },
+        status: { $nin: ["Absent", "None"] },
+        inTime: { $ne: null },
+        outTime: { $ne: null }
+      };
+      if (
+        parsedQuery.dateRange ||
+        parsedQuery.dates?.[0] ||
+        parsedQuery.timeRange === "last week"
+      ) {
+        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
+      }
+      const records = await Attendance.find(query).lean();
+      if (!records.length) {
+        return {
+          success: false,
+          message: `${name || empcode} has no valid attendance records for ${dateStr}`
+        };
+      }
+      const inTimes = records
+        .map((r: any) => {
+          const time = moment.utc(r.inTime, ["HH:mm:ss", "HH:mm"]);
+          return time.isValid() ? time.hour() * 3600 + time.minute() * 60 + time.second() : null;
+        })
+        .filter((t: number | null): t is number => t !== null);
+      const outTimes = records
+        .map((r: any) => {
+          const time = moment.utc(r.outTime, ["HH:mm:ss", "HH:mm"]);
+          return time.isValid() ? time.hour() * 3600 + time.minute() * 60 + time.second() : null;
+        })
+        .filter((t: number | null): t is number => t !== null);
+      const avgInTime = inTimes.length
+        ? moment
+            .utc((inTimes.reduce((a: number, b: number) => a + b, 0) / inTimes.length) * 1000)
+            .format("h:mm A")
+        : "N/A";
+      const avgOutTime = outTimes.length
+        ? moment
+            .utc((outTimes.reduce((a: number, b: number) => a + b, 0) / outTimes.length) * 1000)
+            .format("h:mm A")
+        : "N/A";
+      return {
+        success: true,
+        message: `${name || empcode}'s average in-time is ${avgInTime} and out-time is ${avgOutTime} for ${dateStr}`
+      };
+    }
+
+    if (keywords.includes("attendance") || keywords.includes("show")) {
+      let response = `Attendance for ${name || empcode} ${dateStr}:\n`;
       attendanceRecords.forEach((record: any) => {
-        const recordDate = moment(record.date).format("DD MMMM YYYY");
+        const recordDate = momentTimezone.tz(record.date, "Asia/Kolkata").format("DD MMMM YYYY");
         response += `${recordDate}: Status=${record.status || "Not recorded"}, In=${record.inTime || "Not recorded"}, Out=${record.outTime || "Not recorded"}, Minutes Late=${record.minutesLate ?? "0"}\n`;
       });
       return { success: true, message: response.trim() };
-    } else if (keywords.includes("workinghours")) {
+    }
+
+    if (keywords.includes("late") || parsedQuery.hoursLate) {
       const record = attendanceRecords[0];
-      if (!record.inTime || !record.outTime) {
-        return { success: false, message: `${name} has incomplete attendance data on ${dateStr}` };
+      if (record.minutesLate === undefined || record.minutesLate === null) {
+        return {
+          success: false,
+          message: `${name || empcode} has no late minutes recorded on ${dateStr}`
+        };
       }
-      const inTime = moment(record.inTime, ["HH:mm:ss", "HH:mm"]);
-      const outTime = moment(record.outTime, ["HH:mm:ss", "HH:mm"]);
-      const hoursWorked = outTime.diff(inTime, "hours", true).toFixed(2);
-      return { success: true, message: `${name} worked ${hoursWorked} hours on ${dateStr}` };
-    } else if (keywords.includes("after10am")) {
+      return {
+        success: true,
+        message: `${name || empcode} was ${record.minutesLate} minutes late on ${dateStr}`
+      };
+    }
+
+    if (keywords.includes("intime") && keywords.includes("outtime")) {
+      const record = attendanceRecords[0];
+      const inTime = record.inTime || "Not recorded";
+      const outTime = record.outTime || "Not recorded";
+      return {
+        success: true,
+        message: `${name || empcode}'s in-time on ${dateStr} was ${inTime}, out-time was ${outTime}`
+      };
+    }
+
+    if (parsedQuery.averageOutTime && !parsedQuery.averageInTime) {
+      const query: any = {
+        empcode,
+        empname: { $regex: `^${name}$`, $options: "i" },
+        status: { $nin: ["Absent", "None"] },
+        outTime: { $ne: null }
+      };
+      if (
+        parsedQuery.dateRange ||
+        parsedQuery.dates?.[0] ||
+        parsedQuery.timeRange === "last week"
+      ) {
+        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
+      }
+      const records = await Attendance.find(query).lean();
+      if (!records.length) {
+        return {
+          success: false,
+          message: `${name || empcode} has no valid out-time records for ${dateStr}`
+        };
+      }
+      const outTimes = records
+        .map((r: any) => {
+          const time = moment.utc(r.outTime, ["HH:mm:ss", "HH:mm"]);
+          return time.isValid() ? time.hour() * 3600 + time.minute() * 60 + time.second() : null;
+        })
+        .filter((t: number | null): t is number => t !== null);
+      const avgOutTime = outTimes.length
+        ? moment
+            .utc((outTimes.reduce((a: number, b: number) => a + b, 0) / outTimes.length) * 1000)
+            .format("h:mm A")
+        : "N/A";
+      return {
+        success: true,
+        message: `${name || empcode}'s average out-time is ${avgOutTime} for ${dateStr}`
+      };
+    }
+
+    if (parsedQuery.averageInTime && !parsedQuery.averageOutTime) {
+      const query: any = {
+        empcode,
+        empname: { $regex: `^${name}$`, $options: "i" },
+        status: { $nin: ["Absent", "None"] },
+        inTime: { $ne: null }
+      };
+      if (
+        parsedQuery.dateRange ||
+        parsedQuery.dates?.[0] ||
+        parsedQuery.timeRange === "last week"
+      ) {
+        query.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
+      }
+      const records = await Attendance.find(query).lean();
+      if (!records.length) {
+        return {
+          success: false,
+          message: `${name || empcode} has no valid in-time records for ${dateStr}`
+        };
+      }
+      const inTimes = records
+        .map((r: any) => {
+          const time = moment.utc(r.inTime, ["HH:mm:ss", "HH:mm"]);
+          return time.isValid() ? time.hour() * 3600 + time.minute() * 60 + time.second() : null;
+        })
+        .filter((t: number | null): t is number => t !== null);
+      const avgInTime = inTimes.length
+        ? moment
+            .utc((inTimes.reduce((a: number, b: number) => a + b, 0) / inTimes.length) * 1000)
+            .format("h:mm A")
+        : "N/A";
+      return {
+        success: true,
+        message: `${name || empcode}'s average in-time is ${avgInTime} for ${dateStr}`
+      };
+    }
+
+    if (keywords.includes("outtime") && !keywords.includes("intime")) {
+      const record = attendanceRecords[0];
+      if (!record.outTime) {
+        return {
+          success: false,
+          message: `${name || empcode} has no out-time recorded on ${dateStr}`
+        };
+      }
+      return {
+        success: true,
+        message: `${name || empcode}'s out-time on ${dateStr} was ${record.outTime}`
+      };
+    }
+
+    if (keywords.includes("intime") && !keywords.includes("outtime")) {
       const record = attendanceRecords[0];
       if (!record.inTime) {
-        return { success: false, message: `${name} has no in-time recorded on ${dateStr}` };
+        return {
+          success: false,
+          message: `${name || empcode} has no in-time recorded on ${dateStr}`
+        };
+      }
+      return {
+        success: true,
+        message: `${name || empcode}'s in-time on ${dateStr} was ${record.inTime}`
+      };
+    }
+
+    if (keywords.includes("after10am")) {
+      const record = attendanceRecords[0];
+      if (!record.inTime) {
+        return {
+          success: false,
+          message: `${name || empcode} has no in-time recorded on ${dateStr}`
+        };
       }
       const inTime = moment(record.inTime, ["HH:mm:ss", "HH:mm"]);
       const isLate = inTime.isAfter(moment("10:00", "HH:mm"));
       return {
         success: true,
-        message: `${name} ${isLate ? "logged in after 10:00 AM" : "did not log in after 10:00 AM"} on ${dateStr}`
+        message: `${name || empcode} ${isLate ? "logged in after 10:00 AM" : "did not log in after 10:00 AM"} on ${dateStr}`
       };
-    } else if (keywords.includes("latelogoff")) {
+    }
+
+    if (keywords.includes("latelogoff")) {
       const record = attendanceRecords[0];
       if (!record.outTime) {
-        return { success: false, message: `${name} has no out-time recorded on ${dateStr}` };
+        return {
+          success: false,
+          message: `${name || empcode} has no out-time recorded on ${dateStr}`
+        };
       }
       const outTime = moment(record.outTime, ["HH:mm:ss", "HH:mm"]);
       const isLate = outTime.isAfter(moment("19:00", "HH:mm"));
       return {
         success: true,
-        message: `${name} ${isLate ? "logged off after 7:00 PM" : "did not log off after 7:00 PM"} on ${dateStr}`
+        message: `${name || empcode} ${isLate ? "logged off after 7:00 PM" : "did not log off after 7:00 PM"} on ${dateStr}`
       };
     }
 
-    return { success: false, message: `Please specify a valid attendance query for ${name}` };
+    console.log("No matching query handler");
+    return {
+      success: false,
+      message: `Please specify a valid attendance query for ${name || empcode}`
+    };
   } catch (error: any) {
-    return { success: false, message: error.message || QueryMessages.EMPLOYEE_QUERY.FAILED };
+    console.error("Error in processEmployeeQuery:", error.message, error.stack);
+    return { success: false, message: `Failed to process query: ${error.message}` };
   }
 };
 
@@ -1142,7 +1302,7 @@ export const processQuery = async (
         (parsedQuery.dates?.length ||
           parsedQuery.dateRange ||
           parsedQuery.timeRange ||
-          parsedQuery.keywords?.some((k) =>
+          parsedQuery.keywords?.some((k: any) =>
             [
               "intime",
               "outtime",
@@ -1167,7 +1327,7 @@ export const processQuery = async (
       response = {
         success: false,
         message:
-          "Invalid query: Please specify details, project, organization, task, or attendance information."
+          "Invalid query: Please specify details for project, organization, task, or attendance information."
       };
     }
 
@@ -1223,7 +1383,7 @@ export const clearQueryHistory = async (): Promise<{ success: boolean; message?:
     }
 
     await deleteAllQueryHistory();
-    return { success: true, message: "Query history cleared" };
+    return { success: true, message: "Query history cleared successfully" };
   } catch (error: any) {
     return { success: false, message: error.message || QueryMessages.CLEAR.FAILED };
   }

@@ -12,7 +12,7 @@ const tags = [API, "Query"];
 const QueryRoutes = [];
 
 QueryRoutes.push({
-  path: API_PATHS.PROCESS_QUERY,
+  path: "/api/query",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     queryController.processQuery(new RequestHelper(request), handler)
@@ -28,7 +28,7 @@ QueryRoutes.push({
 });
 
 QueryRoutes.push({
-  path: API_PATHS.GET_QUERY_HISTORY,
+  path: "/api/query/history",
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     queryController.getQueryHistory(new RequestHelper(request), handler)
@@ -44,7 +44,7 @@ QueryRoutes.push({
 });
 
 QueryRoutes.push({
-  path: API_PATHS.CLEAR_QUERY_HISTORY,
+  path: "/api/query/history/clear",
   method: API_METHODS.DELETE,
   handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
     queryController.clearQueryHistory(new RequestHelper(request), handler)
@@ -60,7 +60,7 @@ QueryRoutes.push({
 });
 
 QueryRoutes.push({
-  path: API_PATHS.DELETE_CONVERSATION,
+  path: "/api/query/conversation/{id}",
   method: API_METHODS.DELETE,
   handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
     queryController.deleteConversation(new RequestHelper(request), handler)

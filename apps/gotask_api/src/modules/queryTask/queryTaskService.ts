@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import { QueryTaskMessages } from "../../constants/apiMessages/queryTaskMessages";
 import { TASK_STATUS } from "../../constants/taskConstant";
 import { TimeUtil } from "../../constants/utils/timeUtils";
-import { ExtendedParsedQuery } from "../../domain/interface/query/queryInterface";
 import {
   addTimeSpentToTask,
   createCommentInTask,
@@ -22,6 +21,33 @@ import { ITask } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 import { User } from "../../domain/model/user/user";
+
+// Parse time_added string (e.g., "1d2h" -> 26 hours, "3h" -> 3 hours, "2d" -> 48 hours)
+function parseTimeLogged(timeLogged: string | undefined): number {
+  if (!timeLogged) return 0;
+  try {
+    const match = timeLogged.match(/^(\d+)d(\d+)h$|^(\d+)d$|^(\d+)h$/i);
+    if (!match) return 0;
+    if (match[1] && match[2]) {
+      // "XdYh" format, e.g., "1d2h"
+      const days = parseInt(match[1], 10);
+      const hours = parseInt(match[2], 10);
+      return days * 24 + hours;
+    } else if (match[3]) {
+      // "Xd" format, e.g., "2d"
+      const days = parseInt(match[3], 10);
+      return days * 24;
+    } else if (match[4]) {
+      // "Yh" format, e.g., "3h"
+      const hours = parseInt(match[4], 10);
+      return hours;
+    }
+    return 0;
+  } catch (error) {
+    console.error(`Error parsing time_added "${timeLogged}": ${(error as Error).message}`);
+    return 0;
+  }
+}
 
 export const createNewTaskService = async (
   taskData: Partial<ITask>
@@ -175,322 +201,9 @@ export const addTimeSpentService = async (
   }
 };
 
-// export const processTaskQuery = async (
-//   query: string,
-//   parsedQuery: ExtendedParsedQuery
-// ): Promise<{ success: boolean; data?: any; message?: string }> => {
-//   try {
-//     if (parsedQuery.taskName && !parsedQuery.empname && !parsedQuery.project_name) {
-//       const tasks = await findAllTasks();
-//       const task = tasks.find((t) =>
-//         t.title.toLowerCase().includes(parsedQuery.taskName!.toLowerCase())
-//       );
-//       if (!task) {
-//         return { success: false, message: `No tasks found with name: ${parsedQuery.taskName}` };
-//       }
-
-//       if (parsedQuery.taskStatus) {
-//         return { success: true, message: `Task ${task.title} status: ${task.status}` };
-//       }
-
-//       if (parsedQuery.dueDate) {
-//         const dueDate = task.due_date ? moment(task.due_date).format("DD MMMM YYYY") : "N/A";
-//         return { success: true, message: `Task ${task.title} due date: ${dueDate}` };
-//       }
-
-//       if (parsedQuery.hoursSpent) {
-//         const timeStr = task.time_spent_total || "0d0h";
-//         const daysMatch = timeStr.match(/(\d+)d/);
-//         const hoursMatch = timeStr.match(/(\d+)h/);
-//         const days = daysMatch ? parseInt(daysMatch[1]) : 0;
-//         const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
-//         const totalHours = days * 24 + hours;
-//         const formatted = TimeUtil.formatHoursToTimeString(totalHours);
-//         return { success: true, message: `Task ${task.title} total time spent: ${formatted}` };
-//       }
-
-//       if (parsedQuery.isFinished) {
-//         const isFinished = task.status === "completed";
-//         return {
-//           success: true,
-//           message: `Task ${task.title} is ${isFinished ? "finished" : "not finished"}`
-//         };
-//       }
-
-//       if (parsedQuery.assignedEmployees) {
-//         const user = await User.findOne({ id: task.user_id }).lean();
-//         const name = user ? user.name : "Unknown";
-//         return { success: true, message: `Task ${task.title} assigned to: ${name}` };
-//       }
-
-//       if (parsedQuery.taskSeverity) {
-//         return {
-//           success: true,
-//           message: `Task ${task.title} severity: ${task.severity || "N/A"}`
-//         };
-//       }
-
-//       if (parsedQuery.workAfterDue) {
-//         if (!task.due_date || !task.time_spent) {
-//           return { success: true, message: `No time spent after due date for task ${task.title}` };
-//         }
-//         const hoursAfterDue = task.time_spent
-//           .filter((entry) => moment(entry.date).isAfter(moment(task.due_date)))
-//           .reduce((sum, entry) => sum + (entry.hours || 0), 0);
-//         const formatted = TimeUtil.formatHoursToTimeString(hoursAfterDue);
-//         return {
-//           success: true,
-//           message: `Spent ${formatted} after due date on task ${task.title}`
-//         };
-//       }
-
-//       return {
-//         success: true,
-//         message: `Task ${task.title}: Status=${task.status}, Time Spent=${task.time_spent_total}, Due=${moment(task.due_date).format("DD MMMM YYYY")}`
-//       };
-//     }
-
-//     if (parsedQuery.project_name || parsedQuery.project_id) {
-//       const projectQuery: any = {};
-//       if (parsedQuery.project_name) {
-//         projectQuery.name = { $regex: parsedQuery.project_name, $options: "i" };
-//       }
-//       if (parsedQuery.project_id) {
-//         projectQuery.id = parsedQuery.project_id;
-//       }
-
-//       const project = await mongoose.model<IProject>("Project").findOne(projectQuery).lean();
-//       if (!project) {
-//         return {
-//           success: false,
-//           message: `No project found with ${parsedQuery.project_name ? `name: ${parsedQuery.project_name}` : `id: ${parsedQuery.project_id}`}`
-//         };
-//       }
-
-//       const pipeline = [{ $match: { project_id: project.id } }];
-//       const tasks = await findTasksByProject(pipeline);
-
-//       if (parsedQuery.openTasks) {
-//         const openTasks = tasks.filter((t: ITask) => t.status !== "completed");
-//         if (!openTasks.length) {
-//           return { success: true, message: `No open tasks for project ${project.name}` };
-//         }
-//         const taskNames = openTasks.map((t: ITask) => t.title).join(", ");
-//         return { success: true, message: `Open tasks for ${project.name}: ${taskNames}` };
-//       }
-
-//       if (parsedQuery.completedTasks) {
-//         const completedTasks = tasks.filter((t: ITask) => t.status === "completed");
-//         if (!completedTasks.length) {
-//           return { success: true, message: `No completed tasks for project ${project.name}` };
-//         }
-//         const taskNames = completedTasks.map((t: ITask) => t.title).join(", ");
-//         return { success: true, message: `Completed tasks for ${project.name}: ${taskNames}` };
-//       }
-
-//       if (parsedQuery.overdueWork) {
-//         const overdueTasks = tasks.filter(
-//           (t: ITask) => t.status !== "completed" && moment(t.due_date).isBefore(moment())
-//         );
-//         if (!overdueTasks.length) {
-//           return { success: true, message: `No overdue tasks for project ${project.name}` };
-//         }
-//         const taskNames = overdueTasks.map((t: ITask) => t.title).join(", ");
-//         return {
-//           success: true,
-//           message: `Overdue tasks for project ${project.name}: ${taskNames}`
-//         };
-//       }
-
-//       if (parsedQuery.assignedEmployees) {
-//         const userIds = [...new Set(tasks.map((t: ITask) => t.user_id))];
-//         const users = await User.find({ id: { $in: userIds } }).lean();
-//         const names = users.map((u) => u.name).join(", ");
-//         return { success: true, message: `Employees assigned to ${project.name}: ${names}` };
-//       }
-
-//       if (parsedQuery.hoursSpent) {
-//         const totalHours = tasks.reduce((sum: number, t: ITask) => {
-//           const hours = TimeUtil.parseHourMinuteString(t.time_spent_total);
-//           return sum + hours;
-//         }, 0);
-//         const formatted = TimeUtil.formatHoursToTimeString(totalHours);
-//         return { success: true, message: `Total hours spent on ${project.name}: ${formatted}` };
-//       }
-
-//       if (parsedQuery.projectAssignedHours) {
-//         const assignedHours = (project as any).assigned_hours || 0;
-//         return {
-//           success: true,
-//           message: `Project ${project.name} has ${assignedHours} hours assigned`
-//         };
-//       }
-
-//       if (parsedQuery.dueDate) {
-//         const dueDate = project.due_date ? moment(project.due_date).format("DD MMMM YYYY") : "N/A";
-//         return { success: true, message: `Due date for project ${project.name}: ${dueDate}` };
-//       }
-
-//       if (parsedQuery.projectStatus) {
-//         return { success: true, message: `Status of project ${project.name}: ${project.status}` };
-//       }
-
-//       if (parsedQuery.isFinished) {
-//         const isFinished = project.status === "completed";
-//         return {
-//           success: true,
-//           message: `Project ${project.name} is ${isFinished ? "finished" : "not finished"}`
-//         };
-//       }
-
-//       return { success: true, message: `Found ${tasks.length} tasks for ${project.name}` };
-//     }
-
-//     if (parsedQuery.empname || parsedQuery.empcode) {
-//       let user_id = parsedQuery.empcode;
-//       let empname = parsedQuery.empname;
-
-//       if (parsedQuery.empname) {
-//         const user = await User.findOne({
-//           name: { $regex: `^${parsedQuery.empname}$`, $options: "i" }
-//         }).lean();
-//         if (!user) {
-//           return { success: false, message: `No employee found with name: ${parsedQuery.empname}` };
-//         }
-//         user_id = user.id;
-//         empname = user.name;
-//       } else if (parsedQuery.empcode) {
-//         const user = await User.findOne({ id: parsedQuery.empcode }).lean();
-//         if (!user) {
-//           return { success: false, message: `No employee with empcode: ${parsedQuery.empcode}` };
-//         }
-//         empname = user.name;
-//         user_id = user.id;
-//       }
-
-//       const pipeline = [{ $match: { user_id } }];
-//       const tasks = await findTasksByUser(pipeline);
-
-//       if (!tasks.length) {
-//         return { success: false, message: `No tasks assigned to ${empname}` };
-//       }
-
-//       if (parsedQuery.openTasks) {
-//         const openTasks = tasks.filter((t: ITask) => t.status !== "completed");
-//         if (!openTasks.length) {
-//           return { success: true, message: `No open tasks for ${empname}` };
-//         }
-//         const taskNames = openTasks.map((t: ITask) => t.title).join(", ");
-//         return { success: true, message: `Open tasks for ${empname}: ${taskNames}` };
-//       }
-
-//       if (parsedQuery.completedTasks) {
-//         const completedTasks = tasks.filter((t: ITask) => t.status === "completed");
-//         if (!completedTasks.length) {
-//           return { success: true, message: `No completed tasks for ${empname}` };
-//         }
-//         const taskNames = completedTasks.map((t: ITask) => t.title).join(", ");
-//         return { success: true, message: `Completed tasks for ${empname}: ${taskNames}` };
-//       }
-
-//       if (parsedQuery.hoursSpent && !parsedQuery.date && parsedQuery.taskName) {
-//         const task = tasks.find((t: any) =>
-//           t.title.toLowerCase().includes(parsedQuery.taskName!.toLowerCase())
-//         );
-//         if (!task) {
-//           return {
-//             success: false,
-//             message: `Task ${parsedQuery.taskName} not found for ${empname}`
-//           };
-//         }
-//         const timeStr = task.time_spent_total || "0d0h";
-//         const daysMatch = timeStr.match(/(\d+)d/);
-//         const hoursMatch = timeStr.match(/(\d+)h/);
-//         const days = daysMatch ? parseInt(daysMatch[1]) : 0;
-//         const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
-//         const totalHours = days * 24 + hours;
-//         const formatted = TimeUtil.formatHoursToTimeString(totalHours);
-//         return { success: true, message: `${empname} spent ${formatted} on task ${task.title}` };
-//       }
-
-//       if (parsedQuery.date && parsedQuery.hoursSpent) {
-//         const targetDate = moment(parsedQuery.date, "YYYY-MM-DD").format("YYYY-MM-DD");
-//         const totalHours = tasks.reduce((sum: number, t: ITask) => {
-//           const entry = t.time_spent.find(
-//             (e: ITimeSpentEntry) => moment(e.date).format("YYYY-MM-DD") === targetDate
-//           );
-//           return sum + (entry ? entry.hours : 0);
-//         }, 0);
-//         const formatted = TimeUtil.formatHoursToTimeString(totalHours);
-//         return {
-//           success: true,
-//           message: `${empname} spent ${formatted} on tasks on ${targetDate}`
-//         };
-//       }
-
-//       if (parsedQuery.overdueWork) {
-//         const overdueTasks = tasks.filter(
-//           (t: ITask) => t.status !== "completed" && moment(t.due_date).isBefore(moment())
-//         );
-//         if (!overdueTasks.length) {
-//           return { success: true, message: `No overdue tasks for ${empname}` };
-//         }
-//         const taskNames = overdueTasks.map((t: ITask) => t.title).join(", ");
-//         return { success: true, message: `Overdue tasks for ${empname}: ${taskNames}` };
-//       }
-
-//       if (parsedQuery.workAfterDue && parsedQuery.taskName) {
-//         const task = tasks.find((t: any) =>
-//           t.title.toLowerCase().includes(parsedQuery.taskName!.toLowerCase())
-//         );
-//         if (!task) {
-//           return {
-//             success: false,
-//             message: `Task ${parsedQuery.taskName} not found for ${empname}`
-//           };
-//         }
-//         if (!task.due_date || !task.time_spent) {
-//           return { success: true, message: `No time spent after due date for task ${task.title}` };
-//         }
-//         const hoursAfterDue = task.time_spent
-//           .filter((entry: any) => moment(entry.date).isAfter(moment(task.due_date)))
-//           .reduce((sum: any, entry: any) => sum + (entry.hours || 0), 0);
-//         const formatted = TimeUtil.formatHoursToTimeString(hoursAfterDue);
-//         return {
-//           success: true,
-//           message: `${empname} spent ${formatted} after due date on task ${task.title}`
-//         };
-//       }
-
-//       if (parsedQuery.taskDetails) {
-//         const response = `Tasks for ${empname}:\n${tasks
-//           .map(
-//             (t: ITask) =>
-//               `${t.title}: Status=${t.status}, Time Spent=${t.time_spent_total || "0d0h"}, Due=${moment(t.due_date).format("DD MMMM YYYY")}`
-//           )
-//           .join("\n")}`;
-//         return { success: true, message: response.trim() };
-//       }
-
-//       let response = `Tasks for ${empname}:\n`;
-//       tasks.forEach((task: ITask) => {
-//         response += `${task.title}: Status=${task.status}, Time Spent=${task.time_spent_total}, Due=${moment(task.due_date).format("DD MMMM YYYY")}\n`;
-//       });
-//       return { success: true, message: response.trim() };
-//     }
-
-//     return {
-//       success: false,
-//       message: "Invalid task query: Please specify task, project, or employee details"
-//     };
-//   } catch (error: any) {
-//     return { success: false, message: error.message || QueryTaskMessages.QUERY.FAILED };
-//   }
-// };
-
 export const processTaskQuery = async (
   query: string,
-  parsedQuery: ExtendedParsedQuery
+  parsedQuery: Record<string, any>
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
     const lowerQuery = query.toLowerCase();
@@ -635,7 +348,7 @@ export const processTaskQuery = async (
         }
         const hoursAfterDue = task.time_spent
           .filter((entry) => moment(entry.date).isAfter(moment(task.due_date)))
-          .reduce((sum, entry) => sum + (entry.hours || 0), 0);
+          .reduce((sum, entry) => sum + parseTimeLogged(entry.time_logged), 0);
         const formatted = TimeUtil.formatHoursToTimeString(hoursAfterDue);
         return {
           success: true,
@@ -863,7 +576,7 @@ export const processTaskQuery = async (
           const entry = t.time_spent.find(
             (e: ITimeSpentEntry) => moment(e.date).format("YYYY-MM-DD") === targetDate
           );
-          return sum + (entry ? entry.hours : 0);
+          return sum + (entry ? parseTimeLogged(entry.time_logged) : 0);
         }, 0);
         const formatted = TimeUtil.formatHoursToTimeString(totalHours);
         return {
@@ -887,7 +600,10 @@ export const processTaskQuery = async (
         }
         const hoursAfterDue = task.time_spent
           .filter((entry: any) => moment(entry.date).isAfter(moment(task.due_date)))
-          .reduce((sum: any, entry: any) => sum + (entry.hours || 0), 0);
+          .reduce(
+            (sum: number, entry: ITimeSpentEntry) => sum + parseTimeLogged(entry.time_logged),
+            0
+          );
         const formatted = TimeUtil.formatHoursToTimeString(hoursAfterDue);
         return {
           success: true,

@@ -1,10 +1,10 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
 import jwt from "jsonwebtoken";
-import userService from "./userService";
 import { getRoleByIdService } from "../role/roleService";
 import UserMessages from "../../constants/apiMessages/userMessage";
 import { comparePassword } from "../../constants/utils/common";
+import userService from "./userService";
 
 class UserController extends BaseController {
   async createUser(requestHelper: RequestHelper, handler: any) {
@@ -160,7 +160,7 @@ class UserController extends BaseController {
       if (!projectId) {
         throw new Error("Project ID is required");
       }
-      const response = await getUsersByProjectId(projectId);
+      const response = await userService.getUsersByProjectId(projectId);
       return this.sendResponse(handler, response);
     } catch (error) {
       return this.replyError(error);

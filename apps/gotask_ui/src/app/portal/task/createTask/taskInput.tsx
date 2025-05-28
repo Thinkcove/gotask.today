@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Grid } from "@mui/material";
 import FormField from "../../../component/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
@@ -35,6 +35,52 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
   // Helper function to determine if a field should be read-only
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
+
+  // Memoized function to get current user object
+  const getCurrentUser = useMemo(() => {
+    if (!formData.user_id) return null;
+
+    // First check in filtered users
+    let user = filteredUsers.find((u: User) => u.id === formData.user_id);
+
+    // If not found, check in all users
+    if (!user && getAllUsers) {
+      user = getAllUsers.find((u: User) => u.id === formData.user_id);
+    }
+
+    // If still not found but we have user_name in formData, create a user object
+    if (!user && formData.user_name) {
+      user = {
+        id: formData.user_id,
+        name: formData.user_name
+      } as User;
+    }
+
+    return user;
+  }, [formData.user_id, formData.user_name, filteredUsers, getAllUsers]);
+
+  // Memoized function to get current project object
+  const getCurrentProject = useMemo(() => {
+    if (!formData.project_id) return null;
+
+    // First check in filtered projects
+    let project = filteredProjects.find((p: Project) => p.id === formData.project_id);
+
+    // If not found, check in all projects
+    if (!project && getAllProjects) {
+      project = getAllProjects.find((p: Project) => p.id === formData.project_id);
+    }
+
+    // If still not found but we have project_name in formData, create a project object
+    if (!project && formData.project_name) {
+      project = {
+        id: formData.project_id,
+        name: formData.project_name
+      } as Project;
+    }
+
+    return project;
+  }, [formData.project_id, formData.project_name, filteredProjects, getAllProjects]);
 
   // Handle Assignee change and fetch projects
   const handleAssigneeChange = async (userId: string) => {
@@ -88,25 +134,42 @@ const TaskInput: React.FC<TaskInputProps> = ({
     }
   };
 
-  // Determine which options to show for users
+  // Get user options with current user included if not already present
   const getUserOptions = () => {
-    // If project is selected, show filtered users for that project
+    let options: User[] = [];
+
     if (formData.project_id) {
-      return filteredUsers;
+      options = [...filteredUsers];
+    } else {
+      options = [...(getAllUsers || [])];
     }
-    // If no project selected, show all users
-    return getAllUsers || [];
+
+    // Ensure current user is included in options
+    const currentUser = getCurrentUser;
+    if (currentUser && !options.find((u: User) => u.id === currentUser.id)) {
+      options.unshift(currentUser);
+    }
+
+    return options;
   };
 
-  // Determine which options to show for projects
+  // Get project options with current project included if not already present
   const getProjectOptions = () => {
-    // If no user is selected, show all projects
+    let options: Project[] = [];
+
     if (!formData.user_id) {
-      return getAllProjects || [];
+      options = [...(getAllProjects || [])];
+    } else {
+      options = [...filteredProjects];
     }
-    // If user is selected, show only projects assigned to that user
-    // If user has no projects assigned, return empty array (will show "No options")
-    return filteredProjects;
+
+    // Ensure current project is included in options
+    const currentProject = getCurrentProject;
+    if (currentProject && !options.find((p: Project) => p.id === currentProject.id)) {
+      options.unshift(currentProject);
+    }
+
+    return options;
   };
 
   const userOptions = getUserOptions();

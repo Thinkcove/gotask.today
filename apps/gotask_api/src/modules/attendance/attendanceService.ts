@@ -634,14 +634,11 @@ export const processEmployeeQuery = async (
         message: `${name || empcode} ${isLate ? "logged off after 7:00 PM" : "did not log off after 7:00 PM"} on ${dateStr}`
       };
     }
-
-    console.log("No matching query handler");
     return {
       success: false,
       message: `Please specify a valid attendance query for ${name || empcode}`
     };
   } catch (error: any) {
-    console.error("Error in processEmployeeQuery:", error.message, error.stack);
     return { success: false, message: `Failed to process query: ${error.message}` };
   }
 };
@@ -667,8 +664,8 @@ export const uploadAttendance = async (
     if (!sheetName) {
       return {
         success: false,
-        message: "No sheets found in the file",
-        data: { inserted: 0, skipped: 0, errors: ["No sheets found in the file"] }
+        message: AttendanceMessages.UPLOAD.REQUIRED,
+        data: { inserted: 0, skipped: 0, errors: [AttendanceMessages.UPLOAD.REQUIRED] }
       };
     }
     const worksheet = workbook.Sheets[sheetName];
@@ -681,8 +678,8 @@ export const uploadAttendance = async (
     if (rows.length < 2) {
       return {
         success: false,
-        message: "XLSX file is empty or has no data rows",
-        data: { inserted: 0, skipped: 0, errors: ["No data rows found"] }
+        message: AttendanceMessages.UPLOAD.NOTIFY,
+        data: { inserted: 0, skipped: 0, errors: [AttendanceMessages.UPLOAD.REQUIRED] }
       };
     }
 
@@ -842,7 +839,7 @@ export const uploadAttendance = async (
       return {
         success: false,
         data: { inserted: 0, skipped: rowIndex, errors },
-        message: "No valid attendance records processed"
+        message: AttendanceMessages.UPLOAD.VALIDATION
       };
     }
 
@@ -878,9 +875,7 @@ export const uploadAttendance = async (
       success: insertedCount > 0,
       data: { inserted: insertedCount, skipped: skippedCount, errors },
       message:
-        insertedCount > 0
-          ? "Attendance records processed successfully"
-          : "No valid attendance records processed"
+        insertedCount > 0 ? AttendanceMessages.UPLOAD.SUCCESS : AttendanceMessages.UPLOAD.VALIDATION
     };
   } catch (error: any) {
     return {

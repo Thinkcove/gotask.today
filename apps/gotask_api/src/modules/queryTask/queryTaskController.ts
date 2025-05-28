@@ -1,4 +1,3 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
 import BaseController from "../../common/baseController";
 import RequestHelper from "../../helpers/requestHelper";
 import {

@@ -1,5 +1,4 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
 import queryController from "./queryController";

@@ -185,7 +185,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      bgcolor: "red",
+                      bgcolor: "#ffffff",
                       border: "1px solid #e0e0e0",
                       overflow: "hidden", // prevent child overflow
                       flexWrap: "wrap" // allow wrapping if content grows

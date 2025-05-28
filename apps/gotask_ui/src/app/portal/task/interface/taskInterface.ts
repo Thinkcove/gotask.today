@@ -80,6 +80,11 @@ export type Project = {
   name: string;
 };
 
+export type User = {
+  id: string;
+  name: string;
+};
+
 export type TaskFilterType = {
   min_date?: string;
   max_date?: string;

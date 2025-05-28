@@ -88,33 +88,34 @@ const TaskInput: React.FC<TaskInputProps> = ({
     }
   };
 
-  // Determine which options to show
+  // Determine which options to show for users
   const getUserOptions = () => {
-    // Use filtered users if a project is selected and users are loaded
-    if (formData.project_id && filteredUsers.length > 0) {
+    // If project is selected, show filtered users for that project
+    if (formData.project_id) {
       return filteredUsers;
     }
-    // Fallback to all users
+    // If no project selected, show all users
     return getAllUsers || [];
   };
 
+  // Determine which options to show for projects
   const getProjectOptions = () => {
-    // Don't show any project if no user is selected
+    // If no user is selected, show all projects
     if (!formData.user_id) {
-      return [];
+      return getAllProjects || [];
     }
-
+    // If user is selected, show only projects assigned to that user
+    // If user has no projects assigned, return empty array (will show "No options")
     return filteredProjects;
   };
 
   const userOptions = getUserOptions();
   const projectOptions = getProjectOptions();
-
-  const currentStatus = formData.status || "";
+  const currentStatus = formData.status;
   const allowedStatuses = TASK_WORKFLOW[currentStatus] || [];
 
   // Include current status in options
-  const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses])).filter(Boolean);
+  const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
 
   return (
     <>

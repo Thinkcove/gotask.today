@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import FormField from "../../../component/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
-import { useAllProjects, useAllUsers, getProjectIdsAndNames } from "../service/taskAction";
-import { IFormField, Project } from "../interface/taskInterface";
+import {
+  useAllProjects,
+  useAllUsers,
+  getProjectIdsAndNames,
+  getUsersByProjectId
+} from "../service/taskAction";
+import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
 interface TaskInputProps {
   formData: IFormField;
-  handleInputChange: (name: string, value: string) => void;
+  handleInputChange: (name: string, value: string | Project[] | User[]) => void;
   errors: { [key: string]: string };
   readOnlyFields?: string[];
 }
@@ -21,15 +26,15 @@ const TaskInput: React.FC<TaskInputProps> = ({
   readOnlyFields = []
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const { getAllUsers } = useAllUsers();
-  const { getAllProjects } = useAllProjects();
-  // Get projects based on the assigned user
-  const userProjects = formData.projects || getAllProjects || [];
-  // Find the selected project
-  const selectedProject = userProjects.find((p: Project) => p.id === formData.project_id) || {
-    id: formData.project_id,
-    name: formData.project_name
-  };
+  const { getAllUsers } = useAllUsers(); // getAllUsers is User[]
+  const { getAllProjects } = useAllProjects(); // getAllProjects is Project[]
+
+  // State to hold filtered data
+  const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
+
   // Helper function to determine if a field should be read-only
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
@@ -37,14 +42,88 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const handleAssigneeChange = async (userId: string) => {
     handleInputChange("user_id", userId);
 
-    const projects = await getProjectIdsAndNames(userId);
-    handleInputChange("projects", projects); // Store projects in formData
+    if (!userId) {
+      setFilteredProjects(getAllProjects || []);
+      handleInputChange("projects", getAllProjects || []);
+      return;
+    }
+
+    setIsLoadingProjects(true);
+    try {
+      const projects = await getProjectIdsAndNames(userId);
+      setFilteredProjects(projects);
+      handleInputChange("projects", projects);
+
+      // Reset project_id only if it's not valid for the selected user
+      if (formData.project_id && !projects.some((p: Project) => p.id === formData.project_id)) {
+        handleInputChange("project_id", "");
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      setFilteredProjects(getAllProjects || []);
+      handleInputChange("projects", getAllProjects || []);
+    } finally {
+      setIsLoadingProjects(false);
+    }
   };
-  const currentStatus = formData.status;
+
+  // Handle Project change and fetch users
+  const handleProjectChange = async (projectId: string) => {
+    handleInputChange("project_id", projectId);
+
+    if (!projectId) {
+      setFilteredUsers(getAllUsers || []);
+      handleInputChange("users", getAllUsers || []);
+      return;
+    }
+
+    setIsLoadingUsers(true);
+    try {
+      const users = await getUsersByProjectId(projectId);
+      setFilteredUsers(users);
+      handleInputChange("users", users);
+
+      // Reset user_id only if it's not valid for the selected project
+      if (formData.user_id && !users.some((u: User) => u.id === formData.user_id)) {
+        handleInputChange("user_id", "");
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setFilteredUsers(getAllUsers || []);
+      handleInputChange("users", getAllUsers || []);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
+
+  // Determine which options to show
+  const getUserOptions = () => {
+    // Use filtered users if a project is selected and users are loaded
+    if (formData.project_id && filteredUsers.length > 0) {
+      return filteredUsers;
+    }
+    // Fallback to all users
+    return getAllUsers || [];
+  };
+
+  const getProjectOptions = () => {
+    // Use filtered projects if a user is selected and projects are loaded
+    if (formData.user_id && filteredProjects.length > 0) {
+      return filteredProjects;
+    }
+    // Fallback to all projects
+    return getAllProjects || [];
+  };
+
+  const userOptions = getUserOptions();
+  const projectOptions = getProjectOptions();
+
+  const currentStatus = formData.status || "";
   const allowedStatuses = TASK_WORKFLOW[currentStatus] || [];
 
-  // Make sure the current value is included in the options
-  const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
+  // Include current status in options
+  const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses])).filter(Boolean);
+
   return (
     <>
       <Grid item xs={12} sm={6} mb={2}>
@@ -53,7 +132,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
           type="text"
           required
           placeholder={transtask("placeholdername")}
-          value={formData.title}
+          value={formData.title || ""}
           onChange={(value) => handleInputChange("title", String(value))}
           error={errors.title}
           disabled={isReadOnly("title")}
@@ -64,36 +143,38 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label={transtask("labelassignee")}
             type="select"
-            options={getAllUsers}
+            options={userOptions}
             required
             placeholder={transtask("placeholderassignee")}
-            value={formData.user_id}
+            value={formData.user_id || ""}
             onChange={(value) => handleAssigneeChange(String(value))}
             error={errors.user_id}
             disabled={isReadOnly("user_id")}
+            isLoading={isLoadingUsers}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormField
             label={transtask("labelproject")}
             type="select"
-            options={userProjects}
+            options={projectOptions}
             required
             placeholder={transtask("placeholderproject")}
-            value={selectedProject.id}
-            onChange={(value) => handleInputChange("project_id", String(value))}
+            value={formData.project_id || ""}
+            onChange={(value) => handleProjectChange(String(value))}
             error={errors.project_id}
-            disabled={isReadOnly("project_id") || !formData.user_id}
+            disabled={isReadOnly("project_id")}
+            isLoading={isLoadingProjects}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormField
             label={transtask("labelstatus")}
             type="select"
-            options={uniqueStatuses.map((s) => s.toUpperCase())}
+            options={uniqueStatuses.map((s) => ({ id: s.toLowerCase(), name: s.toUpperCase() }))}
             required
             placeholder={transtask("placeholderstatus")}
-            value={currentStatus.toUpperCase()}
+            value={formData.status || ""}
             onChange={(value) => handleInputChange("status", String(value).toLowerCase())}
             error={errors.status}
             disabled={isReadOnly("status")}
@@ -103,9 +184,12 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label={transtask("labelseverity")}
             type="select"
-            options={Object.values(TASK_SEVERITY).map((s) => s.toUpperCase())}
+            options={Object.values(TASK_SEVERITY).map((s) => ({
+              id: s.toLowerCase(),
+              name: s.toUpperCase()
+            }))}
             placeholder={transtask("placeholderseverity")}
-            value={formData.severity.toUpperCase()}
+            value={formData.severity || ""}
             onChange={(value) => handleInputChange("severity", String(value).toLowerCase())}
             error={errors.severity}
             disabled={isReadOnly("severity")}
@@ -141,13 +225,12 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("due_date")}
           />
         </Grid>
-
         <Grid item xs={12}>
           <FormField
             label={transtask("labeldescription")}
             type="text"
             placeholder={transtask("placeholderdescription")}
-            value={formData.description}
+            value={formData.description || ""}
             onChange={(value) => handleInputChange("description", String(value))}
             disabled={isReadOnly("description")}
             multiline

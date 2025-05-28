@@ -33,6 +33,7 @@ interface FormFieldProps {
   height?: number;
   onFocus?: () => void;
   inputType?: string;
+  isLoading?: boolean;
 }
 
 const FormField: React.FC<FormFieldProps> = ({

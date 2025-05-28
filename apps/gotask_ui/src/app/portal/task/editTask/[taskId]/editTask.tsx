@@ -9,7 +9,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { createComment, updateTask } from "../../service/taskAction";
 import { ArrowBack, History } from "@mui/icons-material";
-import { IFormField, ITask, ITaskComment } from "../../interface/taskInterface";
+import { IFormField, ITask, ITaskComment, Project, User } from "../../interface/taskInterface";
 import HistoryDrawer from "../taskHistory";
 import TaskComments from "../taskComments";
 import { useUser } from "@/app/userContext";
@@ -19,6 +19,7 @@ import TimeProgressBar from "@/app/portal/task/editTask/timeProgressBar";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+
 interface EditTaskProps {
   data: ITask;
   mutate: KeyedMutator<ITask>;
@@ -57,10 +58,11 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     return data.time_spent.some((entry) => entry.date === today);
   };
 
-  const handleInputChange = (name: string, value: string) => {
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
+  const handleInputChange = (name: string, value: string | Project[] | User[]) => {
+    if (typeof value === 'string') {
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+    }
+    };
   const alreadyExists = checkIfDateExists();
 
   const handleProgressClick = () => {

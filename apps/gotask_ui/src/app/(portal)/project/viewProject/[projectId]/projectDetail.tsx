@@ -13,7 +13,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
 import EditProject from "./editProject";
-import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import LabelValueText from "@/app/component/text/labelValueText";

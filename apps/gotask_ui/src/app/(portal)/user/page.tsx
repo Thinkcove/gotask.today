@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import UserList from "./components/userList";
-import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 

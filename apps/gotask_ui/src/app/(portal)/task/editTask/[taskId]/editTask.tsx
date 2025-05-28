@@ -16,7 +16,7 @@ import { useUser } from "@/app/userContext";
 import { KeyedMutator } from "swr";
 import TimeSpentPopup from "../timeSpentPopup";
 import TimeProgressBar from "@/app/(portal)/task/editTask/timeProgressBar";
-import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 interface EditTaskProps {

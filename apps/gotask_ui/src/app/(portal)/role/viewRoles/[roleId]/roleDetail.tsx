@@ -1,5 +1,5 @@
 import { useParams, useRouter } from "next/navigation";
-import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 import {
   Box,
   Divider,

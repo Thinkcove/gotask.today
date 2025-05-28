@@ -40,6 +40,11 @@ const UserMessages = {
     MISSING_FIELDS: "Missing required fields",
     NOT_FOUND: "Query was unsopported",
     SUCCESS: "User found Successfully"
+  },
+
+  PROJECT: {
+    ID_REQUIRED: "Project ID is required and cannot be empty",
+    FETCH_FAILED: "Failed to fetch users by project ID"
   }
 };
 

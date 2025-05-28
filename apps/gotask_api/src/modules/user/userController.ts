@@ -151,6 +151,21 @@ class UserController extends BaseController {
       });
     }
   }
+
+  // controllers/userController.ts
+
+  async getUsersByProjectId(requestHelper: RequestHelper, handler: any) {
+    try {
+      const projectId = requestHelper.getParam("project_id");
+      if (!projectId) {
+        throw new Error("Project ID is required");
+      }
+      const response = await getUsersByProjectId(projectId);
+      return this.sendResponse(handler, response);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
 export default UserController;

@@ -6,7 +6,8 @@ import {
   findAllUsers,
   findProjectsByIds,
   findUser,
-  updateUserById
+  updateUserById,
+  findUsersByProjectId
 } from "../../domain/interface/user/userInterface";
 import { IUser, User } from "../../domain/model/user/user";
 import { Role } from "../../domain/model/role/role";
@@ -282,6 +283,38 @@ const getUserByEmail = async (
   }
 };
 
+// GET USERS BY PROJECT ID - Fixed function
+const getUsersByProjectId = async (
+  projectId: string
+): Promise<{
+  success: boolean;
+  data?: IUser[];
+  message?: string;
+}> => {
+  try {
+    // Validate project ID
+    if (!projectId) {
+      return {
+        success: false,
+        message: UserMessages.PROJECT.ID_REQUIRED
+      };
+    }
+
+    // Call the database interface function
+    const users = await findUsersByProjectId(projectId);
+
+    return {
+      success: true,
+      data: users
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || UserMessages.PROJECT.FETCH_FAILED
+    };
+  }
+};
+
 // PROCESS USER QUERY
 const processQuery = async (
   query: string,
@@ -343,12 +376,13 @@ const processQuery = async (
   }
 };
 
-export default {
+export {
   createUser,
   getAllUsers,
   getUserById,
   updateUser,
   deleteUser,
   getUserByEmail,
+  getUsersByProjectId,
   processQuery
 };

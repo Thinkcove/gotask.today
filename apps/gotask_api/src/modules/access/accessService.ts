@@ -4,157 +4,198 @@ import {
   getAllAccessRecordsFromDb,
   getAccessByIdFromDb,
   updateAccessInDb,
-  deleteAccessByIdFromDb
+  deleteAccessByIdFromDb,
 } from "../../domain/interface/access/accessInterface";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
-import accessConfig from "../../modules/access/accessConfig.json";
+import accessConfig from "./accessConfig.json";
 
-// Create a new access record
+// Utility: Filter object keys based on allowed fields
+const filterFields = <T extends object>(
+  obj: T | null | undefined,
+  allowedFields: (keyof T)[]
+): Partial<T> => {
+  if (!obj || typeof obj !== "object") return {};
+  const filtered: Partial<T> = {};
+  allowedFields.forEach((field) => {
+    if (field in obj) filtered[field] = obj[field];
+  });
+  return filtered;
+};
+
+// Fields allowed in Access document
+const allowedAccessFields: (keyof IAccess)[] = ["name", "application"];
+
+// Create Access service
 const createAccess = async (
   accessData: Partial<IAccess>
-): Promise<{ success: boolean; data?: IAccess; message?: string }> => {
+): Promise<{ success: boolean; data?: Partial<IAccess>; message?: string }> => {
   try {
-    if (!accessData.name || !accessData.application) {
+    const filteredInput = filterFields(accessData, allowedAccessFields);
+
+    if (!filteredInput.name || !filteredInput.application) {
       return {
         success: false,
-        message: AccessMessages.CREATE.REQUIRED
+        message: AccessMessages.CREATE.REQUIRED,
       };
     }
 
-    const newAccess = await createAccessInDb(accessData);
+    // TODO: Add validation for application structure if needed
+
+    const newAccess = await createAccessInDb(filteredInput);
+    const filteredAccess = filterFields(newAccess, ["id", ...allowedAccessFields]);
 
     return {
       success: true,
-      data: newAccess
+      data: filteredAccess,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.CREATE.FAILED
+      message: error.message || AccessMessages.CREATE.FAILED,
     };
   }
 };
 
-// Get all access records
+// Update Access service
+const updateAccess = async (
+  id: string,
+  updateData: Partial<IAccess>
+): Promise<{ success: boolean; data?: Partial<IAccess>; message?: string }> => {
+  try {
+    const existing = await getAccessByIdFromDb(id);
+    if (!existing) {
+      return {
+        success: false,
+        message: AccessMessages.UPDATE.NOT_FOUND,
+      };
+    }
+
+    const filteredUpdate = filterFields(updateData, allowedAccessFields);
+
+    // TODO: Add validation for application/actions format if needed
+
+    const updatedAccess = await updateAccessInDb(id, filteredUpdate);
+    const filtered = filterFields(updatedAccess!, ["id", ...allowedAccessFields]);
+
+    return {
+      success: true,
+      data: filtered,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || AccessMessages.UPDATE.FAILED,
+    };
+  }
+};
+
+// Get all Access records service
 const getAllAccesses = async (): Promise<{
   success: boolean;
-  data?: IAccess[] | null;
+  data?: Partial<IAccess>[];
   message?: string;
 }> => {
   try {
     const accesses = await getAllAccessRecordsFromDb();
+    const filteredAccesses = accesses.map((access) =>
+      filterFields(access, ["id", ...allowedAccessFields])
+    );
+
     return {
       success: true,
-      data: accesses
+      data: filteredAccesses,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.FETCH.FAILED_ALL
+      message: error.message || AccessMessages.FETCH.FAILED_ALL,
     };
   }
 };
 
-// Get a specific access by ID
+// Get Access by ID service
 const getAccessById = async (
   id: string
-): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
+): Promise<{ success: boolean; data?: Partial<IAccess>; message?: string }> => {
   try {
     const access = await getAccessByIdFromDb(id);
     if (!access) {
       return {
         success: false,
-        message: AccessMessages.FETCH.NOT_FOUND
+        message: AccessMessages.FETCH.NOT_FOUND,
       };
     }
+
+    const filtered = filterFields(access, ["id", ...allowedAccessFields]);
+
     return {
       success: true,
-      data: access
+      data: filtered,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.FETCH.FAILED_BY_ID
+      message: error.message || AccessMessages.FETCH.FAILED_BY_ID,
     };
   }
 };
 
-// Update access record by unique ID
-const updateAccess = async (
-  id: string,
-  updateData: Partial<IAccess>
-): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
-  try {
-    const access = await getAccessByIdFromDb(id);
-    if (!access) {
-      return {
-        success: false,
-        message: AccessMessages.UPDATE.NOT_FOUND
-      };
-    }
-
-    const updatedAccess = await updateAccessInDb(id, updateData);
-
-    return {
-      success: true,
-      data: updatedAccess
-    };
-  } catch (error: any) {
-    return {
-      success: false,
-      message: error.message || AccessMessages.UPDATE.FAILED
-    };
-  }
-};
-
-// Delete access record by unique ID
+// Delete Access by ID service
 const deleteAccessById = async (
   id: string
-): Promise<{ success: boolean; data?: IAccess | null; message?: string }> => {
+): Promise<{ success: boolean; message?: string }> => {
   try {
     const access = await getAccessByIdFromDb(id);
     if (!access) {
       return {
         success: false,
-        message: AccessMessages.DELETE.NOT_FOUND
+        message: AccessMessages.DELETE.NOT_FOUND,
       };
     }
 
     const success = await deleteAccessByIdFromDb(id);
-
     if (!success) {
       return {
         success: false,
-        message: AccessMessages.DELETE.FAILED
+        message: AccessMessages.DELETE.FAILED,
       };
     }
+
     return {
       success: true,
-      message: AccessMessages.DELETE.SUCCESS
+      message: AccessMessages.DELETE.SUCCESS,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.DELETE.FAILED
+      message: error.message || AccessMessages.DELETE.FAILED,
     };
   }
 };
 
-const getAccessOptionsFromConfig = async () => {
+// Get Access options from config file
+const getAccessOptionsFromConfig = async (): Promise<{
+  success: boolean;
+  data?: any;
+  message?: string;
+}> => {
   try {
     const accessOptions = accessConfig.accesses || [];
     return { success: true, data: accessOptions };
-  } catch {
-    return { success: false, message: AccessMessages.CONFIG.LOAD_FAILED };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || AccessMessages.CONFIG.LOAD_FAILED,
+    };
   }
 };
 
-// Export functions as named exports
 export {
   createAccess,
   getAllAccesses,
   getAccessById,
   updateAccess,
   deleteAccessById,
-  getAccessOptionsFromConfig
+  getAccessOptionsFromConfig,
+  getAllAccessRecordsFromDb,
 };

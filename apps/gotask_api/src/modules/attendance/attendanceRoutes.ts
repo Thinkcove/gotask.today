@@ -87,12 +87,6 @@ AttendanceRoutes.push({
               throw new Error('No file provided in payload. Expected key: "file"');
             }
 
-            console.log("File object:", {
-              filename: payload.file.filename,
-              headers: payload.file.headers,
-              hasStream: !!payload.file._readableState
-            }); // Debug: Log file details
-
             const uploadDir = path.join(__dirname, "./Uploads");
             await fs.mkdir(uploadDir, { recursive: true });
 

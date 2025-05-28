@@ -99,16 +99,12 @@ const TaskInput: React.FC<TaskInputProps> = ({
   };
 
   const getProjectOptions = () => {
-    // If a user is selected but has no projects assigned, return "No options"
-    if (formData.user_id && filteredProjects.length === 0) {
-      return [{ id: "", name: "No options" }];
+    // Don't show any project if no user is selected
+    if (!formData.user_id) {
+      return [];
     }
-    // Use filtered projects if a user is selected and projects are loaded
-    if (formData.user_id && filteredProjects.length > 0) {
-      return filteredProjects;
-    }
-    // Fallback to all projects when no user is selected
-    return getAllProjects || [];
+
+    return filteredProjects;
   };
 
   const userOptions = getUserOptions();

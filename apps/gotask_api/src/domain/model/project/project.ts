@@ -10,6 +10,7 @@ export interface IProject extends Document {
   status: string;
   user_id?: string[]; //user id
   organization_id: string; // UUID from Organization model
+  due_date?: Date;
 }
 
 const ProjectSchema = new Schema<IProject>(
@@ -40,7 +41,8 @@ const ProjectSchema = new Schema<IProject>(
     ],
     organization_id: {
       type: String
-    }
+    },
+    due_date: { type: Date, required: false }
   },
   { timestamps: true }
 );

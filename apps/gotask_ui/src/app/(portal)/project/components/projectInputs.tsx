@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Grid } from "@mui/material";
-import FormField from "@/app/component/formField";
+import FormField from "@/app/component/input/formField";
 import { IProjectField, PROJECT_WORKFLOW } from "../interfaces/projectInterface";
 import { useAllOrganizations } from "../../organization/services/organizationAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";

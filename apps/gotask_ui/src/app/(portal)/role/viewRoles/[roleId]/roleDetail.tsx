@@ -18,7 +18,7 @@ import { useState } from "react";
 import { KeyedMutator } from "swr";
 import { Role } from "../../interfaces/roleInterface";
 import CommonDialog from "@/app/component/dialog/commonDialog";
-import FormField from "@/app/component/formField";
+import FormField from "@/app/component/input/formField";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { useAllAccess, removeAccessFromRole, updateRole } from "../../services/roleAction";

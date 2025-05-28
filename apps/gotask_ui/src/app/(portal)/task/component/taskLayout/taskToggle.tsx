@@ -5,10 +5,10 @@ import { useTranslations } from "next-intl";
 
 interface TaskToggleProps {
   view: "projects" | "users";
-  setView: React.Dispatch<React.SetStateAction<"projects" | "users">>;
+  onViewChange: (view: "projects" | "users") => void;
 }
 
-const TaskToggle: React.FC<TaskToggleProps> = ({ view, setView }) => {
+const TaskToggle: React.FC<TaskToggleProps> = ({ view, onViewChange }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
     <Box
@@ -21,10 +21,10 @@ const TaskToggle: React.FC<TaskToggleProps> = ({ view, setView }) => {
         marginBottom: "4px"
       }}
     >
-      {["projects", "assignees"].map((key) => (
+      {["projects", "users"].map((key) => (
         <Box
           key={key}
-          onClick={() => setView(key as "projects" | "users")}
+          onClick={() => onViewChange(key as "projects" | "users")}
           sx={{
             cursor: "pointer",
             fontSize: "0.875rem",

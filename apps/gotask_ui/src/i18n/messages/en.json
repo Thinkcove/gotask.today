@@ -198,7 +198,7 @@
     "viewmore": "ViewMore",
     "notask": "No tasks available",
     "projects": "Projects",
-    "assignees": "Assignees",
+    "users": "Assignees",
     "createtask": "Create New Task",
     "failedfetch": "Failed to Fetch the Task",
     "tasktitle": "Task Title is required",

@@ -19,10 +19,14 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 
-const TaskList: React.FC = () => {
+interface TaskListProps {
+  initialView?: "projects" | "users";
+}
+
+const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const { canAccess } = useUserPermission();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const [view, setView] = useState<"projects" | "users">("projects");
+  const [view, setView] = useState<"projects" | "users">(initialView);
   const router = useRouter();
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -212,6 +216,12 @@ const TaskList: React.FC = () => {
     setSearchParams(newParams);
     resetTaskState();
   };
+  const handleViewChange = (nextView: "projects" | "users") => {
+    if (nextView !== view) {
+      setView(nextView);
+      router.push(`/task/${nextView}`);
+    }
+  };
 
   return (
     <Box>
@@ -230,7 +240,7 @@ const TaskList: React.FC = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <SearchBar value={searchText} onChange={handleSearchChange} placeholder="Search Task" />
         </Box>
-        <TaskToggle view={view} setView={setView} />
+        <TaskToggle view={view} onViewChange={handleViewChange} />
       </Box>
 
       <TaskFilterControls

@@ -4,7 +4,7 @@ import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
 import { useAllUsers } from "@/app/(portal)/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
-import FormField, { SelectOption } from "@/app/component/formField";
+import FormField, { SelectOption } from "@/app/component/input/formField";
 import { useParams, useRouter } from "next/navigation";
 import { assignUsersToProject, removeUsersFromProject } from "../../services/projectAction";
 import { KeyedMutator } from "swr";

@@ -227,12 +227,15 @@ const FormField: React.FC<FormFieldProps> = ({
             }}
             disabled={disabled}
             filterSelectedOptions
-            renderOption={(props, option, { selected }) => (
-              <li {...props}>
-                <Checkbox checked={selected} sx={{ marginRight: 1 }} />
-                {option.name}
-              </li>
-            )}
+            renderOption={(props, option, { selected }) => {
+              const { key, ...rest } = props;
+              return (
+                <li key={key} {...rest}>
+                  <Checkbox checked={selected} sx={{ marginRight: 1 }} />
+                  {option.name}
+                </li>
+              );
+            }}
             renderInput={(params) => (
               <TextField
                 {...params}

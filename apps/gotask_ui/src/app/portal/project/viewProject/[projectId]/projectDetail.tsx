@@ -185,43 +185,63 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      bgcolor: "#ffffff",
-                      border: "1px solid #e0e0e0"
+                      bgcolor: "red",
+                      border: "1px solid #e0e0e0",
+                      overflow: "hidden", // prevent child overflow
+                      flexWrap: "wrap" // allow wrapping if content grows
                     }}
                   >
-                    <Stack direction="row" spacing={2} alignItems="center">
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                      sx={{ minWidth: 0, flex: 1 }}
+                    >
                       <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
 
-                      <Box>
+                      <Box sx={{ minWidth: 0 }}>
                         <Typography
                           fontWeight={600}
                           fontSize="1rem"
-                          sx={{ textTransform: "capitalize" }}
+                          sx={{
+                            textTransform: "capitalize",
+                            wordBreak: "break-word",
+                            maxWidth: 200 // adjust as needed
+                          }}
                         >
                           {user.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            wordBreak: "break-word",
+                            maxWidth: 200 // adjust as needed
+                          }}
+                        >
                           {user.user_id}
                         </Typography>
                       </Box>
                     </Stack>
 
                     {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
-                      <IconButton
-                        color="error"
-                        onClick={() => {
-                          setSelectedUserId(user.id); // <-- save which user is clicked
-                          setOpenDeleteDialog(true); // <-- open the confirmation dialog
-                        }}
-                        sx={{
-                          transition: "0.2s ease",
-                          "&:hover": {
-                            transform: "scale(1.1)"
-                          }
-                        }}
-                      >
-                        <Delete />
-                      </IconButton>
+                      <Box sx={{ flexShrink: 0 }}>
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            setSelectedUserId(user.id);
+                            setOpenDeleteDialog(true);
+                          }}
+                          sx={{
+                            transition: "0.2s ease",
+                            "&:hover": {
+                              transform: "scale(1.1)"
+                            }
+                          }}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </Box>
                     )}
                   </Box>
                 </Grid>

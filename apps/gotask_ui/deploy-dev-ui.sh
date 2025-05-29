@@ -21,7 +21,7 @@ scp -r -i "$keyfile" .next/* $user@$ipaddr:$appFolder/.next/
 scp -r -i "$keyfile" package.json $user@$ipaddr:$appFolder/package.json
 echo "New build Copied"
 
-ssh -i "$keyfile" $user@$ipaddr "pm2 restart 'test-gotask-today '"
+ssh -i "$keyfile" $user@$ipaddr "pm2 restart 'test-gotask-today'"
 
 echo "Service Restarted"
 

@@ -1,4 +1,6 @@
-import React, { useRef, useState } from "react";
+"use client";
+
+import React, { useRef, useState, useEffect } from "react";
 import { Grid, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {
@@ -8,7 +10,7 @@ import {
   useUserGroupTask
 } from "../../service/taskAction";
 import TaskToggle from "../taskLayout/taskToggle";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import TaskCard from "../taskLayout/taskCard";
 import { IGroup, Project, User } from "../../interface/taskInterface";
 import SearchBar from "@/app/component/searchBar/searchBar";
@@ -28,45 +30,60 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { canAccess } = useUserPermission();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const [view, setView] = useState<"projects" | "users">(initialView);
-  const router = useRouter();
+  const { getAllProjects: allProjects } = useAllProjects();
+  const { getAllUsers: allUsers } = useAllUsers();
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const isFetchingRef = useRef(false);
   const appendedPages = useRef<Set<string>>(new Set());
-  const previousView = useRef(view);
+  const previousView = useRef(initialView);
   const scrollFrameRef = useRef<number | null>(null);
 
+  const [view, setView] = useState<"projects" | "users">(initialView);
   const [page, setPage] = useState(1);
   const [allTasks, setAllTasks] = useState<IGroup[]>([]);
   const [hasMoreData, setHasMoreData] = useState(true);
 
-  const [searchText, setSearchText] = useState("");
-  const [searchParams, setSearchParams] = useState<{
+  // Filters
+  const [searchText, setSearchText] = useState<string>(searchParams.get("title") || "");
+  const [searchParamsObj, setSearchParamsObj] = useState<{
     search_vals?: string[][];
     search_vars?: string[][];
   }>({});
+  const [statusFilter, setStatusFilter] = useState<string[]>(searchParams.getAll("status"));
+  const [severityFilter, setSeverityFilter] = useState<string[]>(searchParams.getAll("severity"));
+  const [projectFilter, setProjectFilter] = useState<string[]>(searchParams.getAll("project_name"));
+  const [userFilter, setUserFilter] = useState<string[]>(searchParams.getAll("user_name"));
 
-  const [minDate, setMinDate] = useState<string | undefined>();
-  const [maxDate, setMaxDate] = useState<string | undefined>();
-  const [dateVar, setDateVar] = useState<string>("due_date");
-  const [moreDays, setMoreDays] = useState<string | undefined>();
-  const [lessDays, setLessDays] = useState<string | undefined>();
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [severityFilter, setSeverityFilter] = useState<string[]>([]);
-  const [projectFilter, setProjectFilter] = useState<string[]>([]);
-  const [userFilter, setUserFilter] = useState<string[]>([]);
-  const [dateFrom, setDateFrom] = useState<string>("");
-  const [dateTo, setDateTo] = useState<string>("");
-  const [variationType, setVariationType] = useState<"more" | "less" | "">("");
-  const [variationDays, setVariationDays] = useState<number>(0);
-  const { getAllProjects: allProjects } = useAllProjects();
-  const { getAllUsers: allUsers } = useAllUsers();
-  // Memoize params to avoid recomputation
-  const search_vals = searchParams.search_vals;
-  const search_vars = searchParams.search_vars;
+  const [minDate, setMinDate] = useState<string | undefined>(
+    searchParams.get("minDate") || undefined
+  );
+  const [maxDate, setMaxDate] = useState<string | undefined>(
+    searchParams.get("maxDate") || undefined
+  );
+  const [dateVar, setDateVar] = useState<string>(searchParams.get("dateVar") || "due_date");
+  const [moreDays, setMoreDays] = useState<string | undefined>(
+    searchParams.get("moreDays") || undefined
+  );
+  const [lessDays, setLessDays] = useState<string | undefined>(
+    searchParams.get("lessDays") || undefined
+  );
+  const [variationType, setVariationType] = useState<"more" | "less" | "">(
+    (searchParams.get("variationType") as any) || ""
+  );
+  const [variationDays, setVariationDays] = useState<number>(
+    Number(searchParams.get("variationDays")) || 0
+  );
+  const [dateFrom, setDateFrom] = useState<string>(searchParams.get("dateFrom") || "");
+  const [dateTo, setDateTo] = useState<string>(searchParams.get("dateTo") || "");
+
+  // Memoize filters
+  const search_vals = searchParamsObj.search_vals;
+  const search_vars = searchParamsObj.search_vars;
 
   const isProjectView = view === "projects";
 
@@ -81,7 +98,6 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     moreDays,
     lessDays
   );
-
   const userData = useUserGroupTask(
     page,
     6,
@@ -110,20 +126,18 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
         isError: userData.isError
       };
 
-  const tasks = fetchedTasks ?? [];
+  // Append tasks to state
   const currentTaskKey = `${view}_${page}`;
-
-  // Append new data logic
-  if (!isLoading && !appendedPages.current.has(currentTaskKey) && hasMoreData) {
-    if (!tasks) return;
+  if (!isLoading && !appendedPages.current.has(currentTaskKey) && hasMoreData && fetchedTasks) {
     const existingIds = new Set(allTasks.map((g) => g.id));
-    const newTasks = tasks.filter((g: IGroup) => !existingIds.has(g.id));
+    const newTasks = fetchedTasks.filter((g: IGroup) => !existingIds.has(g.id));
     setAllTasks((prev) => [...prev, ...newTasks]);
-    if (tasks.length < 6) setHasMoreData(false);
+    if (fetchedTasks.length < 6) setHasMoreData(false);
     appendedPages.current.add(currentTaskKey);
     isFetchingRef.current = false;
   }
 
+  // Reset task data
   const resetTaskState = () => {
     setPage(1);
     setAllTasks([]);
@@ -131,11 +145,81 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     setHasMoreData(true);
   };
 
-  // Reset logic when view changes
-  if (previousView.current !== view) {
-    previousView.current = view;
+  useEffect(() => {
+    if (previousView.current !== view) {
+      previousView.current = view;
+      resetTaskState();
+    }
+  }, [view]);
+
+  const updateURLParams = () => {
+    const params = new URLSearchParams();
+
+    if (searchText.trim()) params.set("title", searchText);
+    statusFilter.forEach((s) => params.append("status", s));
+    severityFilter.forEach((s) => params.append("severity", s));
+    projectFilter.forEach((p) => params.append("project_name", p));
+    userFilter.forEach((u) => params.append("user_name", u));
+    if (minDate) params.set("minDate", minDate);
+    if (maxDate) params.set("maxDate", maxDate);
+    if (dateVar && (minDate || maxDate)) {
+      params.set("dateVar", dateVar);
+    }
+
+    if (moreDays) params.set("moreDays", moreDays);
+    if (lessDays) params.set("lessDays", lessDays);
+    if (variationType) params.set("variationType", variationType);
+    if (variationDays) params.set("variationDays", variationDays.toString());
+    if (dateFrom) params.set("dateFrom", dateFrom);
+    if (dateTo) params.set("dateTo", dateTo);
+
+    router.replace(`?${params.toString()}`);
+  };
+
+  useEffect(() => {
+    updateURLParams();
+
+    const search_vals: string[][] = [];
+    const search_vars: string[][] = [];
+
+    if (searchText.trim()) {
+      search_vals.push([searchText]);
+      search_vars.push(["title"]);
+    }
+    statusFilter.forEach((s) => {
+      search_vals.push([s]);
+      search_vars.push(["status"]);
+    });
+    severityFilter.forEach((s) => {
+      search_vals.push([s]);
+      search_vars.push(["severity"]);
+    });
+    projectFilter.forEach((p) => {
+      search_vals.push([p]);
+      search_vars.push(["project_name"]);
+    });
+    userFilter.forEach((u) => {
+      search_vals.push([u]);
+      search_vars.push(["user_name"]);
+    });
+
+    setSearchParamsObj({ search_vals, search_vars });
     resetTaskState();
-  }
+  }, [
+    searchText,
+    statusFilter,
+    severityFilter,
+    projectFilter,
+    userFilter,
+    minDate,
+    maxDate,
+    moreDays,
+    lessDays,
+    variationType,
+    variationDays,
+    dateFrom,
+    dateTo
+  ]);
 
   const handleScroll = () => {
     if (scrollFrameRef.current !== null) return;
@@ -152,151 +236,11 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     });
   };
 
-  const handleSearchChange = (val: string) => {
-    setSearchText(val);
-    const trimmedVal = val.trim();
-
-    const newParams = {
-      ...searchParams,
-      ...(trimmedVal
-        ? {
-            search_vals: [[trimmedVal]],
-            search_vars: [["title"]]
-          }
-        : {
-            search_vals: [],
-            search_vars: []
-          })
-    };
-
-    setSearchParams(newParams);
-    resetTaskState();
-  };
-
-  const isSearched = searchText.trim() !== "";
-
-  const isFiltered = () =>
-    (searchParams.search_vals ?? []).some((arr) => arr.length > 0) ||
-    (!!minDate && !!maxDate) ||
-    !!moreDays ||
-    !!lessDays;
-
-  if (isError) {
-    return (
-      <Grid container spacing={3} sx={{ p: 2, mb: 8 }}>
-        <Grid item xs={12}>
-          <EmptyState imageSrc={TaskErrorImage} message={transtask("failedfetch")} />
-        </Grid>
-      </Grid>
-    );
-  }
-
   const handleViewChange = (nextView: "projects" | "users") => {
     if (nextView !== view) {
       setView(nextView);
       router.push(`/task/${nextView}`);
     }
-  };
-
-  const updateSearchParamsFromFilters = (
-    status: string[],
-    severity: string[],
-    projects: string[],
-    users: string[],
-    searchTextValue: string
-  ) => {
-    const search_vals: string[][] = [];
-    const search_vars: string[][] = [];
-
-    if (status.length) {
-      status.forEach((v) => {
-        search_vals.push([v]);
-        search_vars.push(["status"]);
-      });
-    }
-    if (severity.length) {
-      severity.forEach((v) => {
-        search_vals.push([v]);
-        search_vars.push(["severity"]);
-      });
-    }
-    if (projects.length) {
-      projects.forEach((v) => {
-        search_vals.push([v]);
-        search_vars.push(["project_name"]);
-      });
-    }
-    if (users.length) {
-      users.forEach((v) => {
-        search_vals.push([v]);
-        search_vars.push(["user_name"]);
-      });
-    }
-
-    if (searchTextValue.trim()) {
-      search_vals.push([searchTextValue]);
-      search_vars.push(["title"]);
-    }
-
-    setSearchParams({ search_vals, search_vars });
-    resetTaskState();
-  };
-
-  const handleStatusChange = (val: string[]) => {
-    setStatusFilter(val);
-    updateSearchParamsFromFilters(val, severityFilter, projectFilter, userFilter, searchText);
-  };
-  const handleSeverityChange = (val: string[]) => {
-    setSeverityFilter(val);
-    updateSearchParamsFromFilters(statusFilter, val, projectFilter, userFilter, searchText);
-  };
-  const handleProjectChange = (val: string[]) => {
-    setProjectFilter(val);
-    updateSearchParamsFromFilters(statusFilter, severityFilter, val, userFilter, searchText);
-  };
-  const handleUserChange = (val: string[]) => {
-    setUserFilter(val);
-    updateSearchParamsFromFilters(statusFilter, severityFilter, projectFilter, val, searchText);
-  };
-
-  const handleDateChange = (from: string, to: string) => {
-    setMinDate(from || undefined);
-    setMaxDate(to || undefined);
-    setDateVar("due_date");
-
-    const newParams = {
-      ...searchParams,
-      ...(searchText.trim()
-        ? {
-            search_vals: [...(searchParams.search_vals || []), [searchText]],
-            search_vars: [...(searchParams.search_vars || []), ["title"]]
-          }
-        : {})
-    };
-
-    setSearchParams(newParams);
-    resetTaskState();
-  };
-
-  const handleVariationChange = (type: "more" | "less", days: number) => {
-    const more = type === "more" ? `${days}d` : undefined;
-    const less = type === "less" ? `-${days}d` : undefined;
-
-    setMoreDays(more);
-    setLessDays(less);
-
-    const newParams = {
-      ...searchParams,
-      ...(searchText.trim()
-        ? {
-            search_vals: [...(searchParams.search_vals || []), [searchText]],
-            search_vars: [...(searchParams.search_vars || []), ["title"]]
-          }
-        : {})
-    };
-
-    setSearchParams(newParams);
-    resetTaskState();
   };
 
   const handleViewMore = (id: string) => {
@@ -324,6 +268,39 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     router.push(`/task/${view}/${id}?${params.toString()}`);
   };
 
+  const isFiltered = () =>
+    !!statusFilter.length ||
+    !!severityFilter.length ||
+    !!projectFilter.length ||
+    !!userFilter.length ||
+    !!searchText.trim();
+
+  if (isError) {
+    return (
+      <Grid container spacing={3} sx={{ p: 2, mb: 8 }}>
+        <Grid item xs={12}>
+          <EmptyState imageSrc={TaskErrorImage} message={transtask("failedfetch")} />
+        </Grid>
+      </Grid>
+    );
+  }
+  // Define this function above the return statement
+  const handleVariationChange = (type: "more" | "less" | "", days: number) => {
+    setVariationType(type);
+    setVariationDays(days);
+
+    if (type === "more") {
+      setMoreDays(`${days}d`);
+      setLessDays(undefined);
+    } else if (type === "less") {
+      setLessDays(`-${days}d`);
+      setMoreDays(undefined);
+    } else {
+      setMoreDays(undefined);
+      setLessDays(undefined);
+    }
+  };
+
   return (
     <Box>
       <Box
@@ -339,7 +316,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <SearchBar value={searchText} onChange={handleSearchChange} placeholder="Search Task" />
+          <SearchBar value={searchText} onChange={setSearchText} placeholder="Search Task" />
         </Box>
         <TaskToggle view={view} onViewChange={handleViewChange} />
       </Box>
@@ -355,26 +332,31 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
         variationDays={variationDays}
         dateFrom={dateFrom}
         dateTo={dateTo}
-        onStatusChange={handleStatusChange}
-        onSeverityChange={handleSeverityChange}
-        onProjectChange={handleProjectChange}
-        onUserChange={handleUserChange}
+        onStatusChange={setStatusFilter}
+        onSeverityChange={setSeverityFilter}
+        onProjectChange={setProjectFilter}
+        onUserChange={setUserFilter}
         onDateChange={(from, to) => {
           setDateFrom(from);
           setDateTo(to);
-          handleDateChange(from, to);
+          setMinDate(from || undefined);
+          setMaxDate(to || undefined);
         }}
-        onVariationChange={(type, days) => {
-          setVariationType(type);
-          setVariationDays(days);
-          handleVariationChange(type, days);
-        }}
+        onVariationChange={handleVariationChange}
         onClearFilters={() => {
           setStatusFilter([]);
           setSeverityFilter([]);
           setProjectFilter([]);
           setUserFilter([]);
-          updateSearchParamsFromFilters([], [], [], [], searchText);
+          setSearchText("");
+          setDateFrom("");
+          setDateTo("");
+          setMinDate(undefined);
+          setMaxDate(undefined);
+          setVariationType("");
+          setVariationDays(0);
+          setMoreDays(undefined);
+          setLessDays(undefined);
         }}
         transtask={transtask}
       />
@@ -382,14 +364,14 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
       <Box
         ref={scrollRef}
         onScroll={handleScroll}
-        sx={{ overflowY: "auto", height: "calc(100vh - 150px)", scrollBehavior: "smooth" }}
+        sx={{ overflowY: "auto", height: "calc(100vh - 150px)" }}
       >
         <Grid container spacing={3} sx={{ p: 2, mb: 8 }}>
-          {allTasks.length === 0 && !isLoading && !isError && (
+          {allTasks.length === 0 && !isLoading && (
             <Grid item xs={12}>
               <EmptyState
-                imageSrc={isFiltered() || isSearched ? NoSearchResultsImage : NoTasksImage}
-                message={isFiltered() || isSearched ? "No data found" : "No tasks available"}
+                imageSrc={isFiltered() ? NoSearchResultsImage : NoTasksImage}
+                message={isFiltered() ? "No data found" : "No tasks available"}
               />
             </Grid>
           )}

@@ -186,6 +186,7 @@
     "filterseverity": "Severity",
     "filterduedate": "Date",
     "filtervariation": "Variation",
+    "daysvariation": "Days Variation",
     "from": "From",
     "to": "To",
     "labelmore": "More Variation",

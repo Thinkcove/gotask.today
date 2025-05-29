@@ -22,7 +22,7 @@ interface Props {
   onProjectChange: (val: string[]) => void;
   onUserChange: (val: string[]) => void;
   onDateChange: (from: string, to: string) => void;
-  onVariationChange: (type: "more" | "less", days: number) => void;
+  onVariationChange: (type: "more" | "less" | "", days: number) => void;
   onClearFilters: () => void;
   transtask: (key: string) => string;
   hideProjectFilter?: boolean;
@@ -54,15 +54,45 @@ const TaskFilters: React.FC<Props> = ({
   const variationRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [variationPopoverOpen, setVariationPopoverOpen] = useState(false);
-  const appliedFilterCount =
-    (statusFilter.length > 0 ? 1 : 0) +
-    (severityFilter.length > 0 ? 1 : 0) +
-    (!hideProjectFilter && projectFilter.length > 0 ? 1 : 0) +
-    (!hideUserFilter && userFilter.length > 0 ? 1 : 0) +
-    (variationType !== "" ? 1 : 0) +
-    (variationDays > 0 ? 1 : 0) +
-    (dateFrom !== "" ? 1 : 0) +
-    (dateTo !== "" ? 1 : 0);
+  let appliedFilterCount = 0;
+
+  if (statusFilter.length > 0) {
+    console.log("Status filter applied:", statusFilter);
+    appliedFilterCount += 1;
+  }
+
+  if (severityFilter.length > 0) {
+    console.log("Severity filter applied:", severityFilter);
+    appliedFilterCount += 1;
+  }
+
+  if (!hideProjectFilter && projectFilter.length > 0) {
+    console.log("Project filter applied:", projectFilter);
+    appliedFilterCount += 1;
+  }
+
+  if (!hideUserFilter && userFilter.length > 0) {
+    console.log("User filter applied:", userFilter);
+    appliedFilterCount += 1;
+  }
+
+  if (variationDays > 0) {
+    console.log("Variation days filter applied:", variationDays);
+    appliedFilterCount += 1;
+  }
+
+  if (typeof dateFrom === "string" && dateFrom.trim() !== "") {
+    console.log("Date from filter applied:", dateFrom);
+    appliedFilterCount += 1;
+  }
+
+  if (typeof dateTo === "string" && dateTo.trim() !== "") {
+    console.log("Date to filter applied:", dateTo);
+    appliedFilterCount += 1;
+  }
+
+  console.log("Total appliedFilterCount:", appliedFilterCount);
+
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -154,13 +184,19 @@ const TaskFilters: React.FC<Props> = ({
         {/* Variation Dropdown + Popover */}
         <Box ref={variationRef}>
           <FilterDropdown
-            label="Variation"
+            label={transtask("filtervariation")}
             options={["more", "less"]}
             selected={variationType ? [variationType] : []}
             onChange={(val) => {
-              const type = val[0] as "more" | "less";
-              onVariationChange(type, variationDays);
-              setVariationPopoverOpen(true);
+              if (val.length === 0) {
+                // User clicked "X" or cleared the dropdown
+                onVariationChange("", 0);
+                setVariationPopoverOpen(false); // Close popover if needed
+              } else {
+                const type = val[0] as "more" | "less";
+                onVariationChange(type, variationDays);
+                setVariationPopoverOpen(true);
+              }
             }}
             singleSelect
           />
@@ -174,7 +210,7 @@ const TaskFilters: React.FC<Props> = ({
         >
           <Box sx={{ p: 2, width: 200 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              Days Variation
+              {transtask("daysvariation")}
             </Typography>
             <Slider
               value={variationDays}

@@ -1,6 +1,26 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { IQueryHistory } from "../../interface/query/queryInterface";
+
+export interface ParsedQuery {
+  keywords?: string[];
+  dates?: Date[];
+  empcode?: string | null;
+  empname?: string | null;
+  id?: string | null;
+  project_id?: string | null;
+  project_name?: string | null;
+  timeRange?: string | null;
+}
+
+export interface IQueryHistory extends Document {
+  id: string;
+  query: string;
+  timestamp: Date;
+  parsedQuery: Record<string, any>;
+  response: string;
+  conversationId: string;
+  type: string;
+}
 
 const QueryHistorySchema = new Schema<IQueryHistory>(
   {

@@ -2,15 +2,10 @@ import React, { useState, useMemo } from "react";
 import { Grid } from "@mui/material";
 import FormField from "../../../component/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
-import {
-  useAllProjects,
-  useAllUsers,
-  getProjectIdsAndNames,
-  getUsersByProjectId
-} from "../service/taskAction";
-import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { IFormField, Project, User } from "@/app/(portal)/task/interface/taskInterface";
+import { getProjectIdsAndNames, getUsersByProjectId, useAllProjects, useAllUsers } from "@/app/(portal)/task/service/taskAction";
 
 interface TaskInputProps {
   formData: IFormField;

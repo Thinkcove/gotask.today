@@ -7,7 +7,7 @@ import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { IFormField } from "../interface/taskInterface";
+import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -33,12 +33,12 @@ const CreateTask: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Handle form field changes
-  const handleInputChange = (name: string, value: string | Date) => {
+  const handleInputChange = (name: string, value: string | Date | Project[] | User[]) => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value instanceof Date ? value.toISOString().split("T")[0] : value
     }));
-  };
+    };
 
   // Validate required fields
   const validateForm = () => {

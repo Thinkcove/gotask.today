@@ -45,7 +45,6 @@ const ViewMoreAction: React.FC = () => {
     if (lessDays) return parseInt(lessDays.replace("-", ""));
     return 0;
   }, [moreDays, lessDays]);
-
   const { search_vals, search_vars } = useMemo(() => {
     const vals: string[][] = [];
     const vars: string[][] = [];
@@ -70,8 +69,13 @@ const ViewMoreAction: React.FC = () => {
       vars.push(["user_name"]);
     });
 
+    if (id) {
+      vals.push([id as string]);
+      vars.push(["id"]);
+    }
+
     return { search_vals: vals, search_vars: vars };
-  }, [statusFilter, severityFilter, projectFilter, userFilter]);
+  }, [statusFilter, severityFilter, projectFilter, userFilter, id]);
 
   const { getAllProjects: allProjects } = useAllProjects();
   const { getAllUsers: allUsers } = useAllUsers();
@@ -94,6 +98,8 @@ const ViewMoreAction: React.FC = () => {
 
   const { tasksByProjects, isLoading: isLoadingProjects } = useProjectGroupTask(...hookArgs);
   const { tasksByUsers, isLoading: isLoadingUsers } = useUserGroupTask(...hookArgs);
+  console.log("tasksByProjects", tasksByProjects);
+  console.log("tasksByUsers", tasksByUsers);
 
   const drawerTasks = view === "projects" ? tasksByProjects : tasksByUsers;
   const isLoading = view === "projects" ? isLoadingProjects : isLoadingUsers;

@@ -118,7 +118,8 @@ const OtpLogin = () => {
         fullWidth
         variant="contained"
         type="submit"
-        disabled={loading}
+        disabled={loading || (otpSent ? otp.trim() === "" : email.trim() === "")}
+
       >
         {loading
           ? translogin("loading")

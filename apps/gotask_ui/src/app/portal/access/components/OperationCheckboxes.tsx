@@ -126,7 +126,7 @@ const OperationCheckboxes: React.FC<Props> = ({
           >
             {operations.length === 0 ? (
               <Typography variant="body2" color="text.secondary" sx={{ p: 1 }}>
-                {t('Access.noOperationsAvailable')}
+                {t('noOperationsAvailable')}
               </Typography>
             ) : (
               operations.map((operation) => (

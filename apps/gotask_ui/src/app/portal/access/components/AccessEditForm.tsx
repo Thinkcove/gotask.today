@@ -8,17 +8,17 @@ import {
   Typography,
   Stack,
   IconButton,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import {
   useAccessOptions,
   useAccessRoleById,
-  updateAccessRole
+  updateAccessRole,
 } from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
@@ -32,33 +32,55 @@ export default function AccessEditForm() {
   const { id } = useParams();
   const router = useRouter();
 
+  // State for form fields
   const [roleName, setRoleName] = useState<string>("");
   const [application, setApplication] = useState<AccessRole["application"]>([]);
   const [currentTab, setCurrentTab] = useState<string>("");
+
+  // Submission/loading state
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Snackbar state
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info" | "warning">("info");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    "success" | "error" | "info" | "warning"
+  >("info");
 
-  const { role, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(String(id));
-  const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
+  // Fetch role data & access options
+  const {
+    role,
+    isLoading: isRoleLoading,
+    error: roleError,
+  } = useAccessRoleById(String(id));
+  const {
+    accessOptions,
+    isLoading: isOptionsLoading,
+    error: optionsError,
+  } = useAccessOptions();
 
   const validModules = ["User Management", "Task Management", "Project Management"];
 
-  if (role && roleName === "" && application.length === 0) {
-    setRoleName(role.name);
-    setApplication(role.application || []);
-  }
+  // Initialize roleName and application when role data arrives
+  useEffect(() => {
+    if (role) {
+      setRoleName(role.name);
+      setApplication(role.application || []);
+    }
+  }, [role]);
 
-  if (accessOptions.length > 0 && !currentTab) {
-    const firstValidModule =
-      role?.application?.find((app: { access: string }) => validModules.includes(app.access))?.access ||
-      accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
-      validModules[0];
-    setCurrentTab(firstValidModule);
-  }
+  // Initialize current tab when accessOptions or role.application changes
+  useEffect(() => {
+    if (accessOptions.length > 0 && !currentTab) {
+      const firstValidModule =
+        role?.application?.find((app) => validModules.includes(app.access))?.access ||
+        accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
+        validModules[0];
+      setCurrentTab(firstValidModule);
+    }
+  }, [accessOptions, role, currentTab]);
 
+  // Handle checkbox changes for permissions
   const handlePermissionChange = (access: string, action: string, checked: boolean) => {
     setApplication((prev) => {
       const updated = [...prev];
@@ -80,7 +102,10 @@ export default function AccessEditForm() {
     setCurrentTab(module);
   };
 
-  const showSnackbar = (message: string, severity: "success" | "error" | "info" | "warning") => {
+  const showSnackbar = (
+    message: string,
+    severity: "success" | "error" | "info" | "warning"
+  ) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setOpenSnackbar(true);
@@ -100,7 +125,7 @@ export default function AccessEditForm() {
     const payload = {
       name: roleName.trim(),
       application,
-      createdAt: role.createdAt
+      createdAt: role.createdAt,
     };
 
     try {
@@ -122,14 +147,27 @@ export default function AccessEditForm() {
     }
   };
 
-  const selectedPermissionsMap = application.reduce((acc: Record<string, string[]>, app) => {
-    acc[app.access] = app.actions;
-    return acc;
-  }, {});
+  // Map selected permissions for the UI
+  const selectedPermissionsMap = application.reduce(
+    (acc: Record<string, string[]>, app) => {
+      acc[app.access] = app.actions;
+      return acc;
+    },
+    {}
+  );
 
+  // Loading and error states
   if (isRoleLoading || isOptionsLoading) {
     return (
-      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -137,7 +175,15 @@ export default function AccessEditForm() {
 
   if (roleError || optionsError) {
     return (
-      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="body1" color="error">
           {roleError || optionsError}
         </Typography>
@@ -156,7 +202,7 @@ export default function AccessEditForm() {
         borderRadius: 2,
         boxShadow: 3,
         p: 2,
-        m: 3
+        m: 3,
       }}
     >
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -188,8 +234,8 @@ export default function AccessEditForm() {
               "& .MuiOutlinedInput-root": {
                 borderRadius: 1,
                 "&:hover fieldset": { borderColor: "#741B92" },
-                "&.Mui-focused fieldset": { borderColor: "#741B92" }
-              }
+                "&.Mui-focused fieldset": { borderColor: "#741B92" },
+              },
             }}
           />
         </Box>
@@ -231,7 +277,7 @@ export default function AccessEditForm() {
           mt: { xs: 2, sm: 0 },
           backgroundColor: "white",
           padding: "8px 16px",
-          borderTop: "1px solid #ddd"
+          borderTop: "1px solid #ddd",
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
@@ -244,7 +290,7 @@ export default function AccessEditForm() {
               borderRadius: 1,
               textTransform: "none",
               "&:hover": { bgcolor: "#f5f5f5" },
-              width: { xs: "100%", sm: "auto" }
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             {t("cancel")}
@@ -262,7 +308,7 @@ export default function AccessEditForm() {
               textTransform: "none",
               bgcolor: "#741B92",
               "&:hover": { bgcolor: "#5e1675" },
-              width: { xs: "100%", sm: "auto" }
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             {isSubmitting ? <CircularProgress size={20} /> : t("editaccess")}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -23,10 +23,11 @@ import {
   useAccessOptions,
   deleteAccessRole,
 } from "../services/accessService";
+
 import AccessPermissionsContainer from "./AccessPermissionsContainer";
 import AccessHeading from "./AccessHeading";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
-import CommonDialog from "../../../component/dialog/commonDialog"; // ✅ Import your dialog
+import CommonDialog from "../../../component/dialog/commonDialog";
 
 const AccessView: React.FC = () => {
   const t = useTranslations("Access");
@@ -39,20 +40,20 @@ const AccessView: React.FC = () => {
 
   const [currentTab, setCurrentTab] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // ✅ Dialog state
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const {
     role: accessRole,
     isLoading: isRoleLoading,
     error: roleError,
   } = useAccessRoleById(id as string);
+
   const {
     accessOptions,
     isLoading: isOptionsLoading,
     error: optionsError,
   } = useAccessOptions();
 
-  // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<
@@ -68,21 +69,18 @@ const AccessView: React.FC = () => {
     setSnackbarOpen(true);
   };
 
-  const validModules = [
-    "User Management",
-    "Task Management",
-    "Project Management",
-  ];
+  const validModules = ["User Management", "Task Management", "Project Management"];
 
-  if (accessOptions.length > 0 && !currentTab && accessRole) {
-    const firstValidModule =
-      accessRole.application?.find((app: { access: string }) =>
-        validModules.includes(app.access)
-      )?.access ||
-      accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
-      validModules[0];
-    setCurrentTab(firstValidModule);
-  }
+  useEffect(() => {
+    if (accessOptions.length > 0 && !currentTab && accessRole) {
+      const firstValid =
+        accessRole.application?.find((a) => validModules.includes(a.access))?.access ||
+        accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
+        validModules[0];
+
+      setCurrentTab(firstValid);
+    }
+  }, [accessOptions, accessRole]);
 
   const confirmDelete = async () => {
     if (!accessRole || isDeleting) return;
@@ -91,30 +89,25 @@ const AccessView: React.FC = () => {
       setIsDeleting(true);
       const res = await deleteAccessRole(accessRole.id);
       if (res.success) {
-        showSnackbar(res.message || t("updatesuccess"), "success");
-        setTimeout(() => {
-          router.push("/portal/access");
-        }, 500);
+        showSnackbar(res.message || t("deletesuccess"), "success");
+        setTimeout(() => router.push("/portal/access"), 500);
       } else {
-        showSnackbar(res.message || t("updateerror"), "error");
+        showSnackbar(res.message || t("deleteerror"), "error");
       }
     } catch (err) {
-      console.error("Failed to delete access role:", err);
-      showSnackbar(t("updateerror"), "error");
+      console.error("Delete error:", err);
+      showSnackbar(t("deleteerror"), "error");
     } finally {
       setIsDeleting(false);
-      setOpenDeleteDialog(false); // ✅ Close dialog after action
+      setOpenDeleteDialog(false);
     }
   };
 
   const selectedPermissions =
-    accessRole?.application?.reduce(
-      (acc: Record<string, string[]>, app: { access: string; actions: string[] }) => {
-        acc[app.access] = app.actions;
-        return acc;
-      },
-      {}
-    ) || {};
+    accessRole?.application?.reduce((acc: Record<string, string[]>, app) => {
+      acc[app.access] = app.actions;
+      return acc;
+    }, {}) || {};
 
   if (isRoleLoading || isOptionsLoading) {
     return (
@@ -191,34 +184,20 @@ const AccessView: React.FC = () => {
           flexDirection={isMobile ? "column" : "row"}
           gap={isMobile ? 2 : 0}
         >
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="flex-start"
-          >
-            {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
-              <Tooltip title={t("cancel")}>
-                <IconButton onClick={() => router.back()} color="primary">
-                  <ArrowBack />
-                </IconButton>
-              </Tooltip>
-            )}
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Tooltip title={t("cancel")}>
+              <IconButton onClick={() => router.back()} color="primary">
+                <ArrowBack />
+              </IconButton>
+            </Tooltip>
             <AccessHeading title={accessRole.name} />
           </Stack>
 
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="flex-end"
-          >
+          <Stack direction="row" spacing={1} alignItems="center">
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
               <Tooltip title={t("editaccess")}>
                 <IconButton
-                  onClick={() =>
-                    router.push(`/portal/access/pages/edit/${accessRole.id}`)
-                  }
+                  onClick={() => router.push(`/portal/access/pages/edit/${accessRole.id}`)}
                   color="primary"
                 >
                   <Edit />
@@ -240,10 +219,7 @@ const AccessView: React.FC = () => {
         </Box>
 
         <Box sx={{ width: "100%", maxWidth: 500, mb: 3 }}>
-          <Typography
-            variant="body2"
-            sx={{ mb: 1, color: "#333", fontWeight: 500 }}
-          >
+          <Typography variant="body2" sx={{ mb: 1, color: "#333", fontWeight: 500 }}>
             {t("accessName")}
           </Typography>
           <TextField
@@ -254,12 +230,8 @@ const AccessView: React.FC = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 1,
-                "&:hover fieldset": {
-                  borderColor: "#741B92",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#741B92",
-                },
+                "&:hover fieldset": { borderColor: "#741B92" },
+                "&.Mui-focused fieldset": { borderColor: "#741B92" },
               },
             }}
           />
@@ -277,17 +249,17 @@ const AccessView: React.FC = () => {
           </Box>
         ) : (
           <AccessPermissionsContainer
-            accessOptions={accessOptions}
-            currentModule={currentTab}
-            selectedPermissions={selectedPermissions}
-            onTabChange={setCurrentTab}
-            onCheckboxChange={() => {}}
-            readOnly
-          />
+              accessOptions={accessOptions}
+              currentModule={currentTab}
+              selectedPermissions={selectedPermissions}
+              onTabChange={setCurrentTab}
+              onCheckboxChange={() => { } }
+              readOnly fieldOptions={undefined} selectedFields={{}} onFieldChange={function (module: string, action: string, field: string, checked: boolean): void {
+                throw new Error("Function not implemented.");
+              } }          />
         )}
       </Box>
 
-      {/* ✅ Confirmation Dialog */}
       <CommonDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
@@ -300,7 +272,6 @@ const AccessView: React.FC = () => {
         </Typography>
       </CommonDialog>
 
-      {/* ✅ Reusable Snackbar */}
       <CustomSnackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}

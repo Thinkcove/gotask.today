@@ -2,17 +2,9 @@ import env from "@/app/common/env";
 import { getData, postData, putData, deleteData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
 import { withAuth } from "@/app/common/utils/authToken";
-import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
+import { AccessOption, AccessRole, AccessData } from "../interfaces/accessInterfaces";
 
-// Interface for AccessData
-interface AccessData {
-  id: string;
-  name: string;
-  accesses: { access: string; actions: string[] }[];
-  createdAt?: string;
-}
-
-// Fetch access options
+// Fetch access options from config endpoint
 export const getAccessOptions = async (): Promise<{
   success: boolean;
   data?: AccessOption[];
@@ -31,7 +23,7 @@ export const getAccessOptions = async (): Promise<{
 };
 
 // SWR hook for access options
-const fetchAccessOptions = async () => {
+export const fetchAccessOptions = async (): Promise<AccessOption[]> => {
   const result = await withAuth(async (token) => {
     return await getData(`${env.API_BASE_URL}/access/options`, token);
   });
@@ -44,20 +36,20 @@ const fetchAccessOptions = async () => {
 };
 
 export const useAccessOptions = () => {
-  const { data, error, isLoading } = useSWR([`fetchAccessOptions`], fetchAccessOptions, {
-    revalidateOnFocus: false
+  const { data, error, isLoading } = useSWR([fetchAccessOptions], fetchAccessOptions, {
+    revalidateOnFocus: false,
   });
 
   return {
     accessOptions: Array.isArray(data) ? data : [],
     isLoading,
-    error: error ? error.message : null
+    error: error ? error.message : null,
   };
 };
 
 // Create an access role
 export const createAccessRole = async (
-  accessData: AccessRole
+  accessData: Omit<AccessRole, "id" | "createdAt" | "updatedAt"> // don't send id or timestamps
 ): Promise<{ success: boolean; data?: AccessRole; message?: string }> => {
   const result = await withAuth(async (token) => {
     const data = await postData(
@@ -76,7 +68,7 @@ export const createAccessRole = async (
 };
 
 // Fetch all access roles
-const fetchAccessRoles = async () => {
+export const fetchAccessRoles = async (): Promise<AccessRole[]> => {
   const result = await withAuth(async (token) => {
     return await getData(`${env.API_BASE_URL}/access`, token);
   });
@@ -89,41 +81,40 @@ const fetchAccessRoles = async () => {
 };
 
 export const useAllAccessRoles = () => {
-  const { data, error, isLoading } = useSWR([`fetchAccessRoles`], fetchAccessRoles, {
-    revalidateOnFocus: false
+  const { data, error, isLoading } = useSWR([fetchAccessRoles], fetchAccessRoles, {
+    revalidateOnFocus: false,
   });
 
+  // Map backend AccessRole[] to AccessData[] (for UI usage)
   const mappedData: AccessData[] =
     data?.map((role: AccessRole) => ({
       id: role.id,
       name: role.name,
       accesses: role.application || [],
-      createdAt: role.createdAt
+      createdAt: role.createdAt,
+      updatedAt: role.updatedAt,
     })) || [];
 
   return {
     accessRoles: mappedData,
     isLoading,
-    error: error ? error.message : null
+    error: error ? error.message : null,
   };
 };
 
 // Update an access role
 export const updateAccessRole = async (
   id: string,
-  accessData: Omit<AccessRole, "id">
+  accessData: Omit<AccessRole, "id" | "createdAt" | "updatedAt"> // omit id and timestamps when updating
 ): Promise<{ success: boolean; data?: AccessRole; message?: string }> => {
   const result = await withAuth(async (token) => {
-    const cleanedPayload = {
+    // Just send name and application as backend expects
+    const payload = {
       name: accessData.name,
-      application: accessData.application?.map(({ ...rest }) => rest)
+      application: accessData.application?.map(({ access, actions }) => ({ access, actions })),
     };
 
-    const data = await putData(
-      `${env.API_BASE_URL}/access/${id}`,
-      cleanedPayload as unknown as Record<string, unknown>,
-      token
-    );
+    const data = await putData(`${env.API_BASE_URL}/access/${id}`, payload, token);
     return { success: true, data };
   });
 
@@ -135,9 +126,7 @@ export const updateAccessRole = async (
 };
 
 // Delete an access role
-export const deleteAccessRole = async (
-  id: string
-): Promise<{ success: boolean; message: string }> => {
+export const deleteAccessRole = async (id: string): Promise<{ success: boolean; message: string }> => {
   const result = await withAuth(async (token) => {
     await deleteData(`${env.API_BASE_URL}/access/${id}`, token);
     return { success: true, message: "Access role deleted successfully." };
@@ -167,7 +156,7 @@ export const getAccessRoleById = async (
 };
 
 // SWR hook for access role by ID
-const fetchAccessRoleById = async ([, id]: [string, string]) => {
+const fetchAccessRoleById = async ([, id]: [string, string]): Promise<AccessRole | null> => {
   const result = await withAuth(async (token) => {
     return await getData(`${env.API_BASE_URL}/access/${id}`, token);
   });
@@ -181,12 +170,12 @@ const fetchAccessRoleById = async ([, id]: [string, string]) => {
 
 export const useAccessRoleById = (id: string) => {
   const { data, error, isLoading } = useSWR([`fetchAccessRoleById`, id], fetchAccessRoleById, {
-    revalidateOnFocus: false
+    revalidateOnFocus: false,
   });
 
   return {
     role: data,
     isLoading,
-    error: error ? error.message : null
+    error: error ? error.message : null,
   };
 };

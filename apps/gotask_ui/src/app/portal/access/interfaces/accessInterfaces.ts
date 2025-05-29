@@ -1,34 +1,39 @@
+// Single access option from config (for dropdowns, etc.)
 export interface AccessOption {
   access: string;
   actions: string[];
+  fields?: {
+    [action: string]: string[];  // e.g. "read": ["name", "user_id", ...]
+  };
 }
 
-// Actual permissions assigned to an access role
+// Permission assigned in a role (part of application array)
 export interface ApplicationPermission {
   access: string;
   actions: string[];
 }
 
-// Represents the access role entity
+// Access role entity returned from backend
 export interface AccessRole {
-  createdAt: string;
   id: string;
   name: string;
-  application: ApplicationPermission[];
+  application: ApplicationPermission[];  // array of permissions
+  createdAt: string;
+  updatedAt?: string;
 }
 
-// API response structure when fetching an access role
+// API response wrapper for AccessRole (single)
 export interface AccessRoleResponse {
   success: boolean;
   message: string;
   data: AccessRole | null;
 }
 
-// Used for dropdowns or selections (optional)
+// Used for UI dropdowns or lists of roles
 export interface AccessData {
   id: string;
   name: string;
-  accesses: AccessOption[];
+  accesses: ApplicationPermission[];  // note: renamed from `accesses` instead of `application`
   createdAt?: string;
   updatedAt?: string;
 }

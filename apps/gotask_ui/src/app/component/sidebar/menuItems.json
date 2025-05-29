@@ -2,49 +2,49 @@
   {
     "text": "Dashboard",
     "icon": "DashboardIcon",
-    "path": "/portal/dashboard",
+    "path": "/dashboard",
     "access": null
   },
   {
     "text": "Project",
     "icon": "FolderIcon",
-    "path": "/portal/project",
+    "path": "/project",
     "access": "Project Management"
   },
   {
     "text": "User",
     "icon": "PeopleIcon",
-    "path": "/portal/user",
+    "path": "/user",
     "access": "User Management"
   },
   {
     "text": "Organization",
     "icon": "BusinessIcon",
-    "path": "/portal/organization",
+    "path": "/organization",
     "access": "Organization Management"
   },
   {
     "text": "Role",
     "icon": "SecurityIcon",
-    "path": "/portal/role",
+    "path": "/role",
     "access": "Role Management"
   },
   {
     "text": "Access",
     "icon": "VpnKeyIcon",
-    "path": "/portal/access",
+    "path": "/access",
     "access": "Access Management"
   },
   {
     "text": "Task",
     "icon": "AssignmentIcon",
-    "path": "/portal/task",
+    "path": "/task",
     "access": "Task Management"
   },
   {
     "text": "User Report",
     "icon": "BarChartIcon",
-    "path": "/portal/report",
+    "path": "/report",
     "access": "User Report"
   }
 ]

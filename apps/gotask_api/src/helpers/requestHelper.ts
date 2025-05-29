@@ -7,6 +7,10 @@ class RequestHelper {
     this.request = request;
   }
 
+  getRequest(): Request {
+    return this.request;
+  }
+
   getParam(key: string): any {
     return this.request.params[key];
   }

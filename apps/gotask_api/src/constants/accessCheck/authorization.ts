@@ -6,9 +6,10 @@ export const APPLICATIONS = {
   ACCESS: "Access Management",
   ORGANIZATION: "Organization Management",
   REPORT: "User Report",
-  ATTENDANCE: "Attendance Management", // Added
-  QUERY: "Query Management",
-  QUERY_TASK: "Query Task Management"
+  CHATBOT: "Chatbot Management"
+  // ATTENDANCE: "Attendance Management", // Added
+  // QUERY: "Query Management",
+  // QUERY_TASK: "Query Task Management"
 } as const;
 
 export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];

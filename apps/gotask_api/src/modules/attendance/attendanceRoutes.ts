@@ -9,8 +9,8 @@ import authStrategy from "../../constants/auth/authStrategy";
 import fs from "fs/promises";
 import path from "path";
 
-const appName = APPLICATIONS.ATTENDANCE;
-const tags = [API, "Attendance"];
+const appName = APPLICATIONS.CHATBOT;
+const tags = [API, "Chatbot"];
 const AttendanceRoutes = [];
 
 AttendanceRoutes.push({

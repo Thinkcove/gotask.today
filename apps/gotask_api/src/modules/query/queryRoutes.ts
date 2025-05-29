@@ -7,8 +7,8 @@ import { permission } from "../../middleware/permission";
 import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
 import authStrategy from "../../constants/auth/authStrategy";
 
-const appName = APPLICATIONS.QUERY;
-const tags = [API, "Query"];
+const appName = APPLICATIONS.CHATBOT;
+const tags = [API, "Chatbot"];
 const QueryRoutes = [];
 
 QueryRoutes.push({

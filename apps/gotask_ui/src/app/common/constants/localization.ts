@@ -11,6 +11,7 @@ export const LOCALIZATION = {
     APPBAR: "Appbar",
     SIDEBAR: "Sidebar",
     STATUSCHART: "Statuschart",
-    REPORT: "Report"
+    REPORT: "Report",
+    QUERYTEXT: "Ask Me Something"
   }
 };

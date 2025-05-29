@@ -7,7 +7,7 @@ import { useUser } from "../userContext";
 import env from "../common/env";
 import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation"; // ✅ App Router
+import { useRouter } from "next/navigation";
 
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
@@ -62,14 +62,11 @@ const OtpLogin = () => {
       if (res.ok && data.success && data.data) {
         const { user, token } = data.data;
 
-        // ✅ Save user and token
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
 
-        // ✅ Update context
         setUser({ ...user, token });
 
-        // ✅ Redirect to dashboard
         router.push("/dashboard");
       } else {
         setError(data.error || data.message || translogin("otperror"));
@@ -80,8 +77,18 @@ const OtpLogin = () => {
     setLoading(false);
   };
 
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); 
+    if (otpSent) {
+      verifyOtp();
+    } else {
+      sendOtp();
+    }
+  };
+
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <StyledTextField
         fullWidth
         label={translogin("labelemail")}
@@ -110,7 +117,7 @@ const OtpLogin = () => {
       <StyledButton
         fullWidth
         variant="contained"
-        onClick={otpSent ? verifyOtp : sendOtp}
+        type="submit"
         disabled={loading}
       >
         {loading
@@ -119,7 +126,7 @@ const OtpLogin = () => {
           ? translogin("verifyotp")
           : translogin("sendotp")}
       </StyledButton>
-    </>
+    </form>
   );
 };
 

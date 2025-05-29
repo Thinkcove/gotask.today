@@ -1,12 +1,10 @@
 import { Access, IAccess } from "../../model/access/access";
 
 // Create a new access record
-export const createAccessInDb = async (
-  accessData: Partial<IAccess>
-): Promise<IAccess> => {
+export const createAccessInDb = async (accessData: Partial<IAccess>): Promise<IAccess> => {
   const newAccess = new Access({
     name: accessData.name,
-    application: accessData.application,
+    application: accessData.application
   });
   return await newAccess.save();
 };
@@ -17,9 +15,7 @@ export const getAllAccessRecordsFromDb = async (): Promise<IAccess[]> => {
 };
 
 // Get access record by custom unique ID (e.g., UUID or string)
-export const getAccessByIdFromDb = async (
-  id: string
-): Promise<IAccess | null> => {
+export const getAccessByIdFromDb = async (id: string): Promise<IAccess | null> => {
   // Assuming `id` is a custom unique field, not _id
   return await Access.findOne({ id }).exec();
 };

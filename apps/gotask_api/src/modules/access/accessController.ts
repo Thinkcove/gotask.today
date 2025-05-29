@@ -6,7 +6,7 @@ import {
   getAccessById,
   updateAccess,
   deleteAccessById,
-  getAccessOptionsFromConfig,
+  getAccessOptionsFromConfig
 } from "../access/accessService";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
 

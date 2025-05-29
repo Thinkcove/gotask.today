@@ -3,8 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 
 export interface IApplication {
   access: string;
-  actions: string[];             // array of string actions (e.g. ["READ", "CREATE"])
-  fields: { [action: string]: string[] };  // map action -> allowed fields
+  actions: string[]; // array of string actions (e.g. ["READ", "CREATE"])
+  fields: { [action: string]: string[] }; // map action -> allowed fields
 }
 
 export interface IAccess extends Document {
@@ -17,7 +17,7 @@ const ApplicationSchema = new Schema<IApplication>(
   {
     access: { type: String, required: true },
     actions: {
-      type: [String],       // just an array of strings
+      type: [String], // just an array of strings
       required: true,
       default: []
     },

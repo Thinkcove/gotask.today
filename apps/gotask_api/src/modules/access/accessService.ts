@@ -4,7 +4,7 @@ import {
   getAllAccessRecordsFromDb,
   getAccessByIdFromDb,
   updateAccessInDb,
-  deleteAccessByIdFromDb,
+  deleteAccessByIdFromDb
 } from "../../domain/interface/access/accessInterface";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
 import accessConfig from "./accessConfig.json";
@@ -35,7 +35,7 @@ const createAccess = async (
     if (!filteredInput.name || !filteredInput.application) {
       return {
         success: false,
-        message: AccessMessages.CREATE.REQUIRED,
+        message: AccessMessages.CREATE.REQUIRED
       };
     }
 
@@ -46,12 +46,12 @@ const createAccess = async (
 
     return {
       success: true,
-      data: filteredAccess,
+      data: filteredAccess
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.CREATE.FAILED,
+      message: error.message || AccessMessages.CREATE.FAILED
     };
   }
 };
@@ -66,7 +66,7 @@ const updateAccess = async (
     if (!existing) {
       return {
         success: false,
-        message: AccessMessages.UPDATE.NOT_FOUND,
+        message: AccessMessages.UPDATE.NOT_FOUND
       };
     }
 
@@ -79,12 +79,12 @@ const updateAccess = async (
 
     return {
       success: true,
-      data: filtered,
+      data: filtered
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.UPDATE.FAILED,
+      message: error.message || AccessMessages.UPDATE.FAILED
     };
   }
 };
@@ -103,12 +103,12 @@ const getAllAccesses = async (): Promise<{
 
     return {
       success: true,
-      data: filteredAccesses,
+      data: filteredAccesses
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.FETCH.FAILED_ALL,
+      message: error.message || AccessMessages.FETCH.FAILED_ALL
     };
   }
 };
@@ -122,7 +122,7 @@ const getAccessById = async (
     if (!access) {
       return {
         success: false,
-        message: AccessMessages.FETCH.NOT_FOUND,
+        message: AccessMessages.FETCH.NOT_FOUND
       };
     }
 
@@ -130,26 +130,24 @@ const getAccessById = async (
 
     return {
       success: true,
-      data: filtered,
+      data: filtered
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.FETCH.FAILED_BY_ID,
+      message: error.message || AccessMessages.FETCH.FAILED_BY_ID
     };
   }
 };
 
 // Delete Access by ID service
-const deleteAccessById = async (
-  id: string
-): Promise<{ success: boolean; message?: string }> => {
+const deleteAccessById = async (id: string): Promise<{ success: boolean; message?: string }> => {
   try {
     const access = await getAccessByIdFromDb(id);
     if (!access) {
       return {
         success: false,
-        message: AccessMessages.DELETE.NOT_FOUND,
+        message: AccessMessages.DELETE.NOT_FOUND
       };
     }
 
@@ -157,18 +155,18 @@ const deleteAccessById = async (
     if (!success) {
       return {
         success: false,
-        message: AccessMessages.DELETE.FAILED,
+        message: AccessMessages.DELETE.FAILED
       };
     }
 
     return {
       success: true,
-      message: AccessMessages.DELETE.SUCCESS,
+      message: AccessMessages.DELETE.SUCCESS
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.DELETE.FAILED,
+      message: error.message || AccessMessages.DELETE.FAILED
     };
   }
 };
@@ -185,7 +183,7 @@ const getAccessOptionsFromConfig = async (): Promise<{
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.CONFIG.LOAD_FAILED,
+      message: error.message || AccessMessages.CONFIG.LOAD_FAILED
     };
   }
 };
@@ -197,5 +195,5 @@ export {
   updateAccess,
   deleteAccessById,
   getAccessOptionsFromConfig,
-  getAllAccessRecordsFromDb,
+  getAllAccessRecordsFromDb
 };

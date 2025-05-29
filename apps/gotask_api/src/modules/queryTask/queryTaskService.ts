@@ -1,4 +1,4 @@
-npmrimport moment from "moment";
+import moment from "moment";
 import mongoose from "mongoose";
 import { QueryTaskMessages } from "../../constants/apiMessages/queryTaskMessages";
 import { TimeUtil } from "../../constants/utils/timeUtils";

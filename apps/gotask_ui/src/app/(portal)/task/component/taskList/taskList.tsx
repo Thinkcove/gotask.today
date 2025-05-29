@@ -386,33 +386,8 @@ const TaskList: React.FC = () => {
               <TaskCard
                 view={view}
                 group={group}
-<<<<<<< HEAD:apps/gotask_ui/src/app/portal/task/component/taskList/taskList.tsx
                 onTaskClick={(id) => router.push(`/portal/task/viewTask/${id}`)}
                 onViewMore={handleViewMore}
-=======
-                onTaskClick={(id) => router.push(`/task/viewTask/${id}`)}
-                onViewMore={(id) => {
-                  const params = new URLSearchParams({
-                    view,
-                    ...(minDate && { minDate }),
-                    ...(maxDate && { maxDate }),
-                    ...(moreDays && { moreDays }),
-                    ...(lessDays && { lessDays }),
-                    dateVar,
-                    page: page.toString(),
-                    ...(searchText && { searchText })
-                  });
-
-                  const filters = {
-                    search_vals: filtersOnly.search_vals || [],
-                    search_vars: filtersOnly.search_vars || []
-                  };
-
-                  params.append("filters", encodeURIComponent(JSON.stringify(filters)));
-
-                  router.push(`/task/viewMore/${id}?${params.toString()}`);
-                }}
->>>>>>> main:apps/gotask_ui/src/app/(portal)/task/component/taskList/taskList.tsx
               />
             </Grid>
           ))}

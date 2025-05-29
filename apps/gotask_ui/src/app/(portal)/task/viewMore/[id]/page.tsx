@@ -212,7 +212,6 @@ const ViewMoreAction: React.FC = () => {
         selectedGroupId={id as string}
         drawerTasks={drawerTasks}
         isLoadingDrawer={isLoading && !drawerTasks?.length}
-        onClose={() => window.history.back()}
         onTaskClick={(taskId) => (window.location.href = `/task/viewTask/${taskId}`)}
         view={view}
       />

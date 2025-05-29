@@ -11,28 +11,29 @@ export const createAccessInDb = async (accessData: Partial<IAccess>): Promise<IA
 
 // Get all access records
 export const getAllAccessRecordsFromDb = async (): Promise<IAccess[]> => {
-  return await Access.find();
+  return await Access.find().exec(); // .exec() returns a real Promise
 };
 
+// Get access record by custom unique ID (e.g., UUID or string)
 export const getAccessByIdFromDb = async (id: string): Promise<IAccess | null> => {
-  return await Access.findOne({ id });
+  // Assuming `id` is a custom unique field, not _id
+  return await Access.findOne({ id }).exec();
 };
 
-// Update access record by custom unique ID (e.g., UUID or string)
+// Update access record by custom unique ID
 export const updateAccessInDb = async (
   id: string,
   updateData: Partial<IAccess>
 ): Promise<IAccess | null> => {
-  // No need to check for MongoDB ObjectId validity since you're using custom `id`
   return await Access.findOneAndUpdate(
     { id }, // Query by custom `id`
     updateData,
-    { new: true, runValidators: true } // Return updated record and apply validations
-  );
+    { new: true, runValidators: true }
+  ).exec();
 };
 
-// Delete access record by custom unique ID (e.g., UUID or string)
+// Delete access record by custom unique ID
 export const deleteAccessByIdFromDb = async (id: string): Promise<boolean> => {
-  const deletedAccess = await Access.findOneAndDelete({ id }); // Query by custom `id`
+  const deletedAccess = await Access.findOneAndDelete({ id }).exec();
   return deletedAccess !== null;
 };

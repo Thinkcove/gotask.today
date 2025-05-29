@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TextField, Typography, Button, CircularProgress, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
@@ -17,6 +17,7 @@ const AccessCreateForm: React.FC = () => {
   const { canAccess } = useUserPermission();
   const [accessName, setAccessName] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
+  const [selectedFields, setSelectedFields] = useState<Record<string, any>>({});
   const [currentModule, setCurrentModule] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState<{
@@ -29,12 +30,16 @@ const AccessCreateForm: React.FC = () => {
   const { accessOptions, isLoading, error } = useAccessOptions();
 
   const validModules = ["User Management", "Task Management", "Project Management"];
+  const fieldOptions = accessOptions.find((item) => item?.access === currentModule) || {}
 
-  if (accessOptions.length > 0 && !currentModule) {
-    const firstValidModule =
-      accessOptions.find((opt) => validModules.includes(opt.access))?.access || validModules[0];
-    setCurrentModule(firstValidModule);
-  }
+  // Set initial currentModule once accessOptions load
+  useEffect(() => {
+    if (accessOptions.length > 0 && !currentModule) {
+      const firstValidModule =
+        accessOptions.find((opt) => validModules.includes(opt.access))?.access || validModules[0];
+      setCurrentModule(firstValidModule);
+    }
+  }, [accessOptions, currentModule]);
 
   const handleCheckboxChange = (module: string, action: string, checked: boolean) => {
     setSelectedPermissions((prev) => {
@@ -45,6 +50,34 @@ const AccessCreateForm: React.FC = () => {
       return { ...prev, [module]: updated };
     });
   };
+
+  const handleFieldChange = (module: string, action: string, field: string, checked: boolean) => {
+    console.log('module',module, 'field', field, 'checked', checked)
+    setSelectedFields((prev) => {
+      if (!prev?.module) {
+        prev = {[module] : {}}
+      }
+      if (!prev?.module?.action) {
+        prev.module = {[action] : []}
+      }
+      if (prev?.module?.action?.length) {
+        if(prev?.module?.action?.includes(field) && !checked) {
+            prev.module.action.filter((item: string) => item !== field)
+        } else if(!prev?.module?.action?.includes(field) && checked) {
+          prev.module.action.push(field);
+        }
+      }
+      return prev
+    })
+    //  setSelectedFields((prev) => {
+    //   const existing = prev[module] || [];
+    //   console.log('existing', existing)
+      // const updated = checked
+      //   ? [...new Set([...existing, action])]
+      //   : existing.filter((a) => a !== action);
+      // return { ...prev, [module]: updated };
+    // });
+  }
 
   const handleSnackbarClose = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
@@ -66,6 +99,9 @@ const AccessCreateForm: React.FC = () => {
         actions
       }))
       .filter((app) => app.actions.length > 0);
+
+      console.log('application11111111', application)
+
 
     if (application.length === 0) {
       setSnackbar({
@@ -154,7 +190,7 @@ const AccessCreateForm: React.FC = () => {
           />
         </Box>
 
-        <Typography variant="h6" fontWeight={600} sx={{ color: "#333" }}>
+        <Typography variant="h6" fontWeight={600} sx={{ color: "#333", mt: 2, mb: 1 }}>
           {t("Access.accessManagement")}
         </Typography>
 
@@ -176,12 +212,15 @@ const AccessCreateForm: React.FC = () => {
           </Box>
         ) : (
           <AccessPermissionsContainer
-            accessOptions={accessOptions}
-            currentModule={currentModule}
-            selectedPermissions={selectedPermissions}
-            onTabChange={setCurrentModule}
-            onCheckboxChange={handleCheckboxChange}
-          />
+                  accessOptions={accessOptions}
+                  currentModule={currentModule}
+                  selectedPermissions={selectedPermissions}
+                  onTabChange={setCurrentModule}
+                  onCheckboxChange={handleCheckboxChange} 
+                  fieldOptions={fieldOptions} 
+                  selectedFields={selectedFields} 
+                  onFieldChange={handleFieldChange}          
+                  />
         )}
       </Box>
 
@@ -190,7 +229,8 @@ const AccessCreateForm: React.FC = () => {
           borderColor: "divider",
           display: "flex",
           justifyContent: "flex-end",
-          gap: 1
+          gap: 1,
+          mt: 2
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (

@@ -1,27 +1,35 @@
 import React from 'react';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import AccessTabs from '../components/AccessTabs';
 import OperationCheckboxes from '../components/OperationCheckboxes';
+import FieldCheckboxes from '../components/FieldCheckboxes';
 
 interface AccessPermissionsProps {
   accessOptions: { access: string; actions: string[] }[];
+  fieldOptions: Record<string, any>;
   currentModule: string;
   selectedPermissions: { [module: string]: string[] };
+  selectedFields: { [module: string]: string[] };
   onTabChange: (module: string) => void;
   onCheckboxChange: (module: string, action: string, checked: boolean) => void;
+  onFieldChange: (module: string, action: string, field: string, checked: boolean) => void;
   readOnly?: boolean;
 }
 
 const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
   accessOptions,
+  fieldOptions,
   currentModule,
   selectedPermissions,
+  selectedFields,
   onTabChange,
   onCheckboxChange,
+  onFieldChange,
   readOnly = false,
 }) => {
   const currentOperations = accessOptions.find((m) => m.access === currentModule)?.actions || [];
-  const selected = selectedPermissions[currentModule] || [];
+  const selectedOps = selectedPermissions[currentModule] || [];
+  const selectedFlds = selectedFields?.[currentModule] || [];
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -31,23 +39,41 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
         onChange={onTabChange}
       />
 
-      <Grid container spacing={2} sx={{ mt:0 }}>
-        <Grid item xs={12}>
-          <Typography variant="h6" sx={{ pl: 2 }}>
-            Permissions for {currentModule}
-          </Typography>
-        </Grid>
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="h6" sx={{ pl: 1, mb: 1 }}>
+          Permissions for {currentModule}
+        </Typography>
 
-        <Grid item xs={12}>
-          <OperationCheckboxes
-            module={currentModule}
-            operations={currentOperations}
-            selected={selected}
-            onChange={onCheckboxChange}
-            readOnly={readOnly}
-          />
-        </Grid>
-      </Grid>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'space-between',
+            gap: 1,
+          }}
+        >
+          <Box sx={{ flex: 1, pr: 1 }}>
+            <OperationCheckboxes
+              module={currentModule}
+              operations={currentOperations}
+              selected={selectedOps}
+              onChange={onCheckboxChange}
+              readOnly={readOnly}
+            />
+          </Box>
+
+          <Box sx={{ flex: 4, pl: 1 }}>
+            <FieldCheckboxes
+              module={currentModule}
+              fieldsOptions={fieldOptions}
+              selectedOps={selectedOps}
+              selected={selectedFlds}
+              onChange={onFieldChange}
+              readOnly={readOnly}
+            />
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 };

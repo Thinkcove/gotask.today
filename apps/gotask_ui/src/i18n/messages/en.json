@@ -56,7 +56,12 @@
     "accessNameRequired": "Access name is required.",
     "atLeastOnePermissionRequired": "Please select at least one permission.",
     "searchplaceholder": "Search Access",
-    "delete": "Delete"
+    "delete": "Delete",
+    "fieldAccess": "Field Access",
+  "selectallFields": "Select all fields",
+  "noFieldsAvailable": "No fields available",
+  "field": "Field",
+  "noOperationsAvailable": "No operations available"
   },
   "Dashboard": {
     "overview": "Dashboard Overview",

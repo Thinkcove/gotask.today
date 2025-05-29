@@ -1,13 +1,4 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Box, Typography, Paper, Avatar, IconButton } from "@mui/material";
-import TextInput from "@/app/components/textField";
-import { addUserMessage, clearMessages } from "../services/queryAction";
-import { QueryService } from "../services/queryService";
-import ChatHistory from "./chatHistory";
-import { AppDispatch, RootState } from "@/app/store/store";
-import { useRouter } from "next/navigation";
 
 const Chatbot: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

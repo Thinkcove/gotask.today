@@ -6,7 +6,9 @@ import {
   createQueryHistory,
   deleteAllQueryHistory,
   deleteQueryHistoryByConversationId,
-  findQueryHistory
+  ParsedQuery,
+  findQueryHistory,
+  IQueryHistory
 } from "../../domain/interface/query/queryInterface";
 import { User } from "../../domain/model/user/user";
 import { Attendance } from "../../domain/model/attendance/attendanceModel";
@@ -14,7 +16,6 @@ import attendanceService from "../attendance/attendanceService";
 import queryTaskService from "../queryTask/queryTaskService";
 import userService from "../user/userService";
 import { QueryMessages } from "../../constants/apiMessages/queryMessages";
-import { IQueryHistory } from "../../domain/model/query/queryModel";
 
 declare module "moment" {
   interface Duration {
@@ -743,7 +744,7 @@ export const parseQuery = async (
       const targetDayIndex = daysOfWeek.indexOf(dayName);
       const today = moment().startOf("day");
       const currentDayIndex = today.day();
-      const dayDiff = targetDayIndex - currentDayIndex - 7;
+      let dayDiff = targetDayIndex - currentDayIndex - 7;
       const targetDate = today.clone().add(dayDiff, "days");
       if (targetDate.isValid()) {
         result.dates.push(targetDate.toDate());

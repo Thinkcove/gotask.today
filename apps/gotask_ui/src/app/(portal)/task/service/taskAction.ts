@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import env from "@/app/common/env";
 import { getData, postData } from "@/app/common/utils/apiData";
-import { IFormField, ITaskComment, Project, TaskPayload } from "../interface/taskInterface";
+import { IFormField, ITaskComment, Project, TaskPayload, User } from "../interface/taskInterface";
 import { withAuth } from "@/app/common/utils/authToken";
 
 // Modify both hooks with an optional dateRange parameter
@@ -205,6 +205,15 @@ export const getProjectIdsAndNames = async (userId: string) => {
   return data.success
     ? data.data.map((project: Project) => ({ id: project.id, name: project.name }))
     : [];
+};
+
+export const getUsersByProjectId = async (projectId: string) => {
+  const response = await fetch(`${env.API_BASE_URL}/getUsersByProjectId/${projectId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  });
+  const data = await response.json();
+  return data.success ? data.data.map((user: User) => ({ id: user.id, name: user.name })) : [];
 };
 
 // Log Task Time

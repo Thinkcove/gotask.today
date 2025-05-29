@@ -70,7 +70,7 @@ const OtpLogin = () => {
         setUser({ ...user, token });
 
         // ✅ Redirect to dashboard
-        router.push("/portal/dashboard");
+        router.push("/dashboard");
       } else {
         setError(data.error || data.message || translogin("otperror"));
       }

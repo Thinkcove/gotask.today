@@ -105,4 +105,30 @@ UserRoutes.push({
   }
 });
 
+// route : Get users by Project Id
+UserRoutes.push({
+  path: API_PATHS.GET_USERS_BY_PROJECT_ID,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.getUsersByProjectId(new RequestHelper(request), handler),
+  config: {
+    notes: "Get Users by Project ID",
+    tags
+  }
+});
+
+//route for user query
+UserRoutes.push({
+  path: "/api/user/query",
+  method: API_METHODS.POST,
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+    userController.processQuery(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Process user-related query",
+    tags,
+    auth: { strategy: authStrategy.SIMPLE }
+  }
+});
+
 export default UserRoutes;

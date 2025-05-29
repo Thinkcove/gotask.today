@@ -1,6 +1,16 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { IAttendance } from "../../interface/attendance/attendanceInterface";
+
+export interface IAttendance extends Document {
+  id: string;
+  empcode: string;
+  empname: string;
+  date: Date;
+  inTime: string;
+  outTime: string;
+  status: string;
+  minutesLate: number;
+}
 
 const attendanceSchema = new Schema<IAttendance>(
   {

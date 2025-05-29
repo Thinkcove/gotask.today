@@ -22,7 +22,7 @@ interface Props {
   onProjectChange: (val: string[]) => void;
   onUserChange: (val: string[]) => void;
   onDateChange: (from: string, to: string) => void;
-  onVariationChange: (type: "more" | "less" | "", days: number) => void;
+onVariationChange: (type: "more" | "less" | "", days: number) => void;
   onClearFilters: () => void;
   transtask: (key: string) => string;
   hideProjectFilter?: boolean;

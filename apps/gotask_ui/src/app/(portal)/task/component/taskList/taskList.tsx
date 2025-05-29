@@ -246,21 +246,24 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const handleViewMore = (id: string) => {
     const params = new URLSearchParams({
       view,
-      ...(minDate && { minDate }),
-      ...(maxDate && { maxDate }),
-      ...(moreDays && { moreDays }),
-      ...(lessDays && { lessDays }),
-      ...((minDate || maxDate || moreDays || lessDays) && dateVar && { dateVar }),
       page: page.toString()
     });
+
+    if (minDate) params.set("minDate", minDate);
+    if (maxDate) params.set("maxDate", maxDate);
+    if (moreDays) params.set("moreDays", moreDays);
+    if (lessDays) params.set("lessDays", lessDays);
+    if ((minDate || maxDate || moreDays || lessDays) && dateVar) {
+      params.set("dateVar", dateVar);
+    }
 
     statusFilter.forEach((val) => params.append("status", val));
     severityFilter.forEach((val) => params.append("severity", val));
 
+    // Conditionally include filters based on current view
     if (view !== "projects") {
       projectFilter.forEach((val) => params.append("project_name", val));
     }
-
     if (view !== "users") {
       userFilter.forEach((val) => params.append("user_name", val));
     }

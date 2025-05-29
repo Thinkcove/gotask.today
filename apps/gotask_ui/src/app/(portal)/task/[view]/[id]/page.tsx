@@ -32,14 +32,19 @@ const ViewMoreAction: React.FC = () => {
   const page = parseInt(searchParams.get("page") || "1");
 
   const getArrayParam = (name: string): string[] => {
-    const values = searchParams.getAll(name);
-    return values.filter(Boolean);
+    return searchParams.getAll(name).filter(Boolean);
   };
 
   const statusFilter = getArrayParam("status");
   const severityFilter = getArrayParam("severity");
   const projectFilter = getArrayParam("project_name");
   const userFilter = getArrayParam("user_name");
+  const variationType = moreDays ? "more" : lessDays ? "less" : "";
+  const variationDays = useMemo(() => {
+    if (moreDays) return parseInt(moreDays);
+    if (lessDays) return parseInt(lessDays.replace("-", ""));
+    return 0;
+  }, [moreDays, lessDays]);
 
   const { search_vals, search_vars } = useMemo(() => {
     const vals: string[][] = [];
@@ -67,13 +72,6 @@ const ViewMoreAction: React.FC = () => {
 
     return { search_vals: vals, search_vars: vars };
   }, [statusFilter, severityFilter, projectFilter, userFilter]);
-
-  const variationType = moreDays ? "more" : lessDays ? "less" : "";
-  const variationDays = moreDays
-    ? parseInt(moreDays)
-    : lessDays
-      ? parseInt(lessDays.replace("-", ""))
-      : 0;
 
   const { getAllProjects: allProjects } = useAllProjects();
   const { getAllUsers: allUsers } = useAllUsers();
@@ -120,13 +118,16 @@ const ViewMoreAction: React.FC = () => {
     updateQueryParam("maxDate", to);
   };
 
-  const updateVariation = (type: "more" | "less", days: number) => {
+  const updateVariation = (type: "" | "more" | "less", days: number) => {
     if (type === "more") {
       updateQueryParam("moreDays", `${days}`);
       updateQueryParam("lessDays", undefined);
-    } else {
+    } else if (type === "less") {
       updateQueryParam("lessDays", `-${days}`);
       updateQueryParam("moreDays", undefined);
+    } else {
+      updateQueryParam("moreDays", undefined);
+      updateQueryParam("lessDays", undefined);
     }
   };
 
@@ -141,7 +142,6 @@ const ViewMoreAction: React.FC = () => {
     updateQueryParam("project_name", projects);
     updateQueryParam("user_name", users);
   };
-
   const clearAllFilters = () => {
     [
       "status",
@@ -202,8 +202,8 @@ const ViewMoreAction: React.FC = () => {
           onUserChange={(val) =>
             updateSearchFilters(statusFilter, severityFilter, projectFilter, val)
           }
-          onDateChange={updateDateRange}
-          onVariationChange={updateVariation}
+          onDateChange={(from, to) => updateDateRange(from, to)}
+          onVariationChange={(type, days) => updateVariation(type, days)}
           onClearFilters={clearAllFilters}
           transtask={transtask}
         />

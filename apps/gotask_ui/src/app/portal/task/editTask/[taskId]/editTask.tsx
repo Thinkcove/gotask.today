@@ -2,23 +2,23 @@
 
 import React, { useState } from "react";
 import { Button, Box, Typography, IconButton } from "@mui/material";
-import TaskInput from "@/app/(portal)/task/createTask/taskInput";
+import TaskInput from "@/app/portal/task/createTask/taskInput";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import { createComment, updateTask } from "../../service/taskAction";
 import { ArrowBack, History } from "@mui/icons-material";
-import { IFormField, ITask, ITaskComment, Project, User } from "../../interface/taskInterface";
-import HistoryDrawer from "../taskHistory";
-import TaskComments from "../taskComments";
 import { useUser } from "@/app/userContext";
 import { KeyedMutator } from "swr";
-import TimeSpentPopup from "../timeSpentPopup";
-import TimeProgressBar from "@/app/(portal)/task/editTask/timeProgressBar";
-import ModuleHeader from "@/app/component/header/moduleHeader";
+import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import { createComment, updateTask } from "@/app/(portal)/task/service/taskAction";
+import { IFormField, ITask, ITaskComment, Project, User } from "@/app/(portal)/task/interface/taskInterface";
+import TimeProgressBar from "@/app/(portal)/task/editTask/timeProgressBar";
+import HistoryDrawer from "@/app/(portal)/task/editTask/taskHistory";
+import TaskComments from "@/app/(portal)/task/editTask/taskComments";
+import TimeSpentPopup from "@/app/(portal)/task/editTask/timeSpentPopup";
 
 interface EditTaskProps {
   data: ITask;
@@ -47,7 +47,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     project_id: data?.project_id || "",
     project_name: data?.project_name || "",
     created_on: data?.created_on ? data.created_on.split("T")[0] : "",
-    due_date: data?.due_date ? data.due_date.split("T")[0] : ""
+    due_date: data?.due_date ? data.due_date.split("T")[0] : "",
   });
 
   const checkIfDateExists = (): boolean => {
@@ -59,10 +59,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   };
 
   const handleInputChange = (name: string, value: string | Project[] | User[]) => {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
-    };
+  };
   const alreadyExists = checkIfDateExists();
 
   const handleProgressClick = () => {
@@ -98,14 +98,14 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       setSnackbar({
         open: true,
         message: transtask("updatesuccess"),
-        severity: SNACKBAR_SEVERITY.SUCCESS
+        severity: SNACKBAR_SEVERITY.SUCCESS,
       });
     } catch (error) {
       console.error("Error while updating task:", error);
       setSnackbar({
         open: true,
         message: transtask("upadteerror"),
-        severity: SNACKBAR_SEVERITY.ERROR
+        severity: SNACKBAR_SEVERITY.ERROR,
       });
     }
   };
@@ -116,7 +116,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       task_id: data.id,
       user_id: user?.id || "",
       user_name: user?.name || "",
-      comment: commentText
+      comment: commentText,
     };
     await createComment(commentData);
     await mutate();
@@ -135,7 +135,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           margin: "0 auto",
           justifyContent: "center",
           alignItems: "center",
-          flexDirection: "column"
+          flexDirection: "column",
         }}
       >
         <Box
@@ -146,7 +146,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             pt: 2,
             zIndex: 1000,
             flexDirection: "column",
-            gap: 2
+            gap: 2,
           }}
         >
           <Box
@@ -154,7 +154,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              width: "100%"
+              width: "100%",
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -174,7 +174,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                   border: "2px solid #741B92",
                   px: 2,
                   textTransform: "none",
-                  "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
+                  "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" },
                 }}
                 onClick={() => router.back()}
               >
@@ -189,7 +189,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                   px: 2,
                   textTransform: "none",
                   fontWeight: "bold",
-                  "&:hover": { backgroundColor: "rgb(202, 187, 201) 100%)" }
+                  "&:hover": { backgroundColor: "rgb(202, 187, 201) 100%)" },
                 }}
                 onClick={handleSubmit}
               >
@@ -206,7 +206,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
               display: "flex",
               gap: 1,
               color: "#741B92",
-              px: 2
+              px: 2,
             }}
           >
             <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
@@ -221,8 +221,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             timeSpentTotal={data.time_spent_total || "0h"}
             dueDate={data.due_date || ""}
             timeEntries={data.time_spent || []}
-            canLogTime={!alreadyExists} // Pass the existing check as a prop
-            variation={data.variation ? String(data.variation) : "0d0h"} // Convert to string
+            canLogTime={!alreadyExists}
+            variation={data.variation ? String(data.variation) : "0d0h"}
             onClick={handleProgressClick}
           />
         )}
@@ -232,7 +232,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             px: 2,
             pb: 2,
             maxHeight: "calc(100vh - 200px)",
-            overflowY: "auto"
+            overflowY: "auto",
           }}
         >
           <TaskInput

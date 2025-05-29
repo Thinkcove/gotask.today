@@ -6,9 +6,7 @@ import {
   createQueryHistory,
   deleteAllQueryHistory,
   deleteQueryHistoryByConversationId,
-  ParsedQuery,
-  findQueryHistory,
-  IQueryHistory
+  findQueryHistory
 } from "../../domain/interface/query/queryInterface";
 import { User } from "../../domain/model/user/user";
 import { Attendance } from "../../domain/model/attendance/attendanceModel";
@@ -16,6 +14,7 @@ import attendanceService from "../attendance/attendanceService";
 import queryTaskService from "../queryTask/queryTaskService";
 import userService from "../user/userService";
 import { QueryMessages } from "../../constants/apiMessages/queryMessages";
+import { IQueryHistory } from "../../domain/model/query/queryModel";
 
 declare module "moment" {
   interface Duration {
@@ -111,7 +110,7 @@ function tagPOS(tokens: string[]): { word: string; tag: string }[] {
   }
 }
 
-function identifyDateTokens(query: string, tokens: string[]): Set<string> {
+function identifyDateTokens(query: string): Set<string> {
   const dateTokens = new Set<string>();
   const dateRegex =
     /\b(\d{1,2}-\d{1,2}-\d{4}|\d{4}-\d{1,2}-\d{1,2}|\d{1,2}(?:st|nd|rd|th)?\s+[a-zA-Z]+(?:\s+\d{4})?|[a-zA-Z]+\s+\d{1,2}(?:,)?\s+\d{4})\b/i;
@@ -188,7 +187,7 @@ export const parseQuery = async (
 
     const lowerQuery = query.toLowerCase().trim();
     const tokens = tokenizer.tokenize(query) || [];
-    const dateTokens = identifyDateTokens(query, tokens);
+    const dateTokens = identifyDateTokens(query);
     const taggedTokens = tagPOS(tokens);
 
     const attendanceKeywords = [
@@ -744,7 +743,7 @@ export const parseQuery = async (
       const targetDayIndex = daysOfWeek.indexOf(dayName);
       const today = moment().startOf("day");
       const currentDayIndex = today.day();
-      let dayDiff = targetDayIndex - currentDayIndex - 7;
+      const dayDiff = targetDayIndex - currentDayIndex - 7;
       const targetDate = today.clone().add(dayDiff, "days");
       if (targetDate.isValid()) {
         result.dates.push(targetDate.toDate());

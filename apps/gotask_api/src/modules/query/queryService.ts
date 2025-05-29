@@ -110,7 +110,7 @@ function tagPOS(tokens: string[]): { word: string; tag: string }[] {
   }
 }
 
-function identifyDateTokens(query: string, tokens: string[]): Set<string> {
+function identifyDateTokens(query: string): Set<string> {
   const dateTokens = new Set<string>();
   const dateRegex =
     /\b(\d{1,2}-\d{1,2}-\d{4}|\d{4}-\d{1,2}-\d{1,2}|\d{1,2}(?:st|nd|rd|th)?\s+[a-zA-Z]+(?:\s+\d{4})?|[a-zA-Z]+\s+\d{1,2}(?:,)?\s+\d{4})\b/i;
@@ -187,7 +187,7 @@ export const parseQuery = async (
 
     const lowerQuery = query.toLowerCase().trim();
     const tokens = tokenizer.tokenize(query) || [];
-    const dateTokens = identifyDateTokens(query, tokens);
+    const dateTokens = identifyDateTokens(query);
     const taggedTokens = tagPOS(tokens);
 
     const attendanceKeywords = [

@@ -1,4 +1,3 @@
-import { ResponseToolkit } from "@hapi/hapi";
 import BaseController from "../../common/baseController";
 import { AttendanceMessages } from "../../constants/apiMessages/attendanceMessage";
 import RequestHelper from "../../helpers/requestHelper";

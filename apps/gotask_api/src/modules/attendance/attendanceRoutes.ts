@@ -6,6 +6,7 @@ import { permission } from "../../middleware/permission";
 import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
 import authStrategy from "../../constants/auth/authStrategy";
 import fs from "fs/promises";
+import { createWriteStream } from "node:fs";
 import path from "path";
 import { ATTENDANCE_CONST } from "../../constants/commonConstants/queryConstants";
 import { pipeline } from "stream/promises";
@@ -77,37 +78,29 @@ AttendanceRoutes.push({
     pre: [
       {
         method: async (request: Request, h: ResponseToolkit) => {
-          try {
-            const payload = request.payload as any;
-            console.log("Payload keys:", Object.keys(payload)); // Debug: Log payload keys
-            if (!payload) {
-              throw new Error("No payload received");
-            }
-            if (!payload.file) {
-              throw new Error('No file provided in payload. Expected key: "file"');
-            }
-
-            const uploadDir = path.join(__dirname, "./Uploads");
-            await fs.mkdir(uploadDir, { recursive: true });
-
-            const originalFilename = payload.file.filename || "attendance.xlsx";
-            const extension = path.extname(originalFilename) || ".xlsx";
-            const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-            const filePath = path.join(uploadDir, `attendance-${uniqueSuffix}${extension}`);
-
-            console.log(`Saving file to: ${filePath}`); // Debug: Log file path
-
-            const fileStream = payload.file; // Use payload.file directly
-            const writeStream = require("fs").createWriteStream(filePath);
-            await pipeline(fileStream, writeStream);
-
-            (request.payload as any).file = { path: filePath };
-
-            return h.continue;
-          } catch (error: any) {
-            console.error("Pre handler error:", error.message, error.stack); // Debug log
-            throw error;
+          const payload = request.payload as any;
+          if (!payload) {
+            throw new Error("No payload received");
           }
+          if (!payload.file) {
+            throw new Error('No file provided in payload. Expected key: "file"');
+          }
+
+          const uploadDir = path.join(__dirname, "./Uploads");
+          await fs.mkdir(uploadDir, { recursive: true });
+
+          const originalFilename = payload.file.filename || "attendance.xlsx";
+          const extension = path.extname(originalFilename) || ".xlsx";
+          const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+          const filePath = path.join(uploadDir, `attendance-${uniqueSuffix}${extension}`);
+
+          const fileStream = payload.file;
+          const writeStream = createWriteStream(filePath);
+          await pipeline(fileStream, writeStream);
+
+          (request.payload as any).file = { path: filePath };
+
+          return h.continue;
         },
         assign: "fileHandler"
       }

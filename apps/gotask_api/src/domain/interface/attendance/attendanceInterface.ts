@@ -1,4 +1,17 @@
-import { Attendance, IAttendance } from "../../model/attendance/attendanceModel";
+import mongoose, { Document } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
+import { Attendance } from "../../model/attendance/attendanceModel";
+
+export interface IAttendance extends Document {
+  id: string;
+  empcode: string;
+  empname: string;
+  date: Date;
+  inTime: string;
+  outTime: string;
+  status: string;
+  minutesLate: number;
+}
 
 export const createNewAttendance = async (attendanceData: IAttendance): Promise<IAttendance> => {
   const newAttendance = new Attendance(attendanceData);

@@ -3,5 +3,5 @@ export const QUERY_LIMIT = {
 };
 
 export const ATTENDANCE_CONST = {
-  BYTE_LIMIT: 20971520
+  BYTE_LIMIT: 10485760
 };

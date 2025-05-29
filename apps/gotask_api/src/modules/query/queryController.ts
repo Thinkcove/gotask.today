@@ -1,3 +1,4 @@
+import { Request, ResponseToolkit } from "@hapi/hapi";
 import BaseController from "../../common/baseController";
 import { QUERY_LIMIT } from "../../constants/commonConstants/queryConstants";
 import RequestHelper from "../../helpers/requestHelper";

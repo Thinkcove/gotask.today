@@ -1,15 +1,26 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
-import fs from "fs/promises";
+import { ResponseToolkit } from "@hapi/hapi";
 import BaseController from "../../common/baseController";
+import { AttendanceMessages } from "../../constants/apiMessages/attendanceMessage";
 import RequestHelper from "../../helpers/requestHelper";
-import { addAttendance, processQuery, processEmployeeQuery } from "./attendanceService";
+import {
+  addAttendance,
+  processQuery,
+  processEmployeeQuery,
+  uploadAttendance
+} from "./attendanceService";
+
+interface UploadPayload {
+  file?: {
+    path: string;
+  };
+}
 
 class AttendanceController extends BaseController {
   async createAttendance(requestHelper: RequestHelper, handler: any) {
     try {
       const { empname, empcode, date, inTime, outTime } = requestHelper.getPayload();
       if (!empname || !empcode || !date || !inTime || !outTime) {
-        throw new Error("Please provide empcode, date, inTime, and outTime.");
+        throw new Error("Please provide empname, empcode, date, inTime, and outTime.");
       }
 
       const result = await addAttendance(empname, empcode, new Date(date), inTime, outTime);
@@ -46,6 +57,21 @@ class AttendanceController extends BaseController {
       return this.replyError(error, handler);
     }
   }
+
+  async uploadAttendance(requestHelper: RequestHelper, handler: any) {
+    try {
+      const payload = requestHelper.getPayload<UploadPayload>();
+      if (!payload || !payload.file?.path) {
+        throw new Error(AttendanceMessages.UPLOAD.NOT_FOUND);
+      }
+
+      const filePath = payload.file.path;
+      const result = await uploadAttendance(filePath);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
 }
 
-export default new AttendanceController();
+export default AttendanceController;

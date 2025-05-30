@@ -16,8 +16,8 @@ const AccessRoutes = [];
 AccessRoutes.push({
   path: API_PATHS.CREATE_ACCESS,
   method: API_METHODS.POST,
-  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
-    accessController.createAccess(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, h: ResponseToolkit, restrictedFields: string[]) =>
+    accessController.createAccess(new RequestHelper(request), h, restrictedFields)
   ),
   config: {
     notes: "Create a new access entry",
@@ -32,8 +32,8 @@ AccessRoutes.push({
 AccessRoutes.push({
   path: API_PATHS.GET_ACCESSES,
   method: API_METHODS.GET,
-  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
-    accessController.getAllAccesses(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.READ, (request: Request, h: ResponseToolkit, restrictedFields: string[]) =>
+    accessController.getAllAccesses(new RequestHelper(request), h, restrictedFields)
   ),
   config: {
     notes: "Get all access records",
@@ -48,8 +48,8 @@ AccessRoutes.push({
 AccessRoutes.push({
   path: API_PATHS.GET_ACCESS_BY_ID,
   method: API_METHODS.GET,
-  handler: permission(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit) =>
-    accessController.getAccessById(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.VIEW, (request: Request, h: ResponseToolkit, restrictedFields: string[]) =>
+    accessController.getAccessById(new RequestHelper(request), h, restrictedFields)
   ),
   config: {
     notes: "Get access by ID",
@@ -64,8 +64,8 @@ AccessRoutes.push({
 AccessRoutes.push({
   path: API_PATHS.UPDATE_ACCESS,
   method: API_METHODS.PUT,
-  handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
-    accessController.updateAccess(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.UPDATE, (request: Request, h: ResponseToolkit, restrictedFields: string[]) =>
+    accessController.updateAccess(new RequestHelper(request), h, restrictedFields)
   ),
   config: {
     notes: "Update access by ID",
@@ -80,8 +80,8 @@ AccessRoutes.push({
 AccessRoutes.push({
   path: API_PATHS.DELETE_ACCESS,
   method: API_METHODS.DELETE,
-  handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
-    accessController.deleteAccess(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.DELETE, (request: Request, h: ResponseToolkit, restrictedFields: string[]) =>
+    accessController.deleteAccess(new RequestHelper(request), h, restrictedFields)
   ),
   config: {
     notes: "Delete access by ID",
@@ -92,12 +92,12 @@ AccessRoutes.push({
   }
 });
 
-// Route: Get Access Options (New Route)
+// Route: Get Access Options (No permission middleware here)
 AccessRoutes.push({
   path: API_PATHS.GET_ACCESS_OPTIONS, // Assuming the path is defined in API_PATHS
   method: API_METHODS.GET,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    accessController.getAccessOptions(new RequestHelper(request), handler),
+  handler: (request: Request, h: ResponseToolkit) =>
+    accessController.getAccessOptions(new RequestHelper(request), h),
   config: {
     notes: "Get access options from config",
     tags

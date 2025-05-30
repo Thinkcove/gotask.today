@@ -3,7 +3,20 @@ import { CreateRolePayload } from "../../domain/model/role/role";
 import * as RoleInterface from "../../domain/interface/role/roleInterface";
 import { Access } from "../../domain/model/access/access";
 
-// Create Role Logic
+// Helper to serialize Access for response
+const serializeAccess = (access: any) => ({
+  id: access.id,
+  name: access.name,
+  application: access.application.map((app: any) => ({
+    access: app.access,
+    actions: app.actions,
+    restrictedFields: app.restrictedFields
+      ? Object.fromEntries(app.restrictedFields)
+      : {}
+  }))
+});
+
+// Create Role
 export const createRoleService = async (data: CreateRolePayload) => {
   try {
     const { name, accessIds = [] } = data;
@@ -13,7 +26,6 @@ export const createRoleService = async (data: CreateRolePayload) => {
       return { success: false, message: roleMessages.CREATE.ALREADY_EXISTS };
     }
 
-    // Create the new role and save the associated access references
     const role = await RoleInterface.createRoleInDb(name, accessIds);
 
     return {
@@ -37,16 +49,10 @@ export const getAllRolesService = async () => {
     const enhancedRoles = [];
 
     for (const role of roles) {
-      const accessRecords = await Access.find({
-        id: { $in: role.access }
-      });
-
+      const accessRecords = await Access.find({ id: { $in: role.access } });
       const roleObj = role.toObject();
-      const accessDetails = accessRecords.map((access) => ({
-        id: access.id,
-        name: access.name,
-        application: access.application
-      }));
+
+      const accessDetails = accessRecords.map(serializeAccess);
 
       enhancedRoles.push({
         ...roleObj,
@@ -70,13 +76,8 @@ export const getRoleByIdService = async (roleId: string) => {
     }
 
     const accessRecords = await Access.find({ id: { $in: role.access } });
-
     const roleObj = role.toObject();
-    const accessDetails = accessRecords.map((access) => ({
-      id: access.id,
-      name: access.name,
-      application: access.application
-    }));
+    const accessDetails = accessRecords.map(serializeAccess);
 
     return {
       success: true,
@@ -119,7 +120,6 @@ export const updateRoleService = async (
 export const deleteRoleService = async (roleId: string) => {
   try {
     const success = await RoleInterface.deleteRoleInDb(roleId);
-
     if (!success) {
       return { success: false, message: roleMessages.FETCH.NOT_FOUND };
     }
@@ -136,7 +136,11 @@ export const deleteRoleService = async (roleId: string) => {
   }
 };
 
-export const removeAccessFromRoleService = async (roleId: string, accessId: string) => {
+// Remove Access from Role
+export const removeAccessFromRoleService = async (
+  roleId: string,
+  accessId: string
+) => {
   try {
     const updatedRole = await RoleInterface.removeAccess(roleId, accessId);
     if (!updatedRole) {

@@ -1,36 +1,36 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
-export interface IApplication {
-  access: string;
-  actions: string[]; // array of string actions (e.g. ["READ", "CREATE"])
-  fields: { [action: string]: string[] }; // map action -> allowed fields
+// Interface for a single module's access config
+export interface IAccessModule {
+  module: string; // e.g. "User Management", "Task Management"
+  actions: string[]; // e.g. ["READ", "EDIT"]
+  restrictedFields: { [action: string]: string[] }; // e.g. { EDIT: ["name", "status"] }
 }
 
+// Main access interface extending mongoose.Document
 export interface IAccess extends Document {
   id: string;
-  name: string;
-  application: IApplication[];
+  name: string; // Role name (e.g. "HR Manager", "Associate")
+  accesses: IAccessModule[]; // List of module-level access configs
 }
 
-const ApplicationSchema = new Schema<IApplication>(
+// Schema for individual module access
+const AccessModuleSchema = new Schema<IAccessModule>(
   {
-    access: { type: String, required: true },
-    actions: {
-      type: [String], // just an array of strings
-      required: true,
-      default: []
-    },
-    fields: {
+    module: { type: String, required: true },
+    actions: { type: [String], required: true, default: [] },
+    restrictedFields: {
       type: Map,
       of: [String],
       required: true,
       default: {}
     }
   },
-  { _id: false }
+  { _id: false } // Prevent nested _id generation
 );
 
+// Main Access Schema
 const AccessSchema = new Schema<IAccess>(
   {
     id: {
@@ -43,9 +43,16 @@ const AccessSchema = new Schema<IAccess>(
       required: true,
       unique: true
     },
-    application: [ApplicationSchema]
+    accesses: {
+      type: [AccessModuleSchema],
+      required: true,
+      default: []
+    }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
+// Exporting the Access model
 export const Access = mongoose.model<IAccess>("Access", AccessSchema);

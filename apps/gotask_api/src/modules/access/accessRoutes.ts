@@ -12,94 +12,84 @@ const appName = APPLICATIONS.ACCESS;
 const tags = [API, "Access"];
 const AccessRoutes = [];
 
-// Route: Create Access
+// POST - Create Access
 AccessRoutes.push({
   path: API_PATHS.CREATE_ACCESS,
   method: API_METHODS.POST,
-  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
-    accessController.createAccess(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, h: ResponseToolkit) =>
+    accessController.createAccess(new RequestHelper(request), h)
   ),
   config: {
     notes: "Create a new access entry",
     tags,
-    auth: {
-      strategy: authStrategy.SIMPLE
-    }
+    auth: { strategy: authStrategy.SIMPLE }
   }
 });
 
-// Route: Get All Accesses
+// GET - All Accesses
 AccessRoutes.push({
   path: API_PATHS.GET_ACCESSES,
   method: API_METHODS.GET,
-  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
-    accessController.getAllAccesses(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.READ, (request: Request, h: ResponseToolkit) =>
+    accessController.getAllAccesses(new RequestHelper(request), h)
   ),
   config: {
     notes: "Get all access records",
     tags,
-    auth: {
-      strategy: authStrategy.SIMPLE
-    }
+    auth: { strategy: authStrategy.SIMPLE }
   }
 });
 
-// Route: Get Access by ID
+// GET - Access by ID
 AccessRoutes.push({
   path: API_PATHS.GET_ACCESS_BY_ID,
   method: API_METHODS.GET,
-  handler: permission(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit) =>
-    accessController.getAccessById(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.VIEW, (request: Request, h: ResponseToolkit) =>
+    accessController.getAccessById(new RequestHelper(request), h)
   ),
   config: {
-    notes: "Get access by ID",
+    notes: "Get access record by ID",
     tags,
-    auth: {
-      strategy: authStrategy.SIMPLE
-    }
+    auth: { strategy: authStrategy.SIMPLE }
   }
 });
 
-// Route: Update Access
+// PUT - Update Access
 AccessRoutes.push({
   path: API_PATHS.UPDATE_ACCESS,
   method: API_METHODS.PUT,
-  handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
-    accessController.updateAccess(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.UPDATE, (request: Request, h: ResponseToolkit) =>
+    accessController.updateAccess(new RequestHelper(request), h)
   ),
   config: {
-    notes: "Update access by ID",
+    notes: "Update access record by ID",
     tags,
-    auth: {
-      strategy: authStrategy.SIMPLE
-    }
+    auth: { strategy: authStrategy.SIMPLE }
   }
 });
 
-// Route: Delete Access
+// DELETE - Access by ID
 AccessRoutes.push({
   path: API_PATHS.DELETE_ACCESS,
   method: API_METHODS.DELETE,
-  handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
-    accessController.deleteAccess(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.DELETE, (request: Request, h: ResponseToolkit) =>
+    accessController.deleteAccess(new RequestHelper(request), h)
   ),
   config: {
-    notes: "Delete access by ID",
+    notes: "Delete access record by ID",
     tags,
-    auth: {
-      strategy: authStrategy.SIMPLE
-    }
+    auth: { strategy: authStrategy.SIMPLE }
   }
 });
 
-// Route: Get Access Options (New Route)
+// GET - Access Options (from static config or enum)
 AccessRoutes.push({
-  path: API_PATHS.GET_ACCESS_OPTIONS, // Assuming the path is defined in API_PATHS
+  path: API_PATHS.GET_ACCESS_OPTIONS,
   method: API_METHODS.GET,
-  handler: (request: Request, handler: ResponseToolkit) =>
-    accessController.getAccessOptions(new RequestHelper(request), handler),
+  handler: (request: Request, h: ResponseToolkit) =>
+    accessController.getAccessOptions(new RequestHelper(request), h),
   config: {
-    notes: "Get access options from config",
+    notes: "Get predefined access options from config",
     tags
   }
 });

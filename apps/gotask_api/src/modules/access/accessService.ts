@@ -4,7 +4,7 @@ import {
   getAllAccessRecordsFromDb,
   getAccessByIdFromDb,
   updateAccessInDb,
-  deleteAccessByIdFromDb
+  deleteAccessByIdFromDb,
 } from "../../domain/interface/access/accessInterface";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
 import accessConfig from "./accessConfig.json";
@@ -22,8 +22,32 @@ const filterFields = <T extends object>(
   return filtered;
 };
 
-// Fields allowed in Access document
-const allowedAccessFields: (keyof IAccess)[] = ["name", "application"];
+// Fields allowed in Access document for create/update
+const allowedAccessFields: (keyof IAccess)[] = ["name", "accesses"];
+
+// Validate accesses array structure
+const validateAccesses = (accesses: any): boolean => {
+  if (!Array.isArray(accesses)) return false;
+
+  return accesses.every((item) => {
+    if (
+      typeof item !== "object" ||
+      typeof item.module !== "string" ||
+      !Array.isArray(item.actions) ||
+      !item.actions.every((a: any) => typeof a === "string")
+    ) {
+      return false;
+    }
+    // restrictedFields is optional but if present must be an object
+    if (
+      item.restrictedFields !== undefined &&
+      (typeof item.restrictedFields !== "object" || item.restrictedFields === null)
+    ) {
+      return false;
+    }
+    return true;
+  });
+};
 
 // Create Access service
 const createAccess = async (
@@ -32,26 +56,31 @@ const createAccess = async (
   try {
     const filteredInput = filterFields(accessData, allowedAccessFields);
 
-    if (!filteredInput.name || !filteredInput.application) {
+    if (!filteredInput.name) {
       return {
         success: false,
-        message: AccessMessages.CREATE.REQUIRED
+        message: AccessMessages.CREATE.REQUIRED,
       };
     }
 
-    // TODO: Add validation for application structure if needed
+    if (!filteredInput.accesses || !validateAccesses(filteredInput.accesses)) {
+      return {
+        success: false,
+        message: "Invalid accesses structure. Each access must have a module (string), actions (string[]), and optional restrictedFields (object).",
+      };
+    }
 
     const newAccess = await createAccessInDb(filteredInput);
     const filteredAccess = filterFields(newAccess, ["id", ...allowedAccessFields]);
 
     return {
       success: true,
-      data: filteredAccess
+      data: filteredAccess,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.CREATE.FAILED
+      message: error.message || AccessMessages.CREATE.FAILED,
     };
   }
 };
@@ -66,25 +95,33 @@ const updateAccess = async (
     if (!existing) {
       return {
         success: false,
-        message: AccessMessages.UPDATE.NOT_FOUND
+        message: AccessMessages.UPDATE.NOT_FOUND,
       };
     }
 
     const filteredUpdate = filterFields(updateData, allowedAccessFields);
 
-    // TODO: Add validation for application/actions format if needed
+    if (
+      filteredUpdate.accesses !== undefined &&
+      !validateAccesses(filteredUpdate.accesses)
+    ) {
+      return {
+        success: false,
+        message: "Invalid accesses structure. Each access must have a module (string), actions (string[]), and optional restrictedFields (object).",
+      };
+    }
 
     const updatedAccess = await updateAccessInDb(id, filteredUpdate);
     const filtered = filterFields(updatedAccess!, ["id", ...allowedAccessFields]);
 
     return {
       success: true,
-      data: filtered
+      data: filtered,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.UPDATE.FAILED
+      message: error.message || AccessMessages.UPDATE.FAILED,
     };
   }
 };
@@ -103,12 +140,12 @@ const getAllAccesses = async (): Promise<{
 
     return {
       success: true,
-      data: filteredAccesses
+      data: filteredAccesses,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.FETCH.FAILED_ALL
+      message: error.message || AccessMessages.FETCH.FAILED_ALL,
     };
   }
 };
@@ -122,7 +159,7 @@ const getAccessById = async (
     if (!access) {
       return {
         success: false,
-        message: AccessMessages.FETCH.NOT_FOUND
+        message: AccessMessages.FETCH.NOT_FOUND,
       };
     }
 
@@ -130,24 +167,26 @@ const getAccessById = async (
 
     return {
       success: true,
-      data: filtered
+      data: filtered,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.FETCH.FAILED_BY_ID
+      message: error.message || AccessMessages.FETCH.FAILED_BY_ID,
     };
   }
 };
 
 // Delete Access by ID service
-const deleteAccessById = async (id: string): Promise<{ success: boolean; message?: string }> => {
+const deleteAccessById = async (
+  id: string
+): Promise<{ success: boolean; message?: string }> => {
   try {
     const access = await getAccessByIdFromDb(id);
     if (!access) {
       return {
         success: false,
-        message: AccessMessages.DELETE.NOT_FOUND
+        message: AccessMessages.DELETE.NOT_FOUND,
       };
     }
 
@@ -155,18 +194,18 @@ const deleteAccessById = async (id: string): Promise<{ success: boolean; message
     if (!success) {
       return {
         success: false,
-        message: AccessMessages.DELETE.FAILED
+        message: AccessMessages.DELETE.FAILED,
       };
     }
 
     return {
       success: true,
-      message: AccessMessages.DELETE.SUCCESS
+      message: AccessMessages.DELETE.SUCCESS,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.DELETE.FAILED
+      message: error.message || AccessMessages.DELETE.FAILED,
     };
   }
 };
@@ -183,7 +222,7 @@ const getAccessOptionsFromConfig = async (): Promise<{
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || AccessMessages.CONFIG.LOAD_FAILED
+      message: error.message || AccessMessages.CONFIG.LOAD_FAILED,
     };
   }
 };
@@ -195,5 +234,5 @@ export {
   updateAccess,
   deleteAccessById,
   getAccessOptionsFromConfig,
-  getAllAccessRecordsFromDb
+  getAllAccessRecordsFromDb,
 };

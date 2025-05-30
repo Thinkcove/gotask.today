@@ -15,36 +15,38 @@ import { useTranslations } from "next-intl";
 
 interface Props {
   module: string;
-  fieldsOptions: Record<string, any>;
-  selectedOps: string[];
-  selected: string[];
+  action: string;
+  fields: string[];
+  selected: any;
   onChange: (module: string, action: string, field: string, checked: boolean) => void;
   readOnly?: boolean;
 }
 
 const FieldCheckboxes: React.FC<Props> = ({
   module,
-  fieldsOptions,
-  selectedOps,
+  action,
+  fields,
   selected,
   onChange,
   readOnly = false
 }) => {
   const t = useTranslations("Access");
-
-  //   const allChecked = fields.length > 0 && fields.every((field) => selected.includes(field));
-  //   const someChecked = selected.length > 0 && selected.length < fieldsOptions.length;
+  console.log('action', action);
+  console.log('selected', selected)
+    const selectedFields = selected?.[action?.toLowerCase()] || [];
+    const allChecked = fields.length > 0 && fields.every((field) => selectedFields.includes(field));
+    const someChecked = selectedFields?.length > 0 && fields?.length > selectedFields?.length;
 
   const handleSelectAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;
-    // fields.forEach((field) => {
-    //   if (isChecked && !selected.includes(field)) {
-    //     onChange(module, field, true);
-    //   }
-    //   if (!isChecked && selected.includes(field)) {
-    //     onChange(module, field, false);
-    //   }
-    // });
+    fields.forEach((field) => {
+      if (isChecked && !selectedFields.includes(field)) {
+        onChange(module,action?.toLowerCase(), field, true);
+      }
+      if (!isChecked && selectedFields.includes(field)) {
+        onChange(module,action?.toLowerCase(), field, false);
+      }
+    });
   };
 
   return (
@@ -67,7 +69,7 @@ const FieldCheckboxes: React.FC<Props> = ({
           gutterBottom
           sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
         >
-          {t("fieldAccess")}: {module}
+          {t("fieldAccess")}: {action}
         </Typography>
 
         <Paper
@@ -83,8 +85,8 @@ const FieldCheckboxes: React.FC<Props> = ({
           <FormControlLabel
             control={
               <Checkbox
-                // checked={allChecked}
-                // indeterminate={someChecked}
+                checked={allChecked}
+                indeterminate={someChecked}
                 onChange={handleSelectAllChange}
                 disabled={readOnly}
                 inputProps={{ "aria-label": t("selectallFields") }}
@@ -119,15 +121,6 @@ const FieldCheckboxes: React.FC<Props> = ({
             }
           }}
         >
-          {!!selectedOps?.length &&
-            selectedOps.map((opt: string, index: number) => {
-              const fields = fieldsOptions?.fields?.[opt?.toLowerCase()] || [];
-              return (
-                <div key={index}>
-                  <Typography variant="body2" color="text.secondary" sx={{ px: 2, py: 1 }}>
-                    {opt}
-                  </Typography>
-
                   {!fields?.length ? (
                     <Typography variant="body2" color="text.secondary" sx={{ p: 1 }}>
                       {t("noFieldsAvailable")}
@@ -139,9 +132,9 @@ const FieldCheckboxes: React.FC<Props> = ({
                           key={index}
                           control={
                             <Checkbox
-                              checked={selected?.[opt?.toLowerCase()]?.includes(field)}
+                              checked={selectedFields?.includes(field)}
                               onChange={(e) => 
-                                onChange(module,opt?.toLowerCase(), field, e.target.checked)
+                                onChange(module,action?.toLowerCase(), field, e.target.checked)
                               }
                               disabled={readOnly}
                               inputProps={{ "aria-label": `${t("field")}: ${field}` }}
@@ -158,9 +151,6 @@ const FieldCheckboxes: React.FC<Props> = ({
                       </Grid>
                     ))
                   )}
-                </div>
-              );
-            })}
         </Box>
       </CardContent>
     </Card>

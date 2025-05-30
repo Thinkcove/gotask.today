@@ -6,11 +6,12 @@ import {
   getAccessById,
   updateAccess,
   deleteAccessById,
-  getAccessOptionsFromConfig
+  getAccessOptionsFromConfig,
 } from "../access/accessService";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
 
 class AccessController extends BaseController {
+  // Create new Access (Role + accesses)
   async createAccess(requestHelper: RequestHelper, handler: any) {
     try {
       const accessData = requestHelper.getPayload();
@@ -19,7 +20,9 @@ class AccessController extends BaseController {
         return this.replyError(new Error(AccessMessages.CREATE.REQUIRED));
       }
 
-      // You may add validation for application/actions here if needed
+      // Optional: Add validation for accesses array shape, e.g.,
+      // each item should have: module (string), actions (string[]), restrictedFields (object)
+      // You can add Joi or custom validator here if needed.
 
       const result = await createAccess(accessData);
 
@@ -33,6 +36,7 @@ class AccessController extends BaseController {
     }
   }
 
+  // Get all Access records
   async getAllAccesses(_requestHelper: RequestHelper, handler: any) {
     try {
       const result = await getAllAccesses();
@@ -47,6 +51,7 @@ class AccessController extends BaseController {
     }
   }
 
+  // Get a single Access record by id
   async getAccessById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
@@ -63,12 +68,13 @@ class AccessController extends BaseController {
     }
   }
 
+  // Update an Access record by id
   async updateAccess(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
       const payload = requestHelper.getPayload();
 
-      // Optional: Validate payload for application.actions format
+      // Optional: Validate accesses structure before updating
 
       const result = await updateAccess(id, payload);
 
@@ -82,6 +88,7 @@ class AccessController extends BaseController {
     }
   }
 
+  // Delete an Access record by id
   async deleteAccess(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
@@ -98,6 +105,7 @@ class AccessController extends BaseController {
     }
   }
 
+  // Get Access options from config (to show in UI or for validation)
   async getAccessOptions(_requestHelper: RequestHelper, handler: any) {
     try {
       const result = await getAccessOptionsFromConfig();

@@ -1,45 +1,50 @@
 // accessControls.ts
 
+// Define the expected user role access structure
 interface User {
   role?: {
-    accessDetails?: {
-      name: string;
-      application: {
-        access: string;
-        actions: string[]; // actions as simple strings now
-        fields?: { [action: string]: string[] }; // optional fields per action
-      }[];
+    name: string;
+    accesses: {
+      module: string;
+      actions: string[];
+      restrictedFields?: { [action: string]: string[] };
     }[];
   };
 }
 
 /**
- * Checks if the user has permission for the given appName and action.
- * If a field is specified, also checks if the user has permission for that field under the action.
+ * Checks if the user has permission for the given module and action.
+ * If a field is specified, checks if the field is restricted under that action.
  *
- * @param user - the user object containing role and accessDetails
- * @param appName - the name of the access/application to check
+ * @param user - the user object containing role and accesses
+ * @param moduleName - the name of the module to check access for (e.g., "User Management")
  * @param action - the action string to check (e.g., "READ", "CREATE")
- * @param field - optional, the specific field under the action to check access for
- * @returns boolean indicating if the user has the requested permission
+ * @param field - optional, the specific field to check access for
+ * @returns boolean - true if access is granted, false if denied
  */
-export function hasAccess(user: User, appName: string, action: string, field?: string): boolean {
-  const accessDetails = user?.role?.accessDetails || [];
+export function hasAccess(
+  user: User,
+  moduleName: string,
+  action: string,
+  field?: string
+): boolean {
+  const accesses = user?.role?.accesses || [];
 
-  for (const access of accessDetails) {
-    for (const app of access.application) {
-      if (app.access === appName && app.actions.includes(action)) {
-        // If no field specified, return true immediately
-        if (!field) return true;
+  for (const access of accesses) {
+    if (access.module === moduleName && access.actions.includes(action)) {
+      // If no field-level restriction to check, allow access
+      if (!field) return true;
 
-        // If fields defined, check if the field is allowed for this action
-        if (app.fields && app.fields[action] && app.fields[action].includes(field)) {
-          return true;
-        }
+      // Check if the field is restricted for this action
+      const restricted = access.restrictedFields?.[action] || [];
+      if (restricted.includes(field)) {
+        return false; // Access denied due to restricted field
       }
+
+      return true; // Access allowed
     }
   }
 
-  // If no matching permission found
+  // No matching module/action found
   return false;
 }

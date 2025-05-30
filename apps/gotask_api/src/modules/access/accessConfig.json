@@ -1,71 +1,52 @@
 {
   "accesses": [
     {
-      "access": "User Management",
+      "module": "User Management",
       "actions": ["READ", "CREATE", "EDIT", "VIEW", "DELETE"],
-      "fields": {
-        "read": ["name", "user_id", "status", "roleId", "organization", "projects"],
-        "edit": ["name", "status", "roleId", "organization", "projects"]
+      "restrictedFields": {
+        "EDIT": ["name", "user_id", "status", "roleId", "organization"]
       }
     },
     {
-      "access": "Task Management",
+      "module": "Task Management",
       "actions": ["READ", "CREATE", "EDIT", "VIEW", "DELETE"],
-      "fields": {
-        "read": [
-          "id", "title", "description", "status", "severity", "user_id",
-          "user_name", "project_id", "project_name", "due_date",
-          "created_on", "updated_on", "estimated_time", "time_spent_total",
-          "remaining_time", "variation"
-        ],
-        "edit": [
-          "title", "description", "status", "severity",
-          "due_date", "estimated_time", "remaining_time"
-        ]
-      }
+      "restrictedFields": {
+        "EDIT": ["title", "description", "status", "severity", "user_id", "project_id", "due_date"]
+      } 
     },
     {
-      "access": "Project Management",
+      "module": "Project Management",
       "actions": ["READ", "CREATE", "EDIT", "VIEW", "ASSIGN", "UNASSIGN", "UPDATE"],
-      "fields": {
-        "read": ["id", "name", "description", "status", "user_id", "organization_id", "createdAt", "updatedAt"],
-        "edit": ["name", "description", "status", "user_id", "organization_id"],
-        "assign": ["user_id"],
-        "unassign": ["user_id"],
-        "update": ["name", "description", "status", "user_id", "organization_id"]
+      "restrictedFields": {
+        "VIEW":["organization_id"],
+        "EDIT": [ "name", "description", "status", "organization_id"]
       }
     },
     {
-      "access": "Access Management",
+      "module": "Access Management",
       "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE", "UPDATE"],
-      "fields": {
-        "read": ["id", "name", "application"],
-        "edit": ["name", "application"],
-        "update": ["name", "application"]
+      "restrictedFields": {
+        "EDIT": ["name"]
+
       }
     },
     {
-      "access": "Organization Management",
-      "actions": ["READ", "CREATE", "VIEW", "EDIT"],
-      "fields": {
-        "read": ["id", "name", "address", "mail_id", "mobile_no", "projects", "users"],
-        "edit": ["name", "address", "mail_id", "mobile_no", "projects", "users"]
+      "module": "Organization Management",
+      "actions": ["READ", "CREATE", "VIEW", "EDIT","DELETE"],
+      "restrictedFields": {
+        "READ":["users","projects"],
+        "EDIT": ["name", "address", "mail_id", "mobile_no"]
       }
     },
     {
-      "access": "Role Management",
+      "module": "Role Management",
       "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE", "INVOKE_ACCESS", "REVOKE_ACCESS"],
-      "fields": {
-        "read": ["id", "name", "access"],
-        "edit": ["name", "access"]
-      }
+      "restrictedFields": {}
     },
     {
-      "access": "User Report",
+      "module": "User Report",
       "actions": ["READ"],
-      "fields": {
-        "read": ["reportType", "createdAt"]
-      }
+      "restrictedFields": {}
     }
   ]
 }

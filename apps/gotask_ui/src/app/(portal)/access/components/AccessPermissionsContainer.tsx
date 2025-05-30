@@ -31,6 +31,8 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
   const selectedOps = selectedPermissions[currentModule] || [];
   const selectedFlds = selectedFields?.[currentModule] || [];
 
+  console.log('fieldOptions', fieldOptions)
+
   return (
     <Box sx={{ mt: 2 }}>
       <AccessTabs
@@ -61,17 +63,20 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
               readOnly={readOnly}
             />
           </Box>
+          { !!selectedOps?.length && selectedOps.filter(Boolean).map((action, index) => (
 
-          <Box sx={{ flex: 4, pl: 1 }}>
+          <Box key={index} sx={{ flex: 4, pl: 1 }}>
             <FieldCheckboxes
               module={currentModule}
-              fieldsOptions={fieldOptions}
-              selectedOps={selectedOps}
+              action={action}
+              fields={fieldOptions?.fields?.[action?.toLowerCase()] || []}
               selected={selectedFlds}
               onChange={onFieldChange}
               readOnly={readOnly}
             />
           </Box>
+          ))
+        }
         </Box>
       </Box>
     </Box>

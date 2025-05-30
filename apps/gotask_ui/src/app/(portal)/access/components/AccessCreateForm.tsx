@@ -51,33 +51,28 @@ const AccessCreateForm: React.FC = () => {
     });
   };
 
-  const handleFieldChange = (module: string, action: string, field: string, checked: boolean) => {
-    console.log('module',module, 'field', field, 'checked', checked)
-    setSelectedFields((prev) => {
-      if (!prev?.module) {
-        prev = {[module] : {}}
+const handleFieldChange = (module: string, action: string, field: string, checked: boolean) => {
+  setSelectedFields((prev) => {
+    const updated = {
+      ...prev,
+      [module]: {
+        ...prev?.[module],
+        [action]: [...(prev?.[module]?.[action] || [])]
       }
-      if (!prev?.module?.action) {
-        prev.module = {[action] : []}
-      }
-      if (prev?.module?.action?.length) {
-        if(prev?.module?.action?.includes(field) && !checked) {
-            prev.module.action.filter((item: string) => item !== field)
-        } else if(!prev?.module?.action?.includes(field) && checked) {
-          prev.module.action.push(field);
-        }
-      }
-      return prev
-    })
-    //  setSelectedFields((prev) => {
-    //   const existing = prev[module] || [];
-    //   console.log('existing', existing)
-      // const updated = checked
-      //   ? [...new Set([...existing, action])]
-      //   : existing.filter((a) => a !== action);
-      // return { ...prev, [module]: updated };
-    // });
-  }
+    };
+
+    const fieldIndex = updated[module][action].indexOf(field);
+
+    if (checked && fieldIndex === -1) {
+      updated[module][action].push(field);
+    } else if (!checked && fieldIndex !== -1) {
+      updated[module][action].splice(fieldIndex, 1);
+    }
+
+    return updated;
+  });
+};
+
 
   const handleSnackbarClose = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));

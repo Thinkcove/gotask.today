@@ -7,9 +7,11 @@ import { ITaskComment } from "../interface/taskInterface";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
+  onEdit: (comment: ITaskComment) => void; // Updated to pass the selected comment
+  canEditId: string; // Logged-in user ID to check edit eligibility
 }
 
-const CommentHistory: React.FC<CommentHistoryProps> = ({ comments }) => {
+const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEditId }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [showAll, setShowAll] = useState(false);
 
@@ -45,13 +47,12 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments }) => {
 
       <Box
         sx={{
-          maxHeight: { xs: 300, sm: 400, md: 500 }, // Simple max height
-          overflowY: "auto", // Simple scroll
+          maxHeight: { xs: 300, sm: 400, md: 500 },
+          overflowY: "auto",
           overflowX: "hidden",
           pr: { xs: 0, sm: 1 },
           width: "100%",
           boxSizing: "border-box",
-          // Custom scrollbar styling (optional)
           "&::-webkit-scrollbar": {
             width: "6px"
           },
@@ -143,11 +144,34 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments }) => {
                   lineHeight: 1.4,
                   wordBreak: "break-word",
                   overflowWrap: "break-word",
-                  hyphens: "auto"
+                  hyphens: "auto",
+                  mb: 1
                 }}
               >
                 {comment.comment}
               </Typography>
+              {String(comment.user_id) === String(canEditId) && (
+                <Button
+                  variant="text"
+                  color="primary"
+                  onClick={() => onEdit(comment)} // Pass the entire comment object
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: 500,
+                    p: 0,
+                    minWidth: "auto",
+                    "&:hover": {
+                      textDecoration: "underline",
+                      backgroundColor: "transparent"
+                    },
+                    "&:active": {
+                      textDecoration: "underline"
+                    }
+                  }}
+                >
+                  {transtask("addcomment")} {/* Updated label to indicate edit */}
+                </Button>
+              )}
             </Box>
           </Box>
         ))}
@@ -159,10 +183,16 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments }) => {
           size="small"
           sx={{
             textTransform: "none",
-            ml: { xs: 0, sm: 6 },
-            mt: 1,
-            fontSize: { xs: "0.875rem", sm: "0.875rem" },
-            alignSelf: "flex-start"
+            fontWeight: 500,
+            p: 0,
+            minWidth: "auto",
+            "&:hover": {
+              textDecoration: "underline",
+              backgroundColor: "transparent"
+            },
+            "&:active": {
+              textDecoration: "underline"
+            }
           }}
         >
           {transtask("viewMore", { default: "View more" })} ({comments.length - 3} more)

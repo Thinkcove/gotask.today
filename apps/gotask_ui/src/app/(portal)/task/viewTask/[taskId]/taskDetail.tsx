@@ -5,26 +5,70 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { getSeverityColor, getStatusColor } from "@/app/common/constants/task";
 import LabelValueText from "@/app/component/text/labelValueText";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
-import { ITask } from "../../interface/taskInterface";
+import { ITask, ITaskComment } from "../../interface/taskInterface";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import CommentHistory from "../../editTask/commentsHistory";
+import TaskComments from "../../editTask/taskComments";
 import { formatTimeValue } from "@/app/common/utils/common";
+import { useState } from "react";
+import { useUser } from "@/app/userContext";
+import { createComment } from "@/app/(portal)/task/service/taskAction";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { KeyedMutator } from "swr";
+import CommentHistory from "../../editTask/commentsHistory";
 
 interface TaskDetailViewProps {
   task: ITask;
   loading?: boolean;
+  mutate?: KeyedMutator<ITask>;
 }
 
-const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }) => {
+const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const { canAccess } = useUserPermission();
+  const { user } = useUser(); // Get logged-in user details
+  const [isCommenting, setIsCommenting] = useState(false); // Control TaskComments visibility
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
 
   const handleBack = () => {
     router.back();
+  };
+
+  // Handle comment save
+  const handleSaveComment = async (comment: string) => {
+    if (!comment.trim()) return;
+
+    try {
+      const commentData: ITaskComment = {
+        task_id: task.id,
+        user_id: user?.id || "",
+        user_name: user?.name || "",
+        comment
+      };
+      await createComment(commentData);
+      setSnackbar({
+        open: true,
+        message: transtask("commentsuccess"),
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
+      setIsCommenting(false); // Hide TaskComments after saving
+      if (mutate) await mutate(); // Refresh task data
+    } catch (error) {
+      console.error("Error saving comment:", error);
+      setSnackbar({
+        open: true,
+        message: transtask("commenterror"),
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+    }
   };
 
   // Loading state
@@ -64,31 +108,28 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
         sx={{
           minHeight: "100vh",
           p: { xs: 1, sm: 2, md: 3 },
-          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+          background: "linear"
         }}
       >
         <Box
           sx={{
             borderRadius: 4,
-            p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
+            p: { xs: 2, sm: 3, md: 4 },
             bgcolor: "#f9fafb",
             border: "1px solid #e0e0e0",
-            maxHeight: { xs: "auto", md: 820 }, // Remove max height on mobile
-            width: "100%", // Ensure full width
-            boxSizing: "border-box", // Include padding in width calculation
-            overflow: "hidden" // Prevent content from breaking out
+            maxHeight: { xs: "auto", md: "0" },
+            width: "100%",
+            boxSizing: "border-box",
+            overflow: "hidden"
           }}
         >
-          {/* Header */}
           <Grid container spacing={2} alignItems="center" mb={3}>
-            {/* Back Button */}
             <Grid item xs="auto">
               <IconButton color="primary" onClick={handleBack}>
                 <ArrowBack />
               </IconButton>
             </Grid>
 
-            {/* Task Title and Status */}
             <Grid item xs>
               <Box>
                 <Typography
@@ -96,7 +137,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
                   fontWeight={500}
                   sx={{
                     textTransform: "capitalize",
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" } // Responsive font size
+                    fontSize: { xs: "1.25rem", sm: "1.5rem" }
                   }}
                 >
                   {task?.title}
@@ -105,7 +146,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
               </Box>
             </Grid>
 
-            {/* Edit Button - Separate Grid */}
             {canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) && (
               <Grid item xs="auto">
                 <IconButton
@@ -118,7 +158,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
             )}
           </Grid>
 
-          {/* Task Description - Modified to display on separate lines */}
           <Box mb={3}>
             <Typography
               variant="subtitle2"
@@ -135,15 +174,14 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
               sx={{
                 color: "text.primary",
                 lineHeight: 1.6,
-                whiteSpace: "pre-wrap", // Preserve line breaks
-                wordBreak: "break-word" // Break long words if needed
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word"
               }}
             >
               {task.description || "-"}
             </Typography>
           </Box>
 
-          {/* Meta Info */}
           <Grid container spacing={2} mb={3}>
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText label={transtask("detailuser")} value={task.user_name || "-"} />
@@ -170,7 +208,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
                 value={new Date(task.due_date).toLocaleDateString()}
               />
             </Grid>
-
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
                 label={transtask("estimatedt")}
@@ -199,19 +236,33 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
 
           <Divider sx={{ mt: 2, mb: 2 }} />
 
-          {/* Comment History - Contained within card */}
-          {Array.isArray(task?.comment) && task.comment.length > 0 && (
-            <Box
-              sx={{
-                width: "100%",
-                boxSizing: "border-box",
-                overflow: "hidden", // Prevent horizontal overflow
-                wordBreak: "break-word" // Break long words if needed
-              }}
-            >
-              <CommentHistory comments={task.comment} />
-            </Box>
-          )}
+          <Box
+            sx={{
+              width: "100%",
+              boxSizing: "border-box",
+              overflow: "hidden",
+              wordBreak: "break-word"
+            }}
+          >
+            {isCommenting && (
+              <TaskComments comments={task.comment || []} onSave={handleSaveComment} />
+            )}
+
+            {!isCommenting && Array.isArray(task?.comment) && task.comment.length > 0 && (
+              <CommentHistory
+                comments={task.comment}
+                onEdit={() => setIsCommenting(true)}
+                canEditId={user?.id || ""}
+              />
+            )}
+          </Box>
+
+          <CustomSnackbar
+            open={snackbar.open}
+            message={snackbar.message}
+            severity={snackbar.severity}
+            onClose={() => setSnackbar({ ...snackbar, open: false })}
+          />
         </Box>
       </Box>
     </>
@@ -219,3 +270,4 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
 };
 
 export default TaskDetailView;
+

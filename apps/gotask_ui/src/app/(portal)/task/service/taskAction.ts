@@ -186,14 +186,22 @@ export const updateTask = (taskId: string, updatedFields: object) =>
   });
 
 //create comment
-export const createComment = async (formData: ITaskComment) => {
-  const response = await fetch(`${env.API_BASE_URL}/task/createComment`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData)
+export const createComment = (formData: ITaskComment) =>
+  withAuth(async (token) => {
+    const response = await fetch(`${env.API_BASE_URL}/task/createComment`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to create comment");
+    }
+    return response.json();
   });
-  return response.json();
-};
 
 // Get Projects by User
 export const getProjectIdsAndNames = async (userId: string) => {
@@ -228,3 +236,21 @@ export const logTaskTime = async (
   });
   return response.json();
 };
+
+// Update a comment
+export const updateComment = (commentData: ITaskComment) =>
+  withAuth(async (token) => {
+    const response = await fetch(`${env.API_BASE_URL}/task/updateComment/${commentData.id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(commentData)
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update comment");
+    }
+    return response.json();
+  });

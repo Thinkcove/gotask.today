@@ -1,27 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button } from "@mui/material";
 import FormField from "@/app/component/formField";
 import { ITaskComment } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import CommentHistory from "./commentsHistory";
+import { useUser } from "@/app/userContext";
 
 interface TaskCommentsProps {
   comments: ITaskComment[];
-  onSave: (comment: string) => void;
+  onSave: (comment: string, commentId?: string) => void; // Updated to handle comment ID for editing
+  selectedComment?: ITaskComment | null; // Prop for the comment being edited
 }
 
-const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
+const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, selectedComment }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const [newComment, setNewComment] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const { user } = useUser(); // Get logged-in user details
+
+  // Initialize newComment with selectedComment's content if available, else empty string
+  const [newComment, setNewComment] = useState(selectedComment ? selectedComment.comment : "");
+  const [isFocused, setIsFocused] = useState(!!selectedComment); // Show buttons if editing
+  const [editingComment, setEditingComment] = useState<ITaskComment | null>(
+    selectedComment || null
+  );
+
+  // Update state when selectedComment changes
+  useEffect(() => {
+    if (selectedComment) {
+      setNewComment(selectedComment.comment);
+      setEditingComment(selectedComment);
+      setIsFocused(true);
+    }
+  }, [selectedComment]);
 
   const handleSave = () => {
     if (newComment.trim()) {
-      onSave(newComment);
-      setNewComment("");
-      setIsFocused(false);
+      // Pass the comment and the comment ID (if editing)
+      onSave(newComment, editingComment?.id);
+      setNewComment(""); // Clear the field after saving
+      setIsFocused(false); // Hide buttons
+      setEditingComment(null); // Clear editing state
     }
+  };
+
+  const handleCancel = () => {
+    setNewComment(""); // Clear the field
+    setIsFocused(false); // Hide buttons
+    setEditingComment(null); // Clear editing state
+  };
+
+  const handleEdit = (comment: ITaskComment) => {
+    setEditingComment(comment);
+    setNewComment(comment.comment);
+    setIsFocused(true);
   };
 
   return (
@@ -46,7 +77,8 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
             sx={{ backgroundColor: "#741B92", textTransform: "none" }}
             onClick={handleSave}
           >
-            {transtask("savecomment")}
+            {transtask(editingComment ? "updatecomment" : "savecomment")}{" "}
+            {/* Dynamic button label */}
           </Button>
           <Button
             variant="outlined"
@@ -57,10 +89,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
               textTransform: "none",
               "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
             }}
-            onClick={() => {
-              setNewComment("");
-              setIsFocused(false);
-            }}
+            onClick={handleCancel}
           >
             {transtask("cancelcomment")}
           </Button>
@@ -68,8 +97,9 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
       )}
 
       {/* Previous Comments */}
-
-      {comments.length > 0 && <CommentHistory comments={comments} />}
+      {comments.length > 0 && (
+        <CommentHistory comments={comments} onEdit={handleEdit} canEditId={user?.id || ""} />
+      )}
     </Box>
   );
 };

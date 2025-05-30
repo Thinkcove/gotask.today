@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Grid, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {
@@ -48,6 +48,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const [allTasks, setAllTasks] = useState<IGroup[]>([]);
   const [hasMoreData, setHasMoreData] = useState(true);
 
+  // Filters
   const [searchText, setSearchText] = useState<string>(searchParams.get("title") || "");
   const [searchParamsObj, setSearchParamsObj] = useState<{
     search_vals?: string[][];
@@ -81,13 +82,17 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const [dateFrom, setDateFrom] = useState<string>(searchParams.get("dateFrom") || "");
   const [dateTo, setDateTo] = useState<string>(searchParams.get("dateTo") || "");
 
+  // Memoize filters
+  const search_vals = searchParamsObj.search_vals;
+  const search_vars = searchParamsObj.search_vars;
+
   const isProjectView = view === "projects";
 
   const projectData = useProjectGroupTask(
     page,
     6,
-    searchParamsObj.search_vals,
-    searchParamsObj.search_vars,
+    search_vals,
+    search_vars,
     minDate,
     maxDate,
     dateVar,
@@ -97,8 +102,8 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const userData = useUserGroupTask(
     page,
     6,
-    searchParamsObj.search_vals,
-    searchParamsObj.search_vars,
+    search_vals,
+    search_vars,
     minDate,
     maxDate,
     dateVar,
@@ -116,8 +121,13 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
         isLoading: projectData.isLoading,
         isError: projectData.isError
       }
-    : { tasks: userData.tasksByUsers, isLoading: userData.isLoading, isError: userData.isError };
+    : {
+        tasks: userData.tasksByUsers,
+        isLoading: userData.isLoading,
+        isError: userData.isError
+      };
 
+  // Append tasks to state
   const currentTaskKey = `${view}_${page}`;
   if (!isLoading && !appendedPages.current.has(currentTaskKey) && hasMoreData && fetchedTasks) {
     const existingIds = new Set(allTasks.map((g) => g.id));
@@ -136,69 +146,97 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     setHasMoreData(true);
   };
 
-  const updateFiltersAndState = (
-    updatedSearchText = searchText,
-    updatedStatus = statusFilter,
-    updatedSeverity = severityFilter,
-    updatedProject = projectFilter,
-    updatedUser = userFilter,
-    updatedMinDate = minDate,
-    updatedMaxDate = maxDate,
-    updatedMoreDays = moreDays,
-    updatedLessDays = lessDays,
-    updatedVariationType = variationType,
-    updatedVariationDays = variationDays,
-    updatedDateFrom = dateFrom,
-    updatedDateTo = dateTo
-  ) => {
+  // Reset logic when view changes
+  if (previousView.current !== view) {
+    previousView.current = view;
+    resetTaskState();
+  }
+
+  const updateURLParams = useCallback(() => {
     const params = new URLSearchParams();
 
-    if (updatedSearchText.trim()) params.set("title", updatedSearchText);
-    updatedStatus.forEach((s) => params.append("status", s));
-    updatedSeverity.forEach((s) => params.append("severity", s));
-    updatedProject.forEach((p) => params.append("project_name", p));
-    updatedUser.forEach((u) => params.append("user_name", u));
-    if (updatedMinDate) params.set("minDate", updatedMinDate);
-    if (updatedMaxDate) params.set("maxDate", updatedMaxDate);
-    if ((updatedMinDate || updatedMaxDate) && dateVar) {
+    if (searchText.trim()) params.set("title", searchText);
+    statusFilter.forEach((s) => params.append("status", s));
+    severityFilter.forEach((s) => params.append("severity", s));
+    projectFilter.forEach((p) => params.append("project_name", p));
+    userFilter.forEach((u) => params.append("user_name", u));
+    if (minDate) params.set("minDate", minDate);
+    if (maxDate) params.set("maxDate", maxDate);
+    if (dateVar && (minDate || maxDate)) {
       params.set("dateVar", dateVar);
     }
-    if (updatedMoreDays) params.set("moreDays", updatedMoreDays);
-    if (updatedLessDays) params.set("lessDays", updatedLessDays);
-    if (updatedVariationType) params.set("variationType", updatedVariationType);
-    if (updatedVariationDays) params.set("variationDays", updatedVariationDays.toString());
-    if (updatedDateFrom) params.set("dateFrom", updatedDateFrom);
-    if (updatedDateTo) params.set("dateTo", updatedDateTo);
+
+    if (moreDays) params.set("moreDays", moreDays);
+    if (lessDays) params.set("lessDays", lessDays);
+    if (variationType) params.set("variationType", variationType);
+    if (variationDays) params.set("variationDays", variationDays.toString());
+    if (dateFrom) params.set("dateFrom", dateFrom);
+    if (dateTo) params.set("dateTo", dateTo);
 
     router.replace(`?${params.toString()}`);
+  }, [
+    searchText,
+    statusFilter,
+    severityFilter,
+    projectFilter,
+    userFilter,
+    minDate,
+    maxDate,
+    dateVar,
+    moreDays,
+    lessDays,
+    variationType,
+    variationDays,
+    dateFrom,
+    dateTo,
+    router
+  ]);
+
+  useEffect(() => {
+    updateURLParams();
 
     const search_vals: string[][] = [];
     const search_vars: string[][] = [];
 
-    if (updatedSearchText.trim()) {
-      search_vals.push([updatedSearchText]);
+    if (searchText.trim()) {
+      search_vals.push([searchText]);
       search_vars.push(["title"]);
     }
-    updatedStatus.forEach((s) => {
+    statusFilter.forEach((s) => {
       search_vals.push([s]);
       search_vars.push(["status"]);
     });
-    updatedSeverity.forEach((s) => {
+    severityFilter.forEach((s) => {
       search_vals.push([s]);
       search_vars.push(["severity"]);
     });
-    updatedProject.forEach((p) => {
+    projectFilter.forEach((p) => {
       search_vals.push([p]);
       search_vars.push(["project_name"]);
     });
-    updatedUser.forEach((u) => {
+    userFilter.forEach((u) => {
       search_vals.push([u]);
       search_vars.push(["user_name"]);
     });
 
     setSearchParamsObj({ search_vals, search_vars });
     resetTaskState();
-  };
+  }, [
+    updateURLParams,
+    searchText,
+    statusFilter,
+    severityFilter,
+    projectFilter,
+    userFilter,
+    minDate,
+    maxDate,
+    moreDays,
+    lessDays,
+    variationType,
+    variationDays,
+    dateFrom,
+    dateTo
+  ]);
 
   const handleScroll = () => {
     if (scrollFrameRef.current !== null) return;
@@ -217,15 +255,17 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
 
   const handleViewChange = (nextView: "projects" | "users") => {
     if (nextView !== view) {
-      previousView.current = nextView;
       setView(nextView);
-      resetTaskState();
       router.push(`/task/${nextView}`);
     }
   };
 
   const handleViewMore = (id: string) => {
-    const params = new URLSearchParams({ view, page: page.toString() });
+    const params = new URLSearchParams({
+      view,
+      page: page.toString()
+    });
+
     if (minDate) params.set("minDate", minDate);
     if (maxDate) params.set("maxDate", maxDate);
     if (moreDays) params.set("moreDays", moreDays);
@@ -233,29 +273,19 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     if ((minDate || maxDate || moreDays || lessDays) && dateVar) {
       params.set("dateVar", dateVar);
     }
+
     statusFilter.forEach((val) => params.append("status", val));
     severityFilter.forEach((val) => params.append("severity", val));
-    if (view !== "projects") projectFilter.forEach((val) => params.append("project_name", val));
-    if (view !== "users") userFilter.forEach((val) => params.append("user_name", val));
-    router.push(`/task/${view}/${id}?${params.toString()}`);
-  };
 
-  const handleVariationChange = (type: "more" | "less" | "", days: number) => {
-    setVariationType(type);
-    setVariationDays(days);
-
-    if (type === "more") {
-      setMoreDays(`${days}d`);
-      setLessDays(undefined);
-    } else if (type === "less") {
-      setLessDays(`-${days}d`);
-      setMoreDays(undefined);
-    } else {
-      setMoreDays(undefined);
-      setLessDays(undefined);
+    // Conditionally include filters based on current view
+    if (view !== "projects") {
+      projectFilter.forEach((val) => params.append("project_name", val));
+    }
+    if (view !== "users") {
+      userFilter.forEach((val) => params.append("user_name", val));
     }
 
-    updateFiltersAndState();
+    router.push(`/task/${view}/${id}?${params.toString()}`);
   };
 
   const isFiltered = () =>
@@ -274,6 +304,22 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
       </Grid>
     );
   }
+  // Define this function above the return statement
+  const handleVariationChange = (type: "more" | "less" | "", days: number) => {
+    setVariationType(type);
+    setVariationDays(days);
+
+    if (type === "more") {
+      setMoreDays(`${days}d`);
+      setLessDays(undefined);
+    } else if (type === "less") {
+      setLessDays(`-${days}d`);
+      setMoreDays(undefined);
+    } else {
+      setMoreDays(undefined);
+      setLessDays(undefined);
+    }
+  };
 
   return (
     <Box>
@@ -290,14 +336,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <SearchBar
-            value={searchText}
-            onChange={(val) => {
-              setSearchText(val);
-              updateFiltersAndState(val);
-            }}
-            placeholder="Search Task"
-          />
+          <SearchBar value={searchText} onChange={setSearchText} placeholder="Search Task" />
         </Box>
         <TaskToggle view={view} onViewChange={handleViewChange} />
       </Box>
@@ -313,28 +352,15 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
         variationDays={variationDays}
         dateFrom={dateFrom}
         dateTo={dateTo}
-        onStatusChange={(vals) => {
-          setStatusFilter(vals);
-          updateFiltersAndState(searchText, vals);
-        }}
-        onSeverityChange={(vals) => {
-          setSeverityFilter(vals);
-          updateFiltersAndState(searchText, statusFilter, vals);
-        }}
-        onProjectChange={(vals) => {
-          setProjectFilter(vals);
-          updateFiltersAndState(searchText, statusFilter, severityFilter, vals);
-        }}
-        onUserChange={(vals) => {
-          setUserFilter(vals);
-          updateFiltersAndState(searchText, statusFilter, severityFilter, projectFilter, vals);
-        }}
+        onStatusChange={setStatusFilter}
+        onSeverityChange={setSeverityFilter}
+        onProjectChange={setProjectFilter}
+        onUserChange={setUserFilter}
         onDateChange={(from, to) => {
           setDateFrom(from);
           setDateTo(to);
           setMinDate(from || undefined);
           setMaxDate(to || undefined);
-          updateFiltersAndState();
         }}
         onVariationChange={handleVariationChange}
         onClearFilters={() => {
@@ -351,7 +377,6 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
           setVariationDays(0);
           setMoreDays(undefined);
           setLessDays(undefined);
-          updateFiltersAndState("");
         }}
         transtask={transtask}
       />

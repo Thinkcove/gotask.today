@@ -1,5 +1,4 @@
 "use client";
-
 import { Box, CircularProgress } from "@mui/material";
 import { useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -98,8 +97,6 @@ const ViewMoreAction: React.FC = () => {
 
   const { tasksByProjects, isLoading: isLoadingProjects } = useProjectGroupTask(...hookArgs);
   const { tasksByUsers, isLoading: isLoadingUsers } = useUserGroupTask(...hookArgs);
-  console.log("tasksByProjects", tasksByProjects);
-  console.log("tasksByUsers", tasksByUsers);
 
   const drawerTasks = view === "projects" ? tasksByProjects : tasksByUsers;
   const isLoading = view === "projects" ? isLoadingProjects : isLoadingUsers;

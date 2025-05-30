@@ -14,7 +14,8 @@ const StyledButton = styled(Button)(({ theme }) => ({
   borderRadius: 12,
   textTransform: "none",
   fontWeight: 500,
-  color: theme.palette.text.primary,
+  color: "grey",
+  opacity: 1,
   borderColor: theme.palette.grey[400],
   backgroundColor: theme.palette.background.paper,
   "&:hover": {

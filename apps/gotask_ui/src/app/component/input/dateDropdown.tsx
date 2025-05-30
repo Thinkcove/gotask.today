@@ -6,6 +6,7 @@ interface DateDropdownProps {
   dateFrom: string;
   dateTo: string;
   onDateChange: (from: string, to: string) => void;
+  transtask: (key: string) => string;
 }
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -54,7 +55,12 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   }
 }));
 
-const DateDropdown: React.FC<DateDropdownProps> = ({ dateFrom, dateTo, onDateChange }) => {
+const DateDropdown: React.FC<DateDropdownProps> = ({
+  dateFrom,
+  dateTo,
+  onDateChange,
+  transtask
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [tempFrom, setTempFrom] = useState(dateFrom);
   const [tempTo, setTempTo] = useState(dateTo);
@@ -75,7 +81,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({ dateFrom, dateTo, onDateCha
   return (
     <>
       <StyledButton variant="outlined" onClick={handleOpen}>
-        {dateFrom && dateTo ? `${dateFrom} - ${dateTo}` : "Due Date"}
+        {dateFrom && dateTo ? `${dateFrom} - ${dateTo}` : transtask("filterduedate")}
       </StyledButton>
       <Popover
         open={open}

@@ -1,5 +1,5 @@
 "use client";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 import { useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -10,11 +10,13 @@ import {
   useProjectGroupTask,
   useUserGroupTask
 } from "../../service/taskAction";
-import { IGroup, Project, User } from "../../interface/taskInterface";
+import { Project, User } from "../../interface/taskInterface";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import PageHeader from "@/app/component/header/pageHeader";
 import TaskFilters from "@/app/component/filters/taskFilters";
 import ViewMoreList from "../../component/taskList/viewMoreList";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
 const ViewMoreAction: React.FC = () => {
   const router = useRouter();
@@ -166,14 +168,22 @@ const ViewMoreAction: React.FC = () => {
     );
   }
 
+  const groupName = useMemo(() => {
+    if (view === "projects") {
+      return allProjects.find((p: Project) => p.id === id)?.name || "";
+    }
+    if (view === "users") {
+      return allUsers.find((u: User) => u.id === id)?.name || "";
+    }
+    return "";
+  }, [view, id, allProjects, allUsers]);
+
+  const name = transtask("listViewOf", {
+    name: groupName,
+    type: view === "projects" ? transtask("filterproject") : transtask("filteruser")
+  });
   const hideProjectFilter = view === "projects";
   const hideUserFilter = view !== "projects";
-
-  const name = `List view of ${
-    drawerTasks.find((group: IGroup) => group.id === id)?.[
-      view === "projects" ? "project_name" : "user_name"
-    ] ?? ""
-  } ${view === "projects" ? "Project" : "User"}`;
 
   return (
     <>
@@ -211,6 +221,16 @@ const ViewMoreAction: React.FC = () => {
           transtask={transtask}
         />
       </Box>
+
+      {!isLoading && drawerTasks.length === 0 && (
+        <Grid item xs={12}>
+          <EmptyState
+            imageSrc={NoSearchResultsImage}
+            message={transtask("notaskfound", { name: groupName })}
+          />
+        </Grid>
+      )}
+
       <ViewMoreList
         selectedGroupId={id as string}
         drawerTasks={drawerTasks}

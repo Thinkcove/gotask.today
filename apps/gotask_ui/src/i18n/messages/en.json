@@ -184,7 +184,7 @@
     "filteruser": "User",
     "filterstatus": "Status",
     "filterseverity": "Severity",
-    "filterduedate": "Date",
+    "filterduedate": "Due Date",
     "filtervariation": "Variation",
     "daysvariation": "Days Variation",
     "from": "From",
@@ -276,7 +276,10 @@
     "variationt": "Variation",
     "duedate": "Cannot register time before the due date",
     "viewMore": "View more",
-    "comment": "Comments"
+    "comment": "Comments",
+    "listViewOf": "List view of {name} {type}",
+    "notaskfound": "No tasks found for {name} with the selected filters",
+    "nodata": "No data found"
   },
   "User": {
     "username": "User name is required",

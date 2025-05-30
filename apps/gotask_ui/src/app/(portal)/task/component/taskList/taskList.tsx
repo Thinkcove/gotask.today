@@ -391,7 +391,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
             <Grid item xs={12}>
               <EmptyState
                 imageSrc={isFiltered() ? NoSearchResultsImage : NoTasksImage}
-                message={isFiltered() ? "No data found" : "No tasks available"}
+                message={isFiltered() ? transtask("nodata") : transtask("notask")}
               />
             </Grid>
           )}

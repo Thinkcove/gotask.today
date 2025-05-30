@@ -152,7 +152,12 @@ const TaskFilters: React.FC<Props> = ({
               onChange={onUserChange}
             />
           )}
-          <DateDropdown dateFrom={dateFrom} dateTo={dateTo} onDateChange={onDateChange} />
+          <DateDropdown
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            onDateChange={onDateChange}
+            transtask={transtask}
+          />
           <Box ref={variationRef}>
             <FilterDropdown
               label={transtask("filtervariation")}

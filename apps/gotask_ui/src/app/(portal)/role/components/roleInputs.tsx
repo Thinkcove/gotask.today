@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Grid } from "@mui/material";
-import FormField from "@/app/component/formField";
+import FormField from "@/app/component/input/formField";
 import { IRole } from "../interfaces/roleInterface";
 import { useAllAccess } from "../services/roleAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";

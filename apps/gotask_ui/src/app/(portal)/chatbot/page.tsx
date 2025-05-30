@@ -10,7 +10,7 @@ const Page = () => {
   const transchatbot = useTranslations(LOCALIZATION.TRANSITION.CHATBOT);
   return (
     <Box>
-      <ModuleHeader name={transchatbot("chatbot")} />
+      <ModuleHeader name={transchatbot("viewname")} />
       <Chatbot />
     </Box>
   );

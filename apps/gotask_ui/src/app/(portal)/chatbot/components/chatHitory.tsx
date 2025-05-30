@@ -1,5 +1,81 @@
-"use client";
-import React, { useState, useEffect } from "react";
+// import { useState } from "react";
+// import { useSWRConfig } from "swr";
+// import { clearQueryHistory, deleteConversation, useQueryHistory } from "../service/chatAction";
+
+// const ChatHistory: React.FC = () => {
+//   const { getQueryHistory } = useQueryHistory();
+//   const { mutate } = useSWRConfig();
+//   const [loading, setLoading] = useState(false);
+
+//   // Clear all history
+//   const handleClearAll = async () => {
+//     setLoading(true);
+//     try {
+//       await clearQueryHistory();
+//       mutate("fetchQueryHistory"); // Refresh the history
+//     } catch (error) {
+//       console.error("Error clearing history:", error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Delete a specific conversation
+//   const handleDelete = async (conversationId: string) => {
+//     setLoading(true);
+//     try {
+//       await deleteConversation(conversationId);
+//       mutate("fetchQueryHistory"); // Refresh the history
+//     } catch (error) {
+//       console.error("Error deleting conversation:", error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="p-4">
+//       <h2 className="text-xl font-bold mb-4">Chat History</h2>
+//       <button
+//         onClick={handleClearAll}
+//         className="bg-red-500 text-white p-2 rounded mb-4"
+//         disabled={loading}
+//       >
+//         {loading ? "Clearing..." : "Clear All History"}
+//       </button>
+//       <ul className="space-y-4">
+//         {getQueryHistory.length === 0 ? (
+//           <p>No history available.</p>
+//         ) : (
+//           getQueryHistory.map((entry: any) => (
+//             <li key={entry.id} className="border p-4 rounded">
+//               <p>
+//                 <strong>Query:</strong> {entry.query}
+//               </p>
+//               <p>
+//                 <strong>Response:</strong> {entry.response}
+//               </p>
+//               <p>
+//                 <strong>Timestamp:</strong> {entry.timestamp}
+//               </p>
+//               <button
+//                 onClick={() => handleDelete(entry.conversationId)}
+//                 className="bg-red-400 text-white p-1 rounded mt-2"
+//                 disabled={loading}
+//               >
+//                 Delete
+//               </button>
+//             </li>
+//           ))
+//         )}
+//       </ul>
+//     </div>
+//   );
+// };
+
+// export default ChatHistory;
+
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -13,92 +89,36 @@ import {
   MenuItem,
   CircularProgress
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/app/store/store";
-import { QueryService } from "../services/queryService";
-import { deleteConversation, setHistory } from "../services/queryAction";
-import ConfirmationDialog from "@/app/components/popup";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { clearQueryHistory, deleteConversation, useQueryHistory } from "../service/chatAction";
+import { QueryHistoryEntry } from "../interface/chatInterface";
 import CommonDialog from "@/app/component/dialog/commonDialog";
-import { deleteAccessRole, useAccessRoleById } from "../../access/services/accessService";
-import { useParams, useRouter } from "../../../../../node_modules/next/navigation";
-import { useTranslations } from "../../../../../node_modules/next-intl/dist/types/index.react-client";
-
-interface HistoryEntry {
-  _id: string;
-  query: string;
-  response: string;
-  timestamp: string;
-  conversationId: string;
-}
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import AddIcon from "@mui/icons-material/Add";
+import { Query } from "@/app/common/constants/query";
 
 interface ChatHistoryProps {
   onNewChat: () => void;
   onClearAll: () => void;
-  onLogout: () => void;
+  onRedirect: () => void;
   onSelectConversation: (conversationId: string) => void;
 }
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({
   onNewChat,
   onClearAll,
-  onLogout,
+  onRedirect,
   onSelectConversation
 }) => {
-  const dispatch = useDispatch();
-  const history = useSelector((state: RootState) => state.query.history || []);
+  const { getQueryHistory, isLoading, isError, mutate } = useQueryHistory();
   const [openDialog, setOpenDialog] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [menuConversationId, setMenuConversationId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // ✅ Dialog state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<
-    "success" | "error" | "warning" | "info"
-  >("success");
-
-  const showSnackbar = (
-    message: string,
-    severity: "success" | "error" | "warning" | "info" = "success"
-  ) => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarOpen(true);
-  };
-
-  const t = useTranslations("Access");
-  const { id } = useParams();
-  const router = useRouter();
-
-  const {
-    role: accessRole,
-    isLoading: isRoleLoading,
-    error: roleError
-  } = useAccessRoleById(id as string);
-
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        console.log("Fetching query history from backend...");
-        const historyData = await QueryService.getQueryHistory();
-        console.log("History data received:", historyData);
-        dispatch(setHistory(historyData));
-      } catch (error) {
-        console.error("Error fetching history:", error);
-        setError("Failed to load chat history. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchHistory();
-  }, [dispatch]);
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const handleDeleteClick = (conversationId: string) => {
     setConversationToDelete(conversationId);
@@ -106,21 +126,54 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     setMenuAnchorEl(null);
   };
 
+  // const handleDeleteConfirm = async () => {
+  //   if (conversationToDelete) {
+  //     try {
+  //       await deleteConversation(conversationToDelete);
+  //       mutate(
+  //         (currentHistory: any) =>
+  //           currentHistory.filter((entry: any) => entry.conversationId !== conversationToDelete),
+  //         false
+  //       );
+  //       if (selectedConversationId === conversationToDelete) {
+  //         setSelectedConversationId(null);
+  //       }
+  //       setSnackbarMessage("Conversation deleted successfully");
+  //       setSnackbarSeverity("success");
+  //     } catch (error) {
+  //       setSnackbarMessage("Failed to delete conversation");
+  //       setSnackbarSeverity("error");
+  //     } finally {
+  //       setSnackbarOpen(true);
+  //       setOpenDialog(false);
+  //       setConversationToDelete(null);
+  //     }
+  //   }
+  // };
+
   const handleDeleteConfirm = async () => {
     if (conversationToDelete) {
       try {
-        await QueryService.deleteConversation(conversationToDelete);
-        dispatch(deleteConversation(conversationToDelete));
+        await deleteConversation(conversationToDelete);
+        mutate(
+          (currentHistory: any) =>
+            currentHistory.filter((entry: any) => entry.conversationId !== conversationToDelete),
+          false
+        );
         if (selectedConversationId === conversationToDelete) {
           setSelectedConversationId(null);
         }
+        setSnackbarMessage("Conversation deleted successfully");
+        setSnackbarSeverity("success");
       } catch (error) {
-        console.error("Error deleting conversation:", error);
-        setError("Failed to delete conversation. Please try again.");
+        setSnackbarMessage("Failed to delete conversation");
+        setSnackbarSeverity("error");
+      } finally {
+        setSnackbarOpen(true);
+        setOpenDialog(false);
+        setConversationToDelete(null);
       }
     }
-    setOpenDialog(false);
-    setConversationToDelete(null);
   };
 
   const handleDialogClose = () => {
@@ -130,13 +183,17 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
 
   const handleClearAll = async () => {
     try {
-      await QueryService.clearQueryHistory();
-      dispatch(setHistory([]));
+      await clearQueryHistory();
+      mutate([], false);
       setSelectedConversationId(null);
       onClearAll();
+      setSnackbarMessage("All history cleared successfully");
+      setSnackbarSeverity("success");
     } catch (error) {
-      console.error("Error clearing history:", error);
-      setError("Failed to clear history. Please try again.");
+      setSnackbarMessage("Failed to clear history");
+      setSnackbarSeverity("error");
+    } finally {
+      setSnackbarOpen(true);
     }
   };
 
@@ -150,9 +207,9 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     onNewChat();
   };
 
-  const handleLogoutClick = () => {
+  const handleRedirectClick = () => {
     setSelectedConversationId(null);
-    onLogout();
+    onRedirect();
   };
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, conversationId: string) => {
@@ -167,237 +224,118 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
 
   const handleShareClick = () => {
     if (menuConversationId) {
-      const conversation = history.find(
+      const conversation = getQueryHistory.find(
         (entry: any) => entry.conversationId === menuConversationId
       );
       if (conversation) {
         const shareText = `Query: ${conversation.query}\nResponse: ${conversation.response}`;
-        navigator.clipboard
-          .writeText(shareText)
-          .then(() => {
-            alert("Conversation copied to clipboard!");
-          })
-          .catch((err) => {
-            console.error("Failed to copy to clipboard:", err);
-            alert("Failed to copy conversation. Please try again.");
-          });
+        navigator.clipboard.writeText(shareText).then(() => {
+          setSnackbarMessage("Conversation copied to clipboard!");
+          setSnackbarSeverity("success");
+          setSnackbarOpen(true);
+        });
       }
     }
-    setMenuAnchorEl(null);
-    setMenuConversationId(null);
-  };
-
-  const confirmDelete = async () => {
-    if (!accessRole || isDeleting) return;
-
-    try {
-      setIsDeleting(true);
-      const res = await deleteAccessRole(accessRole.id);
-      if (res.success) {
-        showSnackbar(res.message || t("updatesuccess"), "success");
-        setTimeout(() => {
-          router.push("/access");
-        }, 500);
-      } else {
-        showSnackbar(res.message || t("updateerror"), "error");
-      }
-    } catch (err) {
-      console.error("Failed to delete access role:", err);
-      showSnackbar(t("updateerror"), "error");
-    } finally {
-      setIsDeleting(false);
-      setOpenDeleteDialog(false); // ✅ Close dialog after action
-    }
+    handleMenuClose();
   };
 
   return (
     <Box
       sx={{
-        width: "350px",
-        bgcolor: "#ffffff",
-        height: "calc(100vh - 32px)",
-        maxHeight: "calc(100vh - 32px)",
+        width: "300px",
+        bgcolor: "#f0f0f0",
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
-        borderRight: "1px solid #e0e0e0",
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-        borderRadius: "28px",
-        mt: 2,
-        mb: 4,
-        ml: 2,
-        mr: 2
+        borderRadius: "16px",
+        m: 2
       }}
     >
-      <Box sx={{ p: 8 }}>
+      {/* Sidebar Header */}
+      <Box sx={{ p: 2 }}>
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "bold", color: "#333", display: "flex", alignItems: "center", gap: 1 }}
+        >
+          <img src="/image/thinkroveLogo.svg" width="24" height="24" alt="Thinkrove Logo" />
+          Thinkcove Chatbot
+        </Typography>
         <Button
           variant="contained"
-          startIcon={
-            <img
-              src="/image/plusIcon.svg"
-              alt="Plus Icon"
-              style={{
-                width: 20,
-                height: 20,
-                filter: "brightness(0) invert(1)"
-              }}
-            />
-          }
           onClick={handleNewChat}
           sx={{
             width: "100%",
-            bgcolor: "#211959",
+            bgcolor: "#741B92",
             color: "white",
-            borderRadius: "20px",
+            borderRadius: "12px",
+            mt: 2,
             textTransform: "none",
-            padding: "16px 6px",
-            fontSize: "14px",
-            fontWeight: 500,
-            "&:hover": {
-              bgcolor: "#1a144d",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)"
-            }
+            "&:hover": { bgcolor: "#660066" }
           }}
         >
+          <AddIcon />
           New Chat
+          {/* {transchatbot("newChat")} */}
         </Button>
       </Box>
-      <Box sx={{ flex: 1, px: 2, py: 1, overflowY: "auto" }}>
-        <Typography
-          variant="subtitle2"
-          sx={{
-            color: "grey.600",
-            fontSize: "12px",
-            fontWeight: 600,
-            mb: 1,
-            textTransform: "uppercase"
-          }}
-        >
-          Recent Queries
+
+      {/* Recent Queries */}
+      <Box sx={{ flex: 1, px: 2, overflowY: "auto" }}>
+        <Typography sx={{ color: "grey.600", fontSize: "0.9rem", fontWeight: "bold", mb: 1 }}>
+          {/* {transchatbot("recentQueries", "RECENT QUERIES")} */}
+          RECENT QUERIES
         </Typography>
         {isLoading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
-            <CircularProgress size={24} />
-          </Box>
-        ) : error ? (
-          <Typography color="error" sx={{ p: 2, fontSize: "14px" }}>
-            {error}
-            <Button
-              variant="text"
-              onClick={() => {
-                setError(null);
-                fetchHistory();
-              }}
-              sx={{ ml: 1, textTransform: "none" }}
-            >
-              Retry
-            </Button>
-          </Typography>
-        ) : history.length === 0 ? (
-          <Typography sx={{ p: 2, fontSize: "14px", color: "grey.600" }}>
-            No recent queries found.
-          </Typography>
+          <CircularProgress size={24} />
+        ) : isError ? (
+          <Typography color="error">{Query.FAILED}</Typography>
+        ) : getQueryHistory.length === 0 ? (
+          <Typography sx={{ color: "grey.600" }}>{Query.NOT_FOUND}</Typography>
         ) : (
-          <List disablePadding>
-            {history.map((entry: HistoryEntry) => (
+          <List>
+            {getQueryHistory.map((entry: QueryHistoryEntry) => (
               <ListItem
                 key={entry._id}
                 sx={{
-                  py: 0.75,
-                  px: 1,
-                  borderRadius: "8px",
                   bgcolor:
-                    selectedConversationId === entry.conversationId ? "grey.300" : "transparent",
-                  "&:hover": {
-                    bgcolor:
-                      selectedConversationId === entry.conversationId ? "grey.300" : "grey.100",
-                    cursor: "pointer"
-                  }
+                    selectedConversationId === entry.conversationId ? "grey.200" : "transparent",
+                  borderRadius: "8px",
+                  "&:hover": { bgcolor: "grey.100" }
                 }}
               >
-                <ListItemIcon sx={{ minWidth: "32px" }}>
-                  <img
-                    src="/image/chatIcon.svg"
-                    alt="Chat Icon"
-                    style={{
-                      width: 18,
-                      height: 18,
-                      filter: "grayscale(100%) opacity(0.6)"
-                    }}
-                  />
-                </ListItemIcon>
                 <ListItemText
                   primary={entry.query}
-                  primaryTypographyProps={{
-                    variant: "body2",
-                    color: "grey.800",
-                    fontSize: "14px",
-                    noWrap: true,
-                    fontWeight: selectedConversationId === entry.conversationId ? "bold" : "normal"
-                  }}
-                  onClick={() => {
-                    console.log("Clicked conversationId:", entry.conversationId);
-                    handleSelectConversation(entry.conversationId);
-                  }}
+                  onClick={() => handleSelectConversation(entry.conversationId)}
+                  primaryTypographyProps={{ fontSize: "0.9rem" }}
                 />
-                <IconButton
-                  edge="end"
-                  onClick={(event: any) => handleMenuClick(event, entry.conversationId)}
-                  sx={{
-                    p: 0.5,
-                    "&:hover": {
-                      bgcolor: "grey.200"
-                    }
-                  }}
-                >
-                  <MoreVertIcon
-                    sx={{
-                      width: 18,
-                      height: 18,
-                      color: "grey.600"
-                    }}
-                  />
+                <IconButton onClick={(e: any) => handleMenuClick(e, entry.conversationId)}>
+                  <MoreVertIcon />
                 </IconButton>
               </ListItem>
             ))}
           </List>
         )}
       </Box>
-      <Box sx={{ mt: 8, mb: 6, px: 16 }}>
+
+      {/* Redirect Button */}
+      <Box sx={{ p: 2 }}>
         <Button
-          variant="text"
-          startIcon={
-            <img src="/image/logoutIcon.svg" alt="Logout Icon" style={{ width: 18, height: 18 }} />
-          }
-          onClick={handleLogoutClick}
+          variant="contained"
+          onClick={handleRedirectClick}
           sx={{
             width: "100%",
-            color: "#212121",
+            bgcolor: "red",
+            color: "white",
+            borderRadius: "12px",
             textTransform: "none",
-            fontSize: "14px",
-            justifyContent: "flex-start",
-            py: 0.5,
-            "&:hover": {
-              bgcolor: "grey.100"
-            }
+            "&:hover": { bgcolor: "#cc0000" }
           }}
         >
-          Logout
+          Redirect
         </Button>
       </Box>
 
-      <Menu
-        anchorEl={menuAnchorEl}
-        open={Boolean(menuAnchorEl)}
-        onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right"
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right"
-        }}
-      >
+      <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={() => menuConversationId && handleDeleteClick(menuConversationId)}>
           Delete
         </MenuItem>
@@ -405,16 +343,23 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       </Menu>
 
       <CommonDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        onSubmit={confirmDelete}
-        title={t("deleteaccess")}
-        submitLabel={t("delete")}
+        open={openDialog}
+        onClose={handleDialogClose}
+        onSubmit={handleDeleteConfirm}
+        title="Delete Conversation"
+        submitLabel="Delete"
       >
         <Typography variant="body1" color="text.secondary">
-          {t("deleteconfirm")}
+          Are you sure you want to delete this conversation?
         </Typography>
       </CommonDialog>
+
+      <CustomSnackbar
+        open={snackbarOpen}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+      />
     </Box>
   );
 };

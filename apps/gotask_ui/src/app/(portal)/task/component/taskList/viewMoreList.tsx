@@ -1,16 +1,14 @@
 import React from "react";
-import { Box, CircularProgress, Typography, IconButton, Grid } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 import TaskItem, { Task } from "../taskLayout/taskItem";
 import { getStatusColor } from "@/app/common/constants/task";
 import { formatDate } from "@/app/common/utils/common";
 import { IGroup } from "../../interface/taskInterface";
-import { ArrowBack } from "@mui/icons-material";
 
 interface ViewMoreListProps {
   selectedGroupId: string;
   drawerTasks: IGroup[];
   isLoadingDrawer: boolean;
-  onClose: () => void;
   onTaskClick: (id: string) => void;
   view: string;
 }
@@ -19,7 +17,6 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
   selectedGroupId,
   drawerTasks,
   isLoadingDrawer,
-  onClose,
   onTaskClick,
   view
 }) => {
@@ -35,42 +32,12 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
             group.id === selectedGroupId ? (
               <Box key={group.id} sx={{ display: "flex", flexDirection: "column" }}>
                 {/* Header */}
-                <Box
-                  sx={{
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 1100,
-                    backgroundColor: "white",
-                    p: 2,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                >
-                  {/* Back Button (left-aligned but doesn't affect centering) */}
-                  <IconButton
-                    color="primary"
-                    onClick={onClose}
-                    sx={{ position: "absolute", left: 16 }}
-                  >
-                    <ArrowBack />
-                  </IconButton>
-
-                  {/* Centered Title */}
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    sx={{ color: "#741B92", textAlign: "center" }}
-                  >
-                    {view === "projects" ? group.project_name : group.user_name}
-                  </Typography>
-                </Box>
 
                 {/* Task List with Responsive Grid */}
                 <Box
                   sx={{
                     overflowY: "auto",
-                    maxHeight: "calc(100vh - 100px)",
+                    maxHeight: "calc(100vh - 250px)",
                     px: 2,
                     py: 2
                   }}

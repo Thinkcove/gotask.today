@@ -160,14 +160,6 @@ const ViewMoreAction: React.FC = () => {
     ].forEach((key) => updateQueryParam(key, undefined));
   };
 
-  if (!id || !view) {
-    return (
-      <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   const groupName = useMemo(() => {
     if (view === "projects") {
       return allProjects.find((p: Project) => p.id === id)?.name || "";
@@ -177,6 +169,14 @@ const ViewMoreAction: React.FC = () => {
     }
     return "";
   }, [view, id, allProjects, allUsers]);
+
+  if (!id || !view) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   const name = transtask("listViewOf", {
     name: groupName,

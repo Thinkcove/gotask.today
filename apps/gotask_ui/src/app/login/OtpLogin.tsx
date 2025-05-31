@@ -25,6 +25,13 @@ const OtpLogin = () => {
       setError(translogin("emailrequired"));
       return;
     }
+
+    // ✅ Check for uppercase letters only
+    if (/[A-Z]/.test(email)) {
+      setError("Capital letters are not allowed in email. Use lowercase only.");
+      return;
+    }
+
     setError("");
     setLoading(true);
     try {
@@ -50,6 +57,7 @@ const OtpLogin = () => {
       setError(translogin("otprequired"));
       return;
     }
+
     setLoading(true);
     try {
       const res = await fetch(`${env.API_BASE_URL}/otp/verify`, {
@@ -64,7 +72,6 @@ const OtpLogin = () => {
 
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
-
         setUser({ ...user, token });
 
         router.push("/dashboard");
@@ -77,9 +84,8 @@ const OtpLogin = () => {
     setLoading(false);
   };
 
-  
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
     if (otpSent) {
       verifyOtp();
     } else {
@@ -95,7 +101,10 @@ const OtpLogin = () => {
         variant="outlined"
         margin="normal"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          setError(""); // Clear error on change
+        }}
         disabled={otpSent}
         InputProps={{ sx: { height: 56 } }}
       />
@@ -107,7 +116,10 @@ const OtpLogin = () => {
           variant="outlined"
           margin="normal"
           value={otp}
-          onChange={(e) => setOtp(e.target.value)}
+          onChange={(e) => {
+            setOtp(e.target.value);
+            setError("");
+          }}
           InputProps={{ sx: { height: 56 } }}
         />
       )}
@@ -119,7 +131,6 @@ const OtpLogin = () => {
         variant="contained"
         type="submit"
         disabled={loading || (otpSent ? otp.trim() === "" : email.trim() === "")}
-
       >
         {loading
           ? translogin("loading")

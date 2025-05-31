@@ -4,27 +4,45 @@ import useSWR from "swr";
 import { withAuth } from "@/app/common/utils/authToken";
 import { QueryHistoryEntry, QueryResponse, UploadResponse } from "../interface/chatInterface";
 
-// Fetch all query history
-const fetchQueryHistory = async () => {
+// Fetch all query history or by conversationId
+const fetchQueryHistory = async (conversationId?: string) => {
   return withAuth((token) => {
-    return getData(`${env.API_BASE_URL}/api/query/history`, token);
+    const url = conversationId
+      ? `${env.API_BASE_URL}/api/query/history/${conversationId}`
+      : `${env.API_BASE_URL}/api/query/history`;
+    return getData(url, token);
   });
 };
 
 // Hook to fetch query history using SWR
-export const useQueryHistory = () => {
-  const { data } = useSWR("fetchQueryHistory", fetchQueryHistory, {
-    revalidateOnFocus: false
-  });
-  return {
-    getQueryHistory:
-      data?.data?.map((entry: QueryHistoryEntry) => ({
+export const useQueryHistory = (conversationId?: string) => {
+  const { data, error, isLoading, mutate } = useSWR(
+    conversationId ? `queryHistory/${conversationId}` : "queryHistory",
+    () => fetchQueryHistory(conversationId),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      onError: (err: any) => {
+        console.error("SWR error:", err.message, err);
+      }
+    }
+  );
+
+  const history = Array.isArray(data?.data)
+    ? data.data.map((entry: QueryHistoryEntry) => ({
         id: entry.id,
         query: entry.query,
         response: entry.response,
         timestamp: entry.timestamp,
         conversationId: entry.conversationId
-      })) || []
+      }))
+    : [];
+
+  return {
+    history: history ?? [],
+    isLoading,
+    error: error ? new Error(error.message || "Failed to fetch history") : null,
+    mutate
   };
 };
 
@@ -49,8 +67,9 @@ export const sendQuery = async (query: string): Promise<QueryResponse> => {
 export const uploadAttendance = async (file: File): Promise<UploadResponse> => {
   const formData = new FormData();
   formData.append("file", file);
+
   return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/api/attendance/upload`;
+    const url = `${env.API_BASE_URL}/api/v1}/attendance/upload`;
     return postData(url, formData, token);
   });
 };
@@ -65,8 +84,8 @@ export const clearQueryHistory = async () => {
 
 // Delete a specific conversation
 export const deleteConversation = async (conversationId: string) => {
-  return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/api/query/history/${conversationId}`;
-    return deleteData(url, token);
+  return await withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/api/query/conversation/${conversationId}`;
+    return await deleteData(url, token);
   });
 };

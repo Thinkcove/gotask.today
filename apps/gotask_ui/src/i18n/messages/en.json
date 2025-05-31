@@ -362,7 +362,8 @@
     "queryError": "Error: Unable to send query",
     "invalidFile": "Please upload a valid Excel file (.xlsx or .xls).",
     "invalidFileError": "Invalid file format",
-    "uploadSuccess": "Attendance uploaded successfully! Inserted: {inserted}, Skipped: {skipped}. {errors}",
+    "uploadSuccess": "Attendance uploaded successfully! Inserted: ",
+    "uploadSkips": "Skipped: {skipped}. {errors}",
     "uploadError": "Error uploading attendance: {message}",
     "fileSuccess": "File uploaded successfully",
     "fileFailed": "Failed to upload file",
@@ -381,6 +382,13 @@
     "clearFailed": "Failed to clear history",
     "shareSuccess": "Conversation copied to clipboard!",
     "notFound": "No recent queries found.",
-    "failed": "Failed to load histor"
+    "failed": "Failed to load histor",
+    "chatMessages": "chatMessages",
+    "required": "Query is Required",
+    "error": "Error loading conversation",
+    "servererror": "Server error: Unable to delete conversation",
+    "noconversation": "Conversation not found",
+    "Unauthorized": "Unauthorized: Please check your permissions",
+    "failedtofetch": "Failed to fetch history"
   }
 }

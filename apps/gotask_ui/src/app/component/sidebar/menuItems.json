@@ -48,8 +48,8 @@
     "access": "User Report"
   },
   {
-    "text": "Chatbot Management",
-    "icon": "BarChartIcon",
+    "text": "Chatbot",
+    "icon": "ChatIcon",
     "path": "/chatbot",
     "access": "Chatbot Management"
   }

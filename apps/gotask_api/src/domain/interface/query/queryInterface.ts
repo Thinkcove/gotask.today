@@ -1,5 +1,14 @@
 import { IQueryHistory, QueryHistory } from "../../model/query/queryModel";
 
+export const getQueryHistoryByConversationId = async (
+  conversationId: string
+): Promise<IQueryHistory[]> => {
+  return await QueryHistory.find({ conversationId })
+    .sort({ timestamp: -1 })
+    .select("query timestamp response conversationId type id")
+    .lean();
+};
+
 export const createQueryHistory = async (queryData: IQueryHistory): Promise<IQueryHistory> => {
   const newQuery = new QueryHistory(queryData);
   return await newQuery.save();

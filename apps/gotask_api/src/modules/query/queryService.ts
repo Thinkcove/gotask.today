@@ -6,7 +6,8 @@ import {
   createQueryHistory,
   deleteAllQueryHistory,
   deleteQueryHistoryByConversationId,
-  findQueryHistory
+  findQueryHistory,
+  getQueryHistoryByConversationId
 } from "../../domain/interface/query/queryInterface";
 import { User } from "../../domain/model/user/user";
 import { Attendance } from "../../domain/model/attendance/attendanceModel";
@@ -1370,6 +1371,26 @@ export const getQueryHistory = async (
 
     const history = await findQueryHistory(limit);
     return { success: true, data: history, message: "Query history retrieved successfully" };
+  } catch (error: any) {
+    return { success: false, message: error.message || QueryMessages.HISTORY.FAILED };
+  }
+};
+
+export const getQueryHistoryByConversationIdService = async (
+  conversationId: string
+): Promise<{ success: boolean; data?: IQueryHistory[]; message?: string }> => {
+  try {
+    if (!conversationId || typeof conversationId !== "string") {
+      return { success: false, message: "Conversation ID must be a non-empty string" };
+    }
+
+    const history = await getQueryHistoryByConversationId(conversationId);
+
+    if (!history || history.length === 0) {
+      return { success: false, message: "No history found for this conversation" };
+    }
+
+    return { success: true, data: history, message: "Conversation history retrieved successfully" };
   } catch (error: any) {
     return { success: false, message: error.message || QueryMessages.HISTORY.FAILED };
   }

@@ -12,7 +12,6 @@ export const LOCALIZATION = {
     SIDEBAR: "Sidebar",
     STATUSCHART: "Statuschart",
     REPORT: "Report",
-    CHATBOT: "Chatbot",
-    QUERYTEXT: "Ask Me Something"
+    CHATBOT: "Chatbot"
   }
 };

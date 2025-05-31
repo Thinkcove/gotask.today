@@ -1,6 +1,6 @@
 import { useParams, useRouter } from "next/navigation";
 import { Organization } from "../../interfaces/organizatioinInterface";
-import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 import { Box, Divider, Grid, IconButton, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { ArrowBack, ChevronRight, Edit } from "@mui/icons-material";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";

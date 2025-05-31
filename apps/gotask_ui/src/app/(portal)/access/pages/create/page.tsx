@@ -3,7 +3,7 @@
 import { Box } from "@mui/material";
 import React from "react";
 import AccessCreateForm from "../../components/AccessCreateForm";
-import ModuleHeader from "../../../../component/appBar/moduleHeader";
+import ModuleHeader from "../../../../component/header/moduleHeader";
 import { LOCALIZATION } from "../../../../common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -18,7 +18,7 @@ const AccessCreatePage = () => {
         height: "100vh",
         m: 0,
         p: 0,
-        overflow: "hidden", // Prevent scroll on whole page
+        overflow: "hidden" // Prevent scroll on whole page
       }}
     >
       {/* Header Section */}
@@ -31,7 +31,7 @@ const AccessCreatePage = () => {
         sx={{
           flex: 1,
           overflow: "hidden", // No page scroll here
-          p: 3,
+          p: 3
         }}
       >
         <AccessCreateForm />

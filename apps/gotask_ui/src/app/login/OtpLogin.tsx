@@ -7,8 +7,8 @@ import { useUser } from "../userContext";
 import env from "../common/env";
 import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation"; // ✅ App Router
-
+import { useRouter } from "next/navigation";
+import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex";
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
   const { setUser } = useUser();
@@ -25,6 +25,13 @@ const OtpLogin = () => {
       setError(translogin("emailrequired"));
       return;
     }
+
+   
+    if (EMAIL_UPPERCASE_REGEX.test(email)) {
+      setError(translogin("emailuppercase"));
+      return;
+    }
+
     setError("");
     setLoading(true);
     try {
@@ -50,6 +57,7 @@ const OtpLogin = () => {
       setError(translogin("otprequired"));
       return;
     }
+
     setLoading(true);
     try {
       const res = await fetch(`${env.API_BASE_URL}/otp/verify`, {
@@ -62,14 +70,10 @@ const OtpLogin = () => {
       if (res.ok && data.success && data.data) {
         const { user, token } = data.data;
 
-        // ✅ Save user and token
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
-
-        // ✅ Update context
         setUser({ ...user, token });
 
-        // ✅ Redirect to dashboard
         router.push("/dashboard");
       } else {
         setError(data.error || data.message || translogin("otperror"));
@@ -80,15 +84,27 @@ const OtpLogin = () => {
     setLoading(false);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpSent) {
+      verifyOtp();
+    } else {
+      sendOtp();
+    }
+  };
+
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <StyledTextField
         fullWidth
         label={translogin("labelemail")}
         variant="outlined"
         margin="normal"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          setError(""); // Clear error on change
+        }}
         disabled={otpSent}
         InputProps={{ sx: { height: 56 } }}
       />
@@ -100,7 +116,10 @@ const OtpLogin = () => {
           variant="outlined"
           margin="normal"
           value={otp}
-          onChange={(e) => setOtp(e.target.value)}
+          onChange={(e) => {
+            setOtp(e.target.value);
+            setError("");
+          }}
           InputProps={{ sx: { height: 56 } }}
         />
       )}
@@ -110,8 +129,8 @@ const OtpLogin = () => {
       <StyledButton
         fullWidth
         variant="contained"
-        onClick={otpSent ? verifyOtp : sendOtp}
-        disabled={loading}
+        type="submit"
+        disabled={loading || (otpSent ? otp.trim() === "" : email.trim() === "")}
       >
         {loading
           ? translogin("loading")
@@ -119,7 +138,7 @@ const OtpLogin = () => {
           ? translogin("verifyotp")
           : translogin("sendotp")}
       </StyledButton>
-    </>
+    </form>
   );
 };
 

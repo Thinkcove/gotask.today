@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
-import { createTask, useProjectGroupTask, useUserGroupTask } from "../service/taskAction";
+import { createTask } from "../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
@@ -38,7 +38,7 @@ const CreateTask: React.FC = () => {
       ...prevData,
       [name]: value instanceof Date ? value.toISOString().split("T")[0] : value
     }));
-    };
+  };
 
   // Validate required fields
   const validateForm = () => {
@@ -53,9 +53,6 @@ const CreateTask: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const { mutate: ProjectMutate } = useProjectGroupTask();
-  const { mutate: UserMutate } = useUserGroupTask();
-
   // Handle form submission
   const handleSubmit = async () => {
     if (!validateForm()) return;
@@ -63,16 +60,13 @@ const CreateTask: React.FC = () => {
       // Create the task
       await createTask(formData);
 
-      await ProjectMutate(); // Update project-specific tasks
-      await UserMutate(); // Update user-specific tasks
-
       setSnackbar({
         open: true,
         message: transtask("successmessage"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
 
-      setTimeout(() => router.back(), 2000);
+      router.push("/task/projects?refresh=true");
     } catch (error) {
       console.error("Error while creating task:", error);
       setSnackbar({

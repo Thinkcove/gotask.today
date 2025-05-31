@@ -43,10 +43,7 @@ class AccessController extends BaseController {
   }
 
   // Get All Accesses
-  async getAllAccesses(
-    _requestHelper: RequestHelper,
-    handler: any
-  ) {
+  async getAllAccesses(_requestHelper: RequestHelper, handler: any) {
     try {
       const result = await getAllAccesses();
       if (!result.success) {
@@ -59,10 +56,7 @@ class AccessController extends BaseController {
   }
 
   // Get Access by ID
-  async getAccessById(
-    requestHelper: RequestHelper,
-    handler: any,
-  ) {
+  async getAccessById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
       const result = await getAccessById(id);

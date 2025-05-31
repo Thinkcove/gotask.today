@@ -32,7 +32,6 @@ export const createRoleService = async (data: CreateRolePayload) => {
       }
     };
   } catch (error) {
-    console.error("Error in createRoleService:", error);
     return { success: false, message: roleMessages.CREATE.FAILED };
   }
 };
@@ -41,11 +40,14 @@ export const getRoleByIdService = async (roleId: string) => {
   try {
     // Find the role by its UUID string id
     const role = await Role.findOne({ id: roleId });
+
     if (!role) {
-      return { success: false, message: "Role not found." };
+      return {
+        success: false,
+        message: roleMessages.FETCH.NOT_FOUND
+      };
     }
 
-    // role.access is an array of UUID strings for Access documents
     // Fetch all Access records whose 'id' matches any in role.access array
     const accessRecords = await Access.find({ id: { $in: role.access } });
 
@@ -53,14 +55,22 @@ export const getRoleByIdService = async (roleId: string) => {
     const roleWithAccess = {
       id: role.id,
       name: role.name,
-      access: accessRecords // full Access objects
+      access: accessRecords
     };
 
-    return { success: true, data: roleWithAccess };
+    return {
+      success: true,
+      message: roleMessages.FETCH.BY_ID_SUCCESS,
+      data: roleWithAccess
+    };
   } catch (error: any) {
-    return { success: false, message: error.message || "Error fetching role." };
+    return {
+      success: false,
+      message: error.message || roleMessages.FETCH.FAILED
+    };
   }
 };
+
 export const updateRoleService = async (
   roleId: string,
   updatedData: Partial<CreateRolePayload>
@@ -79,7 +89,6 @@ export const updateRoleService = async (
       }
     };
   } catch (error) {
-    console.error("Error in updateRoleService:", error);
     return { success: false, message: roleMessages.UPDATE.FAILED };
   }
 };
@@ -98,7 +107,6 @@ export const deleteRoleService = async (roleId: string) => {
       }
     };
   } catch (error) {
-    console.error("Error in deleteRoleService:", error);
     return { success: false, message: roleMessages.DELETE.FAILED };
   }
 };
@@ -118,7 +126,6 @@ export const removeAccessFromRoleService = async (roleId: string, accessId: stri
       }
     };
   } catch (error) {
-    console.error("Error in removeAccessFromRoleService:", error);
     return { success: false, message: roleMessages.UPDATE.FAILED };
   }
 };
@@ -141,7 +148,6 @@ export const getAllRolesService = async () => {
 
     return { success: true, data: enhancedRoles };
   } catch (error) {
-    console.error("Error in getAllRolesService:", error);
     return { success: false, message: roleMessages.FETCH.FAILED };
   }
 };

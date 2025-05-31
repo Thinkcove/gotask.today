@@ -20,7 +20,6 @@ function removeRestrictedFields<T>(data: T, restrictedFields: string[]): Partial
   return cleanedData as Partial<T>;
 }
 
-// Helper: Convert restrictedFields to plain object (identity function now)
 const toRestrictedFieldsObject = (restrictedFields?: {
   [key: string]: string[];
 }): { [key: string]: string[] } | undefined => {
@@ -28,7 +27,6 @@ const toRestrictedFieldsObject = (restrictedFields?: {
   return restrictedFields;
 };
 
-// Helper: Convert array of applications, ensure restrictedFields is plain object
 const transformApplications = (
   applications?: Partial<IAccess["application"]>
 ): IAccess["application"] | undefined => {
@@ -49,7 +47,6 @@ const createAccess = async (
   restrictedFields: string[] = []
 ): Promise<{ success: boolean; data?: IAccess; message?: string }> => {
   try {
-    // Remove restricted fields from input data if any
     const filteredData = removeRestrictedFields(accessData, restrictedFields);
 
     if (!filteredData.name || !filteredData.application) {
@@ -59,7 +56,6 @@ const createAccess = async (
       };
     }
 
-    // Transform application restrictedFields from plain object (identity now)
     filteredData.application = transformApplications(filteredData.application);
 
     const newAccess = await createAccessInDb(filteredData);
@@ -135,10 +131,8 @@ const updateAccess = async (
       };
     }
 
-    // Remove restricted fields from updateData
     const filteredUpdateData = removeRestrictedFields(updateData, restrictedFields);
 
-    // Transform application restrictedFields from plain object
     if (filteredUpdateData.application) {
       filteredUpdateData.application = transformApplications(filteredUpdateData.application);
     }
@@ -195,7 +189,7 @@ const getAccessOptionsFromConfig = async () => {
     const accessOptions = accessConfig.accesses || [];
     return { success: true, data: accessOptions };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to load access options" };
+    return { success: false, message: error.message || AccessMessages.FETCH.FAILED_ALL };
   }
 };
 

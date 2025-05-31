@@ -35,11 +35,8 @@ AccessRoutes.push({
 AccessRoutes.push({
   path: API_PATHS.GET_ACCESSES,
   method: API_METHODS.GET,
-  handler: permission(
-    appName,
-    ACTIONS.READ,
-    (request: Request, h: ResponseToolkit) =>
-      accessController.getAllAccesses(new RequestHelper(request), h)
+  handler: permission(appName, ACTIONS.READ, (request: Request, h: ResponseToolkit) =>
+    accessController.getAllAccesses(new RequestHelper(request), h)
   ),
   config: {
     notes: "Get all access records",
@@ -54,11 +51,8 @@ AccessRoutes.push({
 AccessRoutes.push({
   path: API_PATHS.GET_ACCESS_BY_ID,
   method: API_METHODS.GET,
-  handler: permission(
-    appName,
-    ACTIONS.VIEW,
-    (request: Request, h: ResponseToolkit) =>
-      accessController.getAccessById(new RequestHelper(request), h)
+  handler: permission(appName, ACTIONS.VIEW, (request: Request, h: ResponseToolkit) =>
+    accessController.getAccessById(new RequestHelper(request), h)
   ),
   config: {
     notes: "Get access by ID",
@@ -92,11 +86,8 @@ AccessRoutes.push({
 AccessRoutes.push({
   path: API_PATHS.DELETE_ACCESS,
   method: API_METHODS.DELETE,
-  handler: permission(
-    appName,
-    ACTIONS.DELETE,
-    (request: Request, h: ResponseToolkit) =>
-      accessController.deleteAccess(new RequestHelper(request), h)
+  handler: permission(appName, ACTIONS.DELETE, (request: Request, h: ResponseToolkit) =>
+    accessController.deleteAccess(new RequestHelper(request), h)
   ),
   config: {
     notes: "Delete access by ID",

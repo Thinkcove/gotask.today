@@ -46,7 +46,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         backgroundColor: "#fff",
         borderRadius: 2,
         border: "1px solid #e0e0e0",
-        boxShadow: "0px 2px 6px rgba(0,0,0,0.04)",
+        boxShadow: `inset 0 0 20px ${getStatusColor(task.status)}44`,
         px: 1,
         py: 2,
         mb: 2,

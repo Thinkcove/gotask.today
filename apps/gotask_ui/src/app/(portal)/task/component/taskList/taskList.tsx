@@ -225,7 +225,6 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
       resetTaskState();
       const params = new URLSearchParams(window.location.search);
       params.delete("refresh");
-      router.replace(`?${params.toString()}`);
     } else {
       resetTaskState();
     }
@@ -244,8 +243,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     variationDays,
     dateFrom,
     dateTo,
-    searchParams,
-    router
+    searchParams
   ]);
 
   const handleScroll = () => {

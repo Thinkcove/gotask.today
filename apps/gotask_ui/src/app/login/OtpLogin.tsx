@@ -8,8 +8,7 @@ import env from "../common/env";
 import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex"; // ✅ Import regex constant
-
+import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex";
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
   const { setUser } = useUser();
@@ -27,7 +26,7 @@ const OtpLogin = () => {
       return;
     }
 
-    // ✅ Use regex constant and translated message
+   
     if (EMAIL_UPPERCASE_REGEX.test(email)) {
       setError(translogin("emailuppercase"));
       return;

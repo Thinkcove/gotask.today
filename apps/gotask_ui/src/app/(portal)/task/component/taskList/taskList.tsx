@@ -244,7 +244,8 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     variationDays,
     dateFrom,
     dateTo,
-    searchParams
+    searchParams,
+    router
   ]);
 
   const handleScroll = () => {

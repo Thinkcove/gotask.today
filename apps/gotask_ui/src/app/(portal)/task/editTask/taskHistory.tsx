@@ -16,6 +16,7 @@ import { ITaskHistory } from "../interface/taskInterface";
 import { InfoOutlined } from "@mui/icons-material";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { getColorForUser } from "@/app/common/constants/avatar";
 
 interface HistoryDrawerProps {
   open: boolean;
@@ -26,11 +27,20 @@ interface HistoryDrawerProps {
 const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
-    <Drawer anchor="right" open={open} onClose={onClose}>
+    <Drawer
+      anchor="right"
+      open={open}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          width: 360,
+          display: "flex",
+          flexDirection: "column"
+        }
+      }}
+    >
       <Box
         sx={{
-          width: { xs: "100%", sm: "100%", md: "400px" },
-          maxWidth: "clamp(20rem, 90vw, 100rem)",
           display: "flex",
           flexDirection: "column",
           height: "100vh"
@@ -104,7 +114,13 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history })
             >
               <CardContent sx={{ pb: "10px !important" }}>
                 <Stack direction="row" alignItems="center" spacing={2} mb={1}>
-                  <Avatar sx={{ bgcolor: "#741B92", height: 32, width: 32 }}>
+                  <Avatar
+                    sx={{
+                      bgcolor: getColorForUser(item.loginuser_name || ""),
+                      height: 32,
+                      width: 32
+                    }}
+                  >
                     {item.loginuser_name?.charAt(0)}
                   </Avatar>
                   <Typography variant="subtitle1" fontWeight="bold">

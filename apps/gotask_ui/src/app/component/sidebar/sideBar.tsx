@@ -103,7 +103,6 @@ const Sidebar: React.FC = () => {
             position: "fixed",
             top: 20,
             left: 20,
-            zIndex: 1300,
             backgroundColor: "#741B92",
             color: "#fff",
             "&:hover": { backgroundColor: "#5a1473" }

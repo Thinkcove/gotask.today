@@ -2,11 +2,11 @@ export interface Role {
   id: string;
   name: string;
   priority?: number;
-  access: string[];
-  accessDetails: AccessDetail[];
+  access: string[]; // array of access IDs or names
+  accessDetails: AccessDetail[]; // detailed info per access
   createdAt: string;
   updatedAt: string;
-  accessIds: string[];
+  accessIds: string[]; // possibly duplicate of access? Clarify usage
 }
 
 export interface AccessDetail {
@@ -18,6 +18,7 @@ export interface AccessDetail {
 export interface Application {
   access: string;
   actions: string[];
+  restrictedFields?: { [key: string]: string[] };
   _id: string;
 }
 

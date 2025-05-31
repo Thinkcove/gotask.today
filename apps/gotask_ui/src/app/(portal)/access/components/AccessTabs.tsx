@@ -1,37 +1,29 @@
-'use client';
 import React from 'react';
 import { Tabs, Tab } from '@mui/material';
 
 interface AccessTabsProps {
   modules: string[];
   currentModule: string;
-  onChange: (newModule: string) => void;
+  onChange: (module: string) => void;
 }
 
-const AccessTabs: React.FC<AccessTabsProps> = ({
-  modules,
-  currentModule,
-  onChange,
-}) => {
+const AccessTabs: React.FC<AccessTabsProps> = ({ modules, currentModule, onChange }) => {
+  // Fallback to first module if currentModule is invalid
+  const validModule = modules.includes(currentModule) ? currentModule : modules[0] || '';
+
   return (
     <Tabs
-      value={currentModule}
+      value={validModule}
       onChange={(e, newValue) => onChange(newValue)}
       variant="scrollable"
       scrollButtons="auto"
       sx={{
-        width: '100%', 
+        mb: 2,
+        borderBottom: 1,
+        borderColor: 'divider',
         '& .MuiTab-root': {
-          minHeight: '30px',
-          padding: { xs: '6px 12px', sm: '8px 16px' }, 
-          fontSize: { xs: '0.7rem', sm: '0.85rem' }, 
           textTransform: 'none',
-          whiteSpace: 'nowrap',
-        },
-        '& .Mui-selected': {
-          fontWeight: 600,
-          backgroundColor: '#f3f4f6',
-          borderRadius: '6px',
+          fontWeight: 500,
         },
       }}
     >

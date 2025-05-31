@@ -33,7 +33,7 @@
     "text": "Access",
     "icon": "VpnKeyIcon",
     "path": "/access",
-    "access": "Access Management"
+    "access": null
   },
   {
     "text": "Task",

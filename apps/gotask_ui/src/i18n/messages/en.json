@@ -32,7 +32,6 @@
     "access": "Access",
     "createaccessnew": "Create New Access",
     "viewdetail": "Access Detail View",
-    "area": "Area",
     "action": "Action",
     "selectarea": "Select Area",
     "selectaction": "Select Action",
@@ -56,7 +55,12 @@
     "accessNameRequired": "Access name is required.",
     "atLeastOnePermissionRequired": "Please select at least one permission.",
     "searchplaceholder": "Search Access",
-    "delete": "Delete"
+    "delete": "Delete",
+    "noOperationsAvailable": "No operations available",
+    "field": "Field",
+    "fieldAccess": "Field Access",
+    "selectallFields": "Select All Fields",
+    "noFieldsAvailable": "No fields available"
   },
   "Dashboard": {
     "overview": "Dashboard Overview",

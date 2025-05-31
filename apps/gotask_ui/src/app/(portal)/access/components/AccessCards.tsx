@@ -81,7 +81,7 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                         fontWeight: 500,
                         cursor: "pointer",
                         "&:hover": { textDecoration: "underline" }
-                      }}
+                      }}  
                       onClick={() => {
                         router.push(`/access/pages/view/${access.id}`);
                       }}

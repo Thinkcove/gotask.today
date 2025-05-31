@@ -4,7 +4,7 @@ import { hasPermission } from "./permisssion";
 
 export const useUserPermission = () => {
   const { user } = useUser();
-  const accessDetails = (user?.role?.accessDetails ?? []) as {
+  const accessDetails = (user?.role?.access ?? []) as {
     id: string;
     name: string;
     application: {

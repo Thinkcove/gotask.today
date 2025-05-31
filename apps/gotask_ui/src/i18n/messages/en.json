@@ -56,7 +56,9 @@
     "accessNameRequired": "Access name is required.",
     "atLeastOnePermissionRequired": "Please select at least one permission.",
     "searchplaceholder": "Search Access",
-    "delete": "Delete"
+    "delete": "Delete",
+    "emailuppercase": "Capital letters are not allowed in email. Use lowercase only."
+
   },
   "Dashboard": {
     "overview": "Dashboard Overview",

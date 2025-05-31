@@ -29,16 +29,8 @@
       "actions": ["READ"]
     },
     {
-      "access": "Query Management",
-      "actions": ["READ", "DELETE"]
-    },
-    {
-      "access": "Query Task Management",
+      "access": "Chatbot Management",
       "actions": ["READ", "CREATE", "EDIT", "DELETE"]
-    },
-    {
-      "access": "Attendance Management",
-      "actions": ["READ", "CREATE"]
     }
   ]
 }

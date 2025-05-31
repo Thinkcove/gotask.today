@@ -12,8 +12,8 @@ import { ATTENDANCE_CONST } from "../../constants/commonConstants/queryConstants
 import { pipeline } from "stream/promises";
 
 const AttendanceController = new attendanceController();
-const appName = APPLICATIONS.ATTENDANCE;
-const tags = [API, "Attendance"];
+const appName = APPLICATIONS.CHATBOT;
+const tags = [API, "Chatbot"];
 const AttendanceRoutes = [];
 
 // Route: Create Attendance

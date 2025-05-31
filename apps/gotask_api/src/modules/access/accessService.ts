@@ -21,9 +21,9 @@ function removeRestrictedFields<T>(data: T, restrictedFields: string[]): Partial
 }
 
 // Helper: Convert restrictedFields to plain object (identity function now)
-const toRestrictedFieldsObject = (
-  restrictedFields?: { [key: string]: string[] }
-): { [key: string]: string[] } | undefined => {
+const toRestrictedFieldsObject = (restrictedFields?: {
+  [key: string]: string[];
+}): { [key: string]: string[] } | undefined => {
   if (!restrictedFields) return undefined;
   return restrictedFields;
 };
@@ -39,7 +39,7 @@ const transformApplications = (
     .map((app) => ({
       access: app.access!,
       actions: app.actions ?? [],
-      restrictedFields: toRestrictedFieldsObject(app.restrictedFields as any),
+      restrictedFields: toRestrictedFieldsObject(app.restrictedFields as any)
     }));
 };
 

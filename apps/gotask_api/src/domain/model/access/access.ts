@@ -7,7 +7,7 @@ export interface IAccess extends Document {
   application: {
     access: string;
     actions: string[];
-    restrictedFields?: { [key: string]: string[] };  // changed to plain object
+    restrictedFields?: { [key: string]: string[] }; // changed to plain object
   }[];
 }
 
@@ -16,23 +16,23 @@ const AccessSchema = new Schema<IAccess>(
     id: {
       type: String,
       default: uuidv4,
-      unique: true,
+      unique: true
     },
     name: {
       type: String,
       required: true,
-      unique: true,
+      unique: true
     },
     application: [
       {
         access: { type: String, required: true },
         actions: [{ type: String, required: true }],
         restrictedFields: {
-          type: Object,          // changed from Map to Object
-          default: {},
-        },
-      },
-    ],
+          type: Object, // changed from Map to Object
+          default: {}
+        }
+      }
+    ]
   },
   { timestamps: true }
 );

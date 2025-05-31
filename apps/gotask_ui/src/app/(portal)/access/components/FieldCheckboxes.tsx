@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Checkbox,
   FormControlLabel,
-  FormGroup,
   Typography,
   Card,
   CardContent,
@@ -55,14 +54,14 @@ const FieldCheckboxes: React.FC<Props> = ({
       }}
     >
       <CardContent sx={{ padding: 2, flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
-      <Typography
-  variant="subtitle1"
-  fontWeight={600}
-  gutterBottom
-  sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
->
-  {action}
-</Typography>
+        <Typography
+          variant="subtitle1"
+          fontWeight={600}
+          gutterBottom
+          sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        >
+          {action}
+        </Typography>
 
         <Paper
           elevation={0}
@@ -97,20 +96,10 @@ const FieldCheckboxes: React.FC<Props> = ({
             display: 'flex',
             flexDirection: 'column',
             gap: 0.5,
-            '&::-webkit-scrollbar': {
-              width: '6px',
-            },
-            '&::-webkit-scrollbar-track': {
-              background: '#f1f1f1',
-              borderRadius: '4px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: '#888',
-              borderRadius: '4px',
-            },
-            '&::-webkit-scrollbar-thumb:hover': {
-              background: '#555',
-            },
+            '&::-webkit-scrollbar': { width: '6px' },
+            '&::-webkit-scrollbar-track': { background: '#f1f1f1', borderRadius: '4px' },
+            '&::-webkit-scrollbar-thumb': { background: '#888', borderRadius: '4px' },
+            '&::-webkit-scrollbar-thumb:hover': { background: '#555' },
           }}
         >
           {!fields.length ? (

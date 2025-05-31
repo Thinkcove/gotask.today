@@ -1,18 +1,16 @@
 import { Access, IAccess } from "../../model/access/access";
 
 // Create a new access record
-export const createAccessInDb = async (
-  accessData: Partial<IAccess>
-): Promise<IAccess> => {
+export const createAccessInDb = async (accessData: Partial<IAccess>): Promise<IAccess> => {
   const application = accessData.application?.map((app) => ({
     access: app.access,
     actions: app.actions,
-    restrictedFields: app.restrictedFields || {}, // just use plain object directly
+    restrictedFields: app.restrictedFields || {} // just use plain object directly
   }));
 
   const newAccess = new Access({
     name: accessData.name,
-    application,
+    application
   });
 
   return await newAccess.save();
@@ -37,13 +35,13 @@ export const updateAccessInDb = async (
     updateData.application = updateData.application.map((app) => ({
       access: app.access,
       actions: app.actions,
-      restrictedFields: app.restrictedFields || {},
+      restrictedFields: app.restrictedFields || {}
     }));
   }
 
   return await Access.findOneAndUpdate({ id }, updateData, {
     new: true,
-    runValidators: true,
+    runValidators: true
   });
 };
 

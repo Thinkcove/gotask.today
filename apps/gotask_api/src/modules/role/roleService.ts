@@ -9,9 +9,7 @@ const serializeAccess = (access: any) => ({
   application: access.application.map((app: any) => ({
     access: app.access,
     actions: app.actions,
-    restrictedFields: app.restrictedFields
-      ? Object.fromEntries(app.restrictedFields)
-      : {}
+    restrictedFields: app.restrictedFields ? Object.fromEntries(app.restrictedFields) : {}
   }))
 });
 
@@ -55,7 +53,7 @@ export const getRoleByIdService = async (roleId: string) => {
     const roleWithAccess = {
       id: role.id,
       name: role.name,
-      access: accessRecords, // full Access objects
+      access: accessRecords // full Access objects
     };
 
     return { success: true, data: roleWithAccess };
@@ -105,10 +103,7 @@ export const deleteRoleService = async (roleId: string) => {
   }
 };
 
-export const removeAccessFromRoleService = async (
-  roleId: string,
-  accessId: string
-) => {
+export const removeAccessFromRoleService = async (roleId: string, accessId: string) => {
   try {
     const updatedRole = await RoleInterface.removeAccess(roleId, accessId);
     if (!updatedRole) {

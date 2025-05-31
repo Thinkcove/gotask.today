@@ -13,11 +13,7 @@ import AccessMessages from "../../constants/apiMessages/accessMessage";
 
 class AccessController extends BaseController {
   // Create Access
-  async createAccess(
-    requestHelper: RequestHelper,
-    handler: any,
-    restrictedFields: string[] = []
-  ) {
+  async createAccess(requestHelper: RequestHelper, handler: any, restrictedFields: string[] = []) {
     try {
       const accessData = requestHelper.getPayload() as Partial<IAccess>;
 
@@ -49,8 +45,7 @@ class AccessController extends BaseController {
   // Get All Accesses
   async getAllAccesses(
     _requestHelper: RequestHelper,
-    handler: any,
-    _restrictedFields: string[] = []
+    handler: any
   ) {
     try {
       const result = await getAllAccesses();
@@ -67,7 +62,6 @@ class AccessController extends BaseController {
   async getAccessById(
     requestHelper: RequestHelper,
     handler: any,
-    _restrictedFields: string[] = []
   ) {
     try {
       const id = requestHelper.getParam("id");
@@ -82,11 +76,7 @@ class AccessController extends BaseController {
   }
 
   // Update Access
-  async updateAccess(
-    requestHelper: RequestHelper,
-    handler: any,
-    restrictedFields: string[] = []
-  ) {
+  async updateAccess(requestHelper: RequestHelper, handler: any, restrictedFields: string[] = []) {
     try {
       const id = requestHelper.getParam("id");
       const payload = requestHelper.getPayload() as Partial<IAccess>;
@@ -112,11 +102,7 @@ class AccessController extends BaseController {
   }
 
   // Delete Access
-  async deleteAccess(
-    requestHelper: RequestHelper,
-    handler: any,
-    _restrictedFields: string[] = []
-  ) {
+  async deleteAccess(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
       const result = await deleteAccessById(id);

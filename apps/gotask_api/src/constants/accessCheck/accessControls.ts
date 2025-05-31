@@ -25,8 +25,7 @@ export function hasAccess(
   for (const access of accessDetails) {
     for (const app of access.application) {
       if (app.access === appName && app.actions.includes(action)) {
-        const restrictedFields =
-          (app.restrictedFields && app.restrictedFields[action]) || [];
+        const restrictedFields = (app.restrictedFields && app.restrictedFields[action]) || [];
         console.log("app.access", app.access);
         return { hasAccess: true, restrictedFields };
       }
@@ -35,4 +34,3 @@ export function hasAccess(
 
   return { hasAccess: false, restrictedFields: [] };
 }
-  

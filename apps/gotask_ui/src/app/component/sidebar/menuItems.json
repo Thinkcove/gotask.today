@@ -39,7 +39,7 @@
     "text": "Task",
     "icon": "AssignmentIcon",
     "path": "/task",
-    "access": "Task Management"
+    "access": null
   },
   {
     "text": "Report",

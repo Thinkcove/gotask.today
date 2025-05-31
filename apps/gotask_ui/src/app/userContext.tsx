@@ -17,7 +17,7 @@ interface AccessDetail {
 interface Role {
   id: string;
   name: string;
-  accessDetails: AccessDetail[];
+  access: AccessDetail[];
 }
 
 interface User {

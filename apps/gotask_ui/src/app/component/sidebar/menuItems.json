@@ -33,13 +33,13 @@
     "text": "Access",
     "icon": "VpnKeyIcon",
     "path": "/access",
-    "access": "Access Management"
+    "access": null
   },
   {
     "text": "Task",
     "icon": "AssignmentIcon",
     "path": "/task",
-    "access": "Task Management"
+    "access": null
   },
   {
     "text": "Report",

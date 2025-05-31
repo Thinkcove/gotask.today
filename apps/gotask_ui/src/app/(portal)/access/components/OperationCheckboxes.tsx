@@ -43,12 +43,12 @@ const OperationCheckboxes: React.FC<Props> = ({
       sx={{
         width: '100%',
         maxWidth: 300,
-        height: 260, // Fixed height for the entire card
+        height: 260,
         display: 'flex',
         flexDirection: 'column',
         mt: 2,
         borderRadius: 2,
-        overflow: 'hidden', // Prevent content from spilling out
+        overflow: 'hidden',
         '@media (max-width: 600px)': {
           maxWidth: '100%',
           padding: 1,
@@ -65,11 +65,10 @@ const OperationCheckboxes: React.FC<Props> = ({
             mb: 1,
           }}
         >
-          {t('area')}: {module}
+          {t('action')}: {module}
         </Typography>
 
         <FormGroup sx={{ flexDirection: 'column', flex: '1 1 auto' }}>
-          {/* Select All */}
           <Paper
             elevation={0}
             sx={{
@@ -99,11 +98,10 @@ const OperationCheckboxes: React.FC<Props> = ({
             />
           </Paper>
 
-          {/* Scrollable Vertical List of Operations */}
           <Box
             sx={{
-              height: 160, // Fixed height for operations list
-              overflowY: 'auto', // Always scrollable if content exceeds height
+              height: 160,
+              overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
               gap: 0.5,
@@ -126,7 +124,7 @@ const OperationCheckboxes: React.FC<Props> = ({
           >
             {operations.length === 0 ? (
               <Typography variant="body2" color="text.secondary" sx={{ p: 1 }}>
-                {t('Access.noOperationsAvailable')}
+                {t('noOperationsAvailable')}
               </Typography>
             ) : (
               operations.map((operation) => (

@@ -1,9 +1,18 @@
 import { roleMessages } from "../../constants/apiMessages/roleMessages";
-import { CreateRolePayload } from "../../domain/model/role/role";
+import { CreateRolePayload, Role } from "../../domain/model/role/role";
 import * as RoleInterface from "../../domain/interface/role/roleInterface";
 import { Access } from "../../domain/model/access/access";
 
-// Create Role Logic
+const serializeAccess = (access: any) => ({
+  id: access.id,
+  name: access.name,
+  application: access.application.map((app: any) => ({
+    access: app.access,
+    actions: app.actions,
+    restrictedFields: app.restrictedFields ? Object.fromEntries(app.restrictedFields) : {}
+  }))
+});
+
 export const createRoleService = async (data: CreateRolePayload) => {
   try {
     const { name, accessIds = [] } = data;
@@ -13,7 +22,6 @@ export const createRoleService = async (data: CreateRolePayload) => {
       return { success: false, message: roleMessages.CREATE.ALREADY_EXISTS };
     }
 
-    // Create the new role and save the associated access references
     const role = await RoleInterface.createRoleInDb(name, accessIds);
 
     return {
@@ -29,69 +37,30 @@ export const createRoleService = async (data: CreateRolePayload) => {
   }
 };
 
-// Get All Roles
-export const getAllRolesService = async () => {
-  try {
-    const roles = await RoleInterface.getAllRolesFromDb();
-
-    const enhancedRoles = [];
-
-    for (const role of roles) {
-      const accessRecords = await Access.find({
-        id: { $in: role.access }
-      });
-
-      const roleObj = role.toObject();
-      const accessDetails = accessRecords.map((access) => ({
-        id: access.id,
-        name: access.name,
-        application: access.application
-      }));
-
-      enhancedRoles.push({
-        ...roleObj,
-        accessDetails
-      });
-    }
-
-    return { success: true, data: enhancedRoles };
-  } catch (error) {
-    console.error("Error in getAllRolesService:", error);
-    return { success: false, message: roleMessages.FETCH.FAILED };
-  }
-};
-
-// Get Role by ID
 export const getRoleByIdService = async (roleId: string) => {
   try {
-    const role = await RoleInterface.getRoleByIdFromDb(roleId);
+    // Find the role by its UUID string id
+    const role = await Role.findOne({ id: roleId });
     if (!role) {
-      return { success: false, message: roleMessages.FETCH.NOT_FOUND };
+      return { success: false, message: "Role not found." };
     }
 
+    // role.access is an array of UUID strings for Access documents
+    // Fetch all Access records whose 'id' matches any in role.access array
     const accessRecords = await Access.find({ id: { $in: role.access } });
 
-    const roleObj = role.toObject();
-    const accessDetails = accessRecords.map((access) => ({
-      id: access.id,
-      name: access.name,
-      application: access.application
-    }));
-
-    return {
-      success: true,
-      data: {
-        ...roleObj,
-        accessDetails
-      }
+    // Compose the role object with populated access details
+    const roleWithAccess = {
+      id: role.id,
+      name: role.name,
+      access: accessRecords // full Access objects
     };
-  } catch (error) {
-    console.error("Error in getRoleByIdService:", error);
-    return { success: false, message: roleMessages.FETCH.FAILED };
+
+    return { success: true, data: roleWithAccess };
+  } catch (error: any) {
+    return { success: false, message: error.message || "Error fetching role." };
   }
 };
-
-// Update Role
 export const updateRoleService = async (
   roleId: string,
   updatedData: Partial<CreateRolePayload>
@@ -115,11 +84,9 @@ export const updateRoleService = async (
   }
 };
 
-// Delete Role
 export const deleteRoleService = async (roleId: string) => {
   try {
     const success = await RoleInterface.deleteRoleInDb(roleId);
-
     if (!success) {
       return { success: false, message: roleMessages.FETCH.NOT_FOUND };
     }
@@ -142,6 +109,7 @@ export const removeAccessFromRoleService = async (roleId: string, accessId: stri
     if (!updatedRole) {
       return { success: false, message: roleMessages.FETCH.NOT_FOUND };
     }
+
     return {
       success: true,
       data: {
@@ -152,5 +120,28 @@ export const removeAccessFromRoleService = async (roleId: string, accessId: stri
   } catch (error) {
     console.error("Error in removeAccessFromRoleService:", error);
     return { success: false, message: roleMessages.UPDATE.FAILED };
+  }
+};
+
+export const getAllRolesService = async () => {
+  try {
+    const roles = await RoleInterface.getAllRolesFromDb();
+
+    const enhancedRoles = [];
+
+    for (const role of roles) {
+      const accessRecords = await Access.find({ id: { $in: role.access } });
+      const accessDetails = accessRecords.map(serializeAccess);
+
+      enhancedRoles.push({
+        ...role.toObject(),
+        accessDetails
+      });
+    }
+
+    return { success: true, data: enhancedRoles };
+  } catch (error) {
+    console.error("Error in getAllRolesService:", error);
+    return { success: false, message: roleMessages.FETCH.FAILED };
   }
 };

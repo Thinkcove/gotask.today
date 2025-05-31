@@ -17,20 +17,23 @@ import TaskFilters from "@/app/component/filters/taskFilters";
 import ViewMoreList from "../../component/taskList/viewMoreList";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
+import { useUserPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import ActionButton from "@/app/component/floatingButton/actionButton";
+import { Add } from "@mui/icons-material";
 
 const ViewMoreAction: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { id } = useParams();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-
+  const { canAccess } = useUserPermission();
   const view = searchParams.get("view") as "projects" | "users" | null;
   const minDate = searchParams.get("minDate") || "";
   const maxDate = searchParams.get("maxDate") || "";
   const moreDays = searchParams.get("moreDays") || "";
   const lessDays = searchParams.get("lessDays") || "";
   const dateVar = searchParams.get("dateVar") || "due_date";
-  const page = parseInt(searchParams.get("page") || "1");
 
   const getArrayParam = (name: string): string[] => {
     return searchParams.getAll(name).filter(Boolean);
@@ -84,7 +87,7 @@ const ViewMoreAction: React.FC = () => {
   const hookArgs = useMemo(
     () =>
       [
-        page,
+        1,
         6,
         search_vals,
         search_vars,
@@ -94,7 +97,7 @@ const ViewMoreAction: React.FC = () => {
         moreDays || undefined,
         lessDays || undefined
       ] as const,
-    [page, search_vals, search_vars, minDate, maxDate, dateVar, moreDays, lessDays]
+    [search_vals, search_vars, minDate, maxDate, dateVar, moreDays, lessDays]
   );
 
   const { tasksByProjects, isLoading: isLoadingProjects } = useProjectGroupTask(...hookArgs);
@@ -238,6 +241,14 @@ const ViewMoreAction: React.FC = () => {
         onTaskClick={(taskId) => (window.location.href = `/task/viewTask/${taskId}`)}
         view={view}
       />
+
+      {canAccess(APPLICATIONS.TASK, ACTIONS.CREATE) && (
+        <ActionButton
+          label={transtask("createtask")}
+          icon={<Add sx={{ color: "white" }} />}
+          onClick={() => router.push("/task/createTask")}
+        />
+      )}
     </>
   );
 };

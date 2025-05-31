@@ -220,7 +220,15 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     });
 
     setSearchParamsObj({ search_vals, search_vars });
-    resetTaskState();
+    const shouldRefresh = searchParams.get("refresh") === "true";
+    if (shouldRefresh) {
+      resetTaskState();
+      const params = new URLSearchParams(window.location.search);
+      params.delete("refresh");
+      router.replace(`?${params.toString()}`);
+    } else {
+      resetTaskState();
+    }
   }, [
     updateURLParams,
     searchText,
@@ -235,7 +243,9 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     variationType,
     variationDays,
     dateFrom,
-    dateTo
+    dateTo,
+    searchParams,
+    router
   ]);
 
   const handleScroll = () => {
@@ -262,8 +272,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
 
   const handleViewMore = (id: string) => {
     const params = new URLSearchParams({
-      view,
-      page: page.toString()
+      view
     });
 
     if (minDate) params.set("minDate", minDate);

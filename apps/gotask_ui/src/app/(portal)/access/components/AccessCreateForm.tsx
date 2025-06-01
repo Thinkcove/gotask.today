@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { TextField, Typography, Button, CircularProgress, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import AccessHeading from "./AccessHeading";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
-import { useAccessOptions, createAccessRole } from "../services/accessService";
+import { useAccessOptions, createAccessRole } from "../services/accessService"; // Import from service
 import { AccessRole } from "../interfaces/accessInterfaces";
 import { useTranslations } from "next-intl";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
@@ -18,7 +18,7 @@ const AccessCreateForm: React.FC = () => {
   const [accessName, setAccessName] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
   const [selectedFields, setSelectedFields] = useState<Record<string, Record<string, string[]>>>({});
-  const [currentModule, setCurrentModule] = useState("User Management"); 
+  const [currentModule, setCurrentModule] = useState("User Management");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -27,8 +27,6 @@ const AccessCreateForm: React.FC = () => {
   }>({ open: false, message: "", severity: "info" });
   const router = useRouter();
 
-  const { accessOptions, isLoading, error } = useAccessOptions();
-
   const validModules = [
     "User Management",
     "Task Management",
@@ -36,17 +34,19 @@ const AccessCreateForm: React.FC = () => {
     "Access Management",
     "Organization Management",
     "Role Management",
-    "User Report",
+    "User Report"
   ];
 
-  // Set currentModule if accessOptions load and currentModule is not valid
-  useEffect(() => {
-    if (accessOptions.length > 0 && !validModules.includes(currentModule)) {
-      const firstValidModule =
-        accessOptions.find((opt) => validModules.includes(opt.access))?.access || validModules[0];
-      setCurrentModule(firstValidModule);
-    }
-  }, [accessOptions, currentModule]);
+  // Fetch access options using service hook
+  const { accessOptions, isLoading, error } = useAccessOptions();
+
+  // Set currentModule when accessOptions are loaded
+  if (accessOptions.length > 0 && !validModules.includes(currentModule)) {
+    const firstValidModule =
+      accessOptions.find((opt: { access: string }) => validModules.includes(opt.access))?.access ||
+      validModules[0];
+    setCurrentModule(firstValidModule);
+  }
 
   const handleCheckboxChange = (module: string, action: string, checked: boolean) => {
     setSelectedPermissions((prev) => {
@@ -197,7 +197,9 @@ const AccessCreateForm: React.FC = () => {
         ) : error ? (
           <Box display="flex" justifyContent="center">
             <Typography variant="body1" color="error">
-              {error}
+              {error.includes("non-JSON")
+                ? t("Access.serverError")
+                : error || t("Access.errorLoadingOptions")}
             </Typography>
           </Box>
         ) : accessOptions.length === 0 ? (

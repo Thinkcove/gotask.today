@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -11,7 +12,6 @@ import {
   Tooltip,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
-import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
@@ -33,9 +33,13 @@ export default function AccessEditForm() {
   const router = useRouter();
 
   const [roleName, setRoleName] = useState<string>("");
-  const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
-  const [selectedFields, setSelectedFields] = useState<Record<string, Record<string, string[]>>>({});
-  const [currentTab, setCurrentTab] = useState("User Management"); // Initialize with a valid module
+  const [selectedPermissions, setSelectedPermissions] = useState<
+    Record<string, string[]>
+  >({});
+  const [selectedFields, setSelectedFields] = useState<
+    Record<string, Record<string, string[]>>
+  >({});
+  const [currentTab, setCurrentTab] = useState("User Management");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -43,8 +47,14 @@ export default function AccessEditForm() {
     severity: "success" | "error" | "info" | "warning";
   }>({ open: false, message: "", severity: "info" });
 
-  const { role, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(String(id));
-  const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
+  const { role, isLoading: isRoleLoading, error: roleError } = useAccessRoleById(
+    String(id)
+  );
+  const {
+    accessOptions,
+    isLoading: isOptionsLoading,
+    error: optionsError,
+  } = useAccessOptions();
 
   const validModules = [
     "User Management",
@@ -56,35 +66,61 @@ export default function AccessEditForm() {
     "User Report",
   ];
 
-  useEffect(() => {
-    if (role && roleName === "" && Object.keys(selectedPermissions).length === 0) {
-      setRoleName(role.name);
-      setSelectedPermissions(
-        role.application.reduce((acc: Record<string, string[]>, app: { access: string | number; actions: string[]; }) => {
+  // Initialize roleName, selectedPermissions, and selectedFields when role is loaded
+  if (
+    role &&
+    roleName === "" &&
+    Object.keys(selectedPermissions).length === 0
+  ) {
+    setRoleName(role.name);
+    setSelectedPermissions(
+      role.application.reduce(
+        (
+          acc: Record<string, string[]>,
+          app: { access: string; actions: string[] }
+        ) => {
           acc[app.access] = app.actions;
           return acc;
-        }, {})
-      );
-      setSelectedFields(
-        role.application.reduce((acc: Record<string, Record<string, string[]>>, app: { access: string | number; restrictedFields: {}; }) => {
+        },
+        {}
+      )
+    );
+    setSelectedFields(
+      role.application.reduce(
+        (
+          acc: Record<string, Record<string, string[]>>,
+          app: { access: string; restrictedFields: Record<string, string[]> }
+        ) => {
           acc[app.access] = app.restrictedFields || {};
           return acc;
-        }, {})
-      );
-    }
-  }, [role, roleName, selectedPermissions]);
+        },
+        {}
+      )
+    );
+  }
 
-  useEffect(() => {
-    if (accessOptions.length > 0 && role && !validModules.includes(currentTab)) {
-      const firstValidModule =
-        role.application?.find((app: { access: string }) => validModules.includes(app.access))?.access ||
-        accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
-        validModules[0];
-      setCurrentTab(firstValidModule);
-    }
-  }, [accessOptions, role, currentTab]);
+  // Set currentTab when accessOptions and role are loaded
+  if (
+    accessOptions.length > 0 &&
+    role &&
+    !validModules.includes(currentTab)
+  ) {
+    const firstValidModule =
+      role.application?.find((app: { access: string }) =>
+        validModules.includes(app.access)
+      )?.access ||
+      accessOptions.find((opt: { access: string }) =>
+        validModules.includes(opt.access)
+      )?.access ||
+      validModules[0];
+    setCurrentTab(firstValidModule);
+  }
 
-  const handlePermissionChange = (module: string, action: string, checked: boolean) => {
+  const handlePermissionChange = (
+    module: string,
+    action: string,
+    checked: boolean
+  ) => {
     setSelectedPermissions((prev) => {
       const existing = prev[module] || [];
       const updated = checked
@@ -94,7 +130,12 @@ export default function AccessEditForm() {
     });
   };
 
-  const handleFieldChange = (module: string, action: string, field: string, checked: boolean) => {
+  const handleFieldChange = (
+    module: string,
+    action: string,
+    field: string,
+    checked: boolean
+  ) => {
     setSelectedFields((prev) => {
       const moduleFields = prev[module] || {};
       const actionFields = moduleFields[action.toUpperCase()] || [];
@@ -113,7 +154,10 @@ export default function AccessEditForm() {
     });
   };
 
-  const showSnackbar = (message: string, severity: "success" | "error" | "info" | "warning") => {
+  const showSnackbar = (
+    message: string,
+    severity: "success" | "error" | "info" | "warning"
+  ) => {
     setSnackbar({ open: true, message, severity });
   };
 
@@ -163,7 +207,15 @@ export default function AccessEditForm() {
 
   if (isRoleLoading || isOptionsLoading) {
     return (
-      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -171,9 +223,19 @@ export default function AccessEditForm() {
 
   if (roleError || optionsError) {
     return (
-      <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="body1" color="error">
-          {roleError || optionsError}
+          {(roleError || optionsError)?.includes("non-JSON")
+            ? t("serverError")
+            : roleError || optionsError || t("errorLoadingOptions")}
         </Typography>
       </Box>
     );
@@ -194,7 +256,12 @@ export default function AccessEditForm() {
       }}
     >
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
           <Stack direction="row" spacing={1} alignItems="center">
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
               <Tooltip title={t("cancel")}>
@@ -208,7 +275,10 @@ export default function AccessEditForm() {
         </Box>
 
         <Box sx={{ maxWidth: 400, width: "100%", mb: 1 }}>
-          <Typography variant="body2" sx={{ color: "#333", fontWeight: 500 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "#333", fontWeight: 500 }}
+          >
             {t("accessName")} *
           </Typography>
           <TextField
@@ -227,11 +297,17 @@ export default function AccessEditForm() {
           />
         </Box>
 
-        <Typography variant="h6" fontWeight={600} sx={{ color: "#333" }}>
+        <Typography
+          variant="h6"
+          fontWeight={600}
+          sx={{ color: "#333" }}
+        >
           {t("accessManagement")}
         </Typography>
 
-        <Box sx={{ flex: 1, maxHeight: "calc(100vh - 240px)", overflowY: "auto" }}>
+        <Box
+          sx={{ flex: 1, maxHeight: "calc(100vh - 240px)", overflowY: "auto" }}
+        >
           {accessOptions.length === 0 ? (
             <Box display="flex" justifyContent="center">
               <Typography variant="body1" color="text.secondary">
@@ -299,7 +375,11 @@ export default function AccessEditForm() {
               width: { xs: "100%", sm: "auto" },
             }}
           >
-            {isSubmitting ? <CircularProgress size={20} /> : t("editaccess")}
+            {isSubmitting ? (
+              <CircularProgress size={20} />
+            ) : (
+              t("editaccess")
+            )}
           </Button>
         )}
       </Box>

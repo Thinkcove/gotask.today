@@ -1,3 +1,4 @@
+// src/app/common/utils/apiData.ts
 // Centralized error handling function with switch statement
 const handleApiError = (error: any) => {
   switch (true) {
@@ -14,10 +15,10 @@ const handleApiError = (error: any) => {
   }
 };
 
-// apiHeaders function (unchanged)
+// apiHeaders function
 export const apiHeaders = (token?: string) => ({
   Authorization: `Bearer ${token}`,
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
 });
 
 // postData function
@@ -26,19 +27,29 @@ export const postData = async (url: string, payload: Record<string, unknown>, to
     const response = await fetch(url, {
       method: "POST",
       headers: apiHeaders(token),
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      const errorResponse = await response.json();
+      let errorResponse;
+      const contentType = response.headers.get("Content-Type");
+      if (contentType && contentType.includes("application/json")) {
+        errorResponse = await response.json();
+      } else {
+        const text = await response.text();
+        throw {
+          message: `HTTP error! Status: ${response.status}, Received non-JSON response: ${text.slice(0, 100)}`,
+          response: { statusCode: response.status },
+        };
+      }
       throw {
         message: `HTTP error! Status: ${response.status}`,
-        response: errorResponse
+        response: errorResponse,
       };
     }
     return response.json();
   } catch (error) {
-    handleApiError(error); // Use centralized error handling
+    handleApiError(error);
   }
 };
 
@@ -48,14 +59,24 @@ export const putData = async (url: string, payload: Record<string, unknown>, tok
     const response = await fetch(url, {
       method: "PUT",
       headers: apiHeaders(token),
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      const errorResponse = await response.json();
+      let errorResponse;
+      const contentType = response.headers.get("Content-Type");
+      if (contentType && contentType.includes("application/json")) {
+        errorResponse = await response.json();
+      } else {
+        const text = await response.text();
+        throw {
+          message: `HTTP error! Status: ${response.status}, Received non-JSON response: ${text.slice(0, 100)}`,
+          response: { statusCode: response.status },
+        };
+      }
       throw {
         message: `HTTP error! Status: ${response.status}`,
-        response: errorResponse
+        response: errorResponse,
       };
     }
     return response.json();
@@ -69,17 +90,37 @@ export const getData = async (url: string, token?: string) => {
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: apiHeaders(token)
+      headers: apiHeaders(token),
     });
+
     if (!response.ok) {
-      const errorResponse = await response.json(); // Parse error response
+      let errorResponse;
+      const contentType = response.headers.get("Content-Type");
+      if (contentType && contentType.includes("application/json")) {
+        errorResponse = await response.json();
+      } else {
+        const text = await response.text();
+        throw {
+          message: `HTTP error! Status: ${response.status}, Received non-JSON response: ${text.slice(0, 100)}`,
+          response: { statusCode: response.status },
+        };
+      }
       throw {
         message: `HTTP error! Status: ${response.status}`,
-        response: errorResponse
+        response: errorResponse,
       };
     }
-    const data = await response.json();
-    return data;
+
+    const contentType = response.headers.get("Content-Type");
+    if (contentType && contentType.includes("application/json")) {
+      return await response.json();
+    } else {
+      const text = await response.text();
+      throw {
+        message: `Expected JSON but received non-JSON response: ${text.slice(0, 100)}`,
+        response: { statusCode: response.status },
+      };
+    }
   } catch (error) {
     handleApiError(error);
   }
@@ -94,17 +135,27 @@ export const deleteData = async (
   try {
     const options: RequestInit = {
       method: "DELETE",
-      headers: apiHeaders(token)
+      headers: apiHeaders(token),
     };
     if (payload) {
       options.body = JSON.stringify(payload);
     }
     const response = await fetch(url, options);
     if (!response.ok) {
-      const errorResponse = await response.json(); // Parse error response
+      let errorResponse;
+      const contentType = response.headers.get("Content-Type");
+      if (contentType && contentType.includes("application/json")) {
+        errorResponse = await response.json();
+      } else {
+        const text = await response.text();
+        throw {
+          message: `HTTP error! Status: ${response.status}, Received non-JSON response: ${text.slice(0, 100)}`,
+          response: { statusCode: response.status },
+        };
+      }
       throw {
         message: `HTTP error! Status: ${response.status}`,
-        response: errorResponse
+        response: errorResponse,
       };
     }
     return await response.json();

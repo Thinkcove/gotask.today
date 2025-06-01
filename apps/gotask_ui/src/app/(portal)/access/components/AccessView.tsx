@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -35,7 +35,7 @@ const AccessView: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [currentTab, setCurrentTab] = useState("User Management"); // Initialize with a valid module
+  const [currentTab, setCurrentTab] = useState("User Management");
   const [isDeleting, setIsDeleting] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [snackbar, setSnackbar] = useState<{
@@ -65,17 +65,22 @@ const AccessView: React.FC = () => {
     "User Report",
   ];
 
-  useEffect(() => {
-    if (accessOptions.length > 0 && accessRole && !validModules.includes(currentTab)) {
-      const firstValidModule =
-        accessRole.application?.find((app: { access: string }) =>
-          validModules.includes(app.access)
-        )?.access ||
-        accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
-        validModules[0];
-      setCurrentTab(firstValidModule);
-    }
-  }, [accessOptions, accessRole, currentTab]);
+  // Set currentTab when accessOptions and accessRole are loaded
+  if (
+    accessOptions.length > 0 &&
+    accessRole &&
+    !validModules.includes(currentTab)
+  ) {
+    const firstValidModule =
+      accessRole.application?.find((app: { access: string }) =>
+        validModules.includes(app.access)
+      )?.access ||
+      accessOptions.find((opt: { access: string }) =>
+        validModules.includes(opt.access)
+      )?.access ||
+      validModules[0];
+    setCurrentTab(firstValidModule);
+  }
 
   const showSnackbar = (
     message: string,
@@ -116,7 +121,10 @@ const AccessView: React.FC = () => {
   ) || {};
 
   const selectedFields = accessRole?.application?.reduce(
-    (acc: Record<string, Record<string, string[]>>, app: { access: string; restrictedFields: Record<string, string[]> }) => {
+    (
+      acc: Record<string, Record<string, string[]>>,
+      app: { access: string; restrictedFields: Record<string, string[]> }
+    ) => {
       acc[app.access] = app.restrictedFields || {};
       return acc;
     },
@@ -151,7 +159,9 @@ const AccessView: React.FC = () => {
         }}
       >
         <Typography variant="body1" color="error">
-          {roleError || optionsError}
+          {(roleError || optionsError)?.includes("non-JSON")
+            ? t("serverError")
+            : roleError || optionsError || t("errorLoadingOptions")}
         </Typography>
       </Box>
     );

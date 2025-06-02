@@ -1,5 +1,6 @@
 "use client";
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
+import { usePathname } from "next/navigation";
 import { Box, Typography, IconButton, Paper } from "@mui/material";
 import { sendQuery, uploadAttendance, useQueryHistory } from "../service/chatAction";
 import { QueryResponse, QueryHistoryEntry } from "../interface/chatInterface";
@@ -10,57 +11,93 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import FormField from "@/app/component/input/formField";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 
-const Chat: React.FC = () => {
-  const transchatbot = useTranslations(LOCALIZATION.TRANSITION.CHATBOT);
-  const [messages, setMessages] = useState<QueryResponse[]>([]);
-  const [input, setInput] = useState<string>("");
-  const [inputError, setInputError] = useState<string | undefined>(undefined);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+// Custom hook for updating greeting
+const useGreeting = (transchatbot: any) => {
   const [greeting, setGreeting] = useState<string>("Good Day");
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-  const {
-    history: selectedHistory,
-    isLoading: selectedLoading,
-    error: selectedError
-  } = useQueryHistory(selectedConversationId ?? undefined);
+
+  const updateGreeting = useCallback(() => {
+    const hour = new Date().getHours();
+    if (hour >= 0 && hour < 12) setGreeting(transchatbot("greetingMorning"));
+    else if (hour >= 12 && hour < 17) setGreeting(transchatbot("greetingAfternoon"));
+    else setGreeting(transchatbot("greetingEvening"));
+  }, [transchatbot]);
+
+  useMemo(() => {
+    updateGreeting();
+    const interval = setInterval(updateGreeting, 60000);
+    return () => clearInterval(interval);
+  }, [updateGreeting]);
+
+  return greeting;
+};
+
+// Custom hook for managing localStorage
+const useLocalStorageMessages = (messages: QueryResponse[], transchatbot: any) => {
+  const saveToLocalStorage = useCallback(() => {
+    if (typeof window !== "undefined") {
+      if (messages.length > 0) {
+        localStorage.setItem(transchatbot("chatMessages"), JSON.stringify(messages));
+        localStorage.setItem("chatSessionTimestamp", Date.now().toString());
+      } else {
+        localStorage.removeItem(transchatbot("chatMessages"));
+        localStorage.removeItem("chatSessionTimestamp");
+      }
+    }
+  }, [messages, transchatbot]);
+
+  const getFromLocalStorage = useCallback(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const storedMessages = localStorage.getItem(transchatbot("chatMessages"));
+        const sessionTimestamp = localStorage.getItem("chatSessionTimestamp");
+        const currentTime = Date.now();
+        // Consider it a refresh if the session timestamp is recent (within 5 seconds)
+        if (sessionTimestamp && currentTime - parseInt(sessionTimestamp) < 5000) {
+          return storedMessages ? (JSON.parse(storedMessages) as QueryResponse[]) : [];
+        }
+        return [];
+      } catch (error) {
+        console.error("Error parsing localStorage messages:", error);
+        return [];
+      }
+    }
+    return [];
+  }, [transchatbot]);
+
+  const clearLocalStorage = useCallback(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(transchatbot("chatMessages"));
+      localStorage.removeItem("chatSessionTimestamp");
+    }
+  }, [transchatbot]);
+
+  return { saveToLocalStorage, getFromLocalStorage, clearLocalStorage };
+};
+
+// Custom hook for auto-scrolling
+const useAutoScroll = (messages: QueryResponse[]) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useMemo(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  return messagesEndRef;
+};
+
+// Custom hook for handling conversation history
+const useConversationHistory = (
+  selectedConversationId: string | null,
+  memoizedSelectedHistory: QueryHistoryEntry[],
+  initialMessages: QueryResponse[]
+) => {
+  const [messages, setMessages] = useState<QueryResponse[]>(initialMessages);
 
   const generateUniqueId = () => {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  const memoizedSelectedHistory = useMemo(
-    () => selectedHistory ?? [],
-    [JSON.stringify(selectedHistory)]
-  );
-
-  const isReadOnly = () => false;
-
-  useEffect(() => {
-    const updateGreeting = () => {
-      const hour = new Date().getHours();
-      if (hour >= 0 && hour < 12) setGreeting(transchatbot("greetingMorning"));
-      else if (hour >= 12 && hour < 17) setGreeting(transchatbot("greetingAfternoon"));
-      else setGreeting(transchatbot("greetingEvening"));
-    };
-    updateGreeting();
-    const interval = setInterval(updateGreeting, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem(transchatbot("chatMessages"), JSON.stringify(messages));
-    } else {
-      localStorage.removeItem(transchatbot("chatMessages"));
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  useEffect(() => {
+  useMemo(() => {
     if (selectedConversationId && memoizedSelectedHistory?.length > 0) {
       const conversationMessages = memoizedSelectedHistory
         .map((item: QueryHistoryEntry) => [
@@ -86,10 +123,84 @@ const Chat: React.FC = () => {
         ])
         .flat();
       setMessages(conversationMessages);
+    } else if (!selectedConversationId && initialMessages.length > 0) {
+      setMessages(initialMessages);
     } else {
       setMessages([]);
     }
-  }, [selectedConversationId, memoizedSelectedHistory]);
+  }, [selectedConversationId, memoizedSelectedHistory, initialMessages]);
+
+  return { messages, setMessages };
+};
+
+const Chat: React.FC = () => {
+  const transchatbot = useTranslations(LOCALIZATION.TRANSITION.CHATBOT);
+  const pathname = usePathname();
+  const [input, setInput] = useState<string>("");
+  const [inputError, setInputError] = useState<string | undefined>(undefined);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const {
+    history: selectedHistory,
+    isLoading: selectedLoading,
+    error: selectedError
+  } = useQueryHistory(selectedConversationId ?? undefined);
+
+  const memoizedSelectedHistory = useMemo(
+    () => selectedHistory ?? [],
+    [JSON.stringify(selectedHistory)]
+  );
+
+  // Initialize messages from localStorage only on refresh
+  const { saveToLocalStorage, getFromLocalStorage, clearLocalStorage } = useLocalStorageMessages(
+    [],
+    transchatbot
+  );
+  const initialMessages = useMemo(() => {
+    return selectedConversationId ? [] : getFromLocalStorage();
+  }, [selectedConversationId, getFromLocalStorage]);
+
+  // Clear localStorage on component mount to ensure fresh start
+  useMemo(() => {
+    if (!selectedConversationId) {
+      clearLocalStorage();
+    }
+  }, []);
+
+  // Use custom hooks
+  const { messages, setMessages } = useConversationHistory(
+    selectedConversationId,
+    memoizedSelectedHistory,
+    initialMessages
+  );
+  const greeting = useGreeting(transchatbot);
+  const messagesEndRef = useAutoScroll(messages);
+  const { saveToLocalStorage: saveMessages } = useLocalStorageMessages(messages, transchatbot);
+
+  // Save messages to localStorage whenever they change
+  useMemo(() => {
+    saveMessages();
+  }, [saveMessages]);
+
+  // Handle navigation to clear localStorage
+  const prevPathnameRef = useRef<string | null>(null);
+  useMemo(() => {
+    if (
+      typeof window !== "undefined" &&
+      prevPathnameRef.current !== null &&
+      prevPathnameRef.current !== pathname
+    ) {
+      clearLocalStorage();
+      setMessages([]);
+    }
+    prevPathnameRef.current = pathname;
+  }, [pathname, setMessages]);
+
+  const isReadOnly = () => false;
+
+  const generateUniqueId = () => {
+    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  };
 
   const handleSend = useCallback(async () => {
     if (!input.trim()) {
@@ -118,7 +229,7 @@ const Chat: React.FC = () => {
         isSystem: false
       };
       setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage: QueryResponse = {
         id: generateUniqueId(),
         message: transchatbot("queryError"),
@@ -128,69 +239,78 @@ const Chat: React.FC = () => {
       };
       setMessages((prev) => [...prev, errorMessage]);
     }
-  }, [input]);
+  }, [input, transchatbot]);
 
-  const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleFileUpload = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
-      const systemMessage: QueryResponse = {
-        id: generateUniqueId(),
-        message: transchatbot("invalidFile"),
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        isUser: false,
-        isSystem: true
-      };
-      setMessages((prev) => [...prev, systemMessage]);
-      return;
-    }
+      if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+        const systemMessage: QueryResponse = {
+          id: generateUniqueId(),
+          message: transchatbot("invalidFile"),
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          isUser: false,
+          isSystem: true
+        };
+        setMessages((prev) => [...prev, systemMessage]);
+        return;
+      }
 
-    try {
-      const result = await uploadAttendance(file);
-      const systemMessage: QueryResponse = {
-        id: generateUniqueId(),
-        message: `Attendance uploaded successfully! Inserted: ${result.inserted}, Skipped: ${result.skipped}. ${
-          result.errors.length > 0 ? "Errors: " + result.errors.join("; ") : ""
-        }`,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        isUser: false,
-        isSystem: true
-      };
-      setMessages((prev) => [...prev, systemMessage]);
-    } catch (error) {
-      const systemMessage: QueryResponse = {
-        id: generateUniqueId(),
-        message: `Error uploading attendance: ${(error as Error).message}`,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        isUser: false,
-        isSystem: true
-      };
-      setMessages((prev) => [...prev, systemMessage]);
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  }, []);
+      try {
+        const result = await uploadAttendance(file);
+        const systemMessage: QueryResponse = {
+          id: generateUniqueId(),
+          message: `Attendance uploaded successfully! Inserted: ${result.inserted}, Skipped: ${result.skipped}. ${
+            result.errors.length > 0 ? "Errors: " + result.errors.join("; ") : ""
+          }`,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          isUser: false,
+          isSystem: true
+        };
+        setMessages((prev) => [...prev, systemMessage]);
+      } catch (error: any) {
+        const systemMessage: QueryResponse = {
+          id: generateUniqueId(),
+          message: `Error uploading attendance: ${error.message}`,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          isUser: false,
+          isSystem: true
+        };
+        setMessages((prev) => [...prev, systemMessage]);
+      } finally {
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    },
+    [transchatbot]
+  );
 
   const handleInputChange = (value: string) => {
     setInput(value);
-    setInputError(undefined); // Clear error on change
+    setInputError(undefined);
   };
 
   const handleNewChat = useCallback(() => {
     setMessages([]);
-    localStorage.removeItem("chatMessages");
+    clearLocalStorage();
     setSelectedConversationId(null);
-  }, []);
+  }, [clearLocalStorage, transchatbot]);
 
   const handleClearAll = useCallback(() => {
     setMessages([]);
+    clearLocalStorage();
     setSelectedConversationId(null);
-  }, []);
+  }, [clearLocalStorage, transchatbot]);
 
-  const handleSelectConversation = useCallback((conversationId: string) => {
-    setSelectedConversationId(conversationId);
-  }, []);
+  const handleSelectConversation = useCallback(
+    (conversationId: string) => {
+      setMessages([]);
+      clearLocalStorage();
+      setSelectedConversationId(conversationId);
+    },
+    [clearLocalStorage, transchatbot]
+  );
 
   return (
     <>

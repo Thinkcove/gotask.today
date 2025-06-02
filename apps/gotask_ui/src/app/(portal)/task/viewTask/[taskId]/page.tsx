@@ -16,11 +16,19 @@ const fetchTask = async (url: string) => {
 const ViewAction: React.FC = () => {
   const { taskId } = useParams();
   const url = `${env.API_BASE_URL}/getTaskById/${taskId}`;
-  const { data } = useSWR(taskId ? url : null, fetchTask, {
+  const { data, mutate, isLoading } = useSWR(taskId ? url : null, fetchTask, {
     revalidateOnFocus: false
   });
-  const selectedTask = data?.data || [];
-  return selectedTask && <TaskDetail task={selectedTask} />;
+
+  const selectedTask = data?.data || null;
+
+  return selectedTask && (
+    <TaskDetail
+      task={selectedTask}
+      loading={isLoading}
+      mutate={mutate} // ✅ pass mutate so TaskDetail can call it
+    />
+  );
 };
 
 export default ViewAction;

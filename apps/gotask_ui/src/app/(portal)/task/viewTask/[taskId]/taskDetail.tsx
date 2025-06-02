@@ -1,4 +1,15 @@
-import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Box,
+  Typography,
+  Grid,
+  IconButton,
+  Divider,
+  CircularProgress,
+  TextField,
+  Button,
+  Avatar
+} from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -10,11 +21,9 @@ import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import TaskComments from "../../editTask/taskComments";
 import { formatTimeValue } from "@/app/common/utils/common";
-import { useState } from "react";
 import { useUser } from "@/app/userContext";
-import { createComment } from "@/app/(portal)/task/service/taskAction";
+import { createComment, updateComment } from "@/app/(portal)/task/service/taskAction";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { KeyedMutator } from "swr";
@@ -23,15 +32,16 @@ import CommentHistory from "../../editTask/commentsHistory";
 interface TaskDetailViewProps {
   task: ITask;
   loading?: boolean;
-  mutate?: KeyedMutator<ITask>;
+  mutate?: KeyedMutator<any>;
 }
 
 const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const { canAccess } = useUserPermission();
-  const { user } = useUser(); // Get logged-in user details
-  const [isCommenting, setIsCommenting] = useState(false); // Control TaskComments visibility
+  const { user } = useUser();
+  const [isCommenting, setIsCommenting] = useState(false);
+  const [newComment, setNewComment] = useState("");
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -42,25 +52,31 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
     router.back();
   };
 
-  // Handle comment save
-  const handleSaveComment = async (comment: string) => {
-    if (!comment.trim()) return;
+  const handleSaveNewComment = async () => {
+    if (!newComment.trim()) return;
 
     try {
       const commentData: ITaskComment = {
         task_id: task.id,
         user_id: user?.id || "",
         user_name: user?.name || "",
-        comment
+        comment: newComment
       };
       await createComment(commentData);
+
       setSnackbar({
         open: true,
         message: transtask("commentsuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setIsCommenting(false); // Hide TaskComments after saving
-      if (mutate) await mutate(); // Refresh task data
+
+      setNewComment("");
+      setIsCommenting(false);
+
+      // Immediately update UI by revalidating task data including comments
+      if (mutate) {
+        await mutate(); // Re-fetch task details including comments
+      }
     } catch (error) {
       console.error("Error saving comment:", error);
       setSnackbar({
@@ -71,7 +87,47 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
     }
   };
 
-  // Loading state
+  // Handle comment edit save with immediate UI update
+  const handleEditCommentSave = async (updatedComment: ITaskComment) => {
+    try {
+      await updateComment(updatedComment);
+      setSnackbar({
+        open: true,
+        message: transtask("commentupdatesuccess"),
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
+      // Refresh task to update comments immediately
+      if (mutate) {
+        await mutate();
+      }
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      setSnackbar({
+        open: true,
+        message: transtask("commentupdateerror"),
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+    }
+  };
+
+  const handleCancelNewComment = () => {
+    setNewComment("");
+    setIsCommenting(false);
+  };
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    return now.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    }) + ' at ' + now.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+  };
+
   if (loading || !task || Object.keys(task).length === 0) {
     return (
       <>
@@ -108,7 +164,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
         sx={{
           minHeight: "100vh",
           p: { xs: 1, sm: 2, md: 3 },
-          background: "linear"
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
       >
         <Box
@@ -117,7 +173,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             p: { xs: 2, sm: 3, md: 4 },
             bgcolor: "#f9fafb",
             border: "1px solid #e0e0e0",
-            maxHeight: { xs: "auto", md: "0" },
             width: "100%",
             boxSizing: "border-box",
             overflow: "hidden"
@@ -129,7 +184,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 <ArrowBack />
               </IconButton>
             </Grid>
-
             <Grid item xs>
               <Box>
                 <Typography
@@ -244,16 +298,137 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               wordBreak: "break-word"
             }}
           >
+            {/* New Comment Input Section */}
             {isCommenting && (
-              <TaskComments comments={task.comment || []} onSave={handleSaveComment} />
+              <Box
+                sx={{
+                  p: 2,
+                  mb: 3
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    mb: 2
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      backgroundColor: "#741B92",
+                      width: 40,
+                      height: 40,
+                      fontSize: "1rem",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    {user?.name?.charAt(0)?.toUpperCase() || "UT"}
+                  </Avatar>
+                  <Box>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 600,
+                        color: "#333",
+                        fontSize: "1rem"
+                      }}
+                    >
+                      {user?.name || "UI Dev Team"}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "#666",
+                        fontSize: "0.875rem"
+                      }}
+                    >
+                      {getCurrentDateTime()}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <TextField
+                  placeholder={transtask("placeholdercomment")}
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  multiline
+                  rows={4}
+                  fullWidth
+                  variant="outlined"
+                  sx={{
+                    mb: 2,
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "8px",
+                      "& fieldset": {
+                        borderColor: "#e0e0e0",
+                        borderWidth: "1px"
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#ccc"
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#1976d2",
+                        borderWidth: "2px"
+                      }
+                    },
+                    "& .MuiInputBase-input": {
+                      fontSize: "0.875rem",
+                      color: "#333",
+                      padding: "12px"
+                    }
+                  }}
+                />
+
+                <Box display="flex" gap={2} mt={1}>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#741B92",
+                      color: "white",
+                      textTransform: "none",
+                      fontWeight: 500,
+                      px: 3,
+                      py: 1,
+                      borderRadius: "6px"
+                    }}
+                    onClick={handleSaveNewComment}
+                  >
+                    {transtask("savecomments")}
+                  </Button>
+                  <Button
+                    variant="text"
+                    sx={{
+                      backgroundColor: "#741B92",
+                      color: "white",
+                      textTransform: "none",
+                      fontWeight: 500,
+                      px: 3,
+                      py: 1
+                    }}
+                    onClick={handleCancelNewComment}
+                  >
+                    {transtask("cancelcomments")}
+                  </Button>
+                </Box>
+              </Box>
             )}
 
-            {!isCommenting && Array.isArray(task?.comment) && task.comment.length > 0 && (
+            {Array.isArray(task?.comment) && task.comment.length > 0 && (
+                <Box
+                  sx={{
+                  maxHeight: 3 * 120, // Assuming ~120px per comment — adjust if needed
+                  overflowY: "auto",
+                  pr: 1
+                }}
+                >
               <CommentHistory
                 comments={task.comment}
-                onEdit={() => setIsCommenting(true)}
                 canEditId={user?.id || ""}
+                mutate={mutate}
+                onEdit={handleEditCommentSave}
               />
+              </Box>
             )}
           </Box>
 

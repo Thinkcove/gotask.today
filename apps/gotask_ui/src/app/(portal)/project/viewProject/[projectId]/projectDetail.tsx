@@ -137,10 +137,22 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Basic Details */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
-              <LabelValueText
-                label={transproject("detaildescription")}
-                value={project.description}
-              />
+              <Box>
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 1 }}>
+                  {transproject("detaildescription")}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: "text.primary",
+                    lineHeight: 1.6,
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word"
+                  }}
+                >
+                  {(project.description)}
+                </Typography>
+              </Box>
             </Grid>
           </Grid>
           <Grid container spacing={2} mb={2}>

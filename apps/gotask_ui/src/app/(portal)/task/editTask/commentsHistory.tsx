@@ -1,24 +1,82 @@
 import React, { useState } from "react";
-import { Box, Avatar, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Avatar,
+  Typography,
+  Button,
+  TextField,
+} from "@mui/material";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ITaskComment } from "../interface/taskInterface";
+import { updateComment } from "@/app/(portal)/task/service/taskAction";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { KeyedMutator } from "swr";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
-  onEdit: (comment: ITaskComment) => void; // Updated to pass the selected comment
-  canEditId: string; // Logged-in user ID to check edit eligibility
+  onEdit: (comment: ITaskComment) => void;
+  canEditId: string;
+  mutate?: KeyedMutator<any>;
 }
-
-const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEditId }) => {
+const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEditId, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [showAll, setShowAll] = useState(false);
+  const [editingComment, setEditingComment] = useState<ITaskComment | null>(null);
+  const [editText, setEditText] = useState("");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO,
+  });
 
   if (comments.length === 0) return null;
 
   const displayedComments = showAll ? comments : comments.slice(0, 3);
   const hasMoreComments = comments.length > 3;
+
+  const handleEditComment = (comment: ITaskComment) => {
+    setEditingComment(comment);
+    setEditText(comment.comment);
+  };
+
+  const handleSaveEdit = async (comment: ITaskComment) => {
+    if (!editText.trim()) return;
+
+    try {
+      const commentData: ITaskComment = {
+        ...comment,
+        comment: editText,
+      };
+      await updateComment(commentData);
+// await mutate(); // Re-fetches data from server
+console.log("mutate:", mutate); // Should be a function
+
+      setSnackbar({
+        open: true,
+        message: transtask("commentupdated"),
+        severity: SNACKBAR_SEVERITY.SUCCESS,
+      });
+ if (mutate) await mutate();
+      setEditingComment(null);
+      setEditText("");
+      if (mutate) await mutate();
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      setSnackbar({
+        open: true,
+        message: transtask("commenterror"),
+        severity: SNACKBAR_SEVERITY.ERROR,
+      });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingComment(null);
+    setEditText("");
+  };
 
   return (
     <Box
@@ -29,7 +87,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        maxHeight: "100%"
+        maxHeight: "100%",
       }}
     >
       <Box
@@ -38,7 +96,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
           gap: 1,
           color: "#741B92",
           alignItems: "center",
-          mb: 2
+          mb: 2,
         }}
       >
         <Typography fontWeight="bold">{transtask("comment")}</Typography>
@@ -54,20 +112,20 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
           width: "100%",
           boxSizing: "border-box",
           "&::-webkit-scrollbar": {
-            width: "6px"
+            width: "6px",
           },
           "&::-webkit-scrollbar-track": {
             background: "#f1f1f1",
-            borderRadius: "3px"
+            borderRadius: "3px",
           },
           "&::-webkit-scrollbar-thumb": {
             background: "#741B92",
             borderRadius: "3px",
-            opacity: 0.7
+            opacity: 0.7,
           },
           "&::-webkit-scrollbar-thumb:hover": {
-            background: "#5a1472"
-          }
+            background: "#5a1472",
+          },
         }}
       >
         {displayedComments.map((comment) => (
@@ -82,7 +140,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
               my: 1,
               width: "100%",
               boxSizing: "border-box",
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           >
             <Avatar
@@ -91,7 +149,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
                 width: { xs: 32, sm: 40 },
                 height: { xs: 32, sm: 40 },
                 fontSize: { xs: "0.875rem", sm: "1rem" },
-                flexShrink: 0
+                flexShrink: 0,
               }}
             >
               {comment.user_name.charAt(0)}
@@ -100,7 +158,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
               sx={{
                 flex: 1,
                 minWidth: 0,
-                overflow: "hidden"
+                overflow: "hidden",
               }}
             >
               <Box
@@ -109,7 +167,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
                   alignItems: "center",
                   gap: 1,
                   flexWrap: { xs: "wrap", sm: "nowrap" },
-                  mb: 0.5
+                  mb: 0.5,
                 }}
               >
                 <Typography
@@ -121,7 +179,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
                     minWidth: 0,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    whiteSpace: { xs: "normal", sm: "nowrap" }
+                    whiteSpace: { xs: "normal", sm: "nowrap" },
                   }}
                 >
                   {comment.user_name} -
@@ -131,46 +189,114 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
                   sx={{
                     fontSize: { xs: "0.75rem", sm: "0.875rem" },
                     color: "text.secondary",
-                    flexShrink: 0
+                    flexShrink: 0,
                   }}
                 >
                   {new Date(comment.createdAt ?? new Date().toISOString()).toLocaleString()}
                 </Typography>
               </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: { xs: "0.875rem", sm: "0.875rem" },
-                  lineHeight: 1.4,
-                  wordBreak: "break-word",
-                  overflowWrap: "break-word",
-                  hyphens: "auto",
-                  mb: 1
-                }}
-              >
-                {comment.comment}
-              </Typography>
-              {String(comment.user_id) === String(canEditId) && (
-                <Button
-                  variant="text"
-                  color="primary"
-                  onClick={() => onEdit(comment)} // Pass the entire comment object
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 500,
-                    p: 0,
-                    minWidth: "auto",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      backgroundColor: "transparent"
-                    },
-                    "&:active": {
-                      textDecoration: "underline"
-                    }
-                  }}
-                >
-                  {transtask("addcomment")} {/* Updated label to indicate edit */}
-                </Button>
+
+              {editingComment?.id === comment.id ? (
+                <Box>
+                  <TextField
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    multiline
+                    rows={4}
+                    fullWidth
+                    variant="outlined"
+                    sx={{
+                      mb: 2,
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "8px",
+                        "& fieldset": {
+                          borderColor: "#e0e0e0",
+                          borderWidth: "1px",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#ccc",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#1976d2",
+                          borderWidth: "2px",
+                        },
+                      },
+                      "& .MuiInputBase-input": {
+                        fontSize: "0.875rem",
+                        color: "#333",
+                        padding: "12px",
+                      },
+                    }}
+                  />
+                  <Box display="flex" gap={2}>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#741B92",
+                        color: "white",
+                        textTransform: "none",
+                        fontWeight: 500,
+                        px: 3,
+                        py: 1,
+                        borderRadius: "6px",
+                      }}
+                      onClick={() => handleSaveEdit(comment)}
+                    >
+                      {transtask("savecomments")}
+                    </Button>
+                    <Button
+                      variant="text"
+                      sx={{
+                        color: "#741B92",
+                        textTransform: "none",
+                        fontWeight: 500,
+                        px: 3,
+                        py: 1,
+                      }}
+                      onClick={handleCancelEdit}
+                    >
+                      {transtask("cancelcomments")}
+                    </Button>
+                  </Box>
+                </Box>
+              ) : (
+                <>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: { xs: "0.875rem", sm: "0.875rem" },
+                      lineHeight: 1.4,
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
+                      hyphens: "auto",
+                      mb: 1,
+                    }}
+                  >
+                    {comment.comment}
+                  </Typography>
+                  {String(comment.user_id) === String(canEditId) && (
+                    <Button
+                      variant="text"
+                      color="primary"
+                      onClick={() => handleEditComment(comment)} // Use local edit handler
+                      sx={{
+                        textTransform: "none",
+                        fontWeight: 500,
+                        p: 0,
+                        minWidth: "auto",
+                        "&:hover": {
+                          textDecoration: "underline",
+                          backgroundColor: "transparent",
+                        },
+                        "&:active": {
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      {transtask("editcomment", { default: "Edit" })}
+                    </Button>
+                  )}
+                </>
               )}
             </Box>
           </Box>
@@ -188,11 +314,11 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
             minWidth: "auto",
             "&:hover": {
               textDecoration: "underline",
-              backgroundColor: "transparent"
+              backgroundColor: "transparent",
             },
             "&:active": {
-              textDecoration: "underline"
-            }
+              textDecoration: "underline",
+            },
           }}
         >
           {transtask("viewMore", { default: "View more" })} ({comments.length - 3} more)
@@ -208,12 +334,19 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
             ml: { xs: 0, sm: 6 },
             mt: 1,
             fontSize: { xs: "0.875rem", sm: "0.875rem" },
-            alignSelf: "flex-start"
+            alignSelf: "flex-start",
           }}
         >
           {transtask("showLess", { default: "Show less" })}
         </Button>
       )}
+
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </Box>
   );
 };

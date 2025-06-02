@@ -41,13 +41,15 @@ const ProjectInput = ({
           placeholder={transproject("placeholdername")}
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12}  >
         <FormField
           label={transproject("labeldescription")}
           type="text"
           value={formData.description}
           onChange={(value) => handleChange("description", String(value))}
           required
+          multiline
+          height={120}
           error={errors?.description}
           disabled={isReadOnly("description")}
           placeholder={transproject("placeholderdescription")}

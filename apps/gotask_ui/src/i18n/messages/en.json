@@ -273,12 +273,15 @@
     "spentt": "Spent",
     "remainingt": "Remaining",
     "variationt": "Variation",
-    "duedate": "Cannot register time before the due date",
+    "duedate":"Cannot register time before the due date",
     "viewMore": "View more",
     "comment": "Comments",
-    "commentsuccess": "Comment added successfully",
-    "commenterror": "Error saving comment",
-    "addcomment": "Edit"
+    "addcomment": "Edit",
+    "savecomments":"Save",
+    "cancelcomments":"Cancel",
+    "editcomment": "Edit",
+    "commentupdated": "Comment updated successfully.",
+    "commenterror": "Failed to update comment."
   },
   "User": {
     "username": "User name is required",

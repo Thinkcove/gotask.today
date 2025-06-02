@@ -12,26 +12,20 @@ import {
   CircularProgress
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { clearQueryHistory, deleteConversation, useQueryHistory } from "../service/chatAction";
+import { deleteConversation, useQueryHistory } from "../service/chatAction";
 import { QueryHistoryEntry } from "../interface/chatInterface";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import AddIcon from "@mui/icons-material/Add";
-import { Query } from "@/app/common/constants/query";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
 interface ChatHistoryProps {
   onNewChat: () => void;
-  onClearAll: () => void;
   onSelectConversation: (conversationId: string) => void;
 }
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({
-  onNewChat,
-  onClearAll,
-  onSelectConversation
-}) => {
+const ChatHistory: React.FC<ChatHistoryProps> = ({ onNewChat, onSelectConversation }) => {
   const transchatbot = useTranslations(LOCALIZATION.TRANSITION.CHATBOT);
   const { history: getQueryHistory, isLoading, error, mutate } = useQueryHistory();
   const [openDialog, setOpenDialog] = useState(false);
@@ -122,10 +116,10 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   };
 
   const errorMessage = error
-    ? error.message.includes("403")
+    ? error.message
       ? transchatbot("Unauthorized")
-      : error.message || Query.FAILED
-    : Query.FAILED;
+      : error.message || transchatbot("historyError")
+    : transchatbot("failed");
 
   return (
     <Box

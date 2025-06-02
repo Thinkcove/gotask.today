@@ -388,7 +388,7 @@
     "clearFailed": "Failed to clear history",
     "shareSuccess": "Conversation copied to clipboard!",
     "notFound": "No recent queries found.",
-    "failed": "Failed to load histor",
+    "failed": "Failed to load history",
     "chatMessages": "chatMessages",
     "required": "Query is Required",
     "error": "Error loading conversation",

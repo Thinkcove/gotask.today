@@ -19,8 +19,6 @@ const Chat: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [greeting, setGreeting] = useState<string>("Good Day");
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-
-  const { history: allHistory, isLoading: allLoading, error: allError } = useQueryHistory();
   const {
     history: selectedHistory,
     isLoading: selectedLoading,

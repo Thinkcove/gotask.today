@@ -3,10 +3,6 @@ import { getData, postData, deleteData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
 import { withAuth } from "@/app/common/utils/authToken";
 import { QueryHistoryEntry, QueryResponse, UploadResponse } from "../interface/chatInterface";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
-
-const transchatbot = useTranslations(LOCALIZATION.TRANSITION.CHATBOT);
 
 // Fetch all query history or by conversationId
 const fetchQueryHistory = async (conversationId?: string) => {
@@ -45,7 +41,7 @@ export const useQueryHistory = (conversationId?: string) => {
   return {
     history: history ?? [],
     isLoading,
-    error: error ? new Error(error.message || transchatbot("failedtofetch")) : null,
+    error: error ? new Error(error.message || "Failed to fetch history") : null,
     mutate
   };
 };

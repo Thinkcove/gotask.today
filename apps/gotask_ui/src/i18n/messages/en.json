@@ -60,7 +60,8 @@
     "field": "field",
     "fieldAccess": "field Access",
     "selectallFields": "Select All Fields",
-    "noFieldsAvailable": "No fields available"
+    "noFieldsAvailable": "No fields available",
+     "permissionsFor": "Permissions for {module}"
   },
   "Dashboard": {
     "overview": "Dashboard Overview",

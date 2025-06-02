@@ -7,10 +7,11 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import AccessHeading from "./AccessHeading";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
-import { useAccessOptions, createAccessRole } from "../services/accessService"; // Import from service
+import { useAccessOptions, createAccessRole } from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";
 import { useTranslations } from "next-intl";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
+import { VALID_MODULES } from "@/app/common/constants/modules"; // ✅ Imported from constants
 
 const AccessCreateForm: React.FC = () => {
   const t = useTranslations();
@@ -25,26 +26,15 @@ const AccessCreateForm: React.FC = () => {
     message: string;
     severity: "success" | "error" | "warning" | "info";
   }>({ open: false, message: "", severity: "info" });
+
   const router = useRouter();
 
-  const validModules = [
-    "User Management",
-    "Task Management",
-    "Project Management",
-    "Access Management",
-    "Organization Management",
-    "Role Management",
-    "User Report"
-  ];
-
-  // Fetch access options using service hook
   const { accessOptions, isLoading, error } = useAccessOptions();
 
-  // Set currentModule when accessOptions are loaded
-  if (accessOptions.length > 0 && !validModules.includes(currentModule)) {
+  if (accessOptions.length > 0 && !VALID_MODULES.includes(currentModule)) {
     const firstValidModule =
-      accessOptions.find((opt: { access: string }) => validModules.includes(opt.access))?.access ||
-      validModules[0];
+      accessOptions.find((opt: { access: string }) => VALID_MODULES.includes(opt.access))?.access ||
+      VALID_MODULES[0];
     setCurrentModule(firstValidModule);
   }
 

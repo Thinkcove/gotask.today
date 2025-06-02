@@ -9,25 +9,25 @@
     "text": "Project",
     "icon": "FolderIcon",
     "path": "/project",
-    "access": "Project Management"
+    "access": null
   },
   {
     "text": "User",
     "icon": "PeopleIcon",
     "path": "/user",
-    "access": "User Management"
+    "access": null
   },
   {
     "text": "Organization",
     "icon": "BusinessIcon",
     "path": "/organization",
-    "access": "Organization Management"
+    "access": null
   },
   {
     "text": "Role",
     "icon": "SecurityIcon",
     "path": "/role",
-    "access": "Role Management"
+    "access": null
   },
   {
     "text": "Access",

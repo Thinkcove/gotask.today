@@ -25,6 +25,7 @@ import AccessPermissionsContainer from "../components/AccessPermissionsContainer
 import AccessHeading from "../components/AccessHeading";
 import { useTranslations } from "next-intl";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
+import { VALID_MODULES } from "@/app/common/constants/modules";
 
 export default function AccessEditForm() {
   const t = useTranslations("Access");
@@ -56,17 +57,6 @@ export default function AccessEditForm() {
     error: optionsError,
   } = useAccessOptions();
 
-  const validModules = [
-    "User Management",
-    "Task Management",
-    "Project Management",
-    "Access Management",
-    "Organization Management",
-    "Role Management",
-    "User Report",
-  ];
-
-  // Initialize roleName, selectedPermissions, and selectedFields when role is loaded
   if (
     role &&
     roleName === "" &&
@@ -99,20 +89,19 @@ export default function AccessEditForm() {
     );
   }
 
-  // Set currentTab when accessOptions and role are loaded
   if (
     accessOptions.length > 0 &&
     role &&
-    !validModules.includes(currentTab)
+    !VALID_MODULES.includes(currentTab)
   ) {
     const firstValidModule =
       role.application?.find((app: { access: string }) =>
-        validModules.includes(app.access)
+        VALID_MODULES.includes(app.access)
       )?.access ||
       accessOptions.find((opt: { access: string }) =>
-        validModules.includes(opt.access)
+        VALID_MODULES.includes(opt.access)
       )?.access ||
-      validModules[0];
+      VALID_MODULES[0];
     setCurrentTab(firstValidModule);
   }
 
@@ -275,10 +264,7 @@ export default function AccessEditForm() {
         </Box>
 
         <Box sx={{ maxWidth: 400, width: "100%", mb: 1 }}>
-          <Typography
-            variant="body2"
-            sx={{ color: "#333", fontWeight: 500 }}
-          >
+          <Typography variant="body2" sx={{ color: "#333", fontWeight: 500 }}>
             {t("accessName")} *
           </Typography>
           <TextField
@@ -297,11 +283,7 @@ export default function AccessEditForm() {
           />
         </Box>
 
-        <Typography
-          variant="h6"
-          fontWeight={600}
-          sx={{ color: "#333" }}
-        >
+        <Typography variant="h6" fontWeight={600} sx={{ color: "#333" }}>
           {t("accessManagement")}
         </Typography>
 
@@ -375,11 +357,7 @@ export default function AccessEditForm() {
               width: { xs: "100%", sm: "auto" },
             }}
           >
-            {isSubmitting ? (
-              <CircularProgress size={20} />
-            ) : (
-              t("editaccess")
-            )}
+            {isSubmitting ? <CircularProgress size={20} /> : t("editaccess")}
           </Button>
         )}
       </Box>

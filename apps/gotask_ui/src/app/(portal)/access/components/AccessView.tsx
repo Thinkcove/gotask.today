@@ -26,6 +26,7 @@ import AccessPermissionsContainer from "./AccessPermissionsContainer";
 import AccessHeading from "./AccessHeading";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
 import CommonDialog from "../../../component/dialog/commonDialog";
+import { VALID_MODULES } from "@/app/common/constants/modules";
 
 const AccessView: React.FC = () => {
   const t = useTranslations("Access");
@@ -55,30 +56,20 @@ const AccessView: React.FC = () => {
     error: optionsError,
   } = useAccessOptions();
 
-  const validModules = [
-    "User Management",
-    "Task Management",
-    "Project Management",
-    "Access Management",
-    "Organization Management",
-    "Role Management",
-    "User Report",
-  ];
-
   // Set currentTab when accessOptions and accessRole are loaded
   if (
     accessOptions.length > 0 &&
     accessRole &&
-    !validModules.includes(currentTab)
+    !VALID_MODULES.includes(currentTab)
   ) {
     const firstValidModule =
       accessRole.application?.find((app: { access: string }) =>
-        validModules.includes(app.access)
+        VALID_MODULES.includes(app.access)
       )?.access ||
       accessOptions.find((opt: { access: string }) =>
-        validModules.includes(opt.access)
+        VALID_MODULES.includes(opt.access)
       )?.access ||
-      validModules[0];
+      VALID_MODULES[0];
     setCurrentTab(firstValidModule);
   }
 

@@ -3,6 +3,7 @@ import { Box, Typography } from '@mui/material';
 import AccessTabs from '../components/AccessTabs';
 import OperationCheckboxes from '../components/OperationCheckboxes';
 import FieldCheckboxes from '../components/FieldCheckboxes';
+import { useTranslations } from 'next-intl';
 
 interface AccessPermissionsProps {
   accessOptions: { access: string; actions: string[]; restrictedFields: Record<string, string[]> }[];
@@ -25,6 +26,8 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
   onFieldChange,
   readOnly = false,
 }) => {
+  const t = useTranslations("Access"); // Use your namespace, e.g. "Access"
+
   const currentModuleData = accessOptions.find((m) => m.access === currentModule);
   const currentOperations = currentModuleData?.actions || [];
   const restrictedFields = currentModuleData?.restrictedFields || {};
@@ -41,59 +44,48 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
 
       <Box sx={{ mt: 2 }}>
         <Typography variant="h6" sx={{ pl: 1, mb: 1 }}>
-          Permissions for {currentModule}
+          {/* Localized string with variable */}
+          {t("permissionsFor", { module: currentModule })}
         </Typography>
 
-       <Box
-  sx={{
-    display: 'flex',
-    flexDirection: { xs: 'column', sm: 'row' },
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap', // ensures items wrap nicely
-    gap: 1, // controls spacing between elements
-  }}
->
-  <Box sx={{ pr: 1 }}>
-    <OperationCheckboxes
-      module={currentModule}
-      operations={currentOperations}
-      selected={selectedOps}
-      onChange={onCheckboxChange}
-      readOnly={readOnly}
-    />
-  </Box>
-
-  {selectedOps
-    .filter(Boolean)
-    .map((action) =>
-      restrictedFields[action.toUpperCase()]?.length > 0 ? (
         <Box
-          key={action}
-          // sx={{
-          //   p: 1,
-          //   border: '1px solid #e0e0e0',
-          //   borderRadius: 2,
-          //   flex: '0 1 300px', // fixed width with wrapping
-          //   m: 0.5, // small margin between cards
-          //   boxShadow: 1,
-          //   backgroundColor: '#fafafa',
-          // }}
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            gap: 1,
+          }}
         >
-          <FieldCheckboxes
-            module={currentModule}
-            action={action}
-            fields={restrictedFields[action.toUpperCase()] || []}
-            selected={selectedFlds}
-            onChange={onFieldChange}
-            readOnly={readOnly}
-          />
-        </Box>
-      ) : null
-    )
-    .filter(Boolean)}
-</Box>
+          <Box sx={{ pr: 1 }}>
+            <OperationCheckboxes
+              module={currentModule}
+              operations={currentOperations}
+              selected={selectedOps}
+              onChange={onCheckboxChange}
+              readOnly={readOnly}
+            />
+          </Box>
 
+          {selectedOps
+            .filter(Boolean)
+            .map((action) =>
+              restrictedFields[action.toUpperCase()]?.length > 0 ? (
+                <Box key={action}>
+                  <FieldCheckboxes
+                    module={currentModule}
+                    action={action}
+                    fields={restrictedFields[action.toUpperCase()] || []}
+                    selected={selectedFlds}
+                    onChange={onFieldChange}
+                    readOnly={readOnly}
+                  />
+                </Box>
+              ) : null
+            )
+            .filter(Boolean)}
+        </Box>
       </Box>
     </Box>
   );

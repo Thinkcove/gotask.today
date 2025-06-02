@@ -1,6 +1,6 @@
 export const AttendanceMessages = {
   CREATE: {
-    REQUIRED: "Missing required fields: empcode, date, inTime, outTime",
+    REQUIRED: "Please provide empname, empcode, date, inTime, and outTime.",
     FAILED: "Failed to add attendance"
   },
   UPLOAD: {
@@ -14,6 +14,12 @@ export const AttendanceMessages = {
     UPLOAD_FAILED: "Failed to process attendance upload"
   },
   QUERY: {
-    FAILED: "Failed to process attendance query"
+    FAILED: "Failed to process attendance query",
+    PARSE: "Query and parsedQuery are required.",
+    NO_ABSENT: "No absences tracked on Sundays",
+    INVALID:
+      "Invalid attendance query: Please specify absent, after10am, latelogoff, late, or employee details",
+    VALID: "No valid employee identifier provided",
+    INVALID_DATE: "Invalid date format provided"
   }
 };

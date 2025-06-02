@@ -795,7 +795,7 @@ export const parseQuery = async (
       }
     }
 
-    return { success: true, data: result, message: "Query parsed successfully" };
+    return { success: true, data: result, message: QueryMessages.PARSE.SUCCESS };
   } catch (error: any) {
     return { success: false, message: error.message || QueryMessages.PARSE.FAILED };
   }
@@ -806,10 +806,6 @@ export const processEmployeeQuery = async (
   parsedQuery: Record<string, any>
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
-    console.log("processEmployeeQuery called");
-    console.log("Raw Query:", query);
-    console.log("Parsed Query:", JSON.stringify(parsedQuery, null, 2));
-
     let name: string | undefined;
     let empcode: string | undefined;
 
@@ -818,11 +814,9 @@ export const processEmployeeQuery = async (
         .trim()
         .split(/\s+from\s+/i)[0]
         .trim();
-      console.log(`Querying Attendance for empname: ${name}`);
       const attendanceRecords = await Attendance.find({
         empname: { $regex: `^${name}$`, $options: "i" }
       }).lean();
-      console.log(`Attendance records for empname: ${attendanceRecords.length}`);
       if (!attendanceRecords.length) {
         return { success: false, message: `No attendance record found for employee ${name}` };
       }
@@ -830,15 +824,12 @@ export const processEmployeeQuery = async (
       const user = await User.findOne({
         username: { $regex: `^${name}$`, $options: "i" }
       }).lean();
-      console.log(`User found for username ${name}: ${!!user}`);
       if (!user) {
         console.warn(`No user found with username ${name}, proceeding with Attendance data`);
       }
     } else if (parsedQuery.empcode) {
       empcode = parsedQuery.empcode.trim();
-      console.log(`Querying Attendance for empcode: ${empcode}`);
       const attendanceRecords = await Attendance.find({ empcode }).lean();
-      console.log(`Attendance records for empcode: ${attendanceRecords.length}`);
       if (!attendanceRecords.length) {
         return {
           success: false,
@@ -849,13 +840,11 @@ export const processEmployeeQuery = async (
       const user = await User.findOne({
         username: { $regex: `^${name}$`, $options: "i" }
       }).lean();
-      console.log(`User found for username ${name}: ${!!user}`);
       if (!user) {
         console.warn(`No user found with username ${name}, proceeding with Attendance data`);
       }
     } else {
-      console.log("No empname or empcode provided");
-      return { success: false, message: "No valid employee identifier provided" };
+      return { success: false, message: QueryMessages.EMPLOYEE_QUERY.VALID };
     }
 
     let startDate: moment.Moment;
@@ -875,7 +864,6 @@ export const processEmployeeQuery = async (
     }
 
     if (!startDate.isValid() || !endDate.isValid()) {
-      console.log("Invalid date format, attempting fallback parsing");
       if (parsedQuery.dateRange) {
         startDate = momentTimezone
           .tz(`${parsedQuery.dateRange.start} 2023`, ["DD MMMM YYYY", "DD-MM-YYYY"], "Asia/Kolkata")
@@ -890,11 +878,9 @@ export const processEmployeeQuery = async (
         endDate = startDate.clone().endOf("day");
       }
       if (!startDate.isValid() || !endDate.isValid()) {
-        return { success: false, message: "Invalid date format provided" };
+        return { success: false, message: QueryMessages.INVALID.DATE };
       }
     }
-
-    console.log(`Date range: ${startDate.format("YYYY-MM-DD")} to ${endDate.format("YYYY-MM-DD")}`);
 
     const dateStr = parsedQuery.dateRange
       ? `from ${startDate.format("DD MMMM YYYY")} to ${endDate.format("DD MMMM YYYY")}`
@@ -907,9 +893,7 @@ export const processEmployeeQuery = async (
       queryFilter.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
     }
 
-    console.log("Query filter:", JSON.stringify(queryFilter, null, 2));
     const attendanceRecords = await Attendance.find(queryFilter).sort({ date: 1 }).lean();
-    console.log(`Final attendance records: ${attendanceRecords.length}`);
 
     if (!attendanceRecords.length) {
       return {
@@ -919,7 +903,6 @@ export const processEmployeeQuery = async (
     }
 
     const keywords = parsedQuery.keywords || [];
-    console.log("Keywords:", keywords);
 
     if (keywords.includes("workinghours")) {
       const record = attendanceRecords[0];
@@ -1190,13 +1173,11 @@ export const processEmployeeQuery = async (
       };
     }
 
-    console.log("No matching query handler");
     return {
       success: false,
       message: `Please specify a valid attendance query for ${name || empcode}`
     };
   } catch (error: any) {
-    console.error("Error in processEmployeeQuery:", error.message, error.stack);
     return { success: false, message: `Failed to process query: ${error.message}` };
   }
 };
@@ -1326,13 +1307,12 @@ export const processQuery = async (
       queryType = "combined";
       response = {
         success: false,
-        message:
-          "Invalid query: Please specify details for project, organization, task, or attendance information."
+        message: QueryMessages.INVALID.QUERY
       };
     }
 
     if (!response.message) {
-      return { success: false, message: "Invalid or empty response from service" };
+      return { success: false, message: QueryMessages.INVALID.EMPTY };
     }
 
     const finalConversationId = conversationId || new Types.ObjectId().toString();
@@ -1362,15 +1342,14 @@ export const getQueryHistory = async (
         connectTimeoutMS: 10000,
         serverSelectionTimeoutMS: 10000
       });
-      console.log("MongoDB reconnected successfully for query history");
     }
 
     if (limit < 1 || limit > 100) {
-      return { success: false, message: "Limit must be between 1 and 100" };
+      return { success: false, message: QueryMessages.HISTORY.LIMIT };
     }
 
     const history = await findQueryHistory(limit);
-    return { success: true, data: history, message: "Query history retrieved successfully" };
+    return { success: true, data: history, message: QueryMessages.HISTORY.SUCCESS };
   } catch (error: any) {
     return { success: false, message: error.message || QueryMessages.HISTORY.FAILED };
   }
@@ -1381,16 +1360,16 @@ export const getQueryHistoryByConversationIdService = async (
 ): Promise<{ success: boolean; data?: IQueryHistory[]; message?: string }> => {
   try {
     if (!conversationId || typeof conversationId !== "string") {
-      return { success: false, message: "Conversation ID must be a non-empty string" };
+      return { success: false, message: QueryMessages.CONVERSATION.EMPTY };
     }
 
     const history = await getQueryHistoryByConversationId(conversationId);
 
     if (!history || history.length === 0) {
-      return { success: false, message: "No history found for this conversation" };
+      return { success: false, message: QueryMessages.HISTORY.NO_HISTORY };
     }
 
-    return { success: true, data: history, message: "Conversation history retrieved successfully" };
+    return { success: true, data: history, message: QueryMessages.CONVERSATION.SUCCESS };
   } catch (error: any) {
     return { success: false, message: error.message || QueryMessages.HISTORY.FAILED };
   }
@@ -1399,11 +1378,11 @@ export const getQueryHistoryByConversationIdService = async (
 export const clearQueryHistory = async (): Promise<{ success: boolean; message?: string }> => {
   try {
     if (mongoose.connection.readyState !== 1) {
-      return { success: false, message: "Database connection is not established" };
+      return { success: false, message: QueryMessages.CONNECTION.FAILED };
     }
 
     await deleteAllQueryHistory();
-    return { success: true, message: "Query history cleared successfully" };
+    return { success: true, message: QueryMessages.HISTORY.CLEAR };
   } catch (error: any) {
     return { success: false, message: error.message || QueryMessages.CLEAR.FAILED };
   }
@@ -1414,15 +1393,15 @@ export const deleteConversation = async (
 ): Promise<{ success: boolean; message?: string }> => {
   try {
     if (mongoose.connection.readyState !== 1) {
-      return { success: false, message: "Database connection is not established" };
+      return { success: false, message: QueryMessages.CONNECTION.FAILED };
     }
 
     if (!conversationId || typeof conversationId !== "string") {
-      return { success: false, message: "Conversation ID must be a non-empty string" };
+      return { success: false, message: QueryMessages.CONVERSATION.EMPTY };
     }
 
     await deleteQueryHistoryByConversationId(conversationId);
-    return { success: true, message: "Conversation deleted successfully" };
+    return { success: true, message: QueryMessages.CONVERSATION.DELETE };
   } catch (error: any) {
     return { success: false, message: error.message || QueryMessages.DELETE.FAILED };
   }

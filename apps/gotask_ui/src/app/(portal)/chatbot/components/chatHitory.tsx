@@ -54,7 +54,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       try {
         const response = await deleteConversation(conversationToDelete);
         if (!response.success) {
-          throw new Error(response.message || "Unknown delete error");
+          throw new Error(response.message || transchatbot("Unknown"));
         }
         mutate();
         if (selectedConversationId === conversationToDelete) {
@@ -162,13 +162,13 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
           }}
         >
           <AddIcon />
-          New Chat
+          {transchatbot("New")}
         </Button>
       </Box>
 
       <Box sx={{ flex: 1, px: 2, overflowY: "auto" }}>
         <Typography sx={{ color: "grey.600", fontSize: "0.9rem", fontWeight: "bold", mb: 1 }}>
-          RECENT QUERIES
+          {transchatbot("Recent")}
         </Typography>
         {isLoading ? (
           <CircularProgress size={24} />

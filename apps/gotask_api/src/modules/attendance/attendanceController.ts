@@ -19,7 +19,7 @@ class AttendanceController extends BaseController {
     try {
       const { empname, empcode, date, inTime, outTime } = requestHelper.getPayload();
       if (!empname || !empcode || !date || !inTime || !outTime) {
-        throw new Error("Please provide empname, empcode, date, inTime, and outTime.");
+        throw new Error(AttendanceMessages.CREATE.REQUIRED);
       }
 
       const result = await addAttendance(empname, empcode, new Date(date), inTime, outTime);
@@ -33,7 +33,7 @@ class AttendanceController extends BaseController {
     try {
       const { query, parsedQuery } = requestHelper.getPayload();
       if (!query || !parsedQuery) {
-        throw new Error("Query and parsedQuery are required.");
+        throw new Error(AttendanceMessages.QUERY.PARSE);
       }
 
       const result = await processQuery(query, parsedQuery);
@@ -47,7 +47,7 @@ class AttendanceController extends BaseController {
     try {
       const { query, parsedQuery } = requestHelper.getPayload();
       if (!query || !parsedQuery) {
-        throw new Error("Query and parsedQuery are required.");
+        throw new Error(AttendanceMessages.QUERY.PARSE);
       }
 
       const result = await processEmployeeQuery(query, parsedQuery);

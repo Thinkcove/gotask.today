@@ -1,14 +1,14 @@
 "use client";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Box, Typography, IconButton, Paper } from "@mui/material";
-import FormField from "@/app/component/formField";
 import { sendQuery, uploadAttendance, useQueryHistory } from "../service/chatAction";
 import { QueryResponse, QueryHistoryEntry } from "../interface/chatInterface";
 import ChatHistory from "./chatHitory";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import FormField from "@/app/component/input/formField";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 
 const Chat: React.FC = () => {
   const transchatbot = useTranslations(LOCALIZATION.TRANSITION.CHATBOT);
@@ -196,15 +196,7 @@ const Chat: React.FC = () => {
 
   return (
     <>
-      <Box
-        sx={{
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
-          bgcolor: "#ffffff",
-          pb: "2rem"
-        }}
-      >
+      <Box>
         <ModuleHeader name={transchatbot("viewname")} />
       </Box>
 
@@ -321,7 +313,7 @@ const Chat: React.FC = () => {
                   transform: "translate(-50%, -50%)"
                 }}
               >
-                <Typography>Loading conversation...</Typography>
+                <Typography>{transchatbot("Loading")}</Typography>
               </Box>
             ) : selectedError ? (
               <Box

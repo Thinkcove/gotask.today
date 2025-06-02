@@ -1,4 +1,5 @@
 import BaseController from "../../common/baseController";
+import { QueryMessages } from "../../constants/apiMessages/queryMessages";
 import { QUERY_LIMIT } from "../../constants/commonConstants/queryConstants";
 import { QueryHistoryResponse } from "../../domain/model/query/queryModel";
 import RequestHelper from "../../helpers/requestHelper";
@@ -15,7 +16,7 @@ class QueryController extends BaseController {
     try {
       const { query, conversationId } = requestHelper.getPayload();
       if (!query) {
-        throw new Error("Query is required.");
+        throw new Error(QueryMessages.QUERY.REQUIRED);
       }
 
       const result = await processQuery(query, conversationId);
@@ -39,7 +40,7 @@ class QueryController extends BaseController {
     try {
       const conversationId = requestHelper.getParam("conversationId");
       if (!conversationId) {
-        throw new Error("Conversation ID is required.");
+        throw new Error(QueryMessages.CONVERSATION.REQUIRED);
       }
 
       const result: QueryHistoryResponse =
@@ -67,7 +68,7 @@ class QueryController extends BaseController {
     try {
       const conversationId = requestHelper.getParam("id");
       if (!conversationId) {
-        throw new Error("Conversation ID is required.");
+        throw new Error(QueryMessages.CONVERSATION.REQUIRED);
       }
 
       const result = await deleteConversation(conversationId);

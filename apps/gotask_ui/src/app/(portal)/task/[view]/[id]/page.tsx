@@ -202,21 +202,16 @@ const ViewMoreAction: React.FC = () => {
     <>
       <ModuleHeader name="Task" />
       <PageHeader name={name} onClose={() => window.history.back()} />
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 2,
-          px: 3,
 
-          flexWrap: "nowrap"
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <SearchBar value={searchText} onChange={updateSearchText} placeholder="Search Task" />
-        </Box>
+      <Box maxWidth={400} pl={3}>
+        <SearchBar
+          value={searchText}
+          onChange={updateSearchText}
+          sx={{ width: "100%" }}
+          placeholder="Search Task"
+        />
       </Box>
+
       <Box>
         <TaskFilters
           statusFilter={statusFilter}

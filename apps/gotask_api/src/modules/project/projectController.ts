@@ -8,7 +8,8 @@ import {
   getProjectCountByStatus,
   getProjectsByUserId,
   removeUsersFromProject,
-  updateProject
+  updateProject,
+  getFilteredProjects
 } from "./projectService";
 
 class ProjectController extends BaseController {
@@ -117,6 +118,35 @@ class ProjectController extends BaseController {
       return this.replyError(error);
     }
   }
+
+async getFilteredProjects(requestHelper: RequestHelper, handler: any) {
+  try {
+    const { status, user_id } = requestHelper.getQuery();
+
+    const filters: {
+      user_id?: string[];  // Now an array
+      status?: string[];
+    } = {};
+
+    // Support multiple user_ids separated by commas
+    if (user_id) {
+      filters.user_id = user_id.split(",").map((id: string) => id.trim());
+    }
+
+    if (status) {
+      filters.status = status.split(",").map((s: string) => s.trim());
+    }
+
+    const projects = await getFilteredProjects(filters);
+    return this.sendResponse(handler, projects);
+  } catch (error) {
+    return this.replyError(error);
+  }
 }
+
+
+
+}
+
 
 export default ProjectController;

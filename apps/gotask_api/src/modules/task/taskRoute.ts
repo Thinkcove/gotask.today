@@ -152,6 +152,18 @@ TaskRoutes.push({
   }
 });
 
+// Route: Delete Comment
+TaskRoutes.push({
+  path: API_PATHS.DELETE_COMMENT,
+  method: API_METHODS.DELETE,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    taskController.deleteComment(new RequestHelper(request), handler),
+  config: {
+    notes: "Delete a comment from a task",
+    tags
+  }
+});
+
 // Route: Add Time Spent
 TaskRoutes.push({
   path: API_PATHS.ADD_TIME_SPENT,

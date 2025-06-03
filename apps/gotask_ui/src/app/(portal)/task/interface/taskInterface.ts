@@ -76,6 +76,7 @@ export type TaskPayload = {
 };
 
 export type Project = {
+  status(status: any): boolean;
   id: string;
   name: string;
 };

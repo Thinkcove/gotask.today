@@ -123,7 +123,8 @@ const FormField: React.FC<FormFieldProps> = ({
               error={!!error}
               fullWidth
               multiline={multiline}
-              value={value}
+              // value={value}
+              value={value ?? ''} 
               disabled={disabled}
               onFocus={onFocus}
               type={inputType || "text"}

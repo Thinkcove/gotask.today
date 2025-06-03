@@ -300,6 +300,12 @@
     "placeholderuser": "Enter user name",
     "labelemail": "Email",
     "placeholderemail": "Enter your email",
+
+    "labelphone": "Phone Number",
+    "placeholderphone": "Enter your Phone Number",
+    "labeljoinDate": "Join Date",
+    "placeholderjoinDate": "Enter your Join Date",
+
     "labelrole": "Role",
     "placeholderrole": "Select Role",
     "labelorganization": "Organization",
@@ -314,6 +320,10 @@
     "deleteerror": "Error while deleting a user",
     "userdetail": "User Detail View",
     "uesrid": "User ID",
+
+    "phone": "Phone Number",
+    "joinDate": "Join Date",
+
     "roleid": "Role",
     "status": "Status",
     "organization": "Organizations",

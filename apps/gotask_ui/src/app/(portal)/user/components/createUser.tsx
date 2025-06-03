@@ -23,6 +23,8 @@ const initialFormState: IUserField = {
   organization: [],
   roleId: "",
   user_id: "",
+  phone: "",
+  joinDate: new Date(),
   password: ""
 };
 

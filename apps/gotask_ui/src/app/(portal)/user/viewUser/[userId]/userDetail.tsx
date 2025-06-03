@@ -64,6 +64,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const mapUserToUserField = (user: User): IUserField => ({
     name: user.name,
     status: user.status,
+
+    phone: user.phone,
+    joinDate: user.joinDate,
+
     organization: user.organization,
     roleId: user.roleId._id,
     user_id: user.user_id
@@ -116,6 +120,28 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             <Grid item xs={12} md={6}>
               <LabelValueText label={transuser("uesrid")} value={user.user_id} />
             </Grid>
+
+             
+           <Grid item xs={12} md={6}>
+  <LabelValueText
+    label={transuser("phone")}
+    value={user?.phone || "-"}
+    sx={{ textTransform: "capitalize" }}
+  />
+</Grid>
+
+<Grid item xs={12} md={6}>
+  <LabelValueText
+    label={transuser("joinDate")}
+    value={
+      user?.joinDate
+        ? new Date(user.joinDate).toLocaleDateString()
+        : "-"
+    }
+  />
+</Grid>
+
+
 
             <Grid item xs={12} md={6}>
               <LabelValueText

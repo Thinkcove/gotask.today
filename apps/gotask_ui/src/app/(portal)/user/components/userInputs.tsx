@@ -60,6 +60,51 @@ const UserInput = ({
           disabled={isReadOnly("user_id")}
         />
       </Grid>
+
+
+<Grid item xs={12}>
+  <FormField
+    label={transuser("labelphone")}
+    type="text"
+    inputType="tel"
+    placeholder={transuser("placeholderphone")}
+    required
+    value={formData.phone}
+    onChange={(value) => handleChange("phone", String(value))}
+    error={errors?.phone}
+    disabled={isReadOnly("phone")}
+  />
+</Grid>
+
+<Grid item xs={12}>
+  <FormField
+    label={transuser("labeljoinDate")}
+    type="date"
+    inputType="date"
+    value={formData.joinDate}
+    // onChange={(value) => handleChange("joinDate", new Date(value).toLocaleDateString())}
+   //   onChange={(value) =>
+  // handleChange("joinDate", new Date(value as string).toISOString())
+onChange={(value) => {
+  if (value !== undefined && (typeof value === "string" || value instanceof Date)) {
+    const date = new Date(value); // ✅ only called if value is defined and valid
+    if (!isNaN(date.getTime())) {
+      handleChange("joinDate", date.toISOString());
+    }
+  }
+}}
+
+
+
+
+    required
+    error={errors?.joinDate}
+    disabled={isReadOnly("joinDate")}
+    placeholder={transuser("placeholderjoinDate")}
+  />
+</Grid>
+ 
+
       <Grid item xs={12} sm={6}>
         <FormField
           label={transuser("labelrole")}

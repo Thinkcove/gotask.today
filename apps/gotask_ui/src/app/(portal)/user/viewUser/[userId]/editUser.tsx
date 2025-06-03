@@ -32,7 +32,9 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     status: data?.status || true,
     organization: data?.organization || "",
     roleId: data?.roleId || "",
-    user_id: data?.user_id || ""
+    user_id: data?.user_id || "",
+    phone: data?.phone || "",
+    joinDate: data?.joinDate || new Date(),
   }));
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   // Validate required fields
@@ -43,6 +45,8 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     if (formData.status === undefined || formData.status === null) {
       newErrors.status = transuser("userstatus");
     }
+
+    
     if (!formData.user_id) {
       newErrors.user_id = transuser("useremail");
     } else if (!validateEmail(formData.user_id)) {

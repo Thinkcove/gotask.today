@@ -8,6 +8,8 @@ export interface IUser extends Document {
   name: string;
   password: string;
   user_id: string;
+  phone: string;
+  joinDate: Date;
   status: boolean;
   roleId: Types.ObjectId;
   organization?: string[];
@@ -21,6 +23,8 @@ const UserSchema = new Schema<IUser>(
     name: { type: String, required: true },
     password: { type: String, required: true },
     user_id: { type: String, required: true, unique: true },
+    phone: { type: String, required: true },
+    joinDate: { type: Date, default: Date.now },
     status: { type: Boolean, default: true },
 
     // Reference to Role

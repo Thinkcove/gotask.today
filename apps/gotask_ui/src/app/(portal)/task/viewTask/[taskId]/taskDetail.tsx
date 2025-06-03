@@ -16,7 +16,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { getSeverityColor, getStatusColor } from "@/app/common/constants/task";
 import LabelValueText from "@/app/component/text/labelValueText";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { ITask, ITaskComment } from "../../interface/taskInterface";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
@@ -33,7 +32,7 @@ import CommentHistory from "../../editTask/commentsHistory";
 interface TaskDetailViewProps {
   task: ITask;
   loading?: boolean;
-  mutate?: KeyedMutator<any>;
+  mutate?: KeyedMutator<ITask>;
 }
 
 const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
@@ -74,9 +73,8 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
       setNewComment("");
       setIsCommenting(false);
 
-      // Immediately update UI by revalidating task data including comments
       if (mutate) {
-        await mutate(); // Re-fetch task details including comments
+        await mutate();
       }
     } catch (error) {
       console.error("Error saving comment:", error);
@@ -88,7 +86,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
     }
   };
 
-  // Handle comment edit save with immediate UI update
   const handleEditCommentSave = async (updatedComment: ITaskComment) => {
     try {
       await updateComment(updatedComment);
@@ -97,7 +94,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
         message: transtask("commentupdatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      // Refresh task to update comments immediately
       if (mutate) {
         await mutate();
       }
@@ -299,7 +295,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               wordBreak: "break-word"
             }}
           >
-            {/* New Comment Input Section */}
             {isCommenting && (
               <Box
                 sx={{
@@ -377,7 +372,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                       fontSize: "0.875rem",
                       color: "#333",
                       padding: "12px"
-                    }
+                    },
                   }}
                 />
 
@@ -416,19 +411,19 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             )}
 
             {Array.isArray(task?.comment) && task.comment.length > 0 && (
-                <Box
-                  sx={{
-                  maxHeight: 3 * 120, // Assuming ~120px per comment — adjust if needed
+              <Box
+                sx={{
+                  maxHeight: 3 * 120,
                   overflowY: "auto",
                   pr: 1
                 }}
-                >
-              <CommentHistory
-                comments={task.comment}
-                canEditId={user?.id || ""}
-                mutate={mutate}
-                onEdit={handleEditCommentSave}
-              />
+              >
+                <CommentHistory
+                  comments={task.comment}
+                  canEditId={user?.id || ""}
+                  mutate={mutate}
+                  onEdit={handleEditCommentSave}
+                />
               </Box>
             )}
           </Box>

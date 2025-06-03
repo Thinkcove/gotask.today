@@ -9,29 +9,22 @@ import {
 import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { ITaskComment } from "../interface/taskInterface";
+import { ITask, ITaskComment } from "../interface/taskInterface";
 import { getColorForUser } from "@/app/common/constants/avatar";
-import { updateComment } from "@/app/(portal)/task/service/taskAction";
-import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { KeyedMutator } from "swr";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
   onEdit: (comment: ITaskComment) => void;
   canEditId: string;
-  mutate?: KeyedMutator<any>;
+  mutate?: KeyedMutator<ITask>;
 }
+
 const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEditId, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [showAll, setShowAll] = useState(false);
   const [editingComment, setEditingComment] = useState<ITaskComment | null>(null);
   const [editText, setEditText] = useState("");
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: SNACKBAR_SEVERITY.INFO,
-  });
 
   if (comments.length === 0) return null;
 
@@ -51,26 +44,12 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, onEdit, canEd
         ...comment,
         comment: editText,
       };
-      await updateComment(commentData);
-// await mutate(); // Re-fetches data from server
-console.log("mutate:", mutate); // Should be a function
-
-      setSnackbar({
-        open: true,
-        message: transtask("commentupdated"),
-        severity: SNACKBAR_SEVERITY.SUCCESS,
-      });
- if (mutate) await mutate();
+      await onEdit(commentData);
       setEditingComment(null);
       setEditText("");
       if (mutate) await mutate();
     } catch (error) {
       console.error("Error updating comment:", error);
-      setSnackbar({
-        open: true,
-        message: transtask("commenterror"),
-        severity: SNACKBAR_SEVERITY.ERROR,
-      });
     }
   };
 
@@ -146,7 +125,9 @@ console.log("mutate:", mutate); // Should be a function
           >
             <Avatar
               sx={{
-                backgroundColor: getColorForUser(comment.user_name || ""),
+                backgroundColor: getColorForUser
+
+                  (comment.user_name || ""),
                 width: { xs: 32, sm: 40 },
                 height: { xs: 32, sm: 40 },
                 fontSize: { xs: "0.875rem", sm: "1rem" },
@@ -227,6 +208,7 @@ console.log("mutate:", mutate); // Should be a function
                         color: "#333",
                         padding: "12px",
                       },
+
                     }}
                   />
                   <Box display="flex" gap={2}>
@@ -267,19 +249,20 @@ console.log("mutate:", mutate); // Should be a function
                     sx={{
                       fontSize: { xs: "0.875rem", sm: "0.875rem" },
                       lineHeight: 1.4,
-                      wordBreak: "break-word",
+                      whiteSpace: "pre-line", // Enables \n breaks
                       overflowWrap: "break-word",
+                      wordBreak: "break-word",
                       hyphens: "auto",
                       mb: 1,
                     }}
                   >
-                    {comment.comment}
-                  </Typography>
+                    {comment.comment}</Typography>
+
                   {String(comment.user_id) === String(canEditId) && (
                     <Button
                       variant="text"
                       color="primary"
-                      onClick={() => handleEditComment(comment)} // Use local edit handler
+                      onClick={() => handleEditComment(comment)}
                       sx={{
                         textTransform: "none",
                         fontWeight: 500,
@@ -341,13 +324,6 @@ console.log("mutate:", mutate); // Should be a function
           {transtask("showLess", { default: "Show less" })}
         </Button>
       )}
-
-      <CustomSnackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      />
     </Box>
   );
 };

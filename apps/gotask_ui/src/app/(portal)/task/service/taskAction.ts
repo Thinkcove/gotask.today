@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { getData, postData } from "@/app/common/utils/apiData";
+import { getData, postData, putData } from "@/app/common/utils/apiData";
 import { IFormField, ITaskComment, Project, TaskPayload, User } from "../interface/taskInterface";
 import { withAuth } from "@/app/common/utils/authToken";
 
@@ -188,19 +188,11 @@ export const updateTask = (taskId: string, updatedFields: object) =>
 //create comment
 export const createComment = (formData: ITaskComment) =>
   withAuth(async (token) => {
-    const response = await fetch(`${env.API_BASE_URL}/task/createComment`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to create comment");
-    }
-    return response.json();
+    return postData(
+      `${env.API_BASE_URL}/task/createComment`,
+      { ...formData } as Record<string, unknown>,
+      token
+    );
   });
 
 // Get Projects by User
@@ -240,17 +232,9 @@ export const logTaskTime = async (
 // Update a comment
 export const updateComment = (commentData: ITaskComment) =>
   withAuth(async (token) => {
-    const response = await fetch(`${env.API_BASE_URL}/task/updateComment/${commentData.id}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(commentData)
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update comment");
-    }
-    return response.json();
+    return putData(
+      `${env.API_BASE_URL}/task/updateComment/${commentData.id}`,
+      { ...commentData } as Record<string, unknown>,
+      token
+    );
   });

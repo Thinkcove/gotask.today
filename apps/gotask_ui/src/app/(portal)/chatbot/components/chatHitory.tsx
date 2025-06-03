@@ -56,11 +56,12 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onNewChat, onSelectConversati
         }
         setSnackbarMessage(transchatbot("deleteSuccess"));
         setSnackbarSeverity("success");
-      } catch (error) {
+      } catch (error: any) {
+        const status = error?.response?.status;
         const errorMessage =
-          error.response?.status === 500
+          status === 500
             ? transchatbot("servererror")
-            : error.response?.status === 404
+            : status === 404
               ? transchatbot("noconversation")
               : error.message || transchatbot("deleteFailed");
         setSnackbarMessage(errorMessage);
@@ -101,7 +102,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onNewChat, onSelectConversati
   const handleShareClick = () => {
     if (menuConversationId) {
       const conversation = getQueryHistory.find(
-        (entry) => entry.conversationId === menuConversationId
+        (entry: any) => entry.conversationId === menuConversationId
       );
       if (conversation) {
         const shareText = `Query: ${conversation.query}\nResponse: ${conversation.response}`;

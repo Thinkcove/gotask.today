@@ -12,7 +12,7 @@ import FormField from "@/app/component/input/formField";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 
 // Custom hook for updating greeting
-const useGreeting = (transchatbot) => {
+const useGreeting = (transchatbot: (key: string) => string) => {
   const [greeting, setGreeting] = useState<string>("Good Day");
 
   const updateGreeting = useCallback(() => {
@@ -47,7 +47,7 @@ const useGreeting = (transchatbot) => {
 };
 
 // Custom hook for managing localStorage
-const useLocalStorageMessages = (transchatbot: TFunction) => {
+const useLocalStorageMessages = (transchatbot: (key: string) => string) => {
   const saveToLocalStorage = useCallback(
     (messages: QueryResponse[]) => {
       if (typeof window !== "undefined") {
@@ -294,9 +294,14 @@ const Chat: React.FC = () => {
         };
         setMessages((prev) => [...prev, systemMessage]);
       } catch (error) {
+        const message =
+          error instanceof Error
+            ? `Error uploading attendance: ${error.message}`
+            : transchatbot("Uploaderror");
+
         const systemMessage: QueryResponse = {
           id: generateUniqueId(),
-          message: `Error uploading attendance: ${error.message}`,
+          message,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           isUser: false,
           isSystem: true
@@ -309,18 +314,14 @@ const Chat: React.FC = () => {
     [transchatbot]
   );
 
-  const handleInputChange = (value: string) => {
-    setInput(value);
-    setInputError(undefined);
+  const handleInputChange: (value: string | number | Date | string[]) => void = (value) => {
+    if (typeof value === "string") {
+      setInput(value);
+      setInputError(undefined);
+    }
   };
 
   const handleNewChat = useCallback(() => {
-    setMessages([]);
-    clearLocalStorage();
-    setSelectedConversationId(null);
-  }, [clearLocalStorage]);
-
-  const handleClearAll = useCallback(() => {
     setMessages([]);
     clearLocalStorage();
     setSelectedConversationId(null);
@@ -350,11 +351,7 @@ const Chat: React.FC = () => {
         }}
       >
         <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-          <ChatHistory
-            onNewChat={handleNewChat}
-            onClearAll={handleClearAll}
-            onSelectConversation={handleSelectConversation}
-          />
+          <ChatHistory onNewChat={handleNewChat} onSelectConversation={handleSelectConversation} />
         </Box>
         <Box
           sx={{

@@ -96,7 +96,7 @@ const getTasksByProject = async (
   more_variation?: string,
   less_variation?: string,
   sortField?: SortField,
-  sortOrder: SortOrder = SortOrder.ASC
+  sortOrder: SortOrder = SortOrder.DESC
 ): Promise<{
   success: boolean;
   data?: any;

@@ -1,6 +1,6 @@
 "use client";
 import { Box, CircularProgress, Grid } from "@mui/material";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -21,6 +21,9 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { Add } from "@mui/icons-material";
+import { SortOrder, TaskSortField } from "@/app/common/constants/task";
+import SearchBar from "@/app/component/searchBar/searchBar";
+import SortByPopover from "@/app/component/input/sortByPopover";
 
 const ViewMoreAction: React.FC = () => {
   const router = useRouter();
@@ -34,6 +37,13 @@ const ViewMoreAction: React.FC = () => {
   const moreDays = searchParams.get("moreDays") || "";
   const lessDays = searchParams.get("lessDays") || "";
   const dateVar = searchParams.get("dateVar") || "due_date";
+  const title = searchParams.get("title") || "";
+  const urlSortField = (searchParams.get("sortField") as TaskSortField) || TaskSortField.DUE_DATE;
+  const urlSortOrder = (searchParams.get("sortOrder") as SortOrder) || SortOrder.DESC;
+
+  const [searchText, setSearchText] = useState<string>(title);
+  const [sortField, setSortField] = useState<TaskSortField>(urlSortField);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(urlSortOrder);
 
   const getArrayParam = (name: string): string[] => {
     return searchParams.getAll(name).filter(Boolean);
@@ -78,8 +88,13 @@ const ViewMoreAction: React.FC = () => {
       vars.push(["id"]);
     }
 
+    if (title.trim()) {
+      vals.push([title]);
+      vars.push(["title"]);
+    }
+
     return { search_vals: vals, search_vars: vars };
-  }, [statusFilter, severityFilter, projectFilter, userFilter, id]);
+  }, [statusFilter, severityFilter, projectFilter, userFilter, id, title]);
 
   const { getAllProjects: allProjects } = useAllProjects();
   const { getAllUsers: allUsers } = useAllUsers();
@@ -95,9 +110,11 @@ const ViewMoreAction: React.FC = () => {
         maxDate || undefined,
         dateVar,
         moreDays || undefined,
-        lessDays || undefined
+        lessDays || undefined,
+        sortField,
+        sortOrder
       ] as const,
-    [search_vals, search_vars, minDate, maxDate, dateVar, moreDays, lessDays]
+    [search_vals, search_vars, minDate, maxDate, dateVar, moreDays, lessDays, sortField, sortOrder]
   );
 
   const { tasksByProjects, isLoading: isLoadingProjects } = useProjectGroupTask(...hookArgs);
@@ -108,15 +125,12 @@ const ViewMoreAction: React.FC = () => {
 
   const updateQueryParam = (key: string, value: string[] | string | undefined) => {
     const params = new URLSearchParams(window.location.search);
-
     params.delete(key);
-
     if (Array.isArray(value)) {
       value.forEach((v) => params.append(key, v));
     } else if (value) {
       params.set(key, value);
     }
-
     window.history.replaceState(null, "", `?${params.toString()}`);
     router.refresh();
   };
@@ -137,6 +151,18 @@ const ViewMoreAction: React.FC = () => {
       updateQueryParam("moreDays", undefined);
       updateQueryParam("lessDays", undefined);
     }
+  };
+
+  const updateSearchText = (val: string) => {
+    setSearchText(val);
+    updateQueryParam("title", val);
+  };
+
+  const updateSorting = (field: TaskSortField, order: SortOrder) => {
+    setSortField(field);
+    setSortOrder(order);
+    updateQueryParam("sortField", field);
+    updateQueryParam("sortOrder", order);
   };
 
   const updateSearchFilters = (
@@ -192,7 +218,28 @@ const ViewMoreAction: React.FC = () => {
     <>
       <ModuleHeader name="Task" />
       <PageHeader name={name} onClose={() => window.history.back()} />
-      <Box sx={{ pt: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 2,
+          px: 3,
+
+          flexWrap: "nowrap"
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <SearchBar value={searchText} onChange={updateSearchText} placeholder="Search Task" />
+          <SortByPopover
+            sortField={sortField}
+            sortOrder={sortOrder}
+            onSortFieldChange={(field) => updateSorting(field, sortOrder)}
+            onSortOrderChange={(order) => updateSorting(sortField, order)}
+          />
+        </Box>
+      </Box>
+      <Box>
         <TaskFilters
           statusFilter={statusFilter}
           severityFilter={severityFilter}

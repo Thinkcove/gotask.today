@@ -1,5 +1,5 @@
 // Centralized error handling function with switch statement
-const handleApiError = (error: any) => {
+const handleApiError = (error) => {
   switch (true) {
     case !!error.response && !!error.response.statusCode && error.response.statusCode === 401:
       console.error("Unauthorized: Token expired or invalid");

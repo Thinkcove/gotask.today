@@ -42,7 +42,7 @@ function parseTimeLogged(timeLogged: string | undefined): number {
       return hours;
     }
     return 0;
-  } catch (error) {
+  } catch {
     return 0;
   }
 }

@@ -22,7 +22,7 @@ export const useQueryHistory = (conversationId?: string) => {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      onError: (err: any) => {
+      onError: (err) => {
         console.error("SWR error:", err.message, err);
       }
     }

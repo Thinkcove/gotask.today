@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
-import FormField from "@/app/component/formField";
+import FormField from "@/app/component/input/formField";
 import { IUserField } from "../interfaces/userInterface";
 import { useAllOrganizations } from "../../organization/services/organizationAction";
 import { useAllRoles } from "../../role/services/roleAction";

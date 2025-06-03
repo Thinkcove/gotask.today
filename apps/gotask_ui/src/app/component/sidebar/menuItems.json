@@ -42,9 +42,15 @@
     "access": "Task Management"
   },
   {
-    "text": "User Report",
+    "text": "Report",
     "icon": "BarChartIcon",
     "path": "/report",
     "access": "User Report"
+  },
+  {
+    "text": "Chatbot",
+    "icon": "ChatIcon",
+    "path": "/chatbot",
+    "access": "Chatbot Management"
   }
 ]

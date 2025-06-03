@@ -1,12 +1,14 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
 import BaseController from "../../common/baseController";
+import { QueryMessages } from "../../constants/apiMessages/queryMessages";
 import { QUERY_LIMIT } from "../../constants/commonConstants/queryConstants";
+import { QueryHistoryResponse } from "../../domain/model/query/queryModel";
 import RequestHelper from "../../helpers/requestHelper";
 import {
   processQuery,
   getQueryHistory,
   clearQueryHistory,
-  deleteConversation
+  deleteConversation,
+  getQueryHistoryByConversationIdService
 } from "./queryService";
 
 class QueryController extends BaseController {
@@ -14,7 +16,7 @@ class QueryController extends BaseController {
     try {
       const { query, conversationId } = requestHelper.getPayload();
       if (!query) {
-        throw new Error("Query is required.");
+        throw new Error(QueryMessages.QUERY.REQUIRED);
       }
 
       const result = await processQuery(query, conversationId);
@@ -34,6 +36,25 @@ class QueryController extends BaseController {
     }
   }
 
+  async getConversationHistory(requestHelper: RequestHelper, handler: any) {
+    try {
+      const conversationId = requestHelper.getParam("conversationId");
+      if (!conversationId) {
+        throw new Error(QueryMessages.CONVERSATION.REQUIRED);
+      }
+
+      const result: QueryHistoryResponse =
+        await getQueryHistoryByConversationIdService(conversationId);
+      if (!result.success) {
+        return handler.response(result).code(404);
+      }
+
+      return handler.response(result).code(200);
+    } catch (error: any) {
+      return handler.response({ success: false, message: error.message }).code(500);
+    }
+  }
+
   async clearQueryHistory(requestHelper: RequestHelper, handler: any) {
     try {
       const result = await clearQueryHistory();
@@ -45,9 +66,9 @@ class QueryController extends BaseController {
 
   async deleteConversation(requestHelper: RequestHelper, handler: any) {
     try {
-      const { conversationId } = requestHelper.getParam("id");
+      const conversationId = requestHelper.getParam("id");
       if (!conversationId) {
-        throw new Error("Conversation ID is required.");
+        throw new Error(QueryMessages.CONVERSATION.REQUIRED);
       }
 
       const result = await deleteConversation(conversationId);

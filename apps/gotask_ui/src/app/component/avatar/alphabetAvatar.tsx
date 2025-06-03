@@ -19,7 +19,7 @@ const AlphabetAvatar: React.FC<AlphabetAvatarProps> = ({
   size = 24,
   fontSize = 12
 }) => {
-  const letter = userName.charAt(0).toUpperCase() || "U";
+  const letter = userName.charAt(0).toUpperCase() || "-";
   const bgColor = getColorByLetter(letter);
 
   return (

@@ -1,5 +1,5 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
 import BaseController from "../../common/baseController";
+import { QueryTaskMessages } from "../../constants/apiMessages/queryTaskMessages";
 import RequestHelper from "../../helpers/requestHelper";
 import {
   createNewTaskService,
@@ -21,7 +21,7 @@ class QueryTaskController extends BaseController {
     try {
       const { user_id, project_id, created_on, due_date, ...rest } = requestHelper.getPayload();
       if (!user_id || !project_id || !created_on || !due_date) {
-        throw new Error("Please provide user_id, project_id, created_on, and due_date.");
+        throw new Error(QueryTaskMessages.CREATE.REQUIRED_FIELDS);
       }
 
       const result = await createNewTaskService({
@@ -41,7 +41,7 @@ class QueryTaskController extends BaseController {
     try {
       const { id } = requestHelper.getParam("id");
       if (!id) {
-        throw new Error("Please provide task id.");
+        throw new Error(QueryTaskMessages.EMPLOYEE_TASKS.REQUIRED_FIELD);
       }
 
       const result = await deleteTaskService(id);
@@ -64,7 +64,7 @@ class QueryTaskController extends BaseController {
     try {
       const { id } = requestHelper.getParam("id");
       if (!id) {
-        throw new Error("Please provide task id.");
+        throw new Error(QueryTaskMessages.EMPLOYEE_TASKS.REQUIRED_FIELD);
       }
 
       const result = await getTaskByIdService(id);
@@ -78,7 +78,7 @@ class QueryTaskController extends BaseController {
     try {
       const { pipeline } = requestHelper.getPayload();
       if (!pipeline) {
-        throw new Error("Please provide aggregation pipeline.");
+        throw new Error(QueryTaskMessages.EMPLOYEE_TASKS.PIPELINE);
       }
 
       const result = await getTasksByProjectService(pipeline);
@@ -92,7 +92,7 @@ class QueryTaskController extends BaseController {
     try {
       const { pipeline } = requestHelper.getPayload();
       if (!pipeline) {
-        throw new Error("Please provide aggregation pipeline.");
+        throw new Error(QueryTaskMessages.EMPLOYEE_TASKS.PIPELINE);
       }
 
       const result = await getTasksByUserService(pipeline);
@@ -115,7 +115,7 @@ class QueryTaskController extends BaseController {
     try {
       const { id, ...updateData } = requestHelper.getPayload();
       if (!id) {
-        throw new Error("Please provide task id.");
+        throw new Error(QueryTaskMessages.EMPLOYEE_TASKS.REQUIRED_FIELD);
       }
 
       const result = await updateTaskService(id, updateData);
@@ -129,7 +129,7 @@ class QueryTaskController extends BaseController {
     try {
       const { task_id, user_id, comment, user_name } = requestHelper.getPayload();
       if (!task_id || !user_id || !comment || !user_name) {
-        throw new Error("Please provide task_id, user_id, comment, and user_name.");
+        throw new Error(QueryTaskMessages.CREATE.REQUIRED_ID);
       }
 
       const result = await createCommentService({
@@ -148,7 +148,7 @@ class QueryTaskController extends BaseController {
     try {
       const { id, comment } = requestHelper.getPayload();
       if (!id || !comment) {
-        throw new Error("Please provide comment id and new comment text.");
+        throw new Error(QueryTaskMessages.COMMENT.REQUIRED);
       }
 
       const result = await updateCommentService(id, { comment });
@@ -162,7 +162,7 @@ class QueryTaskController extends BaseController {
     try {
       const { id, timeEntries } = requestHelper.getPayload();
       if (!id || !timeEntries) {
-        throw new Error("Please provide task id and time entries.");
+        throw new Error(QueryTaskMessages.EMPLOYEE_TASKS.REQUIRED_ID);
       }
 
       const result = await addTimeSpentService(id, timeEntries);
@@ -176,7 +176,7 @@ class QueryTaskController extends BaseController {
     try {
       const { query, parsedQuery } = requestHelper.getPayload();
       if (!query || !parsedQuery) {
-        throw new Error("Query and parsedQuery are required.");
+        throw new Error(QueryTaskMessages.QUERY.REQUIRED);
       }
 
       const result = await processTaskQuery(query, parsedQuery);

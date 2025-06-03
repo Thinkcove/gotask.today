@@ -1,7 +1,6 @@
 import moment from "moment";
 import mongoose from "mongoose";
 import { QueryTaskMessages } from "../../constants/apiMessages/queryTaskMessages";
-import { TASK_STATUS } from "../../constants/taskConstant";
 import { TimeUtil } from "../../constants/utils/timeUtils";
 import {
   addTimeSpentToTask,
@@ -44,7 +43,6 @@ function parseTimeLogged(timeLogged: string | undefined): number {
     }
     return 0;
   } catch (error) {
-    console.error(`Error parsing time_added "${timeLogged}": ${(error as Error).message}`);
     return 0;
   }
 }
@@ -111,7 +109,7 @@ export const getTasksByProjectService = async (
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
     const tasks = await findTasksByProject(pipeline);
-    return { success: true, data: tasks, message: `Retrieved tasks for project` };
+    return { success: true, data: tasks, message: QueryTaskMessages.EMPLOYEE_TASKS.RETRIEVED };
   } catch (error: any) {
     return { success: false, message: error.message || QueryTaskMessages.QUERY.FAILED };
   }
@@ -122,7 +120,7 @@ export const getTasksByUserService = async (
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
     const tasks = await findTasksByUser(pipeline);
-    return { success: true, data: tasks, message: `Retrieved tasks for user` };
+    return { success: true, data: tasks, message: QueryTaskMessages.EMPLOYEE_TASKS.RETRIEVED_USER };
   } catch (error: any) {
     return { success: false, message: error.message || QueryTaskMessages.QUERY.FAILED };
   }
@@ -135,7 +133,7 @@ export const getTaskCountByStatusService = async (): Promise<{
 }> => {
   try {
     const counts = await findTaskCountByStatus();
-    return { success: true, data: counts, message: `Task counts by status retrieved` };
+    return { success: true, data: counts, message: QueryTaskMessages.EMPLOYEE_TASKS.COUNT };
   } catch (error: any) {
     return { success: false, message: error.message || QueryTaskMessages.QUERY.FAILED };
   }
@@ -214,6 +212,8 @@ export const processTaskQuery = async (
       lowerQuery.includes("project") &&
       lowerQuery.includes("gotask")
     ) {
+      const projectNameMatch = lowerQuery.match(/project\s+([^\s]+)/i);
+      const projectName = projectNameMatch ? projectNameMatch[1] : "unknown";
       const project = await mongoose
         .model<IProject>("Project")
         .findOne({
@@ -221,7 +221,7 @@ export const processTaskQuery = async (
         })
         .lean();
       if (!project) {
-        return { success: false, message: "No project found with name: GoTask" };
+        return { success: false, message: `No project found with name: ${projectName}` };
       }
       const overdueTasks = await mongoose
         .model<ITask>("Task")
@@ -232,7 +232,7 @@ export const processTaskQuery = async (
         })
         .lean();
       if (!overdueTasks.length) {
-        return { success: true, message: `No overdue tasks in project GoTask` };
+        return { success: true, message: `No overdue tasks in project ${projectName}` };
       }
       const taskList = overdueTasks
         .map(
@@ -248,6 +248,8 @@ export const processTaskQuery = async (
       lowerQuery.includes("gotask") &&
       (lowerQuery.includes("finished") || lowerQuery.includes("is finished"))
     ) {
+      const projectNameMatch = lowerQuery.match(/project\s+([^\s]+)/i);
+      const projectName = projectNameMatch ? projectNameMatch[1] : "unknown";
       const project = await mongoose
         .model<IProject>("Project")
         .findOne({
@@ -255,7 +257,7 @@ export const processTaskQuery = async (
         })
         .lean();
       if (!project) {
-        return { success: false, message: "No project found with name: GoTask" };
+        return { success: false, message: `No project found with name: ${projectName}` };
       }
       const isFinished = project.status.toLowerCase() === "completed";
       return {
@@ -270,7 +272,7 @@ export const processTaskQuery = async (
         name: { $regex: "^Rizwana$", $options: "i" }
       }).lean();
       if (!user) {
-        return { success: false, message: "No employee found with name: Rizwana" };
+        return { success: false, message: `No employee found with name: ${user}` };
       }
       const overdueTasks = await mongoose
         .model<ITask>("Task")
@@ -281,7 +283,7 @@ export const processTaskQuery = async (
         })
         .lean();
       if (!overdueTasks.length) {
-        return { success: true, message: `No overdue tasks assigned to Rizwana` };
+        return { success: true, message: `No overdue tasks assigned to ${user}` };
       }
       const taskList = overdueTasks
         .map(
@@ -630,7 +632,7 @@ export const processTaskQuery = async (
 
     return {
       success: false,
-      message: "Invalid task query: Please specify task, project, or employee details"
+      message: QueryTaskMessages.EMPLOYEE_TASKS.INVALID
     };
   } catch (error: any) {
     return { success: false, message: error.message || QueryTaskMessages.QUERY.FAILED };

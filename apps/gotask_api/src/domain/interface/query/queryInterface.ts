@@ -1,27 +1,13 @@
-import mongoose, { Document } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
-import { QueryHistory } from "../../model/query/queryModel";
+import { IQueryHistory, QueryHistory } from "../../model/query/queryModel";
 
-export interface ParsedQuery {
-  keywords?: string[];
-  dates?: Date[];
-  empcode?: string | null;
-  empname?: string | null;
-  id?: string | null;
-  project_id?: string | null;
-  project_name?: string | null;
-  timeRange?: string | null;
-}
-
-export interface IQueryHistory extends Document {
-  id: string;
-  query: string;
-  timestamp: Date;
-  parsedQuery: Record<string, any>;
-  response: string;
-  conversationId: string;
-  type: string;
-}
+export const getQueryHistoryByConversationId = async (
+  conversationId: string
+): Promise<IQueryHistory[]> => {
+  return await QueryHistory.find({ conversationId })
+    .sort({ timestamp: -1 })
+    .select("query timestamp response conversationId type id")
+    .lean();
+};
 
 export const createQueryHistory = async (queryData: IQueryHistory): Promise<IQueryHistory> => {
   const newQuery = new QueryHistory(queryData);

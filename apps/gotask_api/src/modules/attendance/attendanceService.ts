@@ -5,11 +5,10 @@ import { v4 as uuidv4 } from "uuid";
 import {
   createNewAttendance,
   findAttendanceByEmpcodeAndDate,
-  findAttendancesByQuery,
-  IAttendance
+  findAttendancesByQuery
 } from "../../domain/interface/attendance/attendanceInterface";
 import { User } from "../../domain/model/user/user";
-import { Attendance } from "../../domain/model/attendance/attendanceModel";
+import { Attendance, IAttendance } from "../../domain/model/attendance/attendanceModel";
 import { AttendanceMessages } from "../../constants/apiMessages/attendanceMessage";
 
 export const addAttendance = async (
@@ -92,7 +91,7 @@ export const processQuery = async (
       }
 
       if (startDate.day() === 0 && startDate.isSame(endDate, "day")) {
-        return { success: true, message: "No absences tracked on Sundays" };
+        return { success: true, message: AttendanceMessages.QUERY.NO_ABSENT };
       }
 
       const records = await findAttendancesByQuery({
@@ -121,7 +120,7 @@ export const processQuery = async (
         ? moment(parsedQuery.dates[0]).startOf("day")
         : moment().startOf("day");
       if (date.day() === 0) {
-        return { success: true, message: "No attendance tracked on Sundays" };
+        return { success: true, message: AttendanceMessages.QUERY.NO_ABSENT };
       }
 
       const records = await findAttendancesByQuery({
@@ -148,7 +147,7 @@ export const processQuery = async (
         ? moment(parsedQuery.dates[0]).startOf("day")
         : moment().startOf("day");
       if (date.day() === 0) {
-        return { success: true, message: "No attendance tracked on Sundays" };
+        return { success: true, message: AttendanceMessages.QUERY.NO_ABSENT };
       }
 
       const records = await findAttendancesByQuery({
@@ -201,7 +200,7 @@ export const processQuery = async (
     ) {
       const date = moment(parsedQuery.dates[0]).startOf("day");
       if (date.day() === 0) {
-        return { success: true, message: "No attendance tracked on Sundays" };
+        return { success: true, message: AttendanceMessages.QUERY.NO_ABSENT };
       }
 
       const records = await findAttendancesByQuery({
@@ -219,8 +218,7 @@ export const processQuery = async (
 
     return {
       success: false,
-      message:
-        "Invalid attendance query: Please specify absent, after10am, latelogoff, late, or employee details"
+      message: AttendanceMessages.QUERY.INVALID
     };
   } catch (error: any) {
     return { success: false, message: error.message || AttendanceMessages.QUERY.FAILED };
@@ -232,10 +230,6 @@ export const processEmployeeQuery = async (
   parsedQuery: Record<string, any>
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
-    // Log raw query and parsed query
-    console.log("Raw Query:", query);
-    console.log("Parsed Query:", JSON.stringify(parsedQuery, null, 2));
-
     let name: string | undefined;
     let empcode: string | undefined;
 
@@ -245,11 +239,9 @@ export const processEmployeeQuery = async (
         .trim()
         .split(/\s+from\s+/i)[0]
         .trim();
-      console.log(`Looking up Attendance for empname: ${name}`);
       const attendanceRecords = await findAttendancesByQuery({
         empname: { $regex: `^${name}$`, $options: "i" }
       });
-      console.log(`Attendance records for empname: ${attendanceRecords.length}`);
       if (!attendanceRecords.length) {
         return { success: false, message: `No attendance record found for employee ${name}` };
       }
@@ -262,22 +254,18 @@ export const processEmployeeQuery = async (
       }
     } else if (parsedQuery.empcode) {
       empcode = parsedQuery.empcode.trim();
-      console.log(`Looking up Attendance for empcode: ${empcode}`);
       const attendanceRecords = await findAttendancesByQuery({ empcode });
-      console.log(`Attendance records for empcode: ${attendanceRecords.length}`);
       if (!attendanceRecords.length) {
         return { success: false, message: `No attendance record found for empcode ${empcode}` };
       }
       name = attendanceRecords[0].empname;
       // Validate empname against User.username
       const user = await User.findOne({ username: { $regex: `^${name}$`, $options: "i" } }).lean();
-      console.log(`User found for username ${name}: ${!!user}`);
       if (!user) {
         return { success: false, message: `No user found with username ${name}` };
       }
     } else {
-      console.log("No empname or empcode provided");
-      return { success: false, message: `No valid employee identifier provided` };
+      return { success: false, message: AttendanceMessages.QUERY.VALID };
     }
 
     // Step 2: Handle dates
@@ -324,8 +312,7 @@ export const processEmployeeQuery = async (
 
     console.log(`Date range: ${startDate.format("YYYY-MM-DD")} to ${endDate.format("YYYY-MM-DD")}`);
     if (!startDate.isValid() || !endDate.isValid()) {
-      console.log("Invalid date format");
-      return { success: false, message: `Invalid date format provided` };
+      return { success: false, message: AttendanceMessages.QUERY.INVALID_DATE };
     }
 
     const dateStr = parsedQuery.dateRange
@@ -339,10 +326,7 @@ export const processEmployeeQuery = async (
     if (parsedQuery.dateRange || parsedQuery.dates?.[0] || parsedQuery.timeRange === "last week") {
       queryFilter.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
     }
-
-    console.log("Query filter:", JSON.stringify(queryFilter, null, 2));
     const attendanceRecords = await findAttendancesByQuery(queryFilter);
-    console.log(`Final attendance records: ${attendanceRecords.length}`);
 
     if (!attendanceRecords.length) {
       return {
@@ -635,20 +619,273 @@ export const processEmployeeQuery = async (
         message: `${name || empcode} ${isLate ? "logged off after 7:00 PM" : "did not log off after 7:00 PM"} on ${dateStr}`
       };
     }
-
-    console.log("No matching query handler");
     return {
       success: false,
       message: `Please specify a valid attendance query for ${name || empcode}`
     };
   } catch (error: any) {
-    console.error("Error in processEmployeeQuery:", error.message, error.stack);
     return { success: false, message: `Failed to process query: ${error.message}` };
+  }
+};
+
+export const uploadAttendance = async (
+  filePath: string
+): Promise<{
+  success: boolean;
+  data?: { inserted: number; skipped: number; errors: string[] };
+  message?: string;
+}> => {
+  try {
+    if (!fs.existsSync(filePath)) {
+      return {
+        success: false,
+        message: `File not found: ${filePath}`,
+        data: { inserted: 0, skipped: 0, errors: [`File not found: ${filePath}`] }
+      };
+    }
+
+    const workbook = XLSX.readFile(filePath, { type: "file", cellDates: true, raw: false });
+    const sheetName = workbook.SheetNames[0];
+    if (!sheetName) {
+      return {
+        success: false,
+        message: AttendanceMessages.UPLOAD.REQUIRED,
+        data: { inserted: 0, skipped: 0, errors: [AttendanceMessages.UPLOAD.REQUIRED] }
+      };
+    }
+    const worksheet = workbook.Sheets[sheetName];
+    const rows: any[] = XLSX.utils.sheet_to_json(worksheet, {
+      header: 1,
+      raw: false,
+      blankrows: false
+    });
+
+    if (rows.length < 2) {
+      return {
+        success: false,
+        message: AttendanceMessages.UPLOAD.NOTIFY,
+        data: { inserted: 0, skipped: 0, errors: [AttendanceMessages.UPLOAD.REQUIRED] }
+      };
+    }
+
+    const records: IAttendance[] = [];
+    const errors: string[] = [];
+    let currentEmpcode: string | null = null;
+    let currentEmpname: string | null = null;
+    let currentUser: any = null;
+    let isDataSection = false;
+    let headerRow: string[] | null = null;
+    let rowIndex = 0;
+
+    for (const row of rows) {
+      rowIndex++;
+      if (
+        !row ||
+        row.length === 0 ||
+        row.every((cell: any) => !cell || String(cell).trim() === "")
+      ) {
+        errors.push(`Skipped row ${rowIndex}: Empty or invalid row`);
+        continue;
+      }
+
+      const firstCell = row[0] ? String(row[0]).trim().toLowerCase() : "";
+
+      // Detect employee section
+      if (firstCell === "empcode") {
+        currentEmpcode = row[1] ? String(row[1]).trim() : null;
+        currentEmpname = row[4] ? String(row[4]).trim() : null; // Name is in row[4]
+        if (!currentEmpcode || !currentEmpname) {
+          errors.push(`Invalid Empcode or Name at row ${rowIndex}: ${JSON.stringify(row)}`);
+          continue;
+        }
+        // Optional: Validate user in DB, but allow processing if not found
+        currentUser = await User.findOne({ user_id: currentEmpcode }).lean();
+        if (!currentUser) {
+          errors.push(`Warning: No user found for empcode ${currentEmpcode} at row ${rowIndex}`);
+          // Continue processing to allow data insertion with empname from file
+          currentUser = { user_id: currentEmpcode, name: currentEmpname };
+        }
+        isDataSection = false;
+        continue;
+      }
+
+      // Detect header row
+      if (
+        row[0] &&
+        String(row[0]).trim().toLowerCase() === "date" &&
+        row[2] &&
+        String(row[2]).trim().toLowerCase() === "intime"
+      ) {
+        headerRow = row.map((cell: any) => String(cell).trim());
+        isDataSection = true;
+        continue;
+      }
+
+      // Process data rows
+      if (isDataSection && currentEmpcode && currentUser && headerRow) {
+        try {
+          const rowData: { [key: string]: string } = {};
+          headerRow.forEach((header, index) => {
+            rowData[header] = row[index] !== undefined ? String(row[index]).trim() : "";
+          });
+
+          const dateStr = rowData["Date"];
+          const inTime = rowData["INTime"];
+          const outTime = rowData["OUTTime"];
+          const remark = rowData["Remark"];
+
+          // Validate date and inTime
+          if (!dateStr || !inTime || inTime === "--:--") {
+            errors.push(
+              `Skipped row ${rowIndex}: Invalid or missing date (${dateStr}) or inTime (${inTime}) for empcode ${currentEmpcode}`
+            );
+            continue;
+          }
+
+          const date = moment(dateStr, "DD/MM/YYYY", true);
+          if (!date.isValid()) {
+            errors.push(
+              `Invalid date format (${dateStr}) for empcode ${currentEmpcode} at row ${rowIndex}`
+            );
+            continue;
+          }
+
+          const inTimeMoment = moment(inTime, ["HH:mm:ss", "HH:mm"], true);
+          if (!inTimeMoment.isValid()) {
+            errors.push(
+              `Incorrect inTime format (${inTime}) for empcode ${currentEmpcode} at row ${rowIndex}`
+            );
+            continue;
+          }
+
+          // Validate outTime if present
+          let validOutTime: string | null = null;
+          if (outTime && outTime !== "--:--") {
+            const outTimeMoment = moment(outTime, ["HH:mm:ss", "HH:mm"], true);
+            if (!outTimeMoment.isValid()) {
+              errors.push(
+                `Incorrect outTime format (${outTime}) for empcode ${currentEmpcode} at row ${rowIndex}`
+              );
+              continue;
+            }
+            validOutTime = outTime;
+            // Validate Work+OT
+            const workPlusOT = rowData["Work+OT"];
+            if (workPlusOT && workPlusOT !== "--:--") {
+              const [hours, minutes] = workPlusOT.split(":").map(Number);
+              const recordedHours = hours + minutes / 60;
+              const workHours = moment.duration(outTimeMoment.diff(inTimeMoment)).asHours();
+              if (Math.abs(workHours - recordedHours) > 0.5) {
+                errors.push(
+                  `Work+OT mismatch for empcode ${currentEmpcode} at row ${rowIndex}: calculated ${workHours.toFixed(2)} vs recorded ${recordedHours}`
+                );
+              }
+            }
+          }
+
+          // Warn for missing OUTTime
+          if (remark === "MIS-LT") {
+            errors.push(
+              `Missing OUTTime for empcode ${currentEmpcode} on ${dateStr} at row ${rowIndex}`
+            );
+          }
+
+          const standardInTime = moment("09:00", "HH:mm");
+          const minutesLate = inTimeMoment.isAfter(standardInTime)
+            ? inTimeMoment.diff(standardInTime, "minutes")
+            : 0;
+          const status = minutesLate > 0 ? "Late" : inTime === "00:00" ? "Absent" : "Present";
+
+          const attendanceData: IAttendance = {
+            id: uuidv4(),
+            empcode: currentEmpcode,
+            empname: currentUser.name,
+            date: date.startOf("day").toDate(),
+            inTime: inTime,
+            outTime: validOutTime,
+            status,
+            minutesLate
+          } as IAttendance;
+
+          records.push(attendanceData);
+        } catch (err) {
+          errors.push(
+            `Error processing row ${rowIndex} for empcode ${currentEmpcode}: ${(err as Error).message}`
+          );
+        }
+      } else if (!isDataSection && !firstCell.startsWith("empcode")) {
+        errors.push(
+          `Skipped row ${rowIndex}: Not in data section and not an Empcode row - ${JSON.stringify(row)}`
+        );
+      }
+    }
+
+    if (records.length === 0) {
+      return {
+        success: false,
+        data: { inserted: 0, skipped: rowIndex, errors },
+        message: AttendanceMessages.UPLOAD.VALIDATION
+      };
+    }
+
+    let insertedCount = 0;
+    let skippedCount = 0;
+    for (const record of records) {
+      try {
+        const existingRecord = await Attendance.findOne({
+          empcode: record.empcode,
+          date: record.date
+        }).lean();
+        if (existingRecord) {
+          errors.push(
+            `Attendance record already exists for ${record.empcode} on ${moment(record.date).format(
+              "YYYY-MM-DD"
+            )}`
+          );
+          skippedCount++;
+          continue;
+        }
+
+        await Attendance.create(record);
+        insertedCount++;
+      } catch (err) {
+        errors.push(
+          `Error inserting record for empcode ${record.empcode}: ${(err as Error).message}`
+        );
+        skippedCount++;
+      }
+    }
+
+    return {
+      success: insertedCount > 0,
+      data: { inserted: insertedCount, skipped: skippedCount, errors },
+      message:
+        insertedCount > 0 ? AttendanceMessages.UPLOAD.SUCCESS : AttendanceMessages.UPLOAD.VALIDATION
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || AttendanceMessages.UPLOAD.FAILED,
+      data: {
+        inserted: 0,
+        skipped: 0,
+        errors: [error.message || AttendanceMessages.UPLOAD.FAILED]
+      }
+    };
+  } finally {
+    try {
+      if (fs.existsSync(filePath)) {
+        await fs.promises.unlink(filePath);
+      }
+    } catch (error) {
+      console.warn(`Failed to delete file ${filePath}: ${(error as Error).message}`);
+    }
   }
 };
 
 export default {
   addAttendance,
   processQuery,
-  processEmployeeQuery
+  processEmployeeQuery,
+  uploadAttendance
 };

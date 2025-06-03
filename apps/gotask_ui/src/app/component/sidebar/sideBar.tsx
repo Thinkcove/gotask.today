@@ -23,10 +23,11 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import menuItemsData from "./menuItems.json";
 import { useRouter, usePathname } from "next/navigation";
 import { Theme } from "@mui/material/styles";
-import UserInfoCard from "../appBar/userMenu";
+import UserInfoCard from "../header/userMenu";
 import { useUser } from "@/app/userContext";
 import { hasPermission } from "@/app/common/utils/permisssion";
 import { ACTIONS, ActionType, ApplicationName } from "@/app/common/utils/authCheck";
+import ChatIcon from "@mui/icons-material/Chat";
 
 const iconMap: Record<string, React.ReactNode> = {
   DashboardIcon: <GridViewIcon />,
@@ -36,7 +37,8 @@ const iconMap: Record<string, React.ReactNode> = {
   SecurityIcon: <SecurityIcon />,
   VpnKeyIcon: <VpnKeyIcon />,
   AssignmentIcon: <AssignmentIcon />,
-  BarChartIcon: <BarChartIcon />
+  BarChartIcon: <BarChartIcon />,
+  ChatIcon: <ChatIcon />
 };
 
 const drawerWidth = 260;
@@ -103,7 +105,6 @@ const Sidebar: React.FC = () => {
             position: "fixed",
             top: 20,
             left: 20,
-            zIndex: 1300,
             backgroundColor: "#741B92",
             color: "#fff",
             "&:hover": { backgroundColor: "#5a1473" }

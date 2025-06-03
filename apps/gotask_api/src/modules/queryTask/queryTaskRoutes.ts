@@ -1,14 +1,13 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import queryTaskController from "./queryTaskController";
-import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
 import { permission } from "../../middleware/permission";
 import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
 import authStrategy from "../../constants/auth/authStrategy";
 
-const appName = APPLICATIONS.QUERY_TASK;
-const tags = [API, "Query Task"];
+const appName = APPLICATIONS.CHATBOT;
+const tags = [API, "Chatbot"];
 const QueryTaskRoutes = [];
 
 QueryTaskRoutes.push({

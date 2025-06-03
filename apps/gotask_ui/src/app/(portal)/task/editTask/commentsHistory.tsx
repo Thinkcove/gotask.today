@@ -10,6 +10,7 @@ import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ITaskComment } from "../interface/taskInterface";
+import { getColorForUser } from "@/app/common/constants/avatar";
 import { updateComment } from "@/app/(portal)/task/service/taskAction";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -145,7 +146,7 @@ console.log("mutate:", mutate); // Should be a function
           >
             <Avatar
               sx={{
-                backgroundColor: "#741B92",
+                backgroundColor: getColorForUser(comment.user_name || ""),
                 width: { xs: 32, sm: 40 },
                 height: { xs: 32, sm: 40 },
                 fontSize: { xs: "0.875rem", sm: "1rem" },

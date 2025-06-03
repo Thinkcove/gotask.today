@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { getSeverityColor, getStatusColor } from "@/app/common/constants/task";
 import LabelValueText from "@/app/component/text/labelValueText";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 import ModuleHeader from "@/app/component/appBar/moduleHeader";
 import { ITask, ITaskComment } from "../../interface/taskInterface";
 import { useRouter } from "next/navigation";

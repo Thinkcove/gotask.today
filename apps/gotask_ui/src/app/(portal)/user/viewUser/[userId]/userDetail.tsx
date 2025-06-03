@@ -3,7 +3,7 @@ import { Box, Typography, IconButton, Divider, Stack, Chip, Grid } from "@mui/ma
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { IUserField, User } from "../../interfaces/userInterface";
-import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 import EditUser from "./editUser";
 import { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";

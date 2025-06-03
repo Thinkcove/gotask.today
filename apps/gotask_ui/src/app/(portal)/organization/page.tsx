@@ -1,6 +1,6 @@
 import React from "react";
 import OrganizationList from "./components/organizationList";
-import ModuleHeader from "@/app/component/appBar/moduleHeader";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -15,4 +15,3 @@ const Page = () => {
 };
 
 export default Page;
-

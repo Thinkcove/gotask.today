@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button } from "@mui/material";
-import FormField from "@/app/component/formField";
+import FormField from "@/app/component/input/formField";
 import { ITaskComment } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";

@@ -24,8 +24,6 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import TaskFilters from "@/app/component/filters/taskFilters";
-import { SortOrder, TaskSortField } from "@/app/common/constants/task";
-import SortByPopover from "@/app/component/input/sortByPopover";
 
 interface TaskListProps {
   initialView?: "projects" | "users";

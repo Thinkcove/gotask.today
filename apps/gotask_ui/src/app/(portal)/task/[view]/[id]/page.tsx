@@ -21,9 +21,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { Add } from "@mui/icons-material";
-import { SortOrder, TaskSortField } from "@/app/common/constants/task";
 import SearchBar from "@/app/component/searchBar/searchBar";
-import SortByPopover from "@/app/component/input/sortByPopover";
 
 const ViewMoreAction: React.FC = () => {
   const router = useRouter();

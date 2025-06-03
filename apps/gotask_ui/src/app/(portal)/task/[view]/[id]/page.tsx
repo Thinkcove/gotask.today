@@ -38,13 +38,8 @@ const ViewMoreAction: React.FC = () => {
   const lessDays = searchParams.get("lessDays") || "";
   const dateVar = searchParams.get("dateVar") || "due_date";
   const title = searchParams.get("title") || "";
-  const urlSortField = (searchParams.get("sortField") as TaskSortField) || TaskSortField.DUE_DATE;
-  const urlSortOrder = (searchParams.get("sortOrder") as SortOrder) || SortOrder.DESC;
 
   const [searchText, setSearchText] = useState<string>(title);
-  const [sortField, setSortField] = useState<TaskSortField>(urlSortField);
-  const [sortOrder, setSortOrder] = useState<SortOrder>(urlSortOrder);
-
   const getArrayParam = (name: string): string[] => {
     return searchParams.getAll(name).filter(Boolean);
   };
@@ -110,11 +105,9 @@ const ViewMoreAction: React.FC = () => {
         maxDate || undefined,
         dateVar,
         moreDays || undefined,
-        lessDays || undefined,
-        sortField,
-        sortOrder
+        lessDays || undefined
       ] as const,
-    [search_vals, search_vars, minDate, maxDate, dateVar, moreDays, lessDays, sortField, sortOrder]
+    [search_vals, search_vars, minDate, maxDate, dateVar, moreDays, lessDays]
   );
 
   const { tasksByProjects, isLoading: isLoadingProjects } = useProjectGroupTask(...hookArgs);
@@ -156,13 +149,6 @@ const ViewMoreAction: React.FC = () => {
   const updateSearchText = (val: string) => {
     setSearchText(val);
     updateQueryParam("title", val);
-  };
-
-  const updateSorting = (field: TaskSortField, order: SortOrder) => {
-    setSortField(field);
-    setSortOrder(order);
-    updateQueryParam("sortField", field);
-    updateQueryParam("sortOrder", order);
   };
 
   const updateSearchFilters = (
@@ -231,12 +217,6 @@ const ViewMoreAction: React.FC = () => {
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <SearchBar value={searchText} onChange={updateSearchText} placeholder="Search Task" />
-          <SortByPopover
-            sortField={sortField}
-            sortOrder={sortOrder}
-            onSortFieldChange={(field) => updateSorting(field, sortOrder)}
-            onSortOrderChange={(order) => updateSorting(sortField, order)}
-          />
         </Box>
       </Box>
       <Box>

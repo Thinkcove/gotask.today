@@ -83,10 +83,6 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   );
   const [dateFrom, setDateFrom] = useState<string>(searchParams.get("dateFrom") || "");
   const [dateTo, setDateTo] = useState<string>(searchParams.get("dateTo") || "");
-  const rawSortField = searchParams.get("sortField") as TaskSortField;
-  const rawSortOrder = searchParams.get("sortOrder") as SortOrder;
-  const [sortField, setSortField] = useState<TaskSortField>(rawSortField || TaskSortField.DUE_DATE);
-  const [sortOrder, setSortOrder] = useState<SortOrder>(rawSortOrder || SortOrder.DESC);
 
   // Memoize filters
   const search_vals = searchParamsObj.search_vals;
@@ -103,9 +99,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     maxDate,
     dateVar,
     moreDays,
-    lessDays,
-    sortField,
-    sortOrder
+    lessDays
   );
   const userData = useUserGroupTask(
     page,
@@ -116,9 +110,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     maxDate,
     dateVar,
     moreDays,
-    lessDays,
-    sortField,
-    sortOrder
+    lessDays
   );
 
   const {
@@ -182,8 +174,6 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     if (variationDays) params.set("variationDays", variationDays.toString());
     if (dateFrom) params.set("dateFrom", dateFrom);
     if (dateTo) params.set("dateTo", dateTo);
-    if (sortField) params.set("sortField", sortField);
-    if (sortOrder) params.set("sortOrder", sortOrder);
 
     router.replace(`?${params.toString()}`);
   }, [
@@ -255,8 +245,6 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     variationDays,
     dateFrom,
     dateTo,
-    sortField,
-    sortOrder,
     searchParams
   ]);
 
@@ -284,9 +272,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
 
   const handleViewMore = (id: string) => {
     const params = new URLSearchParams({
-      view,
-      sortField,
-      sortOrder
+      view
     });
 
     if (searchText.trim()) params.set("title", searchText);
@@ -359,12 +345,6 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <SearchBar value={searchText} onChange={setSearchText} placeholder="Search Task" />
-          <SortByPopover
-            sortField={sortField}
-            sortOrder={sortOrder}
-            onSortFieldChange={setSortField}
-            onSortOrderChange={setSortOrder}
-          />
         </Box>
         <TaskToggle view={view} onViewChange={handleViewChange} />
       </Box>

@@ -79,57 +79,25 @@ const SortByPopover: React.FC<SortByPopoverProps> = ({
           </RadioGroup>
           <Divider sx={{ fontSize: "small" }} />
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 1 }}>
-            <Typography variant="body2" sx={{ whiteSpace: "nowrap" }}>
-              Order:
-            </Typography>
-          </Box>
-          <Box sx={{ alignItems: "center", gap: 2, mt: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
+            <Typography variant="body2">Order:</Typography>
             <Tooltip title="Ascending">
-              <Box
+              <IconButton
+                size="small"
+                color={sortOrder === SortOrder.ASC ? "primary" : "default"}
                 onClick={() => onSortOrderChange(SortOrder.ASC)}
-                sx={{
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 2,
-                  p: 0.5,
-                  borderRadius: 1,
-                  bgcolor: sortOrder === SortOrder.ASC ? "primary.main" : "transparent",
-                  color: sortOrder === SortOrder.ASC ? "primary.contrastText" : "text.primary",
-                  "&:hover": {
-                    bgcolor: sortOrder === SortOrder.ASC ? "primary.dark" : "action.hover"
-                  },
-                  userSelect: "none"
-                }}
               >
                 <ArrowUpward fontSize="small" />
-                <Typography variant="body2">Ascending</Typography>
-              </Box>
+              </IconButton>
             </Tooltip>
-
             <Tooltip title="Descending">
-              <Box
+              <IconButton
+                size="small"
+                color={sortOrder === SortOrder.DESC ? "primary" : "default"}
                 onClick={() => onSortOrderChange(SortOrder.DESC)}
-                sx={{
-                  mt: 1,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 2,
-                  p: 0.5,
-                  borderRadius: 1,
-                  bgcolor: sortOrder === SortOrder.DESC ? "primary.main" : "transparent",
-                  color: sortOrder === SortOrder.DESC ? "primary.contrastText" : "text.primary",
-                  "&:hover": {
-                    bgcolor: sortOrder === SortOrder.DESC ? "primary.dark" : "action.hover"
-                  },
-                  userSelect: "none"
-                }}
               >
                 <ArrowDownward fontSize="small" />
-                <Typography variant="body2">Descending</Typography>
-              </Box>
+              </IconButton>
             </Tooltip>
           </Box>
         </Box>

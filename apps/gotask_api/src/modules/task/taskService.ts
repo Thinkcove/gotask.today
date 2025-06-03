@@ -162,14 +162,15 @@ const getTasksByProject = async (
 
     const filter = andConditions.length > 0 ? { $and: andConditions } : {};
 
-    // Step 5: Determine sort field and order
-    const sortDirection = sortOrder === SortOrder.ASC ? 1 : -1;
-    const outerSortField = sortField ?? SortField.CREATED_AT;
+    // Step 5: Determine sort fields
+    const sortObject = sortField
+      ? { [sortField]: sortOrder === SortOrder.ASC ? 1 : -1 }
+      : { due_date: -1, user_name: 1 }; // default sort
 
     // Step 6: Build aggregation pipeline
     const aggregationPipeline: any[] = [
       { $match: filter },
-      { $sort: { [outerSortField]: sortDirection } },
+      { $sort: sortObject },
       {
         $group: {
           _id: { id: "$project_id", project_name: "$project_name" },
@@ -189,7 +190,7 @@ const getTasksByProject = async (
           tasks: {
             $sortArray: {
               input: "$tasks",
-              sortBy: { [outerSortField]: sortDirection }
+              sortBy: sortObject
             }
           }
         }
@@ -297,14 +298,15 @@ const getTasksByUser = async (
 
     const filter = andConditions.length > 0 ? { $and: andConditions } : {};
 
-    // Step 5: Determine sort field and order
-    const sortDirection = sortOrder === SortOrder.ASC ? 1 : -1;
-    const outerSortField = sortField ?? SortField.CREATED_AT;
+    // Step 5: Determine sort fields
+    const sortObject = sortField
+      ? { [sortField]: sortOrder === SortOrder.ASC ? 1 : -1 }
+      : { due_date: -1, user_name: 1 }; // default sort
 
     // Step 6: Build aggregation pipeline
     const aggregationPipeline: any[] = [
       { $match: filter },
-      { $sort: { [outerSortField]: sortDirection } },
+      { $sort: sortObject },
       {
         $group: {
           _id: { id: "$user_id", user_name: "$user_name" },
@@ -324,7 +326,7 @@ const getTasksByUser = async (
           tasks: {
             $sortArray: {
               input: "$tasks",
-              sortBy: { [outerSortField]: sortDirection }
+              sortBy: sortObject
             }
           }
         }

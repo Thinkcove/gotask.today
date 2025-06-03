@@ -6,13 +6,13 @@ import { sendQuery, uploadAttendance, useQueryHistory } from "../service/chatAct
 import { QueryResponse, QueryHistoryEntry } from "../interface/chatInterface";
 import ChatHistory from "./chatHitory";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
-import { TFunction, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FormField from "@/app/component/input/formField";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 
 // Custom hook for updating greeting
-const useGreeting = (transchatbot: TFunction) => {
+const useGreeting = (transchatbot) => {
   const [greeting, setGreeting] = useState<string>("Good Day");
 
   const updateGreeting = useCallback(() => {

@@ -92,3 +92,13 @@ export const TASK_CALCULATION = 70;
 export const TASK_VARIATION = 30;
 
 export const TASK_HOURS = 8;
+
+export enum TaskSortField {
+  DUE_DATE = "due_date",
+  USER_NAME = "user_name"
+}
+
+export enum SortOrder {
+  ASC = "asc",
+  DESC = "desc"
+}

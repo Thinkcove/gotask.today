@@ -1,4 +1,5 @@
 import TaskMessages from "../../constants/apiMessages/taskMessage";
+import { SortField, SortOrder } from "../../constants/taskConstant";
 import {
   addTimeSpentToTask,
   createCommentInTask,
@@ -93,7 +94,9 @@ const getTasksByProject = async (
   max_date?: string,
   date_var?: string,
   more_variation?: string,
-  less_variation?: string
+  less_variation?: string,
+  sortField?: SortField,
+  sortOrder: SortOrder = SortOrder.DESC
 ): Promise<{
   success: boolean;
   data?: any;
@@ -101,7 +104,6 @@ const getTasksByProject = async (
 }> => {
   try {
     const skip = (page - 1) * pageSize;
-
     const andConditions: any[] = [];
 
     const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
@@ -114,7 +116,6 @@ const getTasksByProject = async (
       for (let i = 0; i < search_vars.length; i++) {
         const rawField = search_vars[i][0];
         const value = search_vals[i][0];
-
         const field = rawField === "id" ? "project_id" : rawField;
         const regex = new RegExp(value, "i");
 
@@ -161,10 +162,15 @@ const getTasksByProject = async (
 
     const filter = andConditions.length > 0 ? { $and: andConditions } : {};
 
-    // Step 5: Build aggregation pipeline
+    // Step 5: Determine sort fields
+    const sortObject = sortField
+      ? { [sortField]: sortOrder === SortOrder.ASC ? 1 : -1 }
+      : { due_date: -1, user_name: 1 }; // default sort
+
+    // Step 6: Build aggregation pipeline
     const aggregationPipeline: any[] = [
       { $match: filter },
-      { $sort: { createdAt: -1 } },
+      { $sort: sortObject },
       {
         $group: {
           _id: { id: "$project_id", project_name: "$project_name" },
@@ -182,7 +188,10 @@ const getTasksByProject = async (
           total_count: 1,
           latestTaskUpdatedAt: 1,
           tasks: {
-            $sortArray: { input: "$tasks", sortBy: { createdAt: -1 } }
+            $sortArray: {
+              input: "$tasks",
+              sortBy: sortObject
+            }
           }
         }
       },
@@ -190,9 +199,8 @@ const getTasksByProject = async (
       { $limit: pageSize }
     ];
 
-    // Step 6: Execute aggregation and count
+    // Step 7: Execute aggregation and count
     const taskGroups = await findTasksByProject(aggregationPipeline);
-
     const totalProjects = await Task.distinct("project_name", filter).then((res) => res.length);
 
     return {
@@ -222,7 +230,9 @@ const getTasksByUser = async (
   max_date?: string,
   date_var?: string,
   more_variation?: string,
-  less_variation?: string
+  less_variation?: string,
+  sortField?: SortField,
+  sortOrder: SortOrder = SortOrder.ASC
 ): Promise<{
   success: boolean;
   data?: any;
@@ -230,7 +240,6 @@ const getTasksByUser = async (
 }> => {
   try {
     const skip = (page - 1) * pageSize;
-
     const andConditions: any[] = [];
 
     const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
@@ -243,7 +252,6 @@ const getTasksByUser = async (
       for (let i = 0; i < search_vars.length; i++) {
         const rawField = search_vars[i][0];
         const value = search_vals[i][0];
-
         const field = rawField === "id" ? "user_id" : rawField;
         const regex = new RegExp(value, "i");
 
@@ -290,10 +298,15 @@ const getTasksByUser = async (
 
     const filter = andConditions.length > 0 ? { $and: andConditions } : {};
 
-    // Step 5: Build aggregation pipeline
+    // Step 5: Determine sort fields
+    const sortObject = sortField
+      ? { [sortField]: sortOrder === SortOrder.ASC ? 1 : -1 }
+      : { due_date: -1, user_name: 1 }; // default sort
+
+    // Step 6: Build aggregation pipeline
     const aggregationPipeline: any[] = [
       { $match: filter },
-      { $sort: { createdAt: -1 } },
+      { $sort: sortObject },
       {
         $group: {
           _id: { id: "$user_id", user_name: "$user_name" },
@@ -311,7 +324,10 @@ const getTasksByUser = async (
           total_count: 1,
           latestTaskUpdatedAt: 1,
           tasks: {
-            $sortArray: { input: "$tasks", sortBy: { createdAt: -1 } }
+            $sortArray: {
+              input: "$tasks",
+              sortBy: sortObject
+            }
           }
         }
       },
@@ -319,7 +335,7 @@ const getTasksByUser = async (
       { $limit: pageSize }
     ];
 
-    // Step 6: Execute aggregation and count
+    // Step 7: Execute aggregation and count
     const taskGroups = await findTasksByUser(aggregationPipeline);
 
     const totalUsers = await Task.distinct("user_name", filter).then((res) => res.length);

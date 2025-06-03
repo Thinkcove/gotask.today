@@ -1,4 +1,5 @@
 import { ITask } from "../../domain/model/task/task";
+import { formatDate } from "./common";
 
 export const generateHistoryEntry = (
   existingTask: ITask,
@@ -9,7 +10,7 @@ export const generateHistoryEntry = (
 
   if (due_date && new Date(due_date).getTime() !== existingTask.due_date.getTime()) {
     historyEntries.push(
-      `Due Date has been updated from "${existingTask.due_date.toISOString()}" to "${new Date(due_date).toISOString()}".`
+      `Due Date has been updated from "${formatDate(existingTask.due_date)}" to "${formatDate(new Date(due_date))}".`
     );
   }
   if (status && status !== existingTask.status) {

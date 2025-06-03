@@ -1,7 +1,7 @@
 import React from "react";
-import { Box, IconButton, Tooltip } from "@mui/material";
-import FolderIcon from "@mui/icons-material/Folder";
-import GroupIcon from "@mui/icons-material/Group";
+import { Box } from "@mui/material";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 interface TaskToggleProps {
   view: "projects" | "users";
@@ -9,34 +9,47 @@ interface TaskToggleProps {
 }
 
 const TaskToggle: React.FC<TaskToggleProps> = ({ view, onViewChange }) => {
-  const buttons = [
-    { key: "projects", icon: <FolderIcon fontSize="small" />, label: "Projects" },
-    { key: "users", icon: <GroupIcon fontSize="small" />, label: "Users" }
-  ];
-
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   return (
-    <Box sx={{ display: "flex", gap: 0.5 }}>
-      {buttons.map(({ key, icon, label }) => {
-        const selected = view === key;
-        return (
-          <Tooltip key={key} title={label} arrow>
-            <IconButton
-              onClick={() => onViewChange(key as "projects" | "users")}
-              size="small"
-              sx={{
-                backgroundColor: selected ? "#741B92" : "transparent",
-                color: selected ? "#fff" : "#666",
-                "&:hover": {
-                  backgroundColor: selected ? "#741B92" : "#eee"
-                },
-                borderRadius: 1
-              }}
-            >
-              {icon}
-            </IconButton>
-          </Tooltip>
-        );
-      })}
+    <Box
+      sx={{
+        display: "flex",
+        gap: 4,
+        position: "relative",
+        borderBottom: "2px solid #eee",
+        width: "fit-content",
+        marginBottom: "4px"
+      }}
+    >
+      {["projects", "users"].map((key) => (
+        <Box
+          key={key}
+          onClick={() => onViewChange(key as "projects" | "users")}
+          sx={{
+            cursor: "pointer",
+            fontSize: "0.875rem",
+            fontWeight: view === key ? 600 : 400,
+            color: view === key ? "#741B92" : "#555",
+            paddingBottom: "4px",
+            transition: "color 0.2s"
+          }}
+        >
+          {transtask(key)}
+        </Box>
+      ))}
+
+      {/* Animated underline */}
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: 0,
+          left: view === "projects" ? 0 : "calc(100% / 2)",
+          width: "50%",
+          height: "2px",
+          backgroundColor: "#741B92",
+          transition: "left 0.3s ease"
+        }}
+      />
     </Box>
   );
 };

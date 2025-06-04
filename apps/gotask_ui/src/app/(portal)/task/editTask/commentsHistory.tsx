@@ -6,8 +6,9 @@ import { ITask, ITaskComment } from "../interface/taskInterface";
 import { getColorForUser } from "@/app/common/constants/avatar";
 import { useUser } from "@/app/userContext";
 import FormField from "@/app/component/input/formField";
-import { updateComment } from "../service/taskAction";
+import { updateComment, deleteComment } from "../service/taskAction";
 import { KeyedMutator } from "swr";
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
@@ -20,6 +21,8 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
   const { user } = useUser();
   const [editingComment, setEditingComment] = useState<ITaskComment | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<ITaskComment | null>(null);
 
   const handleStartEdit = (comment: ITaskComment) => {
     setEditingComment(comment);
@@ -40,6 +43,25 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
     }
   };
 
+  const handleDeleteClick = (comment: ITaskComment) => {
+    setCommentToDelete(comment);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (commentToDelete && commentToDelete.id) {
+      await deleteComment(commentToDelete.id);
+      setDeleteDialogOpen(false);
+      setCommentToDelete(null);
+      await mutate();
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setCommentToDelete(null);
+  };
+
   const displayedComments = showAll ? comments : comments.slice(0, 3);
   const hasMoreComments = comments.length > 3;
 
@@ -47,13 +69,12 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
     <Box sx={{ mt: 2 }}>
       <Box
         sx={{
-          maxHeight: { xs: 300, sm: 400, md: 500 }, // Simple max height
-          overflowY: "auto", // Simple scroll
+          maxHeight: { xs: 300, sm: 400, md: 500 },
+          overflowY: "auto",
           overflowX: "hidden",
           pr: { xs: 0, sm: 1 },
           width: "100%",
           boxSizing: "border-box",
-          // Custom scrollbar styling (optional)
           "&::-webkit-scrollbar": {
             width: "6px"
           },
@@ -139,13 +160,27 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                 )}
 
                 {isOwner && !isEditing && (
-                  <Typography
-                    variant="body2"
-                    sx={{ mt: 1, cursor: "pointer", display: "inline", color: "primary.main" }}
-                    onClick={() => handleStartEdit(comment)}
-                  >
-                    {transtask("commentedit")}
-                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ cursor: "pointer", color: "primary.main" }}
+                      onClick={() => handleStartEdit(comment)}
+                    >
+                      {transtask("commentedit")}
+                    </Typography>
+                  
+                    <Typography
+                      variant="body2"
+                      sx={{ 
+                        cursor: "pointer", 
+                        color: "#741B92",
+                        "&:hover": { color: "#b71c1c" }
+                      }}
+                      onClick={() => handleDeleteClick(comment)}
+                    >
+                      {transtask("deletecomment")}
+                    </Typography>
+                  </Box>
                 )}
               </Box>
             </Box>
@@ -169,6 +204,21 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
           {transtask("showless", { default: "Show less" })}
         </Button>
       )}
+
+      {/* Delete Confirmation Dialog using CommonDialog */}
+      <CommonDialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        onSubmit={handleDeleteConfirm}
+        title={transtask("deletetitle")}
+        submitLabel={transtask("deletecomment")}
+        cancelLabel={transtask("cancelcomments", { default: "Cancel" })}
+        submitColor="#b71c1c" 
+      >
+        <Typography sx={{pt:2}}>
+          {transtask("commmentmessage")}
+        </Typography>
+      </CommonDialog>
     </Box>
   );
 };

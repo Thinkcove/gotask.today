@@ -5,6 +5,7 @@ import {
   createCommentInTask,
   createNewTask,
   deleteByTaskId,
+  deleteCommentFromTask,
   findAllTasks,
   findTaskById,
   findTaskCountByStatus,
@@ -469,6 +470,32 @@ const updateComment = async (
   }
 };
 
+// Delete a comment for a task
+const deleteComment = async (
+  id: string
+): Promise<{ success: boolean; data?: ITaskComment | null; message?: string }> => {
+  try {
+    const deletedComment = await deleteCommentFromTask(id);
+    if (!deletedComment) {
+      return {
+        success: false,
+        message: TaskMessages.COMMENT.NOT_FOUND
+      };
+    }
+    return {
+      success: true,
+      data: deletedComment,
+      message: TaskMessages.COMMENT.DELETE_SUCCESS
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || TaskMessages.COMMENT.DELETE_FAILED
+    };
+  }
+};
+
+
 //add time spent
 const addTimeSpent = async (
   id: string,
@@ -509,5 +536,7 @@ export {
   updateTask,
   createComment,
   updateComment,
+  deleteComment,
   addTimeSpent
 };
+

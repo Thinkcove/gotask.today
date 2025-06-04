@@ -13,6 +13,7 @@ import {
   getTasksByProject,
   getTasksByUser,
   updateComment,
+  deleteComment,
   updateTask
 } from "./taskService";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
@@ -179,6 +180,17 @@ class TaskController extends BaseController {
       return this.replyError(error, handler);
     }
   }
+
+  // Delete Comment
+  async deleteComment(requestHelper: RequestHelper, handler: any) {
+  try {
+    const id = requestHelper.getParam("id");
+    const deletedComment = await deleteComment(id);
+    return this.sendResponse(handler, deletedComment);
+  } catch (error) {
+    return this.replyError(error, handler);
+  }
+}
 
   // Add Time Spent to Task
   async addTimeSpent(requestHelper: RequestHelper, handler: any) {

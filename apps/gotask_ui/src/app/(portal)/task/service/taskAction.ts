@@ -1,8 +1,9 @@
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { getData, postData } from "@/app/common/utils/apiData";
+import { getData, postData, putData } from "@/app/common/utils/apiData";
 import { IFormField, ITaskComment, Project, TaskPayload, User } from "../interface/taskInterface";
 import { withAuth } from "@/app/common/utils/authToken";
+import { SortOrder, TaskSortField } from "@/app/common/constants/task";
 
 // Modify both hooks with an optional dateRange parameter
 export const useProjectGroupTask = (
@@ -14,7 +15,9 @@ export const useProjectGroupTask = (
   max_date?: string,
   date_var?: string,
   more_variation?: string,
-  less_variation?: string
+  less_variation?: string,
+  sort_field?: TaskSortField,
+  sort_order?: SortOrder
 ) => {
   const fetchProjectTasks = () =>
     withAuth((token) => {
@@ -45,7 +48,9 @@ export const useProjectGroupTask = (
       max_date,
       date_var,
       more_variation,
-      less_variation
+      less_variation,
+      sort_field,
+      sort_order
     ],
     fetchProjectTasks,
     { revalidateOnFocus: false }
@@ -70,7 +75,9 @@ export const useUserGroupTask = (
   max_date?: string,
   date_var?: string,
   more_variation?: string,
-  less_variation?: string
+  less_variation?: string,
+  sort_field?: TaskSortField,
+  sort_order?: SortOrder
 ) => {
   const fetchUserTasks = () =>
     withAuth((token) => {
@@ -85,7 +92,9 @@ export const useUserGroupTask = (
             date_var: date_var ?? "due_date"
           }),
         ...(more_variation && { more_variation }),
-        ...(less_variation && { less_variation })
+        ...(less_variation && { less_variation }),
+        ...(sort_field && { sort_field }),
+        ...(sort_order && { sort_order })
       };
       return postData(`${env.API_BASE_URL}/tasks/grouped-by-user`, payload, token);
     });
@@ -101,7 +110,9 @@ export const useUserGroupTask = (
       max_date,
       date_var,
       more_variation,
-      less_variation
+      less_variation,
+      sort_field,
+      sort_order
     ],
     fetchUserTasks,
     { revalidateOnFocus: false }
@@ -186,14 +197,14 @@ export const updateTask = (taskId: string, updatedFields: object) =>
   });
 
 //create comment
-export const createComment = async (formData: ITaskComment) => {
-  const response = await fetch(`${env.API_BASE_URL}/task/createComment`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData)
+export const createComment = (formData: ITaskComment) =>
+  withAuth(async (token) => {
+    return postData(
+      `${env.API_BASE_URL}/task/createComment`,
+      { ...formData } as Record<string, unknown>,
+      token
+    );
   });
-  return response.json();
-};
 
 // Get Projects by User
 export const getProjectIdsAndNames = async (userId: string) => {
@@ -228,3 +239,13 @@ export const logTaskTime = async (
   });
   return response.json();
 };
+
+// Update a comment
+export const updateComment = (commentData: ITaskComment) =>
+  withAuth(async (token) => {
+    return putData(
+      `${env.API_BASE_URL}/task/updateComment/${commentData.id}`,
+      { ...commentData } as Record<string, unknown>,
+      token
+    );
+  });

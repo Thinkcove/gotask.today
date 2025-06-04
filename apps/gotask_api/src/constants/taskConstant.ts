@@ -12,3 +12,14 @@ export const TASK_SEVERITY = {
   HIGH: "high",
   CRITICAL: "critical"
 };
+
+export enum SortField {
+  DUE_DATE = "due_date",
+  USER_NAME = "user_name",
+  CREATED_AT = "createdAt"
+}
+
+export enum SortOrder {
+  ASC = "asc",
+  DESC = "desc"
+}

@@ -63,7 +63,9 @@ class TaskController extends BaseController {
         max_date,
         date_var,
         more_variation,
-        less_variation
+        less_variation,
+        sort_field,
+        sort_order
       } = requestHelper.getPayload();
 
       const result = await getTasksByProject(
@@ -75,7 +77,9 @@ class TaskController extends BaseController {
         max_date,
         date_var,
         more_variation,
-        less_variation
+        less_variation,
+        sort_field,
+        sort_order
       );
 
       return this.sendResponse(handler, result);
@@ -96,7 +100,9 @@ class TaskController extends BaseController {
         max_date,
         date_var,
         more_variation,
-        less_variation
+        less_variation,
+        sort_field,
+        sort_order
       } = requestHelper.getPayload();
 
       const result = await getTasksByUser(
@@ -108,7 +114,9 @@ class TaskController extends BaseController {
         max_date,
         date_var,
         more_variation,
-        less_variation
+        less_variation,
+        sort_field,
+        sort_order
       );
 
       return this.sendResponse(handler, result);

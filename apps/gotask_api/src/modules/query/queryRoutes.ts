@@ -41,7 +41,6 @@ QueryRoutes.push({
     }
   }
 });
-
 QueryRoutes.push({
   path: "/api/query/history/{conversationId}",
   method: API_METHODS.GET,
@@ -56,22 +55,22 @@ QueryRoutes.push({
       scope: false
     }
   }
-}),
-  QueryRoutes.push({
-    path: "/api/query/history/clear",
-    method: API_METHODS.DELETE,
-    handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
-      queryController.clearQueryHistory(new RequestHelper(request), handler)
-    ),
-    config: {
-      notes: "Clear query history",
-      tags,
-      auth: {
-        strategy: authStrategy.SIMPLE,
-        scope: false
-      }
+});
+QueryRoutes.push({
+  path: "/api/query/history/clear",
+  method: API_METHODS.DELETE,
+  handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
+    queryController.clearQueryHistory(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Clear query history",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE,
+      scope: false
     }
-  });
+  }
+});
 
 QueryRoutes.push({
   path: "/api/query/conversation/{id}",

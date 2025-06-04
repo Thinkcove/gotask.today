@@ -57,10 +57,11 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onNewChat, onSelectConversati
         setSnackbarMessage(transchatbot("deleteSuccess"));
         setSnackbarSeverity("success");
       } catch (error: any) {
+        const status = error?.response?.status;
         const errorMessage =
-          error.response?.status === 500
+          status === 500
             ? transchatbot("servererror")
-            : error.response?.status === 404
+            : status === 404
               ? transchatbot("noconversation")
               : error.message || transchatbot("deleteFailed");
         setSnackbarMessage(errorMessage);
@@ -184,7 +185,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onNewChat, onSelectConversati
                   primary={entry.query}
                   primaryTypographyProps={{ fontSize: "0.9rem" }}
                 />
-                <IconButton onClick={(e: any) => handleMenuClick(e, entry.conversationId)}>
+                <IconButton onClick={(e) => handleMenuClick(e, entry.conversationId)}>
                   <MoreVertIcon />
                 </IconButton>
               </ListItem>
@@ -193,7 +194,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onNewChat, onSelectConversati
         ) : error ? (
           <Typography color="error">{errorMessage}</Typography>
         ) : (
-          <Typography sx={{ color: "grey.600" }}>{Query.NOT_FOUND}</Typography>
+          <Typography sx={{ color: "grey.600" }}>{transchatbot("notFound")}</Typography>
         )}
       </Box>
 

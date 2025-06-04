@@ -273,6 +273,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
       view
     });
 
+    if (searchText.trim()) params.set("title", searchText);
     if (minDate) params.set("minDate", minDate);
     if (maxDate) params.set("maxDate", maxDate);
     if (moreDays) params.set("moreDays", moreDays);
@@ -283,8 +284,6 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
 
     statusFilter.forEach((val) => params.append("status", val));
     severityFilter.forEach((val) => params.append("severity", val));
-
-    // Conditionally include filters based on current view
     if (view !== "projects") {
       projectFilter.forEach((val) => params.append("project_name", val));
     }

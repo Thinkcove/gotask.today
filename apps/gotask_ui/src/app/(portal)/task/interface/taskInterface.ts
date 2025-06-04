@@ -73,6 +73,8 @@ export type TaskPayload = {
   date_var?: string;
   more_variation?: string;
   less_variation?: string;
+  sort_field?: string;
+  sort_order?: "asc" | "desc";
 };
 
 export type Project = {

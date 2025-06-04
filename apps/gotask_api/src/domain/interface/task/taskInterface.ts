@@ -121,6 +121,16 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
       existingTask.history.unshift(historyItem);
     }
 
+    // Recalculate estimated_time if due_date or created_on is updated
+    const createdOn = new Date(updateData.created_on ?? existingTask.created_on);
+    const dueDate = new Date(updateData.due_date ?? existingTask.due_date);
+
+    const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
+    const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+
+    const daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
+    existingTask.estimated_time = daysDiff > 0 ? `${daysDiff}d0h` : "1d0h";
+
     Object.assign(existingTask, updateData);
     await existingTask.save();
 

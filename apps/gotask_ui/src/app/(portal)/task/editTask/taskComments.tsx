@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
-import { ITaskComment } from "../interface/taskInterface";
+import { ITask, ITaskComment } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import CommentHistory from "./commentsHistory";
+import { KeyedMutator } from "swr";
+import { SpeakerNotesOutlined } from "@mui/icons-material";
 
 interface TaskCommentsProps {
   comments: ITaskComment[];
   onSave: (comment: string) => void;
+  mutate: KeyedMutator<ITask>;
 }
 
-const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
+const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [newComment, setNewComment] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -25,7 +28,11 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
   };
 
   return (
-    <Box sx={{ mb: 5 }}>
+    <Box>
+      <Box sx={{ display: "flex", gap: 1, color: "#741B92", alignItems: "center" }}>
+        <Typography fontWeight="bold">{transtask("comment")}</Typography>
+        <SpeakerNotesOutlined />
+      </Box>
       {/* Comment Input Field */}
       <FormField
         label={transtask("labelcomment")}
@@ -69,7 +76,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave }) => {
 
       {/* Previous Comments */}
 
-      {comments.length > 0 && <CommentHistory comments={comments} />}
+      {comments.length > 0 && <CommentHistory comments={comments} mutate={mutate} />}
     </Box>
   );
 };

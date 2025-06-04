@@ -1,7 +1,7 @@
 import { TIME_FORMAT, TIME_PERIODS } from "../../common/constants/timeTask";
 import { TASK_CALCULATION, TASK_VARIATION, TASK_HOURS } from "../constants/task";
 
-export const formatDate = (dateString: string): string => {
+export const monthDate = (dateString: string): string => {
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return "";
   const day = date.getUTCDate();
@@ -127,6 +127,14 @@ export const validateEmail = (email: string): boolean => {
 export const validatePhone = (phone: string) => {
   const phoneRegex = /^\+?[1-9](?:\d\s?){7,14}$/;
   return phoneRegex.test(phone);
+};
+
+export const formatDate = (date: Date) => {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
 };
 
 //extracthours

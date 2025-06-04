@@ -31,10 +31,10 @@ export interface ITask {
   project_id: string;
   project_name: string;
   createdAt: string;
-  created_on: string;
-  updatedAt: string;
+  created_on: Date;
+  updatedAt: Date;
   updated_on: string;
-  due_date: string;
+  due_date: Date;
   history: ITaskHistory[];
   comment: ITaskComment[];
   estimated_time?: string;
@@ -60,7 +60,7 @@ export interface ITaskComment {
   user_name: string;
   comment: string;
   createdAt?: string;
-  updatedAt?: string;
+  updatedAt?: Date;
 }
 
 export type TaskPayload = {

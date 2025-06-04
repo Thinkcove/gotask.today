@@ -85,13 +85,13 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
         <Box
           sx={{
             borderRadius: 4,
-            p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
+            p: { xs: 2, sm: 3, md: 4 },
             bgcolor: "#f9fafb",
             border: "1px solid #e0e0e0",
-            maxHeight: { xs: "auto", md: 820 }, // Remove max height on mobile
-            width: "100%", // Ensure full width
-            boxSizing: "border-box", // Include padding in width calculation
-            overflow: "hidden" // Prevent content from breaking out
+            maxHeight: { xs: "auto", md: 820 }, 
+            width: "100%", 
+            boxSizing: "border-box", 
+            overflow: "hidden" 
           }}
         >
           {/* Header */}
@@ -111,7 +111,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                   fontWeight={500}
                   sx={{
                     textTransform: "capitalize",
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" } // Responsive font size
+                    fontSize: { xs: "1.25rem", sm: "1.5rem" } 
                   }}
                 >
                   {task?.title}

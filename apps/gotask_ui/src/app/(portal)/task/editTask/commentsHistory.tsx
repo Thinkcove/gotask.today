@@ -8,7 +8,7 @@ import { useUser } from "@/app/userContext";
 import FormField from "@/app/component/input/formField";
 import { updateComment, deleteComment } from "../service/taskAction";
 import { KeyedMutator } from "swr";
-import CommonDialog from "@/app/component/dialog/commonDialog"; // Import the CommonDialog
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
@@ -168,7 +168,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                     >
                       {transtask("commentedit")}
                     </Typography>
-                    <Typography sx={{ color: "text.secondary" }}>|</Typography>
+                  
                     <Typography
                       variant="body2"
                       sx={{ 
@@ -178,7 +178,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                       }}
                       onClick={() => handleDeleteClick(comment)}
                     >
-                      {transtask("deleteComment", { default: "Delete" })}
+                      {transtask("deletecomment")}
                     </Typography>
                   </Box>
                 )}
@@ -210,8 +210,8 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}
         onSubmit={handleDeleteConfirm}
-        title={transtask("deleteCommentTitle", { default: "Delete Comment" })}
-        submitLabel={transtask("deleteComment", { default: "Delete" })}
+        title={transtask("deletetitle")}
+        submitLabel={transtask("deletecomment")}
         cancelLabel={transtask("cancelcomments", { default: "Cancel" })}
         submitColor="#b71c1c" 
       >

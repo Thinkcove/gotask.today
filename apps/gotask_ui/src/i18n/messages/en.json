@@ -242,6 +242,8 @@
     "placeholdercomment": "Write a comment...",
     "savecomment": "Save Comment",
     "cancelcomment": "Cancel",
+    "commentedit": "Edit",
+    "showless": "Show Less",
     "comments": "Comments",
     "taskhistory": "Task History",
     "log": "Log of who performed the updates in the task",

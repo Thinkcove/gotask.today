@@ -22,6 +22,12 @@ export interface IQueryHistory extends Document {
   type: string;
 }
 
+export interface QueryHistoryResponse {
+  success: boolean;
+  data?: IQueryHistory[];
+  message?: string;
+}
+
 const QueryHistorySchema = new Schema<IQueryHistory>(
   {
     id: {

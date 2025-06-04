@@ -91,7 +91,7 @@ export const processQuery = async (
       }
 
       if (startDate.day() === 0 && startDate.isSame(endDate, "day")) {
-        return { success: true, message: "No absences tracked on Sundays" };
+        return { success: true, message: AttendanceMessages.QUERY.NO_ABSENT };
       }
 
       const records = await findAttendancesByQuery({
@@ -120,7 +120,7 @@ export const processQuery = async (
         ? moment(parsedQuery.dates[0]).startOf("day")
         : moment().startOf("day");
       if (date.day() === 0) {
-        return { success: true, message: "No attendance tracked on Sundays" };
+        return { success: true, message: AttendanceMessages.QUERY.NO_ABSENT };
       }
 
       const records = await findAttendancesByQuery({
@@ -147,7 +147,7 @@ export const processQuery = async (
         ? moment(parsedQuery.dates[0]).startOf("day")
         : moment().startOf("day");
       if (date.day() === 0) {
-        return { success: true, message: "No attendance tracked on Sundays" };
+        return { success: true, message: AttendanceMessages.QUERY.NO_ABSENT };
       }
 
       const records = await findAttendancesByQuery({
@@ -200,7 +200,7 @@ export const processQuery = async (
     ) {
       const date = moment(parsedQuery.dates[0]).startOf("day");
       if (date.day() === 0) {
-        return { success: true, message: "No attendance tracked on Sundays" };
+        return { success: true, message: AttendanceMessages.QUERY.NO_ABSENT };
       }
 
       const records = await findAttendancesByQuery({
@@ -218,8 +218,7 @@ export const processQuery = async (
 
     return {
       success: false,
-      message:
-        "Invalid attendance query: Please specify absent, after10am, latelogoff, late, or employee details"
+      message: AttendanceMessages.QUERY.INVALID
     };
   } catch (error: any) {
     return { success: false, message: error.message || AttendanceMessages.QUERY.FAILED };
@@ -231,10 +230,6 @@ export const processEmployeeQuery = async (
   parsedQuery: Record<string, any>
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
   try {
-    // Log raw query and parsed query
-    console.log("Raw Query:", query);
-    console.log("Parsed Query:", JSON.stringify(parsedQuery, null, 2));
-
     let name: string | undefined;
     let empcode: string | undefined;
 
@@ -244,11 +239,9 @@ export const processEmployeeQuery = async (
         .trim()
         .split(/\s+from\s+/i)[0]
         .trim();
-      console.log(`Looking up Attendance for empname: ${name}`);
       const attendanceRecords = await findAttendancesByQuery({
         empname: { $regex: `^${name}$`, $options: "i" }
       });
-      console.log(`Attendance records for empname: ${attendanceRecords.length}`);
       if (!attendanceRecords.length) {
         return { success: false, message: `No attendance record found for employee ${name}` };
       }
@@ -261,22 +254,18 @@ export const processEmployeeQuery = async (
       }
     } else if (parsedQuery.empcode) {
       empcode = parsedQuery.empcode.trim();
-      console.log(`Looking up Attendance for empcode: ${empcode}`);
       const attendanceRecords = await findAttendancesByQuery({ empcode });
-      console.log(`Attendance records for empcode: ${attendanceRecords.length}`);
       if (!attendanceRecords.length) {
         return { success: false, message: `No attendance record found for empcode ${empcode}` };
       }
       name = attendanceRecords[0].empname;
       // Validate empname against User.username
       const user = await User.findOne({ username: { $regex: `^${name}$`, $options: "i" } }).lean();
-      console.log(`User found for username ${name}: ${!!user}`);
       if (!user) {
         return { success: false, message: `No user found with username ${name}` };
       }
     } else {
-      console.log("No empname or empcode provided");
-      return { success: false, message: `No valid employee identifier provided` };
+      return { success: false, message: AttendanceMessages.QUERY.VALID };
     }
 
     // Step 2: Handle dates
@@ -323,8 +312,7 @@ export const processEmployeeQuery = async (
 
     console.log(`Date range: ${startDate.format("YYYY-MM-DD")} to ${endDate.format("YYYY-MM-DD")}`);
     if (!startDate.isValid() || !endDate.isValid()) {
-      console.log("Invalid date format");
-      return { success: false, message: `Invalid date format provided` };
+      return { success: false, message: AttendanceMessages.QUERY.INVALID_DATE };
     }
 
     const dateStr = parsedQuery.dateRange
@@ -338,10 +326,7 @@ export const processEmployeeQuery = async (
     if (parsedQuery.dateRange || parsedQuery.dates?.[0] || parsedQuery.timeRange === "last week") {
       queryFilter.date = { $gte: startDate.toDate(), $lte: endDate.toDate() };
     }
-
-    console.log("Query filter:", JSON.stringify(queryFilter, null, 2));
     const attendanceRecords = await findAttendancesByQuery(queryFilter);
-    console.log(`Final attendance records: ${attendanceRecords.length}`);
 
     if (!attendanceRecords.length) {
       return {

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Box, Avatar, Typography, Button } from "@mui/material";
-import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ITask, ITaskComment } from "../interface/taskInterface";

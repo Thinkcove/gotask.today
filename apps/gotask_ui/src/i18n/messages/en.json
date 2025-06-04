@@ -399,6 +399,7 @@
     "Loading": "Loading Conversation.....",
     "Unknown": "Unknown delete error",
     "New": " New Chat",
-    "Recent": "RECENT QUERIES"
+    "Recent": "RECENT QUERIES",
+    "Uploaderror": "An unknown error occurred during upload."
   }
 }

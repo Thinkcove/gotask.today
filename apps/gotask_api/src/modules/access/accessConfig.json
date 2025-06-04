@@ -47,6 +47,11 @@
       "access": "User Report",
       "actions": ["READ"],
       "restrictedFields": {}
+    },
+     {
+      "access": "Chatbot Management",
+      "actions": ["READ", "CREATE", "VIEW", "EDIT"],
+      "restrictedFields": {}
     }
   ]
 }

@@ -6,8 +6,8 @@ import { permission } from "../../middleware/permission";
 import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
 import authStrategy from "../../constants/auth/authStrategy";
 
-const appName = APPLICATIONS.QUERY;
-const tags = [API, "Query"];
+const appName = APPLICATIONS.CHATBOT;
+const tags = [API, "Chatbot"];
 const QueryRoutes = [];
 
 QueryRoutes.push({
@@ -41,7 +41,21 @@ QueryRoutes.push({
     }
   }
 });
-
+QueryRoutes.push({
+  path: "/api/query/history/{conversationId}",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+    queryController.getConversationHistory(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Get conversation history by conversation ID",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE,
+      scope: false
+    }
+  }
+});
 QueryRoutes.push({
   path: "/api/query/history/clear",
   method: API_METHODS.DELETE,
@@ -61,9 +75,10 @@ QueryRoutes.push({
 QueryRoutes.push({
   path: "/api/query/conversation/{id}",
   method: API_METHODS.DELETE,
-  handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
-    queryController.deleteConversation(new RequestHelper(request), handler)
-  ),
+  handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) => {
+    console.log("Route params:", request.params);
+    return queryController.deleteConversation(new RequestHelper(request), handler);
+  }),
   config: {
     notes: "Delete a conversation by ID",
     tags,

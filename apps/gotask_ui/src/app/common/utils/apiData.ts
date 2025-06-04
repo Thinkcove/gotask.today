@@ -21,13 +21,21 @@ export const apiHeaders = (token?: string) => ({
   "Content-Type": "application/json",
 });
 
-// postData function
-export const postData = async (url: string, payload: Record<string, unknown>, token: string) => {
+export const postData = async (
+  url: string,
+  data: Record<string, unknown> | FormData,
+  token?: string
+) => {
   try {
+    const isFormData = data instanceof FormData;
+
     const response = await fetch(url, {
       method: "POST",
-      headers: apiHeaders(token),
-      body: JSON.stringify(payload),
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(!isFormData && { "Content-Type": "application/json" })
+      },
+      body: isFormData ? data : JSON.stringify(data)
     });
 
     if (!response.ok) {

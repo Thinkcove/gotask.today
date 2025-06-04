@@ -7,11 +7,19 @@ import {
   FormHelperText,
   InputAdornment,
   Checkbox,
-  Autocomplete
+  Autocomplete,
+  IconButton
 } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { CalendarMonth, Edit, Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  CalendarMonth,
+  Edit,
+  Visibility,
+  VisibilityOff,
+  Send as SendIcon
+} from "@mui/icons-material";
+import { SxProps, Theme } from "@mui/material/styles";
 
 export interface SelectOption {
   name: string;
@@ -20,18 +28,20 @@ export interface SelectOption {
 
 interface FormFieldProps {
   label: string;
-  type: "text" | "select" | "date" | "multiselect"; // added "multiselect"
+  type: "text" | "select" | "date" | "multiselect";
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];
   value?: string | number | Date | string[];
   onChange?: (value: string | number | Date | string[]) => void;
+  onSend?: () => void; // Add onSend prop
   error?: string;
   disabled?: boolean;
   multiline?: boolean;
   height?: number;
   onFocus?: () => void;
   inputType?: string;
+  sx?: SxProps<Theme>;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -43,13 +53,14 @@ const FormField: React.FC<FormFieldProps> = ({
   error,
   value,
   onChange,
+  onSend, // Add onSend to props
   disabled = false,
   multiline = false,
   height,
   onFocus,
-  inputType
+  inputType,
+  sx
 }) => {
-  // State to handle password visibility
   const [passwordVisible, setPasswordVisible] = useState(true);
   const normalizedOptions: SelectOption[] = (options || []).map((opt) =>
     typeof opt === "string" ? { id: opt, name: opt } : opt
@@ -65,7 +76,8 @@ const FormField: React.FC<FormFieldProps> = ({
           border: "1px solid #DADADA",
           boxShadow: "2px 4px 10px rgba(0,0,0,0.05)",
           transition: "0.3s",
-          "&:focus-within": { borderColor: "#741B92", backgroundColor: "#fff" }
+          "&:focus-within": { borderColor: "#741B92", backgroundColor: "#fff" },
+          ...(sx || {})
         }}
       >
         <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
@@ -83,7 +95,7 @@ const FormField: React.FC<FormFieldProps> = ({
             value={value}
             disabled={disabled}
             onFocus={onFocus}
-            type={passwordVisible ? "text" : "password"} // Toggle between text and password
+            type={passwordVisible ? "text" : "password"}
             sx={{
               "& .MuiInputBase-input::placeholder": {
                 color: "#9C8585",
@@ -94,6 +106,12 @@ const FormField: React.FC<FormFieldProps> = ({
             onChange={(e) => {
               const val = e.target.value;
               onChange?.(val);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey && onSend) {
+                e.preventDefault();
+                onSend();
+              }
             }}
             InputProps={{
               disableUnderline: true,
@@ -109,6 +127,11 @@ const FormField: React.FC<FormFieldProps> = ({
                       sx={{ color: "#9C8585", cursor: "pointer" }}
                       onClick={() => setPasswordVisible(true)}
                     />
+                  )}
+                  {onSend && (
+                    <IconButton onClick={onSend} disabled={disabled || !value}>
+                      <SendIcon sx={{ color: value && !disabled ? "#741B92" : "#9C8585" }} />
+                    </IconButton>
                   )}
                 </InputAdornment>
               )
@@ -136,17 +159,29 @@ const FormField: React.FC<FormFieldProps> = ({
               }}
               onChange={(e) => {
                 let val = e.target.value;
-                // If inputType is "tel", restrict to numbers, spaces, +, -, (, )
                 if (inputType === "tel") {
                   val = val.replace(/[^\d\s()+-]/g, "");
                 }
                 onChange?.(val);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && onSend) {
+                  e.preventDefault();
+                  onSend();
+                }
               }}
               InputProps={{
                 disableUnderline: true,
                 startAdornment: (
                   <InputAdornment position="start">
                     <Edit sx={{ color: "#9C8585" }} />
+                  </InputAdornment>
+                ),
+                endAdornment: onSend && (
+                  <InputAdornment position="end">
+                    <IconButton onClick={onSend} disabled={disabled || !value}>
+                      <SendIcon sx={{ color: value && !disabled ? "#741B92" : "#9C8585" }} />
+                    </IconButton>
                   </InputAdornment>
                 )
               }}
@@ -216,7 +251,7 @@ const FormField: React.FC<FormFieldProps> = ({
           <Autocomplete
             multiple
             disableCloseOnSelect
-            options={normalizedOptions} // Make sure this is always SelectOption[]
+            options={normalizedOptions}
             getOptionLabel={(option) => option.name}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             value={

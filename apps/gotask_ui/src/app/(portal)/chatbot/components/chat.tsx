@@ -559,6 +559,19 @@ const useGreeting = (transchatbot: (key: string) => string) => {
     intervalRef.current = setInterval(updateGreeting, 60000);
   }
 
+  // Set initial greeting
+  const [isInitialized, setIsInitialized] = useState(false);
+  if (!isInitialized) {
+    setGreeting(initializedGreeting);
+    setIsInitialized(true);
+  }
+
+  // Set up interval for updates
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  if (!intervalRef.current) {
+    intervalRef.current = setInterval(updateGreeting, 60000);
+  }
+
   return greeting;
 };
 
@@ -625,8 +638,6 @@ const Chat: React.FC = () => {
   const [inputError, setInputError] = useState<string | undefined>(undefined);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-  const [isChatOpen, setIsChatOpen] = useState(false); // State to toggle chat popup
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false); // State to toggle history sidebar
   const [messages, setMessages] = useState<QueryResponse[]>([]);
 
   const {
@@ -634,11 +645,6 @@ const Chat: React.FC = () => {
     isLoading: selectedLoading,
     error: selectedError
   } = useQueryHistory(selectedConversationId ?? undefined);
-
-  const { user } = useUser();
-  const userName = user?.name || "";
-  const formattedUserName =
-    userName.charAt(0).toUpperCase() + (userName.slice(1) || "").toLowerCase();
 
   const memoizedSelectedHistory = useMemo(() => selectedHistory ?? [], [selectedHistory]);
 

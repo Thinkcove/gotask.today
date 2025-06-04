@@ -22,7 +22,7 @@ export const useQueryHistory = (conversationId?: string) => {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      onError: (err: any) => {
+      onError: (err) => {
         console.error("SWR error:", err.message, err);
       }
     }
@@ -69,7 +69,7 @@ export const uploadAttendance = async (file: File): Promise<UploadResponse> => {
   formData.append("file", file);
 
   return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/api/v1}/attendance/upload`;
+    const url = `${env.API_BASE_URL}/api/v1/attendance/upload`;
     return postData(url, formData, token);
   });
 };

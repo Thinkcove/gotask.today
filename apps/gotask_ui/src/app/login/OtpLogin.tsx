@@ -9,6 +9,8 @@ import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex";
+import { storeTokens } from "../common/utils/authToken"; // ✅ added
+
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
   const { setUser } = useUser();
@@ -26,7 +28,6 @@ const OtpLogin = () => {
       return;
     }
 
-   
     if (EMAIL_UPPERCASE_REGEX.test(email)) {
       setError(translogin("emailuppercase"));
       return;
@@ -48,8 +49,9 @@ const OtpLogin = () => {
       }
     } catch {
       setError(translogin("genericerror"));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const verifyOtp = async () => {
@@ -68,11 +70,12 @@ const OtpLogin = () => {
       const data = await res.json();
 
       if (res.ok && data.success && data.data) {
-        const { user, token } = data.data;
+        const { user, token, refreshToken } = data.data;
 
-        localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("token", token);
-        setUser({ ...user, token });
+        localStorage.setItem("user", JSON.stringify(user)); // Store user
+        storeTokens(token, refreshToken); // ✅ Store both tokens properly
+
+        setUser({ ...user, token, refreshToken }); // ✅ Set user context
 
         router.push("/dashboard");
       } else {
@@ -80,8 +83,9 @@ const OtpLogin = () => {
       }
     } catch {
       setError(translogin("genericerror"));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -103,7 +107,7 @@ const OtpLogin = () => {
         value={email}
         onChange={(e) => {
           setEmail(e.target.value);
-          setError(""); // Clear error on change
+          setError("");
         }}
         disabled={otpSent}
         InputProps={{ sx: { height: 56 } }}
@@ -124,7 +128,11 @@ const OtpLogin = () => {
         />
       )}
 
-      {error && <Typography color="error">{error}</Typography>}
+      {error && (
+        <Typography color="error" sx={{ mt: 1 }}>
+          {error}
+        </Typography>
+      )}
 
       <StyledButton
         fullWidth

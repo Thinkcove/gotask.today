@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User, IUser } from "../../domain/model/user/user";
-import { Otp, IOtp } from "../../domain/model/otp/Otp";
+import { Otp } from "../../domain/model/otp/Otp";
 import { sendEmail } from "../../constants/utils/emailService";
 import { generateOTPWithExpiry } from "../../constants/utils/otpGenerator";
 import { getRoleByIdService } from "../role/roleService";
@@ -15,7 +15,7 @@ export const sendOtpService = async (
   user_id: string
 ): Promise<{ success: boolean; message: string; details?: any }> => {
   try {
-    const user = await User.findOne({ user_id }) as IUser;
+    const user = (await User.findOne({ user_id })) as IUser;
     if (!user) {
       return { success: false, message: UserMessages.FETCH.NOT_FOUND };
     }
@@ -24,10 +24,7 @@ export const sendOtpService = async (
     const existingOtp = await Otp.findOne(query);
     const now = new Date();
 
-    if (
-      existingOtp?.resendCooldownExpiresAt &&
-      existingOtp.resendCooldownExpiresAt > now
-    ) {
+    if (existingOtp?.resendCooldownExpiresAt && existingOtp.resendCooldownExpiresAt > now) {
       return {
         success: false,
         message: OtpMessages.SEND.RESEND_TOO_SOON
@@ -79,7 +76,7 @@ export const verifyOtpService = async (
   details?: any;
 }> => {
   try {
-    const user = await User.findOne({ user_id }).populate("roleId") as IUser;
+    const user = (await User.findOne({ user_id }).populate("roleId")) as IUser;
     if (!user) {
       return { success: false, message: UserMessages.FETCH.NOT_FOUND };
     }

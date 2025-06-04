@@ -34,7 +34,7 @@ export const API_PATHS = {
   OTP_LOGIN: "/api/user/otp-login",
   SEND_OTP: "/otp/send",
   VERIFY_OTP: "/otp/verify",
-   REFRESH_TOKEN: "/otp/refresh-token",
+  REFRESH_TOKEN: "/otp/refresh-token",
 
   //accessroutes
   CREATE_ACCESS: "/access/create", // Path for creating access
@@ -68,7 +68,4 @@ export const API_PATHS = {
   //userpreference
   SET_USER_PREFERENCES: "/setPreference",
   GET_USER_PREFERENCES: "/getPreference"
-
-
-
 };

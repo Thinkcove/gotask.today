@@ -35,7 +35,7 @@ OtpRoutes.push({
 
 // Route: Refresh Token
 OtpRoutes.push({
-  path: API_PATHS.REFRESH_TOKEN, 
+  path: API_PATHS.REFRESH_TOKEN,
   method: API_METHODS.POST,
   handler: (request: Request, handler: ResponseToolkit) =>
     otpController.refreshToken(new RequestHelper(request), handler),

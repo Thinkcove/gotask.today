@@ -14,31 +14,28 @@ const RefreshTokenSchema = new Schema<IRefreshToken>(
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
     token: {
       type: String,
       required: true,
-      unique: true,
+      unique: true
     },
     expiresAt: {
       type: Date,
-      required: true,
+      required: true
     },
     isRevoked: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   {
-    timestamps: true, // Adds createdAt and updatedAt
+    timestamps: true // Adds createdAt and updatedAt
   }
 );
 
 // TTL index: MongoDB will auto-delete documents after expiresAt
 RefreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-export const RefreshToken = model<IRefreshToken>(
-  "RefreshToken",
-  RefreshTokenSchema
-);
+export const RefreshToken = model<IRefreshToken>("RefreshToken", RefreshTokenSchema);

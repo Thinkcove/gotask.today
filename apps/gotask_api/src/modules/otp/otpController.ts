@@ -17,7 +17,7 @@ class OtpController extends BaseController {
       if (!user_id) {
         return this.sendResponse(handler, {
           success: false,
-          error: OtpMessages.SEND.MISSING_USER_ID,
+          error: OtpMessages.SEND.MISSING_USER_ID
         });
       }
 
@@ -36,7 +36,7 @@ class OtpController extends BaseController {
       if (!user_id || !otp) {
         return this.sendResponse(handler, {
           success: false,
-          error: OtpMessages.VERIFY.MISSING_FIELDS,
+          error: OtpMessages.VERIFY.MISSING_FIELDS
         });
       }
 
@@ -51,7 +51,7 @@ class OtpController extends BaseController {
       if (!user) {
         return this.sendResponse(handler, {
           success: false,
-          error: "User not found",
+          error: "User not found"
         });
       }
 
@@ -63,7 +63,7 @@ class OtpController extends BaseController {
         user: user._id,
         token: result.data.refreshToken,
         expiresAt,
-        isRevoked: false,
+        isRevoked: false
       });
 
       return this.sendResponse(handler, result);
@@ -80,20 +80,17 @@ class OtpController extends BaseController {
       if (!refreshToken) {
         return this.sendResponse(handler, {
           success: false,
-          error: "Refresh token is required",
+          error: "Refresh token is required"
         });
       }
 
       let payload: any;
       try {
-        payload = jwt.verify(
-          refreshToken,
-          process.env.REFRESH_AUTH_KEY as string
-        );
-      } catch (err) {
+        payload = jwt.verify(refreshToken, process.env.REFRESH_AUTH_KEY as string);
+      } catch {
         return this.sendResponse(handler, {
           success: false,
-          error: "Invalid or expired refresh token",
+          error: "Invalid or expired refresh token"
         });
       }
 
@@ -102,14 +99,14 @@ class OtpController extends BaseController {
       if (!savedToken || savedToken.isRevoked) {
         return this.sendResponse(handler, {
           success: false,
-          error: "Refresh token revoked or not found",
+          error: "Refresh token revoked or not found"
         });
       }
 
       if (savedToken.expiresAt < new Date()) {
         return this.sendResponse(handler, {
           success: false,
-          error: "Refresh token expired",
+          error: "Refresh token expired"
         });
       }
 
@@ -117,7 +114,7 @@ class OtpController extends BaseController {
       if (!user) {
         return this.sendResponse(handler, {
           success: false,
-          error: "User not found",
+          error: "User not found"
         });
       }
 
@@ -130,7 +127,7 @@ class OtpController extends BaseController {
         {
           id: user._id as Types.ObjectId,
           user_id: user.user_id,
-          role: user.roleId,
+          role: user.roleId
         },
         process.env.AUTH_KEY as string,
         { expiresIn: "15m" }
@@ -149,7 +146,7 @@ class OtpController extends BaseController {
         user: user._id,
         token: newRefreshToken,
         expiresAt,
-        isRevoked: false,
+        isRevoked: false
       });
 
       // Return new tokens
@@ -158,8 +155,8 @@ class OtpController extends BaseController {
         message: "Token refreshed successfully",
         data: {
           accessToken,
-          refreshToken: newRefreshToken,
-        },
+          refreshToken: newRefreshToken
+        }
       });
     } catch (error) {
       return this.replyError(error);

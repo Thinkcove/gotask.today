@@ -283,7 +283,12 @@
     "comment": "Comments",
     "listViewOf": "List view of {name} {type}",
     "notaskfound": "No tasks found for {name} with the selected filters",
-    "nodata": "No data found"
+    "nodata": "No data found",
+    "deleteCommentTitle":"Delete Comment",
+    "deleteComment":"Delete",
+    "cancelcomments":"Cancel",
+    "commmentmessage":"Are You Sure You Want to Delete This Comment?"
+
   },
   "User": {
     "username": "User name is required",

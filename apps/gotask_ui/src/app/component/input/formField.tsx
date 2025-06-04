@@ -19,6 +19,7 @@ import {
   VisibilityOff,
   Send as SendIcon
 } from "@mui/icons-material";
+import { SxProps, Theme } from "@mui/material/styles";
 
 export interface SelectOption {
   name: string;
@@ -40,6 +41,7 @@ interface FormFieldProps {
   height?: number;
   onFocus?: () => void;
   inputType?: string;
+  sx?: SxProps<Theme>;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -56,7 +58,8 @@ const FormField: React.FC<FormFieldProps> = ({
   multiline = false,
   height,
   onFocus,
-  inputType
+  inputType,
+  sx
 }) => {
   const [passwordVisible, setPasswordVisible] = useState(true);
   const normalizedOptions: SelectOption[] = (options || []).map((opt) =>
@@ -73,7 +76,8 @@ const FormField: React.FC<FormFieldProps> = ({
           border: "1px solid #DADADA",
           boxShadow: "2px 4px 10px rgba(0,0,0,0.05)",
           transition: "0.3s",
-          "&:focus-within": { borderColor: "#741B92", backgroundColor: "#fff" }
+          "&:focus-within": { borderColor: "#741B92", backgroundColor: "#fff" },
+          ...(sx || {})
         }}
       >
         <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>

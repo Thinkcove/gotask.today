@@ -46,11 +46,6 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Box sx={{ display: "flex", gap: 1, color: "#741B92", alignItems: "center" }}>
-        <Typography fontWeight="bold">{transtask("comment")}</Typography>
-        <SpeakerNotesOutlined />
-      </Box>
-
       <Box
         sx={{
           maxHeight: { xs: 300, sm: 400, md: 500 }, // Simple max height
@@ -169,11 +164,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
           onClick={() => setShowAll(false)}
           size="small"
           sx={{
-            textTransform: "none",
-            ml: { xs: 0, sm: 6 },
-            mt: 1,
-            fontSize: { xs: "0.875rem", sm: "0.875rem" },
-            alignSelf: "flex-start"
+            textTransform: "none"
           }}
         >
           {transtask("showless", { default: "Show less" })}

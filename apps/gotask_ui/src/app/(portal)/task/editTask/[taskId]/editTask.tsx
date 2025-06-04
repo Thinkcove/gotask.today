@@ -100,6 +100,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         message: transtask("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+      setTimeout(() => router.back(), 2000);
     } catch (error) {
       console.error("Error while updating task:", error);
       setSnackbar({
@@ -108,18 +109,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
-  };
-
-  const submitComment = async (commentText: string) => {
-    if (!commentText.trim()) return;
-    const commentData: ITaskComment = {
-      task_id: data.id,
-      user_id: user?.id || "",
-      user_name: user?.name || "",
-      comment: commentText
-    };
-    await createComment(commentData);
-    await mutate();
   };
 
   const handleBack = () => {
@@ -241,7 +230,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             errors={{}}
             readOnlyFields={["title", "user_id", "project_id", "created_on"]}
           />
-          <TaskComments comments={data.comment || []} onSave={submitComment} mutate={mutate} />
         </Box>
 
         <TimeSpentPopup

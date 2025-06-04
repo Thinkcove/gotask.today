@@ -5,14 +5,16 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { getSeverityColor, getStatusColor } from "@/app/common/constants/task";
 import LabelValueText from "@/app/component/text/labelValueText";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { ITask } from "../../interface/taskInterface";
+import { ITask, ITaskComment } from "../../interface/taskInterface";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import CommentHistory from "../../editTask/commentsHistory";
 import { formatTimeValue } from "@/app/common/utils/common";
 import { KeyedMutator } from "swr";
+import TaskComments from "../../editTask/taskComments";
+import { createComment } from "../../service/taskAction";
+import { useUser } from "@/app/userContext";
 
 interface TaskDetailViewProps {
   task: ITask;
@@ -22,9 +24,20 @@ interface TaskDetailViewProps {
 
 const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+  const { user } = useUser();
   const router = useRouter();
   const { canAccess } = useUserPermission();
-
+  const submitComment = async (commentText: string) => {
+    if (!commentText.trim()) return;
+    const commentData: ITaskComment = {
+      task_id: task?.id,
+      user_id: user?.id || "",
+      user_name: user?.name || "",
+      comment: commentText
+    };
+    await createComment(commentData);
+    await mutate();
+  };
   const handleBack = () => {
     router.back();
   };
@@ -198,19 +211,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
 
             <Divider sx={{ mt: 2, mb: 2 }} />
 
-            {/* Comment History - Contained within card */}
-            {Array.isArray(task?.comment) && task.comment.length > 0 && (
-              <Box
-                sx={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  overflow: "hidden", // Prevent horizontal overflow
-                  wordBreak: "break-word" // Break long words if needed
-                }}
-              >
-                <CommentHistory comments={task.comment} mutate={mutate} />
-              </Box>
-            )}
+            <TaskComments comments={task?.comment || []} onSave={submitComment} mutate={mutate} />
           </Box>
         </Box>
       </Box>

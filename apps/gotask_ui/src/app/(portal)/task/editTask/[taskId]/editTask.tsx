@@ -59,10 +59,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   };
 
   const handleInputChange = (name: string, value: string | Project[] | User[]) => {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
-    };
+  };
   const alreadyExists = checkIfDateExists();
 
   const handleProgressClick = () => {
@@ -241,7 +241,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             errors={{}}
             readOnlyFields={["title", "user_id", "project_id", "created_on"]}
           />
-          <TaskComments comments={data.comment || []} onSave={submitComment} />
+          <TaskComments comments={data.comment || []} onSave={submitComment} mutate={mutate} />
         </Box>
 
         <TimeSpentPopup

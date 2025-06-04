@@ -12,13 +12,15 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import CommentHistory from "../../editTask/commentsHistory";
 import { formatTimeValue } from "@/app/common/utils/common";
+import { KeyedMutator } from "swr";
 
 interface TaskDetailViewProps {
   task: ITask;
   loading?: boolean;
+  mutate: KeyedMutator<ITask>;
 }
 
-const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }) => {
+const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const { canAccess } = useUserPermission();
@@ -119,7 +121,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
           </Grid>
 
           {/* Task Description - Modified to display on separate lines */}
-          <Box sx={{ flex: 1, maxHeight: "calc(100vh - 220px)", overflowY: "auto" }}>
+          <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
             <Box mb={3}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 {transtask("detaildesc")}
@@ -129,8 +131,8 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
                 sx={{
                   color: "text.primary",
                   lineHeight: 1.6,
-                  whiteSpace: "pre-wrap", // Preserve line breaks
-                  wordBreak: "break-word" // Break long words if needed
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word"
                 }}
               >
                 {task.description || "-"}
@@ -206,7 +208,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
                   wordBreak: "break-word" // Break long words if needed
                 }}
               >
-                <CommentHistory comments={task.comment} />
+                <CommentHistory comments={task.comment} mutate={mutate} />
               </Box>
             )}
           </Box>

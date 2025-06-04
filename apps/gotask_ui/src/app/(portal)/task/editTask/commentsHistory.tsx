@@ -36,8 +36,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments }) => {
           display: "flex",
           gap: 1,
           color: "#741B92",
-          alignItems: "center",
-          mb: 2
+          alignItems: "center"
         }}
       >
         <Typography fontWeight="bold">{transtask("comment")}</Typography>

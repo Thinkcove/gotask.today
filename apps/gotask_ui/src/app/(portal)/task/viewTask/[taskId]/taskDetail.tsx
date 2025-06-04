@@ -119,99 +119,97 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false }
           </Grid>
 
           {/* Task Description - Modified to display on separate lines */}
-          <Box mb={3}>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                fontWeight: 600,
-                color: "text.secondary",
-                mb: 1
-              }}
-            >
-              {transtask("detaildesc")}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: "text.primary",
-                lineHeight: 1.6,
-                whiteSpace: "pre-wrap", // Preserve line breaks
-                wordBreak: "break-word" // Break long words if needed
-              }}
-            >
-              {task.description || "-"}
-            </Typography>
-          </Box>
-
-          {/* Meta Info */}
-          <Grid container spacing={2} mb={3}>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText label={transtask("detailuser")} value={task.user_name || "-"} />
-            </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText label={transtask("detailproject")} value={task.project_name || "-"} />
-            </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transtask("detailseverity")}
-                value={task.severity || "-"}
-                sx={{ color: getSeverityColor(task.severity), textTransform: "capitalize" }}
-              />
-            </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transtask("detailcreated")}
-                value={new Date(task.created_on).toLocaleDateString()}
-              />
-            </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transtask("detaildue")}
-                value={new Date(task.due_date).toLocaleDateString()}
-              />
-            </Grid>
-
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transtask("estimatedt")}
-                value={formatTimeValue(task.estimated_time || "-")}
-              />
-            </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transtask("spentt")}
-                value={formatTimeValue(task.time_spent_total || "-")}
-              />
-            </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transtask("remainingt")}
-                value={formatTimeValue(task.remaining_time || "-")}
-              />
-            </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transtask("variationt")}
-                value={formatTimeValue(task.variation || "-")}
-              />
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ mt: 2, mb: 2 }} />
-
-          {/* Comment History - Contained within card */}
-          {Array.isArray(task?.comment) && task.comment.length > 0 && (
-            <Box
-              sx={{
-                width: "100%",
-                boxSizing: "border-box",
-                overflow: "hidden", // Prevent horizontal overflow
-                wordBreak: "break-word" // Break long words if needed
-              }}
-            >
-              <CommentHistory comments={task.comment} />
+          <Box sx={{ flex: 1, maxHeight: "calc(100vh - 220px)", overflowY: "auto" }}>
+            <Box mb={3}>
+              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                {transtask("detaildesc")}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "text.primary",
+                  lineHeight: 1.6,
+                  whiteSpace: "pre-wrap", // Preserve line breaks
+                  wordBreak: "break-word" // Break long words if needed
+                }}
+              >
+                {task.description || "-"}
+              </Typography>
             </Box>
-          )}
+
+            {/* Meta Info */}
+            <Grid container spacing={2} mb={3}>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText label={transtask("detailuser")} value={task.user_name || "-"} />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("detailproject")}
+                  value={task.project_name || "-"}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("detailseverity")}
+                  value={task.severity || "-"}
+                  sx={{ color: getSeverityColor(task.severity), textTransform: "capitalize" }}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("detailcreated")}
+                  value={new Date(task.created_on).toLocaleDateString()}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("detaildue")}
+                  value={new Date(task.due_date).toLocaleDateString()}
+                />
+              </Grid>
+
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("estimatedt")}
+                  value={formatTimeValue(task.estimated_time || "-")}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("spentt")}
+                  value={formatTimeValue(task.time_spent_total || "-")}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("remainingt")}
+                  value={formatTimeValue(task.remaining_time || "-")}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("variationt")}
+                  value={formatTimeValue(task.variation || "-")}
+                />
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ mt: 2, mb: 2 }} />
+
+            {/* Comment History - Contained within card */}
+            {Array.isArray(task?.comment) && task.comment.length > 0 && (
+              <Box
+                sx={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  overflow: "hidden", // Prevent horizontal overflow
+                  wordBreak: "break-word" // Break long words if needed
+                }}
+              >
+                <CommentHistory comments={task.comment} />
+              </Box>
+            )}
+          </Box>
         </Box>
       </Box>
     </>

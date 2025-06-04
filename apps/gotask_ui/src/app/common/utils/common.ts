@@ -129,7 +129,7 @@ export const validatePhone = (phone: string) => {
   return phoneRegex.test(phone);
 };
 
-export const formatDate = (date: Date) => {
+export const formatDate = (date: string) => {
   const d = new Date(date);
   const day = String(d.getDate()).padStart(2, "0");
   const month = String(d.getMonth() + 1).padStart(2, "0");

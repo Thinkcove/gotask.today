@@ -9,6 +9,8 @@ export interface IFormField {
   project_name?: string;
   created_on: string;
   due_date: string;
+  start_date: string;
+  user_estimated: string;
   projects?: string;
 }
 
@@ -31,10 +33,12 @@ export interface ITask {
   project_id: string;
   project_name: string;
   createdAt: string;
-  created_on: Date;
+  created_on: string;
   updatedAt: Date;
   updated_on: string;
-  due_date: Date;
+  start_date: string;
+  user_estimated: string;
+  due_date: string;
   history: ITaskHistory[];
   comment: ITaskComment[];
   estimated_time?: string;

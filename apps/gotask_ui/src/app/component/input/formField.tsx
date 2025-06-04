@@ -28,7 +28,7 @@ export interface SelectOption {
 
 interface FormFieldProps {
   label: string;
-  type: "text" | "select" | "date" | "multiselect";
+  type: "text" | "select" | "date" | "multiselect" | "number";
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];
@@ -42,6 +42,8 @@ interface FormFieldProps {
   onFocus?: () => void;
   inputType?: string;
   sx?: SxProps<Theme>;
+  min?: number;
+  max?: number;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -59,7 +61,9 @@ const FormField: React.FC<FormFieldProps> = ({
   height,
   onFocus,
   inputType,
-  sx
+  sx,
+  min,
+  max
 }) => {
   const [passwordVisible, setPasswordVisible] = useState(true);
   const normalizedOptions: SelectOption[] = (options || []).map((opt) =>
@@ -289,6 +293,43 @@ const FormField: React.FC<FormFieldProps> = ({
                 }}
               />
             )}
+          />
+        )}
+
+        {type === "number" && (
+          <TextField
+            variant="standard"
+            required={required}
+            placeholder={placeholder}
+            error={!!error}
+            fullWidth
+            value={value}
+            disabled={disabled}
+            onFocus={onFocus}
+            type="number"
+            sx={{
+              "& .MuiInputBase-input::placeholder": {
+                color: "#9C8585",
+                opacity: 1
+              }
+            }}
+            onChange={(e) => {
+              const val = e.target.value;
+              const parsedValue = val === "" ? "" : Number(val);
+              onChange?.(parsedValue);
+            }}
+            InputProps={{
+              disableUnderline: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Edit sx={{ color: "#9C8585" }} />
+                </InputAdornment>
+              ),
+              inputProps: {
+                min,
+                max
+              }
+            }}
           />
         )}
       </Box>

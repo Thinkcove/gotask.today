@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import FormField from "../../../component/input/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
 import {
@@ -275,6 +275,51 @@ const TaskInput: React.FC<TaskInputProps> = ({
             }
             disabled={isReadOnly("due_date")}
           />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormField
+            label={transtask("labelstartdate")}
+            type="date"
+            placeholder={transtask("placeholderstartdate")}
+            value={formData.start_date || new Date().toISOString().split("T")[0]}
+            onChange={(value) =>
+              handleInputChange(
+                "start_date",
+                value instanceof Date ? value.toISOString().split("T")[0] : String(value)
+              )
+            }
+            disabled={isReadOnly("start_date")}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Box display="flex" alignItems="center" gap={2}>
+            <FormField
+              label={transtask("labeluserestimateddays")}
+              type="number"
+              min={0}
+              value={parseInt(formData.user_estimated?.split("d")[0] || "0")}
+              onChange={(val) => {
+                const hours =
+                  formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "0";
+                handleInputChange("user_estimated", `${val}d${hours}h`);
+              }}
+              disabled={isReadOnly("user_estimated")}
+            />
+            <FormField
+              label={transtask("labeluserestimatedhours")}
+              type="number"
+              min={0}
+              max={23}
+              value={parseInt(
+                formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "0"
+              )}
+              onChange={(val) => {
+                const days = formData.user_estimated?.split("d")[0] || "0";
+                handleInputChange("user_estimated", `${days}d${val}h`);
+              }}
+              disabled={isReadOnly("user_estimated")}
+            />
+          </Box>
         </Grid>
         <Grid item xs={12}>
           <FormField

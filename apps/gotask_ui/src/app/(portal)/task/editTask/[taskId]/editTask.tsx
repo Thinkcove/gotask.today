@@ -46,7 +46,9 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     project_id: data?.project_id || "",
     project_name: data?.project_name || "",
     created_on: data?.created_on ? data.created_on.split("T")[0] : "",
-    due_date: data?.due_date ? data.due_date.split("T")[0] : ""
+    due_date: data?.due_date ? data.due_date.split("T")[0] : "",
+    start_date: data?.start_date ? data.start_date.split("T")[0] : "",
+    user_estimated: data?.user_estimated || ""
   });
 
   const checkIfDateExists = (): boolean => {
@@ -91,6 +93,12 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       }
       if (formData.description !== data.description) {
         updatedFields.description = formData.description;
+      }
+      if (formData.start_date !== data.start_date) {
+        updatedFields.start_date = formData.start_date;
+      }
+      if (formData.user_estimated !== data.user_estimated) {
+        updatedFields.user_estimated = formData.user_estimated;
       }
       await updateTask(data.id, updatedFields);
       await mutate();

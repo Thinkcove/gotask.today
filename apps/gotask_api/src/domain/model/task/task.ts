@@ -17,6 +17,7 @@ export interface ITask extends Document {
   project_id: string;
   project_name: string;
   due_date: Date;
+  start_date?: Date;
   created_on: Date;
   updated_on: Date;
   loginuser_id?: string;
@@ -24,6 +25,7 @@ export interface ITask extends Document {
   comment?: ITaskComment[];
   history?: ITaskHistory[];
   estimated_time: string;
+  user_estimated?: string;
   time_spent: ITimeSpentEntry[];
   time_spent_total: string;
   remaining_time: string;
@@ -50,10 +52,12 @@ const TaskSchema = new Schema<ITask>(
     project_id: { type: String, required: true },
     project_name: { type: String },
     due_date: { type: Date, required: true },
+    start_date: { type: Date },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
     // Time tracking fields
     estimated_time: { type: String, default: null },
+    user_estimated: { type: String, default: null },
     time_spent: { type: [TimeSpentEntrySchema], default: [] },
     time_spent_total: { type: String, default: "0d0h" },
     remaining_time: { type: String, default: null },

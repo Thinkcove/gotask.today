@@ -2,7 +2,7 @@ const UserMessages = {
   CREATE: {
     REQUIRED: "User data is required",
     MISSING_FIELDS:
-      "Missing required fields: name, user_id,phone,joinDate roleId, password, status",
+      "Missing required fields: emp_id,name, user_id,mobile_no,joined_date, roleId, password, status",
     FAILED: "Failed to create user",
     ROLE_INVALID: "Role ID is invalid or not found",
     SUCCESS: "User created successfully"

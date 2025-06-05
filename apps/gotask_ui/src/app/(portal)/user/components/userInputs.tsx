@@ -35,6 +35,38 @@ const UserInput = ({
 
   return (
     <Grid container spacing={1}>
+
+{/* <Grid item xs={12}>
+<FormField
+  label={transuser("labelemp_id")}
+  type="text"
+  value={formData.emp_id}
+  onChange={(value) => handleChange("emp_id", String(value))}
+  required={false} 
+  error={errors.emp_id}
+  disabled={isReadOnly("emp_id")}
+  placeholder={transuser("placeholderemp_id")}
+/>
+</Grid> */}
+
+<Grid item xs={12}>
+  <FormField
+    label={transuser("labelemp_id")}
+    type="text"
+    value={formData.emp_id}
+    onChange={(value) => {
+      const alphanumeric = String(value).replace(/[^a-zA-Z0-9]/g, ""); // Remove special characters
+      handleChange("emp_id", alphanumeric);
+    }}
+    required={false}
+    error={errors.emp_id}
+    disabled={isReadOnly("emp_id")}
+    placeholder={transuser("placeholderemp_id")}
+  />
+</Grid>
+
+
+
       <Grid item xs={12}>
         <FormField
           label={transuser("labeluser")}
@@ -64,32 +96,35 @@ const UserInput = ({
 
 <Grid item xs={12}>
   <FormField
-    label={transuser("labelphone")}
+    label={transuser("labelmobile_no")}
     type="text"
     inputType="tel"
-    placeholder={transuser("placeholderphone")}
+    placeholder={transuser("placeholdermobile_no")}
     required
-    value={formData.phone}
-    onChange={(value) => handleChange("phone", String(value))}
-    error={errors?.phone}
-    disabled={isReadOnly("phone")}
+    value={formData.mobile_no}
+    onChange={(value) => {
+      const sanitized = String(value).replace(/\D/g, ""); // Remove non-digits
+      if (sanitized.length <= 10) {
+        handleChange("mobile_no", sanitized);
+      }
+    }}
+    error={errors?.mobile_no}
+    disabled={isReadOnly("mobile_no")}
   />
 </Grid>
 
+
 <Grid item xs={12}>
   <FormField
-    label={transuser("labeljoinDate")}
+    label={transuser("labeljoined_date")}
     type="date"
     inputType="date"
-    value={formData.joinDate}
-    // onChange={(value) => handleChange("joinDate", new Date(value).toLocaleDateString())}
-   //   onChange={(value) =>
-  // handleChange("joinDate", new Date(value as string).toISOString())
+    value={formData.joined_date}
 onChange={(value) => {
   if (value !== undefined && (typeof value === "string" || value instanceof Date)) {
     const date = new Date(value); // ✅ only called if value is defined and valid
     if (!isNaN(date.getTime())) {
-      handleChange("joinDate", date.toISOString());
+      handleChange("joined_date", date.toISOString());
     }
   }
 }}
@@ -99,8 +134,8 @@ onChange={(value) => {
 
     required
     error={errors?.joinDate}
-    disabled={isReadOnly("joinDate")}
-    placeholder={transuser("placeholderjoinDate")}
+    disabled={isReadOnly("joined_date")}
+    placeholder={transuser("placeholderjoined_date")}
   />
 </Grid>
  

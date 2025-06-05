@@ -295,15 +295,19 @@
     "nouser": "No Users available.",
     "noorganzationuser": " No Organization for this user",
     "viewdetails": "View Details",
+
+    "labelemp_id": "Emp Id",  
+    "placeholderemp_id": "Enter Employee ID",
+
     "labeluser": "User Name",
     "placeholderuser": "Enter user name",
     "labelemail": "Email",
     "placeholderemail": "Enter your email",
 
-    "labelphone": "Phone Number",
-    "placeholderphone": "Enter your Phone Number",
-    "labeljoinDate": "Join Date",
-    "placeholderjoinDate": "Enter your Join Date",
+    "labelmobile_no": "Mobile Number",
+    "placeholdermobile_no": "Enter your Mobile Number",
+    "labeljoined_date": "Join Date",
+    "placeholderjoined_date": "Enter your Join Date",
 
     "labelrole": "Role",
     "placeholderrole": "Select Role",
@@ -318,10 +322,12 @@
     "deletesuccess": "User deleted successfully!",
     "deleteerror": "Error while deleting a user",
     "userdetail": "User Detail View",
+
+    "emp_Id":"Emp_ID",
     "uesrid": "User ID",
 
-    "phone": "Phone Number",
-    "joinDate": "Join Date",
+    "mobile_no": "Mobile Number",
+    "joined_date": "Joined Date",
 
     "roleid": "Role",
     "status": "Status",

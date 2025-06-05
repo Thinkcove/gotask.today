@@ -18,13 +18,14 @@ interface CreateUserProps {
 }
 
 const initialFormState: IUserField = {
+  emp_id:"",
   name: "",
   status: true,
   organization: [],
   roleId: "",
   user_id: "",
-  phone: "",
-  joinDate: new Date(),
+  mobile_no: "",
+  joined_date: new Date(),
   password: ""
 };
 
@@ -52,6 +53,12 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     } else if (!validateEmail(formData.user_id)) {
       newErrors.user_id = transuser("validmail");
     }
+
+
+if (formData.emp_id && !/^[a-zA-Z0-9]+$/.test(formData.emp_id)) {
+  newErrors.emp_id = "Employee ID can only contain letters and numbers";
+}
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

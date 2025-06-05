@@ -6,8 +6,9 @@ export interface IUserField {
   user_id: string;
   password?: string;
 
-  phone?: string;
-  joinDate?: Date | string;
+  mobile_no?: string;
+  joined_date?: Date | string;
+  emp_id?:string;
 }
 
 export interface User {
@@ -25,8 +26,9 @@ export interface User {
   projectDetails: { id: string; name: string; description: string; status: string }[];
   orgDetails: { id: string; name: string }[];
 
-  phone?: string;
-  joinDate?: Date | string;
+  mobile_no?: string;
+  joined_date?: Date | string;
+  emp_id:string;
 }
 
 export interface RoleData {

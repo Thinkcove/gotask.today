@@ -65,8 +65,9 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
     name: user.name,
     status: user.status,
 
-    phone: user.phone,
-    joinDate: user.joinDate,
+    mobile_no: user.mobile_no,
+    joined_date: user.joined_date,
+    emp_id:user.emp_id,
 
     organization: user.organization,
     roleId: user.roleId._id,
@@ -124,24 +125,30 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
              
            <Grid item xs={12} md={6}>
   <LabelValueText
-    label={transuser("phone")}
-    value={user?.phone || "-"}
+    label={transuser("labelmobile_no")}
+    value={user?.mobile_no || "-"}
     sx={{ textTransform: "capitalize" }}
   />
 </Grid>
 
 <Grid item xs={12} md={6}>
   <LabelValueText
-    label={transuser("joinDate")}
+    label={transuser("labeljoined_date")}
     value={
-      user?.joinDate
-        ? new Date(user.joinDate).toLocaleDateString()
+      user?.joined_date
+        ? new Date(user.joined_date).toLocaleDateString()
         : "-"
     }
   />
 </Grid>
 
-
+         <Grid item xs={12} md={6}>
+  <LabelValueText
+    label={transuser("labelemp_id")}
+    value={user?.emp_id || "-"}
+    sx={{ textTransform: "capitalize" }}
+  />
+</Grid>
 
             <Grid item xs={12} md={6}>
               <LabelValueText
@@ -161,6 +168,9 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 size="small"
               />
             </Grid>
+
+
+
 
             <Grid item xs={12}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>

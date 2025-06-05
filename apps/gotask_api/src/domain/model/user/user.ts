@@ -5,11 +5,12 @@ import bcrypt from "bcrypt";
 // Interface for the User document
 export interface IUser extends Document {
   id: string;
+  emp_id:string;
   name: string;
   password: string;
   user_id: string;
-  phone: string;
-  joinDate: Date;
+  mobile_no: string;
+  joined_date: Date;
   status: boolean;
   roleId: Types.ObjectId;
   organization?: string[];
@@ -20,11 +21,28 @@ export interface IUser extends Document {
 const UserSchema = new Schema<IUser>(
   {
     id: { type: String, default: uuidv4, unique: true },
+    
+emp_id: {
+  type: String,
+  unique: true,
+  sparse: true,
+  required: false,
+  validate: {
+    validator: function (v: string) {
+      if (!v) return true; // allow empty
+      return /^[a-zA-Z0-9]+$/.test(v); // alphanumeric only
+    },
+    message: props => `${props.value} is not valid! Only letters and numbers allowed.`
+  }
+}
+
+,
+
     name: { type: String, required: true },
     password: { type: String, required: true },
     user_id: { type: String, required: true, unique: true },
-    phone: { type: String, required: true },
-    joinDate: { type: Date, default: Date.now },
+    mobile_no: { type: String, required: true },
+    joined_date: { type: Date, default: Date.now },
     status: { type: Boolean, default: true },
 
     // Reference to Role

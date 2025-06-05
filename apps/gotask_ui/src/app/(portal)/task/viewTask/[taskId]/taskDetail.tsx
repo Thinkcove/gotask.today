@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { formatTimeValue } from "@/app/common/utils/common";
+import { formatDate, formatTimeValue } from "@/app/common/utils/common";
 import { KeyedMutator } from "swr";
 import TaskComments from "../../editTask/taskComments";
 import { createComment } from "../../service/taskAction";
@@ -88,10 +88,10 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             p: { xs: 2, sm: 3, md: 4 },
             bgcolor: "#f9fafb",
             border: "1px solid #e0e0e0",
-            maxHeight: { xs: "auto", md: 820 }, 
-            width: "100%", 
-            boxSizing: "border-box", 
-            overflow: "hidden" 
+            maxHeight: { xs: "auto", md: 820 },
+            width: "100%",
+            boxSizing: "border-box",
+            overflow: "hidden"
           }}
         >
           {/* Header */}
@@ -111,7 +111,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                   fontWeight={500}
                   sx={{
                     textTransform: "capitalize",
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" } 
+                    fontSize: { xs: "1.25rem", sm: "1.5rem" }
                   }}
                 >
                   {task?.title}
@@ -173,14 +173,11 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detailcreated")}
-                  value={new Date(task.created_on).toLocaleDateString()}
+                  value={formatDate(task.created_on)}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText
-                  label={transtask("detaildue")}
-                  value={new Date(task.due_date).toLocaleDateString()}
-                />
+                <LabelValueText label={transtask("detaildue")} value={formatDate(task.due_date)} />
               </Grid>
 
               <Grid item xs={4} sm={6} md={4}>

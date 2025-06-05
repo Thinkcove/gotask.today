@@ -1,4 +1,11 @@
-import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Grid,
+  IconButton,
+  Divider,
+  CircularProgress
+} from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -26,7 +33,11 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { user } = useUser();
   const router = useRouter();
-  const { canAccess } = useUserPermission();
+  const { canAccess, getRestricted } = useUserPermission();
+
+  const restrictedFields = getRestricted(APPLICATIONS.TASK, ACTIONS.VIEW);
+  const isRestricted = (field: string) => restrictedFields.includes(field);
+
   const submitComment = async (commentText: string) => {
     if (!commentText.trim()) return;
     const commentData: ITaskComment = {
@@ -38,6 +49,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
     await createComment(commentData);
     await mutate();
   };
+
   const handleBack = () => {
     router.back();
   };
@@ -85,25 +97,23 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
         <Box
           sx={{
             borderRadius: 4,
-            p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
+            p: { xs: 2, sm: 3, md: 4 },
             bgcolor: "#f9fafb",
             border: "1px solid #e0e0e0",
-            maxHeight: { xs: "auto", md: 820 }, // Remove max height on mobile
-            width: "100%", // Ensure full width
-            boxSizing: "border-box", // Include padding in width calculation
-            overflow: "hidden" // Prevent content from breaking out
+            maxHeight: { xs: "auto", md: 820 },
+            width: "100%",
+            boxSizing: "border-box",
+            overflow: "hidden"
           }}
         >
           {/* Header */}
           <Grid container spacing={2} alignItems="center" mb={3}>
-            {/* Back Button */}
             <Grid item xs="auto">
               <IconButton color="primary" onClick={handleBack}>
                 <ArrowBack />
               </IconButton>
             </Grid>
 
-            {/* Task Title and Status */}
             <Grid item xs>
               <Box>
                 <Typography
@@ -111,7 +121,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                   fontWeight={500}
                   sx={{
                     textTransform: "capitalize",
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" } // Responsive font size
+                    fontSize: { xs: "1.25rem", sm: "1.5rem" }
                   }}
                 >
                   {task?.title}
@@ -120,7 +130,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               </Box>
             </Grid>
 
-            {/* Edit Button - Separate Grid */}
             {canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) && (
               <Grid item xs="auto">
                 <IconButton
@@ -133,8 +142,8 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             )}
           </Grid>
 
-          {/* Task Description - Modified to display on separate lines */}
-          <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
+          {/* Description */}
+          {!isRestricted("description") && (
             <Box mb={3}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 {transtask("detaildesc")}
@@ -151,18 +160,23 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 {task.description || "-"}
               </Typography>
             </Box>
+          )}
 
-            {/* Meta Info */}
-            <Grid container spacing={2} mb={3}>
+          <Grid container spacing={2} mb={3}>
+            {!isRestricted("user_id") && (
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText label={transtask("detailuser")} value={task.user_name || "-"} />
               </Grid>
+            )}
+            {!isRestricted("project_id") && (
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detailproject")}
                   value={task.project_name || "-"}
                 />
               </Grid>
+            )}
+            {!isRestricted("severity") && (
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detailseverity")}
@@ -170,49 +184,58 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                   sx={{ color: getSeverityColor(task.severity), textTransform: "capitalize" }}
                 />
               </Grid>
-              <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText
-                  label={transtask("detailcreated")}
-                  value={new Date(task.created_on).toLocaleDateString()}
-                />
-              </Grid>
+            )}
+            <Grid item xs={4} sm={6} md={4}>
+              <LabelValueText
+                label={transtask("detailcreated")}
+                value={new Date(task.created_on).toLocaleDateString()}
+              />
+            </Grid>
+            {!isRestricted("due_date") && (
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detaildue")}
                   value={new Date(task.due_date).toLocaleDateString()}
                 />
               </Grid>
-
+            )}
+            {!isRestricted("estimated_time") && (
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("estimatedt")}
                   value={formatTimeValue(task.estimated_time || "-")}
                 />
               </Grid>
+            )}
+            {!isRestricted("time_spent") && (
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("spentt")}
                   value={formatTimeValue(task.time_spent_total || "-")}
                 />
               </Grid>
+            )}
+            {!isRestricted("remaining_time") && (
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("remainingt")}
                   value={formatTimeValue(task.remaining_time || "-")}
                 />
               </Grid>
+            )}
+            {!isRestricted("variation") && (
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("variationt")}
                   value={formatTimeValue(task.variation || "-")}
                 />
               </Grid>
-            </Grid>
+            )}
+          </Grid>
 
-            <Divider sx={{ mt: 2, mb: 2 }} />
+          <Divider sx={{ mt: 2, mb: 2 }} />
 
-            <TaskComments comments={task?.comment || []} onSave={submitComment} mutate={mutate} />
-          </Box>
+          <TaskComments comments={task?.comment || []} onSave={submitComment} mutate={mutate} />
         </Box>
       </Box>
     </>

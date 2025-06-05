@@ -17,11 +17,29 @@ import {
 } from "./taskService";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 
+function filterRestrictedFields<T extends object>(data: T, restrictedFields: string[]): Partial<T> {
+  const filteredData = { ...data };
+  restrictedFields.forEach(field => {
+    if (field in filteredData) {
+      delete (filteredData as any)[field];
+    }
+  });
+  return filteredData;
+}
+
+function filterRestrictedFieldsFromArray<T extends object>(items: T[], restrictedFields: string[]): Partial<T>[] {
+  return items.map(item => filterRestrictedFields(item, restrictedFields));
+}
+
 class TaskController extends BaseController {
   // Create Task
-  async createTask(requestHelper: RequestHelper, handler: any) {
+  async createTask(requestHelper: RequestHelper, handler: any, restrictedFields: string[]) {
     try {
-      const taskData = requestHelper.getPayload();
+      let taskData = requestHelper.getPayload() as ITask;
+      // Remove restricted fields from incoming payload
+      if (restrictedFields.length > 0) {
+        taskData = filterRestrictedFields(taskData, restrictedFields) as ITask;
+      }
       const newTask = await createTask(taskData);
       return this.sendResponse(handler, newTask);
     } catch (error) {
@@ -29,8 +47,8 @@ class TaskController extends BaseController {
     }
   }
 
-  //delete task
-  async deleteTask(requestHelper: RequestHelper, handler: any) {
+  // Delete Task
+  async deleteTask(requestHelper: RequestHelper, handler: any, restrictedFields: string[]) {
     try {
       const id = requestHelper.getParam("id");
       await deleteTaskById(id);
@@ -41,16 +59,23 @@ class TaskController extends BaseController {
   }
 
   // Get All Tasks
-  async getAllTasks(_requestHelper: RequestHelper, handler: any) {
+  async getAllTasks(_requestHelper: RequestHelper, handler: any, restrictedFields: string[]) {
     try {
-      const tasks = await getAllTasks();
-      return this.sendResponse(handler, tasks);
+      const response = await getAllTasks(); // expected { success, data?, message? }
+
+      if (response.data && Array.isArray(response.data)) {
+        const filteredTasks = filterRestrictedFieldsFromArray(response.data, restrictedFields);
+        return this.sendResponse(handler, { ...response, data: filteredTasks });
+      }
+
+      // fallback if no data or data is not array
+      return this.sendResponse(handler, response);
     } catch (error) {
       return this.replyError(error, handler);
     }
   }
 
-  // Get Tasks by Project
+  // Get Tasks by Project (No field-level filtering assumed here)
   async getTaskByProject(requestHelper: RequestHelper, handler: any) {
     try {
       const {
@@ -87,7 +112,7 @@ class TaskController extends BaseController {
     }
   }
 
-  // Get Tasks by User
+  // Get Tasks by User (No field-level filtering assumed here)
   async getTaskByUser(requestHelper: RequestHelper, handler: any) {
     try {
       const {
@@ -135,10 +160,16 @@ class TaskController extends BaseController {
   }
 
   // Get Task by ID
-  async getTaskById(requestHelper: RequestHelper, handler: any) {
+  async getTaskById(requestHelper: RequestHelper, handler: any, restrictedFields: string[]) {
     try {
       const id = requestHelper.getParam("id");
       const task = await getTaskById(id);
+
+      if (task && typeof task === "object" && restrictedFields.length > 0) {
+        const filteredTask = filterRestrictedFields(task, restrictedFields);
+        return this.sendResponse(handler, filteredTask);
+      }
+
       return this.sendResponse(handler, task);
     } catch (error) {
       return this.replyError(error, handler);
@@ -146,10 +177,16 @@ class TaskController extends BaseController {
   }
 
   // Update Task
-  async updateTask(requestHelper: RequestHelper, handler: any) {
+  async updateTask(requestHelper: RequestHelper, handler: any, restrictedFields: string[]) {
     try {
       const id = requestHelper.getParam("id");
-      const updateData = requestHelper.getPayload() as Partial<ITask>;
+      let updateData = requestHelper.getPayload() as Partial<ITask>;
+
+      if (restrictedFields.length > 0) {
+        // Remove restricted fields from update payload to prevent unauthorized changes
+        updateData = filterRestrictedFields(updateData, restrictedFields) as Partial<ITask>;
+      }
+
       const updatedTask = await updateTask(id, updateData);
       return this.sendResponse(handler, updatedTask);
     } catch (error) {

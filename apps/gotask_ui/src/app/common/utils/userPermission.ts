@@ -1,22 +1,23 @@
+// useUserPermission.ts
 import { useUser } from "@/app/userContext";
 import { ActionType, ApplicationName } from "./authCheck";
-import { hasPermission } from "./permisssion";
+import {
+  AccessDetails,
+  hasPermission,
+  getRestrictedFields,
+} from "../utils/permisssion";
 
 export const useUserPermission = () => {
   const { user } = useUser();
-  const accessDetails = (user?.role?.access ?? []) as {
-    id: string;
-    name: string;
-    application: {
-      access: ApplicationName;
-      actions: ActionType[];
-      _id: string;
-    }[];
-  }[];
+  const accessDetails = (user?.role?.access ?? []) as AccessDetails[];
 
   const canAccess = (application: ApplicationName, action: ActionType): boolean => {
     return hasPermission(accessDetails, application, action);
   };
 
-  return { canAccess };
+  const getRestricted = (application: ApplicationName, action: ActionType): string[] => {
+    return getRestrictedFields(accessDetails, application, action);
+  };
+
+  return { canAccess, getRestricted };
 };

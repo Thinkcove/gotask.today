@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Box, Typography, IconButton } from "@mui/material";
+import {
+  Button,
+  Box,
+  Typography,
+  IconButton
+} from "@mui/material";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
@@ -18,6 +23,8 @@ import TimeProgressBar from "@/app/(portal)/task/editTask/timeProgressBar";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { useUserPermission } from "@/app/common/utils/userPermission";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 
 interface EditTaskProps {
   data: ITask;
@@ -28,6 +35,11 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const { user } = useUser();
+  const { getRestricted } = useUserPermission();
+
+  const restrictedFields = getRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE);
+  const isRestricted = (field: string) => restrictedFields.includes(field);
+
   const [openDrawer, setOpenDrawer] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -57,12 +69,13 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     return data.time_spent.some((entry) => entry.date === today);
   };
 
+  const alreadyExists = checkIfDateExists();
+
   const handleInputChange = (name: string, value: string | Project[] | User[]) => {
     if (typeof value === "string") {
       setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
   };
-  const alreadyExists = checkIfDateExists();
 
   const handleProgressClick = () => {
     if (!alreadyExists) {
@@ -74,31 +87,38 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     try {
       const updatedFields: Record<string, string | number> = {};
       const formattedDueDate = data.due_date ? data.due_date.split("T")[0] : "";
-      if (formData.status !== data.status) {
+
+      if (!isRestricted("status") && formData.status !== data.status) {
         updatedFields.status = formData.status;
         if (user?.name) updatedFields.loginuser_name = user.name;
         if (user?.id) updatedFields.loginuser_id = user.id;
       }
-      if (formData.severity !== data.severity) {
+
+      if (!isRestricted("severity") && formData.severity !== data.severity) {
         updatedFields.severity = formData.severity;
         if (user?.name) updatedFields.loginuser_name = user.name;
         if (user?.id) updatedFields.loginuser_id = user.id;
       }
-      if (formData.due_date !== formattedDueDate) {
+
+      if (!isRestricted("due_date") && formData.due_date !== formattedDueDate) {
         updatedFields.due_date = formData.due_date;
         if (user?.name) updatedFields.loginuser_name = user.name;
         if (user?.id) updatedFields.loginuser_id = user.id;
       }
-      if (formData.description !== data.description) {
+
+      if (!isRestricted("description") && formData.description !== data.description) {
         updatedFields.description = formData.description;
       }
+
       await updateTask(data.id, updatedFields);
       await mutate();
+
       setSnackbar({
         open: true,
         message: transtask("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+
       setTimeout(() => router.back(), 2000);
     } catch (error) {
       console.error("Error while updating task:", error);
@@ -117,34 +137,9 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   return (
     <>
       <ModuleHeader name={transtask("tasks")} />
-      <Box
-        sx={{
-          maxWidth: "1400px",
-          margin: "0 auto",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column"
-        }}
-      >
-        <Box
-          sx={{
-            position: "sticky",
-            top: 0,
-            px: 2,
-            pt: 2,
-            zIndex: 1000,
-            flexDirection: "column",
-            gap: 2
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%"
-            }}
-          >
+      <Box sx={{ maxWidth: "1400px", margin: "0 auto" }}>
+        <Box sx={{ position: "sticky", top: 0, px: 2, pt: 2, zIndex: 1000 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <IconButton color="primary" onClick={handleBack}>
                 <ArrowBack />
@@ -153,34 +148,11 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
                 {transtask("edittask")}
               </Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderRadius: "30px",
-                  color: "black",
-                  border: "2px solid #741B92",
-                  px: 2,
-                  textTransform: "none",
-                  "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
-                }}
-                onClick={() => router.back()}
-              >
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Button variant="outlined" onClick={() => router.back()}>
                 {transtask("canceledit")}
               </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  borderRadius: "30px",
-                  backgroundColor: "#741B92",
-                  color: "white",
-                  px: 2,
-                  textTransform: "none",
-                  fontWeight: "bold",
-                  "&:hover": { backgroundColor: "rgb(202, 187, 201) 100%)" }
-                }}
-                onClick={handleSubmit}
-              >
+              <Button variant="contained" onClick={handleSubmit}>
                 {transtask("save")}
               </Button>
             </Box>
@@ -188,46 +160,35 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         </Box>
 
         {data.history && data.history.length > 0 && (
-          <Box
-            sx={{
-              textDecoration: "underline",
-              display: "flex",
-              gap: 1,
-              color: "#741B92",
-              px: 2
-            }}
-          >
+          <Box sx={{ textDecoration: "underline", display: "flex", gap: 1, px: 2, color: "#741B92" }}>
             <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
               {transtask("showhistory")}
             </Typography>
             <History />
           </Box>
         )}
+
         {data.status !== TASK_STATUS.TO_DO && (
           <TimeProgressBar
             estimatedTime={data.estimated_time || "0h"}
             timeSpentTotal={data.time_spent_total || "0h"}
             dueDate={data.due_date || ""}
             timeEntries={data.time_spent || []}
-            canLogTime={!alreadyExists} // Pass the existing check as a prop
-            variation={data.variation ? String(data.variation) : "0d0h"} // Convert to string
+            canLogTime={!alreadyExists}
+            variation={data.variation ? String(data.variation) : "0d0h"}
             onClick={handleProgressClick}
           />
         )}
 
-        <Box
-          sx={{
-            px: 2,
-            pb: 2,
-            maxHeight: "calc(100vh - 200px)",
-            overflowY: "auto"
-          }}
-        >
+        <Box sx={{ px: 2, pb: 2 }}>
           <TaskInput
             formData={formData}
             handleInputChange={handleInputChange}
             errors={{}}
-            readOnlyFields={["title", "user_id", "project_id", "created_on"]}
+            readOnlyFields={[
+              ...["title", "user_id", "project_id", "created_on"],
+              ...restrictedFields // Prevent editing restricted fields
+            ]}
           />
         </Box>
 

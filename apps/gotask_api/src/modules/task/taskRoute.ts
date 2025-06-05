@@ -16,8 +16,8 @@ const TaskRoutes = [];
 TaskRoutes.push({
   path: API_PATHS.CREATE_TASK,
   method: API_METHODS.POST,
-  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
-    taskController.createTask(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit, restrictedFields: string[]) =>
+    taskController.createTask(new RequestHelper(request), handler, restrictedFields)
   ),
   config: {
     notes: "Create a new task",
@@ -28,12 +28,12 @@ TaskRoutes.push({
   }
 });
 
-//Route: Delete Task
+// Route: Delete Task
 TaskRoutes.push({
   path: `${API_PATHS.DELETE_TASK}/{id}`,
   method: API_METHODS.DELETE,
-  handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
-    taskController.deleteTask(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit, restrictedFields: string[]) =>
+    taskController.deleteTask(new RequestHelper(request), handler, restrictedFields)
   ),
   config: {
     notes: "Delete a task by ID",
@@ -48,8 +48,8 @@ TaskRoutes.push({
 TaskRoutes.push({
   path: API_PATHS.GET_TASKS,
   method: API_METHODS.GET,
-  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
-    taskController.getAllTasks(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit, restrictedFields: string[]) =>
+    taskController.getAllTasks(new RequestHelper(request), handler, restrictedFields)
   ),
   config: {
     notes: "Retrieve all tasks",
@@ -100,8 +100,8 @@ TaskRoutes.push({
 TaskRoutes.push({
   path: API_PATHS.GET_TASK_BY_ID,
   method: API_METHODS.GET,
-  handler: permission(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit) =>
-    taskController.getTaskById(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit, restrictedFields: string[]) =>
+    taskController.getTaskById(new RequestHelper(request), handler, restrictedFields)
   ),
   config: {
     notes: "Get a task by ID",
@@ -116,8 +116,8 @@ TaskRoutes.push({
 TaskRoutes.push({
   path: API_PATHS.UPDATE_TASK,
   method: API_METHODS.PUT,
-  handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
-    taskController.updateTask(new RequestHelper(request), handler)
+  handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit, restrictedFields: string[]) =>
+    taskController.updateTask(new RequestHelper(request), handler, restrictedFields)
   ),
   config: {
     notes: "Update a task",

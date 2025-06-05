@@ -183,14 +183,14 @@ class TaskController extends BaseController {
 
   // Delete Comment
   async deleteComment(requestHelper: RequestHelper, handler: any) {
-  try {
-    const id = requestHelper.getParam("id");
-    const deletedComment = await deleteComment(id);
-    return this.sendResponse(handler, deletedComment);
-  } catch (error) {
-    return this.replyError(error, handler);
+    try {
+      const id = requestHelper.getParam("id");
+      const deletedComment = await deleteComment(id);
+      return this.sendResponse(handler, deletedComment);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
   }
-}
 
   // Add Time Spent to Task
   async addTimeSpent(requestHelper: RequestHelper, handler: any) {

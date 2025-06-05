@@ -178,9 +178,7 @@ const updateCommentInTask = async (
 };
 
 // Delete comment from task
-const deleteCommentFromTask = async (
-  id: string
-): Promise<ITaskComment | null> => {
+const deleteCommentFromTask = async (id: string): Promise<ITaskComment | null> => {
   // First, find the comment to get its data before deletion
   const commentToDelete = await TaskComment.findOne({ id });
   if (!commentToDelete) return null;
@@ -190,10 +188,7 @@ const deleteCommentFromTask = async (
   if (!deletedComment) return null;
 
   // Remove the comment from the Task's comment array
-  await Task.updateOne(
-    { "comment.id": id },
-    { $pull: { comment: { id: id } } }
-  );
+  await Task.updateOne({ "comment.id": id }, { $pull: { comment: { id: id } } });
 
   return deletedComment;
 };
@@ -271,6 +266,6 @@ export {
   updateATask,
   createCommentInTask,
   updateCommentInTask,
-  addTimeSpentToTask, deleteCommentFromTask
+  addTimeSpentToTask,
+  deleteCommentFromTask
 };
-

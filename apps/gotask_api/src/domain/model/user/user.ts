@@ -1,6 +1,8 @@
 import { Document, Schema, model, Types } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
+import { ALPHANUMERIC_REGEX } from "../../../constants/utils/regex"
+
 
 // Interface for the User document
 export interface IUser extends Document {
@@ -30,7 +32,7 @@ const UserSchema = new Schema<IUser>(
       validate: {
         validator: function (v: string) {
           if (!v) return true; // allow empty
-          return /^[a-zA-Z0-9]+$/.test(v); // alphanumeric only
+          return ALPHANUMERIC_REGEX.test(v);
         },
         message: (props) => `${props.value} is not valid! Only letters and numbers allowed.`
       }

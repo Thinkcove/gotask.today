@@ -31,8 +31,6 @@ const TaskMessages = {
     NOT_FOUND: "Task not found",
     ADD_FAILED: "Failed to add time track"
   }
-  
 };
 
 export default TaskMessages;
-

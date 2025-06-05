@@ -7,6 +7,8 @@ import { useAllRoles } from "../../role/services/roleAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { statusOptions } from "@/app/common/constants/user";
+import { ONLY_ALPHANUMERIC_REGEX } from "@/app/common/constants/regex";
+import { DIGIT_ONLY_REGEX } from "@/app/common/constants/regex";
 
 interface IUserInputProps {
   formData: IUserField;
@@ -36,26 +38,13 @@ const UserInput = ({
   return (
     <Grid container spacing={1}>
 
-{/* <Grid item xs={12}>
-<FormField
-  label={transuser("labelemp_id")}
-  type="text"
-  value={formData.emp_id}
-  onChange={(value) => handleChange("emp_id", String(value))}
-  required={false} 
-  error={errors.emp_id}
-  disabled={isReadOnly("emp_id")}
-  placeholder={transuser("placeholderemp_id")}
-/>
-</Grid> */}
-
 <Grid item xs={12}>
   <FormField
     label={transuser("labelemp_id")}
     type="text"
     value={formData.emp_id}
     onChange={(value) => {
-      const alphanumeric = String(value).replace(/[^a-zA-Z0-9]/g, ""); // Remove special characters
+      const alphanumeric = String(value).replace(ONLY_ALPHANUMERIC_REGEX, "");
       handleChange("emp_id", alphanumeric);
     }}
     required={false}
@@ -64,8 +53,6 @@ const UserInput = ({
     placeholder={transuser("placeholderemp_id")}
   />
 </Grid>
-
-
 
       <Grid item xs={12}>
         <FormField
@@ -103,7 +90,7 @@ const UserInput = ({
     required
     value={formData.mobile_no}
     onChange={(value) => {
-      const sanitized = String(value).replace(/\D/g, ""); // Remove non-digits
+      const sanitized = String(value).replace(DIGIT_ONLY_REGEX, ""); // Remove non-digits
       if (sanitized.length <= 10) {
         handleChange("mobile_no", sanitized);
       }
@@ -122,15 +109,12 @@ const UserInput = ({
     value={formData.joined_date}
 onChange={(value) => {
   if (value !== undefined && (typeof value === "string" || value instanceof Date)) {
-    const date = new Date(value); // ✅ only called if value is defined and valid
+    const date = new Date(value); // ✅only called if value is defined and valid
     if (!isNaN(date.getTime())) {
       handleChange("joined_date", date.toISOString());
     }
   }
 }}
-
-
-
 
     required
     error={errors?.joinDate}

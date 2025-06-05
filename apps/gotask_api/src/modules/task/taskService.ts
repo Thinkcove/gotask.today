@@ -495,7 +495,6 @@ const deleteComment = async (
   }
 };
 
-
 //add time spent
 const addTimeSpent = async (
   id: string,
@@ -539,4 +538,3 @@ export {
   deleteComment,
   addTimeSpent
 };
-

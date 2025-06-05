@@ -45,12 +45,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
       sx={{
         backgroundColor: `${getStatusColor(task.status)}12`,
         borderRadius: 2,
-        border: `1px solid ${getStatusColor(task.status)}33`,
+        border: `1px solid ${getStatusColor(task.status)}40`,
         px: 1,
         py: 2,
         mb: 2,
-        cursor: canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? "pointer" : "default",
-        transition: "box-shadow 0.2s ease"
+        cursor: canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? "pointer" : "default"
       }}
       onClick={canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? () => onTaskClick(task.id) : undefined}
     >

@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { getData, postData, putData } from "@/app/common/utils/apiData";
+import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import { IFormField, ITaskComment, Project, TaskPayload, User } from "../interface/taskInterface";
 import { withAuth } from "@/app/common/utils/authToken";
 import { SortOrder, TaskSortField } from "@/app/common/constants/task";
@@ -248,4 +248,10 @@ export const updateComment = (commentData: ITaskComment) =>
       { ...commentData } as Record<string, unknown>,
       token
     );
+  });
+
+// Delete a comment
+export const deleteComment = (commentId: string) =>
+  withAuth(async (token) => {
+    return deleteData(`${env.API_BASE_URL}/task/deleteComment/${commentId}`, token);
   });

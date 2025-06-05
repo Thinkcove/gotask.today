@@ -23,7 +23,9 @@ const TaskMessages = {
   COMMENT: {
     CREATE_FAILED: "Failed to create comment",
     UPDATE_FAILED: "Failed to update comment",
-    NOT_FOUND: "Comment not found"
+    NOT_FOUND: "Comment not found",
+    DELETE_SUCCESS: "Comment deleted successfully",
+    DELETE_FAILED: "Failed to delete comment"
   },
   TIME_SPENT: {
     NOT_FOUND: "Task not found",

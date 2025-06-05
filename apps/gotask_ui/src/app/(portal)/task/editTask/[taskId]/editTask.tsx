@@ -7,11 +7,10 @@ import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import { createComment, updateTask } from "../../service/taskAction";
+import { updateTask } from "../../service/taskAction";
 import { ArrowBack, History } from "@mui/icons-material";
-import { IFormField, ITask, ITaskComment, Project, User } from "../../interface/taskInterface";
+import { IFormField, ITask, Project, User } from "../../interface/taskInterface";
 import HistoryDrawer from "../taskHistory";
-import TaskComments from "../taskComments";
 import { useUser } from "@/app/userContext";
 import { KeyedMutator } from "swr";
 import TimeSpentPopup from "../timeSpentPopup";
@@ -59,10 +58,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   };
 
   const handleInputChange = (name: string, value: string | Project[] | User[]) => {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
-    };
+  };
   const alreadyExists = checkIfDateExists();
 
   const handleProgressClick = () => {
@@ -100,6 +99,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         message: transtask("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+      setTimeout(() => router.back(), 2000);
     } catch (error) {
       console.error("Error while updating task:", error);
       setSnackbar({
@@ -108,18 +108,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
-  };
-
-  const submitComment = async (commentText: string) => {
-    if (!commentText.trim()) return;
-    const commentData: ITaskComment = {
-      task_id: data.id,
-      user_id: user?.id || "",
-      user_name: user?.name || "",
-      comment: commentText
-    };
-    await createComment(commentData);
-    await mutate();
   };
 
   const handleBack = () => {
@@ -241,7 +229,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             errors={{}}
             readOnlyFields={["title", "user_id", "project_id", "created_on"]}
           />
-          <TaskComments comments={data.comment || []} onSave={submitComment} />
         </Box>
 
         <TimeSpentPopup

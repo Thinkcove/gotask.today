@@ -242,6 +242,8 @@
     "placeholdercomment": "Write a comment...",
     "savecomment": "Save Comment",
     "cancelcomment": "Cancel",
+    "commentedit": "Edit",
+    "showless": "Show Less",
     "comments": "Comments",
     "taskhistory": "Task History",
     "log": "Log of who performed the updates in the task",
@@ -281,7 +283,12 @@
     "comment": "Comments",
     "listViewOf": "List view of {name} {type}",
     "notaskfound": "No tasks found for {name} with the selected filters",
-    "nodata": "No data found"
+    "nodata": "No data found",
+    "deletetitle":"Delete Comment",
+    "deletecomment":"Delete",
+    "cancelcomments":"Cancel",
+    "commmentmessage":"Are You Sure You Want to Delete This Comment?"
+
   },
   "User": {
     "username": "User name is required",

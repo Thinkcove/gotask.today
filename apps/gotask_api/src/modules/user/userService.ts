@@ -96,6 +96,8 @@ class userService {
         };
       });
 
+      enrichedUsers.sort((a, b) => a.name.localeCompare(b.name));
+
       return {
         success: true,
         data: enrichedUsers

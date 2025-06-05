@@ -1,58 +1,80 @@
 import React, { useState } from "react";
 import { Box, Avatar, Typography, Button } from "@mui/material";
-import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { ITaskComment } from "../interface/taskInterface";
+import { ITask, ITaskComment } from "../interface/taskInterface";
 import { getColorForUser } from "@/app/common/constants/avatar";
+import { useUser } from "@/app/userContext";
+import FormField from "@/app/component/input/formField";
+import { updateComment, deleteComment } from "../service/taskAction";
+import { KeyedMutator } from "swr";
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
+  mutate: KeyedMutator<ITask>;
 }
 
-const CommentHistory: React.FC<CommentHistoryProps> = ({ comments }) => {
+const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [showAll, setShowAll] = useState(false);
+  const { user } = useUser();
+  const [editingComment, setEditingComment] = useState<ITaskComment | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<ITaskComment | null>(null);
 
-  if (comments.length === 0) return null;
+  const handleStartEdit = (comment: ITaskComment) => {
+    setEditingComment(comment);
+    setEditValue(comment.comment);
+  };
+
+  const handleSaveEdit = async () => {
+    if (editingComment && editingComment.id && editValue.trim()) {
+      const updatedComment: ITaskComment = {
+        ...editingComment,
+        comment: editValue.trim()
+      };
+
+      await updateComment(updatedComment);
+      setEditingComment(null);
+      setEditValue("");
+      await mutate();
+    }
+  };
+
+  const handleDeleteClick = (comment: ITaskComment) => {
+    setCommentToDelete(comment);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (commentToDelete && commentToDelete.id) {
+      await deleteComment(commentToDelete.id);
+      setDeleteDialogOpen(false);
+      setCommentToDelete(null);
+      await mutate();
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setCommentToDelete(null);
+  };
 
   const displayedComments = showAll ? comments : comments.slice(0, 3);
   const hasMoreComments = comments.length > 3;
 
   return (
-    <Box
-      sx={{
-        mt: 2,
-        width: "100%",
-        boxSizing: "border-box",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        maxHeight: "100%"
-      }}
-    >
+    <Box sx={{ mt: 2 }}>
       <Box
         sx={{
-          display: "flex",
-          gap: 1,
-          color: "#741B92",
-          alignItems: "center",
-          mb: 2
-        }}
-      >
-        <Typography fontWeight="bold">{transtask("comment")}</Typography>
-        <SpeakerNotesOutlined />
-      </Box>
-
-      <Box
-        sx={{
-          maxHeight: { xs: 300, sm: 400, md: 500 }, // Simple max height
-          overflowY: "auto", // Simple scroll
+          maxHeight: { xs: 300, sm: 400, md: 500 },
+          overflowY: "auto",
           overflowX: "hidden",
           pr: { xs: 0, sm: 1 },
           width: "100%",
           boxSizing: "border-box",
-          // Custom scrollbar styling (optional)
           "&::-webkit-scrollbar": {
             width: "6px"
           },
@@ -70,121 +92,133 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments }) => {
           }
         }}
       >
-        {displayedComments.map((comment) => (
-          <Box
-            key={comment.id}
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              gap: { xs: 1, sm: 2 },
-              py: { xs: 1.5, sm: 2 },
-              pr: { xs: 0, sm: 2 },
-              my: 1,
-              width: "100%",
-              boxSizing: "border-box",
-              overflow: "hidden"
-            }}
-          >
-            <Avatar
-              sx={{
-                backgroundColor: getColorForUser(comment.user_name || ""),
-                width: { xs: 32, sm: 40 },
-                height: { xs: 32, sm: 40 },
-                fontSize: { xs: "0.875rem", sm: "1rem" },
-                flexShrink: 0
-              }}
-            >
-              {comment.user_name.charAt(0)}
-            </Avatar>
-            <Box
-              sx={{
-                flex: 1,
-                minWidth: 0,
-                overflow: "hidden"
-              }}
-            >
-              <Box
+        {displayedComments.map((comment) => {
+          const isOwner = user?.id === comment.user_id;
+          const isEditing = editingComment?.id === comment.id;
+
+          return (
+            <Box key={comment.id} sx={{ display: "flex", gap: 2, pt: 2 }}>
+              <Avatar
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  flexWrap: { xs: "wrap", sm: "nowrap" },
-                  mb: 0.5
+                  backgroundColor: getColorForUser(comment.user_name || ""),
+                  width: 40,
+                  height: 40,
+                  flexShrink: 0
                 }}
               >
-                <Typography
-                  variant="subtitle1"
-                  fontWeight="bold"
-                  sx={{
-                    fontSize: { xs: "0.875rem", sm: "1rem" },
-                    lineHeight: 1.2,
-                    minWidth: 0,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: { xs: "normal", sm: "nowrap" }
-                  }}
-                >
-                  {comment.user_name} -
+                {comment.user_name.charAt(0)}
+              </Avatar>
+
+              <Box sx={{ flex: 1 }}>
+                <Typography fontWeight="bold">
+                  {comment.user_name} -{" "}
+                  <Typography component="span" variant="caption" color="text.secondary">
+                    {new Date(comment.updatedAt ?? "").toLocaleString()}
+                  </Typography>
                 </Typography>
-                <Typography
-                  variant="subtitle2"
-                  sx={{
-                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                    color: "text.secondary",
-                    flexShrink: 0
-                  }}
-                >
-                  {new Date(comment.createdAt ?? new Date().toISOString()).toLocaleString()}
-                </Typography>
+
+                {isEditing ? (
+                  <>
+                    <FormField
+                      label=""
+                      type="text"
+                      value={editValue}
+                      multiline
+                      height={100}
+                      onChange={(val) => setEditValue(val as string)}
+                    />
+                    <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                      <Button
+                        variant="contained"
+                        sx={{ backgroundColor: "#741B92", textTransform: "none" }}
+                        onClick={handleSaveEdit}
+                      >
+                        {transtask("savecomment")}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          color: "black",
+                          border: "2px solid #741B92",
+                          px: 2,
+                          textTransform: "none",
+                          "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
+                        }}
+                        onClick={() => {
+                          setEditingComment(null);
+                          setEditValue("");
+                        }}
+                      >
+                        {transtask("cancelcomment")}
+                      </Button>
+                    </Box>
+                  </>
+                ) : (
+                  <Typography sx={{ mt: 1, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                    {comment.comment}
+                  </Typography>
+                )}
+
+                {isOwner && !isEditing && (
+                  <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ cursor: "pointer", color: "primary.main" }}
+                      onClick={() => handleStartEdit(comment)}
+                    >
+                      {transtask("commentedit")}
+                    </Typography>
+                  
+                    <Typography
+                      variant="body2"
+                      sx={{ 
+                        cursor: "pointer", 
+                        color: "#741B92",
+                        "&:hover": { color: "#b71c1c" }
+                      }}
+                      onClick={() => handleDeleteClick(comment)}
+                    >
+                      {transtask("deletecomment")}
+                    </Typography>
+                  </Box>
+                )}
               </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: { xs: "0.875rem", sm: "0.875rem" },
-                  lineHeight: 1.4,
-                  wordBreak: "break-word",
-                  overflowWrap: "break-word",
-                  hyphens: "auto"
-                }}
-              >
-                {comment.comment}
-              </Typography>
             </Box>
-          </Box>
-        ))}
+          );
+        })}
       </Box>
 
       {hasMoreComments && !showAll && (
-        <Button
-          onClick={() => setShowAll(true)}
-          size="small"
-          sx={{
-            textTransform: "none",
-            ml: { xs: 0, sm: 6 },
-            mt: 1,
-            fontSize: { xs: "0.875rem", sm: "0.875rem" },
-            alignSelf: "flex-start"
-          }}
-        >
+        <Button onClick={() => setShowAll(true)} size="small" sx={{ textTransform: "none" }}>
           {transtask("viewMore", { default: "View more" })} ({comments.length - 3} more)
         </Button>
       )}
-
       {showAll && hasMoreComments && (
         <Button
           onClick={() => setShowAll(false)}
           size="small"
           sx={{
-            textTransform: "none",
-            ml: { xs: 0, sm: 6 },
-            mt: 1,
-            fontSize: { xs: "0.875rem", sm: "0.875rem" },
-            alignSelf: "flex-start"
+            textTransform: "none"
           }}
         >
-          {transtask("showLess", { default: "Show less" })}
+          {transtask("showless", { default: "Show less" })}
         </Button>
       )}
+
+      {/* Delete Confirmation Dialog using CommonDialog */}
+      <CommonDialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        onSubmit={handleDeleteConfirm}
+        title={transtask("deletetitle")}
+        submitLabel={transtask("deletecomment")}
+        cancelLabel={transtask("cancelcomments", { default: "Cancel" })}
+        submitColor="#b71c1c" 
+      >
+        <Typography sx={{pt:2}}>
+          {transtask("commmentmessage")}
+        </Typography>
+      </CommonDialog>
     </Box>
   );
 };

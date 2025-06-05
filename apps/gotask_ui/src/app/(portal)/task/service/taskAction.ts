@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { getData, postData } from "@/app/common/utils/apiData";
+import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import { IFormField, ITaskComment, Project, TaskPayload, User } from "../interface/taskInterface";
 import { withAuth } from "@/app/common/utils/authToken";
 import { SortOrder, TaskSortField } from "@/app/common/constants/task";
@@ -32,9 +32,7 @@ export const useProjectGroupTask = (
             date_var: date_var ?? "due_date"
           }),
         ...(more_variation && { more_variation }),
-        ...(less_variation && { less_variation }),
-        ...(sort_field && { sort_field }),
-        ...(sort_order && { sort_order })
+        ...(less_variation && { less_variation })
       };
       return postData(`${env.API_BASE_URL}/tasks/grouped-by-project`, payload, token);
     });
@@ -199,14 +197,14 @@ export const updateTask = (taskId: string, updatedFields: object) =>
   });
 
 //create comment
-export const createComment = async (formData: ITaskComment) => {
-  const response = await fetch(`${env.API_BASE_URL}/task/createComment`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData)
+export const createComment = (formData: ITaskComment) =>
+  withAuth(async (token) => {
+    return postData(
+      `${env.API_BASE_URL}/task/createComment`,
+      { ...formData } as Record<string, unknown>,
+      token
+    );
   });
-  return response.json();
-};
 
 // Get Projects by User
 export const getProjectIdsAndNames = async (userId: string) => {
@@ -241,3 +239,19 @@ export const logTaskTime = async (
   });
   return response.json();
 };
+
+// Update a comment
+export const updateComment = (commentData: ITaskComment) =>
+  withAuth(async (token) => {
+    return putData(
+      `${env.API_BASE_URL}/task/updateComment/${commentData.id}`,
+      { ...commentData } as Record<string, unknown>,
+      token
+    );
+  });
+
+// Delete a comment
+export const deleteComment = (commentId: string) =>
+  withAuth(async (token) => {
+    return deleteData(`${env.API_BASE_URL}/task/deleteComment/${commentId}`, token);
+  });

@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, Paper, Box, Divider } from "@mui/material";
 import { getStatusColor } from "@/app/common/constants/task";
-import { formatDate } from "@/app/common/utils/common";
+import { monthDate } from "@/app/common/utils/common";
 import { ReadMoreTwoTone } from "@mui/icons-material";
 import TaskItem, { Task } from "./taskItem";
 import { IGroup } from "../../interface/taskInterface";
@@ -74,7 +74,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ view, group, onTaskClick, onViewMor
                 onTaskClick={onTaskClick}
                 view={view}
                 getStatusColor={getStatusColor}
-                formatDate={formatDate}
+                formatDate={monthDate}
               />
             ))}
           </>

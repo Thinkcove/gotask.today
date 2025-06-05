@@ -1,8 +1,7 @@
 import { Document, Schema, model, Types } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
-import { ALPHANUMERIC_REGEX } from "../../../constants/utils/regex"
-
+import { ALPHANUMERIC_REGEX } from "../../../constants/utils/regex";
 
 // Interface for the User document
 export interface IUser extends Document {

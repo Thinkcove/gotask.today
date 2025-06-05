@@ -16,7 +16,7 @@ export interface ITask extends Document {
   user_name: string;
   project_id: string;
   project_name: string;
-  due_date: Date;
+  due_date?: Date;
   start_date?: Date;
   created_on: Date;
   updated_on: Date;
@@ -51,7 +51,7 @@ const TaskSchema = new Schema<ITask>(
     user_name: { type: String },
     project_id: { type: String, required: true },
     project_name: { type: String },
-    due_date: { type: Date, required: true },
+    due_date: { type: Date, required: false },
     start_date: { type: Date },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },

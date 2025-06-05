@@ -8,10 +8,14 @@ export const generateHistoryEntry = (
   const { due_date, status, severity } = updatedData;
   const historyEntries: string[] = [];
 
-  if (due_date && new Date(due_date).getTime() !== existingTask.due_date.getTime()) {
-    historyEntries.push(
-      `Due Date has been updated from "${formatDate(existingTask.due_date)}" to "${formatDate(new Date(due_date))}".`
-    );
+  const existingDueDateTime = existingTask.due_date?.getTime() ?? null;
+  const updatedDueDateTime = due_date?.getTime() ?? null;
+
+  // Only compare if the updated due date is not undefined
+  if (due_date && updatedDueDateTime !== existingDueDateTime) {
+    const fromDate = existingTask.due_date ? formatDate(existingTask.due_date) : "None";
+    const toDate = formatDate(due_date);
+    historyEntries.push(`Due Date has been updated from "${fromDate}" to "${toDate}".`);
   }
   if (status && status !== existingTask.status) {
     historyEntries.push(`Status has been updated from "${existingTask.status}" to "${status}".`);

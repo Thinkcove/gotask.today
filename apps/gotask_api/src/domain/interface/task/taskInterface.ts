@@ -20,22 +20,11 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
     throw new Error("Invalid user_id or project_id");
   }
 
-  const createdOn = new Date(taskData.created_on!);
-  const dueDate = new Date(taskData.due_date!);
-
-  const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
-  const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-
-  // Inclusive: count both start and end dates
-  const daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
-  const estimatedTime = daysDiff > 0 ? `${daysDiff}d0h` : "1d0h";
-
   // Assign user_name and project_name
   const newTask = new Task({
     ...taskData,
     user_name: user.name,
-    project_name: project.name,
-    estimated_time: estimatedTime
+    project_name: project.name
   });
   return await newTask.save();
 };
@@ -101,14 +90,10 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
     const { loginuser_id, loginuser_name } = updateData;
 
     const historyEntry = generateHistoryEntry(existingTask, updateData);
-
-    if (!existingTask.history) {
-      existingTask.history = [];
-    }
+    if (!existingTask.history) existingTask.history = [];
 
     if (historyEntry) {
       const TaskHistoryModel = mongoose.model<ITaskHistory>("TaskHistory", TaskHistorySchema);
-
       const historyItem = new TaskHistoryModel({
         id: uuidv4(),
         task_id: id,
@@ -117,23 +102,17 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
         formatted_history: historyEntry,
         created_date: new Date()
       });
-
       existingTask.history.unshift(historyItem);
     }
 
-    // Recalculate estimated_time if due_date or created_on is updated
-    const createdOn = new Date(updateData.created_on ?? existingTask.created_on);
-    const dueDate = new Date(updateData.due_date ?? existingTask.due_date);
+    // Set estimated_time only if user_estimated is provided
+    if (updateData.user_estimated) {
+      existingTask.estimated_time = updateData.user_estimated;
+    }
 
-    const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
-    const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-
-    const daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
-    existingTask.estimated_time = daysDiff > 0 ? `${daysDiff}d0h` : "1d0h";
-
+    // Apply all updates
     Object.assign(existingTask, updateData);
     await existingTask.save();
-
     return existingTask;
   } catch (error) {
     logger.error(error);
@@ -207,6 +186,7 @@ const addTimeSpentToTask = async (
   let delayHours = 0;
 
   for (const entry of entries) {
+    // Calculate time_logged if start_time and end_time are provided
     if (entry.start_time && entry.end_time) {
       entry.time_logged = TimeUtil.calculateTimeLoggedFromStartEnd(
         entry.start_time,
@@ -217,21 +197,25 @@ const addTimeSpentToTask = async (
       entry.time_logged = TimeUtil.formatHoursToTimeString(totalHours);
     }
 
+    // Validate time format
     if (!TimeUtil.isValidTimeFormat(entry.time_logged)) {
       throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
     }
 
-    //Date comparison debug logs
-    const entryDate = new Date(entry.date);
-    const dueDate = new Date(task.due_date);
+    // If due_date is defined, check for delay
+    if (task.due_date) {
+      const entryDate = new Date(entry.date);
+      const dueDate = new Date(task.due_date);
 
-    if (entryDate > dueDate) {
-      const diffMs = entryDate.getTime() - dueDate.getTime();
-      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); // calendar days
-      const delayHoursForThisEntry = diffDays * 8; // 8 working hours per day
-      delayHours += delayHoursForThisEntry;
+      if (entryDate > dueDate) {
+        const diffMs = entryDate.getTime() - dueDate.getTime();
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); // calendar days
+        const delayHoursForThisEntry = diffDays * 8; // 8 working hours per day
+        delayHours += delayHoursForThisEntry;
+      }
     }
 
+    // Add entry to time_spent
     task.time_spent.unshift({
       ...entry,
       start_time: entry.start_time,
@@ -239,16 +223,18 @@ const addTimeSpentToTask = async (
     });
   }
 
+  // Recalculate total time, remaining, and variation
   const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);
   task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
   task.remaining_time = TimeUtil.calculateRemainingTime(task.estimated_time, task.time_spent_total);
   task.variation = TimeUtil.calculateVariation(task.estimated_time, task.time_spent_total);
 
+  // If there's delay, overwrite variation to show delay only
   if (delayHours > 0) {
     const delayString = TimeUtil.formatHoursToTimeString(delayHours);
-    task.variation = delayString; // ONLY show delay
+    task.variation = delayString;
   } else {
-    task.variation = "0d0h"; // No delay
+    task.variation = "0d0h";
   }
 
   await task.save();

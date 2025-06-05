@@ -246,37 +246,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("severity")}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <FormField
-            label={transtask("labelcreateon")}
-            type="date"
-            placeholder={transtask("placeholdercreatedon")}
-            value={formData.created_on || new Date().toISOString().split("T")[0]}
-            onChange={(value) =>
-              handleInputChange(
-                "created_on",
-                value instanceof Date ? value.toISOString().split("T")[0] : String(value)
-              )
-            }
-            disabled={isReadOnly("created_on")}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <FormField
-            label={transtask("labelduedate")}
-            type="date"
-            placeholder={transtask("placeholderduedate")}
-            value={formData.due_date || new Date().toISOString().split("T")[0]}
-            onChange={(value) =>
-              handleInputChange(
-                "due_date",
-                value instanceof Date ? value.toISOString().split("T")[0] : String(value)
-              )
-            }
-            disabled={isReadOnly("due_date")}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
+
+        <Grid item xs={12} sm={6} md={3}>
           <FormField
             label={transtask("labelstartdate")}
             type="date"
@@ -291,36 +262,60 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("start_date")}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Box display="flex" alignItems="center" gap={2}>
-            <FormField
-              label={transtask("labeluserestimateddays")}
-              type="number"
-              min={0}
-              value={parseInt(formData.user_estimated?.split("d")[0] || "0")}
-              onChange={(val) => {
-                const hours =
-                  formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "0";
-                handleInputChange("user_estimated", `${val}d${hours}h`);
-              }}
-              disabled={isReadOnly("user_estimated")}
-            />
-            <FormField
-              label={transtask("labeluserestimatedhours")}
-              type="number"
-              min={0}
-              max={23}
-              value={parseInt(
-                formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "0"
-              )}
-              onChange={(val) => {
-                const days = formData.user_estimated?.split("d")[0] || "0";
-                handleInputChange("user_estimated", `${days}d${val}h`);
-              }}
-              disabled={isReadOnly("user_estimated")}
-            />
-          </Box>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <FormField
+            label={transtask("labeluserestimateddays")}
+            type="number"
+            min={0}
+            value={
+              formData.user_estimated?.includes("d") ? formData.user_estimated.split("d")[0] : ""
+            }
+            onChange={(val) => {
+              const hours = formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "";
+              const days = val === "" ? "" : val;
+              handleInputChange("user_estimated", `${days || 0}d${hours || 0}h`);
+            }}
+            disabled={isReadOnly("user_estimated")}
+          />
         </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <FormField
+            label={transtask("labeluserestimatedhours")}
+            type="number"
+            min={1}
+            max={8}
+            value={
+              formData.user_estimated?.includes("d")
+                ? formData.user_estimated.split("d")[1]?.replace("h", "").trim() || ""
+                : ""
+            }
+            onChange={(val) => {
+              const days = formData.user_estimated?.split("d")[0] || "";
+              const hours = val === "" ? "" : val;
+              handleInputChange("user_estimated", `${days || 0}d${hours || 0}h`);
+            }}
+            disabled={isReadOnly("user_estimated")}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <FormField
+            label={transtask("labelduedate")}
+            type="date"
+            placeholder={transtask("placeholderduedate")}
+            value={formData.due_date || new Date().toISOString().split("T")[0]}
+            onChange={(value) =>
+              handleInputChange(
+                "due_date",
+                value instanceof Date ? value.toISOString().split("T")[0] : String(value)
+              )
+            }
+            disabled={isReadOnly("due_date")}
+          />
+        </Grid>
+
         <Grid item xs={12}>
           <FormField
             label={transtask("labeldescription")}

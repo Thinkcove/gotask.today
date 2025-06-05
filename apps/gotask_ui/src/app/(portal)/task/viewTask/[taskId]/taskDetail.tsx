@@ -183,7 +183,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("starteddate")}
-                  value={formatDate(task.start_date)}
+                  value={task.start_date ? formatDate(task.start_date) : "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>

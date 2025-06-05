@@ -136,7 +136,10 @@ TaskRoutes.push({
     taskController.createComment(new RequestHelper(request), handler),
   config: {
     notes: "Add a comment to a task",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 
@@ -148,7 +151,25 @@ TaskRoutes.push({
     taskController.updateComment(new RequestHelper(request), handler),
   config: {
     notes: "Update a comment on a task",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Route: Delete Comment
+TaskRoutes.push({
+  path: API_PATHS.DELETE_COMMENT,
+  method: API_METHODS.DELETE,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    taskController.deleteComment(new RequestHelper(request), handler),
+  config: {
+    notes: "Delete a comment from a task",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 

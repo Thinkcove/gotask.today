@@ -121,6 +121,16 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
       existingTask.history.unshift(historyItem);
     }
 
+    // Recalculate estimated_time if due_date or created_on is updated
+    const createdOn = new Date(updateData.created_on ?? existingTask.created_on);
+    const dueDate = new Date(updateData.due_date ?? existingTask.due_date);
+
+    const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
+    const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+
+    const daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
+    existingTask.estimated_time = daysDiff > 0 ? `${daysDiff}d0h` : "1d0h";
+
     Object.assign(existingTask, updateData);
     await existingTask.save();
 
@@ -165,6 +175,27 @@ const updateCommentInTask = async (
   );
 
   return updatedComment;
+};
+
+// Delete comment from task
+const deleteCommentFromTask = async (
+  id: string
+): Promise<ITaskComment | null> => {
+  // First, find the comment to get its data before deletion
+  const commentToDelete = await TaskComment.findOne({ id });
+  if (!commentToDelete) return null;
+
+  // Delete the comment from TaskComment collection
+  const deletedComment = await TaskComment.findOneAndDelete({ id });
+  if (!deletedComment) return null;
+
+  // Remove the comment from the Task's comment array
+  await Task.updateOne(
+    { "comment.id": id },
+    { $pull: { comment: { id: id } } }
+  );
+
+  return deletedComment;
 };
 
 //Add time log
@@ -240,5 +271,6 @@ export {
   updateATask,
   createCommentInTask,
   updateCommentInTask,
-  addTimeSpentToTask
+  addTimeSpentToTask, deleteCommentFromTask
 };
+

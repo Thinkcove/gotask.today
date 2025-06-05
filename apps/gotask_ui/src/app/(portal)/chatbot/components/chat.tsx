@@ -1,531 +1,18 @@
-// "use client";
-// import { useState, useRef, useCallback, useMemo } from "react";
-// import { usePathname } from "next/navigation";
-// import { Box, Typography, IconButton, Paper } from "@mui/material";
-// import { sendQuery, uploadAttendance, useQueryHistory } from "../service/chatAction";
-// import { QueryResponse, QueryHistoryEntry } from "../interface/chatInterface";
-// import ChatHistory from "./chatHitory";
-// import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
-// import { useTranslations } from "next-intl";
-// import { LOCALIZATION } from "@/app/common/constants/localization";
-// import FormField from "@/app/component/input/formField";
-// import ModuleHeader from "@/app/component/header/moduleHeader";
-
-// // Custom hook for updating greeting
-// const useGreeting = (transchatbot: any) => {
-//   const [greeting, setGreeting] = useState<string>("Good Day");
-
-//   const updateGreeting = useCallback(() => {
-//     const hour = new Date().getHours();
-//     if (hour >= 0 && hour < 12) setGreeting(transchatbot("greetingMorning"));
-//     else if (hour >= 12 && hour < 17) setGreeting(transchatbot("greetingAfternoon"));
-//     else setGreeting(transchatbot("greetingEvening"));
-//   }, [transchatbot]);
-
-//   useMemo(() => {
-//     updateGreeting();
-//     const interval = setInterval(updateGreeting, 60000);
-//     return () => clearInterval(interval);
-//   }, [updateGreeting]);
-
-//   return greeting;
-// };
-
-// // Custom hook for managing localStorage
-// const useLocalStorageMessages = (messages: QueryResponse[], transchatbot: any) => {
-//   const saveToLocalStorage = useCallback(() => {
-//     if (typeof window !== "undefined") {
-//       if (messages.length > 0) {
-//         localStorage.setItem(transchatbot("chatMessages"), JSON.stringify(messages));
-//         localStorage.setItem("chatSessionTimestamp", Date.now().toString());
-//       } else {
-//         localStorage.removeItem(transchatbot("chatMessages"));
-//         localStorage.removeItem("chatSessionTimestamp");
-//       }
-//     }
-//   }, [messages, transchatbot]);
-
-//   const getFromLocalStorage = useCallback(() => {
-//     if (typeof window !== "undefined") {
-//       try {
-//         const storedMessages = localStorage.getItem(transchatbot("chatMessages"));
-//         const sessionTimestamp = localStorage.getItem("chatSessionTimestamp");
-//         const currentTime = Date.now();
-//         // Consider it a refresh if the session timestamp is recent (within 5 seconds)
-//         if (sessionTimestamp && currentTime - parseInt(sessionTimestamp) < 5000) {
-//           return storedMessages ? (JSON.parse(storedMessages) as QueryResponse[]) : [];
-//         }
-//         return [];
-//       } catch (error) {
-//         console.error("Error parsing localStorage messages:", error);
-//         return [];
-//       }
-//     }
-//     return [];
-//   }, [transchatbot]);
-
-//   const clearLocalStorage = useCallback(() => {
-//     if (typeof window !== "undefined") {
-//       localStorage.removeItem(transchatbot("chatMessages"));
-//       localStorage.removeItem("chatSessionTimestamp");
-//     }
-//   }, [transchatbot]);
-
-//   return { saveToLocalStorage, getFromLocalStorage, clearLocalStorage };
-// };
-
-// // Custom hook for auto-scrolling
-// const useAutoScroll = (messages: QueryResponse[]) => {
-//   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-//   useMemo(() => {
-//     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-//   }, [messages]);
-
-//   return messagesEndRef;
-// };
-
-// // Custom hook for handling conversation history
-// const useConversationHistory = (
-//   selectedConversationId: string | null,
-//   memoizedSelectedHistory: QueryHistoryEntry[],
-//   initialMessages: QueryResponse[]
-// ) => {
-//   const [messages, setMessages] = useState<QueryResponse[]>(initialMessages);
-
-//   const generateUniqueId = () => {
-//     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-//   };
-
-//   useMemo(() => {
-//     if (selectedConversationId && memoizedSelectedHistory?.length > 0) {
-//       const conversationMessages = memoizedSelectedHistory
-//         .map((item: QueryHistoryEntry) => [
-//           {
-//             id: generateUniqueId(),
-//             message: item.query,
-//             timestamp: new Date(item.timestamp).toLocaleTimeString([], {
-//               hour: "2-digit",
-//               minute: "2-digit"
-//             }),
-//             isUser: true
-//           },
-//           {
-//             id: generateUniqueId(),
-//             message: item.response,
-//             timestamp: new Date(item.timestamp).toLocaleTimeString([], {
-//               hour: "2-digit",
-//               minute: "2-digit"
-//             }),
-//             isUser: false,
-//             isSystem: false
-//           }
-//         ])
-//         .flat();
-//       setMessages(conversationMessages);
-//     } else if (!selectedConversationId && initialMessages.length > 0) {
-//       setMessages(initialMessages);
-//     } else {
-//       setMessages([]);
-//     }
-//   }, [selectedConversationId, memoizedSelectedHistory, initialMessages]);
-
-//   return { messages, setMessages };
-// };
-
-// const Chat: React.FC = () => {
-//   const transchatbot = useTranslations(LOCALIZATION.TRANSITION.CHATBOT);
-//   const pathname = usePathname();
-//   const [input, setInput] = useState<string>("");
-//   const [inputError, setInputError] = useState<string | undefined>(undefined);
-//   const fileInputRef = useRef<HTMLInputElement>(null);
-//   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-//   const {
-//     history: selectedHistory,
-//     isLoading: selectedLoading,
-//     error: selectedError
-//   } = useQueryHistory(selectedConversationId ?? undefined);
-
-//   const memoizedSelectedHistory = useMemo(
-//     () => selectedHistory ?? [],
-//     [JSON.stringify(selectedHistory)]
-//   );
-
-//   // Initialize messages from localStorage only on refresh
-//   const { saveToLocalStorage, getFromLocalStorage, clearLocalStorage } = useLocalStorageMessages(
-//     [],
-//     transchatbot
-//   );
-//   const initialMessages = useMemo(() => {
-//     return selectedConversationId ? [] : getFromLocalStorage();
-//   }, [selectedConversationId, getFromLocalStorage]);
-
-//   // Clear localStorage on component mount to ensure fresh start
-//   useMemo(() => {
-//     if (!selectedConversationId) {
-//       clearLocalStorage();
-//     }
-//   }, []);
-
-//   // Use custom hooks
-//   const { messages, setMessages } = useConversationHistory(
-//     selectedConversationId,
-//     memoizedSelectedHistory,
-//     initialMessages
-//   );
-//   const greeting = useGreeting(transchatbot);
-//   const messagesEndRef = useAutoScroll(messages);
-//   const { saveToLocalStorage: saveMessages } = useLocalStorageMessages(messages, transchatbot);
-
-//   // Save messages to localStorage whenever they change
-//   useMemo(() => {
-//     saveMessages();
-//   }, [saveMessages]);
-
-//   // Handle navigation to clear localStorage
-//   const prevPathnameRef = useRef<string | null>(null);
-//   useMemo(() => {
-//     if (
-//       typeof window !== "undefined" &&
-//       prevPathnameRef.current !== null &&
-//       prevPathnameRef.current !== pathname
-//     ) {
-//       clearLocalStorage();
-//       setMessages([]);
-//     }
-//     prevPathnameRef.current = pathname;
-//   }, [pathname, setMessages]);
-
-//   const isReadOnly = () => false;
-
-//   const generateUniqueId = () => {
-//     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-//   };
-
-//   const handleSend = useCallback(async () => {
-//     if (!input.trim()) {
-//       setInputError(transchatbot("required"));
-//       return;
-//     }
-
-//     const userMessage: QueryResponse = {
-//       id: generateUniqueId(),
-//       message: input,
-//       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-//       isUser: true
-//     };
-
-//     setMessages((prev) => [...prev, userMessage]);
-//     setInput("");
-//     setInputError(undefined);
-
-//     try {
-//       const response = await sendQuery(input);
-//       const botMessage: QueryResponse = {
-//         id: generateUniqueId(),
-//         message: response.message,
-//         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-//         isUser: false,
-//         isSystem: false
-//       };
-//       setMessages((prev) => [...prev, botMessage]);
-//     } catch (error: any) {
-//       const errorMessage: QueryResponse = {
-//         id: generateUniqueId(),
-//         message: transchatbot("queryError"),
-//         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-//         isUser: false,
-//         isSystem: true
-//       };
-//       setMessages((prev) => [...prev, errorMessage]);
-//     }
-//   }, [input, transchatbot]);
-
-//   const handleFileUpload = useCallback(
-//     async (event: React.ChangeEvent<HTMLInputElement>) => {
-//       const file = event.target.files?.[0];
-//       if (!file) return;
-
-//       if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
-//         const systemMessage: QueryResponse = {
-//           id: generateUniqueId(),
-//           message: transchatbot("invalidFile"),
-//           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-//           isUser: false,
-//           isSystem: true
-//         };
-//         setMessages((prev) => [...prev, systemMessage]);
-//         return;
-//       }
-
-//       try {
-//         const result = await uploadAttendance(file);
-//         const systemMessage: QueryResponse = {
-//           id: generateUniqueId(),
-//           message: `Attendance uploaded successfully! Inserted: ${result.inserted}, Skipped: ${result.skipped}. ${
-//             result.errors.length > 0 ? "Errors: " + result.errors.join("; ") : ""
-//           }`,
-//           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-//           isUser: false,
-//           isSystem: true
-//         };
-//         setMessages((prev) => [...prev, systemMessage]);
-//       } catch (error: any) {
-//         const systemMessage: QueryResponse = {
-//           id: generateUniqueId(),
-//           message: `Error uploading attendance: ${error.message}`,
-//           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-//           isUser: false,
-//           isSystem: true
-//         };
-//         setMessages((prev) => [...prev, systemMessage]);
-//       } finally {
-//         if (fileInputRef.current) fileInputRef.current.value = "";
-//       }
-//     },
-//     [transchatbot]
-//   );
-
-//   const handleInputChange = (value: string) => {
-//     setInput(value);
-//     setInputError(undefined);
-//   };
-
-//   const handleNewChat = useCallback(() => {
-//     setMessages([]);
-//     clearLocalStorage();
-//     setSelectedConversationId(null);
-//   }, [clearLocalStorage, transchatbot]);
-
-//   const handleClearAll = useCallback(() => {
-//     setMessages([]);
-//     clearLocalStorage();
-//     setSelectedConversationId(null);
-//   }, [clearLocalStorage, transchatbot]);
-
-//   const handleSelectConversation = useCallback(
-//     (conversationId: string) => {
-//       setMessages([]);
-//       clearLocalStorage();
-//       setSelectedConversationId(conversationId);
-//     },
-//     [clearLocalStorage, transchatbot]
-//   );
-
-//   return (
-//     <>
-//       <Box>
-//         <ModuleHeader name={transchatbot("viewname")} />
-//       </Box>
-
-//       <Box
-//         sx={{
-//           display: "flex",
-//           bgcolor: "#ffffff",
-//           height: "calc(100vh - 80px)",
-//           pb: 2
-//         }}
-//       >
-//         <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-//           <ChatHistory
-//             onNewChat={handleNewChat}
-//             onClearAll={handleClearAll}
-//             onSelectConversation={handleSelectConversation}
-//           />
-//         </Box>
-//         <Box
-//           sx={{
-//             flex: 1,
-//             display: "flex",
-//             flexDirection: "column",
-//             bgcolor: "#ffffff",
-//             p: 3,
-//             height: "100%",
-//             position: "relative"
-//           }}
-//         >
-//           {messages.length > 0 && (
-//             <Box
-//               sx={{
-//                 width: "100%",
-//                 maxWidth: "800px",
-//                 margin: "0 auto",
-//                 flex: 1,
-//                 display: "flex",
-//                 flexDirection: "column",
-//                 mb: 2,
-//                 overflowY: "auto"
-//               }}
-//             >
-//               <Box
-//                 sx={{
-//                   flex: 1,
-//                   minHeight: 0,
-//                   overflowY: "auto",
-//                   display: "flex",
-//                   flexDirection: "column",
-//                   gap: 2,
-//                   pr: 1
-//                 }}
-//               >
-//                 {messages.map((message) => (
-//                   <Box
-//                     key={message.id}
-//                     sx={{
-//                       width: "100%",
-//                       display: "flex",
-//                       justifyContent: message.isUser ? "flex-end" : "flex-start"
-//                     }}
-//                   >
-//                     <Paper
-//                       sx={{
-//                         p: 2,
-//                         bgcolor: message.isSystem
-//                           ? "#EEEEEE"
-//                           : message.isUser
-//                             ? "#EEEEEE"
-//                             : "#BDBDBD",
-//                         borderRadius: "12px",
-//                         maxWidth: "70%"
-//                       }}
-//                     >
-//                       <Typography sx={{ color: "black", fontSize: "1rem" }}>
-//                         {message.message}
-//                       </Typography>
-//                       <Typography sx={{ color: "grey.500", fontSize: "0.75rem", mt: 0.5 }}>
-//                         {message.timestamp}
-//                       </Typography>
-//                     </Paper>
-//                   </Box>
-//                 ))}
-//                 <div ref={messagesEndRef} />
-//               </Box>
-//             </Box>
-//           )}
-
-//           <Box
-//             sx={{
-//               width: "100%",
-//               maxWidth: "800px",
-//               margin: "0 auto",
-//               display: "flex",
-//               flexDirection: "column",
-//               alignItems: "center",
-//               position: "sticky",
-//               bottom: 0,
-//               bgcolor: "#ffffff",
-//               ...(messages.length === 0 && {
-//                 flex: 1,
-//                 display: "flex",
-//                 justifyContent: "center",
-//                 alignItems: "center"
-//               })
-//             }}
-//           >
-//             {selectedLoading ? (
-//               <Box
-//                 sx={{
-//                   position: "absolute",
-//                   top: "50%",
-//                   left: "50%",
-//                   transform: "translate(-50%, -50%)"
-//                 }}
-//               >
-//                 <Typography>{transchatbot("Loading")}</Typography>
-//               </Box>
-//             ) : selectedError ? (
-//               <Box
-//                 sx={{
-//                   position: "absolute",
-//                   top: "50%",
-//                   left: "50%",
-//                   transform: "translate(-50%, -50%)"
-//                 }}
-//               >
-//                 <Typography color="error">
-//                   {selectedError.message || transchatbot("error")}
-//                 </Typography>
-//               </Box>
-//             ) : (
-//               <>
-//                 {messages.length === 0 && (
-//                   <Typography
-//                     sx={{
-//                       textAlign: "center",
-//                       color: "black",
-//                       mb: 2,
-//                       fontSize: "1.2rem"
-//                     }}
-//                   >
-//                     {`${greeting}! How may I assist you today?`}
-//                   </Typography>
-//                 )}
-//                 <Box sx={{ display: "flex", alignItems: "center", width: "100%", gap: 1 }}>
-//                   <FormField
-//                     label=""
-//                     type="text"
-//                     value={input}
-//                     onChange={handleInputChange}
-//                     onSend={handleSend}
-//                     placeholder={transchatbot("placeholder")}
-//                     required
-//                     error={inputError}
-//                     disabled={isReadOnly()}
-//                     sx={{
-//                       flex: 1,
-//                       "& .MuiFormControl-root": {
-//                         borderRadius: "12px",
-//                         border: "1px solid #e0e0e0",
-//                         "&:focus-within": {
-//                           borderColor: "inherit",
-//                           backgroundColor: "inherit"
-//                         }
-//                       },
-//                       "& .MuiInputBase-root": {
-//                         padding: "10px",
-//                         fontSize: "1rem"
-//                       }
-//                     }}
-//                   />
-//                   <IconButton
-//                     onClick={() => fileInputRef.current?.click()}
-//                     sx={{ bgcolor: "#EEEEEE", "&:hover": { bgcolor: "#D3D3D3" } }}
-//                   >
-//                     <CloudUploadOutlinedIcon fontSize="large" sx={{ color: "#741B92" }} />
-//                   </IconButton>
-//                 </Box>
-//                 <input
-//                   type="file"
-//                   ref={fileInputRef}
-//                   style={{ display: "none" }}
-//                   onChange={handleFileUpload}
-//                   accept=".xlsx,.xls"
-//                 />
-//               </>
-//             )}
-//           </Box>
-//         </Box>
-//       </Box>
-//     </>
-//   );
-// };
-
-// export default Chat;
-
 "use client";
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Box, Typography, IconButton, Paper, Button } from "@mui/material";
-import { sendQuery, uploadAttendance, useQueryHistory } from "../service/chatAction";
+import { Box, Typography, IconButton, Paper } from "@mui/material";
+import { sendQuery, useQueryHistory } from "../service/chatAction";
 import { QueryResponse, QueryHistoryEntry } from "../interface/chatInterface";
 import ChatHistory from "./chatHitory";
-import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import ChatIcon from "@mui/icons-material/Chat";
 import HistoryIcon from "@mui/icons-material/History";
+import CloseIcon from "@mui/icons-material/Close"; // Added CloseIcon import
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FormField from "@/app/component/input/formField";
 import { useUser } from "@/app/userContext";
+import { Fab } from "../../../../../node_modules/@mui/material/index";
 
 // Custom hook for updating greeting
 const useGreeting = (transchatbot: (key: string) => string) => {
@@ -545,19 +32,6 @@ const useGreeting = (transchatbot: (key: string) => string) => {
     else if (hour >= 12 && hour < 17) return transchatbot("greetingAfternoon");
     else return transchatbot("greetingEvening");
   }, [transchatbot]);
-
-  // Set initial greeting
-  const [isInitialized, setIsInitialized] = useState(false);
-  if (!isInitialized) {
-    setGreeting(initializedGreeting);
-    setIsInitialized(true);
-  }
-
-  // Set up interval for updates
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  if (!intervalRef.current) {
-    intervalRef.current = setInterval(updateGreeting, 60000);
-  }
 
   // Set initial greeting
   const [isInitialized, setIsInitialized] = useState(false);
@@ -636,9 +110,18 @@ const Chat: React.FC = () => {
   const pathname = usePathname();
   const [input, setInput] = useState<string>("");
   const [inputError, setInputError] = useState<string | undefined>(undefined);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatPopupRef = useRef<HTMLDivElement>(null); // Ref for the chat popup
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<QueryResponse[]>([]);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  // Fetch the logged-in user's details using the context-based useUser hook
+  const { user } = useUser();
+  // Extract and format the username to match AlphabetAvatar's approach
+  const userName = user?.name || "";
+  const formattedUserName =
+    userName.charAt(0).toUpperCase() + (userName.slice(1) || "").toLowerCase();
 
   const {
     history: selectedHistory,
@@ -701,7 +184,6 @@ const Chat: React.FC = () => {
       setMessages([]);
     }
 
-    // Update refs
     prevSelectedConversationIdRef.current = selectedConversationId;
     prevSelectedHistoryRef.current = memoizedSelectedHistory;
   }
@@ -746,6 +228,27 @@ const Chat: React.FC = () => {
   if (prevPathnameRef.current !== pathname) {
     prevPathnameRef.current = pathname;
   }
+
+  // Handle clicks outside the chat popup to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isChatOpen &&
+        chatPopupRef.current &&
+        !chatPopupRef.current.contains(event.target as Node)
+      ) {
+        setIsChatOpen(false);
+      }
+    };
+
+    if (isChatOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isChatOpen]);
 
   const isReadOnly = () => false;
 
@@ -792,56 +295,6 @@ const Chat: React.FC = () => {
     }
   }, [input, transchatbot]);
 
-  const handleFileUpload = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
-        const systemMessage: QueryResponse = {
-          id: generateUniqueId(),
-          message: transchatbot("invalidFile"),
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          isUser: false,
-          isSystem: true
-        };
-        setMessages((prev) => [...prev, systemMessage]);
-        return;
-      }
-
-      try {
-        const result = await uploadAttendance(file);
-        const systemMessage: QueryResponse = {
-          id: generateUniqueId(),
-          message: `Attendance uploaded successfully! Inserted: ${result.inserted}, Skipped: ${result.skipped}. ${
-            result.errors.length > 0 ? "Errors: " + result.errors.join("; ") : ""
-          }`,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          isUser: false,
-          isSystem: true
-        };
-        setMessages((prev) => [...prev, systemMessage]);
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? `Error uploading attendance: ${error.message}`
-            : transchatbot("Uploaderror");
-
-        const systemMessage: QueryResponse = {
-          id: generateUniqueId(),
-          message,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          isUser: false,
-          isSystem: true
-        };
-        setMessages((prev) => [...prev, systemMessage]);
-      } finally {
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      }
-    },
-    [transchatbot]
-  );
-
   const handleInputChange: (value: string | number | Date | string[]) => void = (value) => {
     if (typeof value === "string") {
       setInput(value);
@@ -877,14 +330,12 @@ const Chat: React.FC = () => {
       {/* Button to toggle the chat popup */}
       <Box
         sx={{
-          position: "fixed",
-          bottom: "20px",
-          right: "20px",
-          zIndex: 1000
+          position: "fixed"
         }}
+        bottom={110}
+        right={32}
       >
-        <Button
-          variant="contained"
+        <Fab
           onClick={toggleChat}
           sx={{
             bgcolor: "#741B92",
@@ -896,12 +347,13 @@ const Chat: React.FC = () => {
           }}
         >
           <ChatIcon fontSize="large" />
-        </Button>
+        </Fab>
       </Box>
 
       {/* Chat Popup */}
       {isChatOpen && (
         <Box
+          ref={chatPopupRef} // Attach ref to the chat popup
           sx={{
             position: "fixed",
             bottom: "100px",
@@ -939,7 +391,7 @@ const Chat: React.FC = () => {
               position: "relative"
             }}
           >
-            {/* Header with ModuleHeader and History Toggle */}
+            {/* Header with History Toggle, File Upload, and Close Icon */}
             <Box
               sx={{
                 display: "flex",
@@ -956,12 +408,18 @@ const Chat: React.FC = () => {
                   <HistoryIcon sx={{ color: "#741B92" }} />
                 </IconButton>
               </Box>
-              <IconButton
-                onClick={() => fileInputRef.current?.click()}
-                sx={{ bgcolor: "#EEEEEE", "&:hover": { bgcolor: "#D3D3D3" } }}
-              >
-                <CloudUploadOutlinedIcon fontSize="medium" sx={{ color: "#741B92" }} />
-              </IconButton>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <IconButton
+                  onClick={toggleChat} // Close the popup
+                  sx={{
+                    position: "absolute",
+                    top: "-2px", // Moves the icon slightly higher
+                    right: "-2px" // Moves the icon slightly to the right
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
             </Box>
 
             {/* Chat Messages */}
@@ -1049,7 +507,6 @@ const Chat: React.FC = () => {
                         fontSize: "1.2rem"
                       }}
                     >
-                      {/* {`${greeting}! How may I assist you today?`} */}
                       {`${greeting}${formattedUserName ? ` ${formattedUserName}` : ""}, how may I assist you today?`}
                     </Typography>
                   )}
@@ -1065,7 +522,7 @@ const Chat: React.FC = () => {
                       error={inputError}
                       disabled={isReadOnly()}
                       inputProps={{
-                        startAdornment: null // Remove the start icon
+                        startAdornment: null
                       }}
                       sx={{
                         flex: 1,
@@ -1078,8 +535,9 @@ const Chat: React.FC = () => {
                           }
                         },
                         "& .MuiInputBase-root": {
-                          padding: "10px",
-                          fontSize: "1rem"
+                          padding: "5px 10px",
+                          fontSize: "1rem",
+                          height: "20px"
                         }
                       }}
                     />
@@ -1087,13 +545,6 @@ const Chat: React.FC = () => {
                 </>
               )}
             </Box>
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileUpload}
-              accept=".xlsx,.xls"
-            />
           </Box>
         </Box>
       )}

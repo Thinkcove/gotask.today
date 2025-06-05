@@ -252,15 +252,10 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 
 interface ChatHistoryProps {
   onNewChat: () => void;
-  onClearAll: () => void;
   onSelectConversation: (conversationId: string) => void;
 }
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({
-  onNewChat,
-  onClearAll,
-  onSelectConversation
-}) => {
+const ChatHistory: React.FC<ChatHistoryProps> = ({ onNewChat, onSelectConversation }) => {
   const transchatbot = useTranslations(LOCALIZATION.TRANSITION.CHATBOT);
   const { history: getQueryHistory, isLoading, error, mutate } = useQueryHistory();
   const [openDialog, setOpenDialog] = useState(false);

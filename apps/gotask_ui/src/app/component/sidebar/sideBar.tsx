@@ -28,6 +28,7 @@ import { useUser } from "@/app/userContext";
 import { hasPermission } from "@/app/common/utils/permisssion";
 import { ACTIONS, ActionType, ApplicationName } from "@/app/common/utils/authCheck";
 import ChatIcon from "@mui/icons-material/Chat";
+import { UploadFileOutlined } from "../../../../node_modules/@mui/icons-material/index";
 
 const iconMap: Record<string, React.ReactNode> = {
   DashboardIcon: <GridViewIcon />,
@@ -38,7 +39,8 @@ const iconMap: Record<string, React.ReactNode> = {
   VpnKeyIcon: <VpnKeyIcon />,
   AssignmentIcon: <AssignmentIcon />,
   BarChartIcon: <BarChartIcon />,
-  ChatIcon: <ChatIcon />
+  ChatIcon: <ChatIcon />,
+  UploadIcon: <UploadFileOutlined />
 };
 
 const drawerWidth = 260;
@@ -64,6 +66,7 @@ const Sidebar: React.FC = () => {
   // Only include menu items the user has READ access to
   const filteredMenuItems = menuItemsData.filter((item) => {
     if (!item.access) return true; // Allow items like Dashboard
+    console.log("access check", item.access);
     return hasPermission(accessDetails, item.access as ApplicationName, ACTIONS.READ);
   });
 

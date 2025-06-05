@@ -2,7 +2,7 @@ import env from "@/app/common/env";
 import { getData, postData, deleteData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
 import { withAuth } from "@/app/common/utils/authToken";
-import { QueryHistoryEntry, QueryResponse, UploadResponse } from "../interface/chatInterface";
+import { QueryHistoryEntry, QueryResponse } from "../interface/chatInterface";
 
 // Fetch all query history or by conversationId
 const fetchQueryHistory = async (conversationId?: string) => {
@@ -60,17 +60,6 @@ export const sendQuery = async (query: string): Promise<QueryResponse> => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/api/query`;
     return postData(url, { query }, token);
-  });
-};
-
-// Upload attendance file
-export const uploadAttendance = async (file: File): Promise<UploadResponse> => {
-  const formData = new FormData();
-  formData.append("file", file);
-
-  return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/api/v1/attendance/upload`;
-    return postData(url, formData, token);
   });
 };
 

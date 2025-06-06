@@ -7,7 +7,7 @@ import { QueryResponse, QueryHistoryEntry } from "../interface/chatInterface";
 import ChatHistory from "./chatHitory";
 import ChatIcon from "@mui/icons-material/Chat";
 import HistoryIcon from "@mui/icons-material/History";
-import CloseIcon from "@mui/icons-material/Close"; // Added CloseIcon import
+import CloseIcon from "@mui/icons-material/Close";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FormField from "@/app/component/input/formField";
@@ -25,7 +25,6 @@ const useGreeting = (transchatbot: (key: string) => string) => {
     else setGreeting(transchatbot("greetingEvening"));
   }, [transchatbot]);
 
-  // Initialize greeting immediately
   const initializedGreeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour >= 0 && hour < 12) return transchatbot("greetingMorning");
@@ -33,14 +32,12 @@ const useGreeting = (transchatbot: (key: string) => string) => {
     else return transchatbot("greetingEvening");
   }, [transchatbot]);
 
-  // Set initial greeting
   const [isInitialized, setIsInitialized] = useState(false);
   if (!isInitialized) {
     setGreeting(initializedGreeting);
     setIsInitialized(true);
   }
 
-  // Set up interval for updates
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   if (!intervalRef.current) {
     intervalRef.current = setInterval(updateGreeting, 60000);
@@ -115,10 +112,9 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<QueryResponse[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch the logged-in user's details using the context-based useUser hook
   const { user } = useUser();
-  // Extract and format the username to match AlphabetAvatar's approach
   const userName = user?.name || "";
   const formattedUserName =
     userName.charAt(0).toUpperCase() + (userName.slice(1) || "").toLowerCase();
@@ -131,26 +127,21 @@ const Chat: React.FC = () => {
 
   const memoizedSelectedHistory = useMemo(() => selectedHistory ?? [], [selectedHistory]);
 
-  // Get localStorage utilities
   const { saveToLocalStorage, getFromLocalStorage, clearLocalStorage } =
     useLocalStorageMessages(transchatbot);
 
-  // Get greeting and scroll utilities
   const greeting = useGreeting(transchatbot);
   const { messagesEndRef, scrollToBottom } = useAutoScroll();
 
-  // Handle conversation history loading
   const prevSelectedConversationIdRef = useRef<string | null>(null);
   const prevSelectedHistoryRef = useRef<QueryHistoryEntry[]>([]);
 
-  // Check if conversation selection has changed
   const conversationChanged = prevSelectedConversationIdRef.current !== selectedConversationId;
   const historyChanged =
     JSON.stringify(prevSelectedHistoryRef.current) !== JSON.stringify(memoizedSelectedHistory);
 
   if (conversationChanged || (selectedConversationId && historyChanged)) {
     if (selectedConversationId && memoizedSelectedHistory?.length > 0) {
-      // Load conversation history
       const conversationMessages = memoizedSelectedHistory
         .map((item: QueryHistoryEntry) => [
           {
@@ -176,11 +167,9 @@ const Chat: React.FC = () => {
         .flat();
       setMessages(conversationMessages);
     } else if (!selectedConversationId) {
-      // Load from localStorage or start fresh
       const storedMessages = getFromLocalStorage();
       setMessages(storedMessages);
     } else {
-      // Clear messages for new conversation
       setMessages([]);
     }
 
@@ -188,7 +177,6 @@ const Chat: React.FC = () => {
     prevSelectedHistoryRef.current = memoizedSelectedHistory;
   }
 
-  // Initialize messages on first load
   const [isInitialized, setIsInitialized] = useState(false);
   if (!isInitialized) {
     if (!selectedConversationId) {
@@ -198,7 +186,6 @@ const Chat: React.FC = () => {
     setIsInitialized(true);
   }
 
-  // Save messages to localStorage whenever they change (only for non-conversation messages)
   const prevMessagesRef = useRef<QueryResponse[]>([]);
   if (
     !selectedConversationId &&
@@ -208,14 +195,12 @@ const Chat: React.FC = () => {
     prevMessagesRef.current = messages;
   }
 
-  // Scroll to bottom when messages change
   const prevMessagesLengthRef = useRef(0);
   if (messages.length !== prevMessagesLengthRef.current) {
     setTimeout(scrollToBottom, 100);
     prevMessagesLengthRef.current = messages.length;
   }
 
-  // Handle navigation to clear localStorage
   const prevPathnameRef = useRef<string | null>(null);
   if (
     typeof window !== "undefined" &&
@@ -229,25 +214,11 @@ const Chat: React.FC = () => {
     prevPathnameRef.current = pathname;
   }
 
-  // Handle clicks outside the chat popup to close it
+  // Focus the text field when the chat popup opens
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        isChatOpen &&
-        chatPopupRef.current &&
-        !chatPopupRef.current.contains(event.target as Node)
-      ) {
-        setIsChatOpen(false);
-      }
-    };
-
-    if (isChatOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+    if (isChatOpen && inputRef.current) {
+      inputRef.current.focus();
     }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
   }, [isChatOpen]);
 
   const isReadOnly = () => false;
@@ -327,7 +298,6 @@ const Chat: React.FC = () => {
 
   return (
     <>
-      {/* Button to toggle the chat popup */}
       <Box
         sx={{
           position: "fixed"
@@ -350,10 +320,9 @@ const Chat: React.FC = () => {
         </Fab>
       </Box>
 
-      {/* Chat Popup */}
       {isChatOpen && (
         <Box
-          ref={chatPopupRef} // Attach ref to the chat popup
+          ref={chatPopupRef}
           sx={{
             position: "fixed",
             bottom: "100px",
@@ -369,7 +338,6 @@ const Chat: React.FC = () => {
             overflow: "hidden"
           }}
         >
-          {/* Chat History Sidebar */}
           {isHistoryOpen && (
             <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
               <ChatHistory
@@ -379,7 +347,6 @@ const Chat: React.FC = () => {
             </Box>
           )}
 
-          {/* Main Chat Area */}
           <Box
             sx={{
               flex: 1,
@@ -391,7 +358,6 @@ const Chat: React.FC = () => {
               position: "relative"
             }}
           >
-            {/* Header with History Toggle, File Upload, and Close Icon */}
             <Box
               sx={{
                 display: "flex",
@@ -410,11 +376,11 @@ const Chat: React.FC = () => {
               </Box>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <IconButton
-                  onClick={toggleChat} // Close the popup
+                  onClick={toggleChat}
                   sx={{
                     position: "absolute",
-                    top: "-2px", // Moves the icon slightly higher
-                    right: "-2px" // Moves the icon slightly to the right
+                    top: "-2px",
+                    right: "-2px"
                   }}
                 >
                   <CloseIcon fontSize="small" />
@@ -422,7 +388,6 @@ const Chat: React.FC = () => {
               </Box>
             </Box>
 
-            {/* Chat Messages */}
             {messages.length > 0 && (
               <Box
                 sx={{
@@ -469,7 +434,6 @@ const Chat: React.FC = () => {
               </Box>
             )}
 
-            {/* Input Area */}
             <Box
               sx={{
                 display: "flex",
@@ -512,6 +476,7 @@ const Chat: React.FC = () => {
                   )}
                   <Box sx={{ display: "flex", alignItems: "center", width: "100%", gap: 1 }}>
                     <FormField
+                      ref={inputRef}
                       label=""
                       type="text"
                       value={input}
@@ -528,11 +493,7 @@ const Chat: React.FC = () => {
                         flex: 1,
                         "& .MuiFormControl-root": {
                           borderRadius: "12px",
-                          border: "1px solid #e0e0e0",
-                          "&:focus-within": {
-                            borderColor: "inherit",
-                            backgroundColor: "inherit"
-                          }
+                          border: "1px solid #e0e0e0"
                         },
                         "& .MuiInputBase-root": {
                           padding: "5px 10px",

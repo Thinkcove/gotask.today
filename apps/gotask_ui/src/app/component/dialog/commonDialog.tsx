@@ -43,7 +43,7 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
       }}
       keepMounted
       fullWidth
-      maxWidth="sm"
+      maxWidth="xs"
       PaperProps={{
         sx: {
           borderRadius: 3,

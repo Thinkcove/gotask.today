@@ -100,7 +100,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
               error={!!error}
               fullWidth
               multiline={multiline}
-              value={value}
+              value={value ?? ''} 
               disabled={disabled}
               onFocus={onFocus}
               type={passwordVisible ? "text" : "password"}

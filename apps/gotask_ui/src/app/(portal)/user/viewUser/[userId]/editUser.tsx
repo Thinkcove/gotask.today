@@ -28,21 +28,28 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
   });
 
   const [formData, setFormData] = useState<IUserField>(() => ({
+    first_name: data?.first_name || "",
+    last_name: data?.last_name || "",
     name: data?.name || "",
     status: data?.status || true,
     organization: data?.organization || "",
     roleId: data?.roleId || "",
-    user_id: data?.user_id || ""
+    user_id: data?.user_id || "",
+    mobile_no: data?.mobile_no || "",
+    joined_date: data?.joined_date || new Date(),
+    emp_id:data?.emp_id || ""
   }));
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
+    if (!formData.first_name) newErrors.first_name = transuser("firstname");
+    if (!formData.last_name) newErrors.last_name = transuser("lastname");
     if (!formData.name) newErrors.name = transuser("username");
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
     if (formData.status === undefined || formData.status === null) {
       newErrors.status = transuser("userstatus");
-    }
+    }    
     if (!formData.user_id) {
       newErrors.user_id = transuser("useremail");
     } else if (!validateEmail(formData.user_id)) {

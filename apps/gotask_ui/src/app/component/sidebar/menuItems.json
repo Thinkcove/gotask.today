@@ -38,7 +38,7 @@
   {
     "text": "Task",
     "icon": "AssignmentIcon",
-    "path": "/task",
+    "path": "/task/projects",
     "access": "Task Management"
   },
   {

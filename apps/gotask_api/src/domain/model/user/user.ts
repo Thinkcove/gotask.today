@@ -8,7 +8,7 @@ export interface IUser extends Document {
   id: string;
   first_name:String;
   last_name:String;
-  emp_id: string;
+  emp_id?: string;
   name: string;
   password: string;
   user_id: string;

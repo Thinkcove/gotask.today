@@ -36,9 +36,9 @@ const UserSchema = new Schema<IUser>(
       sparse: true,
       required: false,
       validate: {
-        validator: function (v: string) {
-          if (!v) return true; // allow empty
-          return ALPHANUMERIC_REGEX.test(v);
+      validator: function (v: string) {
+      if (!v) return true; // allow empty
+        return ALPHANUMERIC_REGEX.test(v);
         },
         message: (props) => `${props.value} is not valid! Only letters and numbers allowed.`
       }

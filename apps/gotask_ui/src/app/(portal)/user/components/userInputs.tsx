@@ -132,7 +132,7 @@ const UserInput = ({
           value={formData.joined_date}
           onChange={(value) => {
             if (value !== undefined && (typeof value === "string" || value instanceof Date)) {
-              const date = new Date(value); // ✅only called if value is defined and valid
+              const date = new Date(value); // only called if value is defined and valid
               if (!isNaN(date.getTime())) {
                 handleChange("joined_date", date.toISOString());
               }

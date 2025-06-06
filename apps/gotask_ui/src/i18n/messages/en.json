@@ -407,6 +407,10 @@
     "Unknown": "Unknown delete error",
     "New": " New Chat",
     "Recent": "RECENT QUERIES",
-    "Uploaderror": "An unknown error occurred during upload."
+    "Uploaderror": "An unknown error occurred during upload.",
+    "name": "Upload",
+    "uploadfile": "Upload the files here",
+    "uploadsuccess": "Upload successfully",
+    "validation": "No valid attendance records processed"
   }
 }

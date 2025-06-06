@@ -15,7 +15,11 @@ export const hasPermission = (
   applicationName: ApplicationName,
   action: ActionType
 ): boolean => {
-  return accessDetails.some((detail) =>
-    detail.application.some((app) => app.access === applicationName && app.actions.includes(action))
+  return accessDetails?.some((detail) =>
+    Array.isArray(detail?.application) &&
+    detail.application.some(
+      (app) =>
+        app?.access === applicationName && app?.actions?.includes(action)
+    )
   );
 };

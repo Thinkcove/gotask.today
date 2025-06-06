@@ -1,14 +1,18 @@
 import React from 'react';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import AccessTabs from '../components/AccessTabs';
 import OperationCheckboxes from '../components/OperationCheckboxes';
+import FieldCheckboxes from '../components/FieldCheckboxes';
+import { useTranslations } from 'next-intl';
 
 interface AccessPermissionsProps {
-  accessOptions: { access: string; actions: string[] }[];
+  accessOptions: { access: string; actions: string[]; restrictedFields: Record<string, string[]> }[];
   currentModule: string;
   selectedPermissions: { [module: string]: string[] };
+  selectedFields: { [module: string]: { [action: string]: string[] } };
   onTabChange: (module: string) => void;
   onCheckboxChange: (module: string, action: string, checked: boolean) => void;
+  onFieldChange: (module: string, action: string, field: string, checked: boolean) => void;
   readOnly?: boolean;
 }
 
@@ -16,12 +20,19 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
   accessOptions,
   currentModule,
   selectedPermissions,
+  selectedFields,
   onTabChange,
   onCheckboxChange,
+  onFieldChange,
   readOnly = false,
 }) => {
-  const currentOperations = accessOptions.find((m) => m.access === currentModule)?.actions || [];
-  const selected = selectedPermissions[currentModule] || [];
+  const t = useTranslations("Access"); // Use your namespace, e.g. "Access"
+
+  const currentModuleData = accessOptions.find((m) => m.access === currentModule);
+  const currentOperations = currentModuleData?.actions || [];
+  const restrictedFields = currentModuleData?.restrictedFields || {};
+  const selectedOps = selectedPermissions[currentModule] || [];
+  const selectedFlds = selectedFields[currentModule] || {};
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -31,23 +42,51 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
         onChange={onTabChange}
       />
 
-      <Grid container spacing={2} sx={{ mt:0 }}>
-        <Grid item xs={12}>
-          <Typography variant="h6" sx={{ pl: 2 }}>
-            Permissions for {currentModule}
-          </Typography>
-        </Grid>
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="h6" sx={{ pl: 1, mb: 1 }}>
+          {/* Localized string with variable */}
+          {t("permissionsFor", { module: currentModule })}
+        </Typography>
 
-        <Grid item xs={12}>
-          <OperationCheckboxes
-            module={currentModule}
-            operations={currentOperations}
-            selected={selected}
-            onChange={onCheckboxChange}
-            readOnly={readOnly}
-          />
-        </Grid>
-      </Grid>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            gap: 1,
+          }}
+        >
+          <Box sx={{ pr: 1 }}>
+            <OperationCheckboxes
+              module={currentModule}
+              operations={currentOperations}
+              selected={selectedOps}
+              onChange={onCheckboxChange}
+              readOnly={readOnly}
+            />
+          </Box>
+
+          {selectedOps
+            .filter(Boolean)
+            .map((action) =>
+              restrictedFields[action.toUpperCase()]?.length > 0 ? (
+                <Box key={action}>
+                  <FieldCheckboxes
+                    module={currentModule}
+                    action={action}
+                    fields={restrictedFields[action.toUpperCase()] || []}
+                    selected={selectedFlds}
+                    onChange={onFieldChange}
+                    readOnly={readOnly}
+                  />
+                </Box>
+              ) : null
+            )
+            .filter(Boolean)}
+        </Box>
+      </Box>
     </Box>
   );
 };

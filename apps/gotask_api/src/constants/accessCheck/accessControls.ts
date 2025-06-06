@@ -1,23 +1,32 @@
 interface User {
   role?: {
-    accessDetails?: {
+    access?: {
       name: string;
       application: {
         access: string;
         actions: string[];
+        restrictedFields?: {
+          [action: string]: string[];
+        };
       }[];
     }[];
   };
 }
 
-export function hasAccess(user: User, appName: string, action: string): boolean {
-  const accessDetails = user?.role?.accessDetails || [];
+export function hasAccess(
+  user: User,
+  appName: string,
+  action: string
+): { hasAccess: boolean; restrictedFields: string[] } {
+  const accessDetails = user?.role?.access || [];
   for (const access of accessDetails) {
     for (const app of access.application) {
       if (app.access === appName && app.actions.includes(action)) {
-        return true;
+        const restrictedFields = (app.restrictedFields && app.restrictedFields[action]) || [];
+        return { hasAccess: true, restrictedFields };
       }
     }
   }
-  return false;
+
+  return { hasAccess: false, restrictedFields: [] };
 }

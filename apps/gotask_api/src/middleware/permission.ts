@@ -9,10 +9,13 @@ export function permission(appName: string, action: string, handlerFunc: any) {
       return h.response({ error: "Unauthorized" }).code(401);
     }
 
-    if (!hasAccess(user, appName, action)) {
+    const { hasAccess: allowed, restrictedFields } = hasAccess(user, appName, action);
+
+    if (!allowed) {
       return h.response({ error: "Access Denied" }).code(403);
     }
 
-    return handlerFunc(request, h);
+    // Pass restrictedFields to handler so it can enforce field-level access control
+    return handlerFunc(request, h, restrictedFields);
   };
 }

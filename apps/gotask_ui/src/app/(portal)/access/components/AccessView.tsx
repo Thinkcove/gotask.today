@@ -15,7 +15,6 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
-
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import {
@@ -26,20 +25,25 @@ import {
 import AccessPermissionsContainer from "./AccessPermissionsContainer";
 import AccessHeading from "./AccessHeading";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
-import CommonDialog from "../../../component/dialog/commonDialog"; // ✅ Import your dialog
+import CommonDialog from "../../../component/dialog/commonDialog";
+import { VALID_MODULES } from "../../../common/constants/modules";
 
 const AccessView: React.FC = () => {
   const t = useTranslations("Access");
-
   const { canAccess } = useUserPermission();
   const { id } = useParams();
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [currentTab, setCurrentTab] = useState<string>("");
+  const [currentTab, setCurrentTab] = useState("User Management");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // ✅ Dialog state
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error" | "warning" | "info";
+  }>({ open: false, message: "", severity: "success" });
 
   const {
     role: accessRole,
@@ -52,37 +56,29 @@ const AccessView: React.FC = () => {
     error: optionsError,
   } = useAccessOptions();
 
-  // Snackbar state
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<
-    "success" | "error" | "warning" | "info"
-  >("success");
+  // Set currentTab when accessOptions and accessRole are loaded
+  if (
+    accessOptions.length > 0 &&
+    accessRole &&
+    !VALID_MODULES.includes(currentTab)
+  ) {
+    const firstValidModule =
+      accessRole.application?.find((app: { access: string }) =>
+        VALID_MODULES.includes(app.access)
+      )?.access ||
+      accessOptions.find((opt: { access: string }) =>
+        VALID_MODULES.includes(opt.access)
+      )?.access ||
+      VALID_MODULES[0];
+    setCurrentTab(firstValidModule);
+  }
 
   const showSnackbar = (
     message: string,
     severity: "success" | "error" | "warning" | "info" = "success"
   ) => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarOpen(true);
+    setSnackbar({ open: true, message, severity });
   };
-
-  const validModules = [
-    "User Management",
-    "Task Management",
-    "Project Management",
-  ];
-
-  if (accessOptions.length > 0 && !currentTab && accessRole) {
-    const firstValidModule =
-      accessRole.application?.find((app: { access: string }) =>
-        validModules.includes(app.access)
-      )?.access ||
-      accessOptions.find((opt) => validModules.includes(opt.access))?.access ||
-      validModules[0];
-    setCurrentTab(firstValidModule);
-  }
 
   const confirmDelete = async () => {
     if (!accessRole || isDeleting) return;
@@ -103,18 +99,28 @@ const AccessView: React.FC = () => {
       showSnackbar(t("updateerror"), "error");
     } finally {
       setIsDeleting(false);
-      setOpenDeleteDialog(false); // ✅ Close dialog after action
+      setOpenDeleteDialog(false);
     }
   };
 
-  const selectedPermissions =
-    accessRole?.application?.reduce(
-      (acc: Record<string, string[]>, app: { access: string; actions: string[] }) => {
-        acc[app.access] = app.actions;
-        return acc;
-      },
-      {}
-    ) || {};
+  const selectedPermissions = accessRole?.application?.reduce(
+    (acc: Record<string, string[]>, app: { access: string; actions: string[] }) => {
+      acc[app.access] = app.actions;
+      return acc;
+    },
+    {}
+  ) || {};
+
+  const selectedFields = accessRole?.application?.reduce(
+    (
+      acc: Record<string, Record<string, string[]>>,
+      app: { access: string; restrictedFields: Record<string, string[]> }
+    ) => {
+      acc[app.access] = app.restrictedFields || {};
+      return acc;
+    },
+    {}
+  ) || {};
 
   if (isRoleLoading || isOptionsLoading) {
     return (
@@ -144,7 +150,9 @@ const AccessView: React.FC = () => {
         }}
       >
         <Typography variant="body1" color="error">
-          {roleError || optionsError}
+          {(roleError || optionsError)?.includes("non-JSON")
+            ? t("serverError")
+            : roleError || optionsError || t("errorLoadingOptions")}
         </Typography>
       </Box>
     );
@@ -280,14 +288,15 @@ const AccessView: React.FC = () => {
             accessOptions={accessOptions}
             currentModule={currentTab}
             selectedPermissions={selectedPermissions}
+            selectedFields={selectedFields}
             onTabChange={setCurrentTab}
             onCheckboxChange={() => {}}
+            onFieldChange={() => {}}
             readOnly
           />
         )}
       </Box>
 
-      {/* ✅ Confirmation Dialog */}
       <CommonDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
@@ -300,12 +309,11 @@ const AccessView: React.FC = () => {
         </Typography>
       </CommonDialog>
 
-      {/* ✅ Reusable Snackbar */}
       <CustomSnackbar
-        open={snackbarOpen}
-        onClose={() => setSnackbarOpen(false)}
-        message={snackbarMessage}
-        severity={snackbarSeverity}
+        open={snackbar.open}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+        severity={snackbar.severity}
       />
     </Box>
   );

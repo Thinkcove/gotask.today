@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Typography, Box } from "@mui/material";
 import { StyledTextField, StyledButton } from "./style";
 import { useUser } from "../userContext";
@@ -22,6 +22,14 @@ const OtpLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+
+  // ✅ Auto-redirect if already authenticated
+  useEffect(() => {
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    if (token) {
+      router.replace("/dashboard");
+    }
+  }, []);
 
   const sendOtp = async () => {
     if (!email) {

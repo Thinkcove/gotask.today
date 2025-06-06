@@ -252,7 +252,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             label={transtask("labelstartdate")}
             type="date"
             placeholder={transtask("placeholderstartdate")}
-            value={formData.start_date || new Date().toISOString().split("T")[0]}
+            value={formData.start_date || ""}
             onChange={(value) =>
               handleInputChange(
                 "start_date",
@@ -305,7 +305,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             label={transtask("labelduedate")}
             type="date"
             placeholder={transtask("placeholderduedate")}
-            value={formData.due_date || new Date().toISOString().split("T")[0]}
+            value={formData.due_date || ""}
             onChange={(value) =>
               handleInputChange(
                 "due_date",

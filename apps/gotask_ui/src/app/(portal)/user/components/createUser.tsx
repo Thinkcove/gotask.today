@@ -21,7 +21,6 @@ interface CreateUserProps {
 const initialFormState: IUserField = {
   first_name:"",
   last_name:"",
-  preferred_name:"",
   emp_id:"",
   name: "",
   status: true,
@@ -45,6 +44,8 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
+    if (!formData.name) newErrors.name = transuser("firstname");
+    if (!formData.name) newErrors.name = transuser("lastname");
     
     if (!formData.name) newErrors.name = transuser("username");
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
@@ -60,7 +61,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     }
 
 if (formData.emp_id && !ALPHANUMERIC_REGEX.test(formData.emp_id)) {
-  newErrors.emp_id = "Employee ID can only contain letters and numbers";
+  newErrors.emp_id =transuser("empid");
 }
 
     setErrors(newErrors);

@@ -11,7 +11,6 @@ export interface IUserField {
   emp_id?:string;
   first_name: string;
   last_name: string;
-  preferred_name: string;
 }
 
 export interface User {
@@ -34,7 +33,6 @@ export interface User {
   emp_id?:string;
   first_name: string;
   last_name: string;
-  preferred_name: string;
 }
 
 export interface RoleData {

@@ -8,7 +8,6 @@ export interface IUser extends Document {
   id: string;
   first_name:String;
   last_name:String;
-  preferred_name:String;
   emp_id: string;
   name: string;
   password: string;
@@ -28,9 +27,7 @@ const UserSchema = new Schema<IUser>(
 
     first_name:{type:String,required:false},
     last_name: { type: String, required: false },
-    preferred_name: { type: String, required: false },
-
-
+    
     id: { type: String, default: uuidv4, unique: true },
 
     emp_id: {

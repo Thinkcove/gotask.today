@@ -38,6 +38,45 @@ const UserInput = ({
   return (
     <Grid container spacing={1}>
 
+      <Grid item xs={12}>
+        <FormField
+          label={transuser("labelfirst_name")}
+          type="text"
+          value={formData.first_name}
+          onChange={(value) => handleChange("first_name", String(value))}
+          required={false}
+          error={errors.first_name}
+          disabled={isReadOnly("first_name")}
+          placeholder={transuser("placeholderfirst_name")}
+        />
+      </Grid>
+
+<Grid item xs={12}>
+        <FormField
+          label={transuser("labellast_name")}
+          type="text"
+          value={formData.last_name}
+          onChange={(value) => handleChange("last_name", String(value))}
+          required={false}
+          error={errors.last_name}
+          disabled={isReadOnly("last_name")}
+          placeholder={transuser("placeholderlast_name")}
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <FormField
+          label={transuser("labelpreferred_name")}
+          type="text"
+          value={formData.preferred_name}
+          onChange={(value) => handleChange("preferred_name", String(value))}
+              required={false}
+          error={errors.preferred_name}
+          disabled={isReadOnly("preferred_name")}
+          placeholder={transuser("placeholderpreferred_name")}
+        />
+      </Grid>
+
 <Grid item xs={12}>
   <FormField
     label={transuser("labelemp_id")}

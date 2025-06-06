@@ -10,6 +10,7 @@ import { createUser } from "../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
+import { ALPHANUMERIC_REGEX } from "../../../common/constants/regex";
 
 interface CreateUserProps {
   open: boolean;
@@ -18,6 +19,9 @@ interface CreateUserProps {
 }
 
 const initialFormState: IUserField = {
+  first_name:"",
+  last_name:"",
+  preferred_name:"",
   emp_id:"",
   name: "",
   status: true,
@@ -41,6 +45,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
+    
     if (!formData.name) newErrors.name = transuser("username");
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
     if (formData.status === undefined || formData.status === null) {
@@ -54,11 +59,9 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
       newErrors.user_id = transuser("validmail");
     }
 
-
-if (formData.emp_id && !/^[a-zA-Z0-9]+$/.test(formData.emp_id)) {
+if (formData.emp_id && !ALPHANUMERIC_REGEX.test(formData.emp_id)) {
   newErrors.emp_id = "Employee ID can only contain letters and numbers";
 }
-
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

@@ -9,6 +9,9 @@ export interface IUserField {
   mobile_no?: string;
   joined_date?: Date | string;
   emp_id?:string;
+  first_name: string;
+  last_name: string;
+  preferred_name: string;
 }
 
 export interface User {
@@ -28,7 +31,10 @@ export interface User {
 
   mobile_no?: string;
   joined_date?: Date | string;
-  emp_id:string;
+  emp_id?:string;
+  first_name: string;
+  last_name: string;
+  preferred_name: string;
 }
 
 export interface RoleData {

@@ -62,6 +62,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   };
 
   const mapUserToUserField = (user: User): IUserField => ({
+    first_name: user.first_name,
+    last_name: user.last_name,
+    preferred_name: user.preferred_name,
+
     name: user.name,
     status: user.status,
 

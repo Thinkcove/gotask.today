@@ -28,6 +28,9 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
   });
 
   const [formData, setFormData] = useState<IUserField>(() => ({
+    first_name: data?.first_name || "",
+    last_name: data?.last_name || "",
+    preferred_name: data?.preferred_name || "",
     name: data?.name || "",
     status: data?.status || true,
     organization: data?.organization || "",

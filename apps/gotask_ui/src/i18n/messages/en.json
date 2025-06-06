@@ -33,7 +33,6 @@
     "access": "Access",
     "createaccessnew": "Create New Access",
     "viewdetail": "Access Detail View",
-    "area": "Area",
     "action": "Action",
     "selectarea": "Select Area",
     "selectaction": "Select Action",
@@ -58,6 +57,12 @@
     "atLeastOnePermissionRequired": "Please select at least one permission.",
     "searchplaceholder": "Search Access",
     "delete": "Delete",
+    "noOperationsAvailable": "No operations available",
+    "field": "field",
+    "fieldAccess": "field Access",
+    "selectallFields": "Select All Fields",
+    "noFieldsAvailable": "No fields available",
+     "permissionsFor": "Permissions for {module}",
     "emailuppercase": "Capital letters are not allowed in email. Use lowercase only."
   },
   "Dashboard": {

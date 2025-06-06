@@ -66,7 +66,6 @@ const Sidebar: React.FC = () => {
   // Only include menu items the user has READ access to
   const filteredMenuItems = menuItemsData.filter((item) => {
     if (!item.access) return true; // Allow items like Dashboard
-    console.log("access check", item.access);
     return hasPermission(accessDetails, item.access as ApplicationName, ACTIONS.READ);
   });
 

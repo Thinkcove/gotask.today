@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { uploadAttendance } from "../service/uploadaction";
+import { uploadAttendance } from "../service/uploadAction";
 import {
   IconButton,
   Box,

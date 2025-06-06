@@ -47,7 +47,7 @@ const UserList = () => {
       </Box>
       <UserCards users={filteredUsers} />
 
-      <Chat />
+      {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
 
       {/* Add User Button */}
       {canAccess(APPLICATIONS.USER, ACTIONS.CREATE) && (

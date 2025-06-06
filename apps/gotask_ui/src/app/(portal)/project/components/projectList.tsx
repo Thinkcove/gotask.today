@@ -50,7 +50,7 @@ const ProjectList = () => {
         />
       </Box>
       <ProjectCards projects={filteredProjects} />
-      <Chat />
+      {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
       <Box>
         {/* Add Project Button */}
         {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { StyledTextField, StyledButton } from "./style";
 import { useUser } from "../userContext";
 import env from "../common/env";
@@ -9,6 +9,8 @@ import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex";
+import { storeTokens } from "../common/utils/authToken";
+
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
   const { setUser } = useUser();
@@ -19,6 +21,7 @@ const OtpLogin = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   const sendOtp = async () => {
     if (!email) {
@@ -26,7 +29,6 @@ const OtpLogin = () => {
       return;
     }
 
-   
     if (EMAIL_UPPERCASE_REGEX.test(email)) {
       setError(translogin("emailuppercase"));
       return;
@@ -34,13 +36,16 @@ const OtpLogin = () => {
 
     setError("");
     setLoading(true);
+
     try {
       const res = await fetch(`${env.API_BASE_URL}/otp/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: email }),
       });
+
       const data = await res.json();
+
       if (res.ok && data.success) {
         setOtpSent(true);
       } else {
@@ -48,8 +53,9 @@ const OtpLogin = () => {
       }
     } catch {
       setError(translogin("genericerror"));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const verifyOtp = async () => {
@@ -58,43 +64,43 @@ const OtpLogin = () => {
       return;
     }
 
+    setError("");
     setLoading(true);
+
     try {
       const res = await fetch(`${env.API_BASE_URL}/otp/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: email, otp }),
       });
+
       const data = await res.json();
 
       if (res.ok && data.success && data.data) {
-        const { user, token } = data.data;
+        const { user, token, refreshToken } = data.data;
 
         localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("token", token);
-        setUser({ ...user, token });
+        storeTokens(token, refreshToken, rememberMe);
 
-        router.push("/dashboard");
+        setUser({ ...user, token, refreshToken });
+        router.replace("/dashboard");
       } else {
         setError(data.error || data.message || translogin("otperror"));
       }
     } catch {
       setError(translogin("genericerror"));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (otpSent) {
-      verifyOtp();
-    } else {
-      sendOtp();
-    }
+    otpSent ? verifyOtp() : sendOtp();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} noValidate>
       <StyledTextField
         fullWidth
         label={translogin("labelemail")}
@@ -103,10 +109,12 @@ const OtpLogin = () => {
         value={email}
         onChange={(e) => {
           setEmail(e.target.value);
-          setError(""); // Clear error on change
+          setError("");
         }}
         disabled={otpSent}
         InputProps={{ sx: { height: 56 } }}
+        autoComplete="email"
+        type="email"
       />
 
       {otpSent && (
@@ -121,10 +129,29 @@ const OtpLogin = () => {
             setError("");
           }}
           InputProps={{ sx: { height: 56 } }}
+          autoComplete="one-time-code"
         />
       )}
 
-      {error && <Typography color="error">{error}</Typography>}
+      {otpSent && (
+        <Box display="flex" alignItems="center" sx={{ mt: 1 }}>
+          <input
+            type="checkbox"
+            id="rememberMe"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            style={{ marginRight: 8 }}
+            disabled={otp.trim() === ""}
+          />
+          <label htmlFor="rememberMe">{translogin("rememberme")}</label>
+        </Box>
+      )}
+
+      {error && (
+        <Typography color="error" sx={{ mt: 1 }}>
+          {error}
+        </Typography>
+      )}
 
       <StyledButton
         fullWidth

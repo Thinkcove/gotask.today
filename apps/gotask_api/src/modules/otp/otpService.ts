@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User, IUser } from "../../domain/model/user/user";
-import { Otp, IOtp } from "../../domain/model/otp/Otp";
+import { Otp } from "../../domain/model/otp/Otp";
 import { sendEmail } from "../../constants/utils/emailService";
 import { generateOTPWithExpiry } from "../../constants/utils/otpGenerator";
 import { getRoleByIdService } from "../role/roleService";
@@ -11,7 +11,7 @@ import UserMessages from "../../constants/apiMessages/userMessage";
 const MAX_ATTEMPTS = 5;
 const RESEND_COOLDOWN_MINUTES = 1;
 
-const sendOtpService = async (
+export const sendOtpService = async (
   user_id: string
 ): Promise<{ success: boolean; message: string; details?: any }> => {
   try {
@@ -20,19 +20,11 @@ const sendOtpService = async (
       return { success: false, message: UserMessages.FETCH.NOT_FOUND };
     }
 
-    if (!user._id) {
-      return { success: false, message: "User ID (_id) is missing" };
-    }
-
     const query = { user: user._id };
-    const existingOtp = (await Otp.findOne(query)) as IOtp | null;
+    const existingOtp = await Otp.findOne(query);
     const now = new Date();
 
-    if (
-      existingOtp &&
-      existingOtp.resendCooldownExpiresAt &&
-      existingOtp.resendCooldownExpiresAt > now
-    ) {
+    if (existingOtp?.resendCooldownExpiresAt && existingOtp.resendCooldownExpiresAt > now) {
       return {
         success: false,
         message: OtpMessages.SEND.RESEND_TOO_SOON
@@ -68,19 +60,19 @@ const sendOtpService = async (
     console.error("sendOtpService Error:", error);
     return {
       success: false,
-      message: error.message || "Otp Service Error",
-      details: error.stack || null
+      message: error.message || "OTP Service Error",
+      details: error.stack
     };
   }
 };
 
-const verifyOtpService = async (
+export const verifyOtpService = async (
   user_id: string,
   enteredOtp: string
 ): Promise<{
   success: boolean;
   message: string;
-  data?: { token: string; user: Partial<IUser> };
+  data?: { token: string; refreshToken: string; user: Partial<IUser> };
   details?: any;
 }> => {
   try {
@@ -89,12 +81,8 @@ const verifyOtpService = async (
       return { success: false, message: UserMessages.FETCH.NOT_FOUND };
     }
 
-    if (!user._id) {
-      return { success: false, message: "User ID (_id) is missing" };
-    }
-
     const query = { user: user._id };
-    const otpDoc = (await Otp.findOne(query)) as IOtp | null;
+    const otpDoc = await Otp.findOne(query);
     const now = new Date();
 
     if (!otpDoc) {
@@ -121,6 +109,7 @@ const verifyOtpService = async (
       return { success: false, message: OtpMessages.VERIFY.INVALID };
     }
 
+    // Mark OTP as used
     otpDoc.isUsed = true;
     await otpDoc.save();
 
@@ -137,32 +126,40 @@ const verifyOtpService = async (
       };
     }
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       {
         id: user.id,
         user_id: user.user_id,
         role: roleResult.data
       },
       process.env.AUTH_KEY as string,
-      { expiresIn: "24h" }
+      { expiresIn: "1hr" }
     );
 
-    const { ...sanitizedUser } = user.toObject();
-    sanitizedUser.role = roleResult.data;
+    const refreshToken = jwt.sign(
+      { user_id: user.user_id },
+      process.env.REFRESH_AUTH_KEY as string,
+      { expiresIn: "30d" }
+    );
+
+    const userObject = user.toObject();
+    userObject.role = roleResult.data;
 
     return {
       success: true,
       message: OtpMessages.VERIFY.SUCCESS,
-      data: { token, user: sanitizedUser }
+      data: {
+        token: accessToken,
+        refreshToken,
+        user: userObject
+      }
     };
   } catch (error: any) {
     console.error("verifyOtpService Error:", error);
     return {
       success: false,
-      message: error.message || "Otp Service Error",
-      details: error.stack || null
+      message: error.message || "OTP Service Error",
+      details: error.stack
     };
   }
 };
-
-export { sendOtpService, verifyOtpService };

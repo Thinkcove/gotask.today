@@ -27,7 +27,9 @@
     "otprequired": "Please enter the OTP.",
     "genericerror": "Something went wrong. Please try again.",
     "otpfail": "Failed to send OTP. Please try again.",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "rememberme": "Remember Me"
+
   },
   "Access": {
     "access": "Access",

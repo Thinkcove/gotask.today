@@ -43,10 +43,8 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name = transuser("firstname");
-    if (!formData.name) newErrors.name = transuser("lastname");
-    if (!formData.name) newErrors.name = transuser("empid");
-
+    if (!formData.first_name) newErrors.first_name = transuser("firstname");
+    if (!formData.last_name) newErrors.last_name = transuser("lastname");
     if (!formData.name) newErrors.name = transuser("username");
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
     if (formData.status === undefined || formData.status === null) {

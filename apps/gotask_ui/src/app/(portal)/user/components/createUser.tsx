@@ -44,25 +44,22 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name = transuser("firstname");
-    if (!formData.name) newErrors.name = transuser("lastname");
-    
+    if (!formData.first_name) newErrors.first_name = transuser("firstname");
+    if (!formData.last_name) newErrors.last_name = transuser("lastname");
     if (!formData.name) newErrors.name = transuser("username");
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
     if (formData.status === undefined || formData.status === null) {
       newErrors.status = transuser("userstatus");
     }
     if (!formData.password) newErrors.password = transuser("userpwd");
-
     if (!formData.user_id) {
       newErrors.user_id = transuser("useremail");
     } else if (!validateEmail(formData.user_id)) {
       newErrors.user_id = transuser("validmail");
     }
-
-if (formData.emp_id && !ALPHANUMERIC_REGEX.test(formData.emp_id)) {
-  newErrors.emp_id =transuser("empid");
-}
+    if (formData.emp_id && !ALPHANUMERIC_REGEX.test(formData.emp_id)) {
+     newErrors.emp_id =transuser("empid");
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

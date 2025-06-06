@@ -7,6 +7,8 @@ import TimeBadge from "@/app/component/badge/timeBadge";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { getSeverityColor } from "@/app/common/constants/task";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import DateFormats from "@/app/component/dateTime/dateFormat";
 
 export interface Task {
   id: string;
@@ -27,16 +29,9 @@ interface TaskItemProps {
   onTaskClick: (id: string) => void;
   view: string;
   getStatusColor: (status: string) => string;
-  formatDate: (date: string) => string;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({
-  task,
-  onTaskClick,
-  view,
-  getStatusColor,
-  formatDate
-}) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, onTaskClick, view, getStatusColor }) => {
   const { canAccess } = useUserPermission();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
 
@@ -77,7 +72,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
       >
         <Stack direction="row" alignItems="center" spacing={1}>
           <CalendarToday sx={{ fontSize: 18, color: "text.secondary" }} />
-          <Typography variant="body2">{formatDate(task.due_date)}</Typography>
+          <Typography variant="body2">
+            {<FormattedDateTime date={task.due_date} format={DateFormats.MONTH_DATE} />}
+          </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" spacing={1}>
           {view === "projects" ? (

@@ -10,11 +10,13 @@ import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { formatDate, formatTimeValue } from "@/app/common/utils/common";
+import { formatTimeValue } from "@/app/common/utils/common";
 import { KeyedMutator } from "swr";
 import TaskComments from "../../editTask/taskComments";
 import { createComment } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import DateFormats from "@/app/component/dateTime/dateFormat";
 
 interface TaskDetailViewProps {
   task: ITask;
@@ -173,11 +175,19 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detailcreated")}
-                  value={formatDate(task.created_on)}
+                  value={
+                    <FormattedDateTime
+                      date={task.created_on}
+                      format={DateFormats.FULL_DATE_TIME_12H}
+                    />
+                  }
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText label={transtask("detaildue")} value={formatDate(task.due_date)} />
+                <LabelValueText
+                  label={transtask("detaildue")}
+                  value={<FormattedDateTime date={task.due_date} format={DateFormats.DATE_ONLY} />}
+                />
               </Grid>
 
               <Grid item xs={4} sm={6} md={4}>

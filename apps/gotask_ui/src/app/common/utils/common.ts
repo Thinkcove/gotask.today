@@ -1,14 +1,6 @@
 import { TIME_FORMAT, TIME_PERIODS } from "../../common/constants/timeTask";
 import { TASK_CALCULATION, TASK_VARIATION, TASK_HOURS } from "../constants/task";
 
-export const monthDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return "";
-  const day = date.getUTCDate();
-  const month = date.toLocaleString("en-US", { month: "short" });
-  return `${month} ${day}`;
-};
-
 export const parseTimeString = (timeStr: string) => {
   const weeks = parseInt(timeStr.match(/(\d+)w/)?.[1] || "0", 10);
   const days = parseInt(timeStr.match(/(\d+)d/)?.[1] || "0", 10);
@@ -154,12 +146,4 @@ export const formatTimeValue = (raw: string): string => {
   if (days === 0) return `${hours}h`;
   if (hours === 0) return `${days}d`;
   return `${days}d ${hours}h`;
-};
-
-export const formatDate = (date: string) => {
-  const d = new Date(date);
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const year = d.getFullYear();
-  return `${day}/${month}/${year}`;
 };

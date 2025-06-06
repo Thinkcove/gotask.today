@@ -34,10 +34,10 @@ export const fetchUsers = async () => {
     return (
       data?.map(
         (user: {
-          first_name: string,
-          last_name:string,
-          emp_id: string,
-          joined_date:Date,
+          first_name: string;
+          last_name: string;
+          emp_id: string;
+          joined_date: Date;
           name: string;
           id: string;
           status: string;

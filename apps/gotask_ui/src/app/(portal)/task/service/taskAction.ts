@@ -129,7 +129,7 @@ export const useUserGroupTask = (
 
 //fetch status count
 export const fetchTaskStatusCounts = async () => {
-  return getData(`${env.API_BASE_URL}/tasks/status-count`);
+  withAuth((token) => getData(`${env.API_BASE_URL}/tasks/status-count`, token));
 };
 
 //fetch all users

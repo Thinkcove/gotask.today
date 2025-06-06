@@ -133,7 +133,7 @@ export const verifyOtpService = async (
         role: roleResult.data
       },
       process.env.AUTH_KEY as string,
-      { expiresIn: "1hr" }
+      { expiresIn: "1d" }
     );
 
     const refreshToken = jwt.sign(

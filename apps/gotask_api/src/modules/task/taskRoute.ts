@@ -92,7 +92,10 @@ TaskRoutes.push({
     taskController.getTaskCountByStatus(new RequestHelper(request), handler),
   config: {
     notes: "Get task count grouped by status",
-    tags
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
   }
 });
 

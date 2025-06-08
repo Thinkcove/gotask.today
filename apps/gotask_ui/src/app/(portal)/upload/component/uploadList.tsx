@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { uploadAttendance } from "../service/uploadAction";
 import {
   IconButton,
   Box,
@@ -11,6 +10,7 @@ import {
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { uploadAttendance } from "../service/uploadaction";
 
 const Upload: React.FC = () => {
   const transchatbot = useTranslations(LOCALIZATION.TRANSITION.CHATBOT);

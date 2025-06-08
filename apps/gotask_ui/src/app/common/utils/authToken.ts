@@ -1,10 +1,8 @@
-import env from "../env";
-
 // Helper: choose storage based on rememberMe flag
 const getStorage = (rememberMe: boolean) => (rememberMe ? localStorage : sessionStorage);
 
 // Check if token is expired (JWT expiry)
-const isTokenExpired = (token: string): boolean => {
+export const isTokenExpired = (token: string): boolean => {
   try {
     const payloadBase64 = token.split(".")[1];
     const decodedPayload = JSON.parse(atob(payloadBase64));

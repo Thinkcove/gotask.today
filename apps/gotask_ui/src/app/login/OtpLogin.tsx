@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, CircularProgress } from "@mui/material";
 import { StyledTextField, StyledButton } from "./style";
 import { useUser } from "../userContext";
 import env from "../common/env";
@@ -9,7 +9,7 @@ import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex";
-import { storeToken } from "../common/utils/authToken";
+import { storeToken, isTokenExpired, fetchToken } from "../common/utils/authToken"; 
 
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
@@ -23,15 +23,17 @@ const OtpLogin = () => {
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // ✅ Auto-redirect if already authenticated
+  // Auto redirect if token exists and valid
   useEffect(() => {
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-    if (token) {
+    const token = fetchToken();
+    if (token && !isTokenExpired(token)) {
       router.replace("/dashboard");
     }
   }, [router]);
 
+  // Send OTP request
   const sendOtp = async () => {
+    if (loading) return;
     if (!email) {
       setError(translogin("emailrequired"));
       return;
@@ -49,7 +51,7 @@ const OtpLogin = () => {
       const res = await fetch(`${env.API_BASE_URL}/otp/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: email }),
+        body: JSON.stringify({ user_id: email })
       });
 
       const data = await res.json();
@@ -66,7 +68,10 @@ const OtpLogin = () => {
     }
   };
 
+  // Verify OTP and store tokens
   const verifyOtp = async () => {
+    if (loading) return;
+
     if (!otp) {
       setError(translogin("otprequired"));
       return;
@@ -79,7 +84,7 @@ const OtpLogin = () => {
       const res = await fetch(`${env.API_BASE_URL}/otp/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: email, otp }),
+        body: JSON.stringify({ user_id: email, otp })
       });
 
       const data = await res.json();
@@ -104,8 +109,10 @@ const OtpLogin = () => {
     }
   };
 
+  // Form submit handler switches between sending OTP and verifying OTP
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     otpSent ? verifyOtp() : sendOtp();
   };
 
@@ -121,7 +128,7 @@ const OtpLogin = () => {
           setEmail(e.target.value);
           setError("");
         }}
-        disabled={otpSent}
+        disabled={otpSent || loading}
         InputProps={{ sx: { height: 56 } }}
         autoComplete="email"
         type="email"
@@ -138,6 +145,7 @@ const OtpLogin = () => {
             setOtp(e.target.value);
             setError("");
           }}
+          disabled={loading}
           InputProps={{ sx: { height: 56 } }}
           autoComplete="one-time-code"
         />
@@ -151,7 +159,7 @@ const OtpLogin = () => {
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
             style={{ marginRight: 8 }}
-            disabled={otp.trim() === ""}
+            disabled={otp.trim() === "" || loading}
           />
           <label htmlFor="rememberMe">{translogin("rememberme")}</label>
         </Box>
@@ -169,11 +177,13 @@ const OtpLogin = () => {
         type="submit"
         disabled={loading || (otpSent ? otp.trim() === "" : email.trim() === "")}
       >
-        {loading
-          ? translogin("loading")
-          : otpSent
-          ? translogin("verifyotp")
-          : translogin("sendotp")}
+        {loading ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : otpSent ? (
+          translogin("verifyotp")
+        ) : (
+          translogin("sendotp")
+        )}
       </StyledButton>
     </form>
   );

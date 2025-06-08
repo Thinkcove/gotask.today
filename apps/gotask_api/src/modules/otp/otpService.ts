@@ -11,6 +11,7 @@ import UserMessages from "../../constants/apiMessages/userMessage";
 const MAX_ATTEMPTS = 5;
 const RESEND_COOLDOWN_MINUTES = 1;
 
+// ✅ SEND OTP SERVICE
 export const sendOtpService = async (
   user_id: string
 ): Promise<{ success: boolean; message: string; details?: any }> => {
@@ -24,7 +25,10 @@ export const sendOtpService = async (
     const existingOtp = await Otp.findOne(query);
     const now = new Date();
 
-    if (existingOtp?.resendCooldownExpiresAt && existingOtp.resendCooldownExpiresAt > now) {
+    if (
+      existingOtp?.resendCooldownExpiresAt &&
+      existingOtp.resendCooldownExpiresAt > now
+    ) {
       return {
         success: false,
         message: OtpMessages.SEND.RESEND_TOO_SOON
@@ -66,13 +70,15 @@ export const sendOtpService = async (
   }
 };
 
+// ✅ VERIFY OTP SERVICE
 export const verifyOtpService = async (
   user_id: string,
-  enteredOtp: string
+  enteredOtp: string,
+  rememberMe: boolean
 ): Promise<{
   success: boolean;
   message: string;
-  data?: { token: string; refreshToken: string; user: Partial<IUser> };
+  data?: { token: string; user: Partial<IUser> };
   details?: any;
 }> => {
   try {
@@ -109,7 +115,7 @@ export const verifyOtpService = async (
       return { success: false, message: OtpMessages.VERIFY.INVALID };
     }
 
-    // Mark OTP as used
+    // ✅ OTP is valid – mark as used
     otpDoc.isUsed = true;
     await otpDoc.save();
 
@@ -126,6 +132,8 @@ export const verifyOtpService = async (
       };
     }
 
+    const tokenExpiry = rememberMe ? "30d" : "1d";
+
     const accessToken = jwt.sign(
       {
         id: user.id,
@@ -133,16 +141,12 @@ export const verifyOtpService = async (
         role: roleResult.data
       },
       process.env.AUTH_KEY as string,
-      { expiresIn: "1hr" }
+      { expiresIn: tokenExpiry }
     );
 
-    const refreshToken = jwt.sign(
-      { user_id: user.user_id },
-      process.env.REFRESH_AUTH_KEY as string,
-      { expiresIn: "30d" }
-    );
-
+    // ✅ Sanitize user before returning
     const userObject = user.toObject();
+    delete userObject.password; // 🔒 Don't expose password
     userObject.role = roleResult.data;
 
     return {
@@ -150,7 +154,6 @@ export const verifyOtpService = async (
       message: OtpMessages.VERIFY.SUCCESS,
       data: {
         token: accessToken,
-        refreshToken,
         user: userObject
       }
     };

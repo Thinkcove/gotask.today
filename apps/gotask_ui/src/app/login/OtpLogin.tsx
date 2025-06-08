@@ -9,7 +9,7 @@ import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex";
-import { storeTokens } from "../common/utils/authToken";
+import { storeToken } from "../common/utils/authToken";
 
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
@@ -29,7 +29,7 @@ const OtpLogin = () => {
     if (token) {
       router.replace("/dashboard");
     }
-  }, []);
+  }, [router]);
 
   const sendOtp = async () => {
     if (!email) {
@@ -85,12 +85,14 @@ const OtpLogin = () => {
       const data = await res.json();
 
       if (res.ok && data.success && data.data) {
-        const { user, token, refreshToken } = data.data;
+        const { user, token } = data.data;
 
-        localStorage.setItem("user", JSON.stringify(user));
-        storeTokens(token, refreshToken, rememberMe);
+        // ✅ Store token and user using unified logic (clears old values & respects rememberMe)
+        storeToken(token, rememberMe, user);
 
-        setUser({ ...user, token, refreshToken });
+        // ✅ Set user in context
+        setUser({ ...user, token });
+
         router.replace("/dashboard");
       } else {
         setError(data.error || data.message || translogin("otperror"));

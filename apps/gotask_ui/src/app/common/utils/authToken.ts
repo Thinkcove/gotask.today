@@ -1,6 +1,9 @@
 import env from "../env";
 
-// Check if token is expired
+// Helper: choose storage based on rememberMe flag
+const getStorage = (rememberMe: boolean) => (rememberMe ? localStorage : sessionStorage);
+
+// Check if token is expired (JWT expiry)
 const isTokenExpired = (token: string): boolean => {
   try {
     const payloadBase64 = token.split(".")[1];
@@ -12,46 +15,72 @@ const isTokenExpired = (token: string): boolean => {
   }
 };
 
-// Fetch tokens from storage
-export const fetchToken = (): string | null =>
-  localStorage.getItem("token") || sessionStorage.getItem("token");
+// Store token, rememberMe flag, loginTimestamp, and user in appropriate storage
+export const storeToken = (token: string, rememberMe: boolean, user: any) => {
+  const now = Date.now();
+  const storage = getStorage(rememberMe);
+  
+  // Clear both storages first (to avoid stale data)
+  localStorage.clear();
+  sessionStorage.clear();
 
-export const fetchRefreshToken = (): string | null =>
-  localStorage.getItem("refreshToken") || sessionStorage.getItem("refreshToken");
-
-// Store tokens to storage
-export const storeTokens = (
-  token: string,
-  refreshToken: string,
-  rememberMe: boolean
-) => {
-  const storage = rememberMe ? localStorage : sessionStorage;
   storage.setItem("token", token);
-  storage.setItem("refreshToken", refreshToken);
-
-  const user = localStorage.getItem("user");
-  if (user) storage.setItem("user", user);
+  storage.setItem("rememberMe", rememberMe ? "true" : "false");
+  storage.setItem("loginTimestamp", now.toString());
+  storage.setItem("user", JSON.stringify(user));
 };
 
-// Remove tokens from storage
+// Fetch token from appropriate storage (check localStorage first)
+export const fetchToken = (): string | null => {
+  return localStorage.getItem("token") || sessionStorage.getItem("token");
+};
+
+// Fetch user from appropriate storage (check localStorage first)
+export const fetchUser = (): any | null => {
+  const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
+  if (!userStr) return null;
+  try {
+    return JSON.parse(userStr);
+  } catch {
+    return null;
+  }
+};
+
+// Remove token, user, rememberMe, loginTimestamp from both storages
 export const removeToken = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("user");
-
-  sessionStorage.removeItem("token");
-  sessionStorage.removeItem("refreshToken");
-  sessionStorage.removeItem("user");
+  localStorage.clear();
+  sessionStorage.clear();
 };
 
-// Main auth wrapper
+// Check if session is valid based on rememberMe and loginTimestamp in correct storage
+const isSessionValid = (): boolean => {
+  // Check rememberMe from either storage
+  const rememberMe = (localStorage.getItem("rememberMe") || sessionStorage.getItem("rememberMe")) === "true";
+
+  // Get loginTimestamp from correct storage
+  const loginTimestampStr = rememberMe ? localStorage.getItem("loginTimestamp") : sessionStorage.getItem("loginTimestamp");
+  if (!loginTimestampStr) return false;
+
+  const loginTimestamp = parseInt(loginTimestampStr, 10);
+  const now = Date.now();
+
+  if (rememberMe) {
+    // Remember Me: session persists until token expiry
+    return true;
+  } else {
+    // Non-remember me: expire after 30 minutes (example)
+    const sessionDurationMs = 30 * 60 * 1000; // 30 mins
+    return now - loginTimestamp < sessionDurationMs;
+  }
+};
+
+// Main auth wrapper (no refresh token logic)
 export const withAuth = async <T>(
   callback: (token: string) => Promise<T>
 ): Promise<T | { error: string }> => {
   const token = fetchToken();
-  const refreshToken = fetchRefreshToken();
 
-  if (!token || !refreshToken) {
+  if (!token || isTokenExpired(token) || !isSessionValid()) {
     removeToken();
     return { error: "Session expired. Please log in again." };
   }
@@ -60,31 +89,9 @@ export const withAuth = async <T>(
     return await callback(token);
   } catch (err: any) {
     if (err?.message === "jwt expired" || err?.status === 401) {
-      try {
-        const res = await fetch(`${env.API_BASE_URL}/otp/refresh-token`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
-        });
-
-        const data = await res.json();
-
-        if (res.ok && data.success && data.data?.accessToken) {
-          const newToken = data.data.accessToken;
-          const newRefresh = data.data.refreshToken;
-
-          storeTokens(newToken, newRefresh, true); // rememberMe default true
-          return await callback(newToken);
-        } else {
-          removeToken();
-          return { error: "Session expired. Please login again." };
-        }
-      } catch (err) {
-        removeToken();
-        return { error: "Token refresh failed. Please login again." };
-      }
-    } else {
-      return { error: "An error occurred." };
+      removeToken();
+      return { error: "Session expired. Please log in again." };
     }
+    return { error: "An error occurred." };
   }
 };

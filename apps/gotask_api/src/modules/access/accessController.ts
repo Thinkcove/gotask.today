@@ -10,6 +10,7 @@ import {
   getAccessOptionsFromConfig
 } from "../access/accessService";
 import AccessMessages from "../../constants/apiMessages/accessMessage";
+import { getAccessByIdFromDb } from "../../domain/interface/access/accessInterface";
 
 class AccessController extends BaseController {
   // Create Access
@@ -70,30 +71,54 @@ class AccessController extends BaseController {
   }
 
   // Update Access
-  async updateAccess(requestHelper: RequestHelper, handler: any, restrictedFields: string[] = []) {
-    try {
-      const id = requestHelper.getParam("id");
-      const payload = requestHelper.getPayload() as Partial<IAccess>;
+ async updateAccess(requestHelper: RequestHelper, handler: any, restrictedFields: string[] = []) {
+  try {
+    const id = requestHelper.getParam("id");
+    const payload = requestHelper.getPayload() as Partial<IAccess>;
 
-      // Cast to any to allow dynamic delete without TS error
-      const payloadAny = payload as any;
+    const payloadAny = payload as any;
 
-      // Remove restricted fields from payload before update
-      restrictedFields.forEach((field) => {
-        if (field in payloadAny) {
-          delete payloadAny[field];
-        }
+    // Remove restricted fields from the payload
+    restrictedFields.forEach((field) => {
+      if (field in payloadAny) {
+        delete payloadAny[field];
+      }
+    });
+
+    // Fetch current access for merging
+    const currentAccessResult = await getAccessByIdFromDb(id);
+    if (!currentAccessResult) {
+      return this.replyError(new Error(AccessMessages.UPDATE.NOT_FOUND));
+    }
+
+    // Merge application[] partially if provided
+    if (payload.application && Array.isArray(payload.application)) {
+      const existingApps = currentAccessResult.application || [];
+      const incomingApps = payload.application;
+
+      const mergedApps = existingApps.map((existingApp: any) => {
+        const updatedApp = incomingApps.find((a: any) => a.access === existingApp.access);
+        return updatedApp ? { ...existingApp, ...updatedApp } : existingApp;
       });
 
-      const result = await updateAccess(id, payload);
-      if (!result.success) {
-        return this.replyError(new Error(result.message || AccessMessages.UPDATE.FAILED));
-      }
-      return this.sendResponse(handler, result.data);
-    } catch (error) {
-      return this.replyError(error);
+      const newApps = incomingApps.filter(
+        (newApp: any) => !existingApps.find((oldApp: any) => oldApp.access === newApp.access)
+      );
+
+      payload.application = [...mergedApps, ...newApps];
     }
+
+    const result = await updateAccess(id, payload);
+    if (!result.success) {
+      return this.replyError(new Error(result.message || AccessMessages.UPDATE.FAILED));
+    }
+
+    return this.sendResponse(handler, result.data);
+  } catch (error) {
+    return this.replyError(error);
   }
+}
+
 
   // Delete Access
   async deleteAccess(requestHelper: RequestHelper, handler: any) {

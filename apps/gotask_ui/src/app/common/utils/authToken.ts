@@ -77,19 +77,9 @@ export const withAuth = async <T>(
   callback: (token: string) => Promise<T>
 ): Promise<T | { error: string }> => {
   const token = fetchToken();
-
-  if (!token || isTokenExpired(token) || !isSessionValid()) {
-    removeToken();
-    return { error: "Session expired. Please log in again." };
+  if (!token) {
+    return { error: "Please login again." };
   }
-
-  try {
-    return await callback(token);
-  } catch (err: any) {
-    if (err?.message === "jwt expired" || err?.status === 401) {
-      removeToken();
-      return { error: "Session expired. Please log in again." };
-    }
-    return { error: "An error occurred." };
-  }
+  return await callback(token);
 };
+

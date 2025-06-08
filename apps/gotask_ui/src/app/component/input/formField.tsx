@@ -11,7 +11,6 @@ import {
   IconButton,
   TextFieldProps
 } from "@mui/material";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
   CalendarMonth,
@@ -21,6 +20,7 @@ import {
   Send as SendIcon
 } from "@mui/icons-material";
 import { SxProps, Theme } from "@mui/material/styles";
+import DatePicker from "react-datepicker";
 
 export interface SelectOption {
   name: string;

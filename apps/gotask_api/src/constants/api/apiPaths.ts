@@ -67,5 +67,14 @@ export const API_PATHS = {
 
   //userpreference
   SET_USER_PREFERENCES: "/setPreference",
-  GET_USER_PREFERENCES: "/getPreference"
+  GET_USER_PREFERENCES: "/getPreference",
+
+  //assets
+  CREATE_ASSET: "/createasset",
+  GET_ASSET_BY_ID: "/asset/{id}",
+  GET_ASSETS: "/assets/getAll",
+  DELETE_ASSET: "/asset/delete/{id}",
+
+  //Resource
+  CREATE_RESOURCE: "/createresource"
 };

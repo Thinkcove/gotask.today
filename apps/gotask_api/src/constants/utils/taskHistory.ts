@@ -8,7 +8,11 @@ export const generateHistoryEntry = (
   const { due_date, status, severity } = updatedData;
   const historyEntries: string[] = [];
 
-  if (due_date && new Date(due_date).getTime() !== existingTask.due_date.getTime()) {
+  if (
+    due_date &&
+    existingTask?.due_date &&
+    new Date(due_date).getTime() !== existingTask.due_date.getTime()
+  ) {
     historyEntries.push(
       `Due Date has been updated from "${formatDate(existingTask.due_date)}" to "${formatDate(new Date(due_date))}".`
     );

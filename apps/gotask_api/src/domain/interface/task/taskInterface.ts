@@ -121,15 +121,21 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
       existingTask.history.unshift(historyItem);
     }
 
-    // Recalculate estimated_time if due_date or created_on is updated
-    const createdOn = new Date(updateData.created_on ?? existingTask.created_on);
-    const dueDate = new Date(updateData.due_date ?? existingTask.due_date);
+    // Recalculate estimated_time using start_date and user_estimated
+    const startedOnRaw = updateData.start_date ?? existingTask.start_date;
+    const userEstimated = updateData.user_estimated ?? existingTask.user_estimated;
 
-    const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
-    const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+    if (startedOnRaw && userEstimated) {
+      // Parse estimated string like "2d4h"
+      const dayMatch = /(\d+)d/.exec(userEstimated);
+      const hourMatch = /(\d+)h/.exec(userEstimated);
 
-    const daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
-    existingTask.estimated_time = daysDiff > 0 ? `${daysDiff}d0h` : "1d0h";
+      const days = dayMatch ? parseInt(dayMatch[1]) : 0;
+      const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+
+      // Format to string
+      existingTask.estimated_time = `${days}d${hours}h`;
+    }
 
     Object.assign(existingTask, updateData);
     await existingTask.save();
@@ -178,9 +184,7 @@ const updateCommentInTask = async (
 };
 
 // Delete comment from task
-const deleteCommentFromTask = async (
-  id: string
-): Promise<ITaskComment | null> => {
+const deleteCommentFromTask = async (id: string): Promise<ITaskComment | null> => {
   // First, find the comment to get its data before deletion
   const commentToDelete = await TaskComment.findOne({ id });
   if (!commentToDelete) return null;
@@ -190,10 +194,7 @@ const deleteCommentFromTask = async (
   if (!deletedComment) return null;
 
   // Remove the comment from the Task's comment array
-  await Task.updateOne(
-    { "comment.id": id },
-    { $pull: { comment: { id: id } } }
-  );
+  await Task.updateOne({ "comment.id": id }, { $pull: { comment: { id: id } } });
 
   return deletedComment;
 };
@@ -205,7 +206,6 @@ const addTimeSpentToTask = async (
 ): Promise<ITask | null> => {
   const task = await Task.findOne({ id });
   if (!task) return null;
-
   if (!task.time_spent) task.time_spent = [];
 
   const entries = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
@@ -217,7 +217,7 @@ const addTimeSpentToTask = async (
         entry.start_time,
         entry.end_time
       );
-    } else if (TIME_FORMAT_PATTERNS.STANDARD_TIME.test(entry.time_logged)) {
+    } else if (entry.time_logged && TIME_FORMAT_PATTERNS.STANDARD_TIME.test(entry.time_logged)) {
       const totalHours = TimeUtil.parseHourMinuteString(entry.time_logged);
       entry.time_logged = TimeUtil.formatHoursToTimeString(totalHours);
     }
@@ -226,15 +226,16 @@ const addTimeSpentToTask = async (
       throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
     }
 
-    //Date comparison debug logs
-    const entryDate = new Date(entry.date);
-    const dueDate = new Date(task.due_date);
+    if (task.user_estimated) {
+      const entryDate = new Date(entry.date);
+      const user_estimated = new Date(task.user_estimated);
 
-    if (entryDate > dueDate) {
-      const diffMs = entryDate.getTime() - dueDate.getTime();
-      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); // calendar days
-      const delayHoursForThisEntry = diffDays * 8; // 8 working hours per day
-      delayHours += delayHoursForThisEntry;
+      if (entryDate > user_estimated) {
+        const diffMs = entryDate.getTime() - user_estimated.getTime();
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        const delayHoursForThisEntry = diffDays * 8; // 1 day = 8 hours
+        delayHours += delayHoursForThisEntry;
+      }
     }
 
     task.time_spent.unshift({
@@ -249,11 +250,11 @@ const addTimeSpentToTask = async (
   task.remaining_time = TimeUtil.calculateRemainingTime(task.estimated_time, task.time_spent_total);
   task.variation = TimeUtil.calculateVariation(task.estimated_time, task.time_spent_total);
 
-  if (delayHours > 0) {
+  if (task.user_estimated && delayHours > 0) {
     const delayString = TimeUtil.formatHoursToTimeString(delayHours);
-    task.variation = delayString; // ONLY show delay
+    task.variation = delayString;
   } else {
-    task.variation = "0d0h"; // No delay
+    task.variation = "0d0h";
   }
 
   await task.save();
@@ -271,6 +272,6 @@ export {
   updateATask,
   createCommentInTask,
   updateCommentInTask,
-  addTimeSpentToTask, deleteCommentFromTask
+  addTimeSpentToTask,
+  deleteCommentFromTask
 };
-

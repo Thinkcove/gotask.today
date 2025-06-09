@@ -16,14 +16,16 @@ export interface ITask extends Document {
   user_name: string;
   project_id: string;
   project_name: string;
-  due_date: Date;
+  due_date?: Date;
   created_on: Date;
+  start_date?: Date;
   updated_on: Date;
   loginuser_id?: string;
   loginuser_name?: string;
   comment?: ITaskComment[];
   history?: ITaskHistory[];
   estimated_time: string;
+  user_estimated: string;
   time_spent: ITimeSpentEntry[];
   time_spent_total: string;
   remaining_time: string;

@@ -51,7 +51,12 @@
     },
      {
       "access": "Chatbot Management",
-      "actions": ["READ", "CREATE", "VIEW", "EDIT"],
+      "actions": ["READ", "CREATE", "VIEW", "EDIT","DELETE"],
+      "restrictedFields": {}
+    },
+    {
+      "access": "Upload",
+      "actions": ["READ", "CREATE"],
       "restrictedFields": {}
     }
   ]

@@ -28,6 +28,7 @@ import { useUser } from "@/app/userContext";
 import { hasPermission } from "@/app/common/utils/permisssion";
 import { ACTIONS, ActionType, ApplicationName } from "@/app/common/utils/authCheck";
 import ChatIcon from "@mui/icons-material/Chat";
+import { UploadFileOutlined } from "../../../../node_modules/@mui/icons-material/index";
 
 const iconMap: Record<string, React.ReactNode> = {
   DashboardIcon: <GridViewIcon />,
@@ -38,7 +39,8 @@ const iconMap: Record<string, React.ReactNode> = {
   VpnKeyIcon: <VpnKeyIcon />,
   AssignmentIcon: <AssignmentIcon />,
   BarChartIcon: <BarChartIcon />,
-  ChatIcon: <ChatIcon />
+  ChatIcon: <ChatIcon />,
+  UploadIcon: <UploadFileOutlined />
 };
 
 const drawerWidth = 260;

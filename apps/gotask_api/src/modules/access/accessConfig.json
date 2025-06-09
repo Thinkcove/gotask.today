@@ -19,7 +19,8 @@
       "actions": ["READ", "CREATE", "EDIT", "VIEW", "ASSIGN", "UNASSIGN", "UPDATE"],
       "restrictedFields": {
         "VIEW":["organization_id"],
-        "EDIT": [ "name", "description", "status", "organization_id"]
+        "EDIT": [ "name", "description", "status", "organization_id"],
+        "READ":["description"]
       }
     },
     {

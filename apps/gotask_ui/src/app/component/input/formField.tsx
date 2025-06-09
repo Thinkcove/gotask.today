@@ -8,9 +8,9 @@ import {
   InputAdornment,
   Checkbox,
   Autocomplete,
-  IconButton
+  IconButton,
+  TextFieldProps
 } from "@mui/material";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
   CalendarMonth,
@@ -20,6 +20,7 @@ import {
   Send as SendIcon
 } from "@mui/icons-material";
 import { SxProps, Theme } from "@mui/material/styles";
+import DatePicker from "react-datepicker";
 
 export interface SelectOption {
   name: string;
@@ -34,33 +35,38 @@ interface FormFieldProps {
   options?: SelectOption[] | string[];
   value?: string | number | Date | string[];
   onChange?: (value: string | number | Date | string[]) => void;
-  onSend?: () => void; // Add onSend prop
+  onSend?: () => void;
   error?: string;
   disabled?: boolean;
   multiline?: boolean;
   height?: number;
   onFocus?: () => void;
   inputType?: string;
+  inputProps?: TextFieldProps["InputProps"];
   sx?: SxProps<Theme>;
 }
 
-const FormField: React.FC<FormFieldProps> = ({
-  label,
-  type,
-  options,
-  required,
-  placeholder,
-  error,
-  value,
-  onChange,
-  onSend, // Add onSend to props
-  disabled = false,
-  multiline = false,
-  height,
-  onFocus,
-  inputType,
-  sx
-}) => {
+const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function FormField(
+  {
+    label,
+    type,
+    options,
+    required,
+    placeholder,
+    error,
+    value,
+    onChange,
+    onSend,
+    disabled = false,
+    multiline = false,
+    height,
+    onFocus,
+    inputType,
+    inputProps,
+    sx
+  },
+  ref
+) {
   const [passwordVisible, setPasswordVisible] = useState(true);
   const normalizedOptions: SelectOption[] = (options || []).map((opt) =>
     typeof opt === "string" ? { id: opt, name: opt } : opt
@@ -86,6 +92,7 @@ const FormField: React.FC<FormFieldProps> = ({
 
         {type === "text" && inputType === "password" ? (
           <TextField
+            inputRef={ref}
             variant="standard"
             required={required}
             placeholder={placeholder}
@@ -134,12 +141,14 @@ const FormField: React.FC<FormFieldProps> = ({
                     </IconButton>
                   )}
                 </InputAdornment>
-              )
+              ),
+              ...inputProps
             }}
           />
         ) : (
           type === "text" && (
             <TextField
+              inputRef={ref}
               variant="standard"
               required={required}
               placeholder={placeholder}
@@ -183,7 +192,8 @@ const FormField: React.FC<FormFieldProps> = ({
                       <SendIcon sx={{ color: value && !disabled ? "#741B92" : "#9C8585" }} />
                     </IconButton>
                   </InputAdornment>
-                )
+                ),
+                ...inputProps
               }}
             />
           )
@@ -208,7 +218,8 @@ const FormField: React.FC<FormFieldProps> = ({
                 fullWidth
                 InputProps={{
                   ...params.InputProps,
-                  disableUnderline: true
+                  disableUnderline: true,
+                  ...inputProps
                 }}
                 sx={{
                   "& input": {
@@ -240,7 +251,8 @@ const FormField: React.FC<FormFieldProps> = ({
                     <InputAdornment position="start">
                       <CalendarMonth sx={{ color: "#9C8585" }} />
                     </InputAdornment>
-                  )
+                  ),
+                  ...inputProps
                 }}
               />
             }
@@ -280,7 +292,8 @@ const FormField: React.FC<FormFieldProps> = ({
                 fullWidth
                 InputProps={{
                   ...params.InputProps,
-                  disableUnderline: true
+                  disableUnderline: true,
+                  ...inputProps
                 }}
                 sx={{
                   "& input": {
@@ -295,6 +308,6 @@ const FormField: React.FC<FormFieldProps> = ({
       {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>
   );
-};
+});
 
 export default FormField;

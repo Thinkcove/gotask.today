@@ -127,12 +127,10 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onNewChat, onSelectConversati
       sx={{
         width: "300px",
         bgcolor: "#f0f0f0",
-        maxHeight: 900,
+        height: "100%",
         display: "flex",
         flexDirection: "column",
-        borderRadius: "16px",
-        m: 2,
-        height: "100%"
+        borderRadius: "16px 0 0 16px"
       }}
     >
       <Box

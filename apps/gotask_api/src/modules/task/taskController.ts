@@ -13,6 +13,7 @@ import {
   getTasksByProject,
   getTasksByUser,
   updateComment,
+  deleteComment,
   updateTask
 } from "./taskService";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
@@ -175,6 +176,17 @@ class TaskController extends BaseController {
       const updateData = requestHelper.getPayload() as Partial<ITaskComment>;
       const updatedComment = await updateComment(id, updateData);
       return this.sendResponse(handler, updatedComment);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
+
+  // Delete Comment
+  async deleteComment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const deletedComment = await deleteComment(id);
+      return this.sendResponse(handler, deletedComment);
     } catch (error) {
       return this.replyError(error, handler);
     }

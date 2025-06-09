@@ -1,15 +1,18 @@
 "use client";
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Box, Typography, IconButton, Paper } from "@mui/material";
-import { sendQuery, uploadAttendance, useQueryHistory } from "../service/chatAction";
+import { sendQuery, useQueryHistory } from "../service/chatAction";
 import { QueryResponse, QueryHistoryEntry } from "../interface/chatInterface";
 import ChatHistory from "./chatHitory";
-import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
+import ChatIcon from "@mui/icons-material/Chat";
+import HistoryIcon from "@mui/icons-material/History";
+import CloseIcon from "@mui/icons-material/Close";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FormField from "@/app/component/input/formField";
-import ModuleHeader from "@/app/component/header/moduleHeader";
+import { useUser } from "@/app/userContext";
+import { Fab } from "../../../../../node_modules/@mui/material/index";
 
 // Custom hook for updating greeting
 const useGreeting = (transchatbot: (key: string) => string) => {
@@ -22,7 +25,6 @@ const useGreeting = (transchatbot: (key: string) => string) => {
     else setGreeting(transchatbot("greetingEvening"));
   }, [transchatbot]);
 
-  // Initialize greeting immediately
   const initializedGreeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour >= 0 && hour < 12) return transchatbot("greetingMorning");
@@ -30,14 +32,12 @@ const useGreeting = (transchatbot: (key: string) => string) => {
     else return transchatbot("greetingEvening");
   }, [transchatbot]);
 
-  // Set initial greeting
   const [isInitialized, setIsInitialized] = useState(false);
   if (!isInitialized) {
     setGreeting(initializedGreeting);
     setIsInitialized(true);
   }
 
-  // Set up interval for updates
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   if (!intervalRef.current) {
     intervalRef.current = setInterval(updateGreeting, 60000);
@@ -69,7 +69,6 @@ const useLocalStorageMessages = (transchatbot: (key: string) => string) => {
         const storedMessages = localStorage.getItem(transchatbot("chatMessages"));
         const sessionTimestamp = localStorage.getItem("chatSessionTimestamp");
         const currentTime = Date.now();
-        // Consider it a refresh if the session timestamp is recent (within 5 seconds)
         if (sessionTimestamp && currentTime - parseInt(sessionTimestamp) < 5000) {
           return storedMessages ? (JSON.parse(storedMessages) as QueryResponse[]) : [];
         }
@@ -108,9 +107,17 @@ const Chat: React.FC = () => {
   const pathname = usePathname();
   const [input, setInput] = useState<string>("");
   const [inputError, setInputError] = useState<string | undefined>(undefined);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatPopupRef = useRef<HTMLDivElement>(null); // Ref for the chat popup
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<QueryResponse[]>([]);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const { user } = useUser();
+  const userName = user?.name || "";
+  const formattedUserName =
+    userName.charAt(0).toUpperCase() + (userName.slice(1) || "").toLowerCase();
 
   const {
     history: selectedHistory,
@@ -120,26 +127,21 @@ const Chat: React.FC = () => {
 
   const memoizedSelectedHistory = useMemo(() => selectedHistory ?? [], [selectedHistory]);
 
-  // Get localStorage utilities
   const { saveToLocalStorage, getFromLocalStorage, clearLocalStorage } =
     useLocalStorageMessages(transchatbot);
 
-  // Get greeting and scroll utilities
   const greeting = useGreeting(transchatbot);
   const { messagesEndRef, scrollToBottom } = useAutoScroll();
 
-  // Handle conversation history loading
   const prevSelectedConversationIdRef = useRef<string | null>(null);
   const prevSelectedHistoryRef = useRef<QueryHistoryEntry[]>([]);
 
-  // Check if conversation selection has changed
   const conversationChanged = prevSelectedConversationIdRef.current !== selectedConversationId;
   const historyChanged =
     JSON.stringify(prevSelectedHistoryRef.current) !== JSON.stringify(memoizedSelectedHistory);
 
   if (conversationChanged || (selectedConversationId && historyChanged)) {
     if (selectedConversationId && memoizedSelectedHistory?.length > 0) {
-      // Load conversation history
       const conversationMessages = memoizedSelectedHistory
         .map((item: QueryHistoryEntry) => [
           {
@@ -165,20 +167,16 @@ const Chat: React.FC = () => {
         .flat();
       setMessages(conversationMessages);
     } else if (!selectedConversationId) {
-      // Load from localStorage or start fresh
       const storedMessages = getFromLocalStorage();
       setMessages(storedMessages);
     } else {
-      // Clear messages for new conversation
       setMessages([]);
     }
 
-    // Update refs
     prevSelectedConversationIdRef.current = selectedConversationId;
     prevSelectedHistoryRef.current = memoizedSelectedHistory;
   }
 
-  // Initialize messages on first load
   const [isInitialized, setIsInitialized] = useState(false);
   if (!isInitialized) {
     if (!selectedConversationId) {
@@ -188,7 +186,6 @@ const Chat: React.FC = () => {
     setIsInitialized(true);
   }
 
-  // Save messages to localStorage whenever they change (only for non-conversation messages)
   const prevMessagesRef = useRef<QueryResponse[]>([]);
   if (
     !selectedConversationId &&
@@ -198,14 +195,12 @@ const Chat: React.FC = () => {
     prevMessagesRef.current = messages;
   }
 
-  // Scroll to bottom when messages change
   const prevMessagesLengthRef = useRef(0);
   if (messages.length !== prevMessagesLengthRef.current) {
     setTimeout(scrollToBottom, 100);
     prevMessagesLengthRef.current = messages.length;
   }
 
-  // Handle navigation to clear localStorage
   const prevPathnameRef = useRef<string | null>(null);
   if (
     typeof window !== "undefined" &&
@@ -218,6 +213,13 @@ const Chat: React.FC = () => {
   if (prevPathnameRef.current !== pathname) {
     prevPathnameRef.current = pathname;
   }
+
+  // Focus the text field when the chat popup opens
+  useEffect(() => {
+    if (isChatOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isChatOpen]);
 
   const isReadOnly = () => false;
 
@@ -264,56 +266,6 @@ const Chat: React.FC = () => {
     }
   }, [input, transchatbot]);
 
-  const handleFileUpload = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
-        const systemMessage: QueryResponse = {
-          id: generateUniqueId(),
-          message: transchatbot("invalidFile"),
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          isUser: false,
-          isSystem: true
-        };
-        setMessages((prev) => [...prev, systemMessage]);
-        return;
-      }
-
-      try {
-        const result = await uploadAttendance(file);
-        const systemMessage: QueryResponse = {
-          id: generateUniqueId(),
-          message: `Attendance uploaded successfully! Inserted: ${result.inserted}, Skipped: ${result.skipped}. ${
-            result.errors.length > 0 ? "Errors: " + result.errors.join("; ") : ""
-          }`,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          isUser: false,
-          isSystem: true
-        };
-        setMessages((prev) => [...prev, systemMessage]);
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? `Error uploading attendance: ${error.message}`
-            : transchatbot("Uploaderror");
-
-        const systemMessage: QueryResponse = {
-          id: generateUniqueId(),
-          message,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          isUser: false,
-          isSystem: true
-        };
-        setMessages((prev) => [...prev, systemMessage]);
-      } finally {
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      }
-    },
-    [transchatbot]
-  );
-
   const handleInputChange: (value: string | number | Date | string[]) => void = (value) => {
     if (typeof value === "string") {
       setInput(value);
@@ -336,56 +288,116 @@ const Chat: React.FC = () => {
     [clearLocalStorage]
   );
 
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
+
+  const toggleHistory = () => {
+    setIsHistoryOpen(!isHistoryOpen);
+  };
+
   return (
     <>
-      <Box>
-        <ModuleHeader name={transchatbot("viewname")} />
-      </Box>
-
       <Box
         sx={{
-          display: "flex",
-          bgcolor: "#ffffff",
-          height: "calc(100vh - 80px)",
-          pb: 2
+          position: "fixed"
         }}
+        bottom={110}
+        right={32}
       >
-        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-          <ChatHistory onNewChat={handleNewChat} onSelectConversation={handleSelectConversation} />
-        </Box>
-        <Box
+        <Fab
+          onClick={toggleChat}
           sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            bgcolor: "#ffffff",
-            p: 3,
-            height: "100%",
-            position: "relative"
+            bgcolor: "#741B92",
+            color: "white",
+            borderRadius: "50%",
+            minWidth: "60px",
+            height: "60px",
+            "&:hover": { bgcolor: "#660066" }
           }}
         >
-          {messages.length > 0 && (
+          <ChatIcon fontSize="large" />
+        </Fab>
+      </Box>
+
+      {isChatOpen && (
+        <Box
+          ref={chatPopupRef}
+          sx={{
+            position: "fixed",
+            bottom: "100px",
+            right: "20px",
+            width: isHistoryOpen ? "650px" : "400px",
+            height: "500px",
+            bgcolor: "#ffffff",
+            borderRadius: "16px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            zIndex: 1000,
+            display: "flex",
+            flexDirection: "row",
+            overflow: "hidden"
+          }}
+        >
+          {isHistoryOpen && (
+            <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+              <ChatHistory
+                onNewChat={handleNewChat}
+                onSelectConversation={handleSelectConversation}
+              />
+            </Box>
+          )}
+
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              bgcolor: "#ffffff",
+              p: 2,
+              height: "100%",
+              position: "relative"
+            }}
+          >
             <Box
               sx={{
-                width: "100%",
-                maxWidth: "800px",
-                margin: "0 auto",
-                flex: 1,
                 display: "flex",
-                flexDirection: "column",
-                mb: 2,
-                overflowY: "auto"
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2
               }}
             >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography sx={{ fontWeight: "bold", color: "#741B92" }}>
+                  {transchatbot("viewname")}
+                </Typography>
+                <IconButton onClick={toggleHistory}>
+                  <HistoryIcon sx={{ color: "#741B92" }} />
+                </IconButton>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <IconButton
+                  onClick={toggleChat}
+                  sx={{
+                    position: "absolute",
+                    top: "-2px",
+                    right: "-2px"
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            </Box>
+
+            {messages.length > 0 && (
               <Box
                 sx={{
                   flex: 1,
-                  minHeight: 0,
                   overflowY: "auto",
                   display: "flex",
                   flexDirection: "column",
                   gap: 2,
-                  pr: 1
+                  pr: 1,
+                  mb: 2
                 }}
               >
                 {messages.map((message) => (
@@ -420,112 +432,83 @@ const Chat: React.FC = () => {
                 ))}
                 <div ref={messagesEndRef} />
               </Box>
-            </Box>
-          )}
-
-          <Box
-            sx={{
-              width: "100%",
-              maxWidth: "800px",
-              margin: "0 auto",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              position: "sticky",
-              bottom: 0,
-              bgcolor: "#ffffff",
-              ...(messages.length === 0 && {
-                flex: 1,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-              })
-            }}
-          >
-            {selectedLoading ? (
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)"
-                }}
-              >
-                <Typography>{transchatbot("Loading")}</Typography>
-              </Box>
-            ) : selectedError ? (
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)"
-                }}
-              >
-                <Typography color="error">
-                  {selectedError.message || transchatbot("error")}
-                </Typography>
-              </Box>
-            ) : (
-              <>
-                {messages.length === 0 && (
-                  <Typography
-                    sx={{
-                      textAlign: "center",
-                      color: "black",
-                      mb: 2,
-                      fontSize: "1.2rem"
-                    }}
-                  >
-                    {`${greeting}! How may I assist you today?`}
-                  </Typography>
-                )}
-                <Box sx={{ display: "flex", alignItems: "center", width: "100%", gap: 1 }}>
-                  <FormField
-                    label=""
-                    type="text"
-                    value={input}
-                    onChange={handleInputChange}
-                    onSend={handleSend}
-                    placeholder={transchatbot("placeholder")}
-                    required
-                    error={inputError}
-                    disabled={isReadOnly()}
-                    sx={{
-                      flex: 1,
-                      "& .MuiFormControl-root": {
-                        borderRadius: "12px",
-                        border: "1px solid #e0e0e0",
-                        "&:focus-within": {
-                          borderColor: "inherit",
-                          backgroundColor: "inherit"
-                        }
-                      },
-                      "& .MuiInputBase-root": {
-                        padding: "10px",
-                        fontSize: "1rem"
-                      }
-                    }}
-                  />
-                  <IconButton
-                    onClick={() => fileInputRef.current?.click()}
-                    sx={{ bgcolor: "#EEEEEE", "&:hover": { bgcolor: "#D3D3D3" } }}
-                  >
-                    <CloudUploadOutlinedIcon fontSize="large" sx={{ color: "#741B92" }} />
-                  </IconButton>
-                </Box>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  style={{ display: "none" }}
-                  onChange={handleFileUpload}
-                  accept=".xlsx,.xls"
-                />
-              </>
             )}
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                position: "sticky",
+                bottom: 0,
+                bgcolor: "#ffffff",
+                ...(messages.length === 0 && {
+                  flex: 1,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center"
+                })
+              }}
+            >
+              {selectedLoading ? (
+                <Box sx={{ textAlign: "center" }}>
+                  <Typography>{transchatbot("Loading")}</Typography>
+                </Box>
+              ) : selectedError ? (
+                <Box sx={{ textAlign: "center" }}>
+                  <Typography color="error">
+                    {selectedError.message || transchatbot("error")}
+                  </Typography>
+                </Box>
+              ) : (
+                <>
+                  {messages.length === 0 && (
+                    <Typography
+                      sx={{
+                        textAlign: "center",
+                        color: "black",
+                        mb: 2,
+                        fontSize: "1.2rem"
+                      }}
+                    >
+                      {`${greeting}${formattedUserName ? ` ${formattedUserName}` : ""}, how may I assist you today?`}
+                    </Typography>
+                  )}
+                  <Box sx={{ display: "flex", alignItems: "center", width: "100%", gap: 1 }}>
+                    <FormField
+                      ref={inputRef}
+                      label=""
+                      type="text"
+                      value={input}
+                      onChange={handleInputChange}
+                      onSend={handleSend}
+                      placeholder={transchatbot("placeholder")}
+                      required
+                      error={inputError}
+                      disabled={isReadOnly()}
+                      inputProps={{
+                        startAdornment: null
+                      }}
+                      sx={{
+                        flex: 1,
+                        "& .MuiFormControl-root": {
+                          borderRadius: "12px",
+                          border: "1px solid #e0e0e0"
+                        },
+                        "& .MuiInputBase-root": {
+                          padding: "5px 10px",
+                          fontSize: "1rem",
+                          height: "20px"
+                        }
+                      }}
+                    />
+                  </Box>
+                </>
+              )}
+            </Box>
           </Box>
         </Box>
-      </Box>
+      )}
     </>
   );
 };

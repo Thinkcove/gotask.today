@@ -18,6 +18,7 @@ interface CommonDialogProps extends DialogProps {
   children: React.ReactNode;
   submitLabel?: string;
   cancelLabel?: string;
+  submitColor?: string; // New prop for dynamic color
 }
 
 const CommonDialog: React.FC<CommonDialogProps> = ({
@@ -28,6 +29,7 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
   children,
   submitLabel = "Submit",
   cancelLabel = "Cancel",
+  submitColor,
   ...dialogProps
 }) => {
   return (
@@ -68,7 +70,6 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
       </IconButton>
 
       {/* Header */}
-
       <DialogTitle sx={{ background: "#f5f7fa", py: 2, px: 3 }}>{title}</DialogTitle>
 
       {/* Content */}
@@ -93,14 +94,15 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
           <Button
             onClick={onSubmit}
             variant="contained"
-            color="primary"
             sx={{
               textTransform: "none",
               borderRadius: 3,
               px: 3,
               py: 1.2,
+              backgroundColor: submitColor || "#741B92",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
               "&:hover": {
+                backgroundColor: submitColor ? submitColor : "#5a1472",
                 boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.25)"
               }
             }}

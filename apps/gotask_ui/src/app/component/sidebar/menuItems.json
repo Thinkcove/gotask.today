@@ -38,7 +38,7 @@
   {
     "text": "Task",
     "icon": "AssignmentIcon",
-    "path": "/task",
+    "path": "/task/projects",
     "access": "Task Management"
   },
   {
@@ -47,10 +47,5 @@
     "path": "/report",
     "access": "User Report"
   },
-  {
-    "text": "Chatbot",
-    "icon": "ChatIcon",
-    "path": "/chatbot",
-    "access": "Chatbot Management"
-  }
+  { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" }
 ]

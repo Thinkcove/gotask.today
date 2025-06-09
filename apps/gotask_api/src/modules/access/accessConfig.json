@@ -31,6 +31,10 @@
     {
       "access": "Chatbot Management",
       "actions": ["READ", "CREATE", "EDIT", "DELETE"]
+    },
+    {
+      "access": "Upload",
+      "actions": ["READ", "CREATE"]
     }
   ]
 }

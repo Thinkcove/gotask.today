@@ -295,6 +295,7 @@
     "lastname": "Last name is required",
     "empid": "Employee ID can only contain letters and numbers",
     "username": "Preferred name is required",
+    "mobile_num": "Mobile Number is required",
     "userrole": "Role is required",
     "userstatus": "Status is required",
     "useremail": "Email is required",

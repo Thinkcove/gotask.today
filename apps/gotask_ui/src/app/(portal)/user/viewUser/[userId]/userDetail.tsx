@@ -68,7 +68,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
     status: user.status,
     mobile_no: user.mobile_no,
     joined_date: user.joined_date,
-    emp_id:user.emp_id,
+    emp_id: user.emp_id,
     organization: user.organization,
     roleId: user.roleId._id,
     user_id: user.user_id
@@ -119,8 +119,12 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           {/* Basic Details */}
 
           {/* <Grid container spacing={3} columns={{ xs: 3, sm: 2, md: 3 }}> */}
-          <Grid container spacing={2} mb={3} >
-            <Grid item xs={6} sm={6} md={4} >
+          <Grid container spacing={2} mb={3}>
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText label={transuser("uesrid")} value={user.user_id} />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 {transuser("status")}
               </Typography>
@@ -129,10 +133,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 color={user.status ? "success" : "error"}
                 size="small"
               />
-            </Grid>
-
-            <Grid item xs={6} sm={6} md={4}>
-              <LabelValueText label={transuser("uesrid")} value={user.user_id} />
             </Grid>
 
             <Grid item xs={6} sm={6} md={4}>

@@ -46,7 +46,9 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     project_id: data?.project_id || "",
     project_name: data?.project_name || "",
     created_on: data?.created_on ? data.created_on.split("T")[0] : "",
-    due_date: data?.due_date ? data.due_date.split("T")[0] : ""
+    due_date: data?.due_date ? data.due_date.split("T")[0] : "",
+    start_date: data?.start_date ? data.start_date.split("T")[0] : "",
+    user_estimated: data?.user_estimated || ""
   });
 
   const checkIfDateExists = (): boolean => {
@@ -72,6 +74,18 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   const handleSubmit = async () => {
     try {
+      const isUserEstimatedChanged = formData.user_estimated !== data.user_estimated;
+      const isStartDateEmpty = !formData.start_date;
+
+      if (isUserEstimatedChanged && isStartDateEmpty) {
+        setSnackbar({
+          open: true,
+          message: transtask("startdaterequired"),
+          severity: SNACKBAR_SEVERITY.ERROR
+        });
+        return;
+      }
+
       const updatedFields: Record<string, string | number> = {};
       const formattedDueDate = data.due_date ? data.due_date.split("T")[0] : "";
       if (formData.status !== data.status) {
@@ -91,6 +105,18 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       }
       if (formData.description !== data.description) {
         updatedFields.description = formData.description;
+      }
+      if (formData.start_date !== data.start_date) {
+        updatedFields.start_date = formData.start_date;
+        updatedFields.start_date = formData.start_date;
+        if (user?.name) updatedFields.loginuser_name = user.name;
+        if (user?.id) updatedFields.loginuser_id = user.id;
+      }
+      if (isUserEstimatedChanged) {
+        updatedFields.user_estimated = formData.user_estimated;
+        updatedFields.user_estimated = formData.user_estimated;
+        if (user?.name) updatedFields.loginuser_name = user.name;
+        if (user?.id) updatedFields.loginuser_id = user.id;
       }
       await updateTask(data.id, updatedFields);
       await mutate();
@@ -207,10 +233,11 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           <TimeProgressBar
             estimatedTime={data.estimated_time || "0h"}
             timeSpentTotal={data.time_spent_total || "0h"}
-            dueDate={data.due_date || ""}
+            dueDate={data.user_estimated || "0d0h"}
+            startDate={data.start_date || ""}
             timeEntries={data.time_spent || []}
-            canLogTime={!alreadyExists} // Pass the existing check as a prop
-            variation={data.variation ? String(data.variation) : "0d0h"} // Convert to string
+            canLogTime={!alreadyExists}
+            variation={data.variation ? String(data.variation) : "0d0h"}
             onClick={handleProgressClick}
           />
         )}

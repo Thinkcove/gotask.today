@@ -88,10 +88,10 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             p: { xs: 2, sm: 3, md: 4 },
             bgcolor: "#f9fafb",
             border: "1px solid #e0e0e0",
-            maxHeight: { xs: "auto", md: 820 }, 
-            width: "100%", 
-            boxSizing: "border-box", 
-            overflow: "hidden" 
+            maxHeight: { xs: "auto", md: 820 },
+            width: "100%",
+            boxSizing: "border-box",
+            overflow: "hidden"
           }}
         >
           {/* Header */}
@@ -111,7 +111,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                   fontWeight={500}
                   sx={{
                     textTransform: "capitalize",
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" } 
+                    fontSize: { xs: "1.25rem", sm: "1.5rem" }
                   }}
                 >
                   {task?.title}
@@ -173,16 +173,21 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detailcreated")}
-                  value={new Date(task.created_on).toLocaleDateString()}
+                  value={task.created_on ? new Date(task.created_on).toLocaleDateString() : "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detaildue")}
-                  value={new Date(task.due_date).toLocaleDateString()}
+                  value={task.due_date ? new Date(task.due_date).toLocaleDateString() : "-"}
                 />
               </Grid>
-
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("startdate")}
+                  value={task.start_date ? new Date(task.start_date).toLocaleDateString() : "-"}
+                />
+              </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("estimatedt")}
@@ -205,6 +210,12 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 <LabelValueText
                   label={transtask("variationt")}
                   value={formatTimeValue(task.variation || "-")}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("userestit")}
+                  value={formatTimeValue(task.user_estimated || "-")}
                 />
               </Grid>
             </Grid>

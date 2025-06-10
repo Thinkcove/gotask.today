@@ -20,22 +20,11 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
     throw new Error("Invalid user_id or project_id");
   }
 
-  const createdOn = new Date(taskData.created_on!);
-  const dueDate = new Date(taskData.due_date!);
-
-  const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
-  const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-
-  // Inclusive: count both start and end dates
-  const daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
-  const estimatedTime = daysDiff > 0 ? `${daysDiff}d0h` : "1d0h";
-
   // Assign user_name and project_name
   const newTask = new Task({
     ...taskData,
     user_name: user.name,
-    project_name: project.name,
-    estimated_time: estimatedTime
+    project_name: project.name
   });
   return await newTask.save();
 };
@@ -249,14 +238,6 @@ const addTimeSpentToTask = async (
   task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
   task.remaining_time = TimeUtil.calculateRemainingTime(task.estimated_time, task.time_spent_total);
   task.variation = TimeUtil.calculateVariation(task.estimated_time, task.time_spent_total);
-
-  if (task.user_estimated && delayHours > 0) {
-    const delayString = TimeUtil.formatHoursToTimeString(delayHours);
-    task.variation = delayString;
-  } else {
-    task.variation = "0d0h";
-  }
-
   await task.save();
   return task;
 };

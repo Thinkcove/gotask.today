@@ -28,13 +28,13 @@ export interface SelectOption {
 
 interface FormFieldProps {
   label: string;
-  type: "text" | "select" | "date" | "multiselect";
+  type: "text" | "select" | "date" | "multiselect" | "number";
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];
   value?: string | number | Date | string[];
   onChange?: (value: string | number | Date | string[]) => void;
-  onSend?: () => void; // Add onSend prop
+  onSend?: () => void;
   error?: string;
   disabled?: boolean;
   multiline?: boolean;
@@ -42,6 +42,8 @@ interface FormFieldProps {
   onFocus?: () => void;
   inputType?: string;
   sx?: SxProps<Theme>;
+  min?: number;
+  max?: number;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -53,13 +55,15 @@ const FormField: React.FC<FormFieldProps> = ({
   error,
   value,
   onChange,
-  onSend, // Add onSend to props
+  onSend,
   disabled = false,
   multiline = false,
   height,
   onFocus,
   inputType,
-  sx
+  sx,
+  min,
+  max
 }) => {
   const [passwordVisible, setPasswordVisible] = useState(true);
   const normalizedOptions: SelectOption[] = (options || []).map((opt) =>
@@ -137,57 +141,59 @@ const FormField: React.FC<FormFieldProps> = ({
               )
             }}
           />
-        ) : (
-          type === "text" && (
-            <TextField
-              variant="standard"
-              required={required}
-              placeholder={placeholder}
-              error={!!error}
-              fullWidth
-              multiline={multiline}
-              value={value}
-              disabled={disabled}
-              onFocus={onFocus}
-              type={inputType || "text"}
-              sx={{
-                "& .MuiInputBase-input::placeholder": {
-                  color: "#9C8585",
-                  opacity: 1
-                },
-                ...(multiline && { height: height || 100, overflowY: "auto" })
-              }}
-              onChange={(e) => {
-                let val = e.target.value;
-                if (inputType === "tel") {
-                  val = val.replace(/[^\d\s()+-]/g, "");
-                }
+        ) : type === "text" || type === "number" ? (
+          <TextField
+            variant="standard"
+            required={required}
+            placeholder={placeholder}
+            error={!!error}
+            fullWidth
+            multiline={multiline}
+            value={value === 0 || value ? value : ""}
+            disabled={disabled}
+            onFocus={onFocus}
+            type={type === "number" ? "number" : inputType || "text"}
+            inputProps={{ min, max }}
+            sx={{
+              "& .MuiInputBase-input::placeholder": {
+                color: "#9C8585",
+                opacity: 1
+              },
+              ...(multiline && { height: height || 100, overflowY: "auto" })
+            }}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (type === "number") {
+                onChange?.(val === "" ? "" : Number(val));
+              } else if (inputType === "tel") {
+                onChange?.(val.replace(/[^\d\s()+-]/g, ""));
+              } else {
                 onChange?.(val);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey && onSend) {
-                  e.preventDefault();
-                  onSend();
-                }
-              }}
-              InputProps={{
-                disableUnderline: true,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Edit sx={{ color: "#9C8585" }} />
-                  </InputAdornment>
-                ),
-                endAdornment: onSend && (
-                  <InputAdornment position="end">
-                    <IconButton onClick={onSend} disabled={disabled || !value}>
-                      <SendIcon sx={{ color: value && !disabled ? "#741B92" : "#9C8585" }} />
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
-          )
-        )}
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey && onSend) {
+                e.preventDefault();
+                onSend();
+              }
+            }}
+            InputProps={{
+              disableUnderline: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Edit sx={{ color: "#9C8585" }} />
+                </InputAdornment>
+              ),
+              endAdornment: onSend && (
+                <InputAdornment position="end">
+                  <IconButton onClick={onSend} disabled={disabled || !value}>
+                    <SendIcon sx={{ color: value && !disabled ? "#741B92" : "#9C8585" }} />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+        ) : null}
 
         {type === "select" && (
           <Autocomplete

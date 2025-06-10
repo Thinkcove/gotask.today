@@ -51,10 +51,12 @@ const TaskSchema = new Schema<ITask>(
     user_name: { type: String },
     project_id: { type: String, required: true },
     project_name: { type: String },
-    due_date: { type: Date, required: true },
+    start_date: { type: Date },
+    due_date: { type: Date },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
     // Time tracking fields
+    user_estimated: { type: String, default: null },
     estimated_time: { type: String, default: null },
     time_spent: { type: [TimeSpentEntrySchema], default: [] },
     time_spent_total: { type: String, default: "0d0h" },

@@ -142,7 +142,6 @@ const UserInput = ({
           error={errors?.joinDate}
           disabled={isReadOnly("joined_date")}
           placeholder={transuser("placeholderjoined_date")}
-          
         />
       </Grid>
 

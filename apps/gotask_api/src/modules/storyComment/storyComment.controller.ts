@@ -1,36 +1,53 @@
 // src/modules/storyComment/storyComment.controller.ts
 
-import { Request, ResponseToolkit } from "@hapi/hapi";
-import * as StoryCommentService from "./storyComment.service";
-import { AuthCredentials } from "../../constants/auth/auth"; // adjust path as needed
+import RequestHelper from "../../helpers/requestHelper";
+import BaseController from "../../common/baseController";
+import {
+  addCommentService,
+  getCommentsByStoryService
+} from "./storyComment.service";
+import { storyCommentMessages } from "../../constants/apiMessages/storyCommentMessages";
+import { AuthCredentials } from "../../constants/auth/auth";
 
-export const addCommentHandler = async (req: Request, h: ResponseToolkit) => {
-  try {
-    const { comment } = req.payload as { comment: string };
-    const { storyId } = req.params;
-    const { userId } = req.auth.credentials as unknown as AuthCredentials;
+class StoryCommentController extends BaseController {
+  async addComment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { comment } = requestHelper.getPayload() || {};
+      const { storyId } = requestHelper.getAllParams();
+      const { userId } = requestHelper.getRequest().auth.credentials as unknown as AuthCredentials;
 
-    const newComment = await StoryCommentService.addComment({
-      storyId,
-      userId,
-      comment,
-    });
+      if (!comment) {
+        return this.replyError(new Error(storyCommentMessages.CREATE.COMMENT_REQUIRED));
+      }
 
-    return h.response({ success: true, data: newComment }).code(201);
-  } catch (err: any) {
-    console.error("Error in addCommentHandler:", err);
-    return h.response({ success: false, message: err.message }).code(500);
+      const newComment = await addCommentService({
+        storyId,
+        userId,
+        comment
+      });
+
+      return this.sendResponse(handler, {
+        message: storyCommentMessages.CREATE.SUCCESS,
+        data: newComment
+      });
+    } catch (err: any) {
+      return this.replyError(err);
+    }
   }
-};
 
-export const getCommentsByStoryHandler = async (req: Request, h: ResponseToolkit) => {
-  try {
-    const { storyId } = req.params;
-    const comments = await StoryCommentService.getCommentsByStory(storyId);
+  async getCommentsByStory(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { storyId } = requestHelper.getAllParams();
+      const comments = await getCommentsByStoryService(storyId);
 
-    return h.response({ success: true, data: comments }).code(200);
-  } catch (err: any) {
-    console.error("Error in getCommentsByStoryHandler:", err);
-    return h.response({ success: false, message: err.message }).code(500);
+      return this.sendResponse(handler, {
+        message: storyCommentMessages.FETCH.SUCCESS,
+        data: comments
+      });
+    } catch (err: any) {
+      return this.replyError(err);
+    }
   }
-};
+}
+
+export default StoryCommentController;

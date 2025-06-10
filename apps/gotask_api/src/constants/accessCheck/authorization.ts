@@ -7,7 +7,9 @@ export const APPLICATIONS = {
   ORGANIZATION: "Organization Management",
   REPORT: "User Report",
   CHATBOT: "Chatbot Management",
-  UPLOAD: "Upload"
+  UPLOAD: "Upload",
+  PROJECT_STORY: "Project Story Management",
+  STORY_COMMENT: "Story Comment Management",
 } as const;
 
 export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];

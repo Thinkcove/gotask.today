@@ -1,51 +1,71 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
-import * as ProjectStoryService from "./projectStory.service";
-import { AuthCredentials } from "../../constants/auth/auth"; // 🔁 Use the correct path if it's different in your project
+import RequestHelper from "../../helpers/requestHelper";
+import BaseController from "../../common/baseController";
+import {
+  createStoryService,
+  getStoriesByProjectService,
+  getStoryByIdService
+} from "./projectStory.service";
+import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
+import { AuthCredentials } from "../../constants/auth/auth"; // ✅ Import AuthCredentials
 
-export const createStoryHandler = async (req: Request, h: ResponseToolkit) => {
-  try {
-    const { title, description } = req.payload as { title: string; description: string };
-    const { projectId } = req.params;
-    const { userId } = req.auth.credentials as unknown as AuthCredentials;
+class ProjectStoryController extends BaseController {
+  async createStory(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { title, description } = requestHelper.getPayload() || {};
+      const { projectId } = requestHelper.getAllParams();
+      const { userId } = requestHelper.getRequest().auth.credentials as unknown as AuthCredentials; // ✅ Type-safe
 
-    const story = await ProjectStoryService.createStory({
-      title,
-      description,
-      projectId,
-      createdBy: userId,
-    });
+      if (!title) {
+        return this.replyError(new Error(storyMessages.CREATE.TITLE_REQUIRED));
+      }
 
-    return h.response({ success: true, data: story }).code(201);
-  } catch (err: any) {
-    console.error("Error in createStoryHandler:", err);
-    return h.response({ success: false, message: err.message }).code(500);
-  }
-};
+      const story = await createStoryService({
+        title,
+        description,
+        projectId,
+        createdBy: userId
+      });
 
-export const getStoriesByProjectHandler = async (req: Request, h: ResponseToolkit) => {
-  try {
-    const { projectId } = req.params;
-    const stories = await ProjectStoryService.getStoriesByProject(projectId);
-
-    return h.response({ success: true, data: stories }).code(200);
-  } catch (err: any) {
-    console.error("Error in getStoriesByProjectHandler:", err);
-    return h.response({ success: false, message: err.message }).code(500);
-  }
-};
-
-export const getStoryByIdHandler = async (req: Request, h: ResponseToolkit) => {
-  try {
-    const { storyId } = req.params;
-    const story = await ProjectStoryService.getStoryById(storyId);
-
-    if (!story) {
-      return h.response({ success: false, message: "Story not found" }).code(404);
+      return this.sendResponse(handler, {
+        message: storyMessages.CREATE.SUCCESS,
+        data: story
+      });
+    } catch (err: any) {
+      return this.replyError(err);
     }
-
-    return h.response({ success: true, data: story }).code(200);
-  } catch (err: any) {
-    console.error("Error in getStoryByIdHandler:", err);
-    return h.response({ success: false, message: err.message }).code(500);
   }
-};
+
+  async getStoriesByProject(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { projectId } = requestHelper.getAllParams();
+      const stories = await getStoriesByProjectService(projectId);
+
+      return this.sendResponse(handler, {
+        message: storyMessages.FETCH.ALL_SUCCESS,
+        data: stories
+      });
+    } catch (err: any) {
+      return this.replyError(err);
+    }
+  }
+
+  async getStoryById(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { storyId } = requestHelper.getAllParams();
+      const story = await getStoryByIdService(storyId);
+
+      if (!story) {
+        return this.replyError(new Error(storyMessages.FETCH.NOT_FOUND));
+      }
+
+      return this.sendResponse(handler, {
+        message: storyMessages.FETCH.SINGLE_SUCCESS,
+        data: story
+      });
+    } catch (err: any) {
+      return this.replyError(err);
+    }
+  }
+}
+
+export default ProjectStoryController;

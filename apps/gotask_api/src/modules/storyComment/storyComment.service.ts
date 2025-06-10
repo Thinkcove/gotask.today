@@ -3,7 +3,7 @@
 import { StoryComment, IStoryComment } from "../../domain/model/storyComment/storyComment.model";
 import mongoose from "mongoose";
 
-export const addComment = async (data: {
+export const addCommentService = async (data: {
   storyId: string;
   userId: string;
   comment: string;
@@ -15,7 +15,7 @@ export const addComment = async (data: {
   });
 };
 
-export const getCommentsByStory = async (
+export const getCommentsByStoryService = async (
   storyId: string
 ): Promise<IStoryComment[]> => {
   return await StoryComment.find({ storyId }).sort({ createdAt: -1 });

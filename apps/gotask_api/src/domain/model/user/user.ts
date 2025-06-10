@@ -6,8 +6,8 @@ import { ALPHANUMERIC_REGEX } from "../../../constants/utils/regex";
 // Interface for the User document
 export interface IUser extends Document {
   id: string;
-  first_name: String;
-  last_name: String;
+  first_name: string;
+  last_name: string;
   emp_id?: string;
   name: string;
   password: string;
@@ -31,24 +31,22 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       sparse: true,
       required: false,
-      set: (v: string) => v === '' ? undefined : v, //  convert "" to undefined
+      set: (v: string) => (v === "" ? undefined : v), //  convert "" to undefined
       validate: {
         validator: function (v: string) {
           if (!v) return true; // allow undefined/null
           return ALPHANUMERIC_REGEX.test(v);
         },
-        message: (props) => `${props.value} is not valid! Only letters and numbers allowed.`,
+        message: (props) => `${props.value} is not valid! Only letters and numbers allowed.`
       }
-    }
-,    
-
+    },
     name: { type: String, required: true },
     password: { type: String, required: true },
     user_id: { type: String, required: true, unique: true },
     mobile_no: { type: String, required: true },
     joined_date: { type: Date, requied: true },
     status: { type: Boolean, default: true },
-    
+
     // Reference to Role
     roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true },
 

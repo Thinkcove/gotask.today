@@ -41,6 +41,5 @@ export const useUserPermission = () => {
     }
     return false;
   };
-console.log("isFieldRestricted", isFieldRestricted);
   return { canAccess, isFieldRestricted };
 };

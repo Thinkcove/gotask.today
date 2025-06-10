@@ -22,8 +22,8 @@ import {
   useAccessOptions,
   deleteAccessRole,
 } from "../services/accessService";
-import AccessPermissionsContainer from "./AccessPermissionsContainer";
-import AccessHeading from "./AccessHeading";
+import AccessPermissionsContainer from "../components/accessPermissionsContainer";
+import AccessHeading from "../components/accessHeading";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
 import CommonDialog from "../../../component/dialog/commonDialog";
 

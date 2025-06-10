@@ -19,12 +19,13 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { updateTask } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import {TASK_STATUS,TASK_SEVERITY} from "@/app/common/constants/task";
-import {SNACKBAR_SEVERITY} from "@/app/common/constants/snackbar";
-import {LOCALIZATION} from "@/app/common/constants/localization";
-import {APPLICATIONS,ACTIONS} from "@/app/common/utils/authCheck";
+import { TASK_STATUS, TASK_SEVERITY } from "@/app/common/constants/task";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import { IFormField, ITask, Project, User } from "../../interface/taskInterface";
 import { KeyedMutator } from "swr";
+import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields"; // ✅ Added
 
 interface EditTaskProps {
   data: ITask;
@@ -131,11 +132,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   const handleBack = () => router.back();
 
-  const readOnlyFields = [
-    "title", "description", "status", "severity",
-    "user_id", "user_name", "project_id", "project_name",
-    "created_on", "due_date"
-  ].filter((field) =>
+  // ✅ Dynamically build readOnlyFields using centralized TASK_FORM_FIELDS
+  const readOnlyFields = TASK_FORM_FIELDS.filter((field) =>
     isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, field)
   );
 
@@ -187,9 +185,19 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           </Box>
         </Box>
 
-        {data.history?.length > 0 && (
-          <Box sx={{ textDecoration: "underline", color: "#741B92", px: 2, cursor: "pointer" }}>
-            <Typography onClick={() => setOpenDrawer(true)}>{transtask("showhistory")}</Typography>
+        {data.history && data.history.length > 0 && (
+          <Box
+            sx={{
+              textDecoration: "underline",
+              display: "flex",
+              gap: 1,
+              color: "#741B92",
+              px: 2
+            }}
+          >
+            <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
+              {transtask("showhistory")}
+            </Typography>
             <History />
           </Box>
         )}

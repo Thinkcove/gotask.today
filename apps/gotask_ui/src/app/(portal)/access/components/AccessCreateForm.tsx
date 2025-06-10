@@ -5,8 +5,8 @@ import { TextField, Typography, Button, CircularProgress, Box } from "@mui/mater
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
-import AccessHeading from "./AccessHeading";
-import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
+import AccessHeading from "./accessHeading";
+import AccessPermissionsContainer from "../components/accessPermissionsContainer";
 import { useAccessOptions, createAccessRole } from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";
 import { useTranslations } from "next-intl";
@@ -27,16 +27,6 @@ const AccessCreateForm: React.FC = () => {
   }>({ open: false, message: "", severity: "info" });
   const router = useRouter();
 
-  const validModules = [
-    "User Management",
-    "Task Management",
-    "Project Management",
-    "Access Management",
-    "Organization Management",
-    "Role Management",
-    "User Report"
-  ];
-
   const { accessOptions, isLoading, error } = useAccessOptions();
 
   // Initialize selectedPermissions with all actions selected by default (only once)
@@ -48,11 +38,9 @@ const AccessCreateForm: React.FC = () => {
     setSelectedPermissions(allSelectedPermissions);
   }
 
-  if (accessOptions.length > 0 && !validModules.includes(currentModule)) {
-    const firstValidModule =
-      accessOptions.find((opt: { access: string }) => validModules.includes(opt.access))?.access ||
-      validModules[0];
-    setCurrentModule(firstValidModule);
+  // ✅ Dynamically validate or reset currentModule if it's not in accessOptions
+  if (accessOptions.length > 0 && !accessOptions.some((opt) => opt.access === currentModule)) {
+    setCurrentModule(accessOptions[0].access);
   }
 
   const handleCheckboxChange = (module: string, action: string, checked: boolean) => {

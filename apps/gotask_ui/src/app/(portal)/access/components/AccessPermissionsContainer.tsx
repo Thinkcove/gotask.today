@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Typography, Divider } from '@mui/material';
-import AccessTabs from '../components/AccessTabs';
-import OperationCheckboxes from '../components/OperationCheckboxes';
-import FieldCheckboxes from '../components/FieldCheckboxes';
+import AccessTabs from '../components/accessTabs';
+import OperationCheckboxes from '../components/operationCheckboxes';
+import FieldCheckboxes from '../components/fieldCheckboxes';
 
 interface AccessPermissionsProps {
   accessOptions: { access: string; actions: string[]; restrictedFields: Record<string, string[]> }[];

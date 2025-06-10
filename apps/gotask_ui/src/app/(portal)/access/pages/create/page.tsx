@@ -2,7 +2,7 @@
 
 import { Box } from "@mui/material";
 import React from "react";
-import AccessCreateForm from "../../components/AccessCreateForm";
+import AccessCreateForm from "../../components/accessCreateForm";
 import ModuleHeader from "../../../../component/header/moduleHeader";
 import { LOCALIZATION } from "../../../../common/constants/localization";
 import { useTranslations } from "next-intl";

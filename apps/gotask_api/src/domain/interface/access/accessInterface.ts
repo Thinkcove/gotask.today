@@ -2,10 +2,17 @@ import { Access, IAccess } from "../../model/access/access";
 
 // Create a new access record
 export const createAccessInDb = async (accessData: Partial<IAccess>): Promise<IAccess> => {
+  const application = accessData.application?.map((app) => ({
+    access: app.access,
+    actions: app.actions,
+    restrictedFields: app.restrictedFields || {} // just use plain object directly
+  }));
+
   const newAccess = new Access({
     name: accessData.name,
-    application: accessData.application
+    application
   });
+
   return await newAccess.save();
 };
 
@@ -14,25 +21,32 @@ export const getAllAccessRecordsFromDb = async (): Promise<IAccess[]> => {
   return await Access.find();
 };
 
+// Get access by id
 export const getAccessByIdFromDb = async (id: string): Promise<IAccess | null> => {
   return await Access.findOne({ id });
 };
 
-// Update access record by custom unique ID (e.g., UUID or string)
+// Update access record by id
 export const updateAccessInDb = async (
   id: string,
   updateData: Partial<IAccess>
 ): Promise<IAccess | null> => {
-  // No need to check for MongoDB ObjectId validity since you're using custom `id`
-  return await Access.findOneAndUpdate(
-    { id }, // Query by custom `id`
-    updateData,
-    { new: true, runValidators: true } // Return updated record and apply validations
-  );
+  if (updateData.application) {
+    updateData.application = updateData.application.map((app) => ({
+      access: app.access,
+      actions: app.actions,
+      restrictedFields: app.restrictedFields || {}
+    }));
+  }
+
+  return await Access.findOneAndUpdate({ id }, updateData, {
+    new: true,
+    runValidators: true
+  });
 };
 
-// Delete access record by custom unique ID (e.g., UUID or string)
+// Delete access by id
 export const deleteAccessByIdFromDb = async (id: string): Promise<boolean> => {
-  const deletedAccess = await Access.findOneAndDelete({ id }); // Query by custom `id`
+  const deletedAccess = await Access.findOneAndDelete({ id });
   return deletedAccess !== null;
 };

@@ -89,6 +89,18 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
 
     const { loginuser_id, loginuser_name } = updateData;
 
+    if (updateData.user_id && updateData.user_id !== existingTask.user_id) {
+      const user = await User.findOne({ id: updateData.user_id });
+      if (!user) throw new Error("Invalid user_id");
+      updateData.user_name = user.name;
+    }
+
+    if (updateData.project_id && updateData.project_id !== existingTask.project_id) {
+      const project = await Project.findOne({ id: updateData.project_id });
+      if (!project) throw new Error("Invalid project_id");
+      updateData.project_name = project.name;
+    }
+
     const historyEntry = generateHistoryEntry(existingTask, updateData);
 
     if (!existingTask.history) {
@@ -115,14 +127,10 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
     const userEstimated = updateData.user_estimated ?? existingTask.user_estimated;
 
     if (startedOnRaw && userEstimated) {
-      // Parse estimated string like "2d4h"
       const dayMatch = /(\d+)d/.exec(userEstimated);
       const hourMatch = /(\d+)h/.exec(userEstimated);
-
       const days = dayMatch ? parseInt(dayMatch[1]) : 0;
       const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
-
-      // Format to string
       existingTask.estimated_time = `${days}d${hours}h`;
     }
 

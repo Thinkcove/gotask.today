@@ -17,13 +17,17 @@ interface TaskInputProps {
   handleInputChange: (name: string, value: string | Project[] | User[]) => void;
   errors: { [key: string]: string };
   readOnlyFields?: string[];
+  isUserEstimatedLocked?: boolean;
+  isStartDateLocked?: boolean;
 }
 
 const TaskInput: React.FC<TaskInputProps> = ({
   formData,
   handleInputChange,
   errors,
-  readOnlyFields = []
+  readOnlyFields = [],
+  isUserEstimatedLocked,
+  isStartDateLocked
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers(); // getAllUsers is User[]
@@ -258,7 +262,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 value instanceof Date ? value.toISOString().split("T")[0] : String(value)
               )
             }
-            disabled={isReadOnly("start_date")}
+            disabled={isReadOnly("start_date") || isStartDateLocked}
           />
         </Grid>
 
@@ -267,6 +271,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             label={transtask("labeluserestimateddays")}
             type="number"
             min={0}
+            placeholder={transtask("placeholderdays")}
             value={
               formData.user_estimated?.includes("d") ? formData.user_estimated.split("d")[0] : ""
             }
@@ -275,7 +280,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
               const days = val === "" ? "" : val;
               handleInputChange("user_estimated", `${days || 0}d${hours || 0}h`);
             }}
-            disabled={isReadOnly("user_estimated")}
+            disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
         </Grid>
 
@@ -285,6 +290,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             type="number"
             min={1}
             max={8}
+            placeholder={transtask("placeholderhours")}
             value={
               formData.user_estimated?.includes("d")
                 ? formData.user_estimated.split("d")[1]?.replace("h", "").trim() || ""
@@ -295,7 +301,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
               const hours = val === "" ? "" : val;
               handleInputChange("user_estimated", `${days || 0}d${hours || 0}h`);
             }}
-            disabled={isReadOnly("user_estimated")}
+            disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
         </Grid>
 

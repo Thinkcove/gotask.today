@@ -62,7 +62,7 @@
     "fieldAccess": "field Access",
     "selectallFields": "Select All",
     "noFieldsAvailable": "No fields available",
-     "permissionsFor": "Permissions for {module}",
+    "permissionsFor": "Permissions for {module}",
     "emailuppercase": "Capital letters are not allowed in email. Use lowercase only."
   },
   "Dashboard": {
@@ -238,6 +238,8 @@
     "placeholderdescription": "Enter Description",
     "labelstartdate": "Start Date :",
     "placeholderstartdate": "Select Start Date",
+    "placeholderdays": "Enter Required Days",
+    "placeholderhours": "Enter Required Hours",
     "labeluserestimateddays": "Required Days",
     "labeluserestimatedhours": "Required Hours",
     "startdaterequired": "Please enter Start Date before estimating time",

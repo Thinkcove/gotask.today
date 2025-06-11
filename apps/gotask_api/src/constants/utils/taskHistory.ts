@@ -5,8 +5,31 @@ export const generateHistoryEntry = (
   existingTask: ITask,
   updatedData: Partial<ITask>
 ): string | null => {
-  const { due_date, start_date, status, severity, user_estimated } = updatedData;
+  const {
+    due_date,
+    start_date,
+    status,
+    severity,
+    user_estimated,
+    user_id,
+    user_name,
+    project_id,
+    project_name
+  } = updatedData;
+
   const historyEntries: string[] = [];
+
+  if (user_id && user_id !== existingTask.user_id) {
+    historyEntries.push(
+      `Assignee has been changed from "${existingTask.user_name}" to "${user_name}".`
+    );
+  }
+
+  if (project_id && project_id !== existingTask.project_id) {
+    historyEntries.push(
+      `Project has been changed from "${existingTask.project_name}" to "${project_name}".`
+    );
+  }
 
   if (
     due_date &&

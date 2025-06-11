@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import SearchBar from "../../../component/searchBar/searchBar";
-import AccessCards from "../components/accessCards";
 import { useAllAccessRoles } from "../services/accessService";
 import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import AccessCards from "./AccessCards";
 
 export interface AccessData {
   id: string;

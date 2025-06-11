@@ -71,68 +71,64 @@ class AccessController extends BaseController {
   }
 
   // Update Access
- async updateAccess(requestHelper: RequestHelper, handler: any, restrictedFields: string[] = []) {
-  try {
-    const id = requestHelper.getParam("id");
-    const payload = requestHelper.getPayload() as Partial<IAccess>;
+  async updateAccess(requestHelper: RequestHelper, handler: any, restrictedFields: string[] = []) {
+    try {
+      const id = requestHelper.getParam("id");
+      const payload = requestHelper.getPayload() as Partial<IAccess>;
 
-    const payloadAny = payload as any;
+      const payloadAny = payload as any;
 
-    // Remove restricted fields from the payload
-    restrictedFields.forEach((field) => {
-      if (field in payloadAny) {
-        delete payloadAny[field];
+      // Remove restricted fields from the payload
+      restrictedFields.forEach((field) => {
+        if (field in payloadAny) {
+          delete payloadAny[field];
+        }
+      });
+
+      // Fetch current access for merging
+      const currentAccessResult = await getAccessByIdFromDb(id);
+      if (!currentAccessResult) {
+        return this.replyError(new Error(AccessMessages.UPDATE.NOT_FOUND));
       }
-    });
 
-    // Fetch current access for merging
-    const currentAccessResult = await getAccessByIdFromDb(id);
-    if (!currentAccessResult) {
-      return this.replyError(new Error(AccessMessages.UPDATE.NOT_FOUND));
+      // Merge application[] partially if provided
+      if (payload.application && Array.isArray(payload.application)) {
+        const existingPermissions = currentAccessResult.application || [];
+        const addedPermissions = payload.application;
+
+        const mergedPermissions = existingPermissions.map((existingPermission: any) => {
+          const incomingPermission = addedPermissions.find(
+            (p: any) => p.access === existingPermission.access
+          );
+
+          if (!incomingPermission) return existingPermission;
+
+          return {
+            ...existingPermission,
+            ...incomingPermission,
+            actions: incomingPermission.actions, //  explicitly override actions
+            restrictedFields: incomingPermission.restrictedFields // optional: force override
+          };
+        });
+
+        const newPermissions = addedPermissions.filter(
+          (incoming: any) =>
+            !existingPermissions.find((existing: any) => existing.access === incoming.access)
+        );
+
+        payload.application = [...mergedPermissions, ...newPermissions];
+      }
+
+      const result = await updateAccess(id, payload);
+      if (!result.success) {
+        return this.replyError(new Error(result.message || AccessMessages.UPDATE.FAILED));
+      }
+
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
     }
-
-
-   // Merge application[] partially if provided
-if (payload.application && Array.isArray(payload.application)) {
-  const existingPermissions = currentAccessResult.application || [];
-  const incomingPermissions = payload.application;
-
-  const mergedPermissions = existingPermissions.map((existingPermission: any) => {
-    const incomingPermission = incomingPermissions.find(
-      (p: any) => p.access === existingPermission.access
-    );
-
-    if (!incomingPermission) return existingPermission;
-
-    return {
-      ...existingPermission,
-      ...incomingPermission,
-      actions: incomingPermission.actions, // ⛳ explicitly override actions
-      restrictedFields: incomingPermission.restrictedFields // optional: force override
-    };
-  });
-
-  const newPermissions = incomingPermissions.filter(
-    (incoming: any) =>
-      !existingPermissions.find((existing: any) => existing.access === incoming.access)
-  );
-
-  payload.application = [...mergedPermissions, ...newPermissions];
-}
-
-
-
-    const result = await updateAccess(id, payload);
-    if (!result.success) {
-      return this.replyError(new Error(result.message || AccessMessages.UPDATE.FAILED));
-    }
-
-    return this.sendResponse(handler, result.data);
-  } catch (error) {
-    return this.replyError(error);
   }
-}
-
 
   // Delete Access
   async deleteAccess(requestHelper: RequestHelper, handler: any) {

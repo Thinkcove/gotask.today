@@ -2,7 +2,6 @@ import env from "@/app/common/env";
 import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import { IUserField } from "../interfaces/userInterface";
 import { withAuth } from "@/app/common/utils/authToken";
-import { API_RESPONSE } from "@/app/common/constants/api";
 
 export const createUser = async (
   formData: IUserField
@@ -62,9 +61,7 @@ export const createUser = async (
       message
     };
   }
-  
 };
-
 
 export const updateUser = async (userId: string, updatedFields: IUserField) => {
   return withAuth((token) => {

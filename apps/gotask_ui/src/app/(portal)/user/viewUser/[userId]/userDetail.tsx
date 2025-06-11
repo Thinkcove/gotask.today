@@ -120,7 +120,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {/* <Grid container spacing={3} columns={{ xs: 3, sm: 2, md: 3 }}> */}
           <Grid container spacing={2} mb={3}>
-            <Grid item xs={6} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={transuser("uesrid")} value={user.user_id} />
             </Grid>
 

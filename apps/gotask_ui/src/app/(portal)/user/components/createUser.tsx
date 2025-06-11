@@ -11,7 +11,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
 import { ALPHANUMERIC_REGEX } from "../../../common/constants/regex";
-import { API_RESPONSE } from "@/app/common/constants/api"; 
 
 interface CreateUserProps {
   open: boolean;

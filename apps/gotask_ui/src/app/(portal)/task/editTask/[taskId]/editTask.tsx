@@ -76,8 +76,13 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     try {
       const isUserEstimatedChanged = formData.user_estimated !== data.user_estimated;
       const isStartDateEmpty = !formData.start_date;
+      const isUserEstimateProvided =
+        formData.user_estimated !== null &&
+        formData.user_estimated !== undefined &&
+        formData.user_estimated !== "";
 
-      if (isUserEstimatedChanged && isStartDateEmpty) {
+      // Only show error if user_estimated is provided and changed, and start_date is empty
+      if (isUserEstimateProvided && isUserEstimatedChanged && isStartDateEmpty) {
         setSnackbar({
           open: true,
           message: transtask("startdaterequired"),
@@ -108,12 +113,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       }
       if (formData.start_date !== data.start_date) {
         updatedFields.start_date = formData.start_date;
-        updatedFields.start_date = formData.start_date;
         if (user?.name) updatedFields.loginuser_name = user.name;
         if (user?.id) updatedFields.loginuser_id = user.id;
       }
-      if (isUserEstimatedChanged) {
-        updatedFields.user_estimated = formData.user_estimated;
+      if (isUserEstimatedChanged && isUserEstimateProvided) {
         updatedFields.user_estimated = formData.user_estimated;
         if (user?.name) updatedFields.loginuser_name = user.name;
         if (user?.id) updatedFields.loginuser_id = user.id;
@@ -125,6 +128,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         message: transtask("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+
       setTimeout(() => router.back(), 2000);
     } catch (error) {
       console.error("Error while updating task:", error);

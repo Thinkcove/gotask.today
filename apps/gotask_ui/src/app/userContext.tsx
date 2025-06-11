@@ -22,6 +22,11 @@ interface Role {
 
 interface User {
   id: string;
+  first_name: string;
+  last_name: string;
+  emp_id: string;
+  mobile_no: number;
+  joined_date: Date;
   name: string;
   roleId: { id: string; name: string };
   user_id: string;

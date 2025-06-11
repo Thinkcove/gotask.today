@@ -11,7 +11,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
 import { ALPHANUMERIC_REGEX } from "../../../common/constants/regex";
-import { API_RESPONSE } from "@/app/common/constants/user"; 
+import { API_RESPONSE } from "@/app/common/constants/api"; 
 
 interface CreateUserProps {
   open: boolean;
@@ -29,7 +29,6 @@ const initialFormState: IUserField = {
   roleId: "",
   user_id: "",
   mobile_no: "",
-  // joined_date: new Date(),
   joined_date:"",
   password: ""
 };
@@ -70,58 +69,6 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   const handleChange = (field: keyof IUserField, value: string | string[] | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-  // const handleSubmit = async () => {
-  //   if (!validateForm()) return;
-  //   try {
-  //     await createUser(formData);
-  //     await mutate();
-  //     setSnackbar({
-  //       open: true,
-  //       message: transuser("successmessage"),
-  //       severity: SNACKBAR_SEVERITY.SUCCESS
-  //     });
-  //     onClose();
-  //     handleClose();
-  //   } catch {
-  //     setSnackbar({
-  //       open: true,
-  //       message: transuser("errormessage"),
-  //       severity: SNACKBAR_SEVERITY.ERROR
-  //     });
-  //   }
-  // };
-
-
-  // const handleSubmit = async () => {
-  //   if (!validateForm()) return;
-
-  //   try {
-  //     const success = await createUser(formData); // <- This now returns boolean
-
-  //     if (success === API_RESPONSE.SUCCESS) {
-  //       await mutate();
-  //       setSnackbar({
-  //         open: true,
-  //         message: transuser("successmessage"),
-  //         severity: SNACKBAR_SEVERITY.SUCCESS
-  //       });
-  //       handleClose(); //  Only closes on success
-  //     } else {
-  //       setSnackbar({
-  //         open: true,
-  //         message: transuser("errormessage"),
-  //         severity: SNACKBAR_SEVERITY.ERROR
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Create user error:", error);
-  //     setSnackbar({
-  //       open: true,
-  //       message: transuser("errormessage"),
-  //       severity: SNACKBAR_SEVERITY.ERROR
-  //     });
-  //   }
-  // };
   
   const handleSubmit = async () => {
     if (!validateForm()) return;

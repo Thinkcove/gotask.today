@@ -2,39 +2,7 @@ import env from "@/app/common/env";
 import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import { IUserField } from "../interfaces/userInterface";
 import { withAuth } from "@/app/common/utils/authToken";
-
-//createUser
-// export const createUser = async (formData: IUserField) => {
-//   return withAuth((token) => {
-//     const url = `${env.API_BASE_URL}/createUser`;
-//     return postData(url, formData as unknown as Record<string, unknown>, token);
-//   });
-// };
-import { API_RESPONSE } from "@/app/common/constants/user";
-
-// export const createUser = async (formData: IUserField): Promise<boolean> => {
-//   try {
-//     const result = await withAuth(async (token) => {
-//       const url = `${env.API_BASE_URL}/createUser`;
-//       const response = await postData(url, formData as unknown as Record<string, unknown>, token);
-
-//       // Check your API's success structure here
-//       if (response && response.success) {
-//         return API_RESPONSE.SUCCESS;
-//       } else {
-//         return API_RESPONSE.FAILURE;
-//       }
-//     });
-
-//     //  Check if result is explicitly true/false (not an error object)
-//     return result === API_RESPONSE.SUCCESS;
-//   } catch (err) {
-//     console.error("Create user failed:", err);
-//     return API_RESPONSE.FAILURE;
-//   }
-// };
-
-//update a user
+import { API_RESPONSE } from "@/app/common/constants/api";
 
 export const createUser = async (
   formData: IUserField
@@ -49,15 +17,23 @@ export const createUser = async (
           success: !!response?.success,
           message: response?.message || ""
         };
-      } catch (err: any) {
+      } catch (err: unknown) {
+        let message = "Request failed";
+
+        if (err instanceof Error) {
+          message = err.message;
+        } else if (typeof err === "object" && err !== null && "message" in err) {
+          message = String((err as { message?: string }).message);
+        }
+
         return {
           success: false,
-          message: err?.message || "Request failed"
+          message
         };
       }
     });
 
-    // ✅ Type narrowing here
+    // Type narrowing here
     if ("success" in result) {
       return {
         success: result.success,
@@ -69,13 +45,24 @@ export const createUser = async (
         message: result.error || "Unexpected error"
       };
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
+    let message = "Unknown error occurred";
+
+    // Check if 'err' is a proper Error object (like a thrown Error)
+    if (err instanceof Error) {
+      message = err.message;
+    }
+
+    // Log the error to the console for debugging
     console.error("Create user failed:", err);
+
+    // Return a structured error response
     return {
       success: false,
-      message: err?.message || "Unknown error occurred"
+      message
     };
   }
+  
 };
 
 

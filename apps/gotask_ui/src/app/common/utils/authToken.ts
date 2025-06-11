@@ -1,7 +1,5 @@
-// Helper: choose storage based on rememberMe flag
 const getStorage = (rememberMe: boolean) => (rememberMe ? localStorage : sessionStorage);
 
-// Check if token is expired (JWT expiry)
 export const isTokenExpired = (token: string): boolean => {
   try {
     const payloadBase64 = token.split(".")[1];
@@ -13,12 +11,10 @@ export const isTokenExpired = (token: string): boolean => {
   }
 };
 
-// Store token, rememberMe flag, loginTimestamp, and user in appropriate storage
 export const storeToken = (token: string, rememberMe: boolean, user: any) => {
   const now = Date.now();
   const storage = getStorage(rememberMe);
-  
-  // Clear both storages first (to avoid stale data)
+
   localStorage.clear();
   sessionStorage.clear();
 
@@ -28,12 +24,12 @@ export const storeToken = (token: string, rememberMe: boolean, user: any) => {
   storage.setItem("user", JSON.stringify(user));
 };
 
-// Fetch token from appropriate storage (check localStorage first)
+// Fetch token from appropriate storage
 export const fetchToken = (): string | null => {
   return localStorage.getItem("token") || sessionStorage.getItem("token");
 };
 
-// Fetch user from appropriate storage (check localStorage first)
+// Fetch user from appropriate storage
 export const fetchUser = (): any | null => {
   const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
   if (!userStr) return null;
@@ -44,32 +40,9 @@ export const fetchUser = (): any | null => {
   }
 };
 
-// Remove token, user, rememberMe, loginTimestamp from both storages
 export const removeToken = () => {
   localStorage.clear();
   sessionStorage.clear();
-};
-
-// Check if session is valid based on rememberMe and loginTimestamp in correct storage
-const isSessionValid = (): boolean => {
-  // Check rememberMe from either storage
-  const rememberMe = (localStorage.getItem("rememberMe") || sessionStorage.getItem("rememberMe")) === "true";
-
-  // Get loginTimestamp from correct storage
-  const loginTimestampStr = rememberMe ? localStorage.getItem("loginTimestamp") : sessionStorage.getItem("loginTimestamp");
-  if (!loginTimestampStr) return false;
-
-  const loginTimestamp = parseInt(loginTimestampStr, 10);
-  const now = Date.now();
-
-  if (rememberMe) {
-    // Remember Me: session persists until token expiry
-    return true;
-  } else {
-    // Non-remember me: expire after 30 minutes (example)
-    const sessionDurationMs = 30 * 60 * 1000; // 30 mins
-    return now - loginTimestamp < sessionDurationMs;
-  }
 };
 
 // Main auth wrapper (no refresh token logic)
@@ -82,4 +55,3 @@ export const withAuth = async <T>(
   }
   return await callback(token);
 };
-

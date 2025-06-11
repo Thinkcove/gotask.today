@@ -5,16 +5,16 @@ const handleApiError = (error: any) => {
   switch (true) {
     case statusCode === 401:
       console.error("Unauthorized: Token expired or invalid");
-      window.location.href = "/login"; 
+      window.location.href = "/login";
       break;
 
     case !!statusCode:
       console.error(`API Error: ${error.message}`);
-      throw error; // 
+      throw error; //
 
     default:
       console.error(`Unexpected error: ${error?.message || "Unknown error"}`);
-      throw error; // 
+      throw error; //
   }
 };
 
@@ -60,11 +60,7 @@ export const postData = async (
 };
 
 // PUT request
-export const putData = async (
-  url: string,
-  payload: Record<string, unknown>,
-  token?: string
-) => {
+export const putData = async (url: string, payload: Record<string, unknown>, token?: string) => {
   try {
     const response = await fetch(url, {
       method: "PUT",

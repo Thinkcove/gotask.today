@@ -9,7 +9,7 @@ import { LOCALIZATION } from "../common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex";
-import { storeToken, isTokenExpired, fetchToken } from "../common/utils/authToken"; 
+import { storeToken, isTokenExpired, fetchToken } from "../common/utils/authToken";
 
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
@@ -22,8 +22,8 @@ const OtpLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  // Auto redirect if token exists and valid
   useEffect(() => {
     const token = fetchToken();
     if (token && !isTokenExpired(token)) {
@@ -31,10 +31,10 @@ const OtpLogin = () => {
     }
   }, [router]);
 
-  // Send OTP request
   const sendOtp = async () => {
-    if (loading) return;
-    if (!email) {
+    if (loading || hasSubmitted) return;
+
+    if (!email.trim()) {
       setError(translogin("emailrequired"));
       return;
     }
@@ -46,6 +46,7 @@ const OtpLogin = () => {
 
     setError("");
     setLoading(true);
+    setHasSubmitted(true);
 
     try {
       const res = await fetch(`${env.API_BASE_URL}/otp/send`, {
@@ -65,53 +66,58 @@ const OtpLogin = () => {
       setError(translogin("genericerror"));
     } finally {
       setLoading(false);
+      setHasSubmitted(false);
     }
   };
 
-  // Verify OTP and store tokens
   const verifyOtp = async () => {
-  if (loading) return;
+    if (loading || hasSubmitted) return;
 
-  if (!otp) {
-    setError(translogin("otprequired"));
-    return;
-  }
-
-  setError("");
-  setLoading(true);
-
-  try {
-    const res = await fetch(`${env.API_BASE_URL}/otp/verify`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: email, otp, rememberMe })  // ✅ <-- Include it here
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.success && data.data) {
-      const { user, token } = data.data;
-
-      storeToken(token, rememberMe, user); // ✅ Respects rememberMe for storage logic
-      setUser({ ...user, token });
-      router.replace("/dashboard");
-    } else {
-      setError(data.error || data.message || translogin("otperror"));
+    if (!otp.trim()) {
+      setError(translogin("otprequired"));
+      return;
     }
-  } catch {
-    setError(translogin("genericerror"));
-  } finally {
-    setLoading(false);
+
+    setError("");
+    setLoading(true);
+    setHasSubmitted(true);
+
+    try {
+      const res = await fetch(`${env.API_BASE_URL}/otp/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: email, otp, rememberMe })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success && data.data) {
+        const { user, token } = data.data;
+        storeToken(token, rememberMe, user);
+        setUser({ ...user, token });
+        router.replace("/dashboard");
+      } else {
+        setError(data.error || data.message || translogin("otperror"));
+      }
+    } catch {
+      setError(translogin("genericerror"));
+    } finally {
+      setLoading(false);
+      setHasSubmitted(false);
+    }
+  };
+
+ const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+  if (loading || hasSubmitted) return;
+
+  if (otpSent) {
+    verifyOtp();
+  } else {
+    sendOtp();
   }
 };
 
-
-  // Form submit handler switches between sending OTP and verifying OTP
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loading) return;
-    otpSent ? verifyOtp() : sendOtp();
-  };
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -156,7 +162,7 @@ const OtpLogin = () => {
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
             style={{ marginRight: 8 }}
-            disabled={otp.trim() === "" || loading}
+            disabled={loading}
           />
           <label htmlFor="rememberMe">{translogin("rememberme")}</label>
         </Box>
@@ -172,7 +178,9 @@ const OtpLogin = () => {
         fullWidth
         variant="contained"
         type="submit"
-        disabled={loading || (otpSent ? otp.trim() === "" : email.trim() === "")}
+        disabled={
+          loading || hasSubmitted || (otpSent ? otp.trim() === "" : email.trim() === "")
+        }
       >
         {loading ? (
           <CircularProgress size={24} color="inherit" />

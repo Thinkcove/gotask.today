@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import SearchBar from "../../../component/searchBar/searchBar";
-import AccessCards from "../components/AccessCards";
+import AccessCards from "../components/accessCards";
 import { useAllAccessRoles } from "../services/accessService";
 import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";

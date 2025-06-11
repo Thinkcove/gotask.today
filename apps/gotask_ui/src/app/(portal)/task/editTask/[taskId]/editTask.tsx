@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  IconButton
-} from "@mui/material";
+import { Box, Typography, Button, IconButton } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { ArrowBack, History } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
@@ -60,10 +55,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const handleInputChange = (
-    name: string,
-    value: string | Project[] | User[]
-  ) => {
+  const handleInputChange = (name: string, value: string | Project[] | User[]) => {
     if (!isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, name)) {
       if (typeof value === "string") {
         setFormData((prev) => ({
@@ -94,10 +86,14 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         );
       };
 
+      if (fieldCheck("title", data.title)) updatedFields.title = formData.title;
+      if (fieldCheck("user_id", data.user_id)) updatedFields.user_id = formData.user_id;
+      if (fieldCheck("project_id", data.project_id)) updatedFields.project_id = formData.project_id;
       if (fieldCheck("status", data.status)) updatedFields.status = formData.status;
       if (fieldCheck("severity", data.severity)) updatedFields.severity = formData.severity;
       if (fieldCheck("due_date", formattedDueDate)) updatedFields.due_date = formData.due_date;
-      if (fieldCheck("description", data.description)) updatedFields.description = formData.description;
+      if (fieldCheck("description", data.description))
+        updatedFields.description = formData.description;
 
       if (Object.keys(updatedFields).length > 0) {
         if (user?.name) updatedFields.loginuser_name = user.name;

@@ -12,15 +12,15 @@
       "actions": ["READ", "CREATE", "EDIT", "VIEW", "DELETE"],
       "restrictedFields": {
         "EDIT": ["title", "description", "status", "severity", "user_id", "project_id", "due_date"]
-      } 
+      }
     },
     {
       "access": "Project Management",
       "actions": ["READ", "CREATE", "EDIT", "VIEW", "ASSIGN", "UNASSIGN", "UPDATE"],
       "restrictedFields": {
-        "VIEW":["organization_id"],
-        "EDIT": [ "name", "description", "status", "organization_id"],
-        "READ":["description"]
+        "VIEW": ["organization_id"],
+        "EDIT": ["name", "description", "status", "organization_id"],
+        "READ": ["description"]
       }
     },
     {
@@ -28,14 +28,13 @@
       "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE", "UPDATE"],
       "restrictedFields": {
         "EDIT": ["name"]
-
       }
     },
     {
       "access": "Organization Management",
-      "actions": ["READ", "CREATE", "VIEW", "EDIT","DELETE"],
+      "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE"],
       "restrictedFields": {
-        "READ":["users","projects"],
+        "READ": ["users", "projects"],
         "EDIT": ["name", "address", "mail_id", "mobile_no"]
       }
     },
@@ -49,9 +48,9 @@
       "actions": ["READ"],
       "restrictedFields": {}
     },
-     {
+    {
       "access": "Chatbot Management",
-      "actions": ["READ", "CREATE", "VIEW", "EDIT","DELETE"],
+      "actions": ["READ", "CREATE"],
       "restrictedFields": {}
     },
     {
@@ -61,4 +60,3 @@
     }
   ]
 }
-

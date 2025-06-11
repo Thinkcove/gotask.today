@@ -8,9 +8,9 @@ import {
   InputAdornment,
   Checkbox,
   Autocomplete,
-  IconButton
+  IconButton,
+  TextFieldProps
 } from "@mui/material";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
   CalendarMonth,
@@ -20,6 +20,7 @@ import {
   Send as SendIcon
 } from "@mui/icons-material";
 import { SxProps, Theme } from "@mui/material/styles";
+import DatePicker from "react-datepicker";
 
 export interface SelectOption {
   name: string;
@@ -41,30 +42,33 @@ interface FormFieldProps {
   height?: number;
   onFocus?: () => void;
   inputType?: string;
+  inputProps?: TextFieldProps["InputProps"];
   sx?: SxProps<Theme>;
   min?: number;
   max?: number;
 }
 
-const FormField: React.FC<FormFieldProps> = ({
-  label,
-  type,
-  options,
-  required,
-  placeholder,
-  error,
-  value,
-  onChange,
-  onSend,
-  disabled = false,
-  multiline = false,
-  height,
-  onFocus,
-  inputType,
-  sx,
-  min,
-  max
-}) => {
+const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function FormField(
+  {
+    label,
+    type,
+    options,
+    required,
+    placeholder,
+    error,
+    value,
+    onChange,
+    onSend,
+    disabled = false,
+    multiline = false,
+    height,
+    onFocus,
+    inputType,
+    inputProps,
+    sx
+  },
+  ref
+) {
   const [passwordVisible, setPasswordVisible] = useState(true);
   const normalizedOptions: SelectOption[] = (options || []).map((opt) =>
     typeof opt === "string" ? { id: opt, name: opt } : opt
@@ -90,6 +94,7 @@ const FormField: React.FC<FormFieldProps> = ({
 
         {type === "text" && inputType === "password" ? (
           <TextField
+            inputRef={ref}
             variant="standard"
             required={required}
             placeholder={placeholder}
@@ -138,62 +143,63 @@ const FormField: React.FC<FormFieldProps> = ({
                     </IconButton>
                   )}
                 </InputAdornment>
-              )
-            }}
-          />
-        ) : type === "text" || type === "number" ? (
-          <TextField
-            variant="standard"
-            required={required}
-            placeholder={placeholder}
-            error={!!error}
-            fullWidth
-            multiline={multiline}
-            value={value === 0 || value ? value : ""}
-            disabled={disabled}
-            onFocus={onFocus}
-            type={type === "number" ? "number" : inputType || "text"}
-            inputProps={{ min, max }}
-            sx={{
-              "& .MuiInputBase-input::placeholder": {
-                color: "#9C8585",
-                opacity: 1
-              },
-              ...(multiline && { height: height || 100, overflowY: "auto" })
-            }}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (type === "number") {
-                onChange?.(val === "" ? "" : Number(val));
-              } else if (inputType === "tel") {
-                onChange?.(val.replace(/[^\d\s()+-]/g, ""));
-              } else {
-                onChange?.(val);
-              }
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && onSend) {
-                e.preventDefault();
-                onSend();
-              }
-            }}
-            InputProps={{
-              disableUnderline: true,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Edit sx={{ color: "#9C8585" }} />
-                </InputAdornment>
               ),
-              endAdornment: onSend && (
-                <InputAdornment position="end">
-                  <IconButton onClick={onSend} disabled={disabled || !value}>
-                    <SendIcon sx={{ color: value && !disabled ? "#741B92" : "#9C8585" }} />
-                  </IconButton>
-                </InputAdornment>
-              )
+              ...inputProps
             }}
           />
-        ) : null}
+        ) : (
+          type === "text" && (
+            <TextField
+              inputRef={ref}
+              variant="standard"
+              required={required}
+              placeholder={placeholder}
+              error={!!error}
+              fullWidth
+              multiline={multiline}
+              value={value ?? ''} 
+              disabled={disabled}
+              onFocus={onFocus}
+              type={inputType || "text"}
+              sx={{
+                "& .MuiInputBase-input::placeholder": {
+                  color: "#9C8585",
+                  opacity: 1
+                },
+                ...(multiline && { height: height || 100, overflowY: "auto" })
+              }}
+              onChange={(e) => {
+                let val = e.target.value;
+                if (inputType === "tel") {
+                  val = val.replace(/[^\d\s()+-]/g, "");
+                }
+                onChange?.(val);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && onSend) {
+                  e.preventDefault();
+                  onSend();
+                }
+              }}
+              InputProps={{
+                disableUnderline: true,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Edit sx={{ color: "#9C8585" }} />
+                  </InputAdornment>
+                ),
+                endAdornment: onSend && (
+                  <InputAdornment position="end">
+                    <IconButton onClick={onSend} disabled={disabled || !value}>
+                      <SendIcon sx={{ color: value && !disabled ? "#741B92" : "#9C8585" }} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                ...inputProps
+              }}
+            />
+          )
+        )}
 
         {type === "select" && (
           <Autocomplete
@@ -214,7 +220,8 @@ const FormField: React.FC<FormFieldProps> = ({
                 fullWidth
                 InputProps={{
                   ...params.InputProps,
-                  disableUnderline: true
+                  disableUnderline: true,
+                  ...inputProps
                 }}
                 sx={{
                   "& input": {
@@ -246,7 +253,8 @@ const FormField: React.FC<FormFieldProps> = ({
                     <InputAdornment position="start">
                       <CalendarMonth sx={{ color: "#9C8585" }} />
                     </InputAdornment>
-                  )
+                  ),
+                  ...inputProps
                 }}
               />
             }
@@ -286,7 +294,8 @@ const FormField: React.FC<FormFieldProps> = ({
                 fullWidth
                 InputProps={{
                   ...params.InputProps,
-                  disableUnderline: true
+                  disableUnderline: true,
+                  ...inputProps
                 }}
                 sx={{
                   "& input": {
@@ -301,6 +310,6 @@ const FormField: React.FC<FormFieldProps> = ({
       {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>
   );
-};
+});
 
 export default FormField;

@@ -13,6 +13,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import { Project } from "../../task/interface/taskInterface";
+import Chat from "../../chatbot/components/chat";
 
 const ProjectList = () => {
   const { canAccess } = useUserPermission();
@@ -49,15 +50,17 @@ const ProjectList = () => {
         />
       </Box>
       <ProjectCards projects={filteredProjects} />
-
-      {/* Add Project Button */}
-      {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (
-        <ActionButton
-          label={transproject("createnewproject")}
-          icon={<AddIcon sx={{ color: "white" }} />}
-          onClick={() => setIsModalOpen(true)}
-        />
-      )}
+      {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
+      <Box>
+        {/* Add Project Button */}
+        {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (
+          <ActionButton
+            label={transproject("createnewproject")}
+            icon={<AddIcon sx={{ color: "white" }} />}
+            onClick={() => setIsModalOpen(true)}
+          />
+        )}
+      </Box>
     </Box>
   );
 };

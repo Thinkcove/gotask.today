@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { formatTimeValue } from "@/app/common/utils/common";
+import { formatDate, formatTimeValue } from "@/app/common/utils/common";
 import { KeyedMutator } from "swr";
 import TaskComments from "../../editTask/taskComments";
 import { createComment } from "../../service/taskAction";
@@ -173,7 +173,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detailcreated")}
-                  value={task.created_on ? new Date(task.created_on).toLocaleDateString() : "-"}
+                  value={formatDate(task.created_on)}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
@@ -187,6 +187,9 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                   label={transtask("startdate")}
                   value={task.start_date ? new Date(task.start_date).toLocaleDateString() : "-"}
                 />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText label={transtask("detaildue")} value={formatDate(task.due_date)} />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText

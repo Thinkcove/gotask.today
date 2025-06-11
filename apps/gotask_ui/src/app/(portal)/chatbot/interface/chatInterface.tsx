@@ -14,9 +14,3 @@ export interface QueryResponse {
   isUser: boolean;
   isSystem?: boolean;
 }
-
-export interface UploadResponse {
-  inserted: number;
-  skipped: number;
-  errors: string[];
-}

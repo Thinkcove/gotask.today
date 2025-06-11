@@ -43,18 +43,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
   return (
     <Box
       sx={{
-        backgroundColor: "#fff",
+        backgroundColor: `${getStatusColor(task.status)}12`,
         borderRadius: 2,
-        border: "1px solid #e0e0e0",
-        boxShadow: `inset 0 0 20px ${getStatusColor(task.status)}44`,
+        border: `1px solid ${getStatusColor(task.status)}40`,
         px: 1,
         py: 2,
         mb: 2,
-        cursor: canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? "pointer" : "default",
-        transition: "box-shadow 0.2s ease",
-        "&:hover": {
-          boxShadow: "0 4px 16px rgba(0,0,0,0.1)"
-        }
+        cursor: canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? "pointer" : "default"
       }}
       onClick={canAccess(APPLICATIONS.TASK, ACTIONS.VIEW) ? () => onTaskClick(task.id) : undefined}
     >

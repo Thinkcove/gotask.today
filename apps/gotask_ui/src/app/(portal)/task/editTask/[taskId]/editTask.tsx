@@ -250,7 +250,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           sx={{
             px: 2,
             pb: 2,
-            maxHeight: "calc(100vh - 200px)",
+            maxHeight: "calc(100vh - 250px)",
             overflowY: "auto"
           }}
         >

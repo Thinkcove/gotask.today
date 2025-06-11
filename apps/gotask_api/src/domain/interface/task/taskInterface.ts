@@ -206,7 +206,6 @@ const addTimeSpentToTask = async (
   if (!task.time_spent) task.time_spent = [];
 
   const entries = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
-  let delayHours = 0;
 
   for (const entry of entries) {
     if (entry.start_time && entry.end_time) {
@@ -221,18 +220,6 @@ const addTimeSpentToTask = async (
 
     if (!TimeUtil.isValidTimeFormat(entry.time_logged)) {
       throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
-    }
-
-    if (task.user_estimated) {
-      const entryDate = new Date(entry.date);
-      const user_estimated = new Date(task.user_estimated);
-
-      if (entryDate > user_estimated) {
-        const diffMs = entryDate.getTime() - user_estimated.getTime();
-        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        const delayHoursForThisEntry = diffDays * 8; // 1 day = 8 hours
-        delayHours += delayHoursForThisEntry;
-      }
     }
 
     task.time_spent.unshift({

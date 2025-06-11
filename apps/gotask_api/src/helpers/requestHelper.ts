@@ -34,6 +34,9 @@ class RequestHelper {
   getQuery() {
     return this.request.query;
   }
+  getUser(): any {
+    return this.request.auth && this.request.auth.artifacts && this.request.auth.artifacts.user;
+  }
 }
 
 export default RequestHelper;

@@ -1,20 +1,31 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import jwt from "jsonwebtoken";
-import { getRoleByIdService } from "../role/roleService";
 import AssetMessages from "../../constants/apiMessages/userMessage";
-import { comparePassword } from "../../constants/utils/common";
 import assetServices from "./assetsServices";
 
 class AssetController extends BaseController {
   async createAsset(requestHelper: RequestHelper, handler: any) {
     try {
       const payload = requestHelper.getPayload();
-
+      const user = requestHelper.getUser();
       if (!payload) {
         throw new Error(AssetMessages.CREATE.MISSING_FIELDS);
       }
-      const newUser = await assetServices.createAsset(payload);
+      const newUser = await assetServices.createAsset(payload, user);
+      return this.sendResponse(handler, newUser);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async createAssetType(requestHelper: RequestHelper, handler: any) {
+    try {
+      const payload = requestHelper.getPayload();
+      const user = requestHelper.getUser();
+      if (!payload) {
+        throw new Error(AssetMessages.CREATE.MISSING_FIELDS);
+      }
+      const newUser = await assetServices.createAssetType(payload, user);
       return this.sendResponse(handler, newUser);
     } catch (error) {
       return this.replyError(error);
@@ -24,8 +35,9 @@ class AssetController extends BaseController {
   async getAssetById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const user = await assetServices.getAssetById(id);
-      return this.sendResponse(handler, user);
+      const user = requestHelper.getUser();
+      const asset = await assetServices.getAssetById(id, user);
+      return this.sendResponse(handler, asset);
     } catch (error) {
       return this.replyError(error);
     }
@@ -34,6 +46,15 @@ class AssetController extends BaseController {
   async getAllAssets(requestHelper: RequestHelper, handler: any) {
     try {
       const users = await assetServices.getAllAssets();
+      return this.sendResponse(handler, users);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async getAllAssetsTypes(requestHelper: RequestHelper, handler: any) {
+    try {
+      const users = await assetServices.getAllAssetsTypes();
       return this.sendResponse(handler, users);
     } catch (error) {
       return this.replyError(error);

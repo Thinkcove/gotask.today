@@ -1,6 +1,8 @@
 export const API_PATHS = {
   //taskRoutes
   CREATE_TASK: "/createTask",
+  CREATE_ASSET_TYPE: "/createTaskType",
+  GET_ALL_ASSET_TYPES: "/getAllType",
   DELETE_TASK: "/deleteTask",
   GET_TASKS: "/getAllTasks",
   GET_TASK_BY_ID: "/getTaskById/{id}",

@@ -12,6 +12,7 @@ import * as QueryRoutes from "../modules/query/queryRoutes";
 import * as AttendanceRoutes from "../modules/attendance/attendanceRoutes";
 import * as QueryTaskRoutes from "../modules/queryTask/queryTaskRoutes";
 import * as AssetRoutes from "../modules/assets/assetsRoutes";
+import * as AssetTagRoutes from "../modules/assetTag/assetTagRoutes";
 
 const routes: ServerRoute[] = [
   ...ProjectRoutes.default,
@@ -26,6 +27,7 @@ const routes: ServerRoute[] = [
   ...AttendanceRoutes.default,
   ...QueryTaskRoutes.default,
   ...UserPreferenceRoutes.default,
-  ...AssetRoutes.default
+  ...AssetRoutes.default,
+  ...AssetTagRoutes.default
 ];
 export default routes;

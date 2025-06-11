@@ -1,20 +1,17 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import jwt from "jsonwebtoken";
-import { getRoleByIdService } from "../role/roleService";
 import ResourceMessages from "../../constants/apiMessages/userMessage";
-import { comparePassword } from "../../constants/utils/common";
-import resourceServices from "./resourceService";
+import resourceServices from "./assetTagService";
 
 class ResourceController extends BaseController {
-  async createResource(requestHelper: RequestHelper, handler: any) {
+  async createAssetTag(requestHelper: RequestHelper, handler: any) {
     try {
       const payload = requestHelper.getPayload();
-
+      const user = requestHelper.getUser();
       if (!payload) {
         throw new Error(ResourceMessages.CREATE.MISSING_FIELDS);
       }
-      const newUser = await resourceServices.createAsset(payload);
+      const newUser = await resourceServices.createAssetTag(payload, user);
       return this.sendResponse(handler, newUser);
     } catch (error) {
       return this.replyError(error);

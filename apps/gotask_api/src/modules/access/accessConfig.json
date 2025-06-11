@@ -35,6 +35,10 @@
     {
       "access": "Upload",
       "actions": ["READ", "CREATE"]
+    },
+    {
+      "access": "Asset and Resources",
+      "actions": ["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
     }
   ]
 }

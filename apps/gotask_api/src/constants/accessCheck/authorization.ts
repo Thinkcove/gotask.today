@@ -8,8 +8,7 @@ export const APPLICATIONS = {
   REPORT: "User Report",
   CHATBOT: "Chatbot Management",
   UPLOAD: "Upload",
-  ASSET: "Asset and Resources",
-  RESOURCE: "Resource"
+  ASSET: "Asset and Resources"
 } as const;
 
 export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];

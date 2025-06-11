@@ -16,7 +16,7 @@ const appName = APPLICATIONS.ASSET;
 //Asset Type
 
 AssetRoutes.push({
-  path: API_PATHS.CREATE_ASSET_TYPE,
+  path: "/createAssetType",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
     assetController.createAssetType(new RequestHelper(request), handler)
@@ -31,7 +31,7 @@ AssetRoutes.push({
 });
 
 AssetRoutes.push({
-  path: API_PATHS.GET_ALL_ASSET_TYPES,
+  path: "/getAllType",
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     assetController.getAllAssetsTypes(new RequestHelper(request), handler)
@@ -47,7 +47,7 @@ AssetRoutes.push({
 
 // Route: Create Asset
 AssetRoutes.push({
-  path: API_PATHS.CREATE_ASSET,
+  path: "/createasset",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
     assetController.createAsset(new RequestHelper(request), handler)
@@ -63,7 +63,7 @@ AssetRoutes.push({
 
 // Route: Get User by ID
 AssetRoutes.push({
-  path: API_PATHS.GET_ASSET_BY_ID,
+  path: "/asset/{id}",
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     assetController.getAssetById(new RequestHelper(request), handler)
@@ -78,7 +78,7 @@ AssetRoutes.push({
 });
 
 AssetRoutes.push({
-  path: API_PATHS.GET_ASSETS,
+  path: "/assets/getAll",
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     assetController.getAllAssets(new RequestHelper(request), handler)
@@ -93,7 +93,7 @@ AssetRoutes.push({
 });
 
 AssetRoutes.push({
-  path: API_PATHS.DELETE_ASSET,
+  path: "/asset/delete/{id}",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
     assetController.deleteAsset(new RequestHelper(request), handler)

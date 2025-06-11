@@ -50,7 +50,7 @@
     },
     {
       "access": "Chatbot Management",
-      "actions": ["READ", "CREATE"],
+      "actions": ["READ", "CREATE", "EDIT", "DELETE"],
       "restrictedFields": {}
     },
     {

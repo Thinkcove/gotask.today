@@ -1,11 +1,15 @@
-import React from 'react';
-import { Box, Typography, Divider } from '@mui/material';
-import AccessTabs from '../components/AccessTabs';
-import OperationCheckboxes from '../components/OperationCheckboxes';
-import FieldCheckboxes from '../components/FieldCheckboxes';
+import React from "react";
+import { Box, Typography, Divider } from "@mui/material";
+import AccessTabs from "../components/AccessTabs";
+import OperationCheckboxes from "../components/OperationCheckboxes";
+import FieldCheckboxes from "../components/FieldCheckboxes";
 
 interface AccessPermissionsProps {
-  accessOptions: { access: string; actions: string[]; restrictedFields: Record<string, string[]> }[];
+  accessOptions: {
+    access: string;
+    actions: string[];
+    restrictedFields: Record<string, string[]>;
+  }[];
   currentModule: string;
   selectedPermissions: { [module: string]: string[] };
   selectedFields: { [module: string]: { [action: string]: string[] } };
@@ -23,7 +27,7 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
   onTabChange,
   onCheckboxChange,
   onFieldChange,
-  readOnly = false,
+  readOnly = false
 }) => {
   const currentModuleData = accessOptions.find((m) => m.access === currentModule);
   const currentOperations = currentModuleData?.actions || [];
@@ -37,14 +41,14 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
         mt: 3,
         px: { xs: 1, sm: 3 },
         py: 3,
-        bgcolor: 'background.paper',
+        bgcolor: "background.paper",
         borderRadius: 3,
         boxShadow: 3,
-        minHeight: 500, // ⬆️ Increased height
-        maxHeight: '75vh', // Responsive max height
-        overflowY: 'auto', // Scroll support for smaller screens
-        userSelect: 'none',
-        transition: 'all 0.3s ease-in-out',
+        minHeight: 500, //  Increased height
+        maxHeight: "75vh", // Responsive max height
+        overflowY: "auto",
+        userSelect: "none",
+        transition: "all 0.3s ease-in-out"
       }}
     >
       <AccessTabs
@@ -61,22 +65,21 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
           pl: 1,
           mb: 2,
           fontWeight: 700,
-          color: 'text.primary',
-          borderLeft: '4px solid #1976d2',
-          paddingLeft: '12px',
+          color: "text.primary",
+          borderLeft: "4px solid #1976d2",
+          paddingLeft: "12px"
         }}
-      >
-      </Typography>
+      ></Typography>
 
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: 'flex-start',
-          alignItems: 'flex-start',
-          flexWrap: 'wrap',
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+          flexWrap: "wrap",
           gap: 3,
-          pb: 2,
+          pb: 2
         }}
       >
         <OperationCheckboxes

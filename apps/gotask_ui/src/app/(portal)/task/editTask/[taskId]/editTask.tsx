@@ -20,7 +20,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import { IFormField, ITask, Project, User } from "../../interface/taskInterface";
 import { KeyedMutator } from "swr";
-import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields"; // ✅ Added
+import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields";
 
 interface EditTaskProps {
   data: ITask;
@@ -128,7 +128,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   const handleBack = () => router.back();
 
-  // ✅ Dynamically build readOnlyFields using centralized TASK_FORM_FIELDS
+  // Dynamically build readOnlyFields using centralized TASK_FORM_FIELDS
   const readOnlyFields = TASK_FORM_FIELDS.filter((field) =>
     isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, field)
   );

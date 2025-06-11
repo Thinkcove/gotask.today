@@ -71,7 +71,13 @@ const FieldCheckboxes: React.FC<Props> = ({
           variant="subtitle1"
           fontWeight={700}
           gutterBottom
-          sx={{ fontSize: { xs: '1rem', sm: '1.1rem' }, color: 'success.main', userSelect: 'none' }}
+         sx={{
+            fontWeight: 700,
+            fontSize: { xs: '1rem', sm: '1.1rem' },
+            mb: 1,
+            color: 'primary.main',
+            userSelect: 'none',
+          }}
         >
           {action}
         </Typography>
@@ -79,7 +85,7 @@ const FieldCheckboxes: React.FC<Props> = ({
         <Paper
           elevation={0}
           sx={{
-            backgroundColor: '#e8f5e9',
+            backgroundColor: '#f5f5f5',
             borderRadius: 1,
             px: 1,
             py: 0.5,
@@ -124,11 +130,11 @@ const FieldCheckboxes: React.FC<Props> = ({
               borderRadius: '8px',
             },
             '&::-webkit-scrollbar-thumb': {
-              background: '#a5d6a7',
+              background: '#c1c1c1',
               borderRadius: '8px',
             },
             '&::-webkit-scrollbar-thumb:hover': {
-              background: '#81c784',
+              background: '#9e9e9e',
             },
           }}
         >

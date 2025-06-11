@@ -91,22 +91,36 @@ class AccessController extends BaseController {
       return this.replyError(new Error(AccessMessages.UPDATE.NOT_FOUND));
     }
 
-    // Merge application[] partially if provided
-    if (payload.application && Array.isArray(payload.application)) {
-      const existingApps = currentAccessResult.application || [];
-      const incomingApps = payload.application;
 
-      const mergedApps = existingApps.map((existingApp: any) => {
-        const updatedApp = incomingApps.find((a: any) => a.access === existingApp.access);
-        return updatedApp ? { ...existingApp, ...updatedApp } : existingApp;
-      });
+   // Merge application[] partially if provided
+if (payload.application && Array.isArray(payload.application)) {
+  const existingPermissions = currentAccessResult.application || [];
+  const incomingPermissions = payload.application;
 
-      const newApps = incomingApps.filter(
-        (newApp: any) => !existingApps.find((oldApp: any) => oldApp.access === newApp.access)
-      );
+  const mergedPermissions = existingPermissions.map((existingPermission: any) => {
+    const incomingPermission = incomingPermissions.find(
+      (p: any) => p.access === existingPermission.access
+    );
 
-      payload.application = [...mergedApps, ...newApps];
-    }
+    if (!incomingPermission) return existingPermission;
+
+    return {
+      ...existingPermission,
+      ...incomingPermission,
+      actions: incomingPermission.actions, // ⛳ explicitly override actions
+      restrictedFields: incomingPermission.restrictedFields // optional: force override
+    };
+  });
+
+  const newPermissions = incomingPermissions.filter(
+    (incoming: any) =>
+      !existingPermissions.find((existing: any) => existing.access === incoming.access)
+  );
+
+  payload.application = [...mergedPermissions, ...newPermissions];
+}
+
+
 
     const result = await updateAccess(id, payload);
     if (!result.success) {

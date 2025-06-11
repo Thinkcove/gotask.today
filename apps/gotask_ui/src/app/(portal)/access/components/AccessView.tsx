@@ -4,7 +4,6 @@ import {
   Box,
   Typography,
   CircularProgress,
-  Stack,
   useMediaQuery,
   useTheme,
   TextField,
@@ -21,10 +20,10 @@ import {
   useAccessOptions,
   deleteAccessRole,
 } from "../services/accessService";
-import AccessPermissionsContainer from "../components/accessPermissionsContainer";
-import AccessHeading from "../components/accessHeading";
+import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
 import CommonDialog from "../../../component/dialog/commonDialog";
+import Heading from "../../../component/header/title";
 
 const AccessView: React.FC = () => {
   const t = useTranslations("Access");
@@ -47,7 +46,6 @@ const AccessView: React.FC = () => {
 
   const [currentTab, setCurrentTab] = useState<string>("");
 
-  // ✅ Set currentTab after data is loaded
   if (!isRoleLoading && !isOptionsLoading && !currentTab) {
     if (accessRole?.application?.length > 0) {
       setCurrentTab(accessRole.application[0].access);
@@ -92,7 +90,7 @@ const AccessView: React.FC = () => {
 
   const selectedPermissions =
     accessRole?.application?.reduce(
-      (acc: Record<string, string[]>, app: { access: string | number; actions: string[]; }) => {
+      (acc: Record<string, string[]>, app: { access: string | number; actions: string[] }) => {
         acc[app.access] = app.actions;
         return acc;
       },
@@ -101,15 +99,13 @@ const AccessView: React.FC = () => {
 
   const selectedFields =
     accessRole?.application?.reduce(
-      (acc: Record<string, Record<string, string[]>>, app: { access: string | number; restrictedFields: Record<string, string[]>;
-}) => {
+      (acc: Record<string, Record<string, string[]>>, app: { access: string | number; restrictedFields: Record<string, string[]> }) => {
         acc[app.access] = app.restrictedFields || {};
         return acc;
       },
       {}
     ) || {};
 
-  // Loading state
   if (isRoleLoading || isOptionsLoading) {
     return (
       <Box
@@ -126,7 +122,6 @@ const AccessView: React.FC = () => {
     );
   }
 
-  // Error state
   if (roleError || optionsError) {
     return (
       <Box
@@ -179,16 +174,20 @@ const AccessView: React.FC = () => {
         m: isMobile ? 1 : 3,
       }}
     >
-      <Box sx={{ flex: 1, overflowY: "auto" }}>
+      <Box sx={{ flex: 1 }}>
         <Box
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          mb={2}
-          flexDirection={isMobile ? "column" : "row"}
-          gap={isMobile ? 2 : 0}
+          mb={3}
+          flexDirection={isMobile ? "row" : "row"}
+          flexWrap={isMobile ? "wrap" : "nowrap"}
         >
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Box
+            display="flex"
+            alignItems="center"
+            sx={{ flex: isMobile ? "1 1 50%" : "unset" }}
+          >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
               <Tooltip title={t("cancel")}>
                 <IconButton onClick={() => router.back()} color="primary">
@@ -196,9 +195,16 @@ const AccessView: React.FC = () => {
                 </IconButton>
               </Tooltip>
             )}
-            <AccessHeading title={accessRole.name} />
-          </Stack>
-          <Stack direction="row" spacing={1} alignItems="center">
+            <Heading title={accessRole.name} />
+          </Box>
+
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="center"
+            gap={1}
+            sx={{ flex: isMobile ? "1 1 50%" : "unset" }}
+          >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
               <Tooltip title={t("editaccess")}>
                 <IconButton
@@ -222,7 +228,7 @@ const AccessView: React.FC = () => {
                 </IconButton>
               </Tooltip>
             )}
-          </Stack>
+          </Box>
         </Box>
 
         {/* Role Name Field */}
@@ -257,16 +263,24 @@ const AccessView: React.FC = () => {
             </Typography>
           </Box>
         ) : (
-          <AccessPermissionsContainer
-            accessOptions={accessOptions}
-            currentModule={currentTab}
-            selectedPermissions={selectedPermissions}
-            selectedFields={selectedFields}
-            onTabChange={setCurrentTab}
-            onCheckboxChange={() => {}}
-            onFieldChange={() => {}}
-            readOnly
-          />
+          <Box
+            sx={{
+              maxHeight: "calc(100vh - 350px)",
+              overflowY: "auto",
+              pr: 1,
+            }}
+          >
+            <AccessPermissionsContainer
+              accessOptions={accessOptions}
+              currentModule={currentTab}
+              selectedPermissions={selectedPermissions}
+              selectedFields={selectedFields}
+              onTabChange={setCurrentTab}
+              onCheckboxChange={() => {}}
+              onFieldChange={() => {}}
+              readOnly
+            />
+          </Box>
         )}
       </Box>
 

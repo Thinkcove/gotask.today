@@ -33,7 +33,7 @@
     "access": "Access",
     "createaccessnew": "Create New Access",
     "viewdetail": "Access Detail View",
-    "action": "Action",
+    "action": "ACTION",
     "selectarea": "Select Area",
     "selectaction": "Select Action",
     "placeholderarea": "Choose area",
@@ -60,7 +60,7 @@
     "noOperationsAvailable": "No operations available",
     "field": "field",
     "fieldAccess": "field Access",
-    "selectallFields": "Select All Fields",
+    "selectallFields": "Select All",
     "noFieldsAvailable": "No fields available",
      "permissionsFor": "Permissions for {module}",
     "emailuppercase": "Capital letters are not allowed in email. Use lowercase only."

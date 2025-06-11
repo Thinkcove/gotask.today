@@ -5,12 +5,12 @@ import { TextField, Typography, Button, CircularProgress, Box } from "@mui/mater
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
-import AccessHeading from "./accessHeading";
-import AccessPermissionsContainer from "../components/accessPermissionsContainer";
+import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import { useAccessOptions, createAccessRole } from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";
 import { useTranslations } from "next-intl";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
+import Heading from "../../../component/header/title";
 
 const AccessCreateForm: React.FC = () => {
   const t = useTranslations();
@@ -172,7 +172,7 @@ const AccessCreateForm: React.FC = () => {
       }}
     >
       <Box sx={{ flex: 1 }}>
-        <AccessHeading title={t("Access.createaccessnew")} />
+        <Heading title={t("Access.createaccessnew")} />
         <Box sx={{ maxWidth: 400, width: "100%", mt: 1 }}>
           <Typography variant="body2" sx={{ color: "#333", fontWeight: 500 }}>
             {t("Access.accessName")}

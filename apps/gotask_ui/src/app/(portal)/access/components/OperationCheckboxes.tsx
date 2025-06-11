@@ -76,20 +76,14 @@ const OperationCheckboxes: React.FC<Props> = ({
             userSelect: 'none',
           }}
         >
-          {t('action')}: {module}
+          {t('action')}
         </Typography>
 
-        <FormGroup
-          sx={{
-            flexDirection: 'column',
-            flex: '1 1 auto',
-            overflow: 'hidden',
-          }}
-        >
+        <FormGroup sx={{ flexDirection: 'column', flex: '1 1 auto' }}>
           <Paper
             elevation={0}
             sx={{
-              backgroundColor: '#e0f7fa',
+              backgroundColor: '#f5f5f5',
               borderRadius: 1,
               px: 1,
               py: 0.5,
@@ -134,11 +128,11 @@ const OperationCheckboxes: React.FC<Props> = ({
                 borderRadius: '8px',
               },
               '&::-webkit-scrollbar-thumb': {
-                background: '#81d4fa',
+                background: '#c1c1c1',
                 borderRadius: '8px',
               },
               '&::-webkit-scrollbar-thumb:hover': {
-                background: '#4fc3f7',
+                background: '#9e9e9e',
               },
             }}
           >

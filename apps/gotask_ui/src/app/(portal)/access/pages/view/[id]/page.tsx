@@ -1,7 +1,7 @@
 "use client";
 import { Box } from "@mui/material";
 import React from "react";
-import AccessView from "../../../components/accessView";
+import AccessView from "../../../components/AccessView";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "../../../../../common/constants/localization";
 import ModuleHeader from "@/app/component/header/moduleHeader";

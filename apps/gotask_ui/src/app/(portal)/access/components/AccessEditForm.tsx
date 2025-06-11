@@ -21,10 +21,10 @@ import {
   updateAccessRole,
 } from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";
-import AccessPermissionsContainer from "../components/accessPermissionsContainer";
-import AccessHeading from "../components/accessHeading";
+import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import { useTranslations } from "next-intl";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
+import Heading from "../../../component/header/title";
 
 export default function AccessEditForm() {
   const t = useTranslations("Access");
@@ -264,7 +264,7 @@ export default function AccessEditForm() {
                 </IconButton>
               </Tooltip>
             )}
-            <AccessHeading title={t("editaccess")} />
+            <Heading title={t("editaccess")} />
           </Stack>
         </Box>
 

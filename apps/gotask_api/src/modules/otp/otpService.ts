@@ -1,59 +1,50 @@
 import { User, IUser } from "../../domain/model/user/user";
-import { Otp } from "../../domain/model/otp/Otp";
 import { sendEmail } from "../../constants/utils/emailService";
-import { generateOTPWithExpiry } from "../../constants/utils/otpGenerator";
+import { generateOTPWithExpiry } from "../../constants/otp/otpGenerator";
 import { getRoleByIdService } from "../role/roleService";
-import { getOtpEmailTemplate } from "../../constants/utils/otpEmailTemplate";
+import { getOtpEmailTemplate } from "../../constants/otp/otpEmailTemplate";
 import OtpMessages from "../../constants/apiMessages/OtpMessages";
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { generateOtpToken } from "../../constants/otp/otpToken";
 
-import { isInCooldown, updateOtpAttempts } from "./otp.helper";
-import { generateOtpToken } from "./otp.token";
-import { MAX_ATTEMPTS, RESEND_COOLDOWN_MINUTES } from "./otp.constants";
+import {
+  isInCooldown,
+  updateOtpAttempts,
+  saveOrUpdateOtp,
+  findOtpByUser,
+} from "../../domain/interface/otp/otpLogic"; 
 
-// ✅ SEND OTP
+//SEND OTP
 export const sendOtpService = async (user_id: string) => {
   const user = (await User.findOne({ user_id })) as IUser;
   if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
 
-  const query = { user: user._id };
-  const existingOtp = await Otp.findOne(query);
-
+  const existingOtp = await findOtpByUser(user);
   if (isInCooldown(existingOtp?.resendCooldownExpiresAt)) {
     return { success: false, message: OtpMessages.SEND.RESEND_TOO_SOON };
   }
 
   const { otp, otpExpiry } = generateOTPWithExpiry(5);
-  const resendCooldown = new Date(Date.now() + RESEND_COOLDOWN_MINUTES * 60 * 1000);
+  const now = new Date();
 
-  await Otp.findOneAndUpdate(
-    query,
-    {
-      otp,
-      otpExpiry,
-      isUsed: false,
-      attemptsLeft: MAX_ATTEMPTS,
-      resendCooldownExpiresAt: resendCooldown
-    },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
+  await saveOrUpdateOtp(user, otp, otpExpiry, now);
 
   const emailContent = getOtpEmailTemplate(user.name, otp);
   await sendEmail({
     to: user.user_id,
     subject: emailContent.subject,
-    text: emailContent.text
+    text: emailContent.text,
   });
 
   return { success: true, message: OtpMessages.SEND.SUCCESS };
 };
 
-// ✅ VERIFY OTP
+// VERIFY OTP
 export const verifyOtpService = async (user_id: string, enteredOtp: string, rememberMe: boolean) => {
   const user = (await User.findOne({ user_id }).populate("roleId")) as IUser;
   if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
 
-  const otpDoc = await Otp.findOne({ user: user._id });
+  const otpDoc = await findOtpByUser(user);
   if (!otpDoc) return { success: false, message: OtpMessages.VERIFY.NOT_FOUND };
   if (otpDoc.isUsed) return { success: false, message: OtpMessages.VERIFY.ALREADY_USED };
   if (otpDoc.otpExpiry < new Date()) return { success: false, message: OtpMessages.VERIFY.EXPIRED };
@@ -83,6 +74,6 @@ export const verifyOtpService = async (user_id: string, enteredOtp: string, reme
   return {
     success: true,
     message: OtpMessages.VERIFY.SUCCESS,
-    data: { token: accessToken, user: userObject }
+    data: { token: accessToken, user: userObject },
   };
 };

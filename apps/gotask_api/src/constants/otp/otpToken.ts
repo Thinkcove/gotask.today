@@ -6,7 +6,7 @@ export const generateOtpToken = (
   role: any,
   rememberMe: boolean
 ): string => {
-  const tokenExpiry = rememberMe ? "30d" : "1d"; // Adjust as needed
+  const tokenExpiry = rememberMe ? "30s" : "30s"; // Adjust as needed
   return jwt.sign(
     {
       id: user.id,

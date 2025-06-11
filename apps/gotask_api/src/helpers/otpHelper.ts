@@ -1,5 +1,5 @@
-import { Otp } from "../../domain/model/otp/Otp";
-import { MAX_ATTEMPTS, RESEND_COOLDOWN_MINUTES } from "./otp.constants";
+import { Otp } from "../domain/model/otp/Otp";
+import { MAX_ATTEMPTS, RESEND_COOLDOWN_MINUTES } from "../constants/otp/otpConstants";
 
 // Check if resend is allowed
 export const isInCooldown = (resendCooldownExpiresAt?: Date): boolean => {

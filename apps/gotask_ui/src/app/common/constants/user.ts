@@ -7,7 +7,4 @@ export const statusOptions = [
   { id: "false", name: "In Active" }
 ];
 
-export const API_RESPONSE = {
-  SUCCESS: true,
-  FAILURE: false
-};
+

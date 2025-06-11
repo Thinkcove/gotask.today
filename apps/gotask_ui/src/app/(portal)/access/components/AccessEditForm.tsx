@@ -182,7 +182,7 @@ export default function AccessEditForm() {
 
     try {
       setIsSubmitting(true);
-      const res = await updateAccessRole(String(id), payload);
+     const res = await updateAccessRole(String(id), payload as Omit<AccessRole, "id">);
       if (res.success) {
         showSnackbar(t("updatesuccess"), "success");
         setTimeout(() => {

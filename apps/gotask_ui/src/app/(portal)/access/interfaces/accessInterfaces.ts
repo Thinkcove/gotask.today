@@ -31,7 +31,7 @@ export interface AccessRoleResponse {
 export interface AccessData {
   id: string;
   name: string;
-  accesses: AccessOption[];  // note: "accesses" for UI dropdown use
+  accesses?: AccessOption[];  // note: "accesses" for UI dropdown use
   createdAt?: string;
   updatedAt?: string;
 }

@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Checkbox,
   FormControlLabel,
-  FormGroup,
   Typography,
   Card,
   CardContent,

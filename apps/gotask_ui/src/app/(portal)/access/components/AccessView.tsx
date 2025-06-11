@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import {
   Box,
@@ -102,7 +101,8 @@ const AccessView: React.FC = () => {
 
   const selectedFields =
     accessRole?.application?.reduce(
-      (acc: Record<string, Record<string, string[]>>, app: { access: string | number; restrictedFields: {}; }) => {
+      (acc: Record<string, Record<string, string[]>>, app: { access: string | number; restrictedFields: Record<string, string[]>;
+}) => {
         acc[app.access] = app.restrictedFields || {};
         return acc;
       },

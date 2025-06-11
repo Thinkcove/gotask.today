@@ -54,19 +54,19 @@ const AccessCreateForm: React.FC = () => {
     });
 
     if (!checked) {
-      setSelectedFields((prev) => {
-        const updatedFields = { ...prev };
-        if (updatedFields[module]) {
-          const { [action.toUpperCase()]: removed, ...remainingFields } = updatedFields[module];
-          updatedFields[module] = remainingFields;
+  setSelectedFields((prev) => {
+    const updatedFields = { ...prev };
+    if (updatedFields[module]) {
+      delete updatedFields[module][action.toUpperCase()];
 
-          if (Object.keys(remainingFields).length === 0) {
-            delete updatedFields[module];
-          }
-        }
-        return { ...updatedFields };
-      });
+      if (Object.keys(updatedFields[module]).length === 0) {
+        delete updatedFields[module];
+      }
     }
+    return { ...updatedFields };
+  });
+}
+
   };
 
   const handleFieldChange = (module: string, action: string, field: string, checked: boolean) => {

@@ -10,7 +10,7 @@ export const API_PATHS = {
   GET_TASK_COUNT_BY_STATUS: "/tasks/status-count",
   CREATE_COMMENT: "/task/createComment",
   UPDATE_COMMENT: "/task/updateComment/{id}",
-  DELETE_COMMENT: "/task/deleteComment/{id}",
+  DELETE_COMMENT: '/task/comment/{commentId}', 
 
   //projectRoutes
   CREATE_PROJECT: "/createProject",
@@ -22,6 +22,7 @@ export const API_PATHS = {
   GET_PROJECT_BY_ID: "/getProjectById/{id}",
   UPDATE_PROJECT: "/updateProject/{id}",
   GET_USERS_BY_PROJECT_ID: "/getUsersByProjectId/{project_id}",
+  GET_PROJECTS_FILTERED: "/projects/filter",
 
   //userRoutes
   CREATE_USER: "/createUser",

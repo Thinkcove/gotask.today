@@ -63,13 +63,42 @@ const findProjectById = async (id: string): Promise<IProject | null> => {
   return await Project.findOne({ id });
 };
 
-//update
+
 const updateProjectById = async (
   id: string,
   updateData: Partial<IProject>
 ): Promise<IProject | null> => {
   return await Project.findOneAndUpdate({ id }, updateData, { new: true });
 };
+
+const findProjectsWithFilters = async (filters: {
+  status?: string[];
+  organization_id?: string;
+  name?: string;
+  user_id?: string[];  // array of user ids
+}) => {
+  const query: any = {};
+
+  if (filters.status && filters.status.length > 0) {
+    query.status = { $in: filters.status };
+  }
+
+  if (filters.organization_id) {
+    query.organization_id = filters.organization_id;
+  }
+
+  if (filters.name) {
+    query.name = { $regex: filters.name, $options: "i" };
+  }
+
+  if (filters.user_id && filters.user_id.length > 0) {
+    query.user_id = { $in: filters.user_id };
+  }
+
+  return Project.find(query);
+};
+
+
 
 export {
   createNewProject,
@@ -80,5 +109,6 @@ export {
   findByUserId,
   findProjectCountByStatus,
   findProjectById,
-  updateProjectById
+  updateProjectById,
+  findProjectsWithFilters
 };

@@ -10,7 +10,8 @@ import {
   findProjectCountByStatus,
   findUsersByIds,
   saveProject,
-  updateProjectById
+  updateProjectById,
+  findProjectsWithFilters 
 } from "../../domain/interface/project/projectInterface";
 import { User } from "../../domain/model/user/user";
 
@@ -336,6 +337,41 @@ const updateProject = async (
   }
 };
 
+// Get Filtered Projects (NEW FUNCTION)
+const getFilteredProjects = async (
+  filters: {
+    status?: string[];
+    organization_id?: string;
+    name?: string;
+    user_id?: string[];  // updated here too
+  }
+) => {
+  try {
+    const filteredProjects = await findProjectsWithFilters(filters);
+
+    const allUserIds = Array.from(
+      new Set(filteredProjects.flatMap((p) => p.user_id?.filter(Boolean) || []))
+    );
+    const users = await findUsersByIds(allUserIds);
+    const userMap = new Map(users.map((u) => [u.id, u]));
+
+    const enrichedProjects = filteredProjects.map((p) => ({
+      ...p.toObject(),
+      users: (p.user_id || []).map((id) => userMap.get(id)).filter(Boolean),
+    }));
+
+    return { success: true, data: enrichedProjects };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectMessages.FETCH.FILTER_FAILED,
+    };
+  }
+};
+
+
+
+
 export {
   createProject,
   getAllProjects,
@@ -345,5 +381,6 @@ export {
   getProjectCountByStatus,
   getProjectById,
   removeUsersFromProject,
-  updateProject
+  updateProject,
+  getFilteredProjects
 };

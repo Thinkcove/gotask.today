@@ -107,7 +107,7 @@
   "Projects": {
     "Projecttitle": "Project Title is required",
     "description": "Description is required",
-    "status": "Status is required",
+    "status": "Status",
     "errormessage": "Project created successfully!",
     "successmessage": "Error while creating project",
     "createnew": "Create New Project",
@@ -147,7 +147,10 @@
     "updateerror": "Error while updating project",
     "edittitle": "Edit Project",
     "placeholdeselect": "Select Assignees to the project",
-    "searchplaceholder": "Search Projects"
+    "searchplaceholder": "Search Projects",
+    "filters": "Filters",
+    "clearfilters": "Clear Filters",
+    "user": "User"
   },
   "Role": {
     "rolename": "Role Name is required",

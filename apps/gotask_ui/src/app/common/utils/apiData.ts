@@ -1,16 +1,25 @@
-// Centralized error handling function with switch statement
-const handleApiError = (error: any) => {
-  switch (true) {
-    case !!error.response && !!error.response.statusCode && error.response.statusCode === 401:
-      console.error("Unauthorized: Token expired or invalid");
-      window.location.href = "/login"; // Redirect to login page
-      break;
-    case !!error.response && !!error.response.statusCode:
-      console.error(`API Error: ${error.message}`);
-      throw error; // Rethrow other API errors
-    default:
-      console.error(`Unexpected error: ${error.message}`);
-      throw error; // Rethrow unexpected errors
+const handleApiError = (error: unknown) => {
+  if (typeof error === "object" && error !== null && "response" in error) {
+    const err = error as {
+      message: string;
+      response?: { statusCode?: number };
+    };
+
+    switch (true) {
+      case !!err.response && err.response.statusCode === 401:
+        console.error("Unauthorized: Token expired or invalid");
+        window.location.href = "/login";
+        break;
+      case !!err.response && !!err.response.statusCode:
+        console.error(`API Error: ${err.message}`);
+        throw err;
+      default:
+        console.error(`Unexpected error: ${err.message}`);
+        throw err;
+    }
+  } else {
+    console.error("Unknown error", error);
+    throw error;
   }
 };
 

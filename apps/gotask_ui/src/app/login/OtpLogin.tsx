@@ -70,44 +70,41 @@ const OtpLogin = () => {
 
   // Verify OTP and store tokens
   const verifyOtp = async () => {
-    if (loading) return;
+  if (loading) return;
 
-    if (!otp) {
-      setError(translogin("otprequired"));
-      return;
+  if (!otp) {
+    setError(translogin("otprequired"));
+    return;
+  }
+
+  setError("");
+  setLoading(true);
+
+  try {
+    const res = await fetch(`${env.API_BASE_URL}/otp/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: email, otp, rememberMe })  // ✅ <-- Include it here
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success && data.data) {
+      const { user, token } = data.data;
+
+      storeToken(token, rememberMe, user); // ✅ Respects rememberMe for storage logic
+      setUser({ ...user, token });
+      router.replace("/dashboard");
+    } else {
+      setError(data.error || data.message || translogin("otperror"));
     }
+  } catch {
+    setError(translogin("genericerror"));
+  } finally {
+    setLoading(false);
+  }
+};
 
-    setError("");
-    setLoading(true);
-
-    try {
-      const res = await fetch(`${env.API_BASE_URL}/otp/verify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: email, otp })
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.success && data.data) {
-        const { user, token } = data.data;
-
-        // ✅ Store token and user using unified logic (clears old values & respects rememberMe)
-        storeToken(token, rememberMe, user);
-
-        // ✅ Set user in context
-        setUser({ ...user, token });
-
-        router.replace("/dashboard");
-      } else {
-        setError(data.error || data.message || translogin("otperror"));
-      }
-    } catch {
-      setError(translogin("genericerror"));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Form submit handler switches between sending OTP and verifying OTP
   const handleSubmit = (e: React.FormEvent) => {

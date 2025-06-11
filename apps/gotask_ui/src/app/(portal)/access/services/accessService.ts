@@ -1,14 +1,19 @@
+
 import env from "@/app/common/env";
 import { getData, postData, putData, deleteData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
 import { withAuth } from "@/app/common/utils/authToken";
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 
-// Interface for AccessData
+// Interface for AccessData matching backend model
 interface AccessData {
   id: string;
   name: string;
-  accesses: { access: string; actions: string[] }[];
+  application: { 
+    access: string; 
+    actions: string[]; 
+    restrictedFields?: { [key: string]: string[] };
+  }[];
   createdAt?: string;
 }
 
@@ -97,7 +102,7 @@ export const useAllAccessRoles = () => {
     data?.map((role: AccessRole) => ({
       id: role.id,
       name: role.name,
-      accesses: role.application || [],
+      application: role.application || [],
       createdAt: role.createdAt
     })) || [];
 
@@ -116,7 +121,11 @@ export const updateAccessRole = async (
   const result = await withAuth(async (token) => {
     const cleanedPayload = {
       name: accessData.name,
-      application: accessData.application?.map(({ ...rest }) => rest)
+      application: accessData.application?.map(({ access, actions, restrictedFields }) => ({
+        access,
+        actions,
+        restrictedFields,
+      })),
     };
 
     const data = await putData(

@@ -155,7 +155,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
               error={!!error}
               fullWidth
               multiline={multiline}
-              value={value}
+              value={value ?? ''} 
               disabled={disabled}
               onFocus={onFocus}
               type={inputType || "text"}

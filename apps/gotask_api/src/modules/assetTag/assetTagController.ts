@@ -17,6 +17,20 @@ class ResourceController extends BaseController {
       return this.replyError(error);
     }
   }
+
+  async createAssetIssues(requestHelper: RequestHelper, handler: any) {
+    try {
+      const payload = requestHelper.getPayload();
+      const user = requestHelper.getUser();
+      if (!payload) {
+        throw new Error(ResourceMessages.CREATE.MISSING_FIELDS);
+      }
+      const newUser = await resourceServices.createOrUpdateAssetIssues(payload, user);
+      return this.sendResponse(handler, newUser);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
 export default ResourceController;

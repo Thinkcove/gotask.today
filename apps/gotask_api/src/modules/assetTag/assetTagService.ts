@@ -1,4 +1,9 @@
-import { createResource } from "../../domain/interface/assetTag/assetTag";
+import {
+  createAssetIssues,
+  createResource,
+  getAssetIssueById,
+  updateAssetIssue
+} from "../../domain/interface/assetTag/assetTag";
 import { findUserByEmail } from "../../domain/interface/user/userInterface";
 
 class resourceService {
@@ -32,6 +37,38 @@ class resourceService {
         success: false,
         error: error.message
       };
+    }
+  };
+
+  createOrUpdateAssetIssues = async (payload: any, user: any): Promise<any> => {
+    const userInfo = await findUserByEmail(user.user_id);
+    if (!userInfo) {
+      return { success: false, error: "User not found" };
+    }
+    if (!payload) {
+      return { success: false, error: "Invalid Payload" };
+    }
+    try {
+      let result;
+      if (payload.id) {
+        const existingIssue = await getAssetIssueById(payload.id);
+        if (existingIssue) {
+          result = await updateAssetIssue(payload.id, {
+            ...payload,
+            updatedBy: userInfo.user_id,
+            updatedAt: new Date()
+          });
+          return { success: true, data: result };
+        }
+      }
+      result = await createAssetIssues({
+        ...payload,
+        reportedBy: userInfo.user_id
+      });
+
+      return { success: true, data: result };
+    } catch (error: any) {
+      return { success: false, error: error.message };
     }
   };
 }

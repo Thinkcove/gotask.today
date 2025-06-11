@@ -9,6 +9,7 @@ export interface IAssetIssue extends Document {
   status: "Open" | "In Progress" | "Hold" | "Resolved";
   assignedTo?: string;
   comment?: string;
+  updatedBy: string;
 }
 
 const AssetIssueSchema = new Schema<IAssetIssue>(
@@ -24,7 +25,8 @@ const AssetIssueSchema = new Schema<IAssetIssue>(
       default: "Open"
     },
     assignedTo: { type: String, ref: "User" },
-    comment: { type: String }
+    comment: { type: String },
+    updatedBy: { type: String }
   },
   {
     timestamps: true

@@ -28,4 +28,19 @@ ResourceRoutes.push({
   }
 });
 
+ResourceRoutes.push({
+  path: "/createissues",
+  method: API_METHODS.POST,
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    resourceController.createAssetIssues(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Create new asset issues",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
 export default ResourceRoutes;

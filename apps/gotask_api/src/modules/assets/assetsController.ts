@@ -69,7 +69,7 @@ class AssetController extends BaseController {
         return this.replyError(new Error(result.message));
       }
 
-      return this.sendResponse(handler, { message: "Deleted Successful" });
+      return this.sendResponse(handler, { message: AssetMessages.DELETE.SUCCESS });
     } catch (error) {
       return this.replyError(error);
     }

@@ -6,11 +6,17 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useAllAssets } from "../services/assetActions";
 import Table from "../../../component/table/table"; // adjust path
+import ActionButton from "@/app/component/floatingButton/actionButton";
+import AddIcon from "@mui/icons-material/Add";
+import { useRouter } from "next/navigation";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
 
 export const AssetList: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [selectedView, setSelectedView] = useState("Asset");
-
+  const router = useRouter();
   const { getAll: allAssets } = useAllAssets();
 
   const formattedAssets = (allAssets || []).map((asset: any) => ({
@@ -21,12 +27,37 @@ export const AssetList: React.FC = () => {
     id: asset.id || "-"
   }));
 
+  const handleView = (id: string) => {
+    console.log("View ID:", id);
+    // e.g., navigate to view page
+    router.push(`/assets/viewAsset/${id}`);
+  };
+
+  const handleEdit = (id: string) => {
+    console.log("Edit ID:", id);
+    // e.g., navigate to edit page
+    router.push(`/assets/editAsset/${id}`);
+  };
+
   const assetColumns = [
     { id: "assetType", label: transasset("assets") },
     { id: "assetName", label: transasset("type") },
     { id: "modelName", label: transasset("model") },
     { id: "purchaseDate", label: transasset("purchaseDate") },
-    { id: "actions", label: transasset("actions") }
+    {
+      id: "actions",
+      label: transasset("actions"),
+      render: (_: any, row: any) => (
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <IconButton color="primary" size="small" onClick={() => handleView(row.id)}>
+            <VisibilityIcon fontSize="small" />
+          </IconButton>
+          <IconButton color="primary" size="small" onClick={() => handleEdit(row.id)}>
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      )
+    }
   ];
 
   return (
@@ -57,6 +88,11 @@ export const AssetList: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
+      <ActionButton
+        label={transasset("createasset")}
+        icon={<AddIcon sx={{ color: "white" }} />}
+        onClick={() => router.push("/assets/createAsset")}
+      />
     </>
   );
 };

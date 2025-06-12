@@ -1,9 +1,7 @@
-import jwt from "jsonwebtoken";
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
 import { sendOtpService, verifyOtpService } from "./otpService";
 import OtpMessages from "../../constants/apiMessages/OtpMessages";
-import { User } from "../../domain/model/user/user";
 import { ResponseToolkit } from "@hapi/hapi";
 
 class OtpController extends BaseController {

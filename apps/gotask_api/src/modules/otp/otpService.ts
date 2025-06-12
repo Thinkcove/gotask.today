@@ -12,7 +12,7 @@ import {
   updateOtpAttempts,
   saveOrUpdateOtp,
   findOtpByUser,
-} from "../../domain/interface/otp/otpLogic"; 
+} from "../../domain/interface/otp/otpInterface"; 
 
 //SEND OTP
 export const sendOtpService = async (user_id: string) => {

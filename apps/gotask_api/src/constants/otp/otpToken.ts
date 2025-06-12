@@ -1,12 +1,8 @@
 import jwt from "jsonwebtoken";
 import { IUser } from "../../domain/model/user/user";
 
-export const generateOtpToken = (
-  user: IUser,
-  role: any,
-  rememberMe: boolean
-): string => {
-  const tokenExpiry = rememberMe ? "30d" : "1d"; 
+export const generateOtpToken = (user: IUser, role: any, rememberMe: boolean): string => {
+  const tokenExpiry = rememberMe ? "30d" : "1d";
   return jwt.sign(
     {
       id: user.id,

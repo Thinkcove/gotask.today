@@ -81,10 +81,10 @@ class assetService {
         success: true,
         data: assets
       };
-    } catch (ex) {
+    } catch (error: any) {
       return {
         success: false,
-        error: AssetMessages.FETCH.NOT_FOUND
+        error: error.message || AssetMessages.FETCH.NOT_FOUND
       };
     }
   };
@@ -118,10 +118,10 @@ class assetService {
         success: true,
         data: assets
       };
-    } catch (ex) {
+    } catch (error: any) {
       return {
         success: false,
-        error: AssetMessages.FETCH.ASSET_TYPE_NOT_FOUND
+        error: error.message || AssetMessages.FETCH.ASSET_TYPE_NOT_FOUND
       };
     }
   };

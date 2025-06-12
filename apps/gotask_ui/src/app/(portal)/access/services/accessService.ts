@@ -4,13 +4,20 @@ import useSWR from "swr";
 import { withAuth } from "@/app/common/utils/authToken";
 import { AccessOption, AccessRole } from "../interfaces/accessInterfaces";
 
-// Interface for AccessData
 interface AccessData {
   id: string;
   name: string;
-  accesses: { access: string; actions: string[] }[];
+  application: {
+    access: string;
+    actions: string[];
+    restrictedFields?: { [key: string]: string[] };
+  }[];
   createdAt?: string;
 }
+
+// Helper to safely check for "error" key
+const isErrorResult = (result: any): result is { error: string } =>
+  result && typeof result === "object" && "error" in result;
 
 // Fetch access options
 export const getAccessOptions = async (): Promise<{
@@ -23,8 +30,8 @@ export const getAccessOptions = async (): Promise<{
     return { success: true, data };
   });
 
-  if ("error" in result) {
-    return { success: false, message: result.error };
+  if (!result || isErrorResult(result)) {
+    return { success: false, message: result?.error || "Failed to fetch access options" };
   }
 
   return result;
@@ -36,7 +43,7 @@ const fetchAccessOptions = async () => {
     return await getData(`${env.API_BASE_URL}/access/options`, token);
   });
 
-  if ("error" in result) {
+  if (!result || isErrorResult(result)) {
     return [];
   }
 
@@ -68,8 +75,8 @@ export const createAccessRole = async (
     return { success: true, data };
   });
 
-  if ("error" in result) {
-    return { success: false, message: result.error };
+  if (!result || isErrorResult(result)) {
+    return { success: false, message: result?.error || "Failed to create access role" };
   }
 
   return result;
@@ -81,7 +88,7 @@ const fetchAccessRoles = async () => {
     return await getData(`${env.API_BASE_URL}/access`, token);
   });
 
-  if ("error" in result) {
+  if (!result || isErrorResult(result)) {
     return [];
   }
 
@@ -97,7 +104,7 @@ export const useAllAccessRoles = () => {
     data?.map((role: AccessRole) => ({
       id: role.id,
       name: role.name,
-      accesses: role.application || [],
+      application: role.application || [],
       createdAt: role.createdAt
     })) || [];
 
@@ -116,7 +123,11 @@ export const updateAccessRole = async (
   const result = await withAuth(async (token) => {
     const cleanedPayload = {
       name: accessData.name,
-      application: accessData.application?.map(({ ...rest }) => rest)
+      application: accessData.application?.map(({ access, actions, restrictedFields }) => ({
+        access,
+        actions,
+        restrictedFields
+      }))
     };
 
     const data = await putData(
@@ -127,8 +138,8 @@ export const updateAccessRole = async (
     return { success: true, data };
   });
 
-  if ("error" in result) {
-    return { success: false, message: result.error };
+  if (!result || isErrorResult(result)) {
+    return { success: false, message: result?.error || "Failed to update access role" };
   }
 
   return result;
@@ -143,8 +154,8 @@ export const deleteAccessRole = async (
     return { success: true, message: "Access role deleted successfully." };
   });
 
-  if ("error" in result) {
-    return { success: false, message: result.error };
+  if (!result || isErrorResult(result)) {
+    return { success: false, message: result?.error || "Failed to delete access role" };
   }
 
   return result;
@@ -159,8 +170,8 @@ export const getAccessRoleById = async (
     return { success: true, data };
   });
 
-  if ("error" in result) {
-    return { success: false, message: result.error };
+  if (!result || isErrorResult(result)) {
+    return { success: false, message: result?.error || "Failed to fetch access role" };
   }
 
   return result;
@@ -172,7 +183,7 @@ const fetchAccessRoleById = async ([, id]: [string, string]) => {
     return await getData(`${env.API_BASE_URL}/access/${id}`, token);
   });
 
-  if ("error" in result) {
+  if (!result || isErrorResult(result)) {
     return null;
   }
 

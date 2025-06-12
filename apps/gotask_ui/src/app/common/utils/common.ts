@@ -52,8 +52,9 @@ export const isEndTimeAfterStartTime = (startTime: string, endTime: string): boo
 export const calculateTimeProgressData = (
   estimatedTime: string,
   spentTime: string,
-  dueDate: string,
-  timeEntries: Array<{ date: string; start_time: string; end_time: string }>
+  userEstimated: string,
+  timeEntries: Array<{ date: string; start_time: string; end_time: string }>,
+  startDate: string
 ) => {
   // Parse time strings to extract hours
   const parseTimeString = (timeStr: string) => {
@@ -71,44 +72,32 @@ export const calculateTimeProgressData = (
   let spentFillPercentage = 0;
   let variationFillPercentage = 0;
 
-  if (dueDate && timeEntries && timeEntries.length > 0) {
-    const dueDateObj = new Date(dueDate);
-    if (!isNaN(dueDateObj.getTime())) {
-      // Check if any time entry is after the due date
-      const pastDueEntries = timeEntries.filter((entry) => {
-        const entryDate = new Date(entry.date);
-        return entryDate > dueDateObj;
-      });
+  const durationHours = parseTimeString(userEstimated || "0h");
+  const startDateObj = new Date(startDate);
+  const dueDate = new Date(startDateObj.getTime() + durationHours * 60 * 60 * 1000);
 
-      if (pastDueEntries.length > 0) {
-        // If there are any past-due entries, time spent bar should not fill
-        spentFillPercentage = 0;
+  const pastDueEntries = timeEntries.filter((entry) => {
+    const entryDate = new Date(entry.date);
+    return entryDate > dueDate;
+  });
 
-        // Increment variation by 2% for each registration past the due date
-        variationFillPercentage = pastDueEntries.length * 2;
+  // Calculate spent fill
+  spentFillPercentage =
+    estimatedHours > 0
+      ? Math.min(TASK_CALCULATION, (spentHours / estimatedHours) * TASK_CALCULATION)
+      : spentHours > 0
+        ? TASK_CALCULATION
+        : 0;
 
-        // Cap variation percentage at 30%
-        variationFillPercentage = Math.min(TASK_VARIATION, variationFillPercentage);
-      } else {
-        // If all entries are on or before the due date, fill the time spent bar
-        spentFillPercentage =
-          estimatedHours > 0
-            ? Math.min(TASK_CALCULATION, (spentHours / estimatedHours) * TASK_CALCULATION)
-            : spentHours > 0
-              ? TASK_CALCULATION
-              : 0;
-        variationFillPercentage = 0;
-      }
-    }
-  } else {
-    // If no time entries or due date, default to filling time spent bar
-    spentFillPercentage =
-      estimatedHours > 0
-        ? Math.min(TASK_CALCULATION, (spentHours / estimatedHours) * TASK_CALCULATION)
-        : spentHours > 0
-          ? TASK_CALCULATION
-          : 0;
-    variationFillPercentage = 0;
+  // Determine variation
+  const isOverEstimate = spentHours > estimatedHours;
+
+  if (isOverEstimate || pastDueEntries.length > 0) {
+    // You can customize this formula, here both cases add variation
+    variationFillPercentage = Math.min(
+      TASK_VARIATION,
+      (spentHours - estimatedHours) * 2 + pastDueEntries.length * 2
+    );
   }
 
   return {

@@ -1,4 +1,3 @@
-
 import env from "@/app/common/env";
 import { getData, postData, putData, deleteData } from "@/app/common/utils/apiData";
 import useSWR from "swr";
@@ -53,13 +52,13 @@ const fetchAccessOptions = async () => {
 
 export const useAccessOptions = () => {
   const { data, error, isLoading } = useSWR([`fetchAccessOptions`], fetchAccessOptions, {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
 
   return {
     accessOptions: Array.isArray(data) ? data : [],
     isLoading,
-    error: error ? error.message : null,
+    error: error ? error.message : null
   };
 };
 
@@ -98,7 +97,7 @@ const fetchAccessRoles = async () => {
 
 export const useAllAccessRoles = () => {
   const { data, error, isLoading } = useSWR([`fetchAccessRoles`], fetchAccessRoles, {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
 
   const mappedData: AccessData[] =
@@ -106,13 +105,13 @@ export const useAllAccessRoles = () => {
       id: role.id,
       name: role.name,
       application: role.application || [],
-      createdAt: role.createdAt,
+      createdAt: role.createdAt
     })) || [];
 
   return {
     accessRoles: mappedData,
     isLoading,
-    error: error ? error.message : null,
+    error: error ? error.message : null
   };
 };
 
@@ -127,8 +126,8 @@ export const updateAccessRole = async (
       application: accessData.application?.map(({ access, actions, restrictedFields }) => ({
         access,
         actions,
-        restrictedFields,
-      })),
+        restrictedFields
+      }))
     };
 
     const data = await putData(
@@ -193,12 +192,12 @@ const fetchAccessRoleById = async ([, id]: [string, string]) => {
 
 export const useAccessRoleById = (id: string) => {
   const { data, error, isLoading } = useSWR([`fetchAccessRoleById`, id], fetchAccessRoleById, {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
 
   return {
     role: data,
     isLoading,
-    error: error ? error.message : null,
+    error: error ? error.message : null
   };
 };

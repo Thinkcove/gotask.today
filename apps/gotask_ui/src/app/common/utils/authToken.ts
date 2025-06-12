@@ -1,3 +1,5 @@
+import type { User } from "../../userContext";
+
 const getStorage = (rememberMe: boolean) => (rememberMe ? localStorage : sessionStorage);
 
 export const isTokenExpired = (token: string): boolean => {
@@ -11,7 +13,7 @@ export const isTokenExpired = (token: string): boolean => {
   }
 };
 
-export const storeToken = (token: string, rememberMe: boolean, user: any) => {
+export const storeToken = (token: string, rememberMe: boolean, user: User) => {
   const now = Date.now();
   const storage = getStorage(rememberMe);
 
@@ -24,17 +26,15 @@ export const storeToken = (token: string, rememberMe: boolean, user: any) => {
   storage.setItem("user", JSON.stringify(user));
 };
 
-// Fetch token from appropriate storage
 export const fetchToken = (): string | null => {
   return localStorage.getItem("token") || sessionStorage.getItem("token");
 };
 
-// Fetch user from appropriate storage
-export const fetchUser = (): any | null => {
+export const fetchUser = (): User | null => {
   const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
   if (!userStr) return null;
   try {
-    return JSON.parse(userStr);
+    return JSON.parse(userStr) as User;
   } catch {
     return null;
   }
@@ -45,7 +45,6 @@ export const removeToken = () => {
   sessionStorage.clear();
 };
 
-// Main auth wrapper (no refresh token logic)
 export const withAuth = async <T>(
   callback: (token: string) => Promise<T>
 ): Promise<T | { error: string }> => {

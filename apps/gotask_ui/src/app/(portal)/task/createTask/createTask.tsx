@@ -27,7 +27,9 @@ const CreateTask: React.FC = () => {
     user_id: "",
     project_id: "",
     created_on: new Date().toISOString().split("T")[0],
-    due_date: new Date().toISOString().split("T")[0]
+    due_date: "",
+    start_date: "",
+    user_estimated: ""
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});

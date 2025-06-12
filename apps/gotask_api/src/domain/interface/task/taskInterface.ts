@@ -306,8 +306,7 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
   const newTask = new Task({
     ...taskData,
     user_name: user.name,
-    project_name: project.name,
-    estimated_time: estimatedTime
+    project_name: project.name
   });
   return await newTask.save();
 };
@@ -372,6 +371,18 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
 
     const { loginuser_id, loginuser_name } = updateData;
 
+    if (updateData.user_id && updateData.user_id !== existingTask.user_id) {
+      const user = await User.findOne({ id: updateData.user_id });
+      if (!user) throw new Error("Invalid user_id");
+      updateData.user_name = user.name;
+    }
+
+    if (updateData.project_id && updateData.project_id !== existingTask.project_id) {
+      const project = await Project.findOne({ id: updateData.project_id });
+      if (!project) throw new Error("Invalid project_id");
+      updateData.project_name = project.name;
+    }
+
     const historyEntry = generateHistoryEntry(existingTask, updateData);
 
     if (!existingTask.history) {
@@ -393,15 +404,22 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
       existingTask.history.unshift(historyItem);
     }
 
-    // Recalculate estimated_time if due_date or created_on is updated
-    const createdOn = new Date(updateData.created_on ?? existingTask.created_on);
-    const dueDate = new Date(updateData.due_date ?? existingTask.due_date);
+    // Recalculate estimated_time using start_date and user_estimated
+    const startedOnRaw = updateData.start_date ?? existingTask.start_date;
+    const userEstimated = updateData.user_estimated ?? existingTask.user_estimated;
 
     const createdUTC = Date.UTC(createdOn.getFullYear(), createdOn.getMonth(), createdOn.getDate());
     const dueUTC = Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
 
     const daysDiff = Math.floor((dueUTC - createdUTC) / (1000 * 60 * 60 * 24)) + 1;
     existingTask.estimated_time = daysDiff > 0 ? `${daysDiff}d0h0m` : "1d0h0m";
+    if (startedOnRaw && userEstimated) {
+      const dayMatch = /(\d+)d/.exec(userEstimated);
+      const hourMatch = /(\d+)h/.exec(userEstimated);
+      const days = dayMatch ? parseInt(dayMatch[1]) : 0;
+      const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+      existingTask.estimated_time = `${days}d${hours}h`;
+    }
 
     Object.assign(existingTask, updateData);
     await existingTask.save();
@@ -472,11 +490,9 @@ const addTimeSpentToTask = async (
 ): Promise<ITask | null> => {
   const task = await Task.findOne({ id });
   if (!task) return null;
-
   if (!task.time_spent) task.time_spent = [];
 
   const entries = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
-  let delayHours = 0;
 
   for (const entry of entries) {
     if (entry.start_time && entry.end_time) {
@@ -484,24 +500,13 @@ const addTimeSpentToTask = async (
         entry.start_time,
         entry.end_time
       );
-    } else if (TIME_FORMAT_PATTERNS.STANDARD_TIME.test(entry.time_logged)) {
+    } else if (entry.time_logged && TIME_FORMAT_PATTERNS.STANDARD_TIME.test(entry.time_logged)) {
       const totalHours = TimeUtil.parseHourMinuteString(entry.time_logged);
       entry.time_logged = TimeUtil.formatHoursToTimeString(totalHours);
     }
 
     if (!TimeUtil.isValidTimeFormat(entry.time_logged)) {
       throw new Error("Invalid time format. Use format like '2d4h', '3d', or '6h'");
-    }
-
-    //Date comparison debug logs
-    const entryDate = new Date(entry.date);
-    const dueDate = new Date(task.due_date);
-
-    if (entryDate > dueDate) {
-      const diffMs = entryDate.getTime() - dueDate.getTime();
-      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); // calendar days
-      const delayHoursForThisEntry = diffDays * 8; // 8 working hours per day
-      delayHours += delayHoursForThisEntry;
     }
 
     task.time_spent.unshift({
@@ -520,7 +525,7 @@ const addTimeSpentToTask = async (
     const delayString = TimeUtil.formatHoursToTimeString(delayHours);
     task.variation = delayString; // ONLY show delay
   } else {
-    task.variation = "0d0h0m"; // No delay
+    task.variation = "0d0h"; // No delay
   }
 
   await task.save();

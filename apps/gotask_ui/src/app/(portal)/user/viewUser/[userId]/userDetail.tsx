@@ -62,8 +62,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   };
 
   const mapUserToUserField = (user: User): IUserField => ({
+    first_name: user.first_name,
+    last_name: user.last_name,
     name: user.name,
     status: user.status,
+    mobile_no: user.mobile_no,
+    joined_date: user.joined_date,
+    emp_id: user.emp_id,
     organization: user.organization,
     roleId: user.roleId._id,
     user_id: user.user_id
@@ -112,20 +117,14 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           </Box>
 
           {/* Basic Details */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+
+          {/* <Grid container spacing={3} columns={{ xs: 3, sm: 2, md: 3 }}> */}
+          <Grid container spacing={2} mb={3}>
+            <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={transuser("uesrid")} value={user.user_id} />
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <LabelValueText
-                label={transuser("roleid")}
-                value={user?.roleId.name}
-                sx={{ textTransform: "capitalize" }}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
+            <Grid item xs={6} sm={6} md={4}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 {transuser("status")}
               </Typography>
@@ -133,6 +132,57 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 label={user.status ? "Active" : "Inactive"}
                 color={user.status ? "success" : "error"}
                 size="small"
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labelfirst_name")}
+                value={user?.first_name || "-"}
+                sx={{ textTransform: "capitalize" }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labellast_name")}
+                value={user?.last_name || "-"}
+                sx={{ textTransform: "capitalize" }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labeluser")}
+                value={user?.name || "-"}
+                sx={{ textTransform: "capitalize" }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labelmobile_no")}
+                value={user?.mobile_no || "-"}
+                sx={{ textTransform: "capitalize" }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labeljoined_date")}
+                value={user?.joined_date ? new Date(user.joined_date).toLocaleDateString() : "-"}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText label={transuser("labelemp_id")} value={user?.emp_id || "-"} />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("roleid")}
+                value={user?.roleId.name}
+                sx={{ textTransform: "capitalize" }}
               />
             </Grid>
 

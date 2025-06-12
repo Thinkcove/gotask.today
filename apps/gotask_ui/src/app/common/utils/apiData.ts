@@ -1,25 +1,30 @@
-// Centralized error handling function with switch statement
+// Centralized error handling function
 const handleApiError = (error: any) => {
+  const statusCode = error?.response?.statusCode || error?.response?.status;
+
   switch (true) {
-    case !!error.response && !!error.response.statusCode && error.response.statusCode === 401:
+    case statusCode === 401:
       console.error("Unauthorized: Token expired or invalid");
-      window.location.href = "/login"; // Redirect to login page
+      window.location.href = "/login";
       break;
-    case !!error.response && !!error.response.statusCode:
+
+    case !!statusCode:
       console.error(`API Error: ${error.message}`);
-      throw error; // Rethrow other API errors
+      throw error; //
+
     default:
-      console.error(`Unexpected error: ${error.message}`);
-      throw error; // Rethrow unexpected errors
+      console.error(`Unexpected error: ${error?.message || "Unknown error"}`);
+      throw error; //
   }
 };
 
-// apiHeaders function (unchanged)
+// API headers generator
 export const apiHeaders = (token?: string) => ({
   Authorization: `Bearer ${token}`,
   "Content-Type": "application/json"
 });
 
+// POST request
 export const postData = async (
   url: string,
   data: Record<string, unknown> | FormData,
@@ -40,17 +45,21 @@ export const postData = async (
     if (!response.ok) {
       const errorResponse = await response.json();
       throw {
-        message: `HTTP error! Status: ${response.status}`,
-        response: errorResponse
+        message: errorResponse?.message || `HTTP error! Status: ${response.status}`,
+        response: {
+          status: response.status,
+          ...errorResponse
+        }
       };
     }
-    return response.json();
+
+    return await response.json();
   } catch (error) {
-    handleApiError(error); // Use centralized error handling
+    handleApiError(error);
   }
 };
 
-// putData function
+// PUT request
 export const putData = async (url: string, payload: Record<string, unknown>, token?: string) => {
   try {
     const response = await fetch(url, {
@@ -62,38 +71,46 @@ export const putData = async (url: string, payload: Record<string, unknown>, tok
     if (!response.ok) {
       const errorResponse = await response.json();
       throw {
-        message: `HTTP error! Status: ${response.status}`,
-        response: errorResponse
+        message: errorResponse?.message || `HTTP error! Status: ${response.status}`,
+        response: {
+          status: response.status,
+          ...errorResponse
+        }
       };
     }
-    return response.json();
+
+    return await response.json();
   } catch (error) {
     handleApiError(error);
   }
 };
 
-// getData function
+// GET request
 export const getData = async (url: string, token?: string) => {
   try {
     const response = await fetch(url, {
       method: "GET",
       headers: apiHeaders(token)
     });
+
     if (!response.ok) {
-      const errorResponse = await response.json(); // Parse error response
+      const errorResponse = await response.json();
       throw {
-        message: `HTTP error! Status: ${response.status}`,
-        response: errorResponse
+        message: errorResponse?.message || `HTTP error! Status: ${response.status}`,
+        response: {
+          status: response.status,
+          ...errorResponse
+        }
       };
     }
-    const data = await response.json();
-    return data;
+
+    return await response.json();
   } catch (error) {
     handleApiError(error);
   }
 };
 
-// deleteData function
+// DELETE request
 export const deleteData = async (
   url: string,
   token?: string,
@@ -104,17 +121,24 @@ export const deleteData = async (
       method: "DELETE",
       headers: apiHeaders(token)
     };
+
     if (payload) {
       options.body = JSON.stringify(payload);
     }
+
     const response = await fetch(url, options);
+
     if (!response.ok) {
-      const errorResponse = await response.json(); // Parse error response
+      const errorResponse = await response.json();
       throw {
-        message: `HTTP error! Status: ${response.status}`,
-        response: errorResponse
+        message: errorResponse?.message || `HTTP error! Status: ${response.status}`,
+        response: {
+          status: response.status,
+          ...errorResponse
+        }
       };
     }
+
     return await response.json();
   } catch (error) {
     handleApiError(error);

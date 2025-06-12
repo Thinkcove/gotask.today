@@ -7,6 +7,8 @@ import { useAllRoles } from "../../role/services/roleAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { statusOptions } from "@/app/common/constants/user";
+import { ONLY_ALPHANUMERIC_REGEX } from "@/app/common/constants/regex";
+import { DIGIT_ONLY_REGEX } from "@/app/common/constants/regex";
 
 interface IUserInputProps {
   formData: IUserField;
@@ -37,6 +39,31 @@ const UserInput = ({
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <FormField
+          label={transuser("labelfirst_name")}
+          type="text"
+          value={formData.first_name}
+          onChange={(value) => handleChange("first_name", String(value))}
+          required={true}
+          error={errors.first_name}
+          disabled={isReadOnly("first_name")}
+          placeholder={transuser("placeholderfirst_name")}
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <FormField
+          label={transuser("labellast_name")}
+          type="text"
+          value={formData.last_name}
+          onChange={(value) => handleChange("last_name", String(value))}
+          required={true}
+          error={errors.last_name}
+          disabled={isReadOnly("last_name")}
+          placeholder={transuser("placeholderlast_name")}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <FormField
           label={transuser("labeluser")}
           type="text"
           value={formData.name}
@@ -47,6 +74,23 @@ const UserInput = ({
           placeholder={transuser("placeholderuser")}
         />
       </Grid>
+
+      <Grid item xs={12}>
+        <FormField
+          label={transuser("labelemp_id")}
+          type="text"
+          value={formData.emp_id}
+          onChange={(value) => {
+            const alphanumeric = String(value).replace(ONLY_ALPHANUMERIC_REGEX, "");
+            handleChange("emp_id", alphanumeric);
+          }}
+          required={false}
+          error={errors.emp_id}
+          disabled={isReadOnly("emp_id")}
+          placeholder={transuser("placeholderemp_id")}
+        />
+      </Grid>
+
       <Grid item xs={12}>
         <FormField
           label={transuser("labelemail")}
@@ -60,6 +104,47 @@ const UserInput = ({
           disabled={isReadOnly("user_id")}
         />
       </Grid>
+
+      <Grid item xs={12}>
+        <FormField
+          label={transuser("labelmobile_no")}
+          type="text"
+          inputType="tel"
+          placeholder={transuser("placeholdermobile_no")}
+          required
+          value={formData.mobile_no}
+          onChange={(value) => {
+            const sanitized = String(value).replace(DIGIT_ONLY_REGEX, ""); // Remove non-digits
+            if (sanitized.length <= 10) {
+              handleChange("mobile_no", sanitized);
+            }
+          }}
+          error={errors?.mobile_no}
+          disabled={isReadOnly("mobile_no")}
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <FormField
+          label={transuser("labeljoined_date")}
+          type="date"
+          inputType="date"
+          value={formData.joined_date}
+          onChange={(value) => {
+            if (value !== undefined && (typeof value === "string" || value instanceof Date)) {
+              const date = new Date(value); // only called if value is defined and valid
+              if (!isNaN(date.getTime())) {
+                handleChange("joined_date", date.toISOString());
+              }
+            }
+          }}
+          required={true}
+          error={errors?.joinDate}
+          disabled={isReadOnly("joined_date")}
+          placeholder={transuser("placeholderjoined_date")}
+        />
+      </Grid>
+
       <Grid item xs={12} sm={6}>
         <FormField
           label={transuser("labelrole")}

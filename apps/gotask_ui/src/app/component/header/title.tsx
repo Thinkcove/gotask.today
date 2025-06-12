@@ -1,11 +1,11 @@
 import React from "react";
 import { Typography, Box } from "@mui/material";
 
-interface AccessHeadingProps {
+interface HeadingProps {
   title?: string;
 }
 
-const AccessHeading: React.FC<AccessHeadingProps> = ({ title = "Access" }) => {
+const Heading: React.FC<HeadingProps> = ({ title }) => {
   return (
     <Box sx={{ }}>
       <Typography
@@ -20,4 +20,4 @@ const AccessHeading: React.FC<AccessHeadingProps> = ({ title = "Access" }) => {
   );
 };
 
-export default AccessHeading;
+export default Heading;

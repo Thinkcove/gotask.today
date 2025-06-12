@@ -70,12 +70,14 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onTaskClick, view, getStatusC
         divider={<Divider orientation="vertical" flexItem />}
         mb={1.5}
       >
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <CalendarToday sx={{ fontSize: 18, color: "text.secondary" }} />
-          <Typography variant="body2">
-            {<FormattedDateTime date={task.due_date} format={DateFormats.MONTH_DATE} />}
-          </Typography>
-        </Stack>
+        {task.due_date && (
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <CalendarToday sx={{ fontSize: 18, color: "text.secondary" }} />
+            <Typography variant="body2">
+              <FormattedDateTime date={task.due_date} format={DateFormats.MONTH_DATE} />
+            </Typography>
+          </Stack>
+        )}
         <Stack direction="row" alignItems="center" spacing={1}>
           {view === "projects" ? (
             <Person sx={{ fontSize: 18, color: "text.secondary" }} />

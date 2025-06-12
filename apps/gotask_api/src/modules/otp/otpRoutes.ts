@@ -5,6 +5,7 @@ import RequestHelper from "../../helpers/requestHelper";
 import OtpController from "./otpController";
 
 const otpController = new OtpController();
+
 const tags = [API, "OTP"];
 const OtpRoutes = [];
 
@@ -15,7 +16,7 @@ OtpRoutes.push({
   handler: (request: Request, handler: ResponseToolkit) =>
     otpController.sendOtp(new RequestHelper(request), handler),
   config: {
-    notes: "Send OTP to user's email or phone",
+    notes: "Send OTP to user's email",
     tags
   }
 });

@@ -27,7 +27,9 @@ const CreateTask: React.FC = () => {
     user_id: "",
     project_id: "",
     created_on: new Date().toISOString().split("T")[0],
-    due_date: new Date().toISOString().split("T")[0]
+    due_date: "",
+    start_date: "",
+    user_estimated: ""
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -56,6 +58,17 @@ const CreateTask: React.FC = () => {
   // Handle form submission
   const handleSubmit = async () => {
     if (!validateForm()) return;
+
+    // Check if user_estimated is filled but start_date is missing
+    if (formData.user_estimated && !formData.start_date) {
+      setSnackbar({
+        open: true,
+        message: transtask("startdaterequired"),
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+      return;
+    }
+
     try {
       // Create the task
       await createTask(formData);

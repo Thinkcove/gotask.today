@@ -13,6 +13,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import { User } from "../interfaces/userInterface";
 import SearchBar from "@/app/component/searchBar/searchBar";
+import Chat from "../../chatbot/components/chat";
 
 const UserList = () => {
   const { canAccess } = useUserPermission();
@@ -45,6 +46,8 @@ const UserList = () => {
         />
       </Box>
       <UserCards users={filteredUsers} />
+
+      {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
 
       {/* Add User Button */}
       {canAccess(APPLICATIONS.USER, ACTIONS.CREATE) && (

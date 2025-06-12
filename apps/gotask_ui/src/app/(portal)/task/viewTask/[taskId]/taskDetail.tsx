@@ -176,20 +176,38 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 <LabelValueText
                   label={transtask("detailcreated")}
                   value={
-                    <FormattedDateTime
-                      date={task.created_on}
-                      format={DateFormats.FULL_DATE_TIME_12H}
-                    />
+                    task.created_on ? (
+                      <FormattedDateTime date={task.created_on} format={DateFormats.DATE_ONLY} />
+                    ) : (
+                      "-"
+                    )
                   }
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detaildue")}
-                  value={<FormattedDateTime date={task.due_date} format={DateFormats.DATE_ONLY} />}
+                  value={
+                    task.due_date ? (
+                      <FormattedDateTime date={task.due_date} format={DateFormats.DATE_ONLY} />
+                    ) : (
+                      "-"
+                    )
+                  }
                 />
               </Grid>
-
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("startdate")}
+                  value={
+                    task.start_date ? (
+                      <FormattedDateTime date={task.start_date} format={DateFormats.DATE_ONLY} />
+                    ) : (
+                      "-"
+                    )
+                  }
+                />
+              </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("estimatedt")}
@@ -212,6 +230,12 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 <LabelValueText
                   label={transtask("variationt")}
                   value={formatTimeValue(task.variation || "-")}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("userestit")}
+                  value={formatTimeValue(task.user_estimated || "-")}
                 />
               </Grid>
             </Grid>

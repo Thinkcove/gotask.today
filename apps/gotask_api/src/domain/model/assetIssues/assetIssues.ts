@@ -1,5 +1,6 @@
 import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { ASSET_ISSUES } from "../../../constants/assetConstant";
 
 export interface IAssetIssue extends Document {
   assetId: string;
@@ -21,7 +22,7 @@ const AssetIssueSchema = new Schema<IAssetIssue>(
     description: { type: String },
     status: {
       type: String,
-      enum: ["Open", "In Progress", "Hold", "Resolved"],
+      enum: ASSET_ISSUES,
       default: "Open"
     },
     assignedTo: { type: String, ref: "User" },

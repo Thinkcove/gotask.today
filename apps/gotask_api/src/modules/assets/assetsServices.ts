@@ -1,3 +1,5 @@
+import AssetMessages from "../../constants/apiMessages/assetMessage";
+import UserMessages from "../../constants/apiMessages/userMessage";
 import {
   createAsset,
   getAssetById,
@@ -15,14 +17,14 @@ class assetService {
     if (!userInfo) {
       return {
         success: false,
-        error: "User not found"
+        error: UserMessages.FETCH.NOT_FOUND
       };
     }
 
     if (!payload) {
       return {
         success: false,
-        error: "Invalid Payload"
+        error: AssetMessages.CREATE.INVALID_PAYLOAD
       };
     }
     try {
@@ -46,14 +48,14 @@ class assetService {
     if (!userInfo) {
       return {
         success: false,
-        error: "User not found"
+        error: UserMessages.FETCH.NOT_FOUND
       };
     }
 
     if (!payload) {
       return {
         success: false,
-        error: "Invalid Payload"
+        error: AssetMessages.CREATE.INVALID_PAYLOAD
       };
     }
     try {
@@ -82,7 +84,7 @@ class assetService {
     } catch (ex) {
       return {
         success: false,
-        error: "Assets not found"
+        error: AssetMessages.FETCH.NOT_FOUND
       };
     }
   };
@@ -92,7 +94,7 @@ class assetService {
     if (!userInfo) {
       return {
         success: false,
-        error: "User not found"
+        error: UserMessages.FETCH.NOT_FOUND
       };
     }
     try {
@@ -104,7 +106,7 @@ class assetService {
     } catch {
       return {
         success: false,
-        error: "Failed to get asset"
+        error: AssetMessages.FETCH.FAILED_TO_GET_ASSET
       };
     }
   };
@@ -119,7 +121,7 @@ class assetService {
     } catch (ex) {
       return {
         success: false,
-        error: "Assets types not found"
+        error: AssetMessages.FETCH.ASSET_TYPE_NOT_FOUND
       };
     }
   };
@@ -130,7 +132,7 @@ class assetService {
     if (!asset) {
       return {
         success: false,
-        message: "Asset not found"
+        message: AssetMessages.FETCH.NOT_FOUND
       };
     }
 
@@ -139,7 +141,7 @@ class assetService {
 
     return {
       success: true,
-      message: "Asset deleted successfully"
+      message: AssetMessages.DELETE.SUCCESS
     };
   };
 }

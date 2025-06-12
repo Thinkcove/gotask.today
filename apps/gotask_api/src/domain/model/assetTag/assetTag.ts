@@ -1,5 +1,6 @@
 import { Document, Schema, model, Types } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { ASSET_TAGS } from "../../../constants/assetConstant";
 
 export interface IAssetTag extends Document {
   id: string;
@@ -20,7 +21,7 @@ const AssetTagSchema = new Schema<IAssetTag>(
     assetId: { type: String, ref: "Asset", required: true },
     actionType: {
       type: String,
-      enum: ["Assigned", "Returned", "Serviced"],
+      enum: ASSET_TAGS,
       required: true
     },
     erk: { type: String },

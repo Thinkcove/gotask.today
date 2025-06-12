@@ -1,3 +1,5 @@
+import AssetMessages from "../../constants/apiMessages/assetMessage";
+import UserMessages from "../../constants/apiMessages/userMessage";
 import {
   createAssetIssues,
   createResource,
@@ -13,14 +15,14 @@ class resourceService {
     if (!userInfo) {
       return {
         success: false,
-        error: "User not found"
+        error: UserMessages.FETCH.NOT_FOUND
       };
     }
 
     if (!payload) {
       return {
         success: false,
-        error: "Invalid Payload"
+        error: AssetMessages.CREATE.INVALID_PAYLOAD
       };
     }
     try {
@@ -43,10 +45,10 @@ class resourceService {
   createOrUpdateAssetIssues = async (payload: any, user: any): Promise<any> => {
     const userInfo = await findUserByEmail(user.user_id);
     if (!userInfo) {
-      return { success: false, error: "User not found" };
+      return { success: false, error: UserMessages.FETCH.NOT_FOUND };
     }
     if (!payload) {
-      return { success: false, error: "Invalid Payload" };
+      return { success: false, error: AssetMessages.CREATE.INVALID_PAYLOAD };
     }
     try {
       let result;

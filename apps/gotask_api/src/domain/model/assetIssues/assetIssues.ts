@@ -7,7 +7,7 @@ export interface IAssetIssue extends Document {
   reportedBy: string;
   issueType: string;
   description: string;
-  status: "Open" | "In Progress" | "Hold" | "Resolved";
+  status: (typeof ASSET_ISSUES)[keyof typeof ASSET_ISSUES];
   assignedTo?: string;
   comment?: string;
   updatedBy: string;
@@ -23,7 +23,7 @@ const AssetIssueSchema = new Schema<IAssetIssue>(
     status: {
       type: String,
       enum: ASSET_ISSUES,
-      default: "Open"
+      default: ASSET_ISSUES.OPEN
     },
     assignedTo: { type: String, ref: "User" },
     comment: { type: String },

@@ -7,7 +7,7 @@ export interface IAssetTag extends Document {
   empId?: string;
   userId: String;
   assetId: String;
-  actionType: "Assigned" | "Returned" | "Serviced";
+  actionType: (typeof ASSET_TAGS)[keyof typeof ASSET_TAGS];
   erk?: string;
   previouslyUsedBy?: string;
   active?: boolean;

@@ -10,10 +10,9 @@ interface FormattedDateTimeProps {
 
 const FormattedDateTime: React.FC<FormattedDateTimeProps> = ({
   date,
-  format = DateFormats.FULL_DATE_TIME_12H
+  format = DateFormats.DATE_ONLY
 }) => {
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  console.log("usertime zone", userTimeZone);
   const formattedDate = moment(date).tz(userTimeZone).format(format);
 
   return <span>{formattedDate}</span>;

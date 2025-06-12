@@ -16,7 +16,6 @@ import TaskComments from "../../editTask/taskComments";
 import { createComment } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import DateFormats from "@/app/component/dateTime/dateFormat";
 
 interface TaskDetailViewProps {
   task: ITask;
@@ -175,37 +174,19 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detailcreated")}
-                  value={
-                    task.created_on ? (
-                      <FormattedDateTime date={task.created_on} format={DateFormats.DATE_ONLY} />
-                    ) : (
-                      "-"
-                    )
-                  }
+                  value={task.created_on ? <FormattedDateTime date={task.created_on} /> : "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detaildue")}
-                  value={
-                    task.due_date ? (
-                      <FormattedDateTime date={task.due_date} format={DateFormats.DATE_ONLY} />
-                    ) : (
-                      "-"
-                    )
-                  }
+                  value={task.due_date ? <FormattedDateTime date={task.due_date} /> : "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("startdate")}
-                  value={
-                    task.start_date ? (
-                      <FormattedDateTime date={task.start_date} format={DateFormats.DATE_ONLY} />
-                    ) : (
-                      "-"
-                    )
-                  }
+                  value={task.start_date ? <FormattedDateTime date={task.start_date} /> : "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>

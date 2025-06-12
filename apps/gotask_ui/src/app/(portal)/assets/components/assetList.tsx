@@ -22,11 +22,11 @@ export const AssetList: React.FC = () => {
   }));
 
   const assetColumns = [
-    { id: "assetType", label: "Asset" },
-    { id: "assetName", label: "Type" },
-    { id: "modelName", label: "Model" },
-    { id: "purchaseDate", label: "Purchase date" },
-    { id: "actions", label: "Actions" }
+    { id: "assetType", label: transasset("assets") },
+    { id: "assetName", label: transasset("type") },
+    { id: "modelName", label: transasset("model") },
+    { id: "purchaseDate", label: transasset("purchaseDate") },
+    { id: "actions", label: transasset("actions") }
   ];
 
   return (
@@ -34,7 +34,7 @@ export const AssetList: React.FC = () => {
       <ModuleHeader name={transasset("asset")} />
       <Box sx={{ px: 3, mt: 2, display: "flex", justifyContent: "flex-end" }}>
         <TaskToggle
-          options={["Asset", "Tag", "Issues"]}
+          options={[transasset("assets"), transasset("tag"), transasset("issues")]}
           selected={selectedView}
           onChange={setSelectedView}
         />
@@ -44,15 +44,15 @@ export const AssetList: React.FC = () => {
         <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} sm={12} md={11} lg={10} xl={9}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              {selectedView === "Asset" && (
+              {selectedView === transasset("assets") && (
                 <Paper sx={{ p: 2, overflowX: "auto" }}>
                   <Table columns={assetColumns} rows={formattedAssets} />
                 </Paper>
               )}
 
-              {selectedView === "Tag" && <Typography>Showing Tag List</Typography>}
+              {selectedView === transasset("tag")}
 
-              {selectedView === "Issues" && <Typography>Showing Issues List</Typography>}
+              {selectedView === transasset("issues")}
             </Box>
           </Grid>
         </Grid>

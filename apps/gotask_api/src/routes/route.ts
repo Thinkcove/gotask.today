@@ -11,6 +11,9 @@ import * as UserPreferenceRoutes from "../modules/userPreference/userPreferenceR
 import * as QueryRoutes from "../modules/query/queryRoutes";
 import * as AttendanceRoutes from "../modules/attendance/attendanceRoutes";
 import * as QueryTaskRoutes from "../modules/queryTask/queryTaskRoutes";
+import  ProjectStoryRoutes from "../modules/projectStory/projectStory.routes";
+
+
 
 const routes: ServerRoute[] = [
   ...ProjectRoutes.default,
@@ -24,6 +27,7 @@ const routes: ServerRoute[] = [
   ...QueryRoutes.default,
   ...AttendanceRoutes.default,
   ...QueryTaskRoutes.default,
-  ...UserPreferenceRoutes.default
+  ...UserPreferenceRoutes.default,
+  ...ProjectStoryRoutes
 ];
 export default routes;

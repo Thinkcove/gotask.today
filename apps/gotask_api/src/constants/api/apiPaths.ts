@@ -24,13 +24,12 @@ export const API_PATHS = {
   GET_USERS_BY_PROJECT_ID: "/getUsersByProjectId/{project_id}",
 
     //project story
-    CREATE_PROJECT_STORY: "/api/projects/{projectId}/stories",
-  GET_STORIES_BY_PROJECT: "/api/projects/{projectId}/stories",
-  GET_PROJECT_STORY_BY_ID: "/api/stories/{storyId}",
+    CREATE_PROJECT_STORY: "/project/{projectId}/story",
+  GET_STORIES_BY_PROJECT: "/projects/{projectId}/stories",
+  GET_PROJECT_STORY_BY_ID: "/stories/{storyId}",
+  ADD_COMMENT_TO_STORY: "/story/{storyId}/comment",
 
-  //storycomment
-  ADD_COMMENT: "/stories/{storyId}/comments",
-  GET_COMMENTS_BY_STORY: "/stories/{storyId}/comments",
+
   
   //userRoutes
   CREATE_USER: "/createUser",

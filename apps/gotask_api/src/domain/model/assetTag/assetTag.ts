@@ -1,12 +1,12 @@
-import { Document, Schema, model, Types } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { ASSET_TAGS } from "../../../constants/assetConstant";
 
 export interface IAssetTag extends Document {
   id: string;
   empId?: string;
-  userId: String;
-  assetId: String;
+  userId: string;
+  assetId: string;
   actionType: (typeof ASSET_TAGS)[keyof typeof ASSET_TAGS];
   erk?: string;
   previouslyUsedBy?: string;

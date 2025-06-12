@@ -11,8 +11,8 @@ import {
   isInCooldown,
   updateOtpAttempts,
   saveOrUpdateOtp,
-  findOtpByUser,
-} from "../../domain/interface/otp/otpInterface"; 
+  findOtpByUser
+} from "../../domain/interface/otp/otpInterface";
 
 //SEND OTP
 export const sendOtpService = async (user_id: string) => {
@@ -33,14 +33,18 @@ export const sendOtpService = async (user_id: string) => {
   await sendEmail({
     to: user.user_id,
     subject: emailContent.subject,
-    text: emailContent.text,
+    text: emailContent.text
   });
 
   return { success: true, message: OtpMessages.SEND.SUCCESS };
 };
 
 // VERIFY OTP
-export const verifyOtpService = async (user_id: string, enteredOtp: string, rememberMe: boolean) => {
+export const verifyOtpService = async (
+  user_id: string,
+  enteredOtp: string,
+  rememberMe: boolean
+) => {
   const user = (await User.findOne({ user_id }).populate("roleId")) as IUser;
   if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
 
@@ -74,6 +78,6 @@ export const verifyOtpService = async (user_id: string, enteredOtp: string, reme
   return {
     success: true,
     message: OtpMessages.VERIFY.SUCCESS,
-    data: { token: accessToken, user: userObject },
+    data: { token: accessToken, user: userObject }
   };
 };

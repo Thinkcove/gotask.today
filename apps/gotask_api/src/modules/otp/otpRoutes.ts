@@ -33,5 +33,4 @@ OtpRoutes.push({
   }
 });
 
-
 export default OtpRoutes;

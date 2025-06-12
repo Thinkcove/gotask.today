@@ -395,6 +395,16 @@
     "all": "All",
     "reset": "Reset Filter"
   },
+  "Assets": {
+    "asset": "Assets and Resources",
+    "assets": "Asset",
+    "type": "Type",
+    "model": "Model",
+    "purchaseDate": "Purchase Date",
+    "actions": "Actions",
+    "tag": "Tag",
+    "issues": "Issues"
+  },
 
   "Chatbot": {
     "viewname": "Chatbot",

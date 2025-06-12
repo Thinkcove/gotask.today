@@ -2,39 +2,65 @@
   "accesses": [
     {
       "access": "User Management",
-      "actions": ["READ", "CREATE", "EDIT", "VIEW", "DELETE"]
+      "actions": ["READ", "CREATE", "EDIT", "VIEW", "DELETE"],
+      "restrictedFields": {
+        "EDIT": ["name", "user_id", "status", "roleId", "organization"]
+      }
     },
     {
       "access": "Task Management",
-      "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE"]
+      "actions": ["READ", "CREATE", "EDIT", "VIEW", "DELETE"],
+      "restrictedFields": {
+        "EDIT": ["title", "description", "status", "severity", "user_id", "project_id", "due_date"]
+      }
     },
     {
       "access": "Project Management",
-      "actions": ["READ", "CREATE", "EDIT", "VIEW", "ASSIGN", "UNASSIGN", "UPDATE"]
+      "actions": ["READ", "CREATE", "EDIT", "VIEW", "ASSIGN", "UNASSIGN", "UPDATE"],
+      "restrictedFields": {
+        "VIEW": ["organization_id"],
+        "EDIT": ["name", "description", "status", "organization_id"],
+        "READ": ["description"]
+      }
     },
     {
       "access": "Access Management",
-      "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE", "UPDATE"]
+      "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE", "UPDATE"],
+      "restrictedFields": {
+        "EDIT": ["name"]
+      }
     },
     {
       "access": "Organization Management",
-      "actions": ["READ", "CREATE", "VIEW", "EDIT"]
+      "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE"],
+      "restrictedFields": {
+        "READ": ["users", "projects"],
+        "EDIT": ["name", "address", "mail_id", "mobile_no"]
+      }
     },
     {
       "access": "Role Management",
-      "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE", "INVOKE_ACCESS", "REVOKE_ACCESS"]
+      "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE", "INVOKE_ACCESS", "REVOKE_ACCESS"],
+      "restrictedFields": {}
     },
     {
       "access": "User Report",
-      "actions": ["READ"]
+      "actions": ["READ"],
+      "restrictedFields": {}
     },
     {
       "access": "Chatbot Management",
-      "actions": ["READ", "CREATE", "EDIT", "DELETE"]
+      "actions": ["READ", "CREATE", "EDIT", "DELETE"],
+      "restrictedFields": {}
     },
     {
       "access": "Upload",
-      "actions": ["READ", "CREATE"]
+      "actions": ["READ", "CREATE"],
+      "restrictedFields": {}
+    },
+    {
+      "access": "Asset and Resources",
+      "actions": ["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
     }
   ]
 }

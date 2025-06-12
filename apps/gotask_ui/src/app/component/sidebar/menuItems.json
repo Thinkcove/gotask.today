@@ -47,5 +47,11 @@
     "path": "/report",
     "access": "User Report"
   },
+  {
+    "text": "Asset and Resource",
+    "icon": "ManageAccountsIcon",
+    "path": "/assets",
+    "access": "Asset and Resources"
+  },
   { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" }
 ]

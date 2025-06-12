@@ -29,7 +29,6 @@
     "otpfail": "Failed to send OTP. Please try again.",
     "loading": "Loading...",
     "rememberme": "Remember Me"
-
   },
   "Access": {
     "access": "Access",
@@ -395,6 +394,14 @@
     "error": "Error loading data",
     "all": "All",
     "reset": "Reset Filter"
+  },
+  "Assets": {
+    "asset": "Assets and Resources",
+    "assets": "Asset",
+    "type": "Type",
+    "model": "Model",
+    "purchaseDate": "Purchase Date",
+    "actions": "Actions"
   },
 
   "Chatbot": {

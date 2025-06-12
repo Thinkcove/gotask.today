@@ -5,11 +5,11 @@ export interface IAsset extends Document {
   // Common fields
   id: string;
   typeId: string;
-  deviceName: string;
-  serialNumber: string;
-  ram: string;
-  modelName: string;
-  os: string;
+  deviceName?: string;
+  serialNumber?: string;
+  ram?: string;
+  modelName?: string;
+  os?: string;
   storage?: string;
   processor?: string;
   seller?: string;

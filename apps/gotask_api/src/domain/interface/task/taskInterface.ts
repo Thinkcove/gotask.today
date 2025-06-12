@@ -20,11 +20,19 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
     throw new Error("Invalid user_id or project_id");
   }
 
-  // Assign user_name and project_name
+  const startedOn = taskData.start_date;
+  const userEstimated = taskData.user_estimated;
+  let estimated_time: string | undefined = undefined;
+
+  if (startedOn && userEstimated) {
+    estimated_time = userEstimated;
+  }
+
   const newTask = new Task({
     ...taskData,
     user_name: user.name,
-    project_name: project.name
+    project_name: project.name,
+    estimated_time
   });
   return await newTask.save();
 };

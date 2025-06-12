@@ -189,9 +189,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText label={transtask("detaildue")} value={formatDate(task.due_date)} />
-              </Grid>
-              <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("estimatedt")}
                   value={formatTimeValue(task.estimated_time || "-")}

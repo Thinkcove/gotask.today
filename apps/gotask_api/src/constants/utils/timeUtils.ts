@@ -47,8 +47,7 @@ const calculateRemainingTime = (estimatedTime: string, spentTime: string): strin
 
 // Validate time format
 const isValidTimeFormat = (timeString: string): boolean => {
-  const pattern = /^-?\d+d\d+h(\d+m)?$/; // Supports optional minutes
-  return pattern.test(timeString) && timeString.length > 0;
+  return TIME_FORMAT_PATTERNS.DURATION_FORMAT.test(timeString) && timeString.length > 0;
 };
 
 // Calculate time logged between start and end

@@ -29,7 +29,6 @@
     "otpfail": "Failed to send OTP. Please try again.",
     "loading": "Loading...",
     "rememberme": "Remember Me"
-
   },
   "Access": {
     "access": "Access",
@@ -244,7 +243,7 @@
     "placeholderhours": "Enter Required Hours",
     "labeluserestimateddays": "Required Days",
     "labeluserestimatedhours": "Required Hours",
-    "startdaterequired": "Please enter Start Date before estimating time",
+    "startdaterequired": "Please provide a start date when setting an estimated time.",
     "updatesuccess": "Task updated successfully!",
     "upadteerror": "Error updating task",
     "tasks": "Task",
@@ -395,6 +394,16 @@
     "error": "Error loading data",
     "all": "All",
     "reset": "Reset Filter"
+  },
+  "Assets": {
+    "asset": "Assets and Resources",
+    "assets": "Asset",
+    "type": "Type",
+    "model": "Model",
+    "purchaseDate": "Purchase Date",
+    "actions": "Actions",
+    "tag": "Tag",
+    "issues": "Issues"
   },
 
   "Chatbot": {

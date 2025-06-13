@@ -403,7 +403,27 @@
     "purchaseDate": "Purchase Date",
     "actions": "Actions",
     "tag": "Tag",
-    "issues": "Issues"
+    "issues": "Issues",
+    "createasset": "Create asset",
+    "devicename": "Device Name",
+    "serialnumber": "Serial Number",
+    "modelname": "Model Name",
+    "os": "OS",
+    "ram": "RAM",
+    "storage": "Storage",
+    "processor": "Processor",
+    "seller": "Seller",
+    "dateOfPurchase": "Date of Purchase",
+    "warrantyPeriod": "Warranty Period",
+    "warrantyDate": "Warranty Date",
+    "antivirus": "Antivirus",
+    "recoveryKey": "Recovery Key",
+    "lastServicedDate": "Last Serviced Date",
+    "commentService": "Comment Service",
+    "cancel": "Cancel",
+    "create": "Create",
+    "successmessage": "Asset created successful",
+    "isencrypted": "Is Encrypted"
   },
 
   "Chatbot": {

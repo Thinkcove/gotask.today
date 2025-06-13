@@ -13,18 +13,22 @@ const AccessTabs: React.FC<AccessTabsProps> = ({
   currentModule,
   onChange,
 }) => {
+  // Ensure currentModule is valid, fallback to first module or empty string
+  const safeCurrentModule =
+    modules.includes(currentModule) ? currentModule : modules[0] || "";
+
   return (
     <Tabs
-      value={currentModule}
+      value={safeCurrentModule}
       onChange={(e, newValue) => onChange(newValue)}
       variant="scrollable"
       scrollButtons="auto"
       sx={{
-        width: '100%', 
+        width: '100%',
         '& .MuiTab-root': {
           minHeight: '30px',
-          padding: { xs: '6px 12px', sm: '8px 16px' }, 
-          fontSize: { xs: '0.7rem', sm: '0.85rem' }, 
+          padding: { xs: '6px 12px', sm: '8px 16px' },
+          fontSize: { xs: '0.7rem', sm: '0.85rem' },
           textTransform: 'none',
           whiteSpace: 'nowrap',
         },

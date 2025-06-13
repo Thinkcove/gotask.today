@@ -10,6 +10,7 @@ interface ProgressBarProps {
   estimatedTime: string;
   timeSpentTotal: string;
   dueDate: string;
+  startDate: string;
   timeEntries: Array<{ date: string; start_time: string; end_time: string }>;
   variation: string;
   onClick: () => void;
@@ -21,6 +22,7 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
   timeSpentTotal,
   dueDate,
   timeEntries,
+  startDate,
   variation,
   onClick,
   canLogTime = true
@@ -28,7 +30,7 @@ const TimeProgressBar: React.FC<ProgressBarProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { estimatedHours, spentHours, spentFillPercentage, variationFillPercentage } =
-    calculateTimeProgressData(estimatedTime, timeSpentTotal, dueDate, timeEntries);
+    calculateTimeProgressData(estimatedTime, timeSpentTotal, dueDate, timeEntries, startDate);
 
   const purpleColor = "#741B92";
   const redColor = "#d32f2f";

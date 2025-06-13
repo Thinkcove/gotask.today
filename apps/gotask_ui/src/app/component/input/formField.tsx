@@ -31,7 +31,11 @@ export interface SelectOption {
 
 interface FormFieldProps {
   label: string;
+<<<<<<< HEAD
   type: "text" | "select" | "date" | "multiselect" | "file" ;
+=======
+  type: "text" | "select" | "date" | "multiselect" | "number";
+>>>>>>> main
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];
@@ -46,7 +50,12 @@ interface FormFieldProps {
   inputType?: string;
   inputProps?: TextFieldProps["InputProps"];
   sx?: SxProps<Theme>;
+<<<<<<< HEAD
   
+=======
+  min?: number;
+  max?: number;
+>>>>>>> main
 }
 
 const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function FormField(
@@ -66,7 +75,9 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
     onFocus,
     inputType,
     inputProps,
-    sx
+    sx,
+    min,
+    max
   },
   ref
 ) {
@@ -148,59 +159,61 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
               ...inputProps
             }}
           />
-        ) : (
-          type === "text" && (
-            <TextField
-              inputRef={ref}
-              variant="standard"
-              required={required}
-              placeholder={placeholder}
-              error={!!error}
-              fullWidth
-              multiline={multiline}
-              value={value ?? ''} 
-              disabled={disabled}
-              onFocus={onFocus}
-              type={inputType || "text"}
-              sx={{
-                "& .MuiInputBase-input::placeholder": {
-                  color: "#9C8585",
-                  opacity: 1
-                },
-                ...(multiline && { height: height || 100, overflowY: "auto" })
-              }}
-              onChange={(e) => {
-                let val = e.target.value;
-                if (inputType === "tel") {
-                  val = val.replace(/[^\d\s()+-]/g, "");
-                }
+        ) : type === "text" || type === "number" ? (
+          <TextField
+            inputRef={ref}
+            variant="standard"
+            required={required}
+            placeholder={placeholder}
+            error={!!error}
+            fullWidth
+            multiline={multiline}
+            value={value === 0 || value ? value : ""}
+            disabled={disabled}
+            onFocus={onFocus}
+            type={type === "number" ? "number" : inputType || "text"}
+            inputProps={{ min, max }}
+            sx={{
+              "& .MuiInputBase-input::placeholder": {
+                color: "#9C8585",
+                opacity: 1
+              },
+              ...(multiline && { height: height || 100, overflowY: "auto" })
+            }}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (type === "number") {
+                onChange?.(val === "" ? "" : Number(val));
+              } else if (inputType === "tel") {
+                onChange?.(val.replace(/[^\d\s()+-]/g, ""));
+              } else {
                 onChange?.(val);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey && onSend) {
-                  e.preventDefault();
-                  onSend();
-                }
-              }}
-              InputProps={{
-                disableUnderline: true,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Edit sx={{ color: "#9C8585" }} />
-                  </InputAdornment>
-                ),
-                endAdornment: onSend && (
-                  <InputAdornment position="end">
-                    <IconButton onClick={onSend} disabled={disabled || !value}>
-                      <SendIcon sx={{ color: value && !disabled ? "#741B92" : "#9C8585" }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                ...inputProps
-              }}
-            />
-          )
-        )}
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey && onSend) {
+                e.preventDefault();
+                onSend();
+              }
+            }}
+            InputProps={{
+              disableUnderline: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Edit sx={{ color: "#9C8585" }} />
+                </InputAdornment>
+              ),
+              endAdornment: onSend && (
+                <InputAdornment position="end">
+                  <IconButton onClick={onSend} disabled={disabled || !value}>
+                    <SendIcon sx={{ color: value && !disabled ? "#741B92" : "#9C8585" }} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              ...inputProps
+            }}
+          />
+        ) : null}
 
         {type === "select" && (
           <Autocomplete
@@ -242,6 +255,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
             onChange={(date) => onChange?.(date ? date.toISOString().split("T")[0] : "")}
             disabled={disabled}
             dateFormat="MM/dd/yyyy"
+            placeholderText={placeholder}
             customInput={
               <TextField
                 variant="standard"

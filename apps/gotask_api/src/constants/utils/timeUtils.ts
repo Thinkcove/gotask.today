@@ -5,27 +5,30 @@ import {
   TIME_FORMAT_PATTERNS
 } from "../../constants/commonConstants/timeConstants";
 
-// Parse "2d4h" format to total hours
+// Parse "2d4h30m" format to total hours (including fractional hours for minutes)
 const parseTimeString = (timeString: string): number => {
   if (!timeString) return 0;
   const days = parseInt(timeString.match(/(\d+)d/)?.[1] || "0", 10);
   const hours = parseInt(timeString.match(/(\d+)h/)?.[1] || "0", 10);
-  return days * 8 + hours;
+  const minutes = parseInt(timeString.match(/(\d+)m/)?.[1] || "0", 10);
+  return days * 8 + hours + minutes / 60;
 };
 
-// Parse "HH:MM" string to total hours
+// Parse "HH:MM" string to total hours (including fractional hours for minutes)
 const parseHourMinuteString = (timeStr: string): number => {
   if (!timeStr || !timeStr.includes(":")) return 0;
   const [hours, minutes] = timeStr.split(":").map(Number);
   return ((hours || 0) * 60 + (minutes || 0)) / 60;
 };
 
-// Format total hours to "XdYh" format
+// Format total hours to "XdYhZm" format, always including days, hours, and minutes
 const formatHoursToTimeString = (totalHours: number): string => {
   const days = Math.floor(Math.abs(totalHours) / 8);
-  const hours = Math.round(Math.abs(totalHours) % 8);
+  const remainingHours = Math.abs(totalHours) % 8;
+  const hours = Math.floor(remainingHours);
+  const minutes = Math.round((remainingHours - hours) * 60);
   const sign = totalHours < 0 ? "-" : "";
-  return `${sign}${days}d${hours}h`;
+  return `${sign}${days}d${hours}h${minutes}m`;
 };
 
 // Calculate total time spent from array
@@ -44,7 +47,7 @@ const calculateRemainingTime = (estimatedTime: string, spentTime: string): strin
 
 // Validate time format
 const isValidTimeFormat = (timeString: string): boolean => {
-  return TIME_FORMAT_PATTERNS.DAY_HOUR_FORMAT.test(timeString) && timeString.length > 0;
+  return TIME_FORMAT_PATTERNS.DURATION_FORMAT.test(timeString) && timeString.length > 0;
 };
 
 // Calculate time logged between start and end
@@ -136,7 +139,6 @@ const calculateVariation = (
   const estimatedHours = parseTimeString(estimatedTime);
   const actualSpentHours = parseTimeString(actualSpentTime);
   const variationInHours = actualSpentHours - estimatedHours;
-
   return formatHoursToTimeString(forcePositive ? Math.abs(variationInHours) : variationInHours);
 };
 

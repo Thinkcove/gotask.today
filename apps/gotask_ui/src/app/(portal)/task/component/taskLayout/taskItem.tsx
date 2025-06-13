@@ -75,10 +75,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
         divider={<Divider orientation="vertical" flexItem />}
         mb={1.5}
       >
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <CalendarToday sx={{ fontSize: 18, color: "text.secondary" }} />
-          <Typography variant="body2">{formatDate(task.due_date)}</Typography>
-        </Stack>
+        {task.due_date && (
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <CalendarToday sx={{ fontSize: 18, color: "text.secondary" }} />
+            <Typography variant="body2">
+              {task.due_date ? formatDate(task.due_date) : "-"}
+            </Typography>
+          </Stack>
+        )}
         <Stack direction="row" alignItems="center" spacing={1}>
           {view === "projects" ? (
             <Person sx={{ fontSize: 18, color: "text.secondary" }} />

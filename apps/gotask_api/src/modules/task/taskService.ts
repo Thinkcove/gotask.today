@@ -1,5 +1,6 @@
 import TaskMessages from "../../constants/apiMessages/taskMessage";
 import { SortField, SortOrder } from "../../constants/taskConstant";
+import { TimeUtil } from "../../constants/utils/timeUtils";
 import {
   addTimeSpentToTask,
   createCommentInTask,
@@ -495,7 +496,7 @@ const deleteComment = async (
   }
 };
 
-//add time spent
+// Add time spent
 const addTimeSpent = async (
   id: string,
   timeEntries: ITimeSpentEntry | ITimeSpentEntry[]
@@ -503,17 +504,22 @@ const addTimeSpent = async (
   try {
     const entriesArray = Array.isArray(timeEntries) ? timeEntries : [timeEntries];
 
-    const updatedTask = await addTimeSpentToTask(id, entriesArray); // <-- Pass only array
+    const updatedTask = await addTimeSpentToTask(id, entriesArray);
 
     if (!updatedTask) {
       return { success: false, message: TaskMessages.TIME_SPENT.NOT_FOUND };
     }
 
+    // Ensure estimated_time is formatted with minutes
+    const formattedEstimatedTime = TimeUtil.formatHoursToTimeString(
+      TimeUtil.parseTimeString(updatedTask.estimated_time)
+    );
+
     return {
       success: true,
       data: {
         time_spent: updatedTask.time_spent,
-        estimated_time: updatedTask.estimated_time,
+        estimated_time: formattedEstimatedTime,
         remaining_time: updatedTask.remaining_time,
         time_spent_total: updatedTask.time_spent_total,
         variation: updatedTask.variation

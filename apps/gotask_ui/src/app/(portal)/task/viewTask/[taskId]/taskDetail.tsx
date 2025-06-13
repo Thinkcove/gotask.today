@@ -177,9 +177,17 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText label={transtask("detaildue")} value={formatDate(task.due_date)} />
+                <LabelValueText
+                  label={transtask("detaildue")}
+                  value={task.due_date ? new Date(task.due_date).toLocaleDateString() : "-"}
+                />
               </Grid>
-
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("startdate")}
+                  value={task.start_date ? new Date(task.start_date).toLocaleDateString() : "-"}
+                />
+              </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("estimatedt")}
@@ -202,6 +210,12 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 <LabelValueText
                   label={transtask("variationt")}
                   value={formatTimeValue(task.variation || "-")}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("userestit")}
+                  value={formatTimeValue(task.user_estimated || "-")}
                 />
               </Grid>
             </Grid>

@@ -131,4 +131,21 @@ ProjectRoutes.push({
     }
   }
 });
+
+// Route: Get Projects by Filters (user_id & status)
+ProjectRoutes.push({
+  path: API_PATHS.GET_PROJECTS_FILTERED,
+  method: API_METHODS.GET,
+  handler:  (request: Request, handler: ResponseToolkit) =>
+    projectController.getFilteredProjects(new RequestHelper(request), handler)
+,
+  config: {
+    notes: "Get projects by filters (user_id, status)",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
 export default ProjectRoutes;

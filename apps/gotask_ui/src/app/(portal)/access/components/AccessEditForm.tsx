@@ -26,9 +26,12 @@ import { useTranslations } from "next-intl";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
 import Heading from "../../../component/header/title";
 
+// Define access form fields for restriction checks
+const ACCESS_FORM_FIELDS = ["name", "permissions", "restrictedFields"];
+
 export default function AccessEditForm() {
   const t = useTranslations("Access");
-  const { canAccess } = useUserPermission();
+  const { canAccess, isFieldRestricted } = useUserPermission();
   const { id } = useParams();
   const router = useRouter();
 
@@ -92,7 +95,9 @@ export default function AccessEditForm() {
   // Dynamically get all module names from role and accessOptions
   const allModules = new Set<string>();
   if (role && role.application && role.application.length > 0) {
-    role.application.forEach((app: { access: string; }) => allModules.add(app.access));
+    role.application.forEach((app: { access: string }) =>
+      allModules.add(app.access)
+    );
   }
   if (accessOptions && accessOptions.length > 0) {
     accessOptions.forEach((opt) => allModules.add(opt.access));
@@ -103,9 +108,12 @@ export default function AccessEditForm() {
     allModules.size > 0 &&
     (currentTab === "" || !allModules.has(currentTab))
   ) {
-    const firstModule = role?.application?.find((app: { access: string; }) =>
-      allModules.has(app.access)
-    )?.access || accessOptions.find((opt) => allModules.has(opt.access))?.access || Array.from(allModules)[0];
+    const firstModule =
+      role?.application?.find((app: { access: string }) =>
+        allModules.has(app.access)
+      )?.access ||
+      accessOptions.find((opt) => allModules.has(opt.access))?.access ||
+      Array.from(allModules)[0];
 
     setCurrentTab(firstModule);
   }
@@ -115,13 +123,15 @@ export default function AccessEditForm() {
     action: string,
     checked: boolean
   ) => {
-    setSelectedPermissions((prev) => {
-      const existing = prev[module] || [];
-      const updated = checked
-        ? [...new Set([...existing, action])]
-        : existing.filter((a) => a !== action);
-      return { ...prev, [module]: updated };
-    });
+    if (!isFieldRestricted(APPLICATIONS.ACCESS, ACTIONS.UPDATE, "permissions")) {
+      setSelectedPermissions((prev) => {
+        const existing = prev[module] || [];
+        const updated = checked
+          ? [...new Set([...existing, action])]
+          : existing.filter((a) => a !== action);
+        return { ...prev, [module]: updated };
+      });
+    }
   };
 
   const handleFieldChange = (
@@ -130,22 +140,26 @@ export default function AccessEditForm() {
     field: string,
     checked: boolean
   ) => {
-    setSelectedFields((prev) => {
-      const moduleFields = prev[module] || {};
-      const actionFields = moduleFields[action.toUpperCase()] || [];
+    if (
+      !isFieldRestricted(APPLICATIONS.ACCESS, ACTIONS.UPDATE, "restrictedFields")
+    ) {
+      setSelectedFields((prev) => {
+        const moduleFields = prev[module] || {};
+        const actionFields = moduleFields[action.toUpperCase()] || [];
 
-      const updatedFields = checked
-        ? [...new Set([...actionFields, field])]
-        : actionFields.filter((f) => f !== field);
+        const updatedFields = checked
+          ? [...new Set([...actionFields, field])]
+          : actionFields.filter((f) => f !== field);
 
-      return {
-        ...prev,
-        [module]: {
-          ...moduleFields,
-          [action.toUpperCase()]: updatedFields,
-        },
-      };
-    });
+        return {
+          ...prev,
+          [module]: {
+            ...moduleFields,
+            [action.toUpperCase()]: updatedFields,
+          },
+        };
+      });
+    }
   };
 
   const showSnackbar = (
@@ -182,7 +196,10 @@ export default function AccessEditForm() {
 
     try {
       setIsSubmitting(true);
-     const res = await updateAccessRole(String(id), payload as Omit<AccessRole, "id">);
+      const res = await updateAccessRole(
+        String(id),
+        payload as Omit<AccessRole, "id">
+      );
       if (res.success) {
         showSnackbar(t("updatesuccess"), "success");
         setTimeout(() => {
@@ -198,6 +215,11 @@ export default function AccessEditForm() {
       setIsSubmitting(false);
     }
   };
+
+  // Dynamically build readOnlyFields using ACCESS_FORM_FIELDS
+  const readOnlyFields = ACCESS_FORM_FIELDS.filter((field) =>
+    isFieldRestricted(APPLICATIONS.ACCESS, ACTIONS.UPDATE, field)
+  );
 
   if (isRoleLoading || isOptionsLoading) {
     return (
@@ -277,7 +299,15 @@ export default function AccessEditForm() {
             variant="outlined"
             required
             value={roleName}
-            onChange={(e) => setRoleName(e.target.value)}
+            onChange={(e) =>
+              !isFieldRestricted(APPLICATIONS.ACCESS, ACTIONS.UPDATE, "name") &&
+              setRoleName(e.target.value)
+            }
+            disabled={isFieldRestricted(
+              APPLICATIONS.ACCESS,
+              ACTIONS.UPDATE,
+              "name"
+            )}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 1,
@@ -310,6 +340,7 @@ export default function AccessEditForm() {
               onTabChange={setCurrentTab}
               onCheckboxChange={handlePermissionChange}
               onFieldChange={handleFieldChange}
+              readOnlyFields={readOnlyFields}
             />
           )}
         </Box>
@@ -376,3 +407,4 @@ export default function AccessEditForm() {
     </Box>
   );
 }
+

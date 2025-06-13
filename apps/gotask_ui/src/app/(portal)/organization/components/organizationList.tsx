@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -17,14 +17,19 @@ import { Organization } from "../interfaces/organizatioinInterface";
 const OrganizationList = () => {
   const { canAccess } = useUserPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
   const { data: organizations, mutate } = useSWR("getOrganizations", getOrganizationData);
 
-  const filteredOrganizations =
-    organizations?.filter((org: Organization) =>
-      org.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || null;
+  const filteredOrganizations = useMemo(() => {
+    return (
+      organizations?.filter((org: Organization) =>
+        org.name.toLowerCase().includes(searchTerm.toLowerCase())
+      ) || []
+    );
+  }, [organizations, searchTerm]);
 
   return (
     <Box
@@ -36,12 +41,14 @@ const OrganizationList = () => {
         p: 3
       }}
     >
+      {/* Modal for Create Organization */}
       <CreateOrganization
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         mutate={mutate}
       />
 
+      {/* Search Bar */}
       <Box mb={3} maxWidth={400}>
         <SearchBar
           value={searchTerm}
@@ -51,8 +58,10 @@ const OrganizationList = () => {
         />
       </Box>
 
+      {/* Cards List */}
       <OrganizationCards organizations={filteredOrganizations} />
 
+      {/* Floating Add Button with Permission Check */}
       {canAccess(APPLICATIONS.ORGANIZATION, ACTIONS.CREATE) && (
         <ActionButton
           label={transorganization("createnew")}
@@ -65,3 +74,4 @@ const OrganizationList = () => {
 };
 
 export default OrganizationList;
+

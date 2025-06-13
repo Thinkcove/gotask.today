@@ -228,6 +228,7 @@ const AccessCreateForm: React.FC = () => {
             onTabChange={setCurrentModule}
             onCheckboxChange={handleCheckboxChange}
             onFieldChange={handleFieldChange}
+            readOnlyFields={[]} 
           />
         )}
       </Box>

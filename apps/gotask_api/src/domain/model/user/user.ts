@@ -13,19 +13,15 @@ export interface IUser extends Document {
   password: string;
   user_id: string;
   mobile_no: string;
-
   alternate_no?: string;
-
   joined_date: Date;
   status: boolean;
   roleId: Types.ObjectId;
   organization?: string[];
   projects?: string[];
-
   address: string;
   country: string;
   state: string;
-  // certifications?: string[];
 }
 
 // User Schema

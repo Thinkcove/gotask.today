@@ -39,18 +39,6 @@ const UserInput = ({
 
   return (
     <Grid container spacing={1}>
-      {/* <Grid item xs={12}>
-        <div
-          style={{
-            fontWeight: 600,
-            fontSize: "14px",
-            marginBottom: "10px",
-            marginTop: "20px"
-          }}
-        >
-          {transuser("generalinfo")}
-        </div>
-      </Grid> */}
 
       <Grid item xs={12}>
         <FormField
@@ -156,8 +144,6 @@ const UserInput = ({
         />
       </Grid>
 
-      {/*  */}
-      {/* Country Dropdown */}
       <Grid item xs={12} sm={6}>
         <FormField
           label={transuser("labelcountry")}
@@ -182,7 +168,6 @@ const UserInput = ({
         />
       </Grid>
 
-      {/* State Dropdown */}
       <Grid item xs={12} sm={6}>
         <FormField
           label={transuser("labelState")}
@@ -219,21 +204,6 @@ const UserInput = ({
         />
       </Grid>
 
-      {/* <Grid item xs={12}>
-        <FormField
-          label={transuser("labelcertifications")}
-          type="file"
-          multiple={true}
-          value={formData.certifications}
-          onChange={(value) => handleChange("certifications", value)}
-          required={false}
-          error={errors.certifications}
-          disabled={isReadOnly("certifications")}
-          placeholder={transuser("placeholdercertifications")}
-        />
-      </Grid>  */}
-
-      {/*  */}
       <Grid item xs={12}>
         <FormField
           label={transuser("labeljoined_date")}
@@ -287,7 +257,6 @@ const UserInput = ({
           onChange={(ids) => {
             const selectedIds = ids as string[]; // Ensure selectedIds is an array of strings
             setSelectedOrganizationIds(selectedIds);
-
             // Set formData.organization to the selected array
             handleChange("organization", selectedIds);
           }}

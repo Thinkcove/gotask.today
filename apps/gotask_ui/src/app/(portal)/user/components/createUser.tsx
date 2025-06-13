@@ -34,7 +34,6 @@ const initialFormState: IUserField = {
   address:"",
   country: "",
   state: ""
-  // certifications: []
 };
 
 const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {

@@ -6,9 +6,7 @@ export interface IUserField {
   user_id: string;
   password?: string;
   mobile_no?: string;
-
   alternate_no?: string;
-
   joined_date?: Date | string;
   emp_id?: string;
   first_name: string;
@@ -16,7 +14,6 @@ export interface IUserField {
   address: string;
   country: string;
   state: string;
-  // certifications?: string[];
 }
 
 export interface User {
@@ -42,7 +39,6 @@ export interface User {
   alternate_no?: string;
   country: string;
   state: string;
-  //certifications?: string[]; // Uploads, stored as filenames or URLs
 }
 
 export interface RoleData {

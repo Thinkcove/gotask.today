@@ -31,11 +31,7 @@ export interface SelectOption {
 
 interface FormFieldProps {
   label: string;
-<<<<<<< HEAD
-  type: "text" | "select" | "date" | "multiselect" | "file" ;
-=======
   type: "text" | "select" | "date" | "multiselect" | "number";
->>>>>>> main
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];
@@ -50,12 +46,8 @@ interface FormFieldProps {
   inputType?: string;
   inputProps?: TextFieldProps["InputProps"];
   sx?: SxProps<Theme>;
-<<<<<<< HEAD
-  
-=======
   min?: number;
   max?: number;
->>>>>>> main
 }
 
 const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function FormField(

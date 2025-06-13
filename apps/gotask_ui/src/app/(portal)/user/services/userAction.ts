@@ -103,8 +103,6 @@ export const fetchUsers = async () => {
           country: string;
           state: string;
           alternate_no?: string;
-          
-          // certifications?: string[];
         }) => ({
           id: user.id,
           first_name: user.first_name,
@@ -119,11 +117,10 @@ export const fetchUsers = async () => {
           users: user.projects,
           organizations: user.organizations,
           role: user.role,
-          address:user.address,
+          address: user.address,
           country: user.country,
           state: user.state,
-          alternate_no: user.alternate_no,
-          // certifications: user.certifications
+          alternate_no: user.alternate_no
         })
       ) || []
     );

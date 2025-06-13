@@ -42,7 +42,6 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     country: data?.country || "",
     state: data?.state || "",
     address:data?.address || ""
-    // certifications: data?.certifications || []
   }));
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   // Validate required fields

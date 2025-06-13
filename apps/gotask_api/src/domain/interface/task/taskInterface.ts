@@ -11,7 +11,6 @@ import logger from "../../../common/logger";
 import { TimeUtil } from "../../../constants/utils/timeUtils";
 import { ITimeSpentEntry } from "../../model/task/timespent";
 import { TIME_FORMAT_PATTERNS } from "../../../constants/commonConstants/timeConstants";
-import moment from "moment";
 
 // Create a new task
 const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
@@ -23,10 +22,9 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
 
   const startedOn = taskData.start_date;
   const userEstimated = taskData.user_estimated;
-  let estimated_time: string | undefined = undefined;
 
   if (startedOn && userEstimated) {
-    estimated_time = userEstimated;
+    taskData.estimated_time = userEstimated;
   }
 
   const newTask = new Task({
@@ -125,7 +123,7 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
         loginuser_id,
         loginuser_name,
         formatted_history: historyEntry,
-        created_date: moment().utc()
+        created_date: new Date()
       });
 
       existingTask.history.unshift(historyItem);

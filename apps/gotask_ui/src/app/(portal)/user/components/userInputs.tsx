@@ -9,6 +9,8 @@ import { useTranslations } from "next-intl";
 import { statusOptions } from "@/app/common/constants/user";
 import { ONLY_ALPHANUMERIC_REGEX } from "@/app/common/constants/regex";
 import { DIGIT_ONLY_REGEX } from "@/app/common/constants/regex";
+import { Country, State } from "country-state-city";
+import { SelectOption } from "../../../component/input/formField";
 
 interface IUserInputProps {
   formData: IUserField;
@@ -37,6 +39,19 @@ const UserInput = ({
 
   return (
     <Grid container spacing={1}>
+      {/* <Grid item xs={12}>
+        <div
+          style={{
+            fontWeight: 600,
+            fontSize: "14px",
+            marginBottom: "10px",
+            marginTop: "20px"
+          }}
+        >
+          {transuser("generalinfo")}
+        </div>
+      </Grid> */}
+
       <Grid item xs={12}>
         <FormField
           label={transuser("labelfirst_name")}
@@ -49,7 +64,6 @@ const UserInput = ({
           placeholder={transuser("placeholderfirst_name")}
         />
       </Grid>
-
       <Grid item xs={12}>
         <FormField
           label={transuser("labellast_name")}
@@ -74,7 +88,6 @@ const UserInput = ({
           placeholder={transuser("placeholderuser")}
         />
       </Grid>
-
       <Grid item xs={12}>
         <FormField
           label={transuser("labelemp_id")}
@@ -90,7 +103,6 @@ const UserInput = ({
           placeholder={transuser("placeholderemp_id")}
         />
       </Grid>
-
       <Grid item xs={12}>
         <FormField
           label={transuser("labelemail")}
@@ -124,6 +136,104 @@ const UserInput = ({
         />
       </Grid>
 
+      {/* new fields */}
+      <Grid item xs={12}>
+        <FormField
+          label={transuser("labelalternate_no")}
+          type="text"
+          inputType="tel"
+          value={formData.alternate_no}
+          onChange={(value) => {
+            const sanitized = String(value).replace(DIGIT_ONLY_REGEX, "");
+            if (sanitized.length <= 10) {
+              handleChange("alternate_no", sanitized);
+            }
+          }}
+          required={false}
+          error={errors?.alternate_no}
+          disabled={isReadOnly("alternate_no")}
+          placeholder={transuser("placeholderalternate_no")}
+        />
+      </Grid>
+
+      {/*  */}
+      {/* Country Dropdown */}
+      <Grid item xs={12} sm={6}>
+        <FormField
+          label={transuser("labelcountry")}
+          type="select"
+          value={formData.country as string}
+          onChange={(value) => {
+            handleChange("country", value as string);
+            handleChange("state", ""); // Reset state when country changes
+          }}
+          options={
+            Country.getAllCountries().map((c) => ({
+              label: c.name,
+              value: c.isoCode,
+              name: c.name,
+              id: c.isoCode
+            })) as SelectOption[]
+          }
+          required={false}
+          error={errors.country}
+          disabled={isReadOnly("country")}
+          placeholder={transuser("placeholdercountry")}
+        />
+      </Grid>
+
+      {/* State Dropdown */}
+      <Grid item xs={12} sm={6}>
+        <FormField
+          label={transuser("labelState")}
+          type="select"
+          value={formData.state}
+          onChange={(value) => handleChange("state", value as string)}
+          options={
+            formData.country
+              ? (State.getStatesOfCountry(formData.country).map((s) => ({
+                  label: s.name,
+                  value: s.isoCode,
+                  name: s.name,
+                  id: s.isoCode
+                })) as SelectOption[])
+              : []
+          }
+          required={false}
+          error={errors.state}
+          disabled={!formData.country || isReadOnly("state")}
+          placeholder={transuser("placeholderstate")}
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <FormField
+          label={transuser("labeladdress")}
+          type="text"
+          value={formData.address}
+          onChange={(value) => handleChange("address", String(value))}
+          required
+          error={errors.address}
+          disabled={isReadOnly("address")}
+          placeholder={transuser("placeholderaddress")}
+        />
+      </Grid>
+
+      {/* <Grid item xs={12}>
+        <FormField
+          label={transuser("labelcertifications")}
+          type="file"
+          multiple={true}
+          value={formData.certifications}
+          onChange={(value) => handleChange("certifications", value)}
+          required={false}
+          error={errors.certifications}
+          disabled={isReadOnly("certifications")}
+          placeholder={transuser("placeholdercertifications")}
+        />
+      </Grid>  */}
+
+      {/*  */}
       <Grid item xs={12}>
         <FormField
           label={transuser("labeljoined_date")}
@@ -144,7 +254,6 @@ const UserInput = ({
           placeholder={transuser("placeholderjoined_date")}
         />
       </Grid>
-
       <Grid item xs={12} sm={6}>
         <FormField
           label={transuser("labelrole")}

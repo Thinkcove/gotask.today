@@ -19,17 +19,22 @@ interface CreateUserProps {
 }
 
 const initialFormState: IUserField = {
-  first_name:"",
-  last_name:"",
-  emp_id:"",
+  first_name: "",
+  last_name: "",
+  emp_id: "",
   name: "",
   status: true,
   organization: [],
   roleId: "",
   user_id: "",
   mobile_no: "",
-  joined_date:"",
-  password: ""
+  alternate_no: "",
+  joined_date: "",
+  password: "",
+  address:"",
+  country: "",
+  state: ""
+  // certifications: []
 };
 
 const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {

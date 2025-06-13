@@ -91,6 +91,7 @@ export const fetchUsers = async () => {
           joined_date: Date;
           name: string;
           id: string;
+          mobile_no: string;
           status: string;
           user_id: string;
           createdAt: string;
@@ -98,6 +99,12 @@ export const fetchUsers = async () => {
           projects: string[];
           organizations: string[];
           role: string;
+          address: string;
+          country: string;
+          state: string;
+          alternate_no?: string;
+          
+          // certifications?: string[];
         }) => ({
           id: user.id,
           first_name: user.first_name,
@@ -106,11 +113,17 @@ export const fetchUsers = async () => {
           name: user.name,
           status: user.status,
           user_id: user.user_id,
+          mobile_no: user.mobile_no,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
           users: user.projects,
           organizations: user.organizations,
-          role: user.role
+          role: user.role,
+          address:user.address,
+          country: user.country,
+          state: user.state,
+          alternate_no: user.alternate_no,
+          // certifications: user.certifications
         })
       ) || []
     );

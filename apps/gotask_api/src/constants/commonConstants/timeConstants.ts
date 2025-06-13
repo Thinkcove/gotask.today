@@ -24,5 +24,8 @@ export const TIME_FORMAT_PATTERNS = {
   AMPM_PARTS: /^(\d{1,2}):(\d{2}) ([APap][Mm])$/,
 
   // For day and hour format validation (e.g., 1d5h)
-  DAY_HOUR_FORMAT: /^(\d+d)?(\d+h)?$/
+  DAY_HOUR_FORMAT: /^(\d+d)?(\d+h)?$/,
+
+  //for valdate time format
+  DURATION_FORMAT: /^-?\d+d\d+h(\d+m)?$/
 };

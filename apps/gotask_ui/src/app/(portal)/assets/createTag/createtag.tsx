@@ -59,12 +59,6 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
   const previousUserOptions = userOptions;
   const actionTypes = ACTION_TYPES;
 
-  // const handleFormChange = (field: string, value: any) => {
-  //   setFormData((prev: any) => ({
-  //     ...prev,
-  //     [field]: value
-  //   }));
-  // };
   const handleFormChange = <K extends keyof IAssetTags>(field: K, value: IAssetTags[K]) => {
     setFormData((prev) => ({
       ...prev,

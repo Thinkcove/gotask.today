@@ -9,6 +9,7 @@ import LaptopInputs from "./laptopInputs";
 import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { IAssetAttributes, IAssetType } from "../interface/asset";
 
 interface AssetFormData {
   typeId: string;
@@ -20,7 +21,7 @@ export const CreateAsset: React.FC = () => {
   const [formData, setFormData] = useState<AssetFormData>({
     typeId: ""
   });
-  const [selectedAssetType, setSelectedAssetType] = useState<any | null>(null);
+  const [selectedAssetType, setSelectedAssetType] = useState<IAssetType | null>(null);
   const router = useRouter();
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -29,24 +30,40 @@ export const CreateAsset: React.FC = () => {
   });
 
   const handleAssetTypeChange = (id: string) => {
-    const type = allTypes.find((t: any) => t.id === id);
+    const type = allTypes.find((t: IAssetType) => t.id === id) || null;
     setSelectedAssetType(type);
+    setFormData((prev) => ({ ...prev, typeId: id }));
   };
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = <K extends keyof IAssetAttributes>(
+    field: K,
+    value: IAssetAttributes[K]
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
+    if (!selectedAssetType?.id) {
+      setSnackbar({
+        open: true,
+        message: transasset("selectTypeError"),
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+      return;
+    }
+
     try {
-      const payload = { ...formData, typeId: selectedAssetType?.id };
+      const payload = { ...formData, typeId: selectedAssetType.id };
+      console.log("payload", payload);
       const response = await createLaptopAsset(payload);
+      console.log("response", response);
       if (response?.success) {
         setSnackbar({
           open: true,
           message: transasset("successmessage"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
+        router.push("/assets");
       }
     } catch (err) {
       console.error("Failed to create asset", err);
@@ -111,8 +128,8 @@ export const CreateAsset: React.FC = () => {
               label={transasset("type")}
               type="select"
               required
-              options={(allTypes || []).map((type: any) => ({
-                id: type.id || type._id,
+              options={(allTypes || []).map((type: IAssetType) => ({
+                id: type.id,
                 name: type.name
               }))}
               placeholder={transasset("type")}

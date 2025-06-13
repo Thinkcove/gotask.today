@@ -1,4 +1,4 @@
-import { getData } from "@/app/common/utils/apiData";
+import { getData, postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import useSWR from "swr";
 import env from "@/app/common/env";
@@ -30,17 +30,9 @@ export const useAllTypes = () => {
   };
 };
 
-//createTask
-export const createLaptopAsset = (formData: IAssetAttributes) =>
-  withAuth(async (token) => {
-    const response = await fetch(`${env.API_BASE_URL}/createasset`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    });
-    if (!response.ok) throw new Error("Failed to create asset");
-    return response.json();
+export const createLaptopAsset = async (formData: IAssetAttributes) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/createasset`;
+    return postData(url, formData as unknown as Record<string, unknown>, token);
   });
+};

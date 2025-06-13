@@ -2,7 +2,13 @@ export interface IAsset {
   type: string;
 }
 
+export interface IAssetType {
+  id: string;
+  name: string;
+}
+
 export interface IAssetAttributes {
+  id?: string;
   typeId: string;
   deviceName?: string;
   serialNumber?: string;

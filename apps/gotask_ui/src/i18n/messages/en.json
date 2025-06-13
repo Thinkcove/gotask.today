@@ -422,7 +422,8 @@
     "commentService": "Comment Service",
     "cancel": "Cancel",
     "create": "Create",
-    "successmessage": "Asset created successful"
+    "successmessage": "Asset created successful",
+    "isencrypted": "Is Encrypted"
   },
 
   "Chatbot": {

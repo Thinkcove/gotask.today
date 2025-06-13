@@ -10,6 +10,8 @@ import { updateUser } from "../../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
+import { useUserPermission } from "@/app/common/utils/userPermission";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 
 interface EditUserProps {
   data: IUserField;
@@ -21,6 +23,8 @@ interface EditUserProps {
 
 const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate }) => {
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
+  const { isFieldRestricted } = useUserPermission();
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -37,10 +41,16 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     user_id: data?.user_id || "",
     mobile_no: data?.mobile_no || "",
     joined_date: data?.joined_date || new Date(),
-    emp_id:data?.emp_id || ""
+    emp_id: data?.emp_id || ""
   }));
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  // Validate required fields
+
+  // Dynamically calculate readOnlyFields based on user permission
+  const readOnlyFields: (keyof IUserField)[] = Object.keys(formData).filter((field) =>
+    isFieldRestricted(APPLICATIONS.USER, ACTIONS.UPDATE, field)
+  ) as (keyof IUserField)[];
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.first_name) newErrors.first_name = transuser("firstname");
@@ -49,7 +59,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
     if (formData.status === undefined || formData.status === null) {
       newErrors.status = transuser("userstatus");
-    }    
+    }
     if (!formData.user_id) {
       newErrors.user_id = transuser("useremail");
     } else if (!validateEmail(formData.user_id)) {
@@ -59,7 +69,9 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleChange = (field: keyof IUserField, value: string | string[] | boolean) => {
+    if (readOnlyFields.includes(field)) return;
     setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
@@ -82,6 +94,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
       });
     }
   };
+
   return (
     <Box
       sx={{
@@ -92,18 +105,6 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
         flexDirection: "column"
       }}
     >
-      <Box
-        sx={{
-          position: "sticky",
-          top: 0,
-          px: 2,
-          pt: 2,
-          zIndex: 1000,
-          flexDirection: "column",
-          gap: 2
-        }}
-      ></Box>
-
       <CommonDialog
         open={open}
         onClose={onClose}
@@ -113,10 +114,11 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
         <UserInput
           formData={formData}
           handleChange={handleChange}
-          readOnlyFields={["name"]}
+          readOnlyFields={readOnlyFields}
           errors={errors}
         />
       </CommonDialog>
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

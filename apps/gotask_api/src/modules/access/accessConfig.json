@@ -34,7 +34,7 @@
       "access": "Organization Management",
       "actions": ["READ", "CREATE", "VIEW", "EDIT", "DELETE"],
       "restrictedFields": {
-        "READ": ["users", "projects"],
+        "VIEW": ["userDetails", "projectDetails"],
         "EDIT": ["name", "address", "mail_id", "mobile_no"]
       }
     },

@@ -275,6 +275,7 @@ const AccessView: React.FC = () => {
               currentModule={currentTab}
               selectedPermissions={selectedPermissions}
               selectedFields={selectedFields}
+              readOnlyFields={selectedFields}
               onTabChange={setCurrentTab}
               onCheckboxChange={() => {}}
               onFieldChange={() => {}}

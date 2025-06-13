@@ -10,6 +10,10 @@ import { updateOrganization } from "../../services/organizationAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail, validatePhone } from "@/app/common/utils/common";
+import { useUserPermission } from "@/app/common/utils/userPermission";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { ORGANIZATION_FORM_FIELDS } from "@/app/common/constants/organizationFields";
+
 
 interface EditOrganizationProps {
   data: IOrganizationField;
@@ -27,11 +31,14 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
   mutate
 }) => {
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
+  const { isFieldRestricted } = useUserPermission();
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
+
   const [formData, setFormData] = useState<IOrganizationField>(() => ({
     name: data?.name || "",
     address: data?.address || "",
@@ -40,27 +47,39 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
     projects: data?.projects || [],
     users: data?.users || []
   }));
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  // 🔐 Dynamically compute restricted fields
+  const readOnlyFields = ORGANIZATION_FORM_FIELDS.filter((field) =>
+    isFieldRestricted(APPLICATIONS.ORGANIZATION, ACTIONS.UPDATE, field)
+  );
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.name) newErrors.name = transorganization("errorname");
     if (!formData.address) newErrors.address = transorganization("erroraddress");
+
     if (!formData.mail_id) {
       newErrors.mail_id = transorganization("errormail");
     } else if (!validateEmail(formData.mail_id)) {
       newErrors.mail_id = transorganization("errormailvalid");
     }
+
     if (!formData.mobile_no) {
       newErrors.mobile_no = transorganization("errorphone");
     } else if (!validatePhone(formData.mobile_no)) {
       newErrors.mobile_no = transorganization("errorphonevalid");
     }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleChange = (name: string, value: string) => {
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    if (!isFieldRestricted(APPLICATIONS.ORGANIZATION, ACTIONS.UPDATE, name)) {
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+    }
   };
 
   const handleSubmit = async () => {
@@ -83,6 +102,7 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
       });
     }
   };
+
   return (
     <Box
       sx={{
@@ -93,18 +113,6 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
         flexDirection: "column"
       }}
     >
-      <Box
-        sx={{
-          position: "sticky",
-          top: 0,
-          px: 2,
-          pt: 2,
-          zIndex: 1000,
-          flexDirection: "column",
-          gap: 2
-        }}
-      ></Box>
-
       <CommonDialog
         open={open}
         onClose={onClose}
@@ -114,10 +122,11 @@ const EditOrganization: React.FC<EditOrganizationProps> = ({
         <OrganizationInput
           formData={formData}
           handleChange={handleChange}
-          readOnlyFields={["name"]}
+          readOnlyFields={readOnlyFields} // 👈 Now dynamically passed
           errors={errors}
         />
       </CommonDialog>
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

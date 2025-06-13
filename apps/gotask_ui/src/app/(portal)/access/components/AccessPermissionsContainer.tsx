@@ -9,6 +9,7 @@ interface AccessPermissionsProps {
     access: string;
     actions: string[];
     restrictedFields: Record<string, string[]>;
+     readOnlyFields: Record<string, Record<string, string[]>>;
   }[];
   currentModule: string;
   selectedPermissions: { [module: string]: string[] };
@@ -17,6 +18,7 @@ interface AccessPermissionsProps {
   onCheckboxChange: (module: string, action: string, checked: boolean) => void;
   onFieldChange: (module: string, action: string, field: string, checked: boolean) => void;
   readOnly?: boolean;
+  readOnlyFields: string[];
 }
 
 const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({

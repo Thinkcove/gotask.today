@@ -26,6 +26,9 @@ interface User {
   last_name: string;
   emp_id: string;
   mobile_no: number;
+  alternate_no?: string;
+  country: string;
+  state: string;
   joined_date: Date;
   name: string;
   roleId: { id: string; name: string };

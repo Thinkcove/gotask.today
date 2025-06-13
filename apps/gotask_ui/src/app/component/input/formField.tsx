@@ -25,6 +25,8 @@ import DatePicker from "react-datepicker";
 export interface SelectOption {
   name: string;
   id: string;
+  // label: string;
+  // value: string;
 }
 
 interface FormFieldProps {
@@ -33,8 +35,8 @@ interface FormFieldProps {
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];
-  value?: string | number | Date | string[];
-  onChange?: (value: string | number | Date | string[]) => void;
+  value?: string | number | Date | string[] | boolean;
+  onChange?: (value: string | number | Date | string[]| boolean ) => void;
   onSend?: () => void;
   error?: string;
   disabled?: boolean;

@@ -6,10 +6,14 @@ export interface IUserField {
   user_id: string;
   password?: string;
   mobile_no?: string;
+  alternate_no?: string;
   joined_date?: Date | string;
   emp_id?: string;
   first_name: string;
   last_name: string;
+  address: string;
+  country: string;
+  state: string;
 }
 
 export interface User {
@@ -31,6 +35,10 @@ export interface User {
   emp_id?: string;
   first_name: string;
   last_name: string;
+  address?: string;
+  alternate_no?: string;
+  country: string;
+  state: string;
 }
 
 export interface RoleData {

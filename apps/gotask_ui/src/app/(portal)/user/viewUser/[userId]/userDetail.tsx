@@ -71,7 +71,11 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
     emp_id: user.emp_id,
     organization: user.organization,
     roleId: user.roleId._id,
-    user_id: user.user_id
+    user_id: user.user_id,
+    alternate_no: user.alternate_no,
+    country: user.country || "",
+    state: user.state || "",
+    address: user.address || ""
   });
 
   return (
@@ -118,11 +122,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {/* Basic Details */}
 
-          {/* <Grid container spacing={3} columns={{ xs: 3, sm: 2, md: 3 }}> */}
           <Grid container spacing={2} mb={3}>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={transuser("uesrid")} value={user.user_id} />
-            </Grid>
 
             <Grid item xs={6} sm={6} md={4}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
@@ -163,6 +163,39 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <LabelValueText
                 label={transuser("labelmobile_no")}
                 value={user?.mobile_no || "-"}
+                sx={{ textTransform: "capitalize" }}
+              />
+            </Grid>
+
+            {/* new fields */}
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labelalternate_no")}
+                value={user?.alternate_no || "-"}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labelcountry")}
+                value={user?.country || "-"}
+                sx={{ textTransform: "capitalize" }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labelState")}
+                value={user?.state || "-"}
+                sx={{ textTransform: "capitalize" }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labeladdress")}
+                value={user?.address || "-"}
                 sx={{ textTransform: "capitalize" }}
               />
             </Grid>

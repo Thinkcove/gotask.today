@@ -13,6 +13,7 @@ import { createAssetTags } from "../services/assetActions";
 import { IAssetAttributes, IAssetTags } from "../interface/asset";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { User } from "../../user/interfaces/userInterface";
 
 interface CreateTagProps {
   onClose: () => void;
@@ -39,7 +40,7 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const userOptions = useMemo(() => {
     return (
-      users?.map((user: any) => ({
+      users?.map((user: User) => ({
         id: user.id,
         name: user.name
       })) || []
@@ -58,8 +59,14 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
   const previousUserOptions = userOptions;
   const actionTypes = ACTION_TYPES;
 
-  const handleFormChange = (field: string, value: any) => {
-    setFormData((prev: any) => ({
+  // const handleFormChange = (field: string, value: any) => {
+  //   setFormData((prev: any) => ({
+  //     ...prev,
+  //     [field]: value
+  //   }));
+  // };
+  const handleFormChange = <K extends keyof IAssetTags>(field: K, value: IAssetTags[K]) => {
+    setFormData((prev) => ({
       ...prev,
       [field]: value
     }));

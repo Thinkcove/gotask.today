@@ -8,7 +8,7 @@ import { IAssetTags } from "../interface/asset";
 
 interface AssetTagDrawerFormProps {
   formData: any;
-  onChange: (field: keyof IAssetTags, value: string | string[] | boolean) => void;
+  onChange: <K extends keyof IAssetTags>(field: K, value: IAssetTags[K]) => void;
   userOptions: { id: string; name: string }[];
   assetOptions: { id: string; name: string }[];
   previousUserOptions: { id: string; name: string }[];
@@ -45,7 +45,7 @@ const TagInput: React.FC<AssetTagDrawerFormProps> = ({
             label={trans("assettype")}
             type="select"
             options={assetOptions}
-            value={formData.deviceName || ""}
+            value={formData.assetId || ""}
             onChange={(val) => onChange("assetId", String(val))}
             placeholder={trans("assettype")}
           />

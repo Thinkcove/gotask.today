@@ -33,7 +33,7 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
     ...taskData,
     user_name: user.name,
     project_name: project.name,
-    estimated_time
+    estimated_time: taskData.estimated_time || "0d0h0m"
   });
   return await newTask.save();
 };
@@ -131,16 +131,14 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
       existingTask.history.unshift(historyItem);
     }
 
-    // Recalculate estimated_time using start_date and user_estimated
+    // Set estimated_time from user_estimated, ensuring minutes are included
     const startedOnRaw = updateData.start_date ?? existingTask.start_date;
     const userEstimated = updateData.user_estimated ?? existingTask.user_estimated;
 
     if (startedOnRaw && userEstimated) {
-      const dayMatch = /(\d+)d/.exec(userEstimated);
-      const hourMatch = /(\d+)h/.exec(userEstimated);
-      const days = dayMatch ? parseInt(dayMatch[1]) : 0;
-      const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
-      existingTask.estimated_time = `${days}d${hours}h`;
+      // Parse user_estimated and reformat to ensure minutes
+      const estimatedHours = TimeUtil.parseTimeString(userEstimated);
+      existingTask.estimated_time = TimeUtil.formatHoursToTimeString(estimatedHours);
     }
 
     Object.assign(existingTask, updateData);
@@ -205,7 +203,7 @@ const deleteCommentFromTask = async (id: string): Promise<ITaskComment | null> =
   return deletedComment;
 };
 
-//Add time log
+// Add time log
 const addTimeSpentToTask = async (
   id: string,
   timeEntries: ITimeSpentEntry[]
@@ -240,6 +238,12 @@ const addTimeSpentToTask = async (
 
   const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);
   task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
+
+  const formattedEstimatedTime = task.estimated_time
+    ? TimeUtil.formatHoursToTimeString(TimeUtil.parseTimeString(task.estimated_time))
+    : "0d0h0m";
+  task.estimated_time = formattedEstimatedTime;
+
   task.remaining_time = TimeUtil.calculateRemainingTime(task.estimated_time, task.time_spent_total);
   task.variation = TimeUtil.calculateVariation(task.estimated_time, task.time_spent_total);
   await task.save();

@@ -16,6 +16,7 @@
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
     "@mui/material-nextjs": "^6.4.3",
+    "@mui/x-date-pickers": "^8.5.1",
     "@types/react-datepicker": "^6.2.0",
     "date-fns": "^4.1.0",
     "moment-timezone": "^0.6.0",

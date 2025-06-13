@@ -1,8 +1,9 @@
 import { Typography, Box, SxProps, Theme } from "@mui/material";
+import React from "react";
 
 interface LabelValueTextProps {
   label: string;
-  value: string;
+  value: string | React.ReactNode;
   sx?: SxProps<Theme>;
 }
 

@@ -14,6 +14,7 @@ import EllipsisText from "@/app/component/text/ellipsisText";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 
 interface OrgDetailProps {
   org: Organization;
@@ -89,7 +90,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
             <Grid item xs={12} md={6}>
               <LabelValueText
                 label={transorganization("detailcreatedon")}
-                value={new Date(org?.createdAt).toLocaleDateString()}
+                value={org?.createdAt ? <FormattedDateTime date={org?.createdAt} /> : "-"}
               />
             </Grid>
           </Grid>

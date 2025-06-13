@@ -3,7 +3,7 @@ import { Box, Typography, SxProps, Theme } from "@mui/material";
 
 interface StatusIndicatorProps {
   status: string;
-  getColor?: (status: string) => string;
+  getColor?: (status: string) => string ;
   dotSize?: number;
   capitalize?: boolean;
   textColor?: string;

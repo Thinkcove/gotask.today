@@ -21,6 +21,7 @@ import {
 } from "@mui/icons-material";
 import { SxProps, Theme } from "@mui/material/styles";
 import DatePicker from "react-datepicker";
+import { format } from "date-fns";
 
 export interface SelectOption {
   name: string;
@@ -242,9 +243,9 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
             selected={
               value instanceof Date ? value : value ? new Date(value as string | number) : null
             }
-            onChange={(date) => onChange?.(date ? date.toISOString().split("T")[0] : "")}
+            onChange={(date) => onChange?.(date ? format(date, "dd-MM-yyyy") : "")}
             disabled={disabled}
-            dateFormat="MM/dd/yyyy"
+            dateFormat="dd-MM-yyyy"
             placeholderText={placeholder}
             customInput={
               <TextField

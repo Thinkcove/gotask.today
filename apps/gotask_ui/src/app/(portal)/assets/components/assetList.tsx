@@ -25,16 +25,6 @@ export const AssetList: React.FC = () => {
     purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-"
   }));
 
-  // const assetColumns = [
-  //   { id: "assetType", label: transasset("assets") },
-  //   { id: "assetName", label: transasset("type") },
-  //   { id: "modelName", label: transasset("model") },
-  //   { id: "purchaseDate", label: transasset("purchaseDate") },
-  //   {
-  //     id: "actions",
-  //     label: transasset("actions")
-  //   }
-  // ];
   const assetColumns = getAssetColumns(transasset);
 
   return (

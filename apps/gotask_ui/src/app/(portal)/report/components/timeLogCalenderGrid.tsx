@@ -6,13 +6,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
+  Link
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 import { GroupedLogs, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { extractHours } from "@/app/common/utils/common";
+import { useRouter } from "next/navigation";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -37,6 +39,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
   selectedProjects = []
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
+  const router = useRouter();
   const dateRange = getDateRange(fromDate, toDate);
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
@@ -64,8 +67,17 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
     if (!groupedByUser[user]) groupedByUser[user] = {};
     if (!groupedByUser[user][project]) groupedByUser[user][project] = [];
 
+    const taskId =
+      data.find(
+        (d) =>
+          d.user_name === user &&
+          (d.project_name || transreport("noproject")) === project &&
+          (d.task_title || transreport("notask")) === task
+      )?.task_id || "";
+
     groupedByUser[user][project].push({
       task,
+      taskId,
       dailyLogs: days
     });
   });
@@ -73,7 +85,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
   const totalTimePerUser: Record<string, number> = {};
   Object.entries(groupedByUser).forEach(([user, projects]) => {
     totalTimePerUser[user] = 0;
-    
+
     Object.values(projects).forEach((tasks) => {
       tasks.forEach((task) => {
         (Object.values(task.dailyLogs) as number[]).forEach((hours) => {
@@ -225,7 +237,17 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
                           border: "1px solid #eee"
                         }}
                       >
-                        {taskEntry.task}
+                        {taskEntry.taskId ? (
+                          <Link
+                            href={`/task/viewTask/${taskEntry.taskId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {taskEntry.task}
+                          </Link>
+                        ) : (
+                          taskEntry.task
+                        )}
                       </TableCell>
                     )}
                     {dateRange.map((date) => {

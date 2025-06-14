@@ -30,3 +30,12 @@ export interface IAssetAttributes {
   lastServicedDate?: Date;
   commentService?: string;
 }
+
+export interface IAssetTags {
+  id?: string;
+  userId: string;
+  assetId: string;
+  actionType: string;
+  erk: string;
+  previouslyUsedBy: string;
+}

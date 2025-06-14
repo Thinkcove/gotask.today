@@ -29,6 +29,21 @@ ResourceRoutes.push({
 });
 
 ResourceRoutes.push({
+  path: "/getAllTags",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    resourceController.getAllTags(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Create new Resource",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+ResourceRoutes.push({
   path: "/createissues",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>

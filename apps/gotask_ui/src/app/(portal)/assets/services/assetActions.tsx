@@ -2,7 +2,7 @@ import { getData, postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { IAssetAttributes } from "../interface/asset";
+import { IAssetAttributes, IAssetTags } from "../interface/asset";
 
 //fetch all assets
 export const fetchAllAssets = () =>
@@ -33,6 +33,13 @@ export const useAllTypes = () => {
 export const createLaptopAsset = async (formData: IAssetAttributes) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/createasset`;
+    return postData(url, formData as unknown as Record<string, unknown>, token);
+  });
+};
+
+export const createAssetTags = async (formData: IAssetTags) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/createresource`;
     return postData(url, formData as unknown as Record<string, unknown>, token);
   });
 };

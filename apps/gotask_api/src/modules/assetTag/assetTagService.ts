@@ -3,6 +3,7 @@ import UserMessages from "../../constants/apiMessages/userMessage";
 import {
   createAssetIssues,
   createResource,
+  getAllTags,
   getAssetIssueById,
   updateAssetIssue
 } from "../../domain/interface/assetTag/assetTag";
@@ -38,6 +39,21 @@ class resourceService {
       return {
         success: false,
         error: error.message
+      };
+    }
+  };
+
+  getAllTags = async (): Promise<any> => {
+    try {
+      const assets = await getAllTags();
+      return {
+        success: true,
+        data: assets
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || AssetMessages.FETCH.ASSET_TYPE_NOT_FOUND
       };
     }
   };

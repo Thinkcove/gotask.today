@@ -8,4 +8,11 @@ class Auth {
   static verify = (token: string) => verify(token, authKey);
 }
 
+// src/types/auth.ts
+export interface AuthCredentials {
+  userId: string;
+  role: string;
+  email?: string;
+}
+
 export default Auth;

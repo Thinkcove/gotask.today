@@ -1,7 +1,17 @@
+"use client";
 import { useParams, useRouter } from "next/navigation";
 import { Organization } from "../../interfaces/organizatioinInterface";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { Box, Divider, Grid, IconButton, Stack, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Grid,
+  IconButton,
+  Stack,
+  Tab,
+  Tabs,
+  Typography
+} from "@mui/material";
 import { ArrowBack, ChevronRight, Edit } from "@mui/icons-material";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import { useState } from "react";
@@ -21,7 +31,7 @@ interface OrgDetailProps {
 }
 
 const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
-  const { canAccess } = useUserPermission();
+  const { canAccess, isFieldRestricted } = useUserPermission();
   const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
   const router = useRouter();
   const { orgId } = useParams();
@@ -31,13 +41,18 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
   const handleBack = () => {
     setTimeout(() => router.back(), 2000);
   };
+
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
-  const hasUserView = canAccess(APPLICATIONS.USER, ACTIONS.VIEW);
-  const hasProjectView = canAccess(APPLICATIONS.PROJECT, ACTIONS.VIEW);
+
+  const hasUserTabAccess = !isFieldRestricted(APPLICATIONS.ORGANIZATION, ACTIONS.VIEW, "userDetails");
+  const hasProjectTabAccess = !isFieldRestricted(APPLICATIONS.ORGANIZATION, ACTIONS.VIEW, "projectDetails");
+
+  const hasUserLinkAccess = canAccess(APPLICATIONS.USER, ACTIONS.VIEW);
+  const hasProjectLinkAccess = canAccess(APPLICATIONS.PROJECT, ACTIONS.VIEW);
 
   return (
     <>
@@ -75,7 +90,8 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
               )}
             </Box>
           </Box>
-          {/* Basic Details */}
+
+          {/* Basic Info */}
           <Grid container spacing={2} mb={2}>
             <Grid item xs={12} md={6}>
               <LabelValueText label={transorganization("detailaddress")} value={org.address} />
@@ -93,18 +109,22 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
               />
             </Grid>
           </Grid>
+
           <Divider sx={{ mb: 1 }} />
+
+          {/* Tabs */}
           <Tabs
             value={activeTab}
             onChange={handleTabChange}
             variant="fullWidth"
             sx={{ mb: 4, width: "100%" }}
           >
-            <Tab label={transorganization("labelresource")} />
-            <Tab label={transorganization("labelprojectslist")} />
+            {hasUserTabAccess && <Tab label={transorganization("labelresource")} />}
+            {hasProjectTabAccess && <Tab label={transorganization("labelprojectslist")} />}
           </Tabs>
+
           {/* Users Tab */}
-          {activeTab === 0 && (
+          {hasUserTabAccess && activeTab === 0 && (
             <Grid container spacing={3} sx={{ maxHeight: "300px", overflowY: "auto" }}>
               {org?.userDetails?.length > 0 ? (
                 org.userDetails.map((user) => (
@@ -123,7 +143,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                         }
                       }}
                       onClick={() => {
-                        if (hasUserView) {
+                        if (hasUserLinkAccess) {
                           router.push(`/user/viewUser/${user.id}`);
                         }
                       }}
@@ -131,11 +151,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                       <Stack direction="row" spacing={2} alignItems="center">
                         <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
                         <Box>
-                          <Typography
-                            fontWeight={600}
-                            fontSize="1rem"
-                            sx={{ textTransform: "capitalize" }}
-                          >
+                          <Typography fontWeight={600} fontSize="1rem" sx={{ textTransform: "capitalize" }}>
                             {user.name}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
@@ -143,22 +159,20 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                           </Typography>
                         </Box>
                       </Stack>
-
-                      {/* Chevron Icon */}
                       <ChevronRight color="action" />
                     </Box>
                   </Grid>
                 ))
               ) : (
                 <Grid item xs={12}>
-                  <Typography color="text.secondary"> {transorganization("nousers")}</Typography>
+                  <Typography color="text.secondary">{transorganization("nousers")}</Typography>
                 </Grid>
               )}
             </Grid>
           )}
 
           {/* Projects Tab */}
-          {activeTab === 1 && (
+          {hasProjectTabAccess && activeTab === (hasUserTabAccess ? 1 : 0) && (
             <Grid container spacing={3} sx={{ maxHeight: "300px", overflowY: "auto" }}>
               {org.projectDetails.length > 0 ? (
                 org.projectDetails.map((project) => (
@@ -177,28 +191,18 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                         }
                       }}
                       onClick={() => {
-                        if (hasProjectView) {
+                        if (hasProjectLinkAccess) {
                           router.push(`/project/viewProject/${project.id}`);
                         }
                       }}
                     >
                       <Stack direction="row" spacing={2} alignItems="center">
                         <Box>
-                          <Typography
-                            fontWeight={600}
-                            fontSize="1rem"
-                            sx={{ textTransform: "capitalize" }}
-                          >
+                          <Typography fontWeight={600} fontSize="1rem" sx={{ textTransform: "capitalize" }}>
                             {project.name}
                           </Typography>
                           <EllipsisText text={project.description} maxWidth={350} />
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              pt: 0.5
-                            }}
-                          >
+                          <Box sx={{ display: "flex", alignItems: "center", pt: 0.5 }}>
                             <Box
                               sx={{
                                 width: 10,
@@ -219,7 +223,6 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                           </Box>
                         </Box>
                       </Stack>
-                      {/* Chevron Icon */}
                       <ChevronRight color="action" />
                     </Box>
                   </Grid>
@@ -246,3 +249,5 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
 };
 
 export default OrgDetail;
+
+

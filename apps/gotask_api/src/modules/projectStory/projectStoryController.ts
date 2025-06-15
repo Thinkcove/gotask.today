@@ -1,4 +1,3 @@
-// projectStory.controller.ts
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
 import {
@@ -6,16 +5,16 @@ import {
   getStoriesByProjectService,
   getStoryByIdService,
   addCommentToStoryService
-} from "./projectStory.service";
+} from "./projectStoryService";
 import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
-import { AuthCredentials } from "../../constants/auth/auth";
 
 class ProjectStoryController extends BaseController {
   async createStory(requestHelper: RequestHelper, handler: any) {
     try {
       const { title, description } = requestHelper.getPayload() || {};
       const { projectId } = requestHelper.getAllParams();
-      const { userId } = requestHelper.getRequest().auth.credentials as unknown as AuthCredentials;
+      const user = requestHelper.getUser();
+      const userId = user?.id;
 
       if (!title) {
         return this.replyError(new Error(storyMessages.CREATE.TITLE_REQUIRED));
@@ -73,7 +72,8 @@ class ProjectStoryController extends BaseController {
     try {
       const { comment } = requestHelper.getPayload();
       const { storyId } = requestHelper.getAllParams();
-      const { userId } = requestHelper.getRequest().auth.credentials as unknown as AuthCredentials;
+      const user = requestHelper.getUser();
+      const userId = user?.id;
 
       if (!comment) {
         return this.replyError(new Error(storyMessages.COMMENT.COMMENT_REQUIRED));

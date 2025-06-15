@@ -23,12 +23,6 @@ export const API_PATHS = {
   UPDATE_PROJECT: "/updateProject/{id}",
   GET_USERS_BY_PROJECT_ID: "/getUsersByProjectId/{project_id}",
 
-    //project story
-    CREATE_PROJECT_STORY: "/project/{projectId}/story",
-  GET_STORIES_BY_PROJECT: "/projects/{projectId}/stories",
-  GET_PROJECT_STORY_BY_ID: "/stories/{storyId}",
-  ADD_COMMENT_TO_STORY: "/story/{storyId}/comment",
-
 
   
   //userRoutes

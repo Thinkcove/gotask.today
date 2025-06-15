@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 interface IProjectStoryComment {
   user_id: string;
   comment: string;
-  created_at?: Date;
 }
 
 // Project Story Interface
@@ -18,14 +17,16 @@ export interface IProjectStory extends Document {
   comments: IProjectStoryComment[];
 }
 
-// Embedded Schema for Comments
+// Embedded Schema for Comments with timestamps
 const ProjectStoryCommentSchema = new Schema<IProjectStoryComment>(
   {
     user_id: { type: String, required: true },
-    comment: { type: String, required: true },
-    created_at: { type: Date, default: Date.now }
+    comment: { type: String, required: true }
   },
-  { _id: false }
+  {
+    _id: false,
+    timestamps: true // Adds createdAt & updatedAt
+  }
 );
 
 // Main Schema for Project Story
@@ -54,7 +55,7 @@ const ProjectStorySchema = new Schema<IProjectStory>(
     },
     comments: [ProjectStoryCommentSchema]
   },
-  { timestamps: true }
+  { timestamps: true } // Adds createdAt & updatedAt for the story
 );
 
 // Exporting the Model

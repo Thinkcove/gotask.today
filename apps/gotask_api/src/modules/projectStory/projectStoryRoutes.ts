@@ -3,7 +3,7 @@ import { Request, ResponseToolkit, ServerRoute } from "@hapi/hapi";
 import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
-import ProjectStoryController from "./projectStory.controller";
+import ProjectStoryController from "./projectStoryController";
 import authStrategy from "../../constants/auth/authStrategy";
 
 const controller = new ProjectStoryController();
@@ -12,7 +12,7 @@ const routes: ServerRoute[] = [];
 
 routes.push({
   method: API_METHODS.POST,
-  path: API_PATHS.CREATE_PROJECT_STORY,
+  path: "/project/{projectId}/story",
   handler: (req: Request, h: ResponseToolkit) =>
     controller.createStory(new RequestHelper(req), h),
   options: {
@@ -24,7 +24,7 @@ routes.push({
 
 routes.push({
   method: API_METHODS.GET,
-  path: API_PATHS.GET_STORIES_BY_PROJECT,
+  path: "/projects/{projectId}/stories",
   handler: (req: Request, h: ResponseToolkit) =>
     controller.getStoriesByProject(new RequestHelper(req), h),
   options: {
@@ -36,7 +36,7 @@ routes.push({
 
 routes.push({
   method: API_METHODS.GET,
-  path: API_PATHS.GET_PROJECT_STORY_BY_ID,
+  path: "/stories/{storyId}",
   handler: (req: Request, h: ResponseToolkit) =>
     controller.getStoryById(new RequestHelper(req), h),
   options: {
@@ -48,7 +48,7 @@ routes.push({
 
 routes.push({
   method: API_METHODS.POST,
-  path: API_PATHS.ADD_COMMENT_TO_STORY,
+  path: "/story/{storyId}/comment",
   handler: (req: Request, h: ResponseToolkit) =>
     controller.addComment(new RequestHelper(req), h),
   options: {

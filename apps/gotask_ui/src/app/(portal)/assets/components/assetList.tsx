@@ -6,28 +6,26 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useAllAssets } from "../services/assetActions";
 import Table from "../../../component/table/table"; // adjust path
+import ActionButton from "@/app/component/floatingButton/actionButton";
+import AddIcon from "@mui/icons-material/Add";
+import { useRouter } from "next/navigation";
+import { IAssetAttributes } from "../interface/asset";
+import { getAssetColumns } from "../assetConstants";
 
 export const AssetList: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [selectedView, setSelectedView] = useState("Asset");
-
+  const router = useRouter();
   const { getAll: allAssets } = useAllAssets();
 
-  const formattedAssets = (allAssets || []).map((asset: any) => ({
+  const formattedAssets = (allAssets || []).map((asset: IAssetAttributes) => ({
     assetType: asset.typeId || "-",
     assetName: asset.deviceName || "-",
     modelName: asset.modelName || "-",
-    purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-",
-    id: asset.id || "-"
+    purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-"
   }));
 
-  const assetColumns = [
-    { id: "assetType", label: transasset("assets") },
-    { id: "assetName", label: transasset("type") },
-    { id: "modelName", label: transasset("model") },
-    { id: "purchaseDate", label: transasset("purchaseDate") },
-    { id: "actions", label: transasset("actions") }
-  ];
+  const assetColumns = getAssetColumns(transasset);
 
   return (
     <>
@@ -57,6 +55,11 @@ export const AssetList: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
+      <ActionButton
+        label={transasset("createasset")}
+        icon={<AddIcon sx={{ color: "white" }} />}
+        onClick={() => router.push("/assets/createAsset")}
+      />
     </>
   );
 };

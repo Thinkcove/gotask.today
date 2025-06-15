@@ -11,6 +11,7 @@ import {
   Box
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { ReactNode } from "react";
 
 // Styled cells
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -34,22 +35,25 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 // Column interface
-interface Column {
-  id: string;
+export interface Column<T> {
+  id: keyof T;
   label: string;
   align?: "right" | "left" | "center";
-  render?: (value: any, row: any) => React.ReactNode;
+  render?: (value: T[keyof T], row: T) => React.ReactNode;
 }
 
-// Props
-interface CustomTableProps {
-  columns: Column[];
-  rows: any[];
+interface CustomTableProps<T> {
+  columns: Column<T>[];
+  rows: T[];
   minWidth?: number;
 }
 
 // Responsive CustomTable
-const CustomTable: React.FC<CustomTableProps> = ({ columns, rows, minWidth = 700 }) => {
+const CustomTable = <T extends { [key: string]: unknown }>({
+  columns,
+  rows,
+  minWidth = 700
+}: CustomTableProps<T>) => {
   return (
     <Box sx={{ overflowX: "auto" }}>
       <TableContainer component={Paper} sx={{ minWidth: "100%", width: "max-content" }}>
@@ -57,7 +61,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ columns, rows, minWidth = 700
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <StyledTableCell key={column.id} align={column.align || "left"}>
+                <StyledTableCell key={String(column.id)} align={column.align || "left"}>
                   {column.label}
                 </StyledTableCell>
               ))}
@@ -67,8 +71,10 @@ const CustomTable: React.FC<CustomTableProps> = ({ columns, rows, minWidth = 700
             {rows.map((row, index) => (
               <StyledTableRow key={index}>
                 {columns.map((column) => (
-                  <StyledTableCell key={column.id} align={column.align || "left"}>
-                    {column.render ? column.render(row[column.id], row) : row[column.id]}
+                  <StyledTableCell key={String(column.id)} align={column.align || "left"}>
+                    {column.render
+                      ? column.render(row[column.id], row)
+                      : (row[column.id] as ReactNode)}
                   </StyledTableCell>
                 ))}
               </StyledTableRow>

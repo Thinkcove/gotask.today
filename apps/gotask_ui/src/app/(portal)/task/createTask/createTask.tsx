@@ -10,6 +10,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import moment from "moment-timezone";
 
 const CreateTask: React.FC = () => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
@@ -26,7 +27,7 @@ const CreateTask: React.FC = () => {
     severity: TASK_SEVERITY.LOW,
     user_id: "",
     project_id: "",
-    created_on: new Date().toISOString().split("T")[0],
+    created_on: moment().format("YYYY-MM-DD"),
     due_date: "",
     start_date: "",
     user_estimated: ""

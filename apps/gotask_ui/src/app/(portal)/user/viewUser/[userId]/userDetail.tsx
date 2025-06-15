@@ -17,6 +17,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 
 interface UserDetailProps {
   user: User;
@@ -100,9 +101,15 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
               <ArrowBack />
             </IconButton>
-            <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
-              {user.name}
-            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+                {user.name}
+              </Typography>
+              <StatusIndicator
+                status={user.status ? "active" : "inactive"}
+                getColor={(status) => (status === "active" ? "green" : "red")}
+              />
+            </Box>
             <Box sx={{ flexGrow: 1 }} /> {/* This pushes the next icons to the right */}
             {canAccess(APPLICATIONS.USER, ACTIONS.UPDATE) && (
               <IconButton color="primary" onClick={() => setEditOpen(true)}>
@@ -118,23 +125,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {/* Basic Details */}
 
-          {/* <Grid container spacing={3} columns={{ xs: 3, sm: 2, md: 3 }}> */}
-          <Grid container spacing={2} mb={3}>
+          <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={transuser("uesrid")} value={user.user_id} />
             </Grid>
+          </Grid>
 
-            <Grid item xs={6} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                {transuser("status")}
-              </Typography>
-              <Chip
-                label={user.status ? "Active" : "Inactive"}
-                color={user.status ? "success" : "error"}
-                size="small"
-              />
-            </Grid>
-
+          <Grid container spacing={2} mb={1}>
             <Grid item xs={6} sm={6} md={4}>
               <LabelValueText
                 label={transuser("labelfirst_name")}
@@ -160,17 +157,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Grid>
 
             <Grid item xs={6} sm={6} md={4}>
-              <LabelValueText
-                label={transuser("labelmobile_no")}
-                value={user?.mobile_no || "-"}
-                sx={{ textTransform: "capitalize" }}
-              />
+              <LabelValueText label={transuser("labelmobile_no")} value={user?.mobile_no || "-"} />
             </Grid>
 
             <Grid item xs={6} sm={6} md={4}>
               <LabelValueText
                 label={transuser("labeljoined_date")}
-                value={user?.joined_date ? new Date(user.joined_date).toLocaleDateString() : "-"}
+                value={user?.joined_date ? <FormattedDateTime date={user?.joined_date} /> : "-"}
               />
             </Grid>
 
@@ -185,26 +178,31 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 sx={{ textTransform: "capitalize" }}
               />
             </Grid>
-
-            <Grid item xs={12}>
-              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                {transuser("organization")}
-              </Typography>
-              <Stack direction="row" spacing={1} flexWrap="wrap">
-                {user.orgDetails?.map((orgId) => (
+          </Grid>
+          <Grid item xs={6} sm={6} md={4}>
+            <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+              {transuser("organization")}
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap">
+              {user.orgDetails && user.orgDetails.length > 0 ? (
+                user.orgDetails.map((orgId) => (
                   <Chip
                     key={orgId.id}
                     label={orgId.name}
                     variant="outlined"
                     sx={{ textTransform: "capitalize" }}
                   />
-                ))}
-              </Stack>
-            </Grid>
+                ))
+              ) : (
+                <Typography variant="body2" color="text.disabled">
+                  {transuser("noorganzationuser")}
+                </Typography>
+              )}
+            </Stack>
           </Grid>
 
           {/* Divider */}
-          <Divider sx={{ my: 4 }} />
+          <Divider sx={{ my: 2 }} />
 
           {/* Project Details */}
           <Typography variant="h6" fontWeight="bold" gutterBottom>

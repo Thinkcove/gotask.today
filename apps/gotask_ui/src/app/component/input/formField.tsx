@@ -243,7 +243,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
             selected={
               value instanceof Date ? value : value ? new Date(value as string | number) : null
             }
-            onChange={(date) => onChange?.(date ? format(date, "dd-MM-yyyy") : "")}
+            onChange={(date) => onChange?.(date ? date.toISOString().split("T")[0] : "")}
             disabled={disabled}
             dateFormat="dd-MM-yyyy"
             placeholderText={placeholder}

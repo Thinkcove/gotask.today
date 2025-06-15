@@ -1,6 +1,6 @@
 import { Box, Typography, Stack, Divider } from "@mui/material";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { CalendarToday, Description, Person } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import TimeBadge from "@/app/component/badge/timeBadge";

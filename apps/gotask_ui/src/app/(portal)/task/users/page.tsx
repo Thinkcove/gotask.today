@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import TaskList from "../component/taskList/taskList";
 import Chat from "../../chatbot/components/chat";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 
 const Page = () => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);

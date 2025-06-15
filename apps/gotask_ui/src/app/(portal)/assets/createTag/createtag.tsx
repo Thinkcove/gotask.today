@@ -76,7 +76,6 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
           message: transasset("successmessage"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
-        // router.push("/assets");
       }
       onClose();
     } catch (error) {
@@ -94,8 +93,6 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
         onSubmit={handleSubmit}
         title={trans("createtag")}
       >
-        {/* <TagInput formData={formData} onChange={handleChange} errors={errors} /> */}
-
         <TagInput
           formData={formData}
           onChange={handleFormChange}

@@ -7,7 +7,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetTags } from "../interface/asset";
 
 interface AssetTagDrawerFormProps {
-  formData: any;
+  formData: IAssetTags;
   onChange: <K extends keyof IAssetTags>(field: K, value: IAssetTags[K]) => void;
   userOptions: { id: string; name: string }[];
   assetOptions: { id: string; name: string }[];
@@ -23,7 +23,6 @@ const TagInput: React.FC<AssetTagDrawerFormProps> = ({
   previousUserOptions,
   actionTypes
 }) => {
-  console.log("userOptions", userOptions);
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
 
   return (

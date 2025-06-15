@@ -13,6 +13,7 @@ import { IAssetAttributes } from "../interface/asset";
 import { getAssetColumns } from "../assetConstants";
 import CreateTag from "../createTag/page";
 import CloseIcon from "@mui/icons-material/Close";
+import TagCards from "../createTag/tagCard";
 
 export const AssetList: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -49,30 +50,21 @@ export const AssetList: React.FC = () => {
         />
       </Box>
 
-      <Box sx={{ px: 2, mt: 4 }}>
-        <Grid container spacing={4} justifyContent="center">
-          <Grid item xs={12} sm={12} md={11} lg={10} xl={9}>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              {selectedView === transasset("assets") && (
-                <Paper sx={{ p: 2, overflowX: "auto" }}>
-                  <Table columns={assetColumns} rows={formattedAssets} />
-                </Paper>
-              )}
-
-              {selectedView === transasset("tag") && (
-                <Paper sx={{ p: 2 }}>
-                  <Box>Tag content here...</Box>
-                </Paper>
-              )}
-
-              {selectedView === transasset("issues") && (
-                <Paper sx={{ p: 2 }}>
-                  <Box>Issues content here...</Box>
-                </Paper>
-              )}
-            </Box>
+      {/* Updated Box with reduced padding and spacing */}
+      <Box sx={{ px: 2, mt: 2 }}>
+        {selectedView === transasset("assets") && (
+          <Grid container spacing={1} justifyContent="center">
+            <Grid item xs={12} sm={12} md={11} lg={10} xl={9}>
+              <Paper sx={{ p: 2, overflowX: "auto" }}>
+                <Table columns={assetColumns} rows={formattedAssets} />
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
+        )}
+
+        {selectedView === transasset("tag") && <TagCards />}
+
+        {selectedView === transasset("issues") && <Paper sx={{ p: 2 }}></Paper>}
       </Box>
 
       {/* Floating Action Button */}

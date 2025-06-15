@@ -43,3 +43,16 @@ export const createAssetTags = async (formData: IAssetTags) => {
     return postData(url, formData as unknown as Record<string, unknown>, token);
   });
 };
+
+//fetch all assets tags
+export const fetchAllTags = () =>
+  withAuth((token) => getData(`${env.API_BASE_URL}/getAllTags`, token));
+
+export const useAllTags = () => {
+  const { data } = useSWR([`fetchalltags`], fetchAllTags, {
+    revalidateOnFocus: false
+  });
+  return {
+    getAll: data?.data || []
+  };
+};

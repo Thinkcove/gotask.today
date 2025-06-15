@@ -20,8 +20,8 @@ class ResourceController extends BaseController {
 
   async getAllTags(requestHelper: RequestHelper, handler: any) {
     try {
-      const users = await resourceServices.getAllTags();
-      return this.sendResponse(handler, users);
+      const tags = await resourceServices.getAllTags();
+      return this.sendResponse(handler, tags);
     } catch (error) {
       return this.replyError(error);
     }

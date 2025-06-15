@@ -10,6 +10,7 @@ import MonitorIcon from "@mui/icons-material/Monitor";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import EnhancedEncryptionIcon from "@mui/icons-material/EnhancedEncryption";
+import StatusLabelChip from "@/app/component/chip/chip";
 
 interface UserDetails {
   user_id: string;
@@ -43,6 +44,19 @@ const TagCards: React.FC = () => {
   const { getAll: tags } = useAllTags();
 
   const [showErkId, setShowErkId] = useState<string | null>(null);
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "assigned":
+        return "success";
+      case "returned":
+        return "warning";
+      case "serviced":
+        return "info";
+      default:
+        return "default";
+    }
+  };
 
   const toggleErkVisibility = (id: string) => {
     setShowErkId((prev) => (prev === id ? null : id));
@@ -141,13 +155,7 @@ const TagCards: React.FC = () => {
 
                 {/* Status Tag */}
                 <Box display="flex" justifyContent="flex-start">
-                  <Chip
-                    label={tag.actionType}
-                    color={tag.actionType === "Assigned" ? "success" : "warning"}
-                    size="small"
-                    variant="outlined"
-                    sx={{ fontWeight: 500, fontSize: "0.75rem" }}
-                  />
+                  <StatusLabelChip label={tag.actionType} color={getStatusColor(tag.actionType)} />
                 </Box>
               </Stack>
             </CardComponent>

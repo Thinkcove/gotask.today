@@ -22,4 +22,8 @@ const getAssetIssueById = async (id: string) => {
   return await AssetIssue.findOne({ id });
 };
 
-export { createResource, createAssetIssues, getAssetIssueById };
+const getAllTags = async (): Promise<IAssetTag[]> => {
+  return await AssetTag.find();
+};
+
+export { createResource, createAssetIssues, getAssetIssueById, getAllTags };

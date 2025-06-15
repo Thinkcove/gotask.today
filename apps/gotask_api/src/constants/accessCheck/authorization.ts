@@ -8,6 +8,7 @@ export const APPLICATIONS = {
   REPORT: "User Report",
   CHATBOT: "Chatbot Management",
   UPLOAD: "Upload",
+  PROJECT_STORY: "Project Story Management",
   ASSET: "Asset and Resources"
 } as const;
 

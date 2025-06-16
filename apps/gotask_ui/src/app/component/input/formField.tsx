@@ -21,7 +21,6 @@ import {
 } from "@mui/icons-material";
 import { SxProps, Theme } from "@mui/material/styles";
 import DatePicker from "react-datepicker";
-import { format } from "date-fns";
 
 export interface SelectOption {
   name: string;

@@ -54,9 +54,7 @@ export const CreateAsset: React.FC = () => {
 
     try {
       const payload = { ...formData, typeId: selectedAssetType.id };
-      console.log("payload", payload);
       const response = await createLaptopAsset(payload);
-      console.log("response", response);
       if (response?.success) {
         setSnackbar({
           open: true,

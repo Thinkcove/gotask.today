@@ -36,6 +36,8 @@ interface User {
   status: boolean;
   token: string;
   role: Role;
+  skills?: string[];
+  certifications?: string[];
 }
 
 interface UserContextType {

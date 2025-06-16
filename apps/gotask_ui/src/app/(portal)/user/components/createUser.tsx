@@ -31,9 +31,11 @@ const initialFormState: IUserField = {
   alternate_no: "",
   joined_date: "",
   password: "",
-  address:"",
+  address: "",
   country: "",
-  state: ""
+  state: "",
+  skills: [],
+  certifications: []
 };
 
 const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {

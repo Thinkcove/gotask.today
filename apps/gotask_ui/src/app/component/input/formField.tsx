@@ -25,8 +25,6 @@ import DatePicker from "react-datepicker";
 export interface SelectOption {
   name: string;
   id: string;
-  // label: string;
-  // value: string;
 }
 
 interface FormFieldProps {
@@ -47,8 +45,9 @@ interface FormFieldProps {
   inputProps?: TextFieldProps["InputProps"];
   sx?: SxProps<Theme>;
   min?: number;
-  max?: number;
+  max?: number; 
 }
+
 
 const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function FormField(
   {

@@ -22,6 +22,8 @@ export interface IUser extends Document {
   address: string;
   country: string;
   state: string;
+  skills?: string[];
+  certifications?: string[];
 }
 
 // User Schema
@@ -48,15 +50,20 @@ const UserSchema = new Schema<IUser>(
     password: { type: String, required: true },
     user_id: { type: String, required: true, unique: true },
     mobile_no: { type: String, required: true },
-
     alternate_no: { type: String, required: false },
     address: { type: String, required: false },
     country: { type: String, required: false },
     state: { type: String, required: false },
-
     joined_date: { type: Date, requied: true },
     status: { type: Boolean, default: true },
-
+    skills: {
+      type: [String],
+      default: []
+    },
+    certifications: {
+      type: [String], 
+      default: []
+    },
     // Reference to Role
     roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true },
 

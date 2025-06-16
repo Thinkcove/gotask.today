@@ -14,6 +14,8 @@ export interface IUserField {
   address: string;
   country: string;
   state: string;
+  skills?: string[];
+  certifications?: string[];
 }
 
 export interface User {
@@ -39,6 +41,8 @@ export interface User {
   alternate_no?: string;
   country: string;
   state: string;
+  skills?: string[];
+  certifications?: string[];
 }
 
 export interface RoleData {

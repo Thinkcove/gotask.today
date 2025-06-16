@@ -75,7 +75,9 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
     alternate_no: user.alternate_no,
     country: user.country || "",
     state: user.state || "",
-    address: user.address || ""
+    address: user.address || "",
+    skills: user.skills,
+    certifications: user.certifications
   });
 
   return (
@@ -123,7 +125,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           {/* Basic Details */}
 
           <Grid container spacing={2} mb={3}>
-
             <Grid item xs={6} sm={6} md={4}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 {transuser("status")}
@@ -233,6 +234,20 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   />
                 ))}
               </Stack>
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labelSkills")}
+                value={user?.skills?.length ? user.skills.join(", ") : "-"}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={4}>
+              <LabelValueText
+                label={transuser("labelCertifications")}
+                value={user?.certifications?.length ? user.certifications.join(", ") : "-"}
+              />
             </Grid>
           </Grid>
 

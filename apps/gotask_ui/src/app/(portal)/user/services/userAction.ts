@@ -103,6 +103,8 @@ export const fetchUsers = async () => {
           country: string;
           state: string;
           alternate_no?: string;
+          skills?: string[];
+          certifications?: string[];
         }) => ({
           id: user.id,
           first_name: user.first_name,
@@ -120,7 +122,9 @@ export const fetchUsers = async () => {
           address: user.address,
           country: user.country,
           state: user.state,
-          alternate_no: user.alternate_no
+          alternate_no: user.alternate_no,
+          skills: user.skills,
+          certifications: user.certifications
         })
       ) || []
     );

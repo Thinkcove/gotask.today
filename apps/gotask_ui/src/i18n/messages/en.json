@@ -335,16 +335,19 @@
 
     "labelalternate_no": "Alternate Mobile Number",
     "placeholderalternate_no": "Enter Alternate Mobile Number",
-    "labelcountry":"Country",
-    "placeholdercountry":"Select Country",
-    "labelState":"State",
-    "placeholderstate":"Select State",
+    "labelcountry": "Country",
+    "placeholdercountry": "Select Country",
+    "labelState": "State",
+    "placeholderstate": "Select State",
 
-    "labeladdress":"Address",
-    "placeholderaddress":"Enter full Address",
+    "labeladdress": "Address",
+    "placeholderaddress": "Enter full Address",
 
-    "labelcertifications": "Skills & Certifications",
-    "placeholdercertifications": "Upload Certification Documents",
+    "labelSkills": "Skills",
+    "placeholderSkills": "Enter Skills",
+
+    "labelCertifications": "Certifications",
+    "placeholderCertifications": "Enter Certifications",
 
     "labeljoined_date": "Join Date",
     "placeholderjoined_date": "Enter Join Date",
@@ -358,7 +361,9 @@
 
     "generalinfo": "General Info",
     "contactinfo": "Contact Info",
-    "roleinfo": "Role Info",
+    "empinfo": "Employment Info",
+    "addressinfo": "Address Info",
+    "sectionSkillsCertifications": "Skills & Certifications",
 
     "updatesuccess": "User updated successfully!",
     "updateerror": "Error while updating user",
@@ -376,7 +381,6 @@
     "country": "Country",
     "state": "State",
     "alternate_no": "Alternate Mobile Number",
-    "certifications": "Skills & Certifications",
 
     "joined_date": "Joined Date",
     "roleid": "Role",

@@ -1,18 +1,24 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { Box, Grid, Button } from "@mui/material";
-import FormField from "@/app/component/input/formField";
-import { useAllAssets, useAllIssues } from "../services/assetActions";
+import { Box } from "@mui/material";
 import useSWR from "swr";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { useAllAssets, useAllIssues } from "../services/assetActions";
 import { fetcherUserList } from "../../user/services/userAction";
 import { createAssetIssues } from "../services/assetActions";
 import { IAssetAttributes, IAssetIssues } from "../interface/asset";
-import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { User } from "../../user/interfaces/userInterface";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { statusOptions } from "../assetConstants";
+import IssueInput from "./issuesInput";
+import CommonDialog from "@/app/component/dialog/commonDialog";
+
+interface CreateIssueProps {
+  onClose: () => void;
+  open: boolean;
+}
 
 const initialData: IAssetIssues = {
   assetId: "",
@@ -25,14 +31,15 @@ const initialData: IAssetIssues = {
   updatedBy: ""
 };
 
-const CreateIssue: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+const CreateIssue: React.FC<CreateIssueProps> = ({ onClose, open }) => {
   const [formData, setFormData] = useState<IAssetIssues>(initialData);
+  const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-  const [loading, setLoading] = useState(false);
+
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { data: users } = useSWR("fetch-user", fetcherUserList);
   const { getAll: assets } = useAllAssets();
@@ -66,7 +73,7 @@ const CreateIssue: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         onClose();
       }
     } catch (error) {
-      console.error("Create user error:", error);
+      console.error("Create issue error:", error);
       setSnackbar({
         open: true,
         message: transasset("issueserror"),
@@ -79,72 +86,22 @@ const CreateIssue: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <FormField
-            type="select"
-            label={transasset("assets")}
-            options={assetOptions}
-            placeholder={transasset("assets")}
-            value={formData.assetId}
-            onChange={(v) => handleChange("assetId", String(v))}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FormField
-            type="select"
-            label={transasset("reportedby")}
-            placeholder={transasset("reportedby")}
-            options={userOptions}
-            value={formData.reportedBy}
-            onChange={(v) => handleChange("reportedBy", String(v))}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FormField
-            type="text"
-            label={transasset("issuestype")}
-            placeholder={transasset("issuestype")}
-            value={formData.issueType}
-            onChange={(v) => handleChange("issueType", String(v))}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FormField
-            type="text"
-            label={transasset("description")}
-            placeholder={transasset("description")}
-            value={formData.description}
-            onChange={(v) => handleChange("description", String(v))}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FormField
-            type="select"
-            label={transasset("status")}
-            placeholder={transasset("status")}
-            options={statusOptions}
-            value={formData.status}
-            onChange={(v) => handleChange("status", String(v))}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FormField
-            type="select"
-            label={transasset("assignedTo")}
-            placeholder={transasset("assignedTo")}
-            options={userOptions}
-            value={formData.assignedTo}
-            onChange={(v) => handleChange("assignedTo", String(v))}
-          />
-        </Grid>
-      </Grid>
-
-      <Box mt={2}>
-        <Button variant="contained" onClick={handleSubmit} disabled={loading} fullWidth>
-          {loading ? transasset("submitting") : transasset("submit")}
-        </Button>
-      </Box>
+      <CommonDialog
+        open={open}
+        onClose={onClose}
+        onSubmit={handleSubmit}
+        title={transasset("createissue")}
+      >
+        <IssueInput
+          formData={formData}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          loading={loading}
+          userOptions={userOptions}
+          assetOptions={assetOptions}
+          statusOptions={statusOptions}
+        />
+      </CommonDialog>
 
       <CustomSnackbar
         open={snackbar.open}

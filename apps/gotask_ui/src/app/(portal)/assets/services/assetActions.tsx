@@ -9,11 +9,12 @@ export const fetchAllAssets = () =>
   withAuth((token) => getData(`${env.API_BASE_URL}/assets/getAll`, token));
 
 export const useAllAssets = () => {
-  const { data } = useSWR([`fetchallassets`], fetchAllAssets, {
+  const { data, mutate } = useSWR([`fetchallassets`], fetchAllAssets, {
     revalidateOnFocus: false
   });
   return {
-    getAll: data?.data || []
+    getAll: data?.data || [],
+    mutate
   };
 };
 
@@ -30,7 +31,7 @@ export const useAllTypes = () => {
   };
 };
 
-export const createLaptopAsset = async (formData: IAssetAttributes) => {
+export const createAssetAttributes = async (formData: IAssetAttributes) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/createasset`;
     return postData(url, formData as unknown as Record<string, unknown>, token);

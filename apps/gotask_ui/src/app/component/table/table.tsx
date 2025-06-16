@@ -13,18 +13,19 @@ import {
 import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
 
-// Styled cells
+// Styled table cell
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#D8C7DD",
-    color: theme.palette.common.white
+    color: theme.palette.common.white,
+    fontWeight: "bold"
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14
   }
 }));
 
-// Styled row
+// Styled table row
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover
@@ -36,10 +37,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 // Column interface
 export interface Column<T> {
-  id: keyof T;
+  id: keyof T | string;
   label: string;
   align?: "right" | "left" | "center";
-  render?: (value: T[keyof T], row: T) => React.ReactNode;
+  render?: (value: T[keyof T] | undefined, row: T) => ReactNode;
 }
 
 interface CustomTableProps<T> {
@@ -48,12 +49,8 @@ interface CustomTableProps<T> {
   minWidth?: number;
 }
 
-// Responsive CustomTable
-const CustomTable = <T extends { [key: string]: unknown }>({
-  columns,
-  rows,
-  minWidth = 700
-}: CustomTableProps<T>) => {
+// Generic Custom Table component
+const CustomTable = <T extends object>({ columns, rows, minWidth = 700 }: CustomTableProps<T>) => {
   return (
     <Box sx={{ overflowX: "auto" }}>
       <TableContainer component={Paper} sx={{ minWidth: "100%", width: "max-content" }}>
@@ -68,15 +65,17 @@ const CustomTable = <T extends { [key: string]: unknown }>({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
-              <StyledTableRow key={index}>
-                {columns.map((column) => (
-                  <StyledTableCell key={String(column.id)} align={column.align || "left"}>
-                    {column.render
-                      ? column.render(row[column.id], row)
-                      : (row[column.id] as ReactNode)}
-                  </StyledTableCell>
-                ))}
+            {rows.map((row, rowIndex) => (
+              <StyledTableRow key={rowIndex}>
+                {columns.map((column) => {
+                  // Safely fetch value if column.id exists in row
+                  const value = column.id in row ? row[column.id as keyof T] : undefined;
+                  return (
+                    <StyledTableCell key={String(column.id)} align={column.align || "left"}>
+                      {column.render ? column.render(value, row) : (value as ReactNode)}
+                    </StyledTableCell>
+                  );
+                })}
               </StyledTableRow>
             ))}
           </TableBody>

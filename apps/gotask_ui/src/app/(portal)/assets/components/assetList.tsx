@@ -13,6 +13,8 @@ import { IAssetAttributes } from "../interface/asset";
 import { getAssetColumns } from "../assetConstants";
 import TagCards from "../createTag/tagCard";
 import { CreateTag } from "../createTag/createTags";
+import AssetIssueCards from "../createIssues/issuesCard";
+import CreateIssue from "../createIssues/createIssues";
 
 export const AssetList: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -22,13 +24,18 @@ export const AssetList: React.FC = () => {
   const router = useRouter();
   const { getAll: allAssets } = useAllAssets();
   const formattedAssets = (allAssets || []).map((asset: IAssetAttributes) => ({
+    id: asset.id,
     assetType: asset.assetType?.name || "-",
     assetName: asset.deviceName || "-",
     modelName: asset.modelName || "-",
     purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-"
   }));
 
-  const assetColumns = getAssetColumns(transasset);
+  const handleEdit = (row: IAssetAttributes) => {
+    router.push(`/assets/editAsset/${row.id}`);
+  };
+
+  const assetColumns = getAssetColumns(transasset, handleEdit);
 
   const handleActionClick = () => {
     if (selectedView === transasset("assets")) {
@@ -57,7 +64,7 @@ export const AssetList: React.FC = () => {
           <Grid container spacing={1} justifyContent="center">
             <Grid item xs={12} sm={12} md={11} lg={10} xl={9}>
               <Paper sx={{ p: 2, overflowX: "auto" }}>
-                <Table columns={assetColumns} rows={formattedAssets} />
+                <Table<IAssetAttributes> columns={assetColumns} rows={formattedAssets} />
               </Paper>
             </Grid>
           </Grid>
@@ -82,6 +89,8 @@ export const AssetList: React.FC = () => {
       />
 
       <CreateTag open={modalOpen} onClose={() => setModalOpen(false)} />
+      <CreateIssue open={createIssueOpen} onClose={() => setCreateIssueOpen(false)} />
+      {/* <CreateIssue onClose={() => setCreateIssueOpen(false)} /> */}
     </>
   );
 };

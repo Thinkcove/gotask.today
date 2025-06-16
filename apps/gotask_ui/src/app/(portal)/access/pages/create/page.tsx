@@ -22,18 +22,10 @@ const AccessCreatePage = () => {
       }}
     >
       {/* Header Section */}
-      <Box sx={{ flexShrink: 0 }}>
-        <ModuleHeader name={t("createaccessnew")} />
-      </Box>
+      <ModuleHeader name={t("createaccessnew")} />
 
       {/* Content Section */}
-      <Box
-        sx={{
-          flex: 1,
-          overflow: "hidden", // No page scroll here
-          p: 3
-        }}
-      >
+      <Box sx={{ flex: 1, overflow: "hidden", p: 2 }}>
         <AccessCreateForm />
       </Box>
     </Box>

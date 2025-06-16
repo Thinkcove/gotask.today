@@ -22,10 +22,9 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
 
   const startedOn = taskData.start_date;
   const userEstimated = taskData.user_estimated;
-  let estimated_time: string | undefined = undefined;
 
   if (startedOn && userEstimated) {
-    estimated_time = userEstimated;
+    taskData.estimated_time = userEstimated;
   }
 
   const newTask = new Task({

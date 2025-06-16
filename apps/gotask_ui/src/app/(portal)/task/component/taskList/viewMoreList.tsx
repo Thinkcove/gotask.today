@@ -2,7 +2,6 @@ import React from "react";
 import { Box, CircularProgress, Grid } from "@mui/material";
 import TaskItem, { Task } from "../taskLayout/taskItem";
 import { getStatusColor } from "@/app/common/constants/task";
-import { monthDate } from "@/app/common/utils/common";
 import { IGroup } from "../../interface/taskInterface";
 
 interface ViewMoreListProps {
@@ -50,7 +49,6 @@ const ViewMoreList: React.FC<ViewMoreListProps> = ({
                           onTaskClick={onTaskClick}
                           view={view}
                           getStatusColor={getStatusColor}
-                          formatDate={monthDate}
                         />
                       </Grid>
                     ))}

@@ -1,12 +1,15 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { getAssetById } from "../../domain/interface/asset/asset";
 import {
   createAssetIssues,
   createResource,
+  getAllTags,
   getAssetIssueById,
   updateAssetIssue
 } from "../../domain/interface/assetTag/assetTag";
-import { findUserByEmail } from "../../domain/interface/user/userInterface";
+import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
+import { IAssetTag } from "../../domain/model/assetTag/assetTag";
 
 class resourceService {
   // CREATE ASSET
@@ -26,10 +29,7 @@ class resourceService {
       };
     }
     try {
-      const asset = await createResource({
-        ...payload,
-        userId: userInfo.user_id
-      });
+      const asset = await createResource({ ...payload });
       return {
         success: true,
         data: asset
@@ -38,6 +38,40 @@ class resourceService {
       return {
         success: false,
         error: error.message
+      };
+    }
+  };
+
+  getAllTags = async (): Promise<any> => {
+    try {
+      const assets = await getAllTags();
+
+      const tagsData = await Promise.all(
+        assets.map(async (tagDoc: IAssetTag) => {
+          const tag = tagDoc.toObject();
+          const [asset, previouslyUsedByUser, userDetails] = await Promise.all([
+            getAssetById(tag.assetId),
+            findUser(tag.previouslyUsedBy),
+            findUser(tag.userId)
+          ]);
+
+          return {
+            ...tag,
+            assetDetails: asset || null,
+            previouslyUsedByUser: previouslyUsedByUser || null,
+            userDetails: userDetails || null
+          };
+        })
+      );
+
+      return {
+        success: true,
+        data: tagsData
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || AssetMessages.FETCH.ASSET_TYPE_NOT_FOUND
       };
     }
   };

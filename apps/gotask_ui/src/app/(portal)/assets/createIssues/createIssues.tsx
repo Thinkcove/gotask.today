@@ -12,6 +12,7 @@ import { User } from "../../user/interfaces/userInterface";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { statusOptions } from "../assetConstants";
 
 const initialData: IAssetIssues = {
   assetId: "",
@@ -47,12 +48,6 @@ const CreateIssue: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     [assets]
   );
 
-  const statusOptions = [
-    { id: "Open", name: "Open" },
-    { id: "InProgress", name: "In Progress" },
-    { id: "Resolved", name: "Resolved" }
-  ];
-
   const handleChange = <K extends keyof IAssetIssues>(key: K, value: IAssetIssues[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
@@ -65,15 +60,16 @@ const CreateIssue: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         await issuesMutate();
         setSnackbar({
           open: true,
-          message: "Issue created successfully",
+          message: transasset("issuessuccess"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
         onClose();
       }
-    } catch (err) {
+    } catch (error) {
+      console.error("Create user error:", error);
       setSnackbar({
         open: true,
-        message: "Error creating issue",
+        message: transasset("issueserror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     } finally {
@@ -146,7 +142,7 @@ const CreateIssue: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       <Box mt={2}>
         <Button variant="contained" onClick={handleSubmit} disabled={loading} fullWidth>
-          {loading ? "Submitting..." : "Submit"}
+          {loading ? transasset("submitting") : transasset("submit")}
         </Button>
       </Box>
 

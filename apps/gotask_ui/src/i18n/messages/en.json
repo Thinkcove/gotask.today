@@ -423,7 +423,8 @@
     "commentService": "Comment Service",
     "cancel": "Cancel",
     "create": "Create",
-    "successmessage": "Asset created successful",
+    "assetsuccess": "Asset created successful",
+    "issuessuccess": "Issue created successfully",
     "isencrypted": "Is Encrypted",
     "createtag": "Create tag",
     "assignedTo": "Assigned To",
@@ -435,7 +436,13 @@
     "issuestype": "Issues type",
     "description": "Description",
     "status": "status",
-    "nodata": "No data found"
+    "nodata": "No data found",
+    "issueserror": "Error creating issue",
+    "submitting": "Submitting....",
+    "submit": "Submit",
+    "open": "open",
+    "encryptedkey": "Encrypted Key",
+    "close": "Close"
   },
 
   "Chatbot": {

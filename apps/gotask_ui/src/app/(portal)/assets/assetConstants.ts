@@ -14,3 +14,9 @@ export const ACTION_TYPES = [
   { id: "Returned", name: "Returned" },
   { id: "Serviced", name: "Serviced" }
 ];
+
+export const statusOptions = [
+  { id: "Open", name: "Open" },
+  { id: "InProgress", name: "In Progress" },
+  { id: "Resolved", name: "Resolved" }
+];

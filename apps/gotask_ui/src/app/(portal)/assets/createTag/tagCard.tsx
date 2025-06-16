@@ -177,7 +177,7 @@ const TagCards: React.FC = () => {
                             fullWidth
                           >
                             <DialogTitle sx={{ fontWeight: 600, color: "#741B92" }}>
-                              Encrypted Key
+                              {trans("encryptedkey")}
                             </DialogTitle>
                             <DialogContent>
                               <Typography sx={{ wordBreak: "break-word", fontSize: "1rem" }}>
@@ -186,7 +186,7 @@ const TagCards: React.FC = () => {
                             </DialogContent>
                             <DialogActions>
                               <Button onClick={handleCloseErkDialog} color="primary">
-                                Close
+                                {trans("close")}
                               </Button>
                             </DialogActions>
                           </Dialog>

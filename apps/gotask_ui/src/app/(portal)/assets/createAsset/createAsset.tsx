@@ -58,7 +58,7 @@ export const CreateAsset: React.FC = () => {
       if (response?.success) {
         setSnackbar({
           open: true,
-          message: transasset("successmessage"),
+          message: transasset("assetsuccess"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
         router.push("/assets");

@@ -7,7 +7,6 @@ import { useAllTags } from "../services/assetActions";
 import CardComponent from "@/app/component/card/cardComponent";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import MonitorIcon from "@mui/icons-material/Monitor";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import EnhancedEncryptionIcon from "@mui/icons-material/EnhancedEncryption";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import StatusLabelChip from "@/app/component/chip/chip";

@@ -8,3 +8,9 @@ export const getAssetColumns = (transasset: (key: string) => string) => [
     label: transasset("actions")
   }
 ];
+
+export const ACTION_TYPES = [
+  { id: "Assigned", name: "Assigned" },
+  { id: "Returned", name: "Returned" },
+  { id: "Serviced", name: "Serviced" }
+];

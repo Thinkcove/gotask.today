@@ -18,7 +18,7 @@ import ViewMoreList from "../../component/taskList/viewMoreList";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { Add } from "@mui/icons-material";
 import SearchBar from "@/app/component/searchBar/searchBar";

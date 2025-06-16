@@ -8,16 +8,17 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { logTaskTime } from "../service/taskAction";
 import { KeyedMutator } from "swr";
 import { ITask, TimeEntry } from "../interface/taskInterface";
-import { TIME_FORMAT_PATTERNS, TIME_GUIDE_DESCRIPTION } from "../../../common/constants/timeTask";
+import { TIME_GUIDE_DESCRIPTION } from "../../../common/constants/timeTask";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { format, parse } from "date-fns";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
+import { DURATION_PARSE_FORMAT } from "@/app/common/constants/regex";
 
 const formatTimeString = (time: string): string => {
   if (!time) return "0d0h0m";
 
-  const match = time.match(TIME_FORMAT_PATTERNS.DURATION_PARSE_FORMAT);
+  const match = time.match(DURATION_PARSE_FORMAT);
 
   if (!match) return "0d0h0m";
 

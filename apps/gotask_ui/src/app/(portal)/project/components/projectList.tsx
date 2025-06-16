@@ -10,7 +10,7 @@ import useSWR from "swr";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import { Project } from "../../task/interface/taskInterface";
 import Chat from "../../chatbot/components/chat";

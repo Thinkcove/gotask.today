@@ -19,7 +19,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@assets/*": ["./public/assets/*"]
+      "@assets/*": ["./src/assets/*"]
     },
     "target": "ES2017"
   },

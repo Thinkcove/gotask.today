@@ -429,7 +429,13 @@
     "assignedTo": "Assigned To",
     "assettype": "Asset Type",
     "previouslyUsedBy": "Previously User By",
-    "actionType": "Action Type"
+    "actionType": "Action Type",
+    "createissue": "Crete issues",
+    "reportedby": "Reported by",
+    "issuestype": "Issues type",
+    "description": "Description",
+    "status": "status",
+    "nodata": "No data found"
   },
 
   "Chatbot": {

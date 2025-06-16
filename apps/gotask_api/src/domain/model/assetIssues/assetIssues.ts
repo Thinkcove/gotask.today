@@ -16,7 +16,7 @@ export interface IAssetIssue extends Document {
 const AssetIssueSchema = new Schema<IAssetIssue>(
   {
     id: { type: String, default: uuidv4 },
-    assetId: { type: String, ref: "User", required: true },
+    assetId: { type: String, required: true },
     reportedBy: { type: String, required: true },
     issueType: { type: String, required: true },
     description: { type: String },

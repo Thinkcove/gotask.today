@@ -2,7 +2,7 @@ import { getData, postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { IAssetAttributes, IAssetTags } from "../interface/asset";
+import { IAssetAttributes, IAssetIssues, IAssetTags } from "../interface/asset";
 
 //fetch all assets
 export const fetchAllAssets = () =>
@@ -50,6 +50,25 @@ export const fetchAllTags = () =>
 
 export const useAllTags = () => {
   const { data } = useSWR([`fetchalltags`], fetchAllTags, {
+    revalidateOnFocus: false
+  });
+  return {
+    getAll: data?.data || []
+  };
+};
+
+export const createAssetIssues = async (formData: IAssetIssues) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/createissues`;
+    return postData(url, formData as unknown as Record<string, unknown>, token);
+  });
+};
+
+export const fetchAllIssues = () =>
+  withAuth((token) => getData(`${env.API_BASE_URL}/getallissues`, token));
+
+export const useAllIssues = () => {
+  const { data } = useSWR([`fetchallissues`], fetchAllIssues, {
     revalidateOnFocus: false
   });
   return {

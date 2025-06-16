@@ -14,16 +14,18 @@ import { getAssetColumns } from "../assetConstants";
 import CreateTag from "../createTag/page";
 import CloseIcon from "@mui/icons-material/Close";
 import TagCards from "../createTag/tagCard";
+import AssetIssueCards from "../createIssues/issuesCard";
+import CreateIssue from "../createIssues/createIssues";
 
 export const AssetList: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [selectedView, setSelectedView] = useState("Asset");
   const [modalOpen, setModalOpen] = useState(false);
+  const [createIssueOpen, setCreateIssueOpen] = useState(false);
   const router = useRouter();
   const { getAll: allAssets } = useAllAssets();
-
   const formattedAssets = (allAssets || []).map((asset: IAssetAttributes) => ({
-    assetType: asset.typeId || "-",
+    assetType: asset.assetType?.name || "-",
     assetName: asset.deviceName || "-",
     modelName: asset.modelName || "-",
     purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-"
@@ -36,6 +38,8 @@ export const AssetList: React.FC = () => {
       router.push("/assets/createAsset");
     } else if (selectedView === transasset("tag")) {
       setModalOpen(true);
+    } else if (selectedView === transasset("issues")) {
+      setCreateIssueOpen(true);
     }
   };
 
@@ -64,7 +68,7 @@ export const AssetList: React.FC = () => {
 
         {selectedView === transasset("tag") && <TagCards />}
 
-        {selectedView === transasset("issues") && <Paper sx={{ p: 2 }}></Paper>}
+        {selectedView === transasset("issues") && <AssetIssueCards />}
       </Box>
 
       {/* Floating Action Button */}
@@ -72,7 +76,9 @@ export const AssetList: React.FC = () => {
         label={
           selectedView === transasset("assets")
             ? transasset("createasset")
-            : transasset("createtag")
+            : selectedView === transasset("tag")
+              ? transasset("createtag")
+              : transasset("createissue")
         }
         icon={<AddIcon sx={{ color: "white" }} />}
         onClick={handleActionClick}
@@ -95,6 +101,30 @@ export const AssetList: React.FC = () => {
           </IconButton>
         </DialogTitle>
         <CreateTag open={modalOpen} onClose={() => setModalOpen(false)} />
+      </Dialog>
+
+      <Dialog
+        open={createIssueOpen}
+        onClose={() => setCreateIssueOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }}>
+          {transasset("createissue")}
+          <IconButton
+            aria-label="close"
+            onClick={() => setCreateIssueOpen(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500]
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <CreateIssue onClose={() => setCreateIssueOpen(false)} />
       </Dialog>
     </>
   );

@@ -8,8 +8,8 @@ import CardComponent from "@/app/component/card/cardComponent";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import MonitorIcon from "@mui/icons-material/Monitor";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import EnhancedEncryptionIcon from "@mui/icons-material/EnhancedEncryption";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import StatusLabelChip from "@/app/component/chip/chip";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
@@ -46,11 +46,8 @@ const getInitial = (email: string) => email?.charAt(0).toUpperCase() || "?";
 const TagCards: React.FC = () => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { getAll: tags } = useAllTags();
-
-  const [showErkId, setShowErkId] = useState<string | null>(null);
   const [erkDialogOpen, setErkDialogOpen] = useState(false);
   const [selectedErk, setSelectedErk] = useState<string | null>(null);
-
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "assigned":
@@ -171,7 +168,7 @@ const TagCards: React.FC = () => {
                             onClick={() => handleOpenErkDialog(tag.erk!)}
                             sx={{ cursor: "pointer", display: "flex", alignItems: "center" }}
                           >
-                            <VisibilityIcon sx={{ fontSize: 20, color: "#741B92" }} />
+                            <VisibilityOffIcon sx={{ fontSize: 20 }} />
                           </Box>
                           <Dialog
                             open={erkDialogOpen}

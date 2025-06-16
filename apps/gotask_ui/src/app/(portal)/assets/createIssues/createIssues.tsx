@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from "react";
 import { Box, Grid, Button } from "@mui/material";
 import FormField from "@/app/component/input/formField";
-import { useAllAssets } from "../services/assetActions";
+import { useAllAssets, useAllIssues } from "../services/assetActions";
 import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
 import { createAssetIssues } from "../services/assetActions";
@@ -35,6 +35,7 @@ const CreateIssue: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { data: users } = useSWR("fetch-user", fetcherUserList);
   const { getAll: assets } = useAllAssets();
+  const { mutate: issuesMutate } = useAllIssues();
 
   const userOptions = useMemo(
     () => users?.map((user: User) => ({ id: user.id, name: user.name })) || [],
@@ -61,6 +62,7 @@ const CreateIssue: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     try {
       const res = await createAssetIssues(formData);
       if (res.success) {
+        await issuesMutate();
         setSnackbar({
           open: true,
           message: "Issue created successfully",

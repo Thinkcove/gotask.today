@@ -49,11 +49,12 @@ export const fetchAllTags = () =>
   withAuth((token) => getData(`${env.API_BASE_URL}/getAllTags`, token));
 
 export const useAllTags = () => {
-  const { data } = useSWR([`fetchalltags`], fetchAllTags, {
+  const { data, mutate } = useSWR([`fetchalltags`], fetchAllTags, {
     revalidateOnFocus: false
   });
   return {
-    getAll: data?.data || []
+    getAll: data?.data || [],
+    mutate
   };
 };
 
@@ -68,10 +69,11 @@ export const fetchAllIssues = () =>
   withAuth((token) => getData(`${env.API_BASE_URL}/getallissues`, token));
 
 export const useAllIssues = () => {
-  const { data } = useSWR([`fetchallissues`], fetchAllIssues, {
+  const { data, mutate } = useSWR([`fetchallissues`], fetchAllIssues, {
     revalidateOnFocus: false
   });
   return {
-    getAll: data?.data || []
+    getAll: data?.data || [],
+    mutate
   };
 };

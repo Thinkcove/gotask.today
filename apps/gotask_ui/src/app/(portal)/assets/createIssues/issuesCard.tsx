@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { Box, Grid, Typography, Chip, Stack, Divider, Avatar } from "@mui/material";
-import BugReportIcon from "@mui/icons-material/BugReport";
+import React from "react";
+import { Box, Grid, Typography, Stack, Avatar } from "@mui/material";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { useTranslations } from "next-intl";
@@ -8,7 +7,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import CardComponent from "@/app/component/card/cardComponent";
 import { IAssetIssues } from "../interface/asset";
 import { useAllIssues } from "../services/assetActions";
-import ReportIcon from "@mui/icons-material/Report";
 import MonitorIcon from "@mui/icons-material/Monitor";
 import ErrorIcon from "@mui/icons-material/Error";
 import Tooltip from "@mui/material/Tooltip";
@@ -31,7 +29,6 @@ export const getStatusColor = (status: string) => {
 const AssetIssueCards: React.FC = () => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { getAll: allissues } = useAllIssues();
-  console.log("issues", allissues);
   if (!allissues?.length) {
     return (
       <Box textAlign="center" mt={5} px={2}>

@@ -1,66 +1,66 @@
+"use client";
+
 import React, { useState } from "react";
-import { Button, Popover, Box, TextField } from "@mui/material";
+import { Button, Popover, TextField, Typography, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ClearIcon from "@mui/icons-material/Close";
+import { useTranslations } from "next-intl";
 
 interface DateDropdownProps {
   dateFrom: string;
   dateTo: string;
   onDateChange: (from: string, to: string) => void;
-  transtask: (key: string) => string;
 }
 
-const StyledButton = styled(Button)(({ theme }) => ({
-  minWidth: 220,
+const StyledTrigger = styled(Button)(({ theme }) => ({
   height: 42,
   borderRadius: 12,
   textTransform: "none",
+  padding: "0 12px",
   fontWeight: 500,
-  color: "grey",
+  backgroundColor: theme.palette.background.paper,
+  color: theme.palette.grey[500],
   opacity: 1,
   borderColor: theme.palette.grey[400],
-  backgroundColor: theme.palette.background.paper,
+  display: "flex",
+  justifyContent: "space-between",
+  minWidth: 240,
   "&:hover": {
-    borderColor: "black"
+    borderColor: theme.palette.primary.main
   }
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
-  width: 120,
+  width: 150,
   "& .MuiOutlinedInput-root": {
-    borderRadius: 12,
+    borderRadius: 10,
+    fontSize: 14,
     height: 42,
-    backgroundColor: theme.palette.background.paper,
-    paddingRight: 8,
-    "& fieldset": {
-      borderColor: theme.palette.grey[300]
-    },
-    "&:hover fieldset": {
-      borderColor: theme.palette.grey[500]
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: theme.palette.primary.main
-    }
+    backgroundColor: theme.palette.background.paper
   },
   "& .MuiInputLabel-root": {
-    fontSize: 14,
-    color: theme.palette.text.secondary
-  },
-  "& .MuiInputLabel-shrink": {
-    color: theme.palette.text.secondary
-  },
-  "& input[type=date]": {
-    padding: "10px 12px",
-    fontSize: 14,
-    color: theme.palette.text.primary
+    fontSize: 13
   }
 }));
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
+};
 
 const DateDropdown: React.FC<DateDropdownProps> = ({
   dateFrom,
   dateTo,
-  onDateChange,
-  transtask
+  onDateChange
 }) => {
+  const t = useTranslations("Task");
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [tempFrom, setTempFrom] = useState(dateFrom);
   const [tempTo, setTempTo] = useState(dateTo);
@@ -71,43 +71,95 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleApply = () => {
     setAnchorEl(null);
-    if (tempFrom && tempTo) {
-      onDateChange(tempFrom, tempTo);
-    }
+    onDateChange(tempFrom, tempTo);
   };
+
+  const handleClear = () => {
+    setTempFrom("");
+    setTempTo("");
+    onDateChange("", "");
+    setAnchorEl(null);
+  };
+
+  const formattedLabel =
+    dateFrom && dateTo
+      ? `${formatDate(dateFrom)} – ${formatDate(dateTo)}`
+      : t("filterduedate");
 
   return (
     <>
-      <StyledButton variant="outlined" onClick={handleOpen}>
-        {dateFrom && dateTo ? `${dateFrom} - ${dateTo}` : transtask("filterduedate")}
-      </StyledButton>
+      <StyledTrigger
+        variant="outlined"
+        onClick={handleOpen}
+        startIcon={<CalendarMonthIcon fontSize="small" />}
+      >
+        <Typography
+  variant="body2"
+  sx={{
+    flexGrow: 1,
+    textAlign: "left",
+    color: dateFrom && dateTo ? "text.primary" : "text.secondary"
+  }}
+>
+  {formattedLabel}
+</Typography>
+
+      </StyledTrigger>
+
       <Popover
         open={open}
         anchorEl={anchorEl}
-        onClose={handleClose}
+        onClose={() => setAnchorEl(null)}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        sx={{ p: 2 }}
+        PaperProps={{ sx: { p: 2, borderRadius: 2, minWidth: 360 } }}
       >
-        <Box sx={{ display: "flex", gap: 2, p: 2 }}>
-          <StyledTextField
-            label="From"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={tempFrom}
-            onChange={(e) => setTempFrom(e.target.value)}
-            size="small"
-          />
-          <StyledTextField
-            label="To"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={tempTo}
-            onChange={(e) => setTempTo(e.target.value)}
-            size="small"
-          />
-        </Box>
+        <Stack spacing={2}>
+          <Stack direction="row" spacing={2}>
+            <StyledTextField
+              label="From"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={tempFrom}
+              onChange={(e) => setTempFrom(e.target.value)}
+            />
+            <StyledTextField
+              label="To"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={tempTo}
+              onChange={(e) => setTempTo(e.target.value)}
+            />
+          </Stack>
+
+          <Stack direction="row" justifyContent="space-between">
+            <Button
+              onClick={handleClear}
+              size="small"
+              color="inherit"
+              startIcon={<ClearIcon fontSize="small" />}
+              sx={{
+                borderRadius: 2,
+                textTransform: "none",
+                color: (theme) => theme.palette.text.secondary,
+                "&:hover": {
+                  backgroundColor: "action.hover"
+                }
+              }}
+            >
+              {t("filterclear")}
+            </Button>
+            <Button
+              onClick={handleApply}
+              variant="contained"
+              size="small"
+              sx={{ borderRadius: 2, textTransform: "none" }}
+            >
+              {t("filterapply")}
+            </Button>
+          </Stack>
+        </Stack>
       </Popover>
     </>
   );

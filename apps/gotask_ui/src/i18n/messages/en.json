@@ -303,7 +303,9 @@
     "deletetitle": "Delete Comment",
     "deletecomment": "Delete",
     "cancelcomments": "Cancel",
-    "commmentmessage": "Are You Sure You Want to Delete This Comment?"
+    "commmentmessage": "Are You Sure You Want to Delete This Comment?",
+    "variation": "Task is ahead of estimate",
+    "variationalert": "Task is taking longer than estimated"
   },
   "User": {
     "firstname": "First name is required",

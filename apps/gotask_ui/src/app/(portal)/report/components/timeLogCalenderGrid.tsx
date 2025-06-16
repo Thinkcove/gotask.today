@@ -14,7 +14,6 @@ import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 import { GroupedLogs, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useRouter } from "next/navigation";
 import { extractHours } from "@/app/common/utils/taskTime";
 
 const headerCellStyle = {
@@ -40,7 +39,6 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
   selectedProjects = []
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
-  const router = useRouter();
   const dateRange = getDateRange(fromDate, toDate);
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;

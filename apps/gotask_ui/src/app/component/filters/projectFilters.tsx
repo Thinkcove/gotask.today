@@ -125,23 +125,26 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
         )}
       </Box>
 
-      {appliedFilterCount > 0 && (
-        <Box sx={{ pl: 3, pb: 2 }}>
-          <Link
-            component="button"
-            onClick={onClearFilters}
-            underline="always"
-            sx={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              maxWidth: 350
-            }}
-          >
-            {`${transproject("clearfilters")} (${appliedFilterCount})`}
-          </Link>
-        </Box>
-      )}
+    {appliedFilterCount > 0 && (
+  <Box sx={{ pl: 3, pb: 2 }}>
+    <Link
+      component="button"
+      onClick={onClearFilters}
+      underline="always"
+      sx={{
+        whiteSpace: "nowrap",
+        fontWeight: 500,
+        color: "#6A1B9A", // purple matching theme (optional)
+        cursor: "pointer",
+        fontSize: "14px"
+      }}
+    >
+       {`Clear All (${appliedFilterCount})`}
+    </Link>
+  </Box>
+)}
+
+
     </Box>
   );
 };

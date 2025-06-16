@@ -12,14 +12,11 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
 import SearchBar from "@/app/component/searchBar/searchBar";
-import { Project } from "../../task/interface/taskInterface";
+import { Project, User } from "../../task/interface/taskInterface";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProjectFilters from "@/app/component/filters/projectFilters";
+import Chat from "../../chatbot/components/chat";
 
-interface User {
-  id: string;
-  name: string;
-}
 
 interface ExtendedProject extends Project {
   users?: User[];
@@ -155,6 +152,7 @@ const ProjectList = () => {
       {/* Project Cards */}
       <Box>
         <ProjectCards projects={filteredProjects} />
+      {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
       </Box>
 
       {/* Floating Add Button */}
@@ -170,3 +168,5 @@ const ProjectList = () => {
 };
 
 export default ProjectList;
+
+

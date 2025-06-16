@@ -119,11 +119,7 @@ export const removeUsersFromProject = async (userIds: string[], projectId: strin
   });
 };
 
-// SWR-compatible fetcher with filters
-export const fetcher = async (filters?: { status?: string[]; user_id?: string[] }) => {
-  if (filters && (filters.status?.length || filters.user_id?.length)) {
-    return fetchFilteredProjects(filters);
-  } else {
-    return fetchProjects();
-  }
+// SWR-compatible fetcher
+export const fetcher = async () => {
+  return fetchProjects();
 };

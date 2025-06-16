@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Dialog, DialogTitle, Grid, IconButton, Paper } from "@mui/material";
+import { Box, Grid, Paper } from "@mui/material";
 import TaskToggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
@@ -11,9 +11,8 @@ import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { IAssetAttributes } from "../interface/asset";
 import { getAssetColumns } from "../assetConstants";
-import CreateTag from "../createTag/page";
-import CloseIcon from "@mui/icons-material/Close";
 import TagCards from "../createTag/tagCard";
+import { CreateTag } from "../createTag/createTags";
 
 export const AssetList: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -78,24 +77,7 @@ export const AssetList: React.FC = () => {
         onClick={handleActionClick}
       />
 
-      <Dialog open={modalOpen} onClose={() => setModalOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ m: 0, p: 2 }}>
-          {transasset("createtag")}
-          <IconButton
-            aria-label="close"
-            onClick={() => setModalOpen(false)}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500]
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <CreateTag open={modalOpen} onClose={() => setModalOpen(false)} />
-      </Dialog>
+      <CreateTag open={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   );
 };

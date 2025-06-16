@@ -58,13 +58,13 @@ export const calculateTimeProgressData = (
   };
 
   // Convert time strings to hours
-  const estimatedHours = parseTimeString(estimatedTime || "0h");
-  const spentHours = parseTimeString(spentTime || "0h");
+  const estimatedHours = parseTimeString(estimatedTime || "0h0m");
+  const spentHours = parseTimeString(spentTime || "0h0m");
 
   let spentFillPercentage = 0;
   let variationFillPercentage = 0;
 
-  const durationHours = parseTimeString(userEstimated || "0h");
+  const durationHours = parseTimeString(userEstimated || "0h0m");
   const startDateObj = new Date(startDate);
   const dueDate = new Date(startDateObj.getTime() + durationHours * 60 * 60 * 1000);
 
@@ -113,11 +113,12 @@ export const validatePhone = (phone: string) => {
 //extracthours
 export const extractHours = (timeStrings: string[]) =>
   timeStrings.reduce((sum, entry) => {
-    const match = entry.match(/(\d+)d(\d+)h/);
+    const match = entry.match(/(\d+)d(\d+)h(\d+)m/);
     if (match) {
       const days = parseInt(match[1], 10);
       const hours = parseInt(match[2], 10);
-      return sum + days * 8 + hours;
+      const minutes = parseInt(match[3], 10);
+      return sum + days * 8 + hours + minutes;
     }
     return sum;
   }, 0);
@@ -127,12 +128,16 @@ export const formatTimeValue = (raw: string): string => {
 
   const dayMatch = raw.match(/(\d+)d/);
   const hourMatch = raw.match(/(\d+)h/);
+  const minuteMatch = raw.match(/(\d+)m/);
 
   const days = dayMatch ? parseInt(dayMatch[1], 10) : 0;
   const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+  const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
 
   if (days === 0 && hours === 0) return "—";
   if (days === 0) return `${hours}h`;
   if (hours === 0) return `${days}d`;
-  return `${days}d ${hours}h`;
+  if (minutes === 0) return `${minutes}m`;
+
+  return `${days}d ${hours}h ${minutes}m`;
 };

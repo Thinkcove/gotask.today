@@ -19,7 +19,7 @@ const TimeBadge: React.FC<TimeBadgeProps> = ({ label, value }) => {
       </Typography>
       <Typography
         variant="caption"
-        sx={{ fontWeight: 500, fontSize: "0.72rem", color: "text.primary" }}
+        sx={{ fontWeight: 700, fontSize: "0.72rem", color: "text.primary" }}
       >
         {formattedValue}
       </Typography>

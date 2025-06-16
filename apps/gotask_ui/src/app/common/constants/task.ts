@@ -81,7 +81,7 @@ export const TASK_SEVERITY = {
 export const getVariationColor = (variation: string) => {
   if (!variation) return "#grey"; // default to zero
   const isNegative = variation.trim().startsWith("-");
-  const isZero = variation.trim() === "0d0h";
+  const isZero = variation.trim() === "0d0h0m";
 
   if (isZero) return "#grey";
   return isNegative ? "green" : "red";

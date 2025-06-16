@@ -1,14 +1,3 @@
-// export const getAssetColumns = (transasset: (key: string) => string) => [
-//   { id: "assetType", label: transasset("assets") },
-//   { id: "assetName", label: transasset("type") },
-//   { id: "modelName", label: transasset("model") },
-//   { id: "purchaseDate", label: transasset("purchaseDate") },
-//   {
-//     id: "actions",
-//     label: transasset("actions")
-//   }
-// ];
-
 import { IconButton } from "@mui/material";
 import { IAssetAttributes } from "./interface/asset";
 import EditIcon from "@mui/icons-material/Edit";

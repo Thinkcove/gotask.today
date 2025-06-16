@@ -14,7 +14,7 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import { useAccessOptions, useAccessRoleById, updateAccessRole } from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";

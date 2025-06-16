@@ -14,7 +14,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import { useAccessRoleById, useAccessOptions, deleteAccessRole } from "../services/accessService";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import CustomSnackbar from "../../../component/snackBar/snackbar";

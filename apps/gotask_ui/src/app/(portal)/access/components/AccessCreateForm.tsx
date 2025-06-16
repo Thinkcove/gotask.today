@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { TextField, Typography, Button, CircularProgress, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import { useAccessOptions, createAccessRole } from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";

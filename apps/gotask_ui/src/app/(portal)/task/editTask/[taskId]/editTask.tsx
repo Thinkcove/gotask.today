@@ -17,7 +17,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { TASK_STATUS, TASK_SEVERITY } from "@/app/common/constants/task";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import { IFormField, ITask, Project, User } from "../../interface/taskInterface";
 import { KeyedMutator } from "swr";
 import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields";
@@ -79,21 +79,10 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const handleSubmit = async () => {
     try {
       const isUserEstimatedChanged = formData.user_estimated !== data.user_estimated;
-      const isStartDateEmpty = !formData.start_date;
       const isUserEstimateProvided =
         formData.user_estimated !== null &&
         formData.user_estimated !== undefined &&
         formData.user_estimated !== "";
-
-      // Validation: If user_estimated is changed and provided, but start_date is empty
-      if (isUserEstimateProvided && isUserEstimatedChanged && isStartDateEmpty) {
-        setSnackbar({
-          open: true,
-          message: transtask("startdaterequired"),
-          severity: SNACKBAR_SEVERITY.ERROR
-        });
-        return;
-      }
 
       const updatedFields: Record<string, string | number> = {};
       const formattedDueDate = data?.due_date?.split("T")[0] || "";
@@ -114,11 +103,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       if (fieldCheck("description", data.description))
         updatedFields.description = formData.description;
 
-      // New logic for start_date and user_estimated
-      if (formData.start_date !== data.start_date) {
-        updatedFields.start_date = formData.start_date;
-      }
-
+      // Only update user_estimated if it's changed and provided
       if (isUserEstimatedChanged && isUserEstimateProvided) {
         updatedFields.user_estimated = formData.user_estimated;
       }

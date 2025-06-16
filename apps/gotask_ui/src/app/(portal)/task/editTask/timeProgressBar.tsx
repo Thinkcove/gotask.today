@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { calculateTimeProgressData } from "../../../common/utils/common";
+import { calculateTimeProgressData } from "../../../common/utils/taskTime";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 

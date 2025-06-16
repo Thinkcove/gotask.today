@@ -10,7 +10,7 @@ import CreateRole from "./createRole";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { Role } from "../interfaces/roleInterface";
 import SearchBar from "@/app/component/searchBar/searchBar";
 

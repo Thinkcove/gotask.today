@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
@@ -16,11 +16,11 @@ interface UserCardProps {
   users: User[] | null;
 }
 
-const UserCards: React.FC<UserCardProps> = ({ users}) => {
+const UserCards: React.FC<UserCardProps> = ({ users }) => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const router = useRouter();
-  
+
   if (!users) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>

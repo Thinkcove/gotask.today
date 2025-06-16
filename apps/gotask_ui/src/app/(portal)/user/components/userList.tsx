@@ -10,7 +10,7 @@ import CreateUser from "./createUser";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { User } from "../interfaces/userInterface";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import Chat from "../../chatbot/components/chat";

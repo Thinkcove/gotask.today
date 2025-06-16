@@ -9,6 +9,8 @@ import FormField from "@/app/component/input/formField";
 import { updateComment, deleteComment } from "../service/taskAction";
 import { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import DateFormats from "@/app/component/dateTime/dateFormat";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
@@ -113,7 +115,10 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                 <Typography fontWeight="bold">
                   {comment.user_name} -{" "}
                   <Typography component="span" variant="caption" color="text.secondary">
-                    {new Date(comment.updatedAt ?? "").toLocaleString()}
+                    <FormattedDateTime
+                      date={comment.updatedAt ?? ""}
+                      format={DateFormats.FULL_DATE_TIME_12H}
+                    />
                   </Typography>
                 </Typography>
 
@@ -168,11 +173,11 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                     >
                       {transtask("commentedit")}
                     </Typography>
-                  
+
                     <Typography
                       variant="body2"
-                      sx={{ 
-                        cursor: "pointer", 
+                      sx={{
+                        cursor: "pointer",
                         color: "#741B92",
                         "&:hover": { color: "#b71c1c" }
                       }}
@@ -213,11 +218,9 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
         title={transtask("deletetitle")}
         submitLabel={transtask("deletecomment")}
         cancelLabel={transtask("cancelcomments", { default: "Cancel" })}
-        submitColor="#b71c1c" 
+        submitColor="#b71c1c"
       >
-        <Typography sx={{pt:2}}>
-          {transtask("commmentmessage")}
-        </Typography>
+        <Typography sx={{ pt: 2 }}>{transtask("commmentmessage")}</Typography>
       </CommonDialog>
     </Box>
   );

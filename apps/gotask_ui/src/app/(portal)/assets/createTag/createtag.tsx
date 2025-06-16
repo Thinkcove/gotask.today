@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { Box } from "@mui/material";
-import TagInput from "./taginputs";
+import TagInput from "./tagInput";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import CommonDialog from "@/app/component/dialog/commonDialog";

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Avatar, Box, Grid, Typography, Chip, Stack, Divider } from "@mui/material";
+import { Avatar, Box, Grid, Typography, Stack, Divider } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useAllTags } from "../services/assetActions";

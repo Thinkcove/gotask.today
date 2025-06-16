@@ -58,4 +58,31 @@ routes.push({
   }
 });
 
+
+//  Update a story
+routes.push({
+  method: API_METHODS.PUT,
+  path: "/stories/{storyId}",
+  handler: (req: Request, h: ResponseToolkit) =>
+    controller.updateStory(new RequestHelper(req), h),
+  options: {
+    notes: "Update a story by ID",
+    tags,
+    auth: { strategy: authStrategy.SIMPLE }
+  }
+});
+
+//  Delete a story
+routes.push({
+  method: API_METHODS.DELETE,
+  path: "/stories/{storyId}",
+  handler: (req: Request, h: ResponseToolkit) =>
+    controller.deleteStory(new RequestHelper(req), h),
+  options: {
+    notes: "Delete a story by ID",
+    tags,
+    auth: { strategy: authStrategy.SIMPLE }
+  }
+});
+
 export default routes;

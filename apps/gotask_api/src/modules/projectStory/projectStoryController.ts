@@ -4,7 +4,9 @@ import {
   createStoryService,
   getStoriesByProjectService,
   getStoryByIdService,
-  addCommentToStoryService
+  addCommentToStoryService,
+  updateStoryService,
+  deleteStoryService
 } from "./projectStoryService";
 import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
 
@@ -87,6 +89,50 @@ class ProjectStoryController extends BaseController {
       return this.sendResponse(handler, {
         message: storyMessages.COMMENT.SUCCESS,
         data: updatedStory
+      });
+    } catch (err: any) {
+      return this.replyError(err);
+    }
+  }
+  async updateStory(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { storyId } = requestHelper.getAllParams();
+      const { title, description } = requestHelper.getPayload();
+      const user = requestHelper.getUser();
+
+      if (!title && !description) {
+        return this.replyError(new Error(storyMessages.UPDATE.NO_FIELDS));
+      }
+
+      const updatedStory = await updateStoryService(storyId, {
+        title,
+        description
+      });
+
+      if (!updatedStory) {
+        return this.replyError(new Error(storyMessages.FETCH.NOT_FOUND));
+      }
+
+      return this.sendResponse(handler, {
+        message: storyMessages.UPDATE.SUCCESS,
+        data: updatedStory
+      });
+    } catch (err: any) {
+      return this.replyError(err);
+    }
+  }
+
+  async deleteStory(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { storyId } = requestHelper.getAllParams();
+
+      const deleted = await deleteStoryService(storyId);
+      if (!deleted) {
+        return this.replyError(new Error(storyMessages.FETCH.NOT_FOUND));
+      }
+
+      return this.sendResponse(handler, {
+        message: storyMessages.DELETE.SUCCESS
       });
     } catch (err: any) {
       return this.replyError(err);

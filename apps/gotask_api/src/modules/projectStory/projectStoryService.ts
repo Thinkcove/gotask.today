@@ -4,14 +4,14 @@ import { ProjectStory, IProjectStory } from "../../domain/model/projectStory/pro
 export const createStoryService = async (data: {
   title: string;
   description?: string;
-  projectId: string;   // UUID of the project
-  createdBy: string;   // UUID of the user creating the story
+  projectId: string;   
+  createdBy: string;   
 }): Promise<IProjectStory> => {
   return await ProjectStory.create({
     title: data.title,
     description: data.description || "",
-    project_id: data.projectId,   // ✅ must match schema field name
-    // you can store createdBy in comments or metadata later if needed
+    project_id: data.projectId,   
+    
   });
 };
 
@@ -19,14 +19,14 @@ export const createStoryService = async (data: {
 export const getStoriesByProjectService = async (
   projectId: string
 ): Promise<IProjectStory[]> => {
-  return await ProjectStory.find({ project_id: projectId }).sort({ createdAt: -1 }); // ✅ match schema
+  return await ProjectStory.find({ project_id: projectId }).sort({ createdAt: -1 }); 
 };
 
 // GET a story by its UUID (not MongoDB _id)
 export const getStoryByIdService = async (
   storyId: string
 ): Promise<IProjectStory | null> => {
-  return await ProjectStory.findOne({ id: storyId }); // ✅ UUID-based search
+  return await ProjectStory.findOne({ id: storyId }); 
 };
 
 // ADD a comment to a story using its UUID
@@ -50,4 +50,30 @@ export const addCommentToStoryService = async (
     },
     { new: true }
   );
+};
+
+
+export const updateStoryService = async (
+  storyId: string,
+  data: {
+    title?: string;
+    description?: string;
+  }
+): Promise<IProjectStory | null> => {
+  const updateData: any = {};
+  if (data.title) updateData.title = data.title;
+  if (data.description) updateData.description = data.description;
+
+  return await ProjectStory.findOneAndUpdate(
+    { id: storyId },
+    { $set: updateData },
+    { new: true }
+  );
+};
+
+export const deleteStoryService = async (
+  storyId: string
+): Promise<boolean> => {
+  const result = await ProjectStory.deleteOne({ id: storyId });
+  return result.deletedCount > 0;
 };

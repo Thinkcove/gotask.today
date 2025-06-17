@@ -21,7 +21,7 @@ const OtpLogin = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
@@ -175,21 +175,26 @@ const handleSubmit = async (e: React.FormEvent) => {
       )}
 
       <StyledButton
-        fullWidth
-        variant="contained"
-        type="submit"
-        disabled={
-          loading || hasSubmitted || (otpSent ? otp.trim() === "" : email.trim() === "")
-        }
-      >
-        {loading ? (
-          <CircularProgress size={24} color="inherit" />
-        ) : otpSent ? (
-          translogin("verifyotp")
-        ) : (
-          translogin("sendotp")
-        )}
-      </StyledButton>
+  fullWidth
+  variant="contained"
+  type="submit"
+  disabled={
+    loading || hasSubmitted || (otpSent ? otp.trim() === "" : email.trim() === "")
+  }
+  sx={{
+    opacity: loading ? 0.7 : 1,
+    pointerEvents: loading ? "none" : "auto",
+  }}
+>
+  {loading ? (
+    <CircularProgress size={24} color="inherit" />
+  ) : otpSent ? (
+    translogin("verifyotp")
+  ) : (
+    translogin("sendotp")
+  )}
+</StyledButton>
+
     </form>
   );
 };

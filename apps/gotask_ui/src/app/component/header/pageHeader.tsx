@@ -2,11 +2,10 @@ import { Box, IconButton, Typography } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 
 interface PageHeaderProps {
-  name: string;
   onClose: () => void;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ name, onClose }) => (
+const PageHeader: React.FC<PageHeaderProps> = ({ onClose }) => (
   <Box
     sx={{
       position: "sticky",
@@ -22,10 +21,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({ name, onClose }) => (
     <IconButton color="primary" onClick={onClose} sx={{ position: "absolute", left: 16 }}>
       <ArrowBack />
     </IconButton>
-
-    <Typography variant="h6" fontWeight="bold" sx={{ color: "#741B92", textAlign: "center" }}>
-      {name}
-    </Typography>
   </Box>
 );
 

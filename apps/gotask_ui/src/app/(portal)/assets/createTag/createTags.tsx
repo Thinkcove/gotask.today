@@ -36,7 +36,6 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
   });
   const { data: users } = useSWR("fetch-user", fetcherUserList);
   const { getAll: allAssets } = useAllAssets();
-  const [loading, setLoading] = useState(false);
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const userOptions = useMemo(() => {
     return (
@@ -67,7 +66,6 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
     try {
       const response = await createAssetTags(formData);
       if (response?.success) {
@@ -80,8 +78,6 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
       onClose();
     } catch (error) {
       console.error("API Error:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -102,11 +98,6 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
           actionTypes={actionTypes}
         />
       </CommonDialog>
-      <Box mt={2}>
-        <button onClick={handleSubmit} disabled={loading}>
-          {loading ? trans("submitting") : trans("submit")}
-        </button>
-      </Box>
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

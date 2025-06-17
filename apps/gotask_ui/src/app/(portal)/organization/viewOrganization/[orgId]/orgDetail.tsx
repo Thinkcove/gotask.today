@@ -13,7 +13,7 @@ import { useTranslations } from "next-intl";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 
 interface OrgDetailProps {

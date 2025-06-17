@@ -16,7 +16,7 @@ export interface ITask extends Document {
   user_name: string;
   project_id: string;
   project_name: string;
-  story_id: string;
+  story_id?: string;
   due_date?: Date;
   created_on: Date;
   start_date?: Date;
@@ -54,8 +54,8 @@ const TaskSchema = new Schema<ITask>(
     project_id: { type: String, required: true },
     project_name: { type: String },
 
-    // ✅ Added story_id field
-    story_id: { type: String, required: true },
+  
+    story_id: { type: String },
 
     start_date: { type: Date },
     due_date: { type: Date },

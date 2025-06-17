@@ -1,6 +1,5 @@
 import { useUser } from "@/app/userContext";
-import { ActionType, ApplicationName } from "./authCheck";
-import { hasPermission } from "./permisssion";
+import { ActionType, ApplicationName } from "./permission";
 
 type AccessDetails = {
   id: string;
@@ -15,9 +14,18 @@ type AccessDetails = {
   }[];
 };
 
+export const hasPermission = (
+  accessDetails: AccessDetails[],
+  applicationName: ApplicationName,
+  action: ActionType
+): boolean => {
+  return accessDetails.some((detail) =>
+    detail.application.some((app) => app.access === applicationName && app.actions.includes(action))
+  );
+};
+
 export const useUserPermission = () => {
   const { user } = useUser();
-
   const accessDetails = (user?.role?.accessDetails ?? []) as AccessDetails[];
 
   const canAccess = (application: ApplicationName, action: ActionType): boolean => {
@@ -29,17 +37,15 @@ export const useUserPermission = () => {
     action: ActionType,
     fieldName: string
   ): boolean => {
-    for (const detail of accessDetails) {
-      for (const app of detail.application) {
+    return accessDetails.some((detail) =>
+      detail.application.some((app) => {
         if (app.access === application && app.actions.includes(action)) {
-          const restricted = app.restrictedFields?.[action] ?? [];
-          if (restricted.includes(fieldName)) {
-            return true;
-          }
+          const restrictedFields = app.restrictedFields?.[action] ?? [];
+          return restrictedFields.includes(fieldName);
         }
-      }
-    }
-    return false;
+        return false;
+      })
+    );
   };
   return { canAccess, isFieldRestricted };
 };

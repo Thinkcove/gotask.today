@@ -60,16 +60,6 @@ const CreateTask: React.FC = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    // Check if user_estimated is filled but start_date is missing
-    if (formData.user_estimated && !formData.start_date) {
-      setSnackbar({
-        open: true,
-        message: transtask("startdaterequired"),
-        severity: SNACKBAR_SEVERITY.ERROR
-      });
-      return;
-    }
-
     try {
       // Create the task
       await createTask(formData);

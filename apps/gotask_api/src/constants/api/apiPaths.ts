@@ -23,8 +23,6 @@ export const API_PATHS = {
   UPDATE_PROJECT: "/updateProject/{id}",
   GET_USERS_BY_PROJECT_ID: "/getUsersByProjectId/{project_id}",
 
-
-  
   //userRoutes
   CREATE_USER: "/createUser",
   GET_USERS: "/getAllUsers",
@@ -39,15 +37,15 @@ export const API_PATHS = {
   VERIFY_OTP: "/otp/verify",
 
   //accessroutes
-  CREATE_ACCESS: "/access/create", // Path for creating access
-  GET_ACCESSES: "/access", // Path for getting all access configurations
-  GET_ACCESS_BY_ID: "/access/{id}", // Path for getting access by ID
+  CREATE_ACCESS: "/access/create",
+  GET_ACCESSES: "/access",
+  GET_ACCESS_BY_ID: "/access/{id}",
   UPDATE_ACCESS: "/access/{id}",
   DELETE_ACCESS: "/access/{id}",
   GET_ACCESS_OPTIONS: "/access/options",
 
-  CREATE_ROLE: "/roles", // POST path for creating a role
-  GET_ALL_ROLES: "/roles", // GET path for fetching all roles
+  CREATE_ROLE: "/roles",
+  GET_ALL_ROLES: "/roles",
   GET_ROLE_BY_ID: "/roles/{id}",
   UPDATE_ROLE: "/roles/{id}",
   DELETE_ROLE: "/roles/{id}",

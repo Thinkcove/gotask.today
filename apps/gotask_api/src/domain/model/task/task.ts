@@ -16,7 +16,7 @@ export interface ITask extends Document {
   user_name: string;
   project_id: string;
   project_name: string;
-  story_id: string; // ✅ New field
+  story_id: string;
   due_date?: Date;
   created_on: Date;
   start_date?: Date;

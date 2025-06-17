@@ -1,6 +1,4 @@
-// projectStory.routes.ts
 import { Request, ResponseToolkit, ServerRoute } from "@hapi/hapi";
-import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
 import ProjectStoryController from "./projectStoryController";
@@ -12,9 +10,8 @@ const routes: ServerRoute[] = [];
 
 routes.push({
   method: API_METHODS.POST,
-  path: "/project/{projectId}/story",
-  handler: (req: Request, h: ResponseToolkit) =>
-    controller.createStory(new RequestHelper(req), h),
+  path: "/createStory/{projectId}",
+  handler: (req: Request, h: ResponseToolkit) => controller.createStory(new RequestHelper(req), h),
   options: {
     notes: "Create a story under a project",
     tags,
@@ -24,7 +21,7 @@ routes.push({
 
 routes.push({
   method: API_METHODS.GET,
-  path: "/projects/{projectId}/stories",
+  path: "/getStories/{projectId}",
   handler: (req: Request, h: ResponseToolkit) =>
     controller.getStoriesByProject(new RequestHelper(req), h),
   options: {
@@ -36,9 +33,8 @@ routes.push({
 
 routes.push({
   method: API_METHODS.GET,
-  path: "/stories/{storyId}",
-  handler: (req: Request, h: ResponseToolkit) =>
-    controller.getStoryById(new RequestHelper(req), h),
+  path: "/story/{storyId}",
+  handler: (req: Request, h: ResponseToolkit) => controller.getStoryById(new RequestHelper(req), h),
   options: {
     notes: "Get story by ID",
     tags,
@@ -48,9 +44,8 @@ routes.push({
 
 routes.push({
   method: API_METHODS.POST,
-  path: "/story/{storyId}/comment",
-  handler: (req: Request, h: ResponseToolkit) =>
-    controller.addComment(new RequestHelper(req), h),
+  path: "/story/comment/{storyId}",
+  handler: (req: Request, h: ResponseToolkit) => controller.addComment(new RequestHelper(req), h),
   options: {
     notes: "Add comment to a story",
     tags,
@@ -58,13 +53,11 @@ routes.push({
   }
 });
 
-
 //  Update a story
 routes.push({
   method: API_METHODS.PUT,
-  path: "/stories/{storyId}",
-  handler: (req: Request, h: ResponseToolkit) =>
-    controller.updateStory(new RequestHelper(req), h),
+  path: "/story/update/{storyId}",
+  handler: (req: Request, h: ResponseToolkit) => controller.updateStory(new RequestHelper(req), h),
   options: {
     notes: "Update a story by ID",
     tags,
@@ -75,9 +68,8 @@ routes.push({
 //  Delete a story
 routes.push({
   method: API_METHODS.DELETE,
-  path: "/stories/{storyId}",
-  handler: (req: Request, h: ResponseToolkit) =>
-    controller.deleteStory(new RequestHelper(req), h),
+  path: "/story/delete/{storyId}",
+  handler: (req: Request, h: ResponseToolkit) => controller.deleteStory(new RequestHelper(req), h),
   options: {
     notes: "Delete a story by ID",
     tags,

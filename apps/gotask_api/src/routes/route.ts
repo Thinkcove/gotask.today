@@ -11,8 +11,7 @@ import * as UserPreferenceRoutes from "../modules/userPreference/userPreferenceR
 import * as QueryRoutes from "../modules/query/queryRoutes";
 import * as AttendanceRoutes from "../modules/attendance/attendanceRoutes";
 import * as QueryTaskRoutes from "../modules/queryTask/queryTaskRoutes";
-import  ProjectStoryRoutes from "../modules/projectStory/projectStoryRoutes";
-
+import ProjectStoryRoutes from "../modules/projectStory/projectStoryRoutes";
 
 import * as AssetRoutes from "../modules/assets/assetsRoutes";
 import * as AssetTagRoutes from "../modules/assetTag/assetTagRoutes";

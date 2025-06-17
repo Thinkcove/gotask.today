@@ -59,7 +59,4 @@ const ProjectStorySchema = new Schema<IProjectStory>(
 );
 
 // Exporting the Model
-export const ProjectStory = mongoose.model<IProjectStory>(
-  "ProjectStory",
-  ProjectStorySchema
-);
+export const ProjectStory = mongoose.model<IProjectStory>("ProjectStory", ProjectStorySchema);

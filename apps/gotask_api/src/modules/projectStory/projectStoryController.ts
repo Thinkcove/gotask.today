@@ -4,7 +4,7 @@ import {
   createStoryService,
   getStoriesByProjectService,
   getStoryByIdService,
-  addCommentToStoryService,
+  addCommentToStory,
   updateStoryService,
   deleteStoryService
 } from "./projectStoryService";
@@ -81,7 +81,7 @@ class ProjectStoryController extends BaseController {
         return this.replyError(new Error(storyMessages.COMMENT.COMMENT_REQUIRED));
       }
 
-      const updatedStory = await addCommentToStoryService(storyId, {
+      const updatedStory = await addCommentToStory(storyId, {
         user_id: userId,
         comment
       });
@@ -98,7 +98,6 @@ class ProjectStoryController extends BaseController {
     try {
       const { storyId } = requestHelper.getAllParams();
       const { title, description } = requestHelper.getPayload();
-      const user = requestHelper.getUser();
 
       if (!title && !description) {
         return this.replyError(new Error(storyMessages.UPDATE.NO_FIELDS));

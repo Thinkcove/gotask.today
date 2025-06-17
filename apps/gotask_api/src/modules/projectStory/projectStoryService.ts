@@ -1,4 +1,5 @@
 import { ProjectStory, IProjectStory } from "../../domain/model/projectStory/projectStory";
+import { Task } from "../../domain/model/task/task";
 
 // CREATE a new story
 export const createStoryService = async (data: {
@@ -64,4 +65,18 @@ export const updateStoryService = async (
 export const deleteStoryService = async (storyId: string): Promise<boolean> => {
   const result = await ProjectStory.deleteOne({ id: storyId });
   return result.deletedCount > 0;
+};
+
+// ✅ Get tasks by storyId
+export const getTasksByStoryId = async (storyId: string) => {
+  try {
+    if (!storyId) {
+      throw new Error("Story ID is required");
+    }
+
+    const tasks = await Task.find({ story_id: storyId }).sort({ created_on: -1 });
+    return tasks;
+  } catch (error: any) {
+    throw new Error(error.message || "Failed to fetch tasks by story ID");
+  }
 };

@@ -14,7 +14,8 @@ const TaskMessages = {
     FAILED_BY_USER: "Failed to retrieve tasks by user",
     FAILED_COUNTS: "Failed to retrieve task counts by status",
     FAILED_BY_ID: "Failed to retrieve task",
-    NOT_FOUND: "Task not found"
+    NOT_FOUND: "Task not found",
+    ALL_SUCCESS: "Tasks fetched successfully"
   },
   UPDATE: {
     NOT_FOUND: "Task not found",

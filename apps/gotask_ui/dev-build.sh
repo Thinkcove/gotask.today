@@ -8,6 +8,6 @@ npm run lint
 npm run format 
 npm run build 
 cp -r public .next/standalone/
-cp .env.local .next/standalone
+cp .env .next/standalone
 cp -r .next/static .next/standalone/.next/
 

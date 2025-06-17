@@ -3,13 +3,12 @@ import httpStatus from "http-status";
 import ErrorMessages from "./errorMessage";
 import logger from "./logger";
 
-// Utility to attach additional data to Boom errors
+// Utility functions for handling errors
 const setDataInError = (err: Boom.Boom, data?: any): Boom.Boom => {
   err.output.payload.details = data || err.data;
   return err;
 };
 
-// Send standard error using Boom type and additional data
 const sendError = (
   errorHandler: (message: string, data?: any) => Boom.Boom,
   message: string,
@@ -19,7 +18,6 @@ const sendError = (
   return setDataInError(err, data);
 };
 
-// Handle known DB errors
 const sendDbError = (ex: any): Boom.Boom => {
   if (ex.code === "ConditionalCheckFailedException") {
     return sendError(Boom.conflict, ex.message, ex.data);
@@ -30,33 +28,26 @@ const sendDbError = (ex: any): Boom.Boom => {
   return sendError(Boom.badGateway, ex.message);
 };
 
-// Handle HTTP errors from external APIs
 const sendExternalApiErrors = (ex: any, errorMessages: any): Boom.Boom => {
-  const exceptionResponse = ex?.response;
+  const exceptionResponse = ex && ex.response;
   if (!exceptionResponse) {
-    const errorMsg = errorMessages.getErrorMessage?.(httpStatus.INTERNAL_SERVER_ERROR) || {
-      message: "Internal server error"
-    };
-    return sendError(Boom.internal, errorMsg.message, errorMsg);
+    const errorMsg = errorMessages.getErrorMessage(httpStatus.INTERNAL_SERVER_ERROR);
+    return sendError(Boom.internal, errorMsg, errorMsg);
   }
-
-  const customErrorData = errorMessages.getErrorMessage?.(exceptionResponse.status);
+  const customErrorData = errorMessages.getErrorMessage(exceptionResponse.status);
   const customMessage =
-    customErrorData?.message ||
-    exceptionResponse.data?.message ||
-    exceptionResponse.data?.description ||
-    "Unknown external error";
-
+    (customErrorData && customErrorData.message) ||
+    exceptionResponse.data.message ||
+    exceptionResponse.data.description;
   const err = new Boom.Boom(customMessage, {
     statusCode: exceptionResponse.status,
     data: exceptionResponse.data
   });
-
   return setDataInError(err, exceptionResponse.data);
 };
 
 class BaseController {
-  // Success Response
+  // Send a success response with a message and optional data
   sendSuccess(handler: any, message: string, data?: any): any {
     return handler
       .response({
@@ -65,10 +56,10 @@ class BaseController {
         data
       })
       .type("application/json")
-      .code(httpStatus.OK);
+      .code(httpStatus.OK); // HTTP status 200 for successful requests
   }
 
-  // Update Response
+  // Send a generic response for an update, which may include partial data
   update(handler: any, message: string, updatedData: any): any {
     return handler
       .response({
@@ -77,39 +68,35 @@ class BaseController {
         data: updatedData
       })
       .type("application/json")
-      .code(httpStatus.OK);
+      .code(httpStatus.OK); // HTTP status 200 for successful updates
   }
 
-  // Standard Error Handler
+  // Send error responses
   replyError(ex: any, errorMessages: ErrorMessages = new ErrorMessages()): Boom.Boom {
     logger.error(ex);
     const className = this.constructor.name.replace("Controller", "");
+    errorMessages.addErrorMessage(httpStatus.INTERNAL_SERVER_ERROR, `${className} Service Error`);
 
-    // Safely call addErrorMessage if defined
-    if (typeof errorMessages.addErrorMessage === "function") {
-      errorMessages.addErrorMessage(httpStatus.INTERNAL_SERVER_ERROR, `${className} Service Error`);
-    }
-
-    if (ex?.type === "dynamo") {
+    // DynamoDB Errors
+    if (ex && ex.type === "dynamo") {
       return sendDbError(ex);
     }
-
-    if (ex?.isBoom === true) {
-      const customMessage = errorMessages.getErrorMessage?.(ex.output.statusCode);
+    // Customized Boom error, Boom errors we throw from services or controller will reach here
+    if (ex && ex.isBoom === true) {
+      const customMessage = errorMessages.getErrorMessage(ex.output.statusCode);
       if (customMessage) {
         ex.output.payload.message = customMessage.message;
       }
-      return setDataInError(ex, customMessage?.details);
+      return setDataInError(ex, customMessage && customMessage.details);
     }
-
-    if (ex?.isJoi) {
+    // Joi validation error
+    if (ex && ex.isJoi) {
       return sendError(Boom.badData, ex, ex.details);
     }
-
     return sendExternalApiErrors(ex, errorMessages);
   }
 
-  // Generic Response Handler
+  // Send a generic success response with a customizable message
   sendResponse(handler: any, response: any): any {
     return handler.response(response).type("application/json").code(httpStatus.OK);
   }

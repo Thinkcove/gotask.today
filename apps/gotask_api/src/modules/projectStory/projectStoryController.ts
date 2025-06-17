@@ -147,7 +147,7 @@ class ProjectStoryController extends BaseController {
       let payload = requestHelper.getPayload();
       const { storyId } = requestHelper.getAllParams();
 
-      // If payload is a string (due to raw JSON body), parse it
+      //  payload is a string (due to raw JSON body), parsing it
       if (typeof payload === "string") {
         payload = JSON.parse(payload);
       }
@@ -157,8 +157,6 @@ class ProjectStoryController extends BaseController {
         story_id: storyId
       };
 
-      console.log("Parsed Payload:", taskData); // should now look correct
-
       const newTask = await createTask(taskData);
       return this.sendResponse(handler, newTask);
     } catch (error) {
@@ -166,7 +164,7 @@ class ProjectStoryController extends BaseController {
     }
   }
 
-  // ✅ New: Get tasks by storyId
+  //  Get tasks by storyId
   async getTasksByStoryId(requestHelper: RequestHelper, handler: any) {
     try {
       const { storyId } = requestHelper.getAllParams();

@@ -195,6 +195,8 @@
     "filterseverity": "Severity",
     "filterduedate": "Due Date",
     "filtervariation": "Variation",
+    "filterclear": "Clear",
+    "filterapply": "Apply",
     "daysvariation": "Days Variation",
     "from": "From",
     "to": "To",

@@ -16,6 +16,7 @@ export interface ITask extends Document {
   user_name: string;
   project_id: string;
   project_name: string;
+  story_id?: string;
   due_date?: Date;
   created_on: Date;
   start_date?: Date;
@@ -31,6 +32,7 @@ export interface ITask extends Document {
   remaining_time: string;
   variation: string;
 }
+
 const TaskSchema = new Schema<ITask>(
   {
     id: { type: String, default: uuidv4, unique: true },
@@ -51,11 +53,14 @@ const TaskSchema = new Schema<ITask>(
     user_name: { type: String },
     project_id: { type: String, required: true },
     project_name: { type: String },
+
+    story_id: { type: String },
+
     start_date: { type: Date },
     due_date: { type: Date },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
-    // Time tracking fields
+
     user_estimated: { type: String, default: null },
     estimated_time: { type: String, default: null },
     time_spent: { type: [TimeSpentEntrySchema], default: [] },

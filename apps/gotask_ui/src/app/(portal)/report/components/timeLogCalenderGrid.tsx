@@ -12,7 +12,7 @@ import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 import { GroupedLogs, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { extractHours } from "@/app/common/utils/common";
+import { extractHours } from "@/app/common/utils/taskTime";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -73,7 +73,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
   const totalTimePerUser: Record<string, number> = {};
   Object.entries(groupedByUser).forEach(([user, projects]) => {
     totalTimePerUser[user] = 0;
-    
+
     Object.values(projects).forEach((tasks) => {
       tasks.forEach((task) => {
         (Object.values(task.dailyLogs) as number[]).forEach((hours) => {

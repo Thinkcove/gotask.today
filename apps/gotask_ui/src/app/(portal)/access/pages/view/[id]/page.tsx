@@ -24,7 +24,7 @@ const AccessViewPage = () => {
       <ModuleHeader name={transAccess("viewdetail")} />
 
       {/* Content Section */}
-      <Box sx={{ flex: 1, overflow: "hidden" }}>
+      <Box sx={{ flex: 1, overflow: "hidden", p:2 }}>
         <AccessView />
       </Box>
     </Box>

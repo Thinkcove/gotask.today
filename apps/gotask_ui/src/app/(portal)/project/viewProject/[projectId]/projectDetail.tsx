@@ -18,8 +18,9 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 
 interface ProjectDetailProps {
   project: Project;
@@ -143,15 +144,20 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               />
             </Grid>
           </Grid>
-          <Grid container spacing={2} mb={2}>
-            <Grid item xs={12} md={6}>
+          <Grid container spacing={2} mb={3}>
+            <Grid item xs={4} sm={6} md={4}>
               <LabelValueText
                 label={transproject("detailcreatedon")}
-                value={new Date(project.createdAt).toLocaleDateString()}
+                value={project.createdAt ? <FormattedDateTime date={project.createdAt} /> : "-"}
+              />
+            </Grid>
+            <Grid item xs={4} sm={6} md={4}>
+              <LabelValueText
+                label={transproject("detailupdateon")}
+                value={project.updatedAt ? <FormattedDateTime date={project.updatedAt} /> : "-"}
               />
             </Grid>
           </Grid>
-
           <Divider sx={{ mb: 4 }} />
 
           {/* Assignees Section */}

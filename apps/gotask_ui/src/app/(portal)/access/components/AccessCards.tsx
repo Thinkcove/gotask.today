@@ -8,9 +8,10 @@ import { useTranslations } from "next-intl";
 import CardComponent from "@/app/component/card/cardComponent";
 import { AccessData } from "../interfaces/accessInterfaces";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 
 interface Props {
   data: AccessData[];
@@ -66,7 +67,7 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                       {t("createdat")}:
                     </Typography>
                     <Typography variant="body2" fontWeight={500} color="text.secondary">
-                      {new Date(access.createdAt).toLocaleDateString()}
+                      {access.createdAt ? <FormattedDateTime date={access.createdAt} /> : "-"}
                     </Typography>
                   </Box>
                 )}

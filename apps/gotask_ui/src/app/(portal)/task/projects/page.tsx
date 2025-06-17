@@ -5,7 +5,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import TaskList from "../component/taskList/taskList";
 import Chat from "../../chatbot/components/chat";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 
 const Page = () => {

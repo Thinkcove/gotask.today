@@ -37,6 +37,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     user_id: data?.user_id || "",
     mobile_no: data?.mobile_no || "",
     joined_date: data?.joined_date || new Date(),
+<<<<<<< HEAD
     emp_id: data?.emp_id || "",
     alternate_no: data?.alternate_no || "",
     country: data?.country || "",
@@ -44,6 +45,9 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     address: data?.address || "",
     skills: data?.skills || [],
     certifications: data?.certifications || []
+=======
+    emp_id: data?.emp_id || ""
+>>>>>>> main
   }));
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   // Validate required fields
@@ -55,7 +59,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
     if (formData.status === undefined || formData.status === null) {
       newErrors.status = transuser("userstatus");
-    }    
+    }
     if (!formData.user_id) {
       newErrors.user_id = transuser("useremail");
     } else if (!validateEmail(formData.user_id)) {

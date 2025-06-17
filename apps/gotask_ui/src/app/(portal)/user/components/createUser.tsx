@@ -9,8 +9,8 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { createUser } from "../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { validateEmail } from "@/app/common/utils/common";
 import { ALPHANUMERIC_REGEX } from "../../../common/constants/regex";
+import { validateEmail } from "@/app/common/utils/common";
 
 interface CreateUserProps {
   open: boolean;
@@ -28,6 +28,7 @@ const initialFormState: IUserField = {
   roleId: "",
   user_id: "",
   mobile_no: "",
+<<<<<<< HEAD
   alternate_no: "",
   joined_date: "",
   password: "",
@@ -36,6 +37,10 @@ const initialFormState: IUserField = {
   state: "",
   skills: [],
   certifications: []
+=======
+  joined_date: "",
+  password: ""
+>>>>>>> main
 };
 
 const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
@@ -65,7 +70,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
       newErrors.user_id = transuser("validmail");
     }
     if (formData.emp_id && !ALPHANUMERIC_REGEX.test(formData.emp_id)) {
-     newErrors.emp_id =transuser("empid");
+      newErrors.emp_id = transuser("empid");
     }
 
     setErrors(newErrors);
@@ -74,7 +79,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
   const handleChange = (field: keyof IUserField, value: string | string[] | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-  
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
@@ -105,7 +110,7 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
       });
     }
   };
-  
+
   const handleClose = () => {
     setFormData(initialFormState);
     setErrors({});

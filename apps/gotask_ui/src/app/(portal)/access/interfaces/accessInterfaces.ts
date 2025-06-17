@@ -35,3 +35,5 @@ export interface AccessData {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export const ACCESS_FORM_FIELDS = ["name", "permissions", "restrictedFields"];

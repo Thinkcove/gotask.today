@@ -20,14 +20,11 @@ import {
   useAccessRoleById,
   updateAccessRole,
 } from "../services/accessService";
-import { AccessRole } from "../interfaces/accessInterfaces";
+import { ACCESS_FORM_FIELDS, AccessRole } from "../interfaces/accessInterfaces";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import { useTranslations } from "next-intl";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
 import Heading from "../../../component/header/title";
-
-// Define access form fields for restriction checks
-const ACCESS_FORM_FIELDS = ["name", "permissions", "restrictedFields"];
 
 export default function AccessEditForm() {
   const t = useTranslations("Access");

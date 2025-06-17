@@ -18,6 +18,8 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
+import { formatTimeZone } from "@/app/common/utils/common";
+
 
 interface Props {
   data: AccessData[];
@@ -61,14 +63,12 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
     <Box sx={{ px: 3, pb: 3 }}>
       <Grid container spacing={3}>
         {data.map((access) => {
-          // Filter fields based on field-level permission
-       const filteredAccess: Partial<AccessData> = {};
-for (const key of Object.keys(access) as (keyof AccessData)[]) {
-  if (!isFieldRestricted(APPLICATIONS.ACCESS, ACTIONS.READ, key)) {
-    (filteredAccess as any)[key] = access[key];
-  }
-}
-
+          const filteredAccess: Partial<AccessData> = {};
+          for (const key of Object.keys(access) as (keyof AccessData)[]) {
+            if (!isFieldRestricted(APPLICATIONS.ACCESS, ACTIONS.READ, key)) {
+              (filteredAccess as any)[key] = access[key];
+            }
+          }
 
           return (
             <Grid item xs={12} sm={6} md={4} lg={3} key={access.id}>
@@ -102,7 +102,7 @@ for (const key of Object.keys(access) as (keyof AccessData)[]) {
                           fontWeight={500}
                           color="text.secondary"
                         >
-                          {new Date(filteredAccess.createdAt).toLocaleDateString()}
+                          {formatTimeZone(filteredAccess.createdAt)}
                         </Typography>
                       </Box>
                     )}
@@ -143,3 +143,5 @@ for (const key of Object.keys(access) as (keyof AccessData)[]) {
 };
 
 export default AccessCards;
+
+

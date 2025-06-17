@@ -1,5 +1,5 @@
 import { KeyedMutator } from "swr";
-import { IOrganizationField, Organization } from "../../interfaces/organizatioinInterface";
+import { IOrganizationField, Organization, ORGANIZATION_FORM_FIELDS } from "../../interfaces/organizatioinInterface";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { useState } from "react";
 import { Box } from "@mui/material";
@@ -12,7 +12,7 @@ import { useTranslations } from "next-intl";
 import { validateEmail, validatePhone } from "@/app/common/utils/common";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
-import { ORGANIZATION_FORM_FIELDS } from "@/app/common/constants/organizationFields";
+
 
 
 interface EditOrganizationProps {

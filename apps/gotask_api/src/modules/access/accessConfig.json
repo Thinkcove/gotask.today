@@ -57,7 +57,12 @@
       "access": "Upload",
       "actions": ["READ", "CREATE"],
       "restrictedFields": {}
+    },
+     {
+      "access": "Asset and Resources",
+      "actions": ["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
     }
+
   ]
 }
 

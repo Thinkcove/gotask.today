@@ -152,3 +152,15 @@ export const formatDate = (date: string) => {
   const year = d.getFullYear();
   return `${day}/${month}/${year}`;
 };
+
+// utils/formatTimeZone.ts
+export const formatTimeZone = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+};

@@ -103,7 +103,7 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
                 fields={restrictedFields[action.toUpperCase()] || []}
                 selected={selectedFlds}
                 onChange={onFieldChange}
-                readOnly={readOnly}
+             
               />
             ) : null
           )}

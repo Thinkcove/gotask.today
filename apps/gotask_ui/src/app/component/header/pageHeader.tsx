@@ -1,4 +1,4 @@
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 
 interface PageHeaderProps {

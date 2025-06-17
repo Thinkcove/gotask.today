@@ -54,7 +54,6 @@ const TaskSchema = new Schema<ITask>(
     project_id: { type: String, required: true },
     project_name: { type: String },
 
-  
     story_id: { type: String },
 
     start_date: { type: Date },

@@ -8,5 +8,4 @@ class Auth {
   static verify = (token: string) => verify(token, authKey);
 }
 
-
 export default Auth;

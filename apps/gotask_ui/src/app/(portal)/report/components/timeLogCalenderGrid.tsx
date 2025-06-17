@@ -238,12 +238,21 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
                       >
                         {taskEntry.taskId ? (
                           <Link
-                            href={`/task/viewTask/${taskEntry.taskId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {taskEntry.task}
-                          </Link>
+  href={`/task/viewTask/${taskEntry.taskId}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  underline="none"
+  sx={{
+    color: "black",
+    cursor: "pointer",
+    "&:hover": {
+      textDecoration: "underline"
+    }
+  }}
+>
+  {taskEntry.task}
+</Link>
+
                         ) : (
                           taskEntry.task
                         )}

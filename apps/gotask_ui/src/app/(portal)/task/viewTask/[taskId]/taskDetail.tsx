@@ -104,7 +104,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               </IconButton>
             </Grid>
 
-            {/* Task Title and Status */}
+            {/* Task Title & Status */}
             <Grid item xs>
               <Box>
                 <Typography

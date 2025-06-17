@@ -5,12 +5,12 @@ import { Button, Popover, TextField, Typography, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ClearIcon from "@mui/icons-material/Close";
-import { useTranslations } from "next-intl";
 
 interface DateDropdownProps {
   dateFrom: string;
   dateTo: string;
   onDateChange: (from: string, to: string) => void;
+  transtask: (key: string) => string;
 }
 
 const StyledTrigger = styled(Button)(({ theme }) => ({
@@ -57,10 +57,9 @@ const formatDate = (dateStr: string) => {
 const DateDropdown: React.FC<DateDropdownProps> = ({
   dateFrom,
   dateTo,
-  onDateChange
+  onDateChange,
+  transtask
 }) => {
-  const t = useTranslations("Task");
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [tempFrom, setTempFrom] = useState(dateFrom);
   const [tempTo, setTempTo] = useState(dateTo);
@@ -86,7 +85,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
   const formattedLabel =
     dateFrom && dateTo
       ? `${formatDate(dateFrom)} – ${formatDate(dateTo)}`
-      : t("filterduedate");
+      : transtask("filterduedate");
 
   return (
     <>
@@ -96,16 +95,15 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
         startIcon={<CalendarMonthIcon fontSize="small" />}
       >
         <Typography
-  variant="body2"
-  sx={{
-    flexGrow: 1,
-    textAlign: "left",
-    color: dateFrom && dateTo ? "text.primary" : "text.secondary"
-  }}
->
-  {formattedLabel}
-</Typography>
-
+          variant="body2"
+          sx={{
+            flexGrow: 1,
+            textAlign: "left",
+            color: dateFrom && dateTo ? "text.primary" : "text.secondary"
+          }}
+        >
+          {formattedLabel}
+        </Typography>
       </StyledTrigger>
 
       <Popover
@@ -148,7 +146,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
                 }
               }}
             >
-              {t("filterclear")}
+              {transtask("filterclear")}
             </Button>
             <Button
               onClick={handleApply}
@@ -156,7 +154,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
               size="small"
               sx={{ borderRadius: 2, textTransform: "none" }}
             >
-              {t("filterapply")}
+              {transtask("filterapply")}
             </Button>
           </Stack>
         </Stack>

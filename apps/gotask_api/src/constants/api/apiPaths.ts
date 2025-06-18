@@ -69,5 +69,4 @@ export const API_PATHS = {
   SET_USER_PREFERENCES: "/setPreference",
   GET_USER_PREFERENCES: "/getPreference",
 
-  // weeklyGoalRoutes
 };

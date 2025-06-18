@@ -7,10 +7,13 @@ import { useAllTags } from "../services/assetActions";
 import CardComponent from "@/app/component/card/cardComponent";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import MonitorIcon from "@mui/icons-material/Monitor";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import EnhancedEncryptionIcon from "@mui/icons-material/EnhancedEncryption";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import StatusLabelChip from "@/app/component/chip/chip";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
+import NoTasksImage from "@assets/placeholderImages/notask.svg";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 
 interface UserDetails {
   user_id: string;
@@ -42,9 +45,8 @@ const getInitial = (email: string) => email?.charAt(0).toUpperCase() || "?";
 const TagCards: React.FC = () => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { getAll: tags } = useAllTags();
-
-  const [showErkId, setShowErkId] = useState<string | null>(null);
-
+  const [erkDialogOpen, setErkDialogOpen] = useState(false);
+  const [selectedErk, setSelectedErk] = useState<string | null>(null);
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "assigned":
@@ -58,14 +60,23 @@ const TagCards: React.FC = () => {
     }
   };
 
-  const toggleErkVisibility = (id: string) => {
-    setShowErkId((prev) => (prev === id ? null : id));
+  const handleOpenErkDialog = (erk: string) => {
+    setSelectedErk(erk);
+    setErkDialogOpen(true);
+  };
+
+  const handleCloseErkDialog = () => {
+    setErkDialogOpen(false);
+    setSelectedErk(null);
   };
 
   if (!tags?.length) {
     return (
       <Box textAlign="center" mt={5} px={2}>
-        <Typography variant="body1">{trans("notagsavailable")}</Typography>
+        <EmptyState
+          imageSrc={!tags ? NoSearchResultsImage : NoTasksImage}
+          message={!tags ? trans("nodata") : trans("nodata")}
+        />
       </Box>
     );
   }
@@ -107,56 +118,82 @@ const TagCards: React.FC = () => {
                 <Divider />
 
                 {/* Info Section */}
-                <Box>
-                  <Box display="flex" alignItems="center" mb={0.5}>
-                    <MonitorIcon sx={{ fontSize: 18, color: "#741B92", mr: 1 }} />
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ fontSize: "0.85rem" }}
-                      noWrap
-                    >
-                      {tag.assetDetails?.modelName || trans("noassetdetails")}
-                    </Typography>
-                  </Box>
-                  {tag.previouslyUsedByUser?.user_id && (
-                    <Box display="flex" alignItems="center" mt={0.5}>
-                      <SupervisorAccountIcon sx={{ fontSize: 18, color: "#741B92", mr: 1 }} />
-                      <Typography variant="body2" color="text.secondary" noWrap>
-                        {tag.previouslyUsedByUser.user_id}
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {tag.erk && (
-                    <Box display="flex" alignItems="center" mt={0.5}>
-                      <EnhancedEncryptionIcon sx={{ fontSize: 18, color: "#741B92", mr: 1 }} />
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ letterSpacing: 2, fontSize: "1rem", mr: 1 }}
-                      >
-                        {showErkId === tag.id ? tag.erk : "••••••••"}
-                      </Typography>
-
-                      <Box
-                        onClick={() => toggleErkVisibility(tag.id)}
-                        sx={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-                      >
-                        {showErkId === tag.id ? (
-                          <VisibilityOffIcon sx={{ fontSize: 20, color: "#741B92" }} />
-                        ) : (
-                          <VisibilityIcon sx={{ fontSize: 20, color: "#741B92" }} />
-                        )}
+                <Stack spacing={1}>
+                  <Grid container spacing={1}>
+                    {/* Row 1: Model Name + Action Type */}
+                    <Grid item xs={6}>
+                      <Box display="flex" alignItems="center">
+                        <MonitorIcon sx={{ fontSize: 18, color: "#741B92", mr: 1 }} />
+                        <Typography variant="body2" color="text.secondary" noWrap>
+                          {tag.assetDetails?.modelName || trans("noassetdetails")}
+                        </Typography>
                       </Box>
-                    </Box>
-                  )}
-                </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box display="flex" alignItems="center">
+                        <StatusLabelChip
+                          label={tag.actionType}
+                          color={getStatusColor(tag.actionType)}
+                        />
+                      </Box>
+                    </Grid>
+                  </Grid>
 
-                {/* Status Tag */}
-                <Box display="flex" justifyContent="flex-start">
-                  <StatusLabelChip label={tag.actionType} color={getStatusColor(tag.actionType)} />
-                </Box>
+                  <Grid container spacing={1}>
+                    {/* Row 2: Previously Used By + ERK */}
+                    {tag.previouslyUsedByUser?.user_id && (
+                      <Grid item xs={6}>
+                        <Box display="flex" alignItems="center">
+                          <SupervisorAccountIcon sx={{ fontSize: 18, color: "#741B92", mr: 1 }} />
+                          <Typography variant="body2" color="text.secondary" noWrap>
+                            {tag.previouslyUsedByUser.user_id}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    )}
+
+                    {tag.erk && (
+                      <Grid item xs={6}>
+                        <Box display="flex" alignItems="center">
+                          <EnhancedEncryptionIcon sx={{ fontSize: 18, color: "#741B92", mr: 1 }} />
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ letterSpacing: 2, fontSize: "1rem", mr: 1 }}
+                          >
+                            ••••••••
+                          </Typography>
+                          <Box
+                            onClick={() => handleOpenErkDialog(tag.erk!)}
+                            sx={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+                          >
+                            <VisibilityOffIcon sx={{ fontSize: 20 }} />
+                          </Box>
+                          <Dialog
+                            open={erkDialogOpen}
+                            onClose={handleCloseErkDialog}
+                            maxWidth="xs"
+                            fullWidth
+                          >
+                            <DialogTitle sx={{ fontWeight: 600, color: "#741B92" }}>
+                              {trans("encryptedkey")}
+                            </DialogTitle>
+                            <DialogContent>
+                              <Typography sx={{ wordBreak: "break-word", fontSize: "1rem" }}>
+                                {selectedErk}
+                              </Typography>
+                            </DialogContent>
+                            <DialogActions>
+                              <Button onClick={handleCloseErkDialog} color="primary">
+                                {trans("close")}
+                              </Button>
+                            </DialogActions>
+                          </Dialog>
+                        </Box>
+                      </Grid>
+                    )}
+                  </Grid>
+                </Stack>
               </Stack>
             </CardComponent>
           </Grid>

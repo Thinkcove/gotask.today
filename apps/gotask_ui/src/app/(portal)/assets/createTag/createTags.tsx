@@ -7,7 +7,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
-import { useAllAssets } from "../services/assetActions";
+import { useAllAssets, useAllTags } from "../services/assetActions";
 import { ACTION_TYPES } from "../assetConstants";
 import { createAssetTags } from "../services/assetActions";
 import { IAssetAttributes, IAssetTags } from "../interface/asset";
@@ -36,6 +36,7 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
   });
   const { data: users } = useSWR("fetch-user", fetcherUserList);
   const { getAll: allAssets } = useAllAssets();
+  const { mutate: tagMutate } = useAllTags();
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const userOptions = useMemo(() => {
     return (
@@ -69,6 +70,7 @@ export const CreateTag: React.FC<CreateTagProps> = ({ onClose, open }) => {
     try {
       const response = await createAssetTags(formData);
       if (response?.success) {
+        await tagMutate();
         setSnackbar({
           open: true,
           message: transasset("successmessage"),

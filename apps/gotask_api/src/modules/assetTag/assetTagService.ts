@@ -4,6 +4,7 @@ import { getAssetById } from "../../domain/interface/asset/asset";
 import {
   createAssetIssues,
   createResource,
+  getAllIssues,
   getAllTags,
   getAssetIssueById,
   updateAssetIssue
@@ -98,13 +99,44 @@ class resourceService {
         }
       }
       result = await createAssetIssues({
-        ...payload,
-        reportedBy: userInfo.user_id
+        ...payload
       });
 
       return { success: true, data: result };
     } catch (error: any) {
       return { success: false, error: error.message };
+    }
+  };
+
+  getAllIssues = async (): Promise<any> => {
+    try {
+      const assetsIssues = await getAllIssues();
+      const tagsData = await Promise.all(
+        assetsIssues.map(async (tagDoc: IAssetTag) => {
+          const tag = tagDoc.toObject();
+          const [asset, assignedTo, reportedBy] = await Promise.all([
+            getAssetById(tag.assetId),
+            findUser(tag.assignedTo),
+            findUser(tag.reportedBy)
+          ]);
+
+          return {
+            ...tag,
+            assetDetails: asset || null,
+            assigned: assignedTo || null,
+            reportedDetails: reportedBy || null
+          };
+        })
+      );
+      return {
+        success: true,
+        data: tagsData
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || AssetMessages.FETCH.ASSET_TYPE_NOT_FOUND
+      };
     }
   };
 }

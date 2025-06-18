@@ -13,28 +13,37 @@ import { IAssetAttributes } from "../interface/asset";
 import { getAssetColumns } from "../assetConstants";
 import TagCards from "../createTag/tagCard";
 import { CreateTag } from "../createTag/createTags";
+import AssetIssueCards from "../createIssues/issuesCard";
+import CreateIssue from "../createIssues/createIssues";
 
 export const AssetList: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [selectedView, setSelectedView] = useState("Asset");
   const [modalOpen, setModalOpen] = useState(false);
+  const [createIssueOpen, setCreateIssueOpen] = useState(false);
   const router = useRouter();
   const { getAll: allAssets } = useAllAssets();
-
   const formattedAssets = (allAssets || []).map((asset: IAssetAttributes) => ({
-    assetType: asset.typeId || "-",
+    id: asset.id,
+    assetType: asset.assetType?.name || "-",
     assetName: asset.deviceName || "-",
     modelName: asset.modelName || "-",
     purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-"
   }));
 
-  const assetColumns = getAssetColumns(transasset);
+  const handleEdit = (row: IAssetAttributes) => {
+    router.push(`/assets/editAsset/${row.id}`);
+  };
+
+  const assetColumns = getAssetColumns(transasset, handleEdit);
 
   const handleActionClick = () => {
     if (selectedView === transasset("assets")) {
       router.push("/assets/createAsset");
     } else if (selectedView === transasset("tag")) {
       setModalOpen(true);
+    } else if (selectedView === transasset("issues")) {
+      setCreateIssueOpen(true);
     }
   };
 
@@ -55,7 +64,7 @@ export const AssetList: React.FC = () => {
           <Grid container spacing={1} justifyContent="center">
             <Grid item xs={12} sm={12} md={11} lg={10} xl={9}>
               <Paper sx={{ p: 2, overflowX: "auto" }}>
-                <Table columns={assetColumns} rows={formattedAssets} />
+                <Table<IAssetAttributes> columns={assetColumns} rows={formattedAssets} />
               </Paper>
             </Grid>
           </Grid>
@@ -63,7 +72,7 @@ export const AssetList: React.FC = () => {
 
         {selectedView === transasset("tag") && <TagCards />}
 
-        {selectedView === transasset("issues") && <Paper sx={{ p: 2 }}></Paper>}
+        {selectedView === transasset("issues") && <AssetIssueCards />}
       </Box>
 
       {/* Floating Action Button */}
@@ -71,13 +80,17 @@ export const AssetList: React.FC = () => {
         label={
           selectedView === transasset("assets")
             ? transasset("createasset")
-            : transasset("createtag")
+            : selectedView === transasset("tag")
+              ? transasset("createtag")
+              : transasset("createissue")
         }
         icon={<AddIcon sx={{ color: "white" }} />}
         onClick={handleActionClick}
       />
 
       <CreateTag open={modalOpen} onClose={() => setModalOpen(false)} />
+      <CreateIssue open={createIssueOpen} onClose={() => setCreateIssueOpen(false)} />
+      {/* <CreateIssue onClose={() => setCreateIssueOpen(false)} /> */}
     </>
   );
 };

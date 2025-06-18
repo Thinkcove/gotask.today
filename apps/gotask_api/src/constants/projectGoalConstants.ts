@@ -1,9 +1,4 @@
-export const PROJECT_STATUS = {
-  TO_DO: "to-do",
-  IN_PROGRESS: "in-progress",
-  HOLD: "hold",
-  COMPLETED: "completed"
-};
+
 
 export const PROJECTGOAL_STATUS = {
   TO_DO: "to-do",
@@ -11,4 +6,6 @@ export const PROJECTGOAL_STATUS = {
   NEED_INFO: "need-info",
   HOLD: "hold",
   COMPLETED: "completed",
+  BLOCKED: "blocked",
+  NOT_STARTED: "not started "
 };

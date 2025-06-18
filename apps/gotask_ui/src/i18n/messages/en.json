@@ -383,14 +383,14 @@
     "total": "Total:"
   },
   "Report": {
-    "moduleheader": "User Log Report",
-    "filtertitle": "Set a date range and users to view report",
+    "moduleheader": "Work Log",
+    "filtertitle": "Work Log",
     "from": "From",
     "to": "To",
     "userlist": "User",
     "projectlist": "Project",
     "nousers": "No users available",
-    "showtasks": "Task",
+    "showtasks": "Show Task",
     "notask": "No Task",
     "showproject": "Project",
     "noproject": "No Project",

@@ -21,7 +21,7 @@ const OtpLogin = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
@@ -107,17 +107,16 @@ const OtpLogin = () => {
     }
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (loading || hasSubmitted) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading || hasSubmitted) return;
 
-  if (otpSent) {
-    await verifyOtp();
-  } else {
-    await sendOtp();
-  }
-};
-
+    if (otpSent) {
+      await verifyOtp();
+    } else {
+      await sendOtp();
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -181,6 +180,10 @@ const handleSubmit = async (e: React.FormEvent) => {
         disabled={
           loading || hasSubmitted || (otpSent ? otp.trim() === "" : email.trim() === "")
         }
+        sx={{
+          opacity: loading ? 0.7 : 1,
+          pointerEvents: loading ? "none" : "auto"
+        }}
       >
         {loading ? (
           <CircularProgress size={24} color="inherit" />

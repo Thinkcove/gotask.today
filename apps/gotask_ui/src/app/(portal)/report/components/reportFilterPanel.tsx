@@ -58,9 +58,18 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     const value = event.target.value;
     if (value.includes("all")) {
       const allIds = usersList.map((u) => u.id);
-      setUserIds(userIds.length === usersList.length ? [] : allIds);
+      if (allIds.length > 5) {
+        setUserIds(allIds.slice(0, 5));
+      } else {
+        setUserIds(userIds.length === usersList.length ? [] : allIds);
+      }
     } else {
-      setUserIds(value as string[]);
+      const newUserIds = typeof value === "string" ? value.split(",") : value;
+      if (newUserIds.length <= 5) {
+        setUserIds(newUserIds);
+      } else {
+        setUserIds(newUserIds.slice(-5));
+      }
     }
   };
 
@@ -68,9 +77,18 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     const value = event.target.value;
     if (value.includes("all")) {
       const allIds = projectsList.map((p) => p.id);
-      setProjectIds(projectIds.length === projectsList.length ? [] : allIds);
+      if (allIds.length > 5) {
+        setProjectIds(allIds.slice(0, 5));
+      } else {
+        setProjectIds(projectIds.length === projectsList.length ? [] : allIds);
+      }
     } else {
-      setProjectIds(value as string[]);
+      const newProjectIds = typeof value === "string" ? value.split(",") : value;
+      if (newProjectIds.length <= 5) {
+        setProjectIds(newProjectIds);
+      } else {
+        setProjectIds(newProjectIds.slice(-5));
+      }
     }
   };
 
@@ -80,6 +98,24 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
 
   const handleClearProjects = () => {
     setProjectIds([]);
+  };
+
+  const userMenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: 250,
+        overflowY: "auto" as const
+      }
+    }
+  };
+
+  const projectMenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: 250,
+        overflowY: "auto" as const
+      }
+    }
   };
 
   return (
@@ -170,6 +206,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                   </Box>
                 );
               }}
+              MenuProps={userMenuProps}
             >
               <MenuItem value="all">
                 <Checkbox
@@ -250,6 +287,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                   </Box>
                 );
               }}
+              MenuProps={projectMenuProps}
             >
               <MenuItem value="all">
                 <Checkbox

@@ -107,17 +107,16 @@ const OtpLogin = () => {
     }
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (loading || hasSubmitted) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading || hasSubmitted) return;
 
-  if (otpSent) {
-    await verifyOtp();
-  } else {
-    await sendOtp();
-  }
-};
-
+    if (otpSent) {
+      await verifyOtp();
+    } else {
+      await sendOtp();
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -175,26 +174,25 @@ const handleSubmit = async (e: React.FormEvent) => {
       )}
 
       <StyledButton
-  fullWidth
-  variant="contained"
-  type="submit"
-  disabled={
-    loading || hasSubmitted || (otpSent ? otp.trim() === "" : email.trim() === "")
-  }
-  sx={{
-    opacity: loading ? 0.7 : 1,
-    pointerEvents: loading ? "none" : "auto",
-  }}
->
-  {loading ? (
-    <CircularProgress size={24} color="inherit" />
-  ) : otpSent ? (
-    translogin("verifyotp")
-  ) : (
-    translogin("sendotp")
-  )}
-</StyledButton>
-
+        fullWidth
+        variant="contained"
+        type="submit"
+        disabled={
+          loading || hasSubmitted || (otpSent ? otp.trim() === "" : email.trim() === "")
+        }
+        sx={{
+          opacity: loading ? 0.7 : 1,
+          pointerEvents: loading ? "none" : "auto"
+        }}
+      >
+        {loading ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : otpSent ? (
+          translogin("verifyotp")
+        ) : (
+          translogin("sendotp")
+        )}
+      </StyledButton>
     </form>
   );
 };

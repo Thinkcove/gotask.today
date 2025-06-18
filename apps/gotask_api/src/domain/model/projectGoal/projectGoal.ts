@@ -11,7 +11,7 @@ export interface IProjectGoal extends Document {
   comments: string[];
   priority: "Low" | "Medium" | "High";
   description?: string;
-  status: "Not-started" | "In-progress" | "Completed" | "Blocked"; // suggested enum for clarity
+  status: "not-started" | "in-progress" | "completed" | "blocked"; // suggested enum for clarity
 }
 
 // Schema definition
@@ -31,8 +31,8 @@ const ProjectGoalSchema = new Schema<IProjectGoal>(
     },
     status: {
       type: String,
-      enum: ["Not-started", "In-progress", "Completed", "Blocked"], // You can adjust the allowed values as needed
-      default: "Not-started"
+      enum: ["not-started", "in-progress", "completed", "blocked"], // You can adjust the allowed values as needed
+      default: "not-started"
     }
   },
   {

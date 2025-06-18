@@ -2,10 +2,16 @@ import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
 
 import {
-  findGoalsByProjectIdNew,
-  findGoalsByUserIdNew
+  findGoalsByProjectId,
+  findGoalsByUserId
 } from "../../domain/interface/projectGoal/projectGoal";
-import { createProjectGoal, deleteProjectGoal, getAllProjectGoals, getProjectGoalById, updateProjectGoal } from "./projectGoalService";
+import {
+  createProjectGoalService,
+  deleteProjectGoalService,
+  getAllProjectGoalsService,
+  getProjectGoalByIdService,
+  updateProjectGoalService
+} from "../projectgoal/projectGoalService";
 
 class ProjectGoalController extends BaseController {
   // Create a new Project goal
@@ -14,7 +20,7 @@ class ProjectGoalController extends BaseController {
       const goalData = requestHelper.getPayload();
       if (!goalData) throw new Error("Missing goal data");
 
-      const newGoal = await createProjectGoal(goalData);
+      const newGoal = await createProjectGoalService(goalData);
       return this.sendResponse(handler, newGoal);
     } catch (error) {
       return this.replyError(error);
@@ -24,7 +30,7 @@ class ProjectGoalController extends BaseController {
   // Get all Project goals
   async getAllProjectGoals(_requestHelper: RequestHelper, handler: any) {
     try {
-      const goals = await getAllProjectGoals();
+      const goals = await getAllProjectGoalsService();
       return this.sendResponse(handler, goals);
     } catch (error) {
       return this.replyError(error);
@@ -37,7 +43,7 @@ class ProjectGoalController extends BaseController {
       const id = requestHelper.getParam("id");
       if (!id) throw new Error("Goal ID is required");
 
-      const goal = await getProjectGoalById(id);
+      const goal = await getProjectGoalByIdService(id);
       return this.sendResponse(handler, goal);
     } catch (error) {
       return this.replyError(error);
@@ -50,7 +56,7 @@ class ProjectGoalController extends BaseController {
       const id = requestHelper.getParam("id");
       const updateData = requestHelper.getPayload();
 
-      const updatedGoal = await updateProjectGoal(id, updateData);
+      const updatedGoal = await updateProjectGoalService(id, updateData);
       if (!updatedGoal) throw new Error("Goal not found");
 
       return this.sendResponse(handler, updatedGoal);
@@ -63,7 +69,7 @@ class ProjectGoalController extends BaseController {
   async deleteProjectGoal(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const deletedGoal = await deleteProjectGoal(id);
+      const deletedGoal = await deleteProjectGoalService(id);
       if (!deletedGoal) throw new Error("Goal not found");
 
       return this.sendResponse(handler, deletedGoal);
@@ -78,7 +84,7 @@ class ProjectGoalController extends BaseController {
       const userId = requestHelper.getParam("user_id");
       if (!userId) throw new Error("User ID is required");
 
-      const goals = await findGoalsByUserIdNew(userId);
+      const goals = await findGoalsByUserId(userId);
       return this.sendResponse(handler, goals);
     } catch (error) {
       return this.replyError(error);
@@ -91,7 +97,7 @@ class ProjectGoalController extends BaseController {
       const projectId = requestHelper.getParam("project_id");
       if (!projectId) throw new Error("Project ID is required");
 
-      const goals = await findGoalsByProjectIdNew(projectId);
+      const goals = await findGoalsByProjectId(projectId);
       return this.sendResponse(handler, goals);
     } catch (error) {
       return this.replyError(error);

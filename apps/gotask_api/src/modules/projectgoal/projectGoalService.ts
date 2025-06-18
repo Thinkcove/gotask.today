@@ -3,17 +3,17 @@ import { findUserById } from "../../domain/interface/user/userInterface";
 import ProjectGoalMessages from "../../constants/apiMessages/projectGoalMessages";
 import { IProjectGoal } from "../../domain/model/projectGoal/projectGoal";
 import {
-  findGoalsByUserIdNew,
-  findGoalsByProjectIdNew,
-  createProjectGoalNew,
-  getProjectGoalByIdNew,
-  updateProjectGoalNew,
-  deleteProjectGoalNew,
-  getAllProjectGoalsNew
+  findGoalsByUserId,
+  findGoalsByProjectId,
+  createProjectGoal,
+  getProjectGoalById,
+  updateProjectGoal,
+  deleteProjectGoal,
+  getAllProjectGoals
 } from "../../domain/interface/projectGoal/projectGoal";
 
 // Create a new weekly goal
-const createProjectGoal = async (
+const createProjectGoalService = async (
   goalData: IProjectGoal
 ): Promise<{ success: boolean; data?: IProjectGoal; message?: string }> => {
   try {
@@ -24,7 +24,7 @@ const createProjectGoal = async (
       };
     }
 
-    const goal = await createProjectGoalNew(goalData);
+    const goal = await createProjectGoal(goalData);
     return {
       success: true,
       data: goal
@@ -38,13 +38,13 @@ const createProjectGoal = async (
 };
 
 // Get all weekly goals
-const getAllProjectGoals = async (): Promise<{
+const getAllProjectGoalsService = async (): Promise<{
   success: boolean;
   data?: IProjectGoal[];
   message?: string;
 }> => {
   try {
-    const goals = await getAllProjectGoalsNew();
+    const goals = await getAllProjectGoals();
     return {
       success: true,
       data: goals
@@ -58,11 +58,11 @@ const getAllProjectGoals = async (): Promise<{
 };
 
 // Get weekly goal by ID
-const getProjectGoalById = async (
+const getProjectGoalByIdService = async (
   id: string
 ): Promise<{ success: boolean; data?: IProjectGoal | null; message?: string }> => {
   try {
-    const goal = await getProjectGoalByIdNew(id);
+    const goal = await getProjectGoalById(id);
     if (!goal) {
       return {
         success: false,
@@ -83,7 +83,7 @@ const getProjectGoalById = async (
 };
 
 // Get weekly goals by user ID
-const getProjectGoalsByUserId = async (
+const getProjectGoalsByUserIdService = async (
   userId: string
 ): Promise<{ success: boolean; data?: IProjectGoal[]; message?: string }> => {
   try {
@@ -102,7 +102,7 @@ const getProjectGoalsByUserId = async (
       };
     }
 
-    const goals = await findGoalsByUserIdNew(userId);
+    const goals = await findGoalsByUserId(userId);
     return {
       success: true,
       data: goals
@@ -116,11 +116,11 @@ const getProjectGoalsByUserId = async (
 };
 
 // Get weekly goals by project ID
-const getProjectGoalsByProjectId = async (
+const getProjectGoalsByIdService = async (
   projectId: string
 ): Promise<{ success: boolean; data?: IProjectGoal[]; message?: string }> => {
   try {
-    const goals = await findGoalsByProjectIdNew(projectId);
+    const goals = await findGoalsByProjectId(projectId);
     return {
       success: true,
       data: goals
@@ -134,12 +134,12 @@ const getProjectGoalsByProjectId = async (
 };
 
 // Update a weekly goal
-const updateProjectGoal = async (
+const updateProjectGoalService = async (
   id: string,
   updateData: Partial<IProjectGoal>
 ): Promise<{ success: boolean; data?: IProjectGoal | null; message?: string }> => {
   try {
-    const updatedGoal = await updateProjectGoalNew(id, updateData);
+    const updatedGoal = await updateProjectGoal(id, updateData);
     if (!updatedGoal) {
       return {
         success: false,
@@ -160,9 +160,11 @@ const updateProjectGoal = async (
 };
 
 // Delete a weekly goal
-const deleteProjectGoal = async (id: string): Promise<{ success: boolean; message: string }> => {
+const deleteProjectGoalService = async (
+  id: string
+): Promise<{ success: boolean; message: string }> => {
   try {
-    const result = await deleteProjectGoalNew(id);
+    const result = await deleteProjectGoal(id);
     if (!result) {
       return {
         success: false,
@@ -183,11 +185,11 @@ const deleteProjectGoal = async (id: string): Promise<{ success: boolean; messag
 };
 
 export {
-  createProjectGoal,
-  getAllProjectGoals,
-  getProjectGoalById,
-  getProjectGoalsByUserId,
-  getProjectGoalsByProjectId,
-  updateProjectGoal,
-  deleteProjectGoal
+  createProjectGoalService,
+  getAllProjectGoalsService,
+  getProjectGoalByIdService,
+  getProjectGoalsByUserIdService,
+  getProjectGoalsByIdService,
+  updateProjectGoalService,
+  deleteProjectGoalService
 };

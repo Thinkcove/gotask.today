@@ -4,7 +4,7 @@ import RequestHelper from "../../helpers/requestHelper";
 import { permission } from "../../middleware/permission";
 import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
 import authStrategy from "../../constants/auth/authStrategy";
-import ProjectGoalController from "./projectGoalController";
+import ProjectGoalController from "../projectgoal/projectGoalController";
 
 const projectGoalController = new ProjectGoalController();
 const appName = APPLICATIONS.Project_GOAL;

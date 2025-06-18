@@ -1,16 +1,11 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import {
-  createProjectGoal,
-  deleteProjectGoal,
-  getAllProjectGoals,
-  getProjectGoalById,
-  updateProjectGoal
-} from "./projectGoalService";
+
 import {
   findGoalsByProjectIdNew,
   findGoalsByUserIdNew
 } from "../../domain/interface/projectGoal/projectGoal";
+import { createProjectGoal, deleteProjectGoal, getAllProjectGoals, getProjectGoalById, updateProjectGoal } from "./projectGoalService";
 
 class ProjectGoalController extends BaseController {
   // Create a new Project goal

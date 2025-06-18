@@ -10,5 +10,5 @@ export const PROJECTGOAL_STATUS = {
   IN_PROGRESS: "in-progress",
   NEED_INFO: "need-info",
   HOLD: "hold",
-  COMPLETED: "completed"
+  COMPLETED: "completed",
 };

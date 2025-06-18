@@ -10,9 +10,10 @@ interface LaptopInputsProps {
   formData: IAssetAttributes;
   onChange: <K extends keyof IAssetAttributes>(field: K, value: IAssetAttributes[K]) => void;
   startIndex?: number;
+  errors?: { [key: string]: string };
 }
 
-const LaptopInputs: React.FC<LaptopInputsProps> = ({ formData, onChange }) => {
+const LaptopInputs: React.FC<LaptopInputsProps> = ({ formData, errors, onChange }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   return (
     <>
@@ -24,6 +25,8 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({ formData, onChange }) => {
               type="text"
               placeholder={transasset("devicename")}
               value={formData.deviceName}
+              error={errors?.deviceName}
+              required
               onChange={(val) => onChange("deviceName", String(val))}
             />
           </Grid>
@@ -40,6 +43,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({ formData, onChange }) => {
             <FormField
               label={transasset("modelname")}
               type="text"
+              error={errors?.modelName}
               placeholder={transasset("modelname")}
               value={formData.modelName}
               onChange={(val) => onChange("modelName", String(val))}
@@ -49,6 +53,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({ formData, onChange }) => {
             <FormField
               label={transasset("os")}
               type="text"
+              error={errors?.os}
               placeholder={transasset("os")}
               value={formData.os}
               onChange={(val) => onChange("os", String(val))}
@@ -58,6 +63,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({ formData, onChange }) => {
             <FormField
               label={transasset("ram")}
               type="text"
+              error={errors?.ram}
               placeholder={transasset("ram")}
               value={formData.ram}
               onChange={(val) => onChange("ram", String(val))}
@@ -67,6 +73,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({ formData, onChange }) => {
             <FormField
               label={transasset("storage")}
               type="text"
+              error={errors?.storage}
               placeholder={transasset("storage")}
               value={formData.storage}
               onChange={(val) => onChange("storage", String(val))}
@@ -76,6 +83,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({ formData, onChange }) => {
             <FormField
               label={transasset("processor")}
               type="text"
+              error={errors?.processor}
               placeholder={transasset("processor")}
               value={formData.processor}
               onChange={(val) => onChange("processor", String(val))}
@@ -97,6 +105,16 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({ formData, onChange }) => {
               placeholder={transasset("dateOfPurchase")}
               value={formData.dateOfPurchase}
               onChange={(val) => onChange("dateOfPurchase", new Date(val as string))}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <FormField
+              label={transasset("encryptedkey")}
+              type="text"
+              placeholder={transasset("encryptedkey")}
+              value={formData.erk}
+              onChange={(val) => onChange("erk", String(val))}
             />
           </Grid>
           <Grid item xs={12} sm={4}>

@@ -244,7 +244,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
             }
             onChange={(date) => onChange?.(date ? date.toISOString().split("T")[0] : "")}
             disabled={disabled}
-            dateFormat="MM/dd/yyyy"
+            dateFormat="dd-MM-yyyy"
             placeholderText={placeholder}
             customInput={
               <TextField

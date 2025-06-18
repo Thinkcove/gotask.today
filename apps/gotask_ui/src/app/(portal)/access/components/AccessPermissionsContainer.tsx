@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Divider } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import AccessTabs from "../components/AccessTabs";
 import OperationCheckboxes from "../components/OperationCheckboxes";
 import FieldCheckboxes from "../components/FieldCheckboxes";
@@ -40,12 +40,10 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
   return (
     <Box
       sx={{
-        mt: 3,
-        px: { xs: 1, sm: 3 },
+        px: 1,
         py: 3,
         bgcolor: "background.paper",
         borderRadius: 3,
-        boxShadow: 3,
         minHeight: 500, //  Increased height
         maxHeight: "75vh", // Responsive max height
         overflowY: "auto",
@@ -58,8 +56,6 @@ const AccessPermissionsContainer: React.FC<AccessPermissionsProps> = ({
         currentModule={currentModule}
         onChange={onTabChange}
       />
-
-      <Divider sx={{ my: 3 }} />
 
       <Typography
         variant="h6"

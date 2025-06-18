@@ -1,5 +1,5 @@
 "use client";
-import { Box, CircularProgress, Grid } from "@mui/material";
+import { Box, CircularProgress, Grid, Divider } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -18,7 +18,7 @@ import ViewMoreList from "../../component/taskList/viewMoreList";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { Add } from "@mui/icons-material";
 import SearchBar from "@/app/component/searchBar/searchBar";
@@ -199,68 +199,107 @@ const ViewMoreAction: React.FC = () => {
   const hideUserFilter = view !== "projects";
 
   return (
-    <>
-      <ModuleHeader name="Task" />
-      <PageHeader name={name} onClose={() => window.history.back()} />
+    <Box display="flex" flexDirection="column" minHeight="100vh" overflow="hidden">
+      <ModuleHeader name={name} />
+      <Box
+        mt={2}
+        display="flex"
+        flexDirection={{ xs: "column", sm: "row" }}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        justifyContent="space-between"
+        flexWrap="wrap"
+        gap={2}
+      >
+        <Box display="flex" alignItems="center" width={{ xs: "100%", sm: "auto" }} gap={2}>
+          <Box sx={{ mr: 2 }}>
+            <PageHeader onClose={() => window.history.back()} />
+          </Box>
+          <Box maxWidth={400} flex={1}>
+            <SearchBar
+              value={searchText}
+              onChange={updateSearchText}
+              sx={{ width: "100%" }}
+              placeholder="Search Task"
+            />
+          </Box>
+        </Box>
 
-      <Box maxWidth={400} pl={3}>
-        <SearchBar
-          value={searchText}
-          onChange={updateSearchText}
-          sx={{ width: "100%" }}
-          placeholder="Search Task"
+        <Divider
+          orientation="vertical"
+          flexItem
+          sx={{
+            display: { xs: "none", sm: "block" },
+            height: 40,
+            alignSelf: "center"
+          }}
         />
-      </Box>
 
-      <Box>
-        <TaskFilters
-          statusFilter={statusFilter}
-          severityFilter={severityFilter}
-          projectFilter={projectFilter}
-          userFilter={userFilter}
-          hideProjectFilter={hideProjectFilter}
-          hideUserFilter={hideUserFilter}
-          allProjects={allProjects.map((p: Project) => p.name)}
-          allUsers={allUsers.map((u: User) => u.name)}
-          variationType={variationType}
-          variationDays={variationDays}
-          dateFrom={minDate}
-          dateTo={maxDate}
-          onStatusChange={(val) =>
-            updateSearchFilters(val, severityFilter, projectFilter, userFilter)
-          }
-          onSeverityChange={(val) =>
-            updateSearchFilters(statusFilter, val, projectFilter, userFilter)
-          }
-          onProjectChange={(val) =>
-            updateSearchFilters(statusFilter, severityFilter, val, userFilter)
-          }
-          onUserChange={(val) =>
-            updateSearchFilters(statusFilter, severityFilter, projectFilter, val)
-          }
-          onDateChange={(from, to) => updateDateRange(from, to)}
-          onVariationChange={(type, days) => updateVariation(type, days)}
-          onClearFilters={clearAllFilters}
-          transtask={transtask}
-        />
-      </Box>
-
-      {!isLoading && drawerTasks.length === 0 && (
-        <Grid item xs={12}>
-          <EmptyState
-            imageSrc={NoSearchResultsImage}
-            message={transtask("notaskfound", { name: groupName })}
+        <Box
+          flex={1}
+          minWidth={280}
+          sx={{
+            overflowX: { xs: "auto", sm: "visible" },
+            width: "100%"
+          }}
+        >
+          <TaskFilters
+            statusFilter={statusFilter}
+            severityFilter={severityFilter}
+            projectFilter={projectFilter}
+            userFilter={userFilter}
+            hideProjectFilter={hideProjectFilter}
+            hideUserFilter={hideUserFilter}
+            allProjects={allProjects.map((p: Project) => p.name)}
+            allUsers={allUsers.map((u: User) => u.name)}
+            variationType={variationType}
+            variationDays={variationDays}
+            dateFrom={minDate}
+            dateTo={maxDate}
+            onStatusChange={(val) =>
+              updateSearchFilters(val, severityFilter, projectFilter, userFilter)
+            }
+            onSeverityChange={(val) =>
+              updateSearchFilters(statusFilter, val, projectFilter, userFilter)
+            }
+            onProjectChange={(val) =>
+              updateSearchFilters(statusFilter, severityFilter, val, userFilter)
+            }
+            onUserChange={(val) =>
+              updateSearchFilters(statusFilter, severityFilter, projectFilter, val)
+            }
+            onDateChange={(from, to) => updateDateRange(from, to)}
+            onVariationChange={(type, days) => updateVariation(type, days)}
+            onClearFilters={clearAllFilters}
+            transtask={transtask}
           />
-        </Grid>
-      )}
+        </Box>
+      </Box>
 
-      <ViewMoreList
-        selectedGroupId={id as string}
-        drawerTasks={drawerTasks}
-        isLoadingDrawer={isLoading && !drawerTasks?.length}
-        onTaskClick={(taskId) => (window.location.href = `/task/viewTask/${taskId}`)}
-        view={view}
-      />
+      <Box flex={1} overflow="auto" mt={2} minHeight="100%" display="flex" flexDirection="column">
+        {!isLoading && drawerTasks.length === 0 ? (
+          <Grid
+            container
+            sx={{ flex: 1, minHeight: "100%" }}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Grid item xs={12}>
+              <EmptyState
+                imageSrc={NoSearchResultsImage}
+                message={transtask("notaskfound", { name: groupName })}
+              />
+            </Grid>
+          </Grid>
+        ) : (
+          <ViewMoreList
+            selectedGroupId={id as string}
+            drawerTasks={drawerTasks}
+            isLoadingDrawer={isLoading && !drawerTasks?.length}
+            onTaskClick={(taskId) => (window.location.href = `/task/viewTask/${taskId}`)}
+            view={view}
+          />
+        )}
+      </Box>
 
       {canAccess(APPLICATIONS.TASK, ACTIONS.CREATE) && (
         <ActionButton
@@ -269,7 +308,7 @@ const ViewMoreAction: React.FC = () => {
           onClick={() => router.push("/task/createTask")}
         />
       )}
-    </>
+    </Box>
   );
 };
 

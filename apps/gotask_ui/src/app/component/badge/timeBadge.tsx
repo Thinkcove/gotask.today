@@ -1,15 +1,16 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { formatTimeValue } from "@/app/common/utils/common";
+import { formatTimeValue } from "@/app/common/utils/taskTime";
 
 interface TimeBadgeProps {
   label: string;
   value: string;
+  showNegative?: boolean;
 }
 
-const TimeBadge: React.FC<TimeBadgeProps> = ({ label, value }) => {
-  const formattedValue = formatTimeValue(value);
+const TimeBadge: React.FC<TimeBadgeProps> = ({ label, value, showNegative = false }) => {
+  const formattedValue = formatTimeValue(value, showNegative);
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -19,7 +20,7 @@ const TimeBadge: React.FC<TimeBadgeProps> = ({ label, value }) => {
       </Typography>
       <Typography
         variant="caption"
-        sx={{ fontWeight: 500, fontSize: "0.72rem", color: "text.primary" }}
+        sx={{ fontWeight: 700, fontSize: "0.72rem", color: "text.primary" }}
       >
         {formattedValue}
       </Typography>

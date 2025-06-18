@@ -1,25 +1,17 @@
 "use client";
 
 import React from "react";
-import {
-  Typography,
-  Grid,
-  CircularProgress,
-  Box,
-  Stack,
-  Divider
-} from "@mui/material";
+import { Typography, Grid, CircularProgress, Box, Stack, Divider } from "@mui/material";
 import { ArrowForward } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import CardComponent from "@/app/component/card/cardComponent";
 import { AccessData } from "../interfaces/accessInterfaces";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
-import { formatTimeZone } from "@/app/common/utils/common";
-
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 
 interface Props {
   data: AccessData[];
@@ -51,12 +43,7 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
   }
 
   if (data.length === 0) {
-    return (
-      <EmptyState
-        imageSrc={NoSearchResultsImage}
-        message={t("noaccessavailable")}
-      />
-    );
+    return <EmptyState imageSrc={NoSearchResultsImage} message={t("noaccessavailable")} />;
   }
 
   return (
@@ -76,11 +63,7 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                 <Stack spacing={2} sx={{ height: "100%" }}>
                   {/* Access Name */}
                   {!isFieldRestricted(APPLICATIONS.ACCESS, ACTIONS.READ, "name") && (
-                    <Typography
-                      variant="h6"
-                      fontWeight={600}
-                      sx={{ textTransform: "capitalize" }}
-                    >
+                    <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
                       {filteredAccess.name}
                     </Typography>
                   )}
@@ -97,13 +80,11 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                         >
                           {t("createdat")}:
                         </Typography>
-                        <Typography
-                          variant="body2"
-                          fontWeight={500}
-                          color="text.secondary"
-                        >
-                          {formatTimeZone(filteredAccess.createdAt)}
-                        </Typography>
+                        {filteredAccess.createdAt ? (
+                          <FormattedDateTime date={filteredAccess.createdAt} />
+                        ) : (
+                          "-"
+                        )}
                       </Box>
                     )}
 
@@ -143,5 +124,3 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
 };
 
 export default AccessCards;
-
-

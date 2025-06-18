@@ -29,6 +29,21 @@ ResourceRoutes.push({
 });
 
 ResourceRoutes.push({
+  path: "/getAllTags",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    resourceController.getAllTags(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Create new Resource",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+ResourceRoutes.push({
   path: "/createissues",
   method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
@@ -36,6 +51,36 @@ ResourceRoutes.push({
   ),
   config: {
     notes: "Create new asset issues",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+ResourceRoutes.push({
+  path: "/getallissues",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    resourceController.getAllIssues(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Get all issues",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+ResourceRoutes.push({
+  path: "/gettagbyid/{id}",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    resourceController.getTagById(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Get all issues",
     tags,
     auth: {
       strategy: authStrategy.SIMPLE

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { TextField, Typography, Button, CircularProgress, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import { useAccessOptions, createAccessRole } from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";
@@ -17,7 +17,9 @@ const AccessCreateForm: React.FC = () => {
   const { canAccess } = useUserPermission();
   const [accessName, setAccessName] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
-  const [selectedFields, setSelectedFields] = useState<Record<string, Record<string, string[]>>>({});
+  const [selectedFields, setSelectedFields] = useState<Record<string, Record<string, string[]>>>(
+    {}
+  );
   const [currentModule, setCurrentModule] = useState("User Management");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState<{
@@ -29,16 +31,35 @@ const AccessCreateForm: React.FC = () => {
 
   const { accessOptions, isLoading, error } = useAccessOptions();
 
-  // Initialize selectedPermissions with all actions selected by default (only once)
-  if (Object.keys(selectedPermissions).length === 0 && accessOptions.length > 0) {
+  //  Initialize all selected permissions and fields if not already set
+  if (
+    accessOptions.length > 0 &&
+    Object.keys(selectedPermissions).length === 0 &&
+    Object.keys(selectedFields).length === 0
+  ) {
     const allSelectedPermissions: Record<string, string[]> = {};
-    accessOptions.forEach(({ access, actions }) => {
+    const allSelectedFields: Record<string, Record<string, string[]>> = {};
+
+    accessOptions.forEach(({ access, actions, restrictedFields }) => {
       allSelectedPermissions[access] = [...actions];
+
+      const actionFields: Record<string, string[]> = {};
+      actions.forEach((action: string) => {
+        const fields = restrictedFields?.[action.toUpperCase()];
+        if (fields && fields.length > 0) {
+          actionFields[action.toUpperCase()] = [...fields];
+        }
+      });
+
+      if (Object.keys(actionFields).length > 0) {
+        allSelectedFields[access] = actionFields;
+      }
     });
+
     setSelectedPermissions(allSelectedPermissions);
+    setSelectedFields(allSelectedFields);
   }
 
-  // ✅ Dynamically validate or reset currentModule if it's not in accessOptions
   if (accessOptions.length > 0 && !accessOptions.some((opt) => opt.access === currentModule)) {
     setCurrentModule(accessOptions[0].access);
   }
@@ -54,19 +75,17 @@ const AccessCreateForm: React.FC = () => {
     });
 
     if (!checked) {
-  setSelectedFields((prev) => {
-    const updatedFields = { ...prev };
-    if (updatedFields[module]) {
-      delete updatedFields[module][action.toUpperCase()];
-
-      if (Object.keys(updatedFields[module]).length === 0) {
-        delete updatedFields[module];
-      }
+      setSelectedFields((prev) => {
+        const updatedFields = { ...prev };
+        if (updatedFields[module]) {
+          delete updatedFields[module][action.toUpperCase()];
+          if (Object.keys(updatedFields[module]).length === 0) {
+            delete updatedFields[module];
+          }
+        }
+        return { ...updatedFields };
+      });
     }
-    return { ...updatedFields };
-  });
-}
-
   };
 
   const handleFieldChange = (module: string, action: string, field: string, checked: boolean) => {
@@ -82,8 +101,8 @@ const AccessCreateForm: React.FC = () => {
         ...prev,
         [module]: {
           ...moduleFields,
-          [action.toUpperCase()]: updatedFields,
-        },
+          [action.toUpperCase()]: updatedFields
+        }
       };
     });
   };
@@ -97,7 +116,7 @@ const AccessCreateForm: React.FC = () => {
       setSnackbar({
         open: true,
         message: t("Access.accessNameRequired"),
-        severity: "error",
+        severity: "error"
       });
       return;
     }
@@ -106,7 +125,7 @@ const AccessCreateForm: React.FC = () => {
       .map(([access, actions]) => ({
         access,
         actions,
-        restrictedFields: selectedFields[access] || {},
+        restrictedFields: selectedFields[access] || {}
       }))
       .filter((app) => app.actions.length > 0);
 
@@ -114,7 +133,7 @@ const AccessCreateForm: React.FC = () => {
       setSnackbar({
         open: true,
         message: t("Access.atLeastOnePermissionRequired"),
-        severity: "error",
+        severity: "error"
       });
       return;
     }
@@ -123,7 +142,7 @@ const AccessCreateForm: React.FC = () => {
       name: accessName.trim(),
       application,
       id: "",
-      createdAt: "",
+      createdAt: ""
     };
 
     try {
@@ -133,7 +152,7 @@ const AccessCreateForm: React.FC = () => {
         setSnackbar({
           open: true,
           message: t("Access.successmessage"),
-          severity: "success",
+          severity: "success"
         });
         setTimeout(() => {
           router.push("/access");
@@ -142,7 +161,7 @@ const AccessCreateForm: React.FC = () => {
         setSnackbar({
           open: true,
           message: response.message || t("Access.errormessage"),
-          severity: "error",
+          severity: "error"
         });
       }
     } catch (err) {
@@ -150,7 +169,7 @@ const AccessCreateForm: React.FC = () => {
       setSnackbar({
         open: true,
         message: t("Access.errormessage"),
-        severity: "error",
+        severity: "error"
       });
     } finally {
       setIsSubmitting(false);
@@ -162,17 +181,20 @@ const AccessCreateForm: React.FC = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "100%",
+        height: "87vh",
         width: "100%",
         bgcolor: "white",
         borderRadius: 2,
         boxShadow: 3,
         p: 2,
-        overflow: "hidden",
+        overflow: "hidden"
       }}
     >
-      <Box sx={{ flex: 1 }}>
+      <Box
+        sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}
+      >
         <Heading title={t("Access.createaccessnew")} />
+
         <Box sx={{ maxWidth: 400, width: "100%", mt: 1 }}>
           <Typography variant="body2" sx={{ color: "#333", fontWeight: 500 }}>
             {t("Access.accessName")}
@@ -187,12 +209,12 @@ const AccessCreateForm: React.FC = () => {
               "& .MuiOutlinedInput-root": {
                 borderRadius: 1,
                 "&:hover fieldset": {
-                  borderColor: "#741B92",
+                  borderColor: "#741B92"
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "#741B92",
-                },
-              },
+                  borderColor: "#741B92"
+                }
+              }
             }}
           />
         </Box>
@@ -201,45 +223,49 @@ const AccessCreateForm: React.FC = () => {
           {t("Access.accessManagement")}
         </Typography>
 
-        {isLoading ? (
-          <Box display="flex" justifyContent="center">
-            <CircularProgress />
-          </Box>
-        ) : error ? (
-          <Box display="flex" justifyContent="center">
-            <Typography variant="body1" color="error">
-              {error.includes("non-JSON")
-                ? t("Access.serverError")
-                : error || t("Access.errorLoadingOptions")}
-            </Typography>
-          </Box>
-        ) : accessOptions.length === 0 ? (
-          <Box display="flex" justifyContent="center">
-            <Typography variant="body1" color="text.secondary">
-              {t("Access.noaccessavailable")}
-            </Typography>
-          </Box>
-        ) : (
-          <AccessPermissionsContainer
-            accessOptions={accessOptions}
-            currentModule={currentModule}
-            selectedPermissions={selectedPermissions}
-            selectedFields={selectedFields}
-            onTabChange={setCurrentModule}
-            onCheckboxChange={handleCheckboxChange}
-            onFieldChange={handleFieldChange}
-            readOnlyFields={[]} 
-          />
-        )}
+        <Box sx={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
+          {isLoading ? (
+            <Box display="flex" justifyContent="center" mt={2}>
+              <CircularProgress />
+            </Box>
+          ) : error ? (
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Typography variant="body1" color="error">
+                {error.includes("non-JSON")
+                  ? t("Access.serverError")
+                  : error || t("Access.errorLoadingOptions")}
+              </Typography>
+            </Box>
+          ) : accessOptions.length === 0 ? (
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Typography variant="body1" color="text.secondary">
+                {t("Access.noaccessavailable")}
+              </Typography>
+            </Box>
+          ) : (
+            <AccessPermissionsContainer
+              accessOptions={accessOptions}
+              currentModule={currentModule}
+              selectedPermissions={selectedPermissions}
+              selectedFields={selectedFields}
+              onTabChange={setCurrentModule}
+              onCheckboxChange={handleCheckboxChange}
+              onFieldChange={handleFieldChange}
+              readOnlyFields={[]}
+            />
+          )}
+        </Box>
       </Box>
 
       <Box
         sx={{
-          borderColor: "divider",
+          borderTop: "1px solid #eee",
+          pt: 2,
+          mt: 2,
           display: "flex",
           justifyContent: "flex-end",
           gap: 1,
-          mt: 2,
+          backgroundColor: "white"
         }}
       >
         {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
@@ -252,8 +278,8 @@ const AccessCreateForm: React.FC = () => {
               borderRadius: 1,
               textTransform: "none",
               "&:hover": {
-                bgcolor: "#f5f5f5",
-              },
+                bgcolor: "#f5f5f5"
+              }
             }}
           >
             {t("Access.cancel")}
@@ -271,8 +297,8 @@ const AccessCreateForm: React.FC = () => {
               textTransform: "none",
               bgcolor: "#741B92",
               "&:hover": {
-                bgcolor: "#5e1675",
-              },
+                bgcolor: "#5e1675"
+              }
             }}
           >
             {isSubmitting ? <CircularProgress size={20} /> : t("Access.createaccessnew")}

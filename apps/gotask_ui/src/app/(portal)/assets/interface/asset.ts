@@ -1,3 +1,5 @@
+import { User } from "../../user/interfaces/userInterface";
+
 export interface IAsset {
   type: string;
 }
@@ -7,8 +9,17 @@ export interface IAssetType {
   name: string;
 }
 
+export interface ITagData {
+  id?: string;
+  userId?: string;
+  user?: User;
+  actionType?: string;
+  createdAt?: string;
+}
+
 export interface IAssetAttributes {
   id?: string;
+  tags?: ITagData;
   typeId: string;
   deviceName?: string;
   serialNumber?: string;
@@ -19,6 +30,7 @@ export interface IAssetAttributes {
   processor?: string;
   seller?: string;
   dateOfPurchase?: Date;
+  erk?: string;
   warrantyPeriod?: string;
   warrantyDate?: Date;
   active?: boolean;
@@ -29,4 +41,42 @@ export interface IAssetAttributes {
   isEncrypted?: boolean;
   lastServicedDate?: Date;
   commentService?: string;
+  assetType?: IAssetType;
+  tagData?: ITagData[];
+  userId?: string;
+}
+
+export interface IAssetTags {
+  id?: string;
+  userId: string;
+  assetId: string;
+  actionType: string;
+  erk: string;
+  previouslyUsedBy: string;
+  tags?: string;
+}
+
+interface AssetDetails {
+  modelName: string;
+  deviceName: string;
+}
+
+interface AssignedDetails {
+  name: string;
+  user_id: string;
+}
+
+export interface IAssetIssues {
+  id?: string;
+  assetId: string;
+  reportedBy: string;
+  issueType: string;
+  description: string;
+  status: string;
+  assignedTo: string;
+  comment: string;
+  updatedBy: string;
+  assetDetails?: AssetDetails;
+  assigned?: AssignedDetails;
+  reportedDetails?: AssignedDetails;
 }

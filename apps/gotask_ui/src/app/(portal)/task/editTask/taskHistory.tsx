@@ -17,6 +17,8 @@ import { InfoOutlined } from "@mui/icons-material";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { getColorForUser } from "@/app/common/constants/avatar";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import DateFormats from "@/app/component/dateTime/dateFormat";
 
 interface HistoryDrawerProps {
   open: boolean;
@@ -145,7 +147,10 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history })
                 {/* Align date to the right */}
                 <Box sx={{ textAlign: "right", width: "100%" }}>
                   <Typography variant="caption" color="text.secondary">
-                    {new Date(item.created_date).toLocaleString()}
+                    <FormattedDateTime
+                      date={item.created_date}
+                      format={DateFormats.FULL_DATE_TIME_12H}
+                    />
                   </Typography>
                 </Box>
               </CardContent>

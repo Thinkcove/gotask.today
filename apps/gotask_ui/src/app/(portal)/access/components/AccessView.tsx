@@ -8,18 +8,14 @@ import {
   useTheme,
   TextField,
   Tooltip,
-  IconButton,
+  IconButton
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
-import {
-  useAccessRoleById,
-  useAccessOptions,
-  deleteAccessRole,
-} from "../services/accessService";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
+import { useAccessRoleById, useAccessOptions, deleteAccessRole } from "../services/accessService";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import CustomSnackbar from "../../../component/snackBar/snackbar";
 import CommonDialog from "../../../component/dialog/commonDialog";
@@ -36,13 +32,9 @@ const AccessView: React.FC = () => {
   const {
     role: accessRole,
     isLoading: isRoleLoading,
-    error: roleError,
+    error: roleError
   } = useAccessRoleById(id as string);
-  const {
-    accessOptions,
-    isLoading: isOptionsLoading,
-    error: optionsError,
-  } = useAccessOptions();
+  const { accessOptions, isLoading: isOptionsLoading, error: optionsError } = useAccessOptions();
 
   const [currentTab, setCurrentTab] = useState<string>("");
 
@@ -99,7 +91,10 @@ const AccessView: React.FC = () => {
 
   const selectedFields =
     accessRole?.application?.reduce(
-      (acc: Record<string, Record<string, string[]>>, app: { access: string | number; restrictedFields: Record<string, string[]> }) => {
+      (
+        acc: Record<string, Record<string, string[]>>,
+        app: { access: string | number; restrictedFields: Record<string, string[]> }
+      ) => {
         acc[app.access] = app.restrictedFields || {};
         return acc;
       },
@@ -114,7 +109,7 @@ const AccessView: React.FC = () => {
           height: "100%",
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
+          alignItems: "center"
         }}
       >
         <CircularProgress />
@@ -130,7 +125,7 @@ const AccessView: React.FC = () => {
           height: "100%",
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
+          alignItems: "center"
         }}
       >
         <Typography variant="body1" color="error">
@@ -150,7 +145,7 @@ const AccessView: React.FC = () => {
           height: "100%",
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
+          alignItems: "center"
         }}
       >
         <Typography variant="body1" color="text.secondary">
@@ -165,16 +160,17 @@ const AccessView: React.FC = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "95%",
-        width: "97%",
+        height: "87vh", // Make it consistent and predictable
         bgcolor: "white",
         borderRadius: 2,
         boxShadow: 3,
-        p: isMobile ? 1.5 : 2,
-        m: isMobile ? 1 : 3,
+        p: 3,
+        overflow: "hidden" // Prevent children from overflowing this container
       }}
     >
-      <Box sx={{ flex: 1 }}>
+      {/* Content Wrapper */}
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+        {/* Header */}
         <Box
           display="flex"
           justifyContent="space-between"
@@ -186,7 +182,7 @@ const AccessView: React.FC = () => {
           <Box
             display="flex"
             alignItems="center"
-            sx={{ flex: isMobile ? "1 1 50%" : "unset" }}
+            sx={{ flex: isMobile ? "1 1 50%" : "unset", textTransform: "capitalize" }}
           >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
               <Tooltip title={t("cancel")}>
@@ -208,9 +204,7 @@ const AccessView: React.FC = () => {
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
               <Tooltip title={t("editaccess")}>
                 <IconButton
-                  onClick={() =>
-                    router.push(`/access/pages/edit/${accessRole.id}`)
-                  }
+                  onClick={() => router.push(`/access/pages/edit/${accessRole.id}`)}
                   color="primary"
                 >
                   <Edit />
@@ -245,31 +239,33 @@ const AccessView: React.FC = () => {
               "& .MuiOutlinedInput-root": {
                 borderRadius: 1,
                 "&:hover fieldset": { borderColor: "#741B92" },
-                "&.Mui-focused fieldset": { borderColor: "#741B92" },
-              },
+                "&.Mui-focused fieldset": { borderColor: "#741B92" }
+              }
             }}
           />
         </Box>
 
         {/* Permissions */}
-        <Typography variant="h6" mb={2} fontWeight={600} sx={{ color: "#333" }}>
+        <Typography variant="h6" fontWeight={600} sx={{ color: "#333" }}>
           {t("viewdetail")}
         </Typography>
 
-        {accessOptions.length === 0 || !currentTab ? (
-          <Box display="flex" justifyContent="center" mt={5}>
-            <Typography variant="body1" color="text.secondary">
-              {t("noaccessavailable")}
-            </Typography>
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              maxHeight: "calc(100vh - 350px)",
-              overflowY: "auto",
-              pr: 1,
-            }}
-          >
+        <Box
+          sx={{
+            flex: 1,
+            overflowY: "auto",
+            minHeight: 0,
+            mt: 1,
+            pr: 1
+          }}
+        >
+          {accessOptions.length === 0 || !currentTab ? (
+            <Box display="flex" justifyContent="center" mt={1}>
+              <Typography variant="body1" color="text.secondary">
+                {t("noaccessavailable")}
+              </Typography>
+            </Box>
+          ) : (
             <AccessPermissionsContainer
               accessOptions={accessOptions}
               currentModule={currentTab}
@@ -281,10 +277,11 @@ const AccessView: React.FC = () => {
               onFieldChange={() => {}}
               readOnly
             />
-          </Box>
-        )}
+          )}
+        </Box>
       </Box>
 
+      {/* Dialog */}
       <CommonDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
@@ -297,6 +294,7 @@ const AccessView: React.FC = () => {
         </Typography>
       </CommonDialog>
 
+      {/* Snackbar */}
       <CustomSnackbar
         open={snackbar.open}
         onClose={() => setSnackbar({ ...snackbar, open: false })}

@@ -20,12 +20,10 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
     throw new Error("Invalid user_id or project_id");
   }
 
-  const startedOn = taskData.start_date;
   const userEstimated = taskData.user_estimated;
-  let estimated_time: string | undefined = undefined;
 
-  if (startedOn && userEstimated) {
-    estimated_time = userEstimated;
+  if (userEstimated) {
+    taskData.estimated_time = userEstimated;
   }
 
   const newTask = new Task({
@@ -131,10 +129,9 @@ const updateATask = async (id: string, updateData: Partial<ITask>): Promise<ITas
     }
 
     // Set estimated_time from user_estimated, ensuring minutes are included
-    const startedOnRaw = updateData.start_date ?? existingTask.start_date;
     const userEstimated = updateData.user_estimated ?? existingTask.user_estimated;
 
-    if (startedOnRaw && userEstimated) {
+    if (userEstimated) {
       // Parse user_estimated and reformat to ensure minutes
       const estimatedHours = TimeUtil.parseTimeString(userEstimated);
       existingTask.estimated_time = TimeUtil.formatHoursToTimeString(estimatedHours);

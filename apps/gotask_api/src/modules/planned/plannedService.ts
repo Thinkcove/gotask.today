@@ -70,7 +70,7 @@ const getWorkPlannedService = async (
   pipeline.push({
     $group: {
       _id: groupId,
-      user_estimated: { $first: "$user_estimated" }, // Keep user_estimated for each task
+      user_estimated: { $first: "$user_estimated" } // Keep user_estimated for each task
     }
   });
 
@@ -81,7 +81,7 @@ const getWorkPlannedService = async (
     user_name: "$_id.user_name",
     start_date: "$_id.start_date",
     end_date: "$_id.due_date",
-    user_estimated: 1,
+    user_estimated: 1
   };
 
   if (showTasks) {

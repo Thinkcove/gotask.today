@@ -2,14 +2,10 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
-import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
-import { permission } from "../../middleware/permission";
 import authStrategy from "../../constants/auth/authStrategy";
 import WorkPlannedController from "./plannedController";
 
-
 const workPlannedController = new WorkPlannedController();
-const appName = APPLICATIONS.WORK_PLANNED; 
 const tags = [API, "Work Planned"];
 
 const WorkPlannedRoutes = [];
@@ -18,7 +14,7 @@ const WorkPlannedRoutes = [];
 WorkPlannedRoutes.push({
   path: API_PATHS.GET_WORK_PLANNED,
   method: API_METHODS.POST,
-  handler:  (request: Request, handler: ResponseToolkit) =>
+  handler: (request: Request, handler: ResponseToolkit) =>
     workPlannedController.getWorkPlanned(new RequestHelper(request), handler),
   config: {
     notes: "Get work planned - tasks created within date range",

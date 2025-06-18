@@ -346,6 +346,8 @@
     "labelpassword": "Password",
     "placeholderpassword": "Enter password",
     "createusernew": "Create New User",
+    "cancelUser": "Cancel",
+    "createUser": "Create",
     "updatesuccess": "User updated successfully!",
     "updateerror": "Error while updating user",
     "edituser": "Edit User",

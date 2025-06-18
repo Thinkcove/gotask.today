@@ -42,7 +42,7 @@
     "access": "Task Management"
   },
   {
-    "text": "Report",
+    "text": "Work Log",
     "icon": "BarChartIcon",
     "path": "/report",
     "access": "User Report"

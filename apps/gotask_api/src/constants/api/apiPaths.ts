@@ -11,6 +11,7 @@ export const API_PATHS = {
   CREATE_COMMENT: "/task/createComment",
   UPDATE_COMMENT: "/task/updateComment/{id}",
   DELETE_COMMENT: "/task/deleteComment/{id}",
+  GET_WORK_PLANNED: "/work-planned/tasks",
 
   //projectRoutes
   CREATE_PROJECT: "/createProject",

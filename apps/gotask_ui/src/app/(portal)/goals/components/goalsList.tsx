@@ -10,10 +10,15 @@ import WeeklyGoalForm from "./weeklyGoal/weeklyGoalForm";
 import { Box, Button, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import ActionButton from "@/app/component/floatingButton/actionButton";
+import AddIcon from "@mui/icons-material/Add";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 function GoalsList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("weekly-goals", fetchWeeklyGoals);
   console.log("weeklyGoals", weeklyGoals);
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.WEEKLYGOAL);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [goalData, setGoalData] = useState<any>({});
@@ -57,7 +62,7 @@ function GoalsList() {
   const handleSubmit = async () => {
     try {
       const payload = {
-        projectId: goalData.projectId,
+        projectId: projectID,
         goalTitle: goalData.goalTitle,
         weekStart: goalData.weekStart,
         weekEnd: goalData.weekEnd,
@@ -81,12 +86,18 @@ function GoalsList() {
       console.error("Error saving weekly goal:", err);
     }
   };
+
   return (
     <Box
       sx={{
         p: 4
       }}
     >
+      <ActionButton
+        label={transGoal("createnewpGoal")}
+        icon={<AddIcon sx={{ color: "white" }} />}
+        onClick={() => setOpenDialog(true)}
+      />
       {openDialog ? (
         <Box
           sx={{
@@ -97,20 +108,57 @@ function GoalsList() {
             backgroundColor: "#f9f9f9"
           }}
         >
-          <Typography variant="h6" mb={2}>
-            {goalData.id ? "Edit Weekly Goal" : "Create Weekly Goal"}
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%"
+            }}
+          >
+            {/* Title with Gradient Effect */}
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+              {goalData.id ? "Edit Weekly Goal" : "Create Weekly Goal"}
+            </Typography>
 
-          <WeeklyGoalForm goalData={goalData} setGoalData={setGoalData} />
-
-          <Box mt={2} display="flex" gap={2}>
-            <Button variant="outlined" color="secondary" onClick={() => setOpenDialog(false)}>
-              Cancel
-            </Button>
-            <Button variant="outlined" color="primary" onClick={handleSubmit}>
-              {goalData.id ? "Update" : "Create"}
-            </Button>
+            {/* Buttons with Soft Hover Effects */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderRadius: "30px",
+                  color: "black",
+                  border: "2px solid  #741B92",
+                  px: 2,
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.2)"
+                  }
+                }}
+                onClick={() => setOpenDialog(false)}
+              >
+                cancle
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: "30px",
+                  backgroundColor: " #741B92",
+                  color: "white",
+                  px: 2,
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    backgroundColor: "rgb(202, 187, 201) 100%)"
+                  }
+                }}
+                onClick={handleSubmit}
+              >
+                {goalData.id ? "Update" : "Create"}
+              </Button>
+            </Box>
           </Box>
+          <WeeklyGoalForm goalData={goalData} setGoalData={setGoalData} />
         </Box>
       ) : (
         <>

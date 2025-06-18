@@ -14,6 +14,6 @@ export const LOCALIZATION = {
     REPORT: "Report",
     CHATBOT: "Chatbot",
     ASSETS: "Assets",
-    WEEKLY_GOAL:"Weekly_Goal"
+    WEEKLYGOAL:"Weekly_Goal"
   }
 };

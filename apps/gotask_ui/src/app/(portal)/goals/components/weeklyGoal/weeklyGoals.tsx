@@ -1,6 +1,8 @@
 import React from "react";
 import { Grid, Box, Typography, Button, Tooltip, IconButton } from "@mui/material";
 import { Edit } from "@mui/icons-material";
+import StatusIndicator from "@/app/component/status/statusIndicator";
+import { getStatusColor } from "@/app/common/constants/task";
 
 export interface WeeklyGoal {
   id: string;
@@ -57,9 +59,7 @@ const WeeklyGoals: React.FC<WeeklyGoalsProps> = ({
                   {goal.goalTitle}
                 </Typography>
 
-                <Typography variant="body2" color="text.secondary">
-                  Status: {formatStatus(goal.status)}
-                </Typography>
+                <StatusIndicator status={goal.status} getColor={getStatusColor} />
 
                 <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
                   <Box display="flex" alignItems="center">
@@ -71,9 +71,7 @@ const WeeklyGoals: React.FC<WeeklyGoalsProps> = ({
                         <input type="checkbox" disabled checked />
                       </>
                     ) : (
-                      <Typography variant="body2" sx={{ fontStyle: "bolder" }}>
-                        Completion Status: {goal.status}
-                      </Typography>
+                      ""
                     )}
                   </Box>
                   <Tooltip title={"editaccess"}>

@@ -1,6 +1,4 @@
 import { findUserById } from "../../domain/interface/user/userInterface";
-
-import WeeklyGoalMessages from "../../constants/apiMessages/weeklyGoalMessage";
 import { IWeeklyGoal } from "../../domain/model/trackwekly/trackwekly";
 import {
   createWeeklyGoalNew,
@@ -11,6 +9,7 @@ import {
   findGoalsByUserIdNew,
   findGoalsByProjectIdNew
 } from "../../domain/interface/trackwekly/trackwekly";
+import WeeklyGoalMessages from "../../constants/apiMessages/weeklyGoalMessage";
 
 // Create a new weekly goal
 const createWeeklyGoal = async (

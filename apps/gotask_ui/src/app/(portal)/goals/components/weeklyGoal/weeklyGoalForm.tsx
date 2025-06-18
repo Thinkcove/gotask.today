@@ -21,7 +21,7 @@ interface WeeklyGoalFormProps {
   setGoalData: (data: GoalData) => void;
 }
 
-const statusOptions = ["Not-started", "In-progress", "Completed", "Blocked"];
+const statusOptions = ["not-started", "in-progress", "completed", "blocked"];
 const priorityOptions = ["High", "Medium", "Low"];
 
 const WeeklyGoalForm: React.FC<WeeklyGoalFormProps> = ({ goalData, setGoalData }) => {

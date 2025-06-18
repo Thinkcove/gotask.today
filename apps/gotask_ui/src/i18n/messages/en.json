@@ -503,9 +503,10 @@
     "validation": "No valid attendance records processed"
   },
 
-  "Weekly_Goal": {
+  "WeeklyGoal": {
     "goal": "Weekly Goal",
     "goalDesc": "Weekly Goal Description",
-    "goalDescPlaceholder": "Enter your weekly goal"
+    "goalDescPlaceholder": "Enter your weekly goal",
+    "createnewpGoal": "Create New Goal"
   }
 }

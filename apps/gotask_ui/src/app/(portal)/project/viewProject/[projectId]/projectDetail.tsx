@@ -21,6 +21,7 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import Link from "next/link";
 
 interface ProjectDetailProps {
   project: Project;
@@ -177,6 +178,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 {transproject("detailaddassignee")}
               </Button>
             )}
+            <Link href={`/goals?projectId=${projectID}`}>Goal</Link>
           </Box>
 
           {/* Users Grid */}

@@ -15,7 +15,7 @@ const getAllWeeklyGoalsNew = async (): Promise<IWeeklyGoal[]> => {
 
 // Get goal by ID
 const getWeeklyGoalByIdNew = async (id: string): Promise<IWeeklyGoal | null> => {
-  return await WeeklyGoal.findOne({ id }); // ✅ use `id`, not `_id`
+  return await WeeklyGoal.findOne({ id }); 
 };
 
 // Update goal by ID

@@ -504,6 +504,7 @@
   },
 
   "Weekly_Goal": {
+    "goal": "Weekly Goal",
     "goalDesc": "Weekly Goal Description",
     "goalDescPlaceholder": "Enter your weekly goal"
   }

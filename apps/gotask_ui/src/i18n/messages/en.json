@@ -154,7 +154,9 @@
     "updateerror": "Error while updating project",
     "edittitle": "Edit Project",
     "placeholdeselect": "Select Assignees to the project",
-    "searchplaceholder": "Search Projects"
+    "searchplaceholder": "Search Projects",
+    "goal": " Goal",
+    "assignee": "Assignee"
   },
   "Role": {
     "rolename": "Role Name is required",
@@ -482,5 +484,10 @@
     "uploadfile": "Upload the files here",
     "uploadsuccess": "Upload successfully",
     "validation": "No valid attendance records processed"
+  },
+
+  "Weekly_Goal": {
+    "goalDesc": "Weekly Goal Description",
+    "goalDescPlaceholder": "Enter your weekly goal"
   }
 }

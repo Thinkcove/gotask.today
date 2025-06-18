@@ -90,17 +90,30 @@ export const fetchWeeklyGoals = async () => {
 };
 
 // Create Weekly Goal
-export const createWeeklyGoal = async (goalData: { goalTitle: string; projectId: string }) => {
+export const createWeeklyGoal = async (goalData: {
+  projectId: string;
+  goalTitle: string;
+  weekStart: string;
+  weekEnd: string;
+  status: string;
+  description: string;
+  comments: string[];
+  priority: string;
+}) => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/weekly/goals`;
     return await postData(url, goalData, token);
   });
 };
 
-// Update Weekly Goal
+
 export const updateWeeklyGoal = async (
   goalId: string,
   updatedGoalData: {
+    projectId: string;
+    goalTitle: string;
+    weekStart: string;
+    weekEnd: string;
     status: string;
     description: string;
     comments: string[];
@@ -112,3 +125,4 @@ export const updateWeeklyGoal = async (
     return await putData(url, updatedGoalData, token);
   });
 };
+

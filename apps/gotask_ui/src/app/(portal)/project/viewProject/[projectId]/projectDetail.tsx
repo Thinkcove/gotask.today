@@ -29,6 +29,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import WeeklyGoals, { WeeklyGoal } from "./weeklyGoal/weeklyGoals";
 import WeeklyGoalForm from "./weeklyGoal/weeklyGoalForm";
+import TaskToggle from "@/app/component/toggle/toggle";
 
 interface ProjectDetailProps {
   project: Project;
@@ -49,7 +50,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     }
   }, [weeklyGoals, error]);
   const [open, setOpen] = useState(false);
-  const [showWeeklyGoalForm, setShowWeeklyGoalForm] = useState(false);
   const [goalData, setGoalData] = useState<any>({});
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
@@ -148,37 +148,41 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     setGoalData(goal);
     setOpenDialog(true);
   };
-  
-  // Submit Handler
+
   const handleSubmit = async () => {
     try {
+      const payload = {
+        projectId: goalData.projectId,
+        goalTitle: goalData.goalTitle,
+        weekStart: goalData.weekStart,
+        weekEnd: goalData.weekEnd,
+        status: goalData.status,
+        description: goalData.description,
+        comments: goalData.comments,
+        priority: goalData.priority
+      };
+
       if (goalData.id) {
         // Edit mode
-        await updateWeeklyGoal(goalData.id, {
-          status: goalData.status,
-          description: goalData.description,
-          comments: goalData.comments,
-          priority: goalData.priority
-        });
+        await updateWeeklyGoal(goalData.id, payload);
       } else {
         // Create mode
-        await createWeeklyGoal({
-          goalTitle: goalData.goalTitle,
-          projectId: goalData.projectId
-        });
+        await createWeeklyGoal(payload);
       }
 
-      // Optional: refetch weekly goals or update local state here
-
-      setOpenDialog(false); // Close dialog after submit
+      // Optional: refresh goal list here
+      setOpenDialog(false); // Close dialog
     } catch (err) {
       console.error("Error saving weekly goal:", err);
     }
   };
+  const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
+  const [selectedView, setSelectedView] = useState("Asset");
 
   return (
     <>
       <ModuleHeader name={transproject("detailview")} />
+
       <Box
         sx={{
           minHeight: "100vh",
@@ -265,7 +269,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               </Grid>
             </Grid>
             <Divider sx={{ mb: 4 }} />
-
+            <TaskToggle
+              options={[transproject("goal"), transproject("assignee")]}
+              selected={selectedView}
+              onChange={setSelectedView}
+            />
             {/* Weekly Goals */}
             <WeeklyGoals
               weeklyGoals={weeklyGoals || []}
@@ -275,6 +283,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               handelOpen={handelOpen}
               openDialog={openDialog}
               handleEditGoal={handleEditGoal}
+              projectId={Array.isArray(projectId) ? projectId[0] : (projectId ?? "")}
             />
 
             {/* Assignees */}

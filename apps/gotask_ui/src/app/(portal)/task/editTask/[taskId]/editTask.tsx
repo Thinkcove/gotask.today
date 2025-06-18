@@ -213,13 +213,13 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
         {data.status !== TASK_STATUS.TO_DO && (
           <TimeProgressBar
-            estimatedTime={data.estimated_time || "0h"}
-            timeSpentTotal={data.time_spent_total || "0h"}
-            dueDate={data.user_estimated || "0d0h"}
+            estimatedTime={data.estimated_time || "0h0m"}
+            timeSpentTotal={data.time_spent_total || "0h0m"}
+            dueDate={data.user_estimated || "0d0h0m"}
             startDate={data.start_date || ""}
             timeEntries={data.time_spent || []}
             canLogTime={!alreadyExists}
-            variation={data.variation ? String(data.variation) : "0d0h"}
+            variation={data.variation ? String(data.variation) : "0d0h0m"}
             onClick={handleProgressClick}
           />
         )}
@@ -238,7 +238,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         <TimeSpentPopup
           isOpen={isPopupOpen}
           onClose={() => setIsPopupOpen(false)}
-          originalEstimate={data.estimated_time || "0d0h"}
+          originalEstimate={data.estimated_time || "0d0h0m"}
           taskId={data.id}
           dueDate={data.due_date || ""}
           mutate={mutate}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Grid, Typography, Paper, Box, Button } from "@mui/material";
 import { createAssetAttributes, useAllAssets, useAllTypes } from "../services/assetActions"; // adjust path as needed
 import FormField from "../../../component/input/formField"; // assuming same reusable FormField
@@ -10,25 +10,58 @@ import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
+import { User } from "../../user/interfaces/userInterface";
+import useSWR from "swr";
+import { fetcherUserList } from "../../user/services/userAction";
 
 interface AssetFormData {
   typeId: string;
+  userId: string;
 }
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { getAll: allTypes } = useAllTypes();
+  const { data: users } = useSWR("fetch-user", fetcherUserList);
   const { mutate: assetMutate } = useAllAssets();
-  const [formData, setFormData] = useState<AssetFormData>({
-    typeId: ""
+  const [formData, setFormData] = useState<IAssetAttributes>({
+    typeId: "",
+    userId: "",
+    deviceName: "",
+    serialNumber: "",
+    modelName: "",
+    os: "",
+    ram: "",
+    storage: "",
+    processor: "",
+    seller: "",
+    dateOfPurchase: new Date(),
+    erk: "",
+    warrantyPeriod: "",
+    warrantyDate: new Date(),
+    antivirus: "",
+    recoveryKey: "",
+    lastServicedDate: new Date(),
+    commentService: "",
+    isEncrypted: false
   });
   const [selectedAssetType, setSelectedAssetType] = useState<IAssetType | null>(null);
   const router = useRouter();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
+
+  const userOptions = useMemo(() => {
+    return (
+      users?.map((user: User) => ({
+        id: user.id,
+        name: user.name
+      })) || []
+    );
+  }, [users]);
 
   const handleAssetTypeChange = (id: string) => {
     const type = allTypes.find((t: IAssetType) => t.id === id) || null;
@@ -43,7 +76,21 @@ export const CreateAsset: React.FC = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.typeId) newErrors.typeId = transasset("typeid");
+    if (!formData.deviceName) newErrors.deviceName = transasset("devicename");
+    if (!formData.ram) newErrors.ram = transasset("ram");
+    if (!formData.modelName) newErrors.modelName = transasset("modelname");
+    if (!formData.os) newErrors.os = transasset("os");
+    if (!formData.storage) newErrors.storage = transasset("storage");
+    if (!formData.processor) newErrors.processor = transasset("processor");
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) return;
     if (!selectedAssetType?.id) {
       setSnackbar({
         open: true,
@@ -54,7 +101,7 @@ export const CreateAsset: React.FC = () => {
     }
 
     try {
-      const payload = { ...formData, typeId: selectedAssetType.id };
+      const payload = { ...formData, typeId: selectedAssetType.id, userId: formData.userId };
       const response = await createAssetAttributes(payload);
       if (response?.success) {
         await assetMutate();
@@ -71,7 +118,7 @@ export const CreateAsset: React.FC = () => {
   };
 
   return (
-    <Paper elevation={2} sx={{ padding: 8 }}>
+    <Paper elevation={2} sx={{ padding: 2 }}>
       <Box
         sx={{
           display: "flex",
@@ -123,24 +170,45 @@ export const CreateAsset: React.FC = () => {
       </Box>
       <Box sx={{ maxHeight: "calc(100vh - 180px)", overflowY: "auto", pr: 1 }}>
         <Grid container>
-          <Grid item xs={12} sm={4}>
-            <FormField
-              label={transasset("type")}
-              type="select"
-              required
-              options={(allTypes || []).map((type: IAssetType) => ({
-                id: type.id,
-                name: type.name
-              }))}
-              placeholder={transasset("type")}
-              value={selectedAssetType?.id || ""}
-              onChange={(val) => handleAssetTypeChange(String(val))}
-            />
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <FormField
+                  label={transasset("type")}
+                  type="select"
+                  required
+                  options={(allTypes || []).map((type: IAssetType) => ({
+                    id: type.id,
+                    name: type.name
+                  }))}
+                  placeholder={transasset("type")}
+                  value={selectedAssetType?.id || ""}
+                  onChange={(val) => handleAssetTypeChange(String(val))}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormField
+                  label={transasset("assignedTo")}
+                  type="select"
+                  options={userOptions}
+                  value={formData.userId || ""}
+                  onChange={(val) => handleInputChange("userId", String(val))}
+                  placeholder={transasset("assignedTo")}
+                />
+              </Grid>
+            </Grid>
           </Grid>
 
-          {/* Laptop Inputs inline with dropdown */}
+          {/* Laptop Inputs below if type is Laptop */}
           {selectedAssetType?.name === "Laptop" && (
-            <LaptopInputs formData={formData} onChange={handleInputChange} startIndex={1} />
+            <Grid item xs={12}>
+              <LaptopInputs
+                formData={formData}
+                onChange={handleInputChange}
+                startIndex={1}
+                errors={errors}
+              />
+            </Grid>
           )}
         </Grid>
         <CustomSnackbar

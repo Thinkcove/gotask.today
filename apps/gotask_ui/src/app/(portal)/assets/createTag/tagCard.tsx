@@ -14,6 +14,7 @@ import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import NoTasksImage from "@assets/placeholderImages/notask.svg";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
+import { getStatusColor } from "@/app/common/constants/asset";
 
 interface UserDetails {
   user_id: string;
@@ -47,18 +48,6 @@ const TagCards: React.FC = () => {
   const { getAll: tags } = useAllTags();
   const [erkDialogOpen, setErkDialogOpen] = useState(false);
   const [selectedErk, setSelectedErk] = useState<string | null>(null);
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "assigned":
-        return "success";
-      case "returned":
-        return "warning";
-      case "serviced":
-        return "info";
-      default:
-        return "default";
-    }
-  };
 
   const handleOpenErkDialog = (erk: string) => {
     setSelectedErk(erk);
@@ -155,7 +144,7 @@ const TagCards: React.FC = () => {
                     {tag.erk && (
                       <Grid item xs={6}>
                         <Box display="flex" alignItems="center">
-                          <EnhancedEncryptionIcon sx={{ fontSize: 18, color: "#741B92", mr: 1 }} />
+                          <EnhancedEncryptionIcon sx={{ fontSize: 18, mr: 1 }} />
                           <Typography
                             variant="body2"
                             color="text.secondary"
@@ -169,26 +158,6 @@ const TagCards: React.FC = () => {
                           >
                             <VisibilityOffIcon sx={{ fontSize: 20 }} />
                           </Box>
-                          <Dialog
-                            open={erkDialogOpen}
-                            onClose={handleCloseErkDialog}
-                            maxWidth="xs"
-                            fullWidth
-                          >
-                            <DialogTitle sx={{ fontWeight: 600, color: "#741B92" }}>
-                              {trans("encryptedkey")}
-                            </DialogTitle>
-                            <DialogContent>
-                              <Typography sx={{ wordBreak: "break-word", fontSize: "1rem" }}>
-                                {selectedErk}
-                              </Typography>
-                            </DialogContent>
-                            <DialogActions>
-                              <Button onClick={handleCloseErkDialog} color="primary">
-                                {trans("close")}
-                              </Button>
-                            </DialogActions>
-                          </Dialog>
                         </Box>
                       </Grid>
                     )}
@@ -199,6 +168,17 @@ const TagCards: React.FC = () => {
           </Grid>
         ))}
       </Grid>
+      <Dialog open={erkDialogOpen} onClose={handleCloseErkDialog} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 600 }}>{trans("encryptedkey")}</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ wordBreak: "break-word", fontSize: "1rem" }}>{selectedErk}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseErkDialog} color="primary">
+            {trans("close")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

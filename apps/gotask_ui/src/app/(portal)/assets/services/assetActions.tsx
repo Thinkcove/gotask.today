@@ -78,3 +78,54 @@ export const useAllIssues = () => {
     mutate
   };
 };
+
+const isErrorResult = (result: any): result is { error: string } =>
+  result && typeof result === "object" && "error" in result;
+
+// const getAttributesById = async ([, id]: [string, string]) => {
+//   const result = await withAuth(async (token) => {
+//     return await getData(`${env.API_BASE_URL}/access/${id}`, token);
+//   });
+
+//   if (!result || isErrorResult(result)) {
+//     return null;
+//   }
+
+//   return result;
+// };
+
+// export const useAttributesById = (id: string) => {
+//   const { data, error, isLoading } = useSWR([`fetchAttributesById`, id], getAttributesById, {
+//     revalidateOnFocus: false
+//   });
+
+//   return {
+//     attributes: data,
+//     isLoading,
+//     error: error ? error.message : null
+//   };
+// };
+
+const getTagById = async ([, id]: [string, string]): Promise<IAssetTags | null> => {
+  const result = await withAuth(async (token) => {
+    return await getData(`${env.API_BASE_URL}/gettagbyid/${id}`, token);
+  });
+
+  if (!result || isErrorResult(result)) {
+    return null;
+  }
+
+  return result.data;
+};
+
+export const useTagById = (id: string) => {
+  const { data, error, isLoading } = useSWR([`fetchTagById`, id], getTagById, {
+    revalidateOnFocus: false
+  });
+
+  return {
+    tags: data ?? null,
+    isLoading,
+    error: error ? error.message : null
+  };
+};

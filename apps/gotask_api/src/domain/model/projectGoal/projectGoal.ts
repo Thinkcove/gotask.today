@@ -1,5 +1,10 @@
 import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { TASK_SEVERITY } from "../../../constants/taskConstant";
+import { PROJECTGOAL_STATUS } from "../../../constants/projectGoalConstants";
+
+export type TaskSeverity = (typeof TASK_SEVERITY)[keyof typeof TASK_SEVERITY];
+export type ProjectGoalStatus = (typeof PROJECTGOAL_STATUS)[keyof typeof PROJECTGOAL_STATUS];
 
 // Interface for TypeScript
 export interface IProjectGoal extends Document {
@@ -9,9 +14,9 @@ export interface IProjectGoal extends Document {
   weekStart: Date;
   weekEnd: Date;
   comments: string[];
-  priority: "Low" | "Medium" | "High";
+  priority: TaskSeverity;
   description?: string;
-  status: "not-started" | "in-progress" | "completed" | "blocked"; // suggested enum for clarity
+  status: ProjectGoalStatus;
 }
 
 // Schema definition
@@ -26,13 +31,11 @@ const ProjectGoalSchema = new Schema<IProjectGoal>(
     comments: { type: [String], default: [] },
     priority: {
       type: String,
-      enum: ["Low", "Medium", "High"],
-      default: "Medium"
+      enum: Object.values(TASK_SEVERITY)
     },
     status: {
       type: String,
-      enum: ["not-started", "in-progress", "completed", "blocked"], // You can adjust the allowed values as needed
-      default: "not-started"
+      enum: Object.values(PROJECTGOAL_STATUS)
     }
   },
   {

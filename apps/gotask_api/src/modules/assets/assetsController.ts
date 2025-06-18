@@ -11,7 +11,7 @@ class AssetController extends BaseController {
       if (!payload) {
         throw new Error(AssetMessages.CREATE.MISSING_FIELDS);
       }
-      const newUser = await assetServices.createAsset(payload, user);
+      const newUser = await assetServices.createOrUpdateAsset(payload, user);
       return this.sendResponse(handler, newUser);
     } catch (error) {
       return this.replyError(error);

@@ -6,13 +6,14 @@ import { useUserTimeLogReport } from "../services/reportService";
 import { fetchProject, fetchUser } from "../../task/service/taskAction";
 import useSWR from "swr";
 import { User } from "../interface/timeLog";
-import TimeLogCalendarGrid from "./timeLogCalenderGrid";
 import FiltersPanel from "./reportFilterPanel";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoReportImage from "@assets/placeholderImages/noreportlog.svg";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { Project } from "../../task/interface/taskInterface";
+
+import TimeLogCalendarGrid from "./timeLogCalenderGrid";
 
 const getInitialFilters = () => {
   if (typeof window !== "undefined") {
@@ -24,7 +25,7 @@ const getInitialFilters = () => {
           toDate: "",
           showTasks: false,
           userIds: [],
-          projectIds: [],
+          projectIds: []
         };
   }
   return {
@@ -32,34 +33,31 @@ const getInitialFilters = () => {
     toDate: "",
     showTasks: false,
     userIds: [],
-    projectIds: [],
+    projectIds: []
   };
 };
 
 const TimeLogReport = () => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
-
   const [filters, setFilters] = useState(getInitialFilters);
-
   const isClient = typeof window !== "undefined";
 
   const {
     data: fetchedUserData,
     error: userError,
-    isLoading: isUserLoading,
+    isLoading: isUserLoading
   } = useSWR(isClient ? "fetchuser" : null, fetchUser, {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
 
   const {
     data: fetchedProjectData,
     error: projectError,
-    isLoading: isProjectLoading,
+    isLoading: isProjectLoading
   } = useSWR(isClient ? "fetchproject" : null, fetchProject, {
-    revalidateOnFocus: false,
+    revalidateOnFocus: false
   });
 
-  
   const usersList: User[] = fetchedUserData?.data || [];
   const projectsList: Project[] = fetchedProjectData?.data || [];
 
@@ -77,7 +75,7 @@ const TimeLogReport = () => {
       toDate: "",
       showTasks: false,
       userIds: [],
-      projectIds: [],
+      projectIds: []
     };
     setFilters(cleared);
     if (isClient) {
@@ -90,7 +88,7 @@ const TimeLogReport = () => {
     toDate: filters.toDate,
     userIds: filters.userIds.length > 0 ? filters.userIds : [],
     showTasks: filters.showTasks,
-    selectedProjects: filters.projectIds.length > 0 ? filters.projectIds : [],
+    selectedProjects: filters.projectIds.length > 0 ? filters.projectIds : []
   };
 
   const shouldFetch = filters.fromDate !== "" && filters.toDate !== "";
@@ -98,15 +96,13 @@ const TimeLogReport = () => {
   const {
     data: reportData,
     isLoading: isReportLoading,
-    isError: isReportError,
+    isError: isReportError
   } = useUserTimeLogReport(payload, shouldFetch);
 
   if (userError) {
     return (
       <Box sx={{ p: 3 }}>
-        <Typography color="error">
-          {transreport("errorFetchingUsers")}
-        </Typography>
+        <Typography color="error">{transreport("errorFetchingUsers")}</Typography>
       </Box>
     );
   }
@@ -114,9 +110,7 @@ const TimeLogReport = () => {
   if (projectError) {
     return (
       <Box sx={{ p: 3 }}>
-        <Typography color="error">
-          {transreport("errorFetchingProjects")}
-        </Typography>
+        <Typography color="error">{transreport("errorFetchingProjects")}</Typography>
       </Box>
     );
   }
@@ -124,8 +118,8 @@ const TimeLogReport = () => {
   if (isUserLoading || isProjectLoading) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
-              <CircularProgress />
-            </Box>
+        <CircularProgress />
+      </Box>
     );
   }
 
@@ -164,16 +158,11 @@ const TimeLogReport = () => {
         <Grid item xs={12} md={9}>
           {isReportLoading && <CircularProgress />}
 
-          {isReportError && (
-            <Typography color="error">{transreport("error")}</Typography>
-          )}
+          {isReportError && <Typography color="error">{transreport("error")}</Typography>}
 
           {!filters.fromDate || !filters.toDate ? (
             <Grid item xs={12}>
-              <EmptyState
-                imageSrc={NoReportImage}
-                message={transreport("loghelper")}
-              />
+              <EmptyState imageSrc={NoReportImage} message={transreport("loghelper")} />
             </Grid>
           ) : reportData ? (
             <TimeLogCalendarGrid

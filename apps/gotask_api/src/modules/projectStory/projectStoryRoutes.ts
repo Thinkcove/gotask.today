@@ -77,19 +77,6 @@ routes.push({
   }
 });
 
-// Create a task under a story
-routes.push({
-  method: API_METHODS.POST,
-  path: "/story/{storyId}/task/create",
-  handler: (req: Request, h: ResponseToolkit) =>
-    controller.createTaskUnderStory(new RequestHelper(req), h),
-  options: {
-    notes: "Create a task under a specific story",
-    tags,
-    auth: { strategy: authStrategy.SIMPLE }
-  }
-});
-
 // Get all tasks by storyId
 routes.push({
   method: API_METHODS.GET,

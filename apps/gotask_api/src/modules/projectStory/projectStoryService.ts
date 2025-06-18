@@ -1,5 +1,6 @@
 import { ProjectStory, IProjectStory } from "../../domain/model/projectStory/projectStory";
 import { Task } from "../../domain/model/task/task";
+import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
 
 // CREATE a new story
 export const createStoryService = async (data: {
@@ -8,24 +9,48 @@ export const createStoryService = async (data: {
   projectId: string;
   createdBy: string;
 }): Promise<IProjectStory> => {
-  return await ProjectStory.create({
-    title: data.title,
-    description: data.description || "",
-    project_id: data.projectId
-  });
+  try {
+    if (!data.title || !data.projectId) {
+      throw new Error(storyMessages.CREATE.TITLE_REQUIRED);
+    }
+
+    return await ProjectStory.create({
+      title: data.title,
+      description: data.description || "",
+      project_id: data.projectId
+    });
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.CREATE.FAILED);
+  }
 };
 
 // GET all stories for a specific project by UUID
 export const getStoriesByProjectService = async (projectId: string): Promise<IProjectStory[]> => {
-  return await ProjectStory.find({ project_id: projectId }).sort({ createdAt: -1 });
+  try {
+    if (!projectId) {
+      throw new Error(storyMessages.FETCH.PROJECT_ID_REQUIRED);
+    }
+
+    return await ProjectStory.find({ project_id: projectId }).sort({ createdAt: -1 });
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.FETCH.FAILED);
+  }
 };
 
 // GET a story by its UUID
 export const getStoryByIdService = async (storyId: string): Promise<IProjectStory | null> => {
-  return await ProjectStory.findOne({ id: storyId });
+  try {
+    if (!storyId) {
+      throw new Error(storyMessages.FETCH.NOT_FOUND);
+    }
+
+    return await ProjectStory.findOne({ id: storyId });
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.FETCH.FAILED);
+  }
 };
 
-// ADD a comment to a story using its UUID
+// ADD a comment to a story
 export const addCommentToStory = async (
   storyId: string,
   commentData: {
@@ -33,21 +58,30 @@ export const addCommentToStory = async (
     comment: string;
   }
 ): Promise<IProjectStory | null> => {
-  return await ProjectStory.findOneAndUpdate(
-    { id: storyId },
-    {
-      $push: {
-        comments: {
-          user_id: commentData.user_id,
-          comment: commentData.comment,
-          created_at: new Date()
+  try {
+    if (!storyId || !commentData.comment) {
+      throw new Error(storyMessages.COMMENT.COMMENT_REQUIRED);
+    }
+
+    return await ProjectStory.findOneAndUpdate(
+      { id: storyId },
+      {
+        $push: {
+          comments: {
+            user_id: commentData.user_id,
+            comment: commentData.comment,
+            created_at: new Date()
+          }
         }
-      }
-    },
-    { new: true }
-  );
+      },
+      { new: true }
+    );
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.COMMENT.FAILED);
+  }
 };
 
+// UPDATE a story
 export const updateStoryService = async (
   storyId: string,
   data: {
@@ -55,28 +89,45 @@ export const updateStoryService = async (
     description?: string;
   }
 ): Promise<IProjectStory | null> => {
-  const updateData: any = {};
-  if (data.title) updateData.title = data.title;
-  if (data.description) updateData.description = data.description;
+  try {
+    if (!data.title && !data.description) {
+      throw new Error(storyMessages.UPDATE.NO_FIELDS);
+    }
 
-  return await ProjectStory.findOneAndUpdate({ id: storyId }, { $set: updateData }, { new: true });
+    const updateData: any = {};
+    if (data.title) updateData.title = data.title;
+    if (data.description) updateData.description = data.description;
+
+    return await ProjectStory.findOneAndUpdate(
+      { id: storyId },
+      { $set: updateData },
+      { new: true }
+    );
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.UPDATE.FAILED);
+  }
 };
 
+// DELETE a story
 export const deleteStoryService = async (storyId: string): Promise<boolean> => {
-  const result = await ProjectStory.deleteOne({ id: storyId });
-  return result.deletedCount > 0;
+  try {
+    const result = await ProjectStory.deleteOne({ id: storyId });
+    return result.deletedCount > 0;
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.DELETE.FAILED);
+  }
 };
 
-// ✅ Get tasks by storyId
+// GET tasks linked to a story
 export const getTasksByStoryId = async (storyId: string) => {
   try {
     if (!storyId) {
-      throw new Error("Story ID is required");
+      throw new Error(storyMessages.TASK.FETCH_FAILED);
     }
 
     const tasks = await Task.find({ story_id: storyId }).sort({ created_on: -1 });
     return tasks;
   } catch (error: any) {
-    throw new Error(error.message || "Failed to fetch tasks by story ID");
+    throw new Error(error.message || storyMessages.TASK.FETCH_FAILED);
   }
 };

@@ -10,8 +10,6 @@ import {
   getTasksByStoryId
 } from "./projectStoryService";
 import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
-import { createTask } from "../task/taskService";
-import taskMessages from "../../constants/apiMessages/taskMessage";
 
 class ProjectStoryController extends BaseController {
   async createStory(requestHelper: RequestHelper, handler: any) {
@@ -141,42 +139,21 @@ class ProjectStoryController extends BaseController {
     }
   }
 
-  //create task from story
-  async createTaskUnderStory(requestHelper: RequestHelper, handler: any) {
-    try {
-      let payload = requestHelper.getPayload();
-      const { storyId } = requestHelper.getAllParams();
-
-      //  payload is a string (due to raw JSON body), parsing it
-      if (typeof payload === "string") {
-        payload = JSON.parse(payload);
-      }
-
-      const taskData = {
-        ...payload,
-        story_id: storyId
-      };
-
-      const newTask = await createTask(taskData);
-      return this.sendResponse(handler, newTask);
-    } catch (error) {
-      return this.replyError(error, handler);
-    }
-  }
-
-  //  Get tasks by storyId
   async getTasksByStoryId(requestHelper: RequestHelper, handler: any) {
     try {
       const { storyId } = requestHelper.getAllParams();
+      if (!storyId) {
+        return this.replyError(new Error(storyMessages.TASK.FETCH_FAILED));
+      }
 
       const tasks = await getTasksByStoryId(storyId);
 
       return this.sendResponse(handler, {
-        message: taskMessages.FETCH.ALL_SUCCESS,
+        message: storyMessages.TASK.FETCH_SUCCESS,
         data: tasks
       });
     } catch (err: any) {
-      return this.replyError(err);
+      return this.replyError(err, handler);
     }
   }
 }

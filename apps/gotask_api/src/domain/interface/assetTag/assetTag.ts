@@ -1,6 +1,5 @@
 import { AssetIssue, IAssetIssue } from "../../model/assetIssues/assetIssues";
 import { AssetTag, IAssetTag } from "../../model/assetTag/assetTag";
-import { IUser } from "../../model/user/user";
 
 const createResource = async (resourceData: IAssetTag, assetId?: string): Promise<IAssetTag> => {
   const payload = {

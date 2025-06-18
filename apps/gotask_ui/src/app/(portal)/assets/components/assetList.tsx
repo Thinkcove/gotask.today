@@ -41,7 +41,6 @@ export const AssetList: React.FC = () => {
       encrypted: asset.isEncrypted ? "Encrypted" : "-"
     };
   });
-  console.log("formattedAssets", formattedAssets);
   const handleEdit = (row: IAssetAttributes) => {
     router.push(`/assets/editAsset/${row.id}`);
   };

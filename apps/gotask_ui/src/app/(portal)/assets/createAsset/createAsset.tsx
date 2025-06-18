@@ -14,11 +14,6 @@ import { User } from "../../user/interfaces/userInterface";
 import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
 
-interface AssetFormData {
-  typeId: string;
-  userId: string;
-}
-
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { getAll: allTypes } = useAllTypes();

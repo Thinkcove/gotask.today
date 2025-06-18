@@ -16,9 +16,8 @@ import {
   getTagsByTypeId,
   updateTag
 } from "../../domain/interface/assetTag/assetTag";
-import { findUser, findUserByEmail, findUserById } from "../../domain/interface/user/userInterface";
+import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
 import { IAsset } from "../../domain/model/asset/asset";
-import { IAssetTag } from "../../domain/model/assetTag/assetTag";
 
 class assetService {
   createOrUpdateAsset = async (payload: any, user: any): Promise<any> => {
@@ -40,7 +39,7 @@ class assetService {
 
       // Update tag if both tag and userId are provided
       if (payload.userId && payload.tag) {
-        const updated = await updateTag(payload.tag, { userId: payload.userId });
+        await updateTag(payload.tag, { userId: payload.userId });
       }
 
       let result;

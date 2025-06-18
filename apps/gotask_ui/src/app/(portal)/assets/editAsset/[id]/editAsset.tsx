@@ -32,7 +32,7 @@ interface EditAssetProps {
   mutate: KeyedMutator<IAsset>;
 }
 
-const EditAsset: React.FC<EditAssetProps> = ({ data, open, onClose, assetID, mutate }) => {
+const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const router = useRouter();
   const [snackbar, setSnackbar] = useState({

@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { formatTimeValue } from "@/app/common/utils/common";
+import { formatTimeValue } from "@/app/common/utils/taskTime";
 
 interface TimeBadgeProps {
   label: string;

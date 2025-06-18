@@ -1,10 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { TextField, Typography, Button, CircularProgress, Box } from "@mui/material";
+import {
+  TextField,
+  Typography,
+  Button,
+  CircularProgress,
+  Box
+} from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import AccessPermissionsContainer from "../components/AccessPermissionsContainer";
 import { useAccessOptions, createAccessRole } from "../services/accessService";
 import { AccessRole } from "../interfaces/accessInterfaces";
@@ -17,9 +23,7 @@ const AccessCreateForm: React.FC = () => {
   const { canAccess } = useUserPermission();
   const [accessName, setAccessName] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
-  const [selectedFields, setSelectedFields] = useState<Record<string, Record<string, string[]>>>(
-    {}
-  );
+  const [selectedFields, setSelectedFields] = useState<Record<string, Record<string, string[]>>>({});
   const [currentModule, setCurrentModule] = useState("User Management");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState<{
@@ -31,16 +35,35 @@ const AccessCreateForm: React.FC = () => {
 
   const { accessOptions, isLoading, error } = useAccessOptions();
 
-  // Initialize selectedPermissions with all actions selected by default (only once)
-  if (Object.keys(selectedPermissions).length === 0 && accessOptions.length > 0) {
+  //  Initialize all selected permissions and fields if not already set
+  if (
+    accessOptions.length > 0 &&
+    Object.keys(selectedPermissions).length === 0 &&
+    Object.keys(selectedFields).length === 0
+  ) {
     const allSelectedPermissions: Record<string, string[]> = {};
-    accessOptions.forEach(({ access, actions }) => {
+    const allSelectedFields: Record<string, Record<string, string[]>> = {};
+
+    accessOptions.forEach(({ access, actions, restrictedFields }) => {
       allSelectedPermissions[access] = [...actions];
+
+      const actionFields: Record<string, string[]> = {};
+      actions.forEach((action: string) => {
+        const fields = restrictedFields?.[action.toUpperCase()];
+        if (fields && fields.length > 0) {
+          actionFields[action.toUpperCase()] = [...fields];
+        }
+      });
+
+      if (Object.keys(actionFields).length > 0) {
+        allSelectedFields[access] = actionFields;
+      }
     });
+
     setSelectedPermissions(allSelectedPermissions);
+    setSelectedFields(allSelectedFields);
   }
 
-  // ✅ Dynamically validate or reset currentModule if it's not in accessOptions
   if (accessOptions.length > 0 && !accessOptions.some((opt) => opt.access === currentModule)) {
     setCurrentModule(accessOptions[0].access);
   }
@@ -60,7 +83,6 @@ const AccessCreateForm: React.FC = () => {
         const updatedFields = { ...prev };
         if (updatedFields[module]) {
           delete updatedFields[module][action.toUpperCase()];
-
           if (Object.keys(updatedFields[module]).length === 0) {
             delete updatedFields[module];
           }
@@ -163,7 +185,7 @@ const AccessCreateForm: React.FC = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "87vh", // Set predictable height
+        height: "87vh",
         width: "100%",
         bgcolor: "white",
         borderRadius: 2,
@@ -172,13 +194,9 @@ const AccessCreateForm: React.FC = () => {
         overflow: "hidden"
       }}
     >
-      {/* Scrollable content */}
-      <Box
-        sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}
-      >
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
         <Heading title={t("Access.createaccessnew")} />
 
-        {/* Access Name Field */}
         <Box sx={{ maxWidth: 400, width: "100%", mt: 1 }}>
           <Typography variant="body2" sx={{ color: "#333", fontWeight: 500 }}>
             {t("Access.accessName")}
@@ -203,7 +221,6 @@ const AccessCreateForm: React.FC = () => {
           />
         </Box>
 
-        {/* Access Management Section */}
         <Typography variant="h6" fontWeight={600} sx={{ color: "#333", mt: 2, mb: 1 }}>
           {t("Access.accessManagement")}
         </Typography>
@@ -241,7 +258,6 @@ const AccessCreateForm: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Action Buttons */}
       <Box
         sx={{
           borderTop: "1px solid #eee",
@@ -291,7 +307,6 @@ const AccessCreateForm: React.FC = () => {
         )}
       </Box>
 
-      {/* Snackbar */}
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

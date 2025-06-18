@@ -5,10 +5,8 @@ import { useAllAccessRoles } from "../services/accessService";
 import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { APPLICATIONS, ACTIONS } from "@/app/common/utils/authCheck";
+import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import AccessCards from "../components/AccessCards";
-
-
 
 export interface AccessData {
   id: string;

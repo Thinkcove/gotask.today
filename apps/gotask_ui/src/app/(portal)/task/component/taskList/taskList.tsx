@@ -22,7 +22,7 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, APPLICATIONS } from "@/app/common/utils/authCheck";
+import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import TaskFilters from "@/app/component/filters/taskFilters";
 
 interface TaskListProps {

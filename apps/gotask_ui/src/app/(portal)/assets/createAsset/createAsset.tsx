@@ -78,7 +78,6 @@ export const CreateAsset: React.FC = () => {
     if (!formData.ram) newErrors.ram = transasset("ram");
     if (!formData.modelName) newErrors.modelName = transasset("modelname");
     if (!formData.os) newErrors.os = transasset("os");
-    if (!formData.storage) newErrors.storage = transasset("storage");
     if (!formData.processor) newErrors.processor = transasset("processor");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

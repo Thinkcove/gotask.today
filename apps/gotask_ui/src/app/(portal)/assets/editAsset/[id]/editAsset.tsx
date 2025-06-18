@@ -6,7 +6,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { KeyedMutator } from "swr";
-import { IAssetAttributes, IAsset, IAssetType, IAssetTags } from "../../interface/asset";
+import { IAssetAttributes, IAssetType, IAssetTags } from "../../interface/asset";
 import {
   createAssetAttributes,
   useAllAssets,
@@ -29,7 +29,7 @@ interface EditAssetProps {
   open: boolean;
   onClose: () => void;
   assetID: string;
-  mutate: KeyedMutator<IAsset>;
+  mutate: KeyedMutator<IAssetAttributes | null>;
 }
 
 const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
@@ -90,7 +90,6 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     if (!formData.ram) newErrors.ram = transasset("ram");
     if (!formData.modelName) newErrors.modelName = transasset("modelname");
     if (!formData.os) newErrors.os = transasset("os");
-    if (!formData.storage) newErrors.storage = transasset("storage");
     if (!formData.processor) newErrors.processor = transasset("processor");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -172,7 +171,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
 
   return (
     <>
-      <ModuleHeader name="asset" />
+      <ModuleHeader name={transasset("asset")} />
 
       <Paper elevation={2} sx={{ p: 2 }}>
         <Box

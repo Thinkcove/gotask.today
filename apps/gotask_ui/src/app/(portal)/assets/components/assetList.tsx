@@ -11,15 +11,12 @@ import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { IAssetAttributes } from "../interface/asset";
 import { getAssetColumns } from "../assetConstants";
-import TagCards from "../createTag/tagCard";
-import { CreateTag } from "../createTag/createTags";
 import AssetIssueCards from "../createIssues/issuesCard";
 import CreateIssue from "../createIssues/createIssues";
 
 export const AssetList: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [selectedView, setSelectedView] = useState("Asset");
-  const [modalOpen, setModalOpen] = useState(false);
   const [createIssueOpen, setCreateIssueOpen] = useState(false);
   const router = useRouter();
   const { getAll: allAssets } = useAllAssets();
@@ -78,8 +75,6 @@ export const AssetList: React.FC = () => {
           </Grid>
         )}
 
-        {selectedView === transasset("tag") && <TagCards />}
-
         {selectedView === transasset("issues") && <AssetIssueCards />}
       </Box>
 
@@ -96,7 +91,6 @@ export const AssetList: React.FC = () => {
         onClick={handleActionClick}
       />
 
-      <CreateTag open={modalOpen} onClose={() => setModalOpen(false)} />
       <CreateIssue open={createIssueOpen} onClose={() => setCreateIssueOpen(false)} />
     </>
   );

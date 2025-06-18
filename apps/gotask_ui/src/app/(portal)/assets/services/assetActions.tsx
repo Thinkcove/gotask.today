@@ -105,3 +105,28 @@ export const useTagById = (id: string) => {
     error: error ? error.message : null
   };
 };
+
+const getAssetById = async ([, id]: [string, string]): Promise<IAssetAttributes | null> => {
+  const result = await withAuth(async (token) => {
+    return await getData(`${env.API_BASE_URL}/asset/${id}`, token);
+  });
+
+  if (!result || isErrorResult(result)) {
+    return null;
+  }
+
+  return result.data;
+};
+
+export const useAssetById = (id: string) => {
+  const { data, error, isLoading, mutate } = useSWR([`fetchAssetById`, id], getAssetById, {
+    revalidateOnFocus: false
+  });
+
+  return {
+    asset: data ?? null,
+    isLoading,
+    mutate,
+    error: error ? error.message : null
+  };
+};

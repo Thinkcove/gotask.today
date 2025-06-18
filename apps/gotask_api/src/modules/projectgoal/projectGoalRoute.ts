@@ -6,17 +6,17 @@ import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization
 import authStrategy from "../../constants/auth/authStrategy";
 import ProjectGoalController from "./projectGoalController";
 
-const weeklyGoalController = new ProjectGoalController();
+const projectGoalController = new ProjectGoalController();
 const appName = APPLICATIONS.Project_GOAL;
 const tags = [API, "WeeklyGoal"];
 const ProjectGoalRoutes = [];
 
 // Route: Create Weekly Goal
 ProjectGoalRoutes.push({
-  path: "/weekly/goals",
+  path: "/project/goals",
   method: API_METHODS.POST,
   handler: (request: Request, handler: ResponseToolkit) =>
-    weeklyGoalController.createProjectGoal(new RequestHelper(request), handler),
+    projectGoalController.createProjectGoal(new RequestHelper(request), handler),
   config: {
     notes: "Create a Weekly Goal",
     tags,
@@ -26,10 +26,10 @@ ProjectGoalRoutes.push({
 
 // Route: Get All Weekly Goals
 ProjectGoalRoutes.push({
-  path: "/weekly/goals",
+  path: "/project/goals",
   method: API_METHODS.GET,
   handler: (request: Request, handler: ResponseToolkit) =>
-    weeklyGoalController.getAllProjectGoals(new RequestHelper(request), handler),
+    projectGoalController.getAllProjectGoals(new RequestHelper(request), handler),
   config: {
     notes: "Get All Weekly Goals",
     tags,
@@ -39,10 +39,10 @@ ProjectGoalRoutes.push({
 
 // Route: Get Weekly Goal by ID
 ProjectGoalRoutes.push({
-  path: "/weekly/goals/{id}",
+  path: "/project/goals/{id}",
   method: API_METHODS.GET,
   handler: (request: Request, handler: ResponseToolkit) =>
-    weeklyGoalController.getProjectGoalById(new RequestHelper(request), handler),
+    projectGoalController.getProjectGoalById(new RequestHelper(request), handler),
   config: {
     notes: "Get Weekly Goal by ID",
     tags,
@@ -52,10 +52,10 @@ ProjectGoalRoutes.push({
 
 // Route: Update Weekly Goal
 ProjectGoalRoutes.push({
-  path: "/weekly/goals/{id}",
+  path: "/project/goals/{id}",
   method: API_METHODS.PUT,
   handler: (request: Request, handler: ResponseToolkit) =>
-    weeklyGoalController.updateProjectGoal(new RequestHelper(request), handler),
+    projectGoalController.updateProjectGoal(new RequestHelper(request), handler),
   config: {
     notes: "Update Weekly Goal",
     tags,
@@ -65,10 +65,10 @@ ProjectGoalRoutes.push({
 
 // Route: Delete Weekly Goal
 ProjectGoalRoutes.push({
-  path: "/weekly/goals/{id}",
+  path: "/project/goals/{id}",
   method: API_METHODS.DELETE,
   handler: permission(appName, ACTIONS.DELETE, (request: Request, handler: ResponseToolkit) =>
-    weeklyGoalController.deleteProjectGoal(new RequestHelper(request), handler)
+    projectGoalController.deleteProjectGoal(new RequestHelper(request), handler)
   ),
   config: {
     notes: "Delete Weekly Goal",
@@ -79,10 +79,10 @@ ProjectGoalRoutes.push({
 
 // Route: Get Weekly Goals by User ID
 ProjectGoalRoutes.push({
-  path: "/weekly/goals/user/{user_id}",
+  path: "/project/goals/user/{user_id}",
   method: API_METHODS.GET,
   handler: (request: Request, handler: ResponseToolkit) =>
-    weeklyGoalController.findProjectGoalsByUserId(new RequestHelper(request), handler),
+    projectGoalController.findProjectGoalsByUserId(new RequestHelper(request), handler),
   config: {
     notes: "Get Weekly Goals by User ID",
     tags
@@ -91,10 +91,10 @@ ProjectGoalRoutes.push({
 
 // Route: Get Weekly Goals by Project ID
 ProjectGoalRoutes.push({
-  path: "/weekly/goals/project/{project_id}",
+  path: "/project/goals/project/{project_id}",
   method: API_METHODS.GET,
   handler: (request: Request, handler: ResponseToolkit) =>
-    weeklyGoalController.getProjectGoalById(new RequestHelper(request), handler),
+    projectGoalController.getProjectGoalById(new RequestHelper(request), handler),
   config: {
     notes: "Get Weekly Goals by Project ID",
     tags

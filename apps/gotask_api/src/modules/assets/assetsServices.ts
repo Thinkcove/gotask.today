@@ -12,7 +12,6 @@ import {
 } from "../../domain/interface/asset/asset";
 import {
   createResource,
-  getAssetByUserId,
   getTagsByAssetId,
   getTagsByTypeId,
   updateTag

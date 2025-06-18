@@ -14,13 +14,15 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { User } from "../interfaces/userInterface";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import Chat from "../../chatbot/components/chat";
+import { useRouter } from "next/navigation"; 
 
 const UserList = () => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const [searchTerm, setSearchTerm] = useState("");
   const { data: users, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
+  const router = useRouter();
 
   const filteredUsers =
     users?.filter((user: User) => user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -36,7 +38,7 @@ const UserList = () => {
         p: 3
       }}
     >
-      <CreateUser open={isModalOpen} onClose={() => setIsModalOpen(false)} mutate={UserUpdate} />
+      
       <Box mb={3} maxWidth={400}>
         <SearchBar
           value={searchTerm}
@@ -54,9 +56,10 @@ const UserList = () => {
         <ActionButton
           label={transuser("createusernew")}
           icon={<AddIcon sx={{ color: "white" }} />}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => router.push("/user/createUser")}
         />
       )}
+      
     </Box>
   );
 };

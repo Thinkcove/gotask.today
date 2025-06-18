@@ -4,7 +4,7 @@ import {
   createWeeklyGoal,
   fetchWeeklyGoals,
   updateWeeklyGoal
-} from "../../project/services/projectAction";
+} from "../service/projectGoalAction";
 import WeeklyGoals, { WeeklyGoal } from "./weeklyGoal/weeklyGoals";
 import WeeklyGoalForm from "./weeklyGoal/weeklyGoalForm";
 import { Box, Button, Typography } from "@mui/material";

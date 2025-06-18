@@ -214,36 +214,6 @@ class assetService {
       message: AssetMessages.DELETE.SUCCESS
     };
   };
-
-  getAssetByUserId = async (id: string, user: any): Promise<any> => {
-    const userInfo = await findUserByEmail(user.user_id);
-    if (!userInfo) {
-      return {
-        success: false,
-        error: UserMessages.FETCH.NOT_FOUND
-      };
-    }
-    try {
-      const userAsset = await getAssetByUserId(id);
-      let assetDetails = null;
-
-      if (userAsset?.assetId) {
-        assetDetails = await getAssetById(userAsset.assetId);
-      }
-      return {
-        data: {
-          ...userAsset?.toObject(),
-          assetDetails: assetDetails ? assetDetails : null
-        },
-        success: true
-      };
-    } catch {
-      return {
-        success: false,
-        error: AssetMessages.FETCH.FAILED_TO_GET_ASSET
-      };
-    }
-  };
 }
 
 export default new assetService();

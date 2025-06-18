@@ -14,6 +14,8 @@ import { Role } from "../../domain/model/role/role";
 import { getRoleByIdService } from "../role/roleService";
 import { findRoleByIds } from "../../domain/interface/role/roleInterface";
 import { Organization } from "../../domain/model/organization/organization";
+import { getAssetByUserId } from "../../domain/interface/assetTag/assetTag";
+import { getAssetById } from "../../domain/interface/asset/asset";
 
 class userService {
   // CREATE USER
@@ -165,9 +167,18 @@ class userService {
         orgDetails = orgIds.map((id: string) => organizationMap.get(id)).filter(Boolean);
       }
 
+      const userAsset = await getAssetByUserId(id);
+
+      let assetData = null;
+
+      if (userAsset) {
+        assetData = await getAssetById(userAsset?.assetId);
+      }
+
       userObj.role = enrichedRole;
       userObj.projectDetails = projectDetails;
       userObj.orgDetails = orgDetails;
+      userObj.assetDetails = assetData ? assetData.toObject?.() : null;
 
       return {
         success: true,

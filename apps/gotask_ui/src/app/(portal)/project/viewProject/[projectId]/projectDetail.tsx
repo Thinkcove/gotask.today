@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
@@ -6,14 +6,8 @@ import { useAllUsers } from "@/app/(portal)/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import FormField, { SelectOption } from "@/app/component/input/formField";
 import { useParams, useRouter } from "next/navigation";
-import {
-  assignUsersToProject,
-  createWeeklyGoal,
-  fetchWeeklyGoals,
-  removeUsersFromProject,
-  updateWeeklyGoal
-} from "../../services/projectAction";
-import useSWR, { KeyedMutator } from "swr";
+import { assignUsersToProject, removeUsersFromProject } from "../../services/projectAction";
+import { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -27,10 +21,6 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import WeeklyGoals, { WeeklyGoal } from "./weeklyGoal/weeklyGoals";
-import WeeklyGoalForm from "./weeklyGoal/weeklyGoalForm";
-import TaskToggle from "@/app/component/toggle/toggle";
-import Link from "next/link";
 
 interface ProjectDetailProps {
   project: Project;
@@ -40,7 +30,6 @@ interface ProjectDetailProps {
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-
   const [open, setOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
@@ -107,14 +96,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     }
   };
 
-
-
-
-
   return (
     <>
       <ModuleHeader name={transproject("detailview")} />
-
       <Box
         sx={{
           minHeight: "100vh",
@@ -122,6 +106,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
       >
+        {/* Project and Users Info */}
         <Box
           sx={{
             borderRadius: 4,
@@ -130,7 +115,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             border: "1px solid #e0e0e0"
           }}
         >
-          {/* Project Header */}
+          {/* User Info Header */}
           <Box display="flex" alignItems="center" mb={3}>
             <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
               <ArrowBack />
@@ -175,12 +160,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           </Grid>
           <Divider sx={{ mb: 4 }} />
 
-          {/* Assignees */}
+          {/* Assignees Section */}
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h5" fontWeight={600}>
               {transproject("detailassignee")}
             </Typography>
-            <Link href={`/goals?projectId=${projectID}`}>Goal</Link>
             {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
               <Button
                 variant="contained"
@@ -209,8 +193,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       justifyContent: "space-between",
                       bgcolor: "#ffffff",
                       border: "1px solid #e0e0e0",
-                      overflow: "hidden",
-                      flexWrap: "wrap"
+                      overflow: "hidden", // prevent child overflow
+                      flexWrap: "wrap" // allow wrapping if content grows
                     }}
                   >
                     <Stack
@@ -220,6 +204,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       sx={{ minWidth: 0, flex: 1 }}
                     >
                       <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
+
                       <Box sx={{ minWidth: 0 }}>
                         <Typography
                           fontWeight={600}
@@ -227,7 +212,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                           sx={{
                             textTransform: "capitalize",
                             wordBreak: "break-word",
-                            maxWidth: 200
+                            maxWidth: 200 // adjust as needed
                           }}
                         >
                           {user.name}
@@ -235,7 +220,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                         <Typography
                           variant="body2"
                           color="text.secondary"
-                          sx={{ wordBreak: "break-word", maxWidth: 200 }}
+                          sx={{
+                            wordBreak: "break-word",
+                            maxWidth: 200 // adjust as needed
+                          }}
                         >
                           {user.user_id}
                         </Typography>
@@ -271,7 +259,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             )}
           </Grid>
         </Box>
-
         {/* Add User Dialog */}
         <CommonDialog
           open={open}
@@ -289,8 +276,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             onChange={(ids) => setSelectedUserIds(ids as string[])}
           />
         </CommonDialog>
-
-        {/* Edit Project */}
         <EditProject
           open={editOpen}
           onClose={() => setEditOpen(false)}
@@ -298,8 +283,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           mutate={mutate}
           projectID={projectID}
         />
-
-        {/* Delete User Dialog */}
         <CommonDialog
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
@@ -315,8 +298,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             {transproject("removeusernote2")}
           </Typography>
         </CommonDialog>
-
-        {/* Snackbar */}
         <CustomSnackbar
           open={snackbar.open}
           message={snackbar.message}
@@ -327,4 +308,5 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     </>
   );
 };
+
 export default ProjectDetail;

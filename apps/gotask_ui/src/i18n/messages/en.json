@@ -154,7 +154,12 @@
     "updateerror": "Error while updating project",
     "edittitle": "Edit Project",
     "placeholdeselect": "Select Assignees to the project",
-    "searchplaceholder": "Search Projects"
+    "searchplaceholder": "Search Projects",
+    "Stories": {
+      "projectStories": "Project Stories",
+      "noStoriesFound": "No stories found for this project.",
+      "createStory": "Create Story"
+    } 
   },
   "Role": {
     "rolename": "Role Name is required",

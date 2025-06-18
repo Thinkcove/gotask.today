@@ -117,23 +117,35 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
         >
           {/* User Info Header */}
           <Box display="flex" alignItems="center" mb={3}>
-            <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
-              <ArrowBack />
-            </IconButton>
-            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
-                  {project.name}
-                </Typography>
-                <StatusIndicator status={project.status} getColor={getStatusColor} />
-              </Box>
-              {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
-                <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
-                  <Edit />
-                </IconButton>
-              )}
-            </Box>
-          </Box>
+  <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
+    <ArrowBack />
+  </IconButton>
+  <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+    <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+        {project.name}
+      </Typography>
+      <StatusIndicator status={project.status} getColor={getStatusColor} />
+    </Box>
+    <Box display="flex" alignItems="center" gap={1}>
+      <Button
+        variant="outlined"
+        color="primary"
+        size="small"
+        onClick={() => router.push(`/project/viewProject/${projectID}/stories`)}
+        sx={{ textTransform: "none", borderRadius: 2 }}
+      >
+        View Stories
+      </Button>
+      {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
+        <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+          <Edit />
+        </IconButton>
+      )}
+    </Box>
+  </Box>
+</Box>
+
 
           {/* Basic Details */}
           <Grid container spacing={2} flexDirection="column" mb={2}>

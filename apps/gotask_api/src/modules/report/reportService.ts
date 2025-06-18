@@ -42,7 +42,7 @@ const getUserTimeReportService = async (
     user_name: 1,
     "time_spent.date": 1,
     "time_spent.time_logged": 1,
-    status: 1 // 👈 include task status
+    status: 1
   };
 
   if (showTasks) {
@@ -61,7 +61,7 @@ const getUserTimeReportService = async (
     user_id: "$user_id",
     user_name: "$user_name",
     date: "$time_spent.date",
-    status: "$status" // 👈 include status in group
+    status: "$status"
   };
 
   if (showTasks) {
@@ -86,7 +86,7 @@ const getUserTimeReportService = async (
     user_id: "$_id.user_id",
     user_name: "$_id.user_name",
     date: "$_id.date",
-    status: "$_id.status", // 👈 include status in final result
+    status: "$_id.status",
     task_id: "$_id.task_id",
     task_title: "$_id.task_title",
     project_id: "$_id.project_id",

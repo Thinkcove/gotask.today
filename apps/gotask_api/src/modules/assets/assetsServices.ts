@@ -6,9 +6,12 @@ import {
   getAllAssets,
   update,
   createAssetType,
-  getAllAssetsTypes
+  getAllAssetsTypes,
+  getAssetTypeById
 } from "../../domain/interface/asset/asset";
 import { findUserByEmail } from "../../domain/interface/user/userInterface";
+import { IAsset } from "../../domain/model/asset/asset";
+import { IAssetTag } from "../../domain/model/assetTag/assetTag";
 
 class assetService {
   // CREATE ASSET
@@ -77,9 +80,20 @@ class assetService {
   getAllAssets = async (): Promise<any> => {
     try {
       const assets = await getAllAssets();
+      const tagsData = await Promise.all(
+        assets.map(async (tagDoc: IAsset) => {
+          const tag = tagDoc.toObject();
+          const [asset] = await Promise.all([getAssetTypeById(tag.typeId)]);
+
+          return {
+            ...tag,
+            assetType: asset || null
+          };
+        })
+      );
       return {
         success: true,
-        data: assets
+        data: tagsData
       };
     } catch (error: any) {
       return {

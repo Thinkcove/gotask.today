@@ -2,18 +2,19 @@ import { getData, postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { IAssetAttributes, IAssetTags } from "../interface/asset";
+import { IAssetAttributes, IAssetIssues, IAssetTags } from "../interface/asset";
 
 //fetch all assets
 export const fetchAllAssets = () =>
   withAuth((token) => getData(`${env.API_BASE_URL}/assets/getAll`, token));
 
 export const useAllAssets = () => {
-  const { data } = useSWR([`fetchallassets`], fetchAllAssets, {
+  const { data, mutate } = useSWR([`fetchallassets`], fetchAllAssets, {
     revalidateOnFocus: false
   });
   return {
-    getAll: data?.data || []
+    getAll: data?.data || [],
+    mutate
   };
 };
 
@@ -30,7 +31,7 @@ export const useAllTypes = () => {
   };
 };
 
-export const createLaptopAsset = async (formData: IAssetAttributes) => {
+export const createAssetAttributes = async (formData: IAssetAttributes) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/createasset`;
     return postData(url, formData as unknown as Record<string, unknown>, token);
@@ -49,10 +50,31 @@ export const fetchAllTags = () =>
   withAuth((token) => getData(`${env.API_BASE_URL}/getAllTags`, token));
 
 export const useAllTags = () => {
-  const { data } = useSWR([`fetchalltags`], fetchAllTags, {
+  const { data, mutate } = useSWR([`fetchalltags`], fetchAllTags, {
     revalidateOnFocus: false
   });
   return {
-    getAll: data?.data || []
+    getAll: data?.data || [],
+    mutate
+  };
+};
+
+export const createAssetIssues = async (formData: IAssetIssues) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/createissues`;
+    return postData(url, formData as unknown as Record<string, unknown>, token);
+  });
+};
+
+export const fetchAllIssues = () =>
+  withAuth((token) => getData(`${env.API_BASE_URL}/getallissues`, token));
+
+export const useAllIssues = () => {
+  const { data, mutate } = useSWR([`fetchallissues`], fetchAllIssues, {
+    revalidateOnFocus: false
+  });
+  return {
+    getAll: data?.data || [],
+    mutate
   };
 };

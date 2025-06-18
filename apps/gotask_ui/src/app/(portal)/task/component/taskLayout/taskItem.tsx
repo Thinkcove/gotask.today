@@ -117,7 +117,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onTaskClick, view, getStatusC
         <TimeBadge label={transtask("estimatedt")} value={task.estimated_time ?? "-"} />
         <TimeBadge label={transtask("spentt")} value={task.time_spent_total ?? "-"} />
         <TimeBadge label={transtask("remainingt")} value={task.remaining_time ?? "-"} />
-        <TimeBadge label={transtask("variationt")} value={task.variation ?? "—"} />
+        <TimeBadge label={transtask("variationt")} value={task.variation ?? "—"} showNegative />
       </Stack>
     </Box>
   );

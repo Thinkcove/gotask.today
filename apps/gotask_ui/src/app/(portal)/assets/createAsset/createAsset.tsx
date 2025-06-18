@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Grid, Typography, Paper, Box, Button } from "@mui/material";
-import { createLaptopAsset, useAllTypes } from "../services/assetActions"; // adjust path as needed
+import { createAssetAttributes, useAllAssets, useAllTypes } from "../services/assetActions"; // adjust path as needed
 import FormField from "../../../component/input/formField"; // assuming same reusable FormField
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
@@ -18,6 +18,7 @@ interface AssetFormData {
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { getAll: allTypes } = useAllTypes();
+  const { mutate: assetMutate } = useAllAssets();
   const [formData, setFormData] = useState<AssetFormData>({
     typeId: ""
   });
@@ -54,11 +55,12 @@ export const CreateAsset: React.FC = () => {
 
     try {
       const payload = { ...formData, typeId: selectedAssetType.id };
-      const response = await createLaptopAsset(payload);
+      const response = await createAssetAttributes(payload);
       if (response?.success) {
+        await assetMutate();
         setSnackbar({
           open: true,
-          message: transasset("successmessage"),
+          message: transasset("assetsuccess"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
         router.push("/assets");

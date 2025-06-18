@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
@@ -6,8 +6,14 @@ import { useAllUsers } from "@/app/(portal)/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import FormField, { SelectOption } from "@/app/component/input/formField";
 import { useParams, useRouter } from "next/navigation";
-import { assignUsersToProject, removeUsersFromProject } from "../../services/projectAction";
-import { KeyedMutator } from "swr";
+import {
+  assignUsersToProject,
+  createWeeklyGoal,
+  fetchWeeklyGoals,
+  removeUsersFromProject,
+  updateWeeklyGoal
+} from "../../services/projectAction";
+import useSWR, { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -21,6 +27,8 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import WeeklyGoals, { WeeklyGoal } from "./weeklyGoal/weeklyGoals";
+import WeeklyGoalForm from "./weeklyGoal/weeklyGoalForm";
 
 interface ProjectDetailProps {
   project: Project;
@@ -30,7 +38,19 @@ interface ProjectDetailProps {
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+
+  const { data: weeklyGoals, error, isLoading } = useSWR("weekly-goals", fetchWeeklyGoals);
+  useEffect(() => {
+    if (weeklyGoals) {
+      console.log("Fetched Weekly Goals:", weeklyGoals);
+    }
+    if (error) {
+      console.error("Error fetching weekly goals:", error);
+    }
+  }, [weeklyGoals, error]);
   const [open, setOpen] = useState(false);
+  const [showWeeklyGoalForm, setShowWeeklyGoalForm] = useState(false);
+  const [goalData, setGoalData] = useState<any>({});
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
   const router = useRouter();
@@ -95,6 +115,66 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
       });
     }
   };
+  const formatStatus = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "not-started":
+        return "Not Started";
+      case "in-progress":
+        return "In Progress";
+      case "completed":
+        return "Completed";
+      case "blocked":
+        return "Blocked";
+      default:
+        return "Unknown";
+    }
+  };
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editGoal, setEditGoal] = useState<WeeklyGoal | null>(null);
+  console.log("editGoal", editGoal);
+  const handelOpen = () => {
+    setGoalData({
+      goalTitle: "",
+      projectId: projectID,
+      status: "",
+      description: "",
+      comments: "",
+      priority: ""
+    });
+    setOpenDialog(true);
+  };
+  const handleEditGoal = (goal: WeeklyGoal) => {
+    setEditGoal(goal);
+    setGoalData(goal);
+    setOpenDialog(true);
+  };
+  
+  // Submit Handler
+  const handleSubmit = async () => {
+    try {
+      if (goalData.id) {
+        // Edit mode
+        await updateWeeklyGoal(goalData.id, {
+          status: goalData.status,
+          description: goalData.description,
+          comments: goalData.comments,
+          priority: goalData.priority
+        });
+      } else {
+        // Create mode
+        await createWeeklyGoal({
+          goalTitle: goalData.goalTitle,
+          projectId: goalData.projectId
+        });
+      }
+
+      // Optional: refetch weekly goals or update local state here
+
+      setOpenDialog(false); // Close dialog after submit
+    } catch (err) {
+      console.error("Error saving weekly goal:", err);
+    }
+  };
 
   return (
     <>
@@ -106,159 +186,194 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
       >
-        {/* Project and Users Info */}
-        <Box
-          sx={{
-            borderRadius: 4,
-            p: 4,
-            bgcolor: "#f9fafb",
-            border: "1px solid #e0e0e0"
-          }}
-        >
-          {/* User Info Header */}
-          <Box display="flex" alignItems="center" mb={3}>
-            <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
-              <ArrowBack />
-            </IconButton>
-            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
-                  {project.name}
-                </Typography>
-                <StatusIndicator status={project.status} getColor={getStatusColor} />
-              </Box>
-              {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
-                <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
-                  <Edit />
-                </IconButton>
-              )}
+        {openDialog ? (
+          <Box
+            sx={{
+              mt: 3,
+              p: 3,
+              border: "1px solid #ccc",
+              borderRadius: 2,
+              backgroundColor: "#f9f9f9"
+            }}
+          >
+            <Typography variant="h6" mb={2}>
+              {goalData.id ? "Edit Weekly Goal" : "Create Weekly Goal"}
+            </Typography>
+
+            <WeeklyGoalForm goalData={goalData} setGoalData={setGoalData} />
+
+            <Box mt={2} display="flex" gap={2}>
+              <Button variant="outlined" color="secondary" onClick={() => setOpenDialog(false)}>
+                Cancel
+              </Button>
+              <Button variant="outlined" color="primary" onClick={handleSubmit}>
+                {goalData.id ? "Update" : "Create"}
+              </Button>
             </Box>
           </Box>
+        ) : (
+          // Begin main content when not creating a weekly goal
+          <Box
+            sx={{
+              borderRadius: 4,
+              p: 4,
+              bgcolor: "#f9fafb",
+              border: "1px solid #e0e0e0"
+            }}
+          >
+            {/* Project Header */}
+            <Box display="flex" alignItems="center" mb={3}>
+              <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
+                <ArrowBack />
+              </IconButton>
+              <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                <Box sx={{ display: "flex", flexDirection: "column" }}>
+                  <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+                    {project.name}
+                  </Typography>
+                  <StatusIndicator status={project.status} getColor={getStatusColor} />
+                </Box>
+                {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
+                  <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+                    <Edit />
+                  </IconButton>
+                )}
+              </Box>
+            </Box>
 
-          {/* Basic Details */}
-          <Grid container spacing={2} flexDirection="column" mb={2}>
-            <Grid item xs={12} md={6}>
-              <LabelValueText
-                label={transproject("detaildescription")}
-                value={project.description}
-              />
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} mb={3}>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transproject("detailcreatedon")}
-                value={project.createdAt ? <FormattedDateTime date={project.createdAt} /> : "-"}
-              />
-            </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transproject("detailupdateon")}
-                value={project.updatedAt ? <FormattedDateTime date={project.updatedAt} /> : "-"}
-              />
-            </Grid>
-          </Grid>
-          <Divider sx={{ mb: 4 }} />
-
-          {/* Assignees Section */}
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h5" fontWeight={600}>
-              {transproject("detailassignee")}
-            </Typography>
-            {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
-              <Button
-                variant="contained"
-                onClick={() => setOpen(true)}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2
-                }}
-              >
-                {transproject("detailaddassignee")}
-              </Button>
-            )}
-          </Box>
-
-          {/* Users Grid */}
-          <Grid container spacing={3} sx={{ maxHeight: "500px", overflowY: "auto" }}>
-            {project.users.length > 0 ? (
-              project.users.map((user) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
-                  <Box
-                    sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      bgcolor: "#ffffff",
-                      border: "1px solid #e0e0e0",
-                      overflow: "hidden", // prevent child overflow
-                      flexWrap: "wrap" // allow wrapping if content grows
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      spacing={2}
-                      alignItems="center"
-                      sx={{ minWidth: 0, flex: 1 }}
-                    >
-                      <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
-
-                      <Box sx={{ minWidth: 0 }}>
-                        <Typography
-                          fontWeight={600}
-                          fontSize="1rem"
-                          sx={{
-                            textTransform: "capitalize",
-                            wordBreak: "break-word",
-                            maxWidth: 200 // adjust as needed
-                          }}
-                        >
-                          {user.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{
-                            wordBreak: "break-word",
-                            maxWidth: 200 // adjust as needed
-                          }}
-                        >
-                          {user.user_id}
-                        </Typography>
-                      </Box>
-                    </Stack>
-
-                    {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
-                      <Box sx={{ flexShrink: 0 }}>
-                        <IconButton
-                          color="error"
-                          onClick={() => {
-                            setSelectedUserId(user.id);
-                            setOpenDeleteDialog(true);
-                          }}
-                          sx={{
-                            transition: "0.2s ease",
-                            "&:hover": {
-                              transform: "scale(1.1)"
-                            }
-                          }}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Box>
-                    )}
-                  </Box>
-                </Grid>
-              ))
-            ) : (
-              <Grid item xs={12}>
-                <Typography color="text.secondary">{transproject("detailnouser")}</Typography>
+            {/* Basic Details */}
+            <Grid container spacing={2} flexDirection="column" mb={2}>
+              <Grid item xs={12} md={6}>
+                <LabelValueText
+                  label={transproject("detaildescription")}
+                  value={project.description}
+                />
               </Grid>
-            )}
-          </Grid>
-        </Box>
+            </Grid>
+            <Grid container spacing={2} mb={3}>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transproject("detailcreatedon")}
+                  value={project.createdAt ? <FormattedDateTime date={project.createdAt} /> : "-"}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transproject("detailupdateon")}
+                  value={project.updatedAt ? <FormattedDateTime date={project.updatedAt} /> : "-"}
+                />
+              </Grid>
+            </Grid>
+            <Divider sx={{ mb: 4 }} />
+
+            {/* Weekly Goals */}
+            <WeeklyGoals
+              weeklyGoals={weeklyGoals || []}
+              isLoading={isLoading}
+              error={!!error}
+              formatStatus={formatStatus}
+              handelOpen={handelOpen}
+              openDialog={openDialog}
+              handleEditGoal={handleEditGoal}
+            />
+
+            {/* Assignees */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="h5" fontWeight={600}>
+                {transproject("detailassignee")}
+              </Typography>
+              {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
+                <Button
+                  variant="contained"
+                  onClick={() => setOpen(true)}
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: 2
+                  }}
+                >
+                  {transproject("detailaddassignee")}
+                </Button>
+              )}
+            </Box>
+
+            {/* Users Grid */}
+            <Grid container spacing={3} sx={{ maxHeight: "500px", overflowY: "auto" }}>
+              {project.users.length > 0 ? (
+                project.users.map((user) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        borderRadius: 3,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        bgcolor: "#ffffff",
+                        border: "1px solid #e0e0e0",
+                        overflow: "hidden",
+                        flexWrap: "wrap"
+                      }}
+                    >
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                        sx={{ minWidth: 0, flex: 1 }}
+                      >
+                        <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography
+                            fontWeight={600}
+                            fontSize="1rem"
+                            sx={{
+                              textTransform: "capitalize",
+                              wordBreak: "break-word",
+                              maxWidth: 200
+                            }}
+                          >
+                            {user.name}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ wordBreak: "break-word", maxWidth: 200 }}
+                          >
+                            {user.user_id}
+                          </Typography>
+                        </Box>
+                      </Stack>
+
+                      {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
+                        <Box sx={{ flexShrink: 0 }}>
+                          <IconButton
+                            color="error"
+                            onClick={() => {
+                              setSelectedUserId(user.id);
+                              setOpenDeleteDialog(true);
+                            }}
+                            sx={{
+                              transition: "0.2s ease",
+                              "&:hover": {
+                                transform: "scale(1.1)"
+                              }
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Box>
+                      )}
+                    </Box>
+                  </Grid>
+                ))
+              ) : (
+                <Grid item xs={12}>
+                  <Typography color="text.secondary">{transproject("detailnouser")}</Typography>
+                </Grid>
+              )}
+            </Grid>
+          </Box>
+        )}
+
         {/* Add User Dialog */}
         <CommonDialog
           open={open}
@@ -276,6 +391,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             onChange={(ids) => setSelectedUserIds(ids as string[])}
           />
         </CommonDialog>
+
+        {/* Edit Project */}
         <EditProject
           open={editOpen}
           onClose={() => setEditOpen(false)}
@@ -283,6 +400,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           mutate={mutate}
           projectID={projectID}
         />
+
+        {/* Delete User Dialog */}
         <CommonDialog
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
@@ -298,6 +417,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             {transproject("removeusernote2")}
           </Typography>
         </CommonDialog>
+
+        {/* Snackbar */}
         <CustomSnackbar
           open={snackbar.open}
           message={snackbar.message}
@@ -308,5 +429,4 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
     </>
   );
 };
-
 export default ProjectDetail;

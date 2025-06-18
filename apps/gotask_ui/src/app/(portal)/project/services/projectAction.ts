@@ -80,3 +80,35 @@ export const removeUsersFromProject = async (userIds: string[], projectId: strin
 export const fetcher = async () => {
   return fetchProjects();
 };
+// Fetch Weekly Goals
+export const fetchWeeklyGoals = async () => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/weekly/goals`;
+    const { data } = await getData(url, token);
+    return data || [];
+  });
+};
+
+// Create Weekly Goal
+export const createWeeklyGoal = async (goalData: { goalTitle: string; projectId: string }) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/weekly/goals`;
+    return await postData(url, goalData, token);
+  });
+};
+
+// Update Weekly Goal
+export const updateWeeklyGoal = async (
+  goalId: string,
+  updatedGoalData: {
+    status: string;
+    description: string;
+    comments: string[];
+    priority: string;
+  }
+) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/weekly/goals/${goalId}`;
+    return await putData(url, updatedGoalData, token);
+  });
+};

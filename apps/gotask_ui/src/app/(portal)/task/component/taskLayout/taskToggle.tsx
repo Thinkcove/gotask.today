@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 interface TaskToggleProps {
   view: "projects" | "users";
-  onViewChange: (view: "projects" | "users") => void;
+  onViewChange: (view: "projects" | "users" ) => void;
 }
 
 const TaskToggle: React.FC<TaskToggleProps> = ({ view, onViewChange }) => {

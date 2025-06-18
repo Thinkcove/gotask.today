@@ -1,4 +1,4 @@
-const WeeklyGoalMessages = {
+const ProjectGoalMessages = {
   CREATE: {
     REQUIRED: "Weekly goal data is required",
     MISSING_FIELDS:
@@ -45,4 +45,4 @@ const WeeklyGoalMessages = {
   }
 };
 
-export default WeeklyGoalMessages;
+export default ProjectGoalMessages;

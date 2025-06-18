@@ -70,11 +70,4 @@ export const API_PATHS = {
   GET_USER_PREFERENCES: "/getPreference",
 
   // weeklyGoalRoutes
-  CREATE_WEEKLY_GOAL: "/weekly/goals",
-  GET_ALL_WEEKLY_GOALS: "/weekly/goals",
-  GET_WEEKLY_GOAL_BY_ID: "/weekly/goals/{id}",
-  UPDATE_WEEKLY_GOAL: "/weekly/goals/{id}",
-  DELETE_WEEKLY_GOAL: "/weekly/goals/{id}",
-  GET_WEEKLY_GOALS_BY_USER: "/weekly/goals/user/{user_id}",
-  GET_WEEKLY_GOALS_BY_PROJECT: "/weekly/goals/project/{project_id}"
 };

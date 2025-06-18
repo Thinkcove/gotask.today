@@ -2,7 +2,7 @@ import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 // Interface for TypeScript
-export interface IWeeklyGoal extends Document {
+export interface IProjectGoal extends Document {
   id: string;
   projectId: string;
   goalTitle: string;
@@ -15,7 +15,7 @@ export interface IWeeklyGoal extends Document {
 }
 
 // Schema definition
-const WeeklyGoalSchema = new Schema<IWeeklyGoal>(
+const ProjectGoalSchema = new Schema<IProjectGoal>(
   {
     id: { type: String, default: uuidv4, unique: true },
     projectId: { type: String, ref: "Project", required: true },
@@ -41,4 +41,4 @@ const WeeklyGoalSchema = new Schema<IWeeklyGoal>(
 );
 
 // Export the model
-export const WeeklyGoal = model<IWeeklyGoal>("WeeklyGoal", WeeklyGoalSchema);
+export const ProjectGoal = model<IProjectGoal>("ProjectGoal", ProjectGoalSchema);

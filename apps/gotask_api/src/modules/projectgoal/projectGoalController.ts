@@ -1,35 +1,35 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
 import {
-  createWeeklyGoal,
-  deleteWeeklyGoal,
-  getAllWeeklyGoals,
-  getWeeklyGoalById,
-  updateWeeklyGoal
-} from "./trackweklyService";
+  createProjectGoal,
+  deleteProjectGoal,
+  getAllProjectGoals,
+  getProjectGoalById,
+  updateProjectGoal
+} from "./projectGoalService";
 import {
   findGoalsByProjectIdNew,
   findGoalsByUserIdNew
-} from "../../domain/interface/trackwekly/trackwekly";
+} from "../../domain/interface/projectGoal/projectGoal";
 
-class WeeklyGoalController extends BaseController {
-  // Create a new weekly goal
-  async createWeeklyGoal(requestHelper: RequestHelper, handler: any) {
+class ProjectGoalController extends BaseController {
+  // Create a new Project goal
+  async createProjectGoal(requestHelper: RequestHelper, handler: any) {
     try {
       const goalData = requestHelper.getPayload();
       if (!goalData) throw new Error("Missing goal data");
 
-      const newGoal = await createWeeklyGoal(goalData);
+      const newGoal = await createProjectGoal(goalData);
       return this.sendResponse(handler, newGoal);
     } catch (error) {
       return this.replyError(error);
     }
   }
 
-  // Get all weekly goals
-  async getAllWeeklyGoals(_requestHelper: RequestHelper, handler: any) {
+  // Get all Project goals
+  async getAllProjectGoals(_requestHelper: RequestHelper, handler: any) {
     try {
-      const goals = await getAllWeeklyGoals();
+      const goals = await getAllProjectGoals();
       return this.sendResponse(handler, goals);
     } catch (error) {
       return this.replyError(error);
@@ -37,12 +37,12 @@ class WeeklyGoalController extends BaseController {
   }
 
   // Get a goal by ID
-  async getWeeklyGoalById(requestHelper: RequestHelper, handler: any) {
+  async getProjectGoalById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
       if (!id) throw new Error("Goal ID is required");
 
-      const goal = await getWeeklyGoalById(id);
+      const goal = await getProjectGoalById(id);
       return this.sendResponse(handler, goal);
     } catch (error) {
       return this.replyError(error);
@@ -50,12 +50,12 @@ class WeeklyGoalController extends BaseController {
   }
 
   // Update a goal by ID
-  async updateWeeklyGoal(requestHelper: RequestHelper, handler: any) {
+  async updateProjectGoal(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
       const updateData = requestHelper.getPayload();
 
-      const updatedGoal = await updateWeeklyGoal(id, updateData);
+      const updatedGoal = await updateProjectGoal(id, updateData);
       if (!updatedGoal) throw new Error("Goal not found");
 
       return this.sendResponse(handler, updatedGoal);
@@ -65,10 +65,10 @@ class WeeklyGoalController extends BaseController {
   }
 
   // Delete a goal by ID
-  async deleteWeeklyGoal(requestHelper: RequestHelper, handler: any) {
+  async deleteProjectGoal(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const deletedGoal = await deleteWeeklyGoal(id);
+      const deletedGoal = await deleteProjectGoal(id);
       if (!deletedGoal) throw new Error("Goal not found");
 
       return this.sendResponse(handler, deletedGoal);
@@ -78,7 +78,7 @@ class WeeklyGoalController extends BaseController {
   }
 
   // Get goals by user ID
-  async findWeeklyGoalsByUserId(requestHelper: RequestHelper, handler: any) {
+  async findProjectGoalsByUserId(requestHelper: RequestHelper, handler: any) {
     try {
       const userId = requestHelper.getParam("user_id");
       if (!userId) throw new Error("User ID is required");
@@ -91,7 +91,7 @@ class WeeklyGoalController extends BaseController {
   }
 
   // Get goals by project ID
-  async findWeeklyGoalsByProjectId(requestHelper: RequestHelper, handler: any) {
+  async findProjectGoalsByProjectId(requestHelper: RequestHelper, handler: any) {
     try {
       const projectId = requestHelper.getParam("project_id");
       if (!projectId) throw new Error("Project ID is required");
@@ -104,4 +104,4 @@ class WeeklyGoalController extends BaseController {
   }
 }
 
-export default WeeklyGoalController;
+export default ProjectGoalController;

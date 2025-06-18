@@ -29,6 +29,7 @@ export interface IAssetAttributes {
   isEncrypted?: boolean;
   lastServicedDate?: Date;
   commentService?: string;
+  assetType?: IAssetType;
 }
 
 export interface IAssetTags {
@@ -38,4 +39,29 @@ export interface IAssetTags {
   actionType: string;
   erk: string;
   previouslyUsedBy: string;
+}
+
+interface AssetDetails {
+  modelName: string;
+  deviceName: string;
+}
+
+interface AssignedDetails {
+  name: string;
+  user_id: string;
+}
+
+export interface IAssetIssues {
+  id?: string;
+  assetId: string;
+  reportedBy: string;
+  issueType: string;
+  description: string;
+  status: string;
+  assignedTo: string;
+  comment: string;
+  updatedBy: string;
+  assetDetails?: AssetDetails;
+  assigned?: AssignedDetails;
+  reportedDetails?: AssignedDetails;
 }

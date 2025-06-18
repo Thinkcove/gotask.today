@@ -11,6 +11,8 @@ import * as UserPreferenceRoutes from "../modules/userPreference/userPreferenceR
 import * as QueryRoutes from "../modules/query/queryRoutes";
 import * as AttendanceRoutes from "../modules/attendance/attendanceRoutes";
 import * as QueryTaskRoutes from "../modules/queryTask/queryTaskRoutes";
+import ProjectStoryRoutes from "../modules/projectStory/projectStoryRoutes";
+
 import * as AssetRoutes from "../modules/assets/assetsRoutes";
 import * as AssetTagRoutes from "../modules/assetTag/assetTagRoutes";
 import * as WorkPlannedReportRoutes from "../modules/planned/plannedRoute";
@@ -28,6 +30,7 @@ const routes: ServerRoute[] = [
   ...AttendanceRoutes.default,
   ...QueryTaskRoutes.default,
   ...UserPreferenceRoutes.default,
+  ...ProjectStoryRoutes,
   ...AssetRoutes.default,
   ...AssetTagRoutes.default,
   ...WorkPlannedReportRoutes.default

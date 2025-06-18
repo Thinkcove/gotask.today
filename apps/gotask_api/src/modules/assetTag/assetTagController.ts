@@ -40,6 +40,15 @@ class ResourceController extends BaseController {
       return this.replyError(error);
     }
   }
+
+  async getAllIssues(requestHelper: RequestHelper, handler: any) {
+    try {
+      const tags = await resourceServices.getAllIssues();
+      return this.sendResponse(handler, tags);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
 export default ResourceController;

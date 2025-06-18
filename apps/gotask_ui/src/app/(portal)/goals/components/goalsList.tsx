@@ -14,6 +14,7 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import SearchBar from "@/app/component/searchBar/searchBar";
 
 function GoalsList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("weekly-goals", fetchWeeklyGoals);
@@ -22,9 +23,15 @@ function GoalsList() {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [goalData, setGoalData] = useState<any>({});
-
   const searchParams = useSearchParams();
+
   const projectID = searchParams.get("projectId") || "";
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredGoals =
+    weeklyGoals?.filter((goal: WeeklyGoal) =>
+      goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   const formatStatus = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -93,6 +100,14 @@ function GoalsList() {
         p: 4
       }}
     >
+      <Box mb={3} maxWidth={400}>
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          sx={{ width: "100%" }}
+          placeholder={transGoal("searchplaceholder")}
+        />
+      </Box>
       <ActionButton
         label={transGoal("createnewpGoal")}
         icon={<AddIcon sx={{ color: "white" }} />}
@@ -171,7 +186,7 @@ function GoalsList() {
             }}
           >
             <WeeklyGoals
-              weeklyGoals={weeklyGoals || []}
+              weeklyGoals={filteredGoals || []}
               isLoading={isLoading}
               error={!!error}
               formatStatus={formatStatus}

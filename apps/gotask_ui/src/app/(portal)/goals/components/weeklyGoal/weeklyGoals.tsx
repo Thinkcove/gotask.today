@@ -36,11 +36,8 @@ const WeeklyGoals: React.FC<WeeklyGoalsProps> = ({
     <>
       <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5" fontWeight={600}>
-          Weekly Goals
+          Project Goals
         </Typography>
-        <Button variant="contained" onClick={() => handelOpen(true)}>
-          Create Goal
-        </Button>
       </Box>
 
       {filteredGoals.length > 0 ? (

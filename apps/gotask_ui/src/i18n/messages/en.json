@@ -507,6 +507,7 @@
     "goal": "Weekly Goal",
     "goalDesc": "Weekly Goal Description",
     "goalDescPlaceholder": "Enter your weekly goal",
-    "createnewpGoal": "Create New Goal"
+    "createnewpGoal": "Create New Goal",
+    "searchplaceholder":"Search Title"
   }
 }

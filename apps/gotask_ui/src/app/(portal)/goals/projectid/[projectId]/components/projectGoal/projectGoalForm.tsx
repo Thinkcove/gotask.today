@@ -5,26 +5,8 @@ import Grid from "@mui/material/Grid/Grid";
 import { Button, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { GoalData, ProjectGoalFormProps } from "../../interface/projectGoal";
 
-// Shared GoalData type
-export interface GoalData {
-  goalTitle: string;
-  description: string;
-  weekStart: string;
-  weekEnd: string;
-  status: string;
-  priority: string;
-  projectId?: string;
-  comments: string[];
-  id?: string;
-}
-
-interface ProjectGoalFormProps {
-  goalData: GoalData;
-  setGoalData: React.Dispatch<React.SetStateAction<GoalData>>;
-  newComment: string;
-  setNewComment: React.Dispatch<React.SetStateAction<string>>;
-}
 
 const statusOptions = ["not-started", "in-progress", "completed", "blocked"];
 const priorityOptions = ["high", "medium", "low"];

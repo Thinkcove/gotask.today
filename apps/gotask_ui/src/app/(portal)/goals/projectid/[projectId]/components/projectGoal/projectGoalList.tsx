@@ -10,26 +10,17 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import SearchBar from "@/app/component/searchBar/searchBar";
 
-import ProjectGoals, { ProjectGoal } from "./projectGoals";
+import ProjectGoals from "./projectGoals";
 import {
   createWeeklyGoal,
   fetchWeeklyGoals,
   updateWeeklyGoal
 } from "@/app/(portal)/goals/service/projectGoalAction";
 import ProjectGoalForm from "./projectGoalForm";
+import { GoalData, ProjectGoal } from "../../interface/projectGoal";
 
 // Define the GoalData type
-type GoalData = {
-  goalTitle: string;
-  description: string;
-  weekStart: string;
-  weekEnd: string;
-  status: string;
-  priority: string;
-  projectId?: string;
-  comments: string[];
-  id?: string;
-};
+
 
 function ProjectGoalList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);

@@ -7,15 +7,9 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { GoalCardProps } from "../../interface/projectGoal";
 
-export interface GoalCardProps {
-  goal: {
-    id: string;
-    goalTitle: string;
-    status: string;
-  };
-  onEdit: (goal: any) => void;
-}
+
 
 const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit }) => {
   const color = getStatusColor(goal.status);

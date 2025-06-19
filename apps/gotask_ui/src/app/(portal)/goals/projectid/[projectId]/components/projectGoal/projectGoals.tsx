@@ -3,29 +3,7 @@ import { Grid, Box, Typography } from "@mui/material";
 import GoalCard from "./GoalCard";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-
-export interface ProjectGoal {
-  comments(comments: any): unknown;
-  priority: string;
-  weekEnd: string;
-  weekStart: string;
-  description: string;
-  id: string;
-  goalTitle: string;
-  status: string;
-  projectId: string;
-}
-
-interface ProjectGoalsProps {
-  projectGoals: ProjectGoal[];
-  isLoading: boolean;
-  error: boolean;
-  formatStatus: (status: string) => string;
-  openDialog: boolean;
-  handelOpen: (open: boolean) => void;
-  handleEditGoal: (goal: ProjectGoal) => void;
-  projectId: string;
-}
+import { ProjectGoalsProps } from "../../interface/projectGoal";
 
 const ProjectGoals: React.FC<ProjectGoalsProps> = ({ projectGoals, projectId, handleEditGoal }) => {
   const filteredGoals = projectGoals.filter((goal) => goal.projectId === projectId);

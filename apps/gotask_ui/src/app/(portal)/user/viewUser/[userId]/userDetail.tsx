@@ -27,6 +27,7 @@ interface UserDetailProps {
 const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
+  const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const router = useRouter();
   const { userId } = useParams();
   const userID = userId as string;
@@ -201,48 +202,95 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Stack>
           </Grid>
 
-          {/* Divider */}
           <Divider sx={{ my: 2 }} />
 
-          {/* Project Details */}
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            {transuser("projectdetails")}
-          </Typography>
+          <Grid container spacing={2}>
+            {/* Asset Section */}
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                {transasset("assets")}
+              </Typography>
 
-          {user.projectDetails && user.projectDetails.length > 0 ? (
-            <Grid container spacing={2} sx={{ maxHeight: "300px", overflowY: "auto" }}>
-              {user.projectDetails.map((project) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={project.id}>
-                  <Box
-                    sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      display: "flex",
-                      flexDirection: "column",
-                      bgcolor: "#ffffff",
-                      border: "1px solid #e0e0e0",
-                      height: "100%",
-                      justifyContent: "space-between"
-                    }}
-                  >
-                    <Stack spacing={1}>
-                      <Typography variant="h4" fontWeight={700} fontSize="1rem">
-                        {project.name}
-                      </Typography>
+              {user.assetDetails && (
+                <Box
+                  sx={{
+                    p: 3,
+                    borderRadius: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    bgcolor: "#ffffff",
+                    border: "1px solid #e0e0e0"
+                  }}
+                >
+                  <Stack spacing={1}>
+                    <Typography variant="h6" fontWeight={700}>
+                      {user.assetDetails.deviceName}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {user.assetDetails.modelName}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      OS: {user.assetDetails.os}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Processor: {user.assetDetails.processor}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      RAM: {user.assetDetails.ram}
+                    </Typography>
+                    {user.assetDetails.storage && (
                       <Typography variant="body2" color="text.secondary">
-                        {project.description}
+                        Storage: {user.assetDetails.storage}
                       </Typography>
-                      <StatusIndicator status={project.status} getColor={getStatusColor} />
-                    </Stack>
-                  </Box>
+                    )}
+                    <Typography variant="body2" color="text.secondary">
+                      Serial Number: {user.assetDetails.serialNumber}
+                    </Typography>
+                  </Stack>
+                </Box>
+              )}
+            </Grid>
+
+            {/* Project Details Section */}
+            <Grid item xs={12} md={8}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                {transuser("projectdetails")}
+              </Typography>
+
+              {user.projectDetails && user.projectDetails.length > 0 ? (
+                <Grid container spacing={2}>
+                  {user.projectDetails.map((project) => (
+                    <Grid item xs={12} sm={6} key={project.id}>
+                      <Box
+                        sx={{
+                          p: 3,
+                          borderRadius: 3,
+                          display: "flex",
+                          flexDirection: "column",
+                          bgcolor: "#ffffff",
+                          border: "1px solid #e0e0e0",
+                          height: "100%",
+                          justifyContent: "space-between"
+                        }}
+                      >
+                        <Stack spacing={1}>
+                          <Typography variant="h4" fontWeight={700} fontSize="1rem">
+                            {project.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {project.description}
+                          </Typography>
+                          <StatusIndicator status={project.status} getColor={getStatusColor} />
+                        </Stack>
+                      </Box>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
+              ) : (
+                <Typography color="text.secondary">No projects assigned yet.</Typography>
+              )}
             </Grid>
-          ) : (
-            <Grid item xs={12}>
-              <Typography color="text.secondary">No projects assigned yet.</Typography>
-            </Grid>
-          )}
+          </Grid>
         </Box>
 
         {/* Edit User Dialog */}

@@ -94,7 +94,12 @@ const CustomTable = <T extends object>({
                   const value = column.id in row ? row[column.id as keyof T] : undefined;
                   return (
                     <StyledTableCell key={String(column.id)} align={column.align || "left"}>
-                      {column.render ? column.render(value, row) : (value as ReactNode)}
+                      {/* {column.render ? column.render(value, row) : (value as ReactNode)} */}
+                      {column.render
+                        ? column.render(value, row)
+                        : typeof value === "object" && value !== null
+                          ? JSON.stringify(value) // fallback to string if object slips through
+                          : (value as ReactNode)}
                     </StyledTableCell>
                   );
                 })}

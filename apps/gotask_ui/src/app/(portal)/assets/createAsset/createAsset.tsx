@@ -13,6 +13,7 @@ import { IAssetAttributes, IAssetType } from "../interface/asset";
 import { User } from "../../user/interfaces/userInterface";
 import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
+import MobileInputs from "./mobileInputs";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -30,15 +31,26 @@ export const CreateAsset: React.FC = () => {
     storage: "",
     processor: "",
     seller: "",
-    dateOfPurchase: new Date(),
+    dateOfPurchase: "",
     erk: "",
     warrantyPeriod: "",
-    warrantyDate: new Date(),
+    warrantyDate: "",
     antivirus: "",
     recoveryKey: "",
-    lastServicedDate: new Date(),
+    lastServicedDate: "",
     commentService: "",
-    isEncrypted: false
+    isEncrypted: false,
+
+    //mobile
+    imeiNumber: "",
+    screenSize: "",
+    batteryCapacity: "",
+    cameraSpecs: "",
+    simType: "",
+    is5GSupported: false,
+    insuranceProvider: "",
+    insurancePolicyNumber: "",
+    insuranceExpiry: ""
   });
   const [selectedAssetType, setSelectedAssetType] = useState<IAssetType | null>(null);
   const router = useRouter();
@@ -79,6 +91,10 @@ export const CreateAsset: React.FC = () => {
     if (!formData.modelName) newErrors.modelName = transasset("modelname");
     if (!formData.os) newErrors.os = transasset("os");
     if (!formData.processor) newErrors.processor = transasset("processor");
+
+    if (selectedAssetType?.name === "Mobile") {
+      if (!formData.imeiNumber) newErrors.imeiNumber = transasset("imeiNumber");
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -194,14 +210,20 @@ export const CreateAsset: React.FC = () => {
           </Grid>
 
           {/* Laptop Inputs below if type is Laptop */}
-          {selectedAssetType?.name === "Laptop" && (
+          {(selectedAssetType?.name === "Laptop" || selectedAssetType?.name === "Mobile") && (
             <Grid item xs={12}>
               <LaptopInputs
                 formData={formData}
                 onChange={handleInputChange}
                 startIndex={1}
+                selectedAssetType={selectedAssetType}
                 errors={errors}
               />
+            </Grid>
+          )}
+          {selectedAssetType?.name === "Mobile" && (
+            <Grid item xs={12}>
+              <MobileInputs formData={formData} onChange={handleInputChange} errors={errors} />
             </Grid>
           )}
         </Grid>

@@ -6,7 +6,6 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import useSWR from "swr";
 import UserCards from "./userCards";
 import { fetcherUserList } from "../services/userAction";
-import CreateUser from "./createUser";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
@@ -14,14 +13,14 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { User } from "../interfaces/userInterface";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import Chat from "../../chatbot/components/chat";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 
 const UserList = () => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-  
+
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: users, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
+  const { data: users } = useSWR("fetch-user", fetcherUserList);
   const router = useRouter();
 
   const filteredUsers =
@@ -38,7 +37,6 @@ const UserList = () => {
         p: 3
       }}
     >
-      
       <Box mb={3} maxWidth={400}>
         <SearchBar
           value={searchTerm}
@@ -59,7 +57,6 @@ const UserList = () => {
           onClick={() => router.push("/user/createUser")}
         />
       )}
-      
     </Box>
   );
 };

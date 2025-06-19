@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
 
 import { Box, Button, Typography } from "@mui/material";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
@@ -157,15 +157,7 @@ function ProjectGoalList() {
       )}
 
       {openDialog ? (
-        <Box
-          sx={{
-            mt: 3,
-            p: 3,
-            border: "1px solid #ccc",
-            borderRadius: 2,
-            backgroundColor: "#f9f9f9"
-          }}
-        >
+        <>
           <Box
             sx={{
               display: "flex",
@@ -219,7 +211,7 @@ function ProjectGoalList() {
             goalData={goalData}
             setGoalData={setGoalData}
           />
-        </Box>
+        </>
       ) : (
         <ProjectGoals
           projectGoals={filteredGoals}

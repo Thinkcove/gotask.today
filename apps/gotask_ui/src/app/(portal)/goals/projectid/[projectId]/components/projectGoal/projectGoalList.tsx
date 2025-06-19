@@ -26,7 +26,6 @@ function ProjectGoalList() {
 
   const { projectId } = useParams();
   const projectID = projectId as string;
-  console.log("projectID--------->", projectID);
   const [openDialog, setOpenDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [goalData, setGoalData] = useState<GoalData>({
@@ -44,7 +43,6 @@ function ProjectGoalList() {
     weeklyGoals?.filter((goal: GoalData) =>
       goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
-  console.log("filteredGoals", filteredGoals);
 
   const formatStatus = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -117,7 +115,6 @@ function ProjectGoalList() {
 
   const handleEditGoal = (goal: GoalData) => {
     const rawComments = goal.comments || [];
-    console.log("Raw comments from goal:", rawComments);
 
     // Transform all comments to Comment objects for frontend use
     const transformedComments = transformCommentsToObjects(rawComments);
@@ -151,15 +148,12 @@ function ProjectGoalList() {
         weekEnd: goalData.weekEnd,
         status: goalData.status,
         description: goalData.description,
-        comments: commentTexts, // Only send comment texts as strings
+        comments: commentTexts, 
         priority: goalData.priority
       };
 
-      console.log("Submitting payload:", payload);
-      console.log("Comments being sent:", commentTexts);
 
       if (goalData.id) {
-        // Type assertion to bypass the type checking
         await updateWeeklyGoal(goalData.id, payload as any);
       } else {
         await createWeeklyGoal(payload as any);

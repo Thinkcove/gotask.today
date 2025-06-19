@@ -1,52 +1,44 @@
 import { PipelineStage } from "mongoose";
 import { Task } from "../../domain/model/task/task";
 
-const getUserTimeReportService = async (
+const getWorkPlannedService = async (
   fromDate: string,
   toDate: string,
   userIds: string[],
   showTasks: boolean,
   selectedProjects?: string[]
 ) => {
-  const dateMatch = { $gte: fromDate, $lte: toDate };
+  const dateMatch = { $gte: new Date(fromDate), $lte: new Date(toDate) };
   const pipeline: PipelineStage[] = [];
 
-  const userMatch: Record<string, any> = {
-    time_spent: { $elemMatch: { date: dateMatch } }
+  // Initial match for tasks created within the date range
+  const initialMatch: Record<string, any> = {
+    created_on: dateMatch
   };
 
+  // Conditionally apply userId filter
   if (userIds && userIds.length > 0) {
-    userMatch.user_id = { $in: userIds };
+    initialMatch.user_id = { $in: userIds };
   }
 
-  pipeline.push({ $match: userMatch });
-  pipeline.push({ $unwind: "$time_spent" });
-
-  pipeline.push({
-    $match: {
-      "time_spent.date": dateMatch
-    }
-  });
-
+  // Conditionally apply project filter
   if (selectedProjects && selectedProjects.length > 0) {
-    pipeline.push({
-      $match: {
-        project_id: { $in: selectedProjects }
-      }
-    });
+    initialMatch.project_id = { $in: selectedProjects };
   }
 
-  // PROJECT stage to include the task status
+  pipeline.push({ $match: initialMatch });
+
+  // Project stage - get required fields
   const projectStage: Record<string, any> = {
     user_id: 1,
     user_name: 1,
-    "time_spent.date": 1,
-    "time_spent.time_logged": 1,
-    status: 1
+    start_date: 1,
+    due_date: 1,
+    user_estimated: 1
   };
 
   if (showTasks) {
-    projectStage.task_id = "$id";
+    projectStage.task_id = "$_id";
     projectStage.task_title = "$title";
   }
 
@@ -57,11 +49,12 @@ const getUserTimeReportService = async (
 
   pipeline.push({ $project: projectStage });
 
+  // Group by user, start_date, due_date, and optional task/project
   const groupId: Record<string, any> = {
     user_id: "$user_id",
     user_name: "$user_name",
-    date: "$time_spent.date",
-    status: "$status"
+    start_date: "$start_date",
+    due_date: "$due_date"
   };
 
   if (showTasks) {
@@ -77,36 +70,34 @@ const getUserTimeReportService = async (
   pipeline.push({
     $group: {
       _id: groupId,
-      total_time_logged: { $push: "$time_spent.time_logged" }
+      user_estimated: { $first: "$user_estimated" } // Keep user_estimated for each task
     }
   });
 
+  // Final project to format the output
   const finalProject: Record<string, any> = {
     _id: 0,
     user_id: "$_id.user_id",
     user_name: "$_id.user_name",
-    date: "$_id.date",
-    status: "$_id.status",
-    task_id: "$_id.task_id",
-    task_title: "$_id.task_title",
-    project_id: "$_id.project_id",
-    project_name: "$_id.project_name",
-    total_time_logged: 1
+    start_date: "$_id.start_date",
+    end_date: "$_id.due_date",
+    user_estimated: 1
   };
 
-  if (!showTasks) {
-    delete finalProject.task_id;
-    delete finalProject.task_title;
+  if (showTasks) {
+    finalProject.task_id = "$_id.task_id";
+    finalProject.task_title = "$_id.task_title";
   }
 
-  if (!(selectedProjects && selectedProjects.length > 0)) {
-    delete finalProject.project_id;
-    delete finalProject.project_name;
+  if (selectedProjects && selectedProjects.length > 0) {
+    finalProject.project_id = "$_id.project_id";
+    finalProject.project_name = "$_id.project_name";
   }
 
   pipeline.push({ $project: finalProject });
-  pipeline.push({ $sort: { user_name: 1, date: 1 } });
+  pipeline.push({ $sort: { user_name: 1, start_date: 1 } });
 
+  // Execute aggregation
   const results = await Task.aggregate(pipeline);
 
   return {
@@ -115,4 +106,4 @@ const getUserTimeReportService = async (
   };
 };
 
-export { getUserTimeReportService };
+export { getWorkPlannedService };

@@ -58,4 +58,34 @@ ResourceRoutes.push({
   }
 });
 
+ResourceRoutes.push({
+  path: "/getallissues",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    resourceController.getAllIssues(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Get all issues",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+ResourceRoutes.push({
+  path: "/gettagbyid/{id}",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    resourceController.getTagById(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Get all issues",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
 export default ResourceRoutes;

@@ -24,13 +24,16 @@ const createTask = async (
   taskData: Partial<ITask>
 ): Promise<{ success: boolean; data?: ITask; message?: string }> => {
   try {
-    if (!taskData) {
+    if (!taskData || !taskData.title || !taskData.project_id) {
       return {
         success: false,
         message: TaskMessages.CREATE.REQUIRED
       };
     }
+
+    // story_id is optional — no need to validate here
     const newTask = await createNewTask(taskData);
+
     return {
       success: true,
       data: newTask

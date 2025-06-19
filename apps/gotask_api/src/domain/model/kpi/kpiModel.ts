@@ -1,0 +1,56 @@
+import mongoose, { Document, Schema } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
+
+export interface IKpiTemplate extends Document {
+  template_id: string;
+  title: string;
+  description: string;
+  measurementCriteria: string;
+  frequency: string;
+  isActive: boolean;
+  changeHistory: { changedBy: string; changedAt: Date; changes: Record<string, any> }[];
+}
+
+const KpiTemplateSchema = new Schema<IKpiTemplate>(
+  {
+    template_id: {
+      type: String,
+      default: uuidv4,
+      unique: true
+    },
+    title: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    measurementCriteria: {
+      type: String,
+      required: true,
+      enum: ["Number", "Percentage", "Rating"]
+    },
+    frequency: {
+      type: String,
+      required: true,
+      enum: ["Monthly", "Quarterly", "Annually"],
+      default: "Quarterly"
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    },
+    changeHistory: [
+      {
+        changedBy: { type: String, required: true },
+        changedAt: { type: Date, default: Date.now },
+        changes: { type: Object, default: {} }
+      }
+    ]
+  },
+  { timestamps: true }
+);
+
+export const KpiTemplate = mongoose.model<IKpiTemplate>("KpiTemplate", KpiTemplateSchema);

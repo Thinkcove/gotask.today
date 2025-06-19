@@ -1,7 +1,5 @@
-// GoalsList.tsx - Fixed version
 import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
-
 import { Box, Button, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -9,7 +7,6 @@ import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import SearchBar from "@/app/component/searchBar/searchBar";
-
 import ProjectGoals from "./projectGoals";
 import {
   createWeeklyGoal,
@@ -28,6 +25,7 @@ function ProjectGoalList() {
   const projectID = projectId as string;
   const [openDialog, setOpenDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
   const [goalData, setGoalData] = useState<GoalData>({
     goalTitle: "",
     description: "",
@@ -75,14 +73,11 @@ function ProjectGoalList() {
 
   const [newComment, setNewComment] = React.useState("");
 
-  // Helper function to transform mixed comments to Comment objects
   const transformCommentsToObjects = (rawComments: any[]): Comment[] => {
     return rawComments.map((comment, index) => {
-      // If it's already a Comment object, return it
       if (typeof comment === "object" && comment.id && comment.comment) {
         return comment as Comment;
       }
-      // If it's a string, convert it to Comment object
       if (typeof comment === "string") {
         return {
           id: Date.now() + index,
@@ -92,7 +87,6 @@ function ProjectGoalList() {
           updatedAt: new Date().toISOString()
         };
       }
-      // Fallback for any other format
       return {
         id: Date.now() + index,
         comment: String(comment),
@@ -103,7 +97,6 @@ function ProjectGoalList() {
     });
   };
 
-  // Helper function to extract only comment text for API payload
   const extractCommentTexts = (comments: Comment[]): string[] => {
     return comments.map((comment) => {
       if (typeof comment === "object" && comment.comment) {
@@ -115,8 +108,6 @@ function ProjectGoalList() {
 
   const handleEditGoal = (goal: GoalData) => {
     const rawComments = goal.comments || [];
-
-    // Transform all comments to Comment objects for frontend use
     const transformedComments = transformCommentsToObjects(rawComments);
 
     setGoalData({
@@ -135,10 +126,8 @@ function ProjectGoalList() {
     setOpenDialog(true);
   };
 
-  // Option 2: Type assertion (if you're sure the API accepts string[])
   const handleSubmit = async () => {
     try {
-      // Extract only comment texts for the API payload
       const commentTexts = extractCommentTexts(goalData.comments);
 
       const payload = {
@@ -164,6 +153,7 @@ function ProjectGoalList() {
       console.error("Error saving weekly goal:", err);
     }
   };
+  
   return (
     <Box sx={{ p: 4 }}>
       {!openDialog && (

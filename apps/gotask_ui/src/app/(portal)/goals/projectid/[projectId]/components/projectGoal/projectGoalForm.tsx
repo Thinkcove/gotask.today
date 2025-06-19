@@ -18,7 +18,6 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
 }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
-  // Transform GoalData to API payload format
   const transformToPayload = (data: GoalData): GoalDataPayload => {
     return {
       ...data,
@@ -26,7 +25,6 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
     };
   };
 
-  // Handle form submission
   const handleSubmit = () => {
     if (onSubmit) {
       const payload = transformToPayload(goalData);

@@ -15,7 +15,13 @@ export interface GoalCardProps {
   goal: GoalData;
   onEdit: (goal: GoalData) => void;
 }
-
+export interface Props {
+  comments: Comment[];
+  onSave: (comment: string) => void;
+  onEdit?: (id: number, comment: string) => void;
+  onDelete?: (id: number) => void;
+  currentUserId?: string;
+}
 export interface ProjectGoalsProps {
   projectGoals: GoalData[];
   isLoading: boolean;

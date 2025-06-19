@@ -6,15 +6,9 @@ import { useTranslations } from "next-intl";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { Comment } from "../../interface/projectGoal";
+import { Comment, Props } from "../../interface/projectGoal";
 
-interface Props {
-  comments: Comment[];
-  onSave: (comment: string) => void;
-  onEdit?: (id: number, comment: string) => void;
-  onDelete?: (id: number) => void;
-  currentUserId?: string;
-}
+
 
 const CommonCommentBox: React.FC<Props> = ({ comments, onSave, onEdit, onDelete }) => {
   const [editValue, setEditValue] = useState("");

@@ -1,4 +1,3 @@
-// components/goal/GoalCard.tsx
 
 import React from "react";
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";

@@ -1,36 +1,44 @@
-// components/forms/WeeklyGoalForm.tsx
-
+// ProjectGoalForm.tsx
 import React from "react";
 import FormField from "@/app/component/input/formField";
 import Grid from "@mui/material/Grid/Grid";
+import { Button, Typography } from "@mui/material";
 
-interface GoalData {
+// Shared GoalData type
+export interface GoalData {
   goalTitle: string;
   description: string;
   weekStart: string;
   weekEnd: string;
   status: string;
   priority: string;
-  comments: string;
-  userId?: string;
   projectId?: string;
+  comments: string[];
+  id?: string;
 }
 
-interface WeeklyGoalFormProps {
+interface ProjectGoalFormProps {
   goalData: GoalData;
-  setGoalData: (data: GoalData) => void;
+  setGoalData: React.Dispatch<React.SetStateAction<GoalData>>;
+  newComment: string;
+  setNewComment: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const statusOptions = ["not-started", "in-progress", "completed", "blocked"];
-const priorityOptions = ["High", "Medium", "Low"];
+const priorityOptions = ["high", "medium", "low"];
 
-const WeeklyGoalForm: React.FC<WeeklyGoalFormProps> = ({ goalData, setGoalData }) => {
+const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
+  goalData,
+  newComment,
+  setNewComment,
+  setGoalData
+}) => {
   return (
     <Grid container spacing={3}>
-      {/* Row 1: Goal Title, Start Week, End Week */}
       <Grid item xs={12} sm={4}>
         <FormField
           label="Goal Title"
+          placeholder="Title"
           type="text"
           value={goalData.goalTitle}
           onChange={(val) => setGoalData({ ...goalData, goalTitle: val as string })}
@@ -41,6 +49,7 @@ const WeeklyGoalForm: React.FC<WeeklyGoalFormProps> = ({ goalData, setGoalData }
           label="Start Week"
           type="date"
           inputType="date"
+          placeholder="Start Date"
           value={goalData.weekStart}
           onChange={(value) => {
             if (value && (typeof value === "string" || value instanceof Date)) {
@@ -58,6 +67,7 @@ const WeeklyGoalForm: React.FC<WeeklyGoalFormProps> = ({ goalData, setGoalData }
           label="End Week"
           type="date"
           inputType="date"
+          placeholder="End Date"
           value={goalData.weekEnd}
           onChange={(value) => {
             if (value && (typeof value === "string" || value instanceof Date)) {
@@ -71,7 +81,6 @@ const WeeklyGoalForm: React.FC<WeeklyGoalFormProps> = ({ goalData, setGoalData }
         />
       </Grid>
 
-      {/* Row 2: Status, Priority, Description */}
       <Grid item xs={12} sm={4}>
         <FormField
           label="Status"
@@ -96,6 +105,7 @@ const WeeklyGoalForm: React.FC<WeeklyGoalFormProps> = ({ goalData, setGoalData }
         <FormField
           label="Description"
           type="text"
+          placeholder="Description"
           multiline
           height={100}
           value={goalData.description}
@@ -103,18 +113,45 @@ const WeeklyGoalForm: React.FC<WeeklyGoalFormProps> = ({ goalData, setGoalData }
         />
       </Grid>
 
-      {/* Row 3: Comments */}
       <Grid item xs={12}>
         <FormField
-          label="Comments (comma separated)"
+          label="Add Comment"
           type="text"
-          multiline
-          value={goalData.comments}
-          onChange={(val) => setGoalData({ ...goalData, comments: val as string })}
+          placeholder="Enter a comment"
+          value={newComment}
+          onChange={(val) => setNewComment(val as string)}
         />
+        <Button
+          variant="contained"
+          sx={{ mt: 1, backgroundColor: "#741B92", textTransform: "none" }}
+          onClick={() => {
+            if (newComment.trim()) {
+              setGoalData((prev: GoalData) => ({
+                ...prev,
+                comments: [...(prev.comments || []), newComment.trim()]
+              }));
+              setNewComment("");
+            }
+          }}
+        >
+          Add Comment
+        </Button>
       </Grid>
+
+      {goalData?.comments?.length > 0 && (
+        <Grid item xs={12}>
+          <Typography variant="subtitle2" sx={{ mt: 2, mb: 1, color: "#741B92" }}>
+            Comments:
+          </Typography>
+          <ul style={{ paddingLeft: 20 }}>
+            {goalData.comments.map((comment, index) => (
+              <li key={index}>{comment}</li>
+            ))}
+          </ul>
+        </Grid>
+      )}
     </Grid>
   );
 };
 
-export default WeeklyGoalForm;
+export default ProjectGoalForm;

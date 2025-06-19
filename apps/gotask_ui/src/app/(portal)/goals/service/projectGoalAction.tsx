@@ -2,10 +2,9 @@ import env from "@/app/common/env";
 import { getData, postData, putData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 
-
 export const fetchWeeklyGoals = async () => {
   return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/weekly/goals`;
+    const url = `${env.API_BASE_URL}/project/goals`;
     const { data } = await getData(url, token);
     return data || [];
   });
@@ -23,11 +22,10 @@ export const createWeeklyGoal = async (goalData: {
   priority: string;
 }) => {
   return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/weekly/goals`;
+    const url = `${env.API_BASE_URL}/project/goals`;
     return await postData(url, goalData, token);
   });
 };
-
 
 export const updateWeeklyGoal = async (
   goalId: string,
@@ -43,8 +41,7 @@ export const updateWeeklyGoal = async (
   }
 ) => {
   return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/weekly/goals/${goalId}`;
+    const url = `${env.API_BASE_URL}/project/goals/${goalId}`;
     return await putData(url, updatedGoalData, token);
   });
 };
-

@@ -1,37 +1,57 @@
+// GoalsList.tsx
 import React, { useState } from "react";
-import useSWR from "swr";
-import {
-  createWeeklyGoal,
-  fetchWeeklyGoals,
-  updateWeeklyGoal
-} from "../service/projectGoalAction";
-import WeeklyGoals, { WeeklyGoal } from "./weeklyGoal/weeklyGoals";
-import WeeklyGoalForm from "./weeklyGoal/weeklyGoalForm";
+import useSWR, { mutate } from "swr";
+
 import { Box, Button, Typography } from "@mui/material";
-import { useParams, useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import SearchBar from "@/app/component/searchBar/searchBar";
 
-function GoalsList() {
-  const { data: weeklyGoals, error, isLoading } = useSWR("weekly-goals", fetchWeeklyGoals);
-  console.log("weeklyGoals", weeklyGoals);
+import ProjectGoals, { ProjectGoal } from "./projectGoals";
+import { createWeeklyGoal, fetchWeeklyGoals, updateWeeklyGoal } from "@/app/(portal)/goals/service/projectGoalAction";
+import ProjectGoalForm from "./projectGoalForm";
+
+// Define the GoalData type
+type GoalData = {
+  goalTitle: string;
+  description: string;
+  weekStart: string;
+  weekEnd: string;
+  status: string;
+  priority: string;
+  projectId?: string;
+  comments: string[];
+  id?: string;
+};
+
+function ProjectGoalList() {
+  const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.WEEKLYGOAL);
 
+  const { projectId } = useParams();
+  const projectID = projectId as string;
+  console.log("projectID--------->", projectID);
   const [openDialog, setOpenDialog] = useState(false);
-  const [goalData, setGoalData] = useState<any>({});
-  const searchParams = useSearchParams();
-
-  const projectID = searchParams.get("projectId") || "";
   const [searchTerm, setSearchTerm] = useState("");
+  const [goalData, setGoalData] = useState<GoalData>({
+    goalTitle: "",
+    description: "",
+    weekStart: "",
+    weekEnd: "",
+    status: "",
+    priority: "",
+    comments: [],
+    projectId: projectID
+  });
 
   const filteredGoals =
-    weeklyGoals?.filter((goal: WeeklyGoal) =>
+    weeklyGoals?.filter((goal: ProjectGoal) =>
       goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
+  console.log("filteredGoals", filteredGoals);
 
   const formatStatus = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -47,25 +67,46 @@ function GoalsList() {
         return "Unknown";
     }
   };
+
   const handelOpen = () => {
     setGoalData({
       goalTitle: "",
       projectId: projectID,
       status: "",
       description: "",
-      comments: "",
-      priority: ""
+      comments: [],
+      priority: "",
+      weekStart: "",
+      weekEnd: ""
     });
     setOpenDialog(true);
   };
-  const [editGoal, setEditGoal] = useState<WeeklyGoal | null>(null);
-  console.log("editGoal", editGoal);
+  const [newComment, setNewComment] = React.useState("");
 
-  const handleEditGoal = (goal: WeeklyGoal) => {
-    setEditGoal(goal);
-    setGoalData(goal);
+  const handleEditGoal = (goal: ProjectGoal) => {
+    const rawComments = goal.comments;
+
+    let safeComments: string[] = [];
+    if (Array.isArray(rawComments) && rawComments.every((c) => typeof c === "string")) {
+      safeComments = rawComments;
+    }
+
+    setGoalData({
+      id: goal.id,
+      goalTitle: goal.goalTitle || "",
+      description: goal.description || "",
+      weekStart: goal.weekStart || "",
+      weekEnd: goal.weekEnd || "",
+      status: goal.status || "",
+      priority: goal.priority || "",
+      projectId: goal.projectId || "",
+      comments: safeComments
+    });
+
+    setNewComment("");
     setOpenDialog(true);
   };
+
   const handleSubmit = async () => {
     try {
       const payload = {
@@ -80,39 +121,37 @@ function GoalsList() {
       };
 
       if (goalData.id) {
-        // Edit mode
         await updateWeeklyGoal(goalData.id, payload);
       } else {
-        // Create mode
         await createWeeklyGoal(payload);
       }
-
-      // Optional: refresh goal list here
-      setOpenDialog(false); // Close dialog
+      await mutate("project-goals");
+      setOpenDialog(false);
     } catch (err) {
       console.error("Error saving weekly goal:", err);
     }
   };
 
   return (
-    <Box
-      sx={{
-        p: 4
-      }}
-    >
-      <Box mb={3} maxWidth={400}>
-        <SearchBar
-          value={searchTerm}
-          onChange={setSearchTerm}
-          sx={{ width: "100%" }}
-          placeholder={transGoal("searchplaceholder")}
-        />
-      </Box>
-      <ActionButton
-        label={transGoal("createnewpGoal")}
-        icon={<AddIcon sx={{ color: "white" }} />}
-        onClick={() => setOpenDialog(true)}
-      />
+    <Box sx={{ p: 4 }}>
+      {!openDialog && (
+        <>
+          <Box mb={3} maxWidth={400}>
+            <SearchBar
+              value={searchTerm}
+              onChange={setSearchTerm}
+              sx={{ width: "100%" }}
+              placeholder={transGoal("searchplaceholder")}
+            />
+          </Box>
+          <ActionButton
+            label={transGoal("createnewpGoal")}
+            icon={<AddIcon sx={{ color: "white" }} />}
+            onClick={handelOpen}
+          />
+        </>
+      )}
+
       {openDialog ? (
         <Box
           sx={{
@@ -131,12 +170,9 @@ function GoalsList() {
               width: "100%"
             }}
           >
-            {/* Title with Gradient Effect */}
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
               {goalData.id ? "Edit Weekly Goal" : "Create Weekly Goal"}
             </Typography>
-
-            {/* Buttons with Soft Hover Effects */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <Button
                 variant="outlined"
@@ -152,7 +188,7 @@ function GoalsList() {
                 }}
                 onClick={() => setOpenDialog(false)}
               >
-                cancle
+                Cancel
               </Button>
               <Button
                 variant="contained"
@@ -164,7 +200,7 @@ function GoalsList() {
                   textTransform: "none",
                   fontWeight: "bold",
                   "&:hover": {
-                    backgroundColor: "rgb(202, 187, 201) 100%)"
+                    backgroundColor: "rgb(202, 187, 201)"
                   }
                 }}
                 onClick={handleSubmit}
@@ -173,33 +209,36 @@ function GoalsList() {
               </Button>
             </Box>
           </Box>
-          <WeeklyGoalForm goalData={goalData} setGoalData={setGoalData} />
+          <ProjectGoalForm
+            newComment={newComment}
+            setNewComment={setNewComment}
+            goalData={goalData}
+            setGoalData={setGoalData}
+          />
         </Box>
       ) : (
-        <>
-          <Box
-            sx={{
-              borderRadius: 4,
-              p: 4,
-              bgcolor: "#f9fafb",
-              border: "1px solid #e0e0e0"
-            }}
-          >
-            <WeeklyGoals
-              weeklyGoals={filteredGoals || []}
-              isLoading={isLoading}
-              error={!!error}
-              formatStatus={formatStatus}
-              handelOpen={handelOpen}
-              openDialog={openDialog}
-              handleEditGoal={handleEditGoal}
-              projectId={Array.isArray(projectID) ? projectID[0] : (projectID ?? "")}
-            />
-          </Box>
-        </>
+        <Box
+          sx={{
+            borderRadius: 4,
+            p: 4,
+            bgcolor: "#f9fafb",
+            border: "1px solid #e0e0e0"
+          }}
+        >
+          <ProjectGoals
+            projectGoals={filteredGoals}
+            isLoading={isLoading}
+            error={!!error}
+            formatStatus={formatStatus}
+            handelOpen={handelOpen}
+            openDialog={openDialog}
+            handleEditGoal={handleEditGoal}
+            projectId={projectID}
+          />
+        </Box>
       )}
     </Box>
   );
 }
 
-export default GoalsList;
+export default ProjectGoalList;

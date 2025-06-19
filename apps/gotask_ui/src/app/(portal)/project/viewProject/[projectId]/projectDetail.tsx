@@ -21,6 +21,7 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import Link from "next/link";
 
 interface ProjectDetailProps {
   project: Project;
@@ -165,18 +166,22 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             <Typography variant="h5" fontWeight={600}>
               {transproject("detailassignee")}
             </Typography>
-            {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
-              <Button
-                variant="contained"
-                onClick={() => setOpen(true)}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2
-                }}
-              >
-                {transproject("detailaddassignee")}
-              </Button>
-            )}
+            <Box display="flex" justifyContent="flex-end" gap={2}>
+              <Link  href={`/goals/projectid/${projectID}`}>Goal</Link>
+
+              {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
+                <Button
+                  variant="contained"
+                  onClick={() => setOpen(true)}
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: 2
+                  }}
+                >
+                  {transproject("detailaddassignee")}
+                </Button>
+              )}
+            </Box>
           </Box>
 
           {/* Users Grid */}

@@ -4,33 +4,40 @@ import { Edit } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
 
-export interface WeeklyGoal {
+export interface ProjectGoal {
+  comments(comments: any): unknown;
+  priority: string;
+  weekEnd: string;
+  weekStart: string;
+  description: string;
   id: string;
   goalTitle: string;
   status: string;
   projectId: string;
 }
 
-interface WeeklyGoalsProps {
-  weeklyGoals: WeeklyGoal[];
+interface ProjectGoalsProps {
+  projectGoals: ProjectGoal[];
   isLoading: boolean;
   error: boolean;
   formatStatus: (status: string) => string;
   openDialog: boolean;
   handelOpen: (open: boolean) => void;
-  handleEditGoal: (goal: WeeklyGoal) => void;
+  handleEditGoal: (goal: ProjectGoal) => void;
   projectId: string;
 }
 
-const WeeklyGoals: React.FC<WeeklyGoalsProps> = ({
-  weeklyGoals,
+const ProjectGoals: React.FC<ProjectGoalsProps> = ({
+  projectGoals,
   formatStatus,
   handelOpen,
   projectId,
   handleEditGoal
 }) => {
   console.log("projectId", projectId);
-  const filteredGoals = weeklyGoals.filter((goal) => goal.projectId === projectId);
+  console.log("list gol ", projectId);
+  
+  const filteredGoals = projectGoals.filter((goal) => goal.projectId === projectId);
 
   return (
     <>
@@ -82,7 +89,7 @@ const WeeklyGoals: React.FC<WeeklyGoalsProps> = ({
           ))}
         </Grid>
       ) : (
-        <Typography>No weekly goals found.</Typography>
+        <Typography>No project goals found.</Typography>
       )}
 
       {/* Create Goal Dialog */}
@@ -90,4 +97,4 @@ const WeeklyGoals: React.FC<WeeklyGoalsProps> = ({
   );
 };
 
-export default WeeklyGoals;
+export default ProjectGoals;

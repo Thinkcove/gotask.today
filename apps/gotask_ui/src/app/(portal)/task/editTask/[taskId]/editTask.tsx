@@ -21,6 +21,7 @@ import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import { IFormField, ITask, Project, User } from "../../interface/taskInterface";
 import { KeyedMutator } from "swr";
 import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields";
+import RichTextEditor from "@/app/component/richText/richTextInput";
 
 interface EditTaskProps {
   data: ITask;
@@ -103,7 +104,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       if (fieldCheck("description", data.description))
         updatedFields.description = formData.description;
 
-      // Only update user_estimated if it's changed and provided
       if (isUserEstimatedChanged && isUserEstimateProvided) {
         updatedFields.user_estimated = formData.user_estimated;
       }
@@ -141,7 +141,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   const handleBack = () => router.back();
 
-  // Dynamically build readOnlyFields using centralized TASK_FORM_FIELDS
   const readOnlyFields = TASK_FORM_FIELDS.filter((field) =>
     isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, field)
   );
@@ -233,6 +232,34 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             isUserEstimatedLocked={!!data.user_estimated}
             isStartDateLocked={!!data.start_date}
           />
+
+          {/* Rich Text Description Field */}
+          {!readOnlyFields.includes("description") ? (
+            <Box sx={{ mt: 3 }}>
+              <RichTextEditor
+                label="Description"
+                placeholder="Enter task description"
+                value={formData.description}
+                onChange={(value) => handleInputChange("description", value)}
+              />
+            </Box>
+          ) : (
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                Description
+              </Typography>
+              <Box
+                sx={{
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  padding: "12px",
+                  minHeight: "150px",
+                  backgroundColor: "#f9f9f9"
+                }}
+                dangerouslySetInnerHTML={{ __html: formData.description }}
+              />
+            </Box>
+          )}
         </Box>
 
         <TimeSpentPopup

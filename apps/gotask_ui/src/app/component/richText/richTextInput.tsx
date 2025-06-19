@@ -1,72 +1,44 @@
-// components/RichTextEditor.tsx
 "use client";
 import React from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
-import Heading from "@tiptap/extension-heading";
-import ListItem from "@tiptap/extension-list-item";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
-import Image from "@tiptap/extension-image";
-import TextStyle from "@tiptap/extension-text-style";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
 import { Box, Typography } from "@mui/material";
 
-export type RichTextEditorProps = {
-  value?: string;
-  onChange: (value: string) => void;
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
+type Props = {
+  label?: string;
   placeholder?: string;
-  showPreview?: boolean;
+  value: string;
+  onChange: (value: string) => void;
 };
 
-const RichTextEditor: React.FC<RichTextEditorProps> = ({
-  value = "",
-  onChange,
-  placeholder = "Start typing...",
-  showPreview = false
-}) => {
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Bold,
-      Italic,
-      Heading.configure({ levels: [1, 2, 3] }),
-      BulletList,
-      OrderedList,
-      ListItem,
-      Image,
-      TextStyle
-    ],
-    content: value,
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange(html);
-    },
-    editorProps: {
-      attributes: {
-        class: "tiptap-editor",
-        placeholder
-      }
-    }
-  });
+const RichTextEditor: React.FC<Props> = ({ label, placeholder, value, onChange }) => {
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+      ["link"],
+      ["clean"]
+    ]
+  };
 
   return (
-    <Box sx={{ padding: 2 }}>
-      <EditorContent
-        editor={editor}
-        style={{
-          border: "1px solid #ccc",
-          borderRadius: 4,
-          padding: "16px",
-          minHeight: "150px"
-        }}
-      />
-      {showPreview && (
-        <Typography variant="body2" sx={{ marginTop: 2 }}>
-          <strong>Preview:</strong> {value || "No content yet"}
+    <Box>
+      {label && (
+        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+          {label}
         </Typography>
       )}
+      <ReactQuill
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        modules={modules}
+        theme="snow"
+      />
     </Box>
   );
 };

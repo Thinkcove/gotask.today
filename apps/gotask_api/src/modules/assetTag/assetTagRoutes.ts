@@ -73,4 +73,19 @@ ResourceRoutes.push({
   }
 });
 
+ResourceRoutes.push({
+  path: "/gettagbyid/{id}",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    resourceController.getTagById(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Get all issues",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
 export default ResourceRoutes;

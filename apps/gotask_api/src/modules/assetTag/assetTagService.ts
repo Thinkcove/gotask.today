@@ -7,14 +7,15 @@ import {
   getAllIssues,
   getAllTags,
   getAssetIssueById,
-  updateAssetIssue
+  getTagById,
+  updateAssetIssue,
+  updateTag
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
 import { IAssetTag } from "../../domain/model/assetTag/assetTag";
 
 class resourceService {
-  // CREATE ASSET
-  createAssetTag = async (payload: any, user: any): Promise<any> => {
+  createOrUpdateAssetTag = async (payload: any, user: any): Promise<any> => {
     const userInfo = await findUserByEmail(user.user_id);
     if (!userInfo) {
       return {
@@ -29,12 +30,28 @@ class resourceService {
         error: AssetMessages.CREATE.INVALID_PAYLOAD
       };
     }
+
     try {
-      const asset = await createResource({ ...payload });
-      return {
-        success: true,
-        data: asset
-      };
+      let result;
+      if (payload.id) {
+        const existingTag = await getTagById(payload.id);
+        if (existingTag) {
+          result = await updateTag(payload.id, {
+            ...payload,
+            updatedBy: userInfo.user_id,
+            updatedAt: new Date()
+          });
+          return { success: true, data: result };
+        }
+      }
+
+      result = await createResource({
+        ...payload,
+        createdBy: userInfo.user_id,
+        createdAt: new Date()
+      });
+
+      return { success: true, data: result };
     } catch (error: any) {
       return {
         success: false,
@@ -136,6 +153,34 @@ class resourceService {
       return {
         success: false,
         error: error.message || AssetMessages.FETCH.ASSET_TYPE_NOT_FOUND
+      };
+    }
+  };
+
+  getTagById = async (id: string, user: any): Promise<any> => {
+    const userInfo = await findUserByEmail(user.user_id);
+    if (!userInfo) {
+      return {
+        success: false,
+        error: UserMessages.FETCH.NOT_FOUND
+      };
+    }
+    try {
+      const data = await getTagById(id);
+      if (!data) {
+        return {
+          success: false,
+          error: AssetMessages.FETCH.NOT_FOUND
+        };
+      }
+      return {
+        data,
+        success: true
+      };
+    } catch {
+      return {
+        success: false,
+        error: AssetMessages.FETCH.FAILED_TO_GET_ASSET
       };
     }
   };

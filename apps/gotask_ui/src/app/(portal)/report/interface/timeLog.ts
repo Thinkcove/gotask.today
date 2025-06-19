@@ -3,6 +3,7 @@ export interface TimeLogEntry {
   project_name?: string;
   project_id?: string;
   task_title?: string;
+  status?: string;
   task_id: string;
   date: string;
   total_time_logged: string[];
@@ -27,4 +28,5 @@ export interface TaskLog {
   task: string;
   dailyLogs: Record<string, number>;
   taskId: string;
+  status: string;
 }

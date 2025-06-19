@@ -7,37 +7,61 @@ import {
   update,
   createAssetType,
   getAllAssetsTypes,
-  getAssetTypeById
+  getAssetTypeById,
+  updateAsset
 } from "../../domain/interface/asset/asset";
-import { findUserByEmail } from "../../domain/interface/user/userInterface";
+import {
+  createResource,
+  getTagsByAssetId,
+  getTagsByTypeId,
+  updateTag
+} from "../../domain/interface/assetTag/assetTag";
+import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
 import { IAsset } from "../../domain/model/asset/asset";
-import { IAssetTag } from "../../domain/model/assetTag/assetTag";
 
 class assetService {
-  // CREATE ASSET
-  createAsset = async (payload: any, user: any): Promise<any> => {
-    const userInfo = await findUserByEmail(user.user_id);
-    if (!userInfo) {
-      return {
-        success: false,
-        error: UserMessages.FETCH.NOT_FOUND
-      };
-    }
-
+  createOrUpdateAsset = async (payload: any, user: any): Promise<any> => {
     if (!payload) {
       return {
         success: false,
         error: AssetMessages.CREATE.INVALID_PAYLOAD
       };
     }
+
     try {
-      const asset = await createAsset({
-        ...payload
-      });
-      return {
-        success: true,
-        data: asset
-      };
+      const userInfo = await findUserByEmail(user.user_id);
+      if (!userInfo) {
+        return {
+          success: false,
+          error: UserMessages.FETCH.NOT_FOUND
+        };
+      }
+
+      // Update tag if both tag and userId are provided
+      if (payload.userId && payload.tag) {
+        await updateTag(payload.tag, { userId: payload.userId });
+      }
+
+      let result;
+
+      // Update existing asset
+      if (payload.id) {
+        const existingAsset = await getAssetById(payload.id);
+        if (existingAsset) {
+          result = await updateAsset(payload.id, { ...payload });
+          return { success: true, data: result };
+        }
+      }
+
+      // Create new asset
+      result = await createAsset({ ...payload });
+
+      // Create resource if userId and asset ID exist
+      if (payload.userId && result?.id) {
+        await createResource(payload, result.id);
+      }
+
+      return { success: true, data: result };
     } catch (error: any) {
       return {
         success: false,
@@ -83,11 +107,31 @@ class assetService {
       const tagsData = await Promise.all(
         assets.map(async (tagDoc: IAsset) => {
           const tag = tagDoc.toObject();
-          const [asset] = await Promise.all([getAssetTypeById(tag.typeId)]);
+          const [asset, tagData] = await Promise.all([
+            getAssetTypeById(tag.typeId),
+            getTagsByTypeId(tag.id)
+          ]);
+
+          const tagDataWithUsers = await Promise.all(
+            (tagData || []).map(async (item: any) => {
+              const tagItem = item.toObject ? item.toObject() : item;
+              let user = null;
+
+              if (tagItem.userId) {
+                user = await findUser(item.userId);
+              }
+
+              return {
+                ...tagItem,
+                user: user || null
+              };
+            })
+          );
 
           return {
             ...tag,
-            assetType: asset || null
+            assetType: asset || null,
+            tagData: tagDataWithUsers || null
           };
         })
       );
@@ -112,9 +156,20 @@ class assetService {
       };
     }
     try {
-      const data = await getAssetById(id);
+      const data = await getAssetById(id); // use actual DB function
+      if (!data) {
+        return {
+          success: false,
+          error: AssetMessages.FETCH.NOT_FOUND
+        };
+      }
+
+      const tags = await getTagsByAssetId(data.id);
       return {
-        data,
+        data: {
+          ...data.toObject(),
+          tags
+        },
         success: true
       };
     } catch {

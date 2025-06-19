@@ -460,7 +460,10 @@
     "insuranceProvider": "Insurance provider",
     "insurancePolicyNumber": "Insurance number",
     "insuranceExpiry": "Insurance expiry",
-    "updatesuccess": "Asset updated successfully"
+    "updatesuccess": "Asset updated successfully",
+    "noasset": "Asset not found",
+    "assetdetails": "Assets Details",
+    "modelName": "Model"
   },
 
   "Chatbot": {

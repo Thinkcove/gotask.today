@@ -62,8 +62,8 @@ const updateTag = async (id: string, payload: Partial<IAssetTag>): Promise<IAsse
   ).lean();
 };
 
-const getAssetByUserId = async (userId: string) => {
-  return await AssetTag.findOne({ userId });
+const getAssetByUserId = async (userId: string): Promise<IAssetTag[]> => {
+  return await AssetTag.find({ userId });
 };
 
 export {

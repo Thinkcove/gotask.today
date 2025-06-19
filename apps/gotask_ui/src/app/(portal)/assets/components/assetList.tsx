@@ -15,6 +15,8 @@ import AssetIssueCards from "../createIssues/issuesCard";
 import CreateIssue from "../createIssues/createIssues";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 
 export const AssetList: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -190,28 +192,33 @@ export const AssetList: React.FC = () => {
         {selectedView === transasset("assets") && (
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Paper
-                sx={{
-                  p: 2,
-                  height: "100%",
-                  overflow: "auto", // allow both scroll directions
-                  display: "flex",
-                  flexDirection: "column",
-                  overflowY: "auto"
-                }}
-              >
-                <Box
+              {mappedAssets.length === 0 ? (
+                <EmptyState
+                  imageSrc={NoAssetsImage}
+                  message={
+                    searchText || modelNameFilter.length || assignedToFilter.length
+                      ? transasset("nodata")
+                      : transasset("noasset")
+                  }
+                />
+              ) : (
+                <Paper
                   sx={{
-                    width: "100%",
-                    mt: 2, // horizontal scroll
-                    flex: 1 // take remaining height
+                    p: 2,
+                    height: "100%",
+                    overflow: "auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    overflowY: "auto"
                   }}
                 >
-                  <Box sx={{ minWidth: 800 }}>
-                    <Table<IAssetDisplayRow> columns={assetColumns} rows={mappedAssets} />
+                  <Box sx={{ width: "100%", mt: 2, flex: 1 }}>
+                    <Box sx={{ minWidth: 800 }}>
+                      <Table<IAssetDisplayRow> columns={assetColumns} rows={mappedAssets} />
+                    </Box>
                   </Box>
-                </Box>
-              </Paper>
+                </Paper>
+              )}
             </Grid>
           </Grid>
         )}

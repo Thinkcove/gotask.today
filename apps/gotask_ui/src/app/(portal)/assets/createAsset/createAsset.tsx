@@ -14,6 +14,7 @@ import { User } from "../../user/interfaces/userInterface";
 import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
 import MobileInputs from "./mobileInputs";
+import { ASSET_TYPE } from "@/app/common/constants/asset";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -210,7 +211,8 @@ export const CreateAsset: React.FC = () => {
           </Grid>
 
           {/* Laptop Inputs below if type is Laptop */}
-          {(selectedAssetType?.name === "Laptop" || selectedAssetType?.name === "Mobile") && (
+          {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
+            selectedAssetType?.name === ASSET_TYPE.MOBILE) && (
             <Grid item xs={12}>
               <LaptopInputs
                 formData={formData}
@@ -221,7 +223,7 @@ export const CreateAsset: React.FC = () => {
               />
             </Grid>
           )}
-          {selectedAssetType?.name === "Mobile" && (
+          {selectedAssetType?.name === ASSET_TYPE.MOBILE && (
             <Grid item xs={12}>
               <MobileInputs formData={formData} onChange={handleInputChange} errors={errors} />
             </Grid>

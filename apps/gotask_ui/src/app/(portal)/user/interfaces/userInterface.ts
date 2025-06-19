@@ -33,7 +33,7 @@ export interface User {
   emp_id?: string;
   first_name: string;
   last_name: string;
-  assetDetails?: IAssetAttributes;
+  assetDetails?: IAssetAttributes[];
 }
 
 export interface RoleData {

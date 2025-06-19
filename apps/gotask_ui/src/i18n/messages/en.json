@@ -505,6 +505,25 @@
     "goalDesc": "Weekly Goal Description",
     "goalDescPlaceholder": "Enter your weekly goal",
     "createnewpGoal": "Create New Goal",
-    "searchplaceholder":"Search Title"
+    "searchplaceholder": "Search Title",
+    "completion": "Completion",
+    "goaltitle": "Goal Title",
+    "goaltitlePlaceholder": "Enter your goal title",
+    "startweek": "Start Week",
+    "startdate": "Start Date",
+    "endweek": "End Week",
+    "enddate": "End Date",
+    "status": "Status",
+    "statusPlaceholder": "Select Status",
+    "priority": "Priority",
+    "priorityPlaceholder": "Select Priority",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter your goal description",
+    "addcomment": "Add Comment",
+    "addcommentPlaceholder": "Enter your comment",
+    "commentlist": "Comment",
+    "cancel": "Cancel",
+    "projectgoals": "Project Goals",
+    "nodatafound": "No project goals found."
   }
 }

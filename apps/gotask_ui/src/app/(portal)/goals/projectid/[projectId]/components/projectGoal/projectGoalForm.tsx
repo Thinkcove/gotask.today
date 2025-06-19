@@ -3,6 +3,8 @@ import React from "react";
 import FormField from "@/app/component/input/formField";
 import Grid from "@mui/material/Grid/Grid";
 import { Button, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 // Shared GoalData type
 export interface GoalData {
@@ -33,12 +35,14 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
   setNewComment,
   setGoalData
 }) => {
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.WEEKLYGOAL);
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={4}>
         <FormField
-          label="Goal Title"
-          placeholder="Title"
+          label={transGoal("goaltitle")}
+          placeholder={transGoal("goaltitlePlaceholder")}
           type="text"
           value={goalData.goalTitle}
           onChange={(val) => setGoalData({ ...goalData, goalTitle: val as string })}
@@ -46,10 +50,10 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
       </Grid>
       <Grid item xs={12} sm={4}>
         <FormField
-          label="Start Week"
+          label={transGoal("startweek")}
           type="date"
           inputType="date"
-          placeholder="Start Date"
+          placeholder={transGoal("startdate")}
           value={goalData.weekStart}
           onChange={(value) => {
             if (value && (typeof value === "string" || value instanceof Date)) {
@@ -64,10 +68,10 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
       </Grid>
       <Grid item xs={12} sm={4}>
         <FormField
-          label="End Week"
+          label={transGoal("endweek")}
           type="date"
           inputType="date"
-          placeholder="End Date"
+          placeholder={transGoal("enddate")}
           value={goalData.weekEnd}
           onChange={(value) => {
             if (value && (typeof value === "string" || value instanceof Date)) {
@@ -83,9 +87,9 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
 
       <Grid item xs={12} sm={4}>
         <FormField
-          label="Status"
+          label={transGoal("status")}
           type="select"
-          placeholder="Select status"
+          placeholder={transGoal("statusPlaceholder")}
           options={statusOptions}
           value={goalData.status}
           onChange={(val) => setGoalData({ ...goalData, status: val as string })}
@@ -93,9 +97,9 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
       </Grid>
       <Grid item xs={12} sm={4}>
         <FormField
-          label="Priority"
+          label={transGoal("priority")}
           type="select"
-          placeholder="Select priority"
+          placeholder={transGoal("priorityPlaceholder")}
           options={priorityOptions}
           value={goalData.priority}
           onChange={(val) => setGoalData({ ...goalData, priority: val as string })}
@@ -103,9 +107,9 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
       </Grid>
       <Grid item xs={12} sm={4}>
         <FormField
-          label="Description"
+          label={transGoal("description")}
           type="text"
-          placeholder="Description"
+          placeholder={transGoal("descriptionPlaceholder")}
           multiline
           height={100}
           value={goalData.description}
@@ -115,9 +119,9 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
 
       <Grid item xs={12}>
         <FormField
-          label="Add Comment"
+          label={transGoal("addcomment")}
           type="text"
-          placeholder="Enter a comment"
+          placeholder={transGoal("addcommentPlaceholder")}
           value={newComment}
           onChange={(val) => setNewComment(val as string)}
         />
@@ -134,14 +138,14 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
             }
           }}
         >
-          Add Comment
+          {transGoal("addcomment")}
         </Button>
       </Grid>
 
       {goalData?.comments?.length > 0 && (
         <Grid item xs={12}>
           <Typography variant="subtitle2" sx={{ mt: 2, mb: 1, color: "#741B92" }}>
-            Comments:
+            {transGoal("commentlist")}
           </Typography>
           <ul style={{ paddingLeft: 20 }}>
             {goalData.comments.map((comment, index) => (

@@ -1,6 +1,8 @@
 import React from "react";
 import { Grid, Box, Typography } from "@mui/material";
 import GoalCard from "./GoalCard";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 export interface ProjectGoal {
   comments(comments: any): unknown;
@@ -27,12 +29,13 @@ interface ProjectGoalsProps {
 
 const ProjectGoals: React.FC<ProjectGoalsProps> = ({ projectGoals, projectId, handleEditGoal }) => {
   const filteredGoals = projectGoals.filter((goal) => goal.projectId === projectId);
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.WEEKLYGOAL);
 
   return (
     <Box sx={{ width: "100%" }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5" fontWeight={600}>
-          Project Goals
+          {transGoal("projectgoals")}
         </Typography>
       </Box>
 
@@ -47,7 +50,7 @@ const ProjectGoals: React.FC<ProjectGoalsProps> = ({ projectGoals, projectId, ha
           </Grid>
         </Box>
       ) : (
-        <Typography>No project goals found.</Typography>
+        <Typography> {transGoal("nodatafound")}</Typography>
       )}
     </Box>
   );

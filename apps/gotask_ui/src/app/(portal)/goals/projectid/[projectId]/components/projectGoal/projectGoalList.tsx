@@ -192,7 +192,7 @@ function ProjectGoalList() {
                 }}
                 onClick={() => setOpenDialog(false)}
               >
-                Cancel
+                {transGoal("cancel")}
               </Button>
               <Button
                 variant="contained"

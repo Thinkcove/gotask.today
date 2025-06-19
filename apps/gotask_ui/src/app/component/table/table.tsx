@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,23 +8,25 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Box
+  Box,
+  TablePagination
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
 
-// Styled cells
+// Styled table cell
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#D8C7DD",
-    color: theme.palette.common.white
+    color: theme.palette.common.white,
+    fontWeight: "bold"
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14
   }
 }));
 
-// Styled row
+// Styled table row
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover
@@ -36,28 +38,46 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 // Column interface
 export interface Column<T> {
-  id: keyof T;
+  id: keyof T | string;
   label: string;
   align?: "right" | "left" | "center";
-  render?: (value: T[keyof T], row: T) => React.ReactNode;
+  render?: (value: T[keyof T] | undefined, row: T) => ReactNode;
 }
 
 interface CustomTableProps<T> {
   columns: Column<T>[];
   rows: T[];
   minWidth?: number;
+  rowsPerPageOptions?: number[];
+  defaultRowsPerPage?: number;
 }
 
-// Responsive CustomTable
-const CustomTable = <T extends { [key: string]: unknown }>({
+// Generic Custom Table component
+const CustomTable = <T extends object>({
   columns,
   rows,
-  minWidth = 700
+  minWidth = 700,
+  rowsPerPageOptions = [5, 10, 25],
+  defaultRowsPerPage = 5
 }: CustomTableProps<T>) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
-    <Box sx={{ overflowX: "auto" }}>
-      <TableContainer component={Paper} sx={{ minWidth: "100%", width: "max-content" }}>
-        <Table sx={{ minWidth }} aria-label="customized table">
+    <Box sx={{ width: "100%", overflowX: "auto" }}>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth }} stickyHeader>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
@@ -68,19 +88,29 @@ const CustomTable = <T extends { [key: string]: unknown }>({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
-              <StyledTableRow key={index}>
-                {columns.map((column) => (
-                  <StyledTableCell key={String(column.id)} align={column.align || "left"}>
-                    {column.render
-                      ? column.render(row[column.id], row)
-                      : (row[column.id] as ReactNode)}
-                  </StyledTableCell>
-                ))}
+            {paginatedRows.map((row, rowIndex) => (
+              <StyledTableRow key={rowIndex}>
+                {columns.map((column) => {
+                  const value = column.id in row ? row[column.id as keyof T] : undefined;
+                  return (
+                    <StyledTableCell key={String(column.id)} align={column.align || "left"}>
+                      {column.render ? column.render(value, row) : (value as ReactNode)}
+                    </StyledTableCell>
+                  );
+                })}
               </StyledTableRow>
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={rowsPerPageOptions}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
     </Box>
   );

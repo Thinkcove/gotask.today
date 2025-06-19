@@ -6,13 +6,18 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
+  Link,
+  Box,
+  Typography
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 import { GroupedLogs, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { extractHours } from "@/app/common/utils/taskTime";
+import StatusIndicator from "@/app/component/status/statusIndicator";
+import { getStatusColor } from "@/app/common/constants/task";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -38,13 +43,13 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const dateRange = getDateRange(fromDate, toDate);
+
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
     const project = entry.project_name || transreport("noproject");
     const task = entry.task_title || transreport("notask");
 
     const date = isValid(parseISO(entry.date)) ? format(parseISO(entry.date), "yyyy-MM-dd") : null;
-
     if (!date) return acc;
 
     const timeLogged = extractHours(entry.total_time_logged || []);
@@ -64,8 +69,20 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
     if (!groupedByUser[user]) groupedByUser[user] = {};
     if (!groupedByUser[user][project]) groupedByUser[user][project] = [];
 
+    const matchedTask = data.find(
+      (d) =>
+        d.user_name === user &&
+        (d.project_name || transreport("noproject")) === project &&
+        (d.task_title || transreport("notask")) === task
+    );
+
+    const taskId = matchedTask?.task_id || "";
+    const status = matchedTask?.status || "";
+
     groupedByUser[user][project].push({
       task,
+      taskId,
+      status,
       dailyLogs: days
     });
   });
@@ -73,7 +90,6 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
   const totalTimePerUser: Record<string, number> = {};
   Object.entries(groupedByUser).forEach(([user, projects]) => {
     totalTimePerUser[user] = 0;
-
     Object.values(projects).forEach((tasks) => {
       tasks.forEach((task) => {
         (Object.values(task.dailyLogs) as number[]).forEach((hours) => {
@@ -225,9 +241,33 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
                           border: "1px solid #eee"
                         }}
                       >
-                        {taskEntry.task}
+                        <Box display="flex" flexDirection="column" gap={0.5}>
+                          {taskEntry.taskId ? (
+                            <Link
+                              href={`/task/viewTask/${taskEntry.taskId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              underline="none"
+                              sx={{
+                                color: "black",
+                                cursor: "pointer",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  textDecoration: "underline"
+                                }
+                              }}
+                            >
+                              {taskEntry.task}
+                            </Link>
+                          ) : (
+                            <Typography fontWeight={500}>{taskEntry.task}</Typography>
+                          )}
+
+                          <StatusIndicator status={taskEntry.status} getColor={getStatusColor} />
+                        </Box>
                       </TableCell>
                     )}
+
                     {dateRange.map((date) => {
                       const key = format(date, "yyyy-MM-dd");
                       const value = taskEntry.dailyLogs[key];

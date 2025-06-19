@@ -71,19 +71,29 @@ export const extractHours = (timeStrings: string[]) =>
 // Time Formatting
 // -----------------------------
 
-export const formatTimeValue = (raw: string): string => {
+export const formatTimeValue = (raw: string, showNegative = false): string => {
   if (!raw || typeof raw !== "string") return "—";
 
-  const dayMatch = raw.match(DAY_PATTERN);
-  const hourMatch = raw.match(/(\d+)h/);
+  const isNegative = raw.startsWith("-");
+  const cleanedRaw = isNegative ? raw.slice(1) : raw;
+
+  const dayMatch = cleanedRaw.match(DAY_PATTERN);
+  const hourMatch = cleanedRaw.match(HOUR_PATTERN);
+  const minuteMatch = cleanedRaw.match(MINUTE_PATTERN);
 
   const days = dayMatch ? parseInt(dayMatch[1], 10) : 0;
   const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+  const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
 
-  if (days === 0 && hours === 0) return "—";
-  if (days === 0) return `${hours}h`;
-  if (hours === 0) return `${days}d`;
-  return `${days}d ${hours}h`;
+  if (days === 0 && hours === 0 && minutes === 0) return "—";
+
+  const parts = [];
+  if (days) parts.push(`${days}d`);
+  if (hours) parts.push(`${hours}h`);
+  if (minutes) parts.push(`${minutes}m`);
+
+  const result = parts.join(" ");
+  return showNegative && isNegative ? `- ${result}` : result;
 };
 
 // -----------------------------
@@ -97,9 +107,9 @@ export const calculateTimeProgressData = (
   timeEntries: Array<{ date: string; start_time: string; end_time: string }>,
   startDate: string
 ) => {
-  const estimatedHours = convertToHours(estimatedTime || "0h");
-  const spentHours = convertToHours(spentTime || "0h");
-  const durationHours = convertToHours(userEstimated || "0h");
+  const estimatedHours = convertToHours(estimatedTime || "0h0m");
+  const spentHours = convertToHours(spentTime || "0h0m");
+  const durationHours = convertToHours(userEstimated || "0h0m");
 
   const startDateObj = new Date(startDate);
   const dueDate = new Date(startDateObj.getTime() + durationHours * 60 * 60 * 1000);

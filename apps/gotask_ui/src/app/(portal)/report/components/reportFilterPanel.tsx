@@ -58,18 +58,10 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     const value = event.target.value;
     if (value.includes("all")) {
       const allIds = usersList.map((u) => u.id);
-      if (allIds.length > 5) {
-        setUserIds(allIds.slice(0, 5));
-      } else {
-        setUserIds(userIds.length === usersList.length ? [] : allIds);
-      }
+      setUserIds(allIds);
     } else {
       const newUserIds = typeof value === "string" ? value.split(",") : value;
-      if (newUserIds.length <= 5) {
-        setUserIds(newUserIds);
-      } else {
-        setUserIds(newUserIds.slice(-5));
-      }
+      setUserIds(newUserIds);
     }
   };
 
@@ -77,21 +69,14 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     const value = event.target.value;
     if (value.includes("all")) {
       const allIds = projectsList.map((p) => p.id);
-      if (allIds.length > 5) {
-        setProjectIds(allIds.slice(0, 5));
-      } else {
-        setProjectIds(projectIds.length === projectsList.length ? [] : allIds);
-      }
+      setProjectIds(allIds);
     } else {
       const newProjectIds = typeof value === "string" ? value.split(",") : value;
-      if (newProjectIds.length <= 5) {
-        setProjectIds(newProjectIds);
-      } else {
-        setProjectIds(newProjectIds.slice(-5));
-      }
+      setProjectIds(newProjectIds);
     }
   };
 
+  // Fixed: Only clear users, not projects
   const handleClearUsers = () => {
     setUserIds([]);
   };
@@ -174,45 +159,28 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
               value={userIds}
               onChange={handleUserChange}
               input={<OutlinedInput label={transreport("userlist")} />}
-              renderValue={(selected) => {
-                const isAllSelected = selected.length === usersList.length;
-                return (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {isAllSelected ? (
+              renderValue={(selected) => (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((id) => {
+                    const user = usersList.find((u) => u.id === id);
+                    return (
                       <Chip
-                        label={`${transreport("all")} (${selected.length})`}
+                        key={id}
+                        label={user?.name || id}
                         onMouseDown={(e) => e.stopPropagation()}
                         onDelete={(e) => {
                           e.stopPropagation();
-                          setUserIds([]);
+                          setUserIds(userIds.filter((uid) => uid !== id));
                         }}
                       />
-                    ) : (
-                      selected.map((id) => {
-                        const user = usersList.find((u) => u.id === id);
-                        return (
-                          <Chip
-                            key={id}
-                            label={user?.name || id}
-                            onMouseDown={(e) => e.stopPropagation()}
-                            onDelete={(e) => {
-                              e.stopPropagation();
-                              setUserIds(userIds.filter((uid) => uid !== id));
-                            }}
-                          />
-                        );
-                      })
-                    )}
-                  </Box>
-                );
-              }}
+                    );
+                  })}
+                </Box>
+              )}
               MenuProps={userMenuProps}
             >
               <MenuItem value="all">
-                <Checkbox
-                  checked={userIds.length === usersList.length}
-                  indeterminate={userIds.length > 0 && userIds.length < usersList.length}
-                />
+                <Checkbox checked={userIds.length === usersList.length} />
                 <ListItemText primary={transreport("all")} />
               </MenuItem>
               {usersList.length > 0 ? (
@@ -227,7 +195,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
               )}
             </Select>
           </FormControl>
-          {userIds.length > 0 && userIds.length !== usersList.length && (
+          {userIds.length > 0 && (
             <IconButton
               size="small"
               onClick={handleClearUsers}
@@ -255,56 +223,43 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
               value={projectIds}
               onChange={handleProjectChange}
               input={<OutlinedInput label={transreport("projectlist")} />}
-              renderValue={(selected) => {
-                const isAllSelected = selected.length === projectsList.length;
-                return (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {isAllSelected ? (
+              renderValue={(selected) => (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((id) => {
+                    const project = projectsList.find((p) => p.id === id);
+                    return (
                       <Chip
-                        label={`${transreport("all")} (${selected.length})`}
+                        key={id}
+                        label={project?.name || id}
                         onMouseDown={(e) => e.stopPropagation()}
                         onDelete={(e) => {
                           e.stopPropagation();
-                          setProjectIds([]);
+                          setProjectIds(projectIds.filter((pid) => pid !== id));
                         }}
                       />
-                    ) : (
-                      selected.map((id) => {
-                        const project = projectsList.find((p) => p.id === id);
-                        return (
-                          <Chip
-                            key={id}
-                            label={project?.name || id}
-                            onMouseDown={(e) => e.stopPropagation()}
-                            onDelete={(e) => {
-                              e.stopPropagation();
-                              setProjectIds(projectIds.filter((pid) => pid !== id));
-                            }}
-                          />
-                        );
-                      })
-                    )}
-                  </Box>
-                );
-              }}
+                    );
+                  })}
+                </Box>
+              )}
               MenuProps={projectMenuProps}
             >
               <MenuItem value="all">
-                <Checkbox
-                  checked={projectIds.length === projectsList.length}
-                  indeterminate={projectIds.length > 0 && projectIds.length < projectsList.length}
-                />
+                <Checkbox checked={projectIds.length === projectsList.length} />
                 <ListItemText primary={transreport("all")} />
               </MenuItem>
-              {projectsList.map((project) => (
-                <MenuItem key={project.id} value={project.id}>
-                  <Checkbox checked={projectIds.includes(project.id)} />
-                  <ListItemText primary={project.name} />
-                </MenuItem>
-              ))}
+              {projectsList.length > 0 ? (
+                projectsList.map((project) => (
+                  <MenuItem key={project.id} value={project.id}>
+                    <Checkbox checked={projectIds.includes(project.id)} />
+                    <ListItemText primary={project.name} />
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem disabled>{transreport("noprojects")}</MenuItem>
+              )}
             </Select>
           </FormControl>
-          {projectIds.length > 0 && projectIds.length !== projectsList.length && (
+          {projectIds.length > 0 && (
             <IconButton
               size="small"
               onClick={handleClearProjects}

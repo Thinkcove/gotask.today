@@ -19,6 +19,7 @@ import {
 import { ProjectStory } from "@/app/(portal)/projectStory/interfaces/projectStory";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import CommentBox from "@/app/(portal)/projectStory/components/CommentBox";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
@@ -30,25 +31,25 @@ const ProjectStoryDetail = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const fetchStory = async () => {
+    try {
+      const response = await getProjectStoryById(storyId as string);
+      setStory(response?.data);
+    } catch (error) {
+      console.error("Error fetching story:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!storyId) return;
-    const fetchStory = async () => {
-      try {
-        const response = await getProjectStoryById(storyId as string);
-        setStory(response?.data);
-      } catch (error) {
-        console.error("Error fetching story:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchStory();
   }, [storyId]);
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-
       const response = await deleteProjectStory(storyId as string);
 
       const message = response?.message || "Story deleted successfully";
@@ -132,11 +133,38 @@ const ProjectStoryDetail = () => {
         <Typography variant="body1" mb={2}>
           {story.description || "No description provided."}
         </Typography>
+
         <Typography variant="caption" color="primary" display="block" mb={2}>
           Status: {story.status || "N/A"}
         </Typography>
 
-        <Divider sx={{ my: 2 }} />
+        {/* Add Comment Box */}
+        <CommentBox storyId={storyId as string} onCommentAdded={fetchStory} />
+
+        {/* Comment List */}
+        <Box mt={2}>
+          <Typography variant="h6" fontWeight={600} mb={1}>
+            Comments
+          </Typography>
+          {story?.comments?.length ? (
+            story.comments.map((comment, index) => (
+              <Box key={index} mb={1} p={1} border="1px solid #ccc" borderRadius={2}>
+                <Typography variant="body2" fontWeight={500}>
+                  {comment.comment}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  By: {comment.user_id} • {new Date(comment.created_at).toLocaleString()}
+                </Typography>
+              </Box>
+            ))
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No comments yet.
+            </Typography>
+          )}
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
 
         {/* Task Section */}
         <Box>
@@ -153,7 +181,7 @@ const ProjectStoryDetail = () => {
             </Button>
           </Box>
 
-          {/* Placeholder for Tasks - replace this with your task list component */}
+          {/* Placeholder for Tasks */}
           <Typography variant="body2" color="text.secondary">
             No tasks linked to this story yet.
           </Typography>

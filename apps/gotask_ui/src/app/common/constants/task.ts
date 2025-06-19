@@ -18,6 +18,10 @@ export const getStatusColor = (status: string): string => {
       return "#CE93D8";
     case "completed":
       return "#4CAF50";
+    case "not-started":
+      return "#B0BEC5";
+    case "blocked":
+      return "#D32F2F";
     default:
       return "000000";
   }

@@ -11,7 +11,11 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import SearchBar from "@/app/component/searchBar/searchBar";
 
 import ProjectGoals, { ProjectGoal } from "./projectGoals";
-import { createWeeklyGoal, fetchWeeklyGoals, updateWeeklyGoal } from "@/app/(portal)/goals/service/projectGoalAction";
+import {
+  createWeeklyGoal,
+  fetchWeeklyGoals,
+  updateWeeklyGoal
+} from "@/app/(portal)/goals/service/projectGoalAction";
 import ProjectGoalForm from "./projectGoalForm";
 
 // Define the GoalData type
@@ -217,25 +221,16 @@ function ProjectGoalList() {
           />
         </Box>
       ) : (
-        <Box
-          sx={{
-            borderRadius: 4,
-            p: 4,
-            bgcolor: "#f9fafb",
-            border: "1px solid #e0e0e0"
-          }}
-        >
-          <ProjectGoals
-            projectGoals={filteredGoals}
-            isLoading={isLoading}
-            error={!!error}
-            formatStatus={formatStatus}
-            handelOpen={handelOpen}
-            openDialog={openDialog}
-            handleEditGoal={handleEditGoal}
-            projectId={projectID}
-          />
-        </Box>
+        <ProjectGoals
+          projectGoals={filteredGoals}
+          isLoading={isLoading}
+          error={!!error}
+          formatStatus={formatStatus}
+          handelOpen={handelOpen}
+          openDialog={openDialog}
+          handleEditGoal={handleEditGoal}
+          projectId={projectID}
+        />
       )}
     </Box>
   );

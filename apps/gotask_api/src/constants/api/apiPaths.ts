@@ -68,5 +68,6 @@ export const API_PATHS = {
 
   //userpreference
   SET_USER_PREFERENCES: "/setPreference",
-  GET_USER_PREFERENCES: "/getPreference"
+  GET_USER_PREFERENCES: "/getPreference",
+
 };

@@ -10,7 +10,8 @@ export const APPLICATIONS = {
   UPLOAD: "Upload",
   PROJECT_STORY: "Project Story",
   ASSET: "Asset and Resources",
-  WORK_PLANNED: "WORK_PLANNED"
+  WORK_PLANNED: "WORK_PLANNED",
+  Project_GOAL: "Project Goal"
 } as const;
 
 export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];

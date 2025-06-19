@@ -10,6 +10,8 @@ export const getAssetColumns = (
   { id: "assetName", label: transasset("type") },
   { id: "modelName", label: transasset("model") },
   { id: "purchaseDate", label: transasset("purchaseDate") },
+  { id: "users", label: transasset("assignedTo") },
+  { id: "encrypted", label: transasset("isencrypted") },
   {
     id: "actions",
     label: transasset("actions"),

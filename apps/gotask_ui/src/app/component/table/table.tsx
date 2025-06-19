@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,7 +8,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Box
+  Box,
+  TablePagination
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
@@ -47,14 +48,36 @@ interface CustomTableProps<T> {
   columns: Column<T>[];
   rows: T[];
   minWidth?: number;
+  rowsPerPageOptions?: number[];
+  defaultRowsPerPage?: number;
 }
 
 // Generic Custom Table component
-const CustomTable = <T extends object>({ columns, rows, minWidth = 700 }: CustomTableProps<T>) => {
+const CustomTable = <T extends object>({
+  columns,
+  rows,
+  minWidth = 700,
+  rowsPerPageOptions = [5, 10, 25],
+  defaultRowsPerPage = 5
+}: CustomTableProps<T>) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
-    <Box sx={{ overflowX: "auto" }}>
-      <TableContainer component={Paper} sx={{ minWidth: "100%", width: "max-content" }}>
-        <Table sx={{ minWidth }} aria-label="customized table">
+    <Box sx={{ width: "100%", overflowX: "auto" }}>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth }} stickyHeader>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
@@ -65,10 +88,9 @@ const CustomTable = <T extends object>({ columns, rows, minWidth = 700 }: Custom
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, rowIndex) => (
+            {paginatedRows.map((row, rowIndex) => (
               <StyledTableRow key={rowIndex}>
                 {columns.map((column) => {
-                  // Safely fetch value if column.id exists in row
                   const value = column.id in row ? row[column.id as keyof T] : undefined;
                   return (
                     <StyledTableCell key={String(column.id)} align={column.align || "left"}>
@@ -80,6 +102,15 @@ const CustomTable = <T extends object>({ columns, rows, minWidth = 700 }: Custom
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={rowsPerPageOptions}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
     </Box>
   );

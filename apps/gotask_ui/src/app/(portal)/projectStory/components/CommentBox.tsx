@@ -1,9 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import useSWR from "swr";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { addCommentToProjectStory } from "../services/projectStoryService";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { useTranslations } from "next-intl";
+
+// Utility to get userId from localStorage
+const getUserId = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("userId");
+  }
+  return null;
+};
+
+const fetchUserId = async () => getUserId();
 
 interface CommentBoxProps {
   storyId: string;
@@ -11,28 +23,28 @@ interface CommentBoxProps {
 }
 
 const CommentBox: React.FC<CommentBoxProps> = ({ storyId, onCommentAdded }) => {
+  const { data: userId } = useSWR("userId", fetchUserId, {
+    revalidateOnFocus: false
+  });
+
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
-  const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
-  const [userId, setUserId] = useState<string | null>(null);
+  const [snack, setSnack] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
 
-  useEffect(() => {
-    const storedUserId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
-    setUserId(storedUserId);
-
-    if (!storedUserId) {
-      console.warn("⚠️ No userId found in localStorage. Make sure it's set during login.");
-    }
-  }, []);
+  const t = useTranslations("Projects.Stories");
 
   const handleSubmit = async () => {
     if (!comment.trim()) {
-      setSnack({ open: true, message: "Comment cannot be empty", severity: "error" });
+      setSnack({ open: true, message: t("commentempty"), severity: "error" });
       return;
     }
 
     if (!userId) {
-      setSnack({ open: true, message: "Unable to identify user", severity: "error" });
+      setSnack({ open: true, message: t("usernotidentified"), severity: "error" });
       return;
     }
 
@@ -42,11 +54,12 @@ const CommentBox: React.FC<CommentBoxProps> = ({ storyId, onCommentAdded }) => {
         user_id: userId,
         comment
       });
-      setSnack({ open: true, message: "Comment added!", severity: "success" });
+
+      setSnack({ open: true, message: t("commentaddsuccess"), severity: "success" });
       setComment("");
-      onCommentAdded(); // Refresh story detail
+      onCommentAdded();
     } catch (err) {
-      setSnack({ open: true, message: "Failed to add comment", severity: "error" });
+      setSnack({ open: true, message: t("commentaddfail"), severity: "error" });
     } finally {
       setLoading(false);
     }
@@ -55,16 +68,16 @@ const CommentBox: React.FC<CommentBoxProps> = ({ storyId, onCommentAdded }) => {
   return (
     <Box mt={3}>
       <Typography fontWeight={600} mb={1}>
-        Add Comment
+        {t("addcomment")}
       </Typography>
       <TextField
-        label="Your Comment"
+        label={t("commentlabel")}
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         fullWidth
         multiline
         rows={3}
-        placeholder="Type your comment here"
+        placeholder={t("commentplaceholder")}
       />
       <Box mt={1} display="flex" justifyContent="flex-end">
         <Button
@@ -73,7 +86,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({ storyId, onCommentAdded }) => {
           disabled={loading}
           sx={{ backgroundColor: "#741B92", textTransform: "none", borderRadius: 2 }}
         >
-          Submit
+          {t("submit")}
         </Button>
       </Box>
 

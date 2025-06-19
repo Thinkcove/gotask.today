@@ -161,7 +161,16 @@
       "createdat": "Created At",
       "viewdetails": "View Details",
       "projectStories": "Project Stories",
-      "editStory": "Edit Story"
+      "editStory": "Edit Story",
+
+       "addcomment": "Add Comment",
+    "commentlabel": "Your Comment",
+    "commentplaceholder": "Type your comment here",
+    "submit": "Submit",
+    "commentempty": "Comment cannot be empty",
+    "usernotidentified": "Unable to identify user",
+    "commentaddsuccess": "Comment added!",
+    "commentaddfail": "Failed to add comment"
     } 
   },
   "Role": {

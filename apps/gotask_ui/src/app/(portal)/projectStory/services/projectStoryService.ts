@@ -2,7 +2,6 @@ import env from "@/app/common/env";
 import { getData, postData, putData, deleteData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import {
-  ProjectStory,
   CreateStoryPayload,
   UpdateStoryPayload,
   AddCommentPayload

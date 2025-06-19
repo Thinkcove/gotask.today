@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
   CircularProgress,
-  TextField
+  TextField,
+  IconButton,
+  Tooltip,
+  Typography
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -14,6 +17,8 @@ import {
 } from "../services/projectStoryService";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import Heading from "@/app/component/header/title";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useSWR from "swr";
 
 const EditStoryForm = () => {
   const { storyId, projectId } = useParams();
@@ -21,7 +26,6 @@ const EditStoryForm = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTitleError, setShowTitleError] = useState(false);
 
@@ -31,31 +35,30 @@ const EditStoryForm = () => {
 
   const handleCloseSnackbar = () => setSnackOpen(false);
 
-  useEffect(() => {
-    if (!storyId) return;
+  // SWR Fetcher
+  const fetchStory = async () => {
+    const response = await getProjectStoryById(storyId as string);
+    return response?.data;
+  };
 
-    const fetchStory = async () => {
-      try {
-        const response = await getProjectStoryById(storyId as string);
-        const story = response?.data;
-        if (story) {
-          setTitle(story.title || "");
-          setDescription(story.description || "");
-        } else {
-          throw new Error("Story not found");
-        }
-      } catch (error) {
-        console.error("Failed to load story:", error);
-        setSnackMessage("Failed to load story.");
-        setSnackSeverity("error");
-        setSnackOpen(true);
-      } finally {
-        setLoading(false);
+  const { data: story, isLoading, error } = useSWR(
+    storyId ? [`projectStory`, storyId] : null,
+    fetchStory,
+    {
+      onSuccess: (data) => {
+        setTitle(data?.title || "");
+        setDescription(data?.description || "");
       }
-    };
+    }
+  );
 
-    fetchStory();
-  }, [storyId]);
+  useEffect(() => {
+    if (error) {
+      setSnackMessage("Failed to load story.");
+      setSnackSeverity("error");
+      setSnackOpen(true);
+    }
+  }, [error]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +94,7 @@ const EditStoryForm = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box textAlign="center" mt={4}>
         <CircularProgress />
@@ -99,10 +102,16 @@ const EditStoryForm = () => {
     );
   }
 
+  if (!story) {
+    return (
+      <Box textAlign="center" mt={4}>
+        <Typography color="error">Story not found.</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box
-      component="form"
-      onSubmit={handleSubmit}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -115,103 +124,135 @@ const EditStoryForm = () => {
         overflow: "hidden"
       }}
     >
-      {/* Scrollable content */}
       <Box
+        component="form"
+        onSubmit={handleSubmit}
         sx={{
-          flex: 1,
-          overflowY: "auto",
-          pr: 1,
           display: "flex",
           flexDirection: "column",
-          gap: 2
+          flex: 1
         }}
       >
-        <Heading title="Edit Story" />
-
-        {/* Title */}
-        <TextField
-          label="Title"
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-            setShowTitleError(false);
-          }}
-          fullWidth
-          required
-          autoFocus
-          placeholder="Update story title"
-          error={showTitleError}
-          helperText={showTitleError ? "Title is required" : " "}
-          InputLabelProps={{ shrink: true }}
+        <Box
           sx={{
-            maxWidth: 400,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 1,
-              backgroundColor: "#fff",
-              "& fieldset": { borderColor: "#ccc" },
-              "&:hover fieldset": { borderColor: "#741B92" },
-              "&.Mui-focused fieldset": { borderColor: "#741B92" },
-              "& input": { py: "16px" }
+            flex: 1,
+            overflowY: "auto",
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            gap: 2
+          }}
+        >
+          <Box display="flex" alignItems="center" gap={1}>
+            <Tooltip title="Back to Story Details">
+              <IconButton
+                onClick={() =>
+                  router.push(`/project/viewProject/${projectId}/stories/${storyId}`)
+                }
+                color="primary"
+              >
+                <ArrowBackIcon />
+              </IconButton>
+            </Tooltip>
+            <Heading title="Edit Story" />
+          </Box>
+
+          {/* Title Field */}
+          <Box sx={{ maxWidth: 400, width: "100%" }}>
+            <TextField
+              label="Title"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setShowTitleError(false);
+              }}
+              fullWidth
+              required
+              autoFocus
+              placeholder="Update story title"
+              error={showTitleError}
+              helperText={showTitleError ? "Title is required" : " "}
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 1,
+                  backgroundColor: "#fff",
+                  "& fieldset": { borderColor: "#ccc" },
+                  "&:hover fieldset": { borderColor: "#741B92" },
+                  "&.Mui-focused fieldset": { borderColor: "#741B92" },
+                  "& input": { py: "16px" }
+                }
+              }}
+            />
+          </Box>
+
+          {/* Description Field */}
+          <Box sx={{ width: "100%" }}>
+            <TextField
+              label="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              fullWidth
+              multiline
+              rows={12}
+              margin="normal"
+              placeholder="Update story description"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 1,
+                  backgroundColor: "#fff",
+                  "& fieldset": { borderColor: "#ccc" },
+                  "&:hover fieldset": { borderColor: "#741B92" },
+                  "&.Mui-focused fieldset": { borderColor: "#741B92" }
+                }
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/* Footer Buttons */}
+        <Box
+          sx={{
+            borderTop: "1px solid #eee",
+            pt: 2,
+            mt: 2,
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 1
+          }}
+        >
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() =>
+              router.push(`/project/viewProject/${projectId}/stories/${storyId}`)
             }
-          }}
-        />
+            sx={{
+              minWidth: 120,
+              borderRadius: 1,
+              textTransform: "none",
+              "&:hover": { bgcolor: "#f5f5f5" }
+            }}
+          >
+            Cancel
+          </Button>
 
-        {/* Description */}
-        <TextField
-          label="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          fullWidth
-          multiline
-          rows={6}
-          margin="normal"
-          placeholder="Update story description"
-        />
-      </Box>
-
-      {/* Footer Buttons */}
-      <Box
-        sx={{
-          borderTop: "1px solid #eee",
-          pt: 2,
-          mt: 2,
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: 1,
-          backgroundColor: "white"
-        }}
-      >
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() =>
-            router.push(`/project/viewProject/${projectId}/stories/${storyId}`)
-          }
-          sx={{
-            minWidth: 120,
-            borderRadius: 1,
-            textTransform: "none",
-            "&:hover": { bgcolor: "#f5f5f5" }
-          }}
-        >
-          Cancel
-        </Button>
-
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={isSubmitting}
-          sx={{
-            minWidth: 120,
-            borderRadius: 1,
-            textTransform: "none",
-            bgcolor: "#741B92",
-            "&:hover": { bgcolor: "#5e1675" }
-          }}
-        >
-          {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Update Story"}
-        </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={isSubmitting}
+            sx={{
+              minWidth: 120,
+              borderRadius: 1,
+              textTransform: "none",
+              bgcolor: "#741B92",
+              "&:hover": { bgcolor: "#5e1675" }
+            }}
+          >
+            {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Update Story"}
+          </Button>
+        </Box>
       </Box>
 
       {/* Snackbar */}

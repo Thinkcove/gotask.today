@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
-import { ArrowBack, Delete, Edit } from "@mui/icons-material";
+import { ArrowBack, Delete } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
 import { useAllUsers } from "@/app/(portal)/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
@@ -32,7 +32,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const router = useRouter();
   const handleBack = () => {
     setTimeout(() => router.back(), 2000);
@@ -51,6 +51,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   );
   const { projectId } = useParams();
   const projectID = projectId as string;
+
   const handleAddUser = async () => {
     setOpen(false);
     try {
@@ -70,18 +71,19 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
       });
     }
   };
+
   const onClose = () => {
     setSelectedUserIds([]);
     setOpen(false);
   };
 
   const handleDelete = async () => {
-    if (!selectedUserId) return; // If no user selected, do nothing
+    if (!selectedUserId) return;
     try {
-      const response = await removeUsersFromProject([selectedUserId], projectID); // send array with 1 id
+      const response = await removeUsersFromProject([selectedUserId], projectID);
       await mutate();
       setOpenDeleteDialog(false);
-      setSelectedUserId(null); // clear after deletion
+      setSelectedUserId(null);
       setSnackbar({
         open: true,
         message: response.message,
@@ -106,7 +108,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
       >
-        {/* Project and Users Info */}
         <Box
           sx={{
             borderRadius: 4,
@@ -115,19 +116,26 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             border: "1px solid #e0e0e0"
           }}
         >
-          {/* User Info Header */}
           <Box display="flex" alignItems="center" mb={3}>
-  <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
-    <ArrowBack />
-  </IconButton>
-  <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-    <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+            <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
+              <ArrowBack />
+            </IconButton>
+
+            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+  <Box>
+    <Stack direction="row" alignItems="center" spacing={2}>
+      <Typography
+        variant="h4"
+        fontWeight={700}
+        sx={{ textTransform: "capitalize", whiteSpace: "nowrap" }}
+      >
         {project.name}
       </Typography>
-      <StatusIndicator status={project.status} getColor={getStatusColor} />
-    </Box>
-    <Box display="flex" alignItems="center" gap={1}>
+
+      {/* Vertical Divider */}
+      <Divider orientation="vertical" flexItem sx={{ bgcolor: "#ccc" }} />
+
+      {/* View Stories Button */}
       <Button
         variant="outlined"
         color="primary"
@@ -137,17 +145,15 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
       >
         View Stories
       </Button>
-      {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
-        <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
-          <Edit />
-        </IconButton>
-      )}
-    </Box>
+    </Stack>
+
+    {/* Project Status */}
+    <StatusIndicator status={project.status} getColor={getStatusColor} />
   </Box>
 </Box>
 
+          </Box>
 
-          {/* Basic Details */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
               <LabelValueText
@@ -163,16 +169,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 value={project.createdAt ? <FormattedDateTime date={project.createdAt} /> : "-"}
               />
             </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transproject("detailupdateon")}
-                value={project.updatedAt ? <FormattedDateTime date={project.updatedAt} /> : "-"}
-              />
-            </Grid>
           </Grid>
           <Divider sx={{ mb: 4 }} />
 
-          {/* Assignees Section */}
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h5" fontWeight={600}>
               {transproject("detailassignee")}
@@ -181,17 +180,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               <Button
                 variant="contained"
                 onClick={() => setOpen(true)}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2
-                }}
+                sx={{ textTransform: "none", borderRadius: 2 }}
               >
                 {transproject("detailaddassignee")}
               </Button>
             )}
           </Box>
 
-          {/* Users Grid */}
           <Grid container spacing={3} sx={{ maxHeight: "500px", overflowY: "auto" }}>
             {project.users.length > 0 ? (
               project.users.map((user) => (
@@ -205,37 +200,24 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       justifyContent: "space-between",
                       bgcolor: "#ffffff",
                       border: "1px solid #e0e0e0",
-                      overflow: "hidden", // prevent child overflow
-                      flexWrap: "wrap" // allow wrapping if content grows
+                      overflow: "hidden",
+                      flexWrap: "wrap"
                     }}
                   >
-                    <Stack
-                      direction="row"
-                      spacing={2}
-                      alignItems="center"
-                      sx={{ minWidth: 0, flex: 1 }}
-                    >
+                    <Stack direction="row" spacing={2} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
                       <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
-
                       <Box sx={{ minWidth: 0 }}>
                         <Typography
                           fontWeight={600}
                           fontSize="1rem"
-                          sx={{
-                            textTransform: "capitalize",
-                            wordBreak: "break-word",
-                            maxWidth: 200 // adjust as needed
-                          }}
+                          sx={{ textTransform: "capitalize", wordBreak: "break-word", maxWidth: 200 }}
                         >
                           {user.name}
                         </Typography>
                         <Typography
                           variant="body2"
                           color="text.secondary"
-                          sx={{
-                            wordBreak: "break-word",
-                            maxWidth: 200 // adjust as needed
-                          }}
+                          sx={{ wordBreak: "break-word", maxWidth: 200 }}
                         >
                           {user.user_id}
                         </Typography>
@@ -252,9 +234,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                           }}
                           sx={{
                             transition: "0.2s ease",
-                            "&:hover": {
-                              transform: "scale(1.1)"
-                            }
+                            "&:hover": { transform: "scale(1.1)" }
                           }}
                         >
                           <Delete />
@@ -271,7 +251,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             )}
           </Grid>
         </Box>
-        {/* Add User Dialog */}
+
         <CommonDialog
           open={open}
           onClose={onClose}
@@ -288,6 +268,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             onChange={(ids) => setSelectedUserIds(ids as string[])}
           />
         </CommonDialog>
+
         <EditProject
           open={editOpen}
           onClose={() => setEditOpen(false)}
@@ -295,6 +276,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           mutate={mutate}
           projectID={projectID}
         />
+
         <CommonDialog
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
@@ -310,6 +292,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             {transproject("removeusernote2")}
           </Typography>
         </CommonDialog>
+
         <CustomSnackbar
           open={snackbar.open}
           message={snackbar.message}

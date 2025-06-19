@@ -1,5 +1,3 @@
-// /app/(portal)/project/[projectId]/stories/[storyId]/page.tsx
-
 "use client";
 
 import React from "react";
@@ -7,9 +5,10 @@ import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import ProjectStoryDetail from "../../../../../projectStory/components/ProjectStoryDetail";
 import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const StoryDetailPage = () => {
-  const t = useTranslations();
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   return (
     <Box
@@ -23,7 +22,7 @@ const StoryDetailPage = () => {
       }}
     >
       {/* Header Section */}
-      <ModuleHeader name={t("Projects.Stories.projectStories")} />
+      <ModuleHeader name={t("Stories.projectStories")} />
 
       {/* Content Section */}
       <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>

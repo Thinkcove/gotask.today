@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React from "react";
 import {
   Box,
   Typography,
@@ -12,11 +11,13 @@ import {
   Button
 } from "@mui/material";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
+import { useParams, useRouter } from "next/navigation";
+import useSWR from "swr";
+
 import {
   getProjectStoryById,
   deleteProjectStory
 } from "@/app/(portal)/projectStory/services/projectStoryService";
-import { ProjectStory } from "@/app/(portal)/projectStory/interfaces/projectStory";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import CommentBox from "@/app/(portal)/projectStory/components/CommentBox";
@@ -25,34 +26,25 @@ const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
 
-  const [story, setStory] = useState<ProjectStory | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  // SWR: Fetch story using existing service
+  const {
+    data: story,
+    isLoading,
+    mutate
+  } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
+    getProjectStoryById(storyId as string).then((res) => res?.data)
+  );
 
-  const fetchStory = async () => {
-    try {
-      const response = await getProjectStoryById(storyId as string);
-      setStory(response?.data);
-    } catch (error) {
-      console.error("Error fetching story:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!storyId) return;
-    fetchStory();
-  }, [storyId]);
+  const [snackbar, setSnackbar] = React.useState({ open: false, message: "", severity: "success" });
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
       const response = await deleteProjectStory(storyId as string);
-
       const message = response?.message || "Story deleted successfully";
+
       setSnackbar({ open: true, message, severity: "success" });
 
       setTimeout(() => router.push(`/project/viewProject/${projectId}/stories`), 500);
@@ -65,7 +57,7 @@ const ProjectStoryDetail = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box textAlign="center" mt={4}>
         <CircularProgress />
@@ -138,8 +130,8 @@ const ProjectStoryDetail = () => {
           Status: {story.status || "N/A"}
         </Typography>
 
-        {/* Add Comment Box */}
-        <CommentBox storyId={storyId as string} onCommentAdded={fetchStory} />
+        {/* Comment Box */}
+        <CommentBox storyId={storyId as string} onCommentAdded={() => mutate()} />
 
         {/* Comment List */}
         <Box mt={2}>
@@ -147,7 +139,7 @@ const ProjectStoryDetail = () => {
             Comments
           </Typography>
           {story?.comments?.length ? (
-            story.comments.map((comment, index) => (
+            story.comments.map((comment: { comment: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; user_id: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; created_at: string | number | Date; }, index: React.Key | null | undefined) => (
               <Box key={index} mb={1} p={1} border="1px solid #ccc" borderRadius={2}>
                 <Typography variant="body2" fontWeight={500}>
                   {comment.comment}
@@ -181,14 +173,14 @@ const ProjectStoryDetail = () => {
             </Button>
           </Box>
 
-          {/* Placeholder for Tasks */}
+          {/* Placeholder */}
           <Typography variant="body2" color="text.secondary">
             No tasks linked to this story yet.
           </Typography>
         </Box>
       </Box>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Dialog */}
       <CommonDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}

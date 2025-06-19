@@ -156,9 +156,12 @@
     "placeholdeselect": "Select Assignees to the project",
     "searchplaceholder": "Search Projects",
     "Stories": {
-      "projectStories": "Project Stories",
       "noStoriesFound": "No stories found for this project.",
-      "createStory": "Create Story"
+      "createStory": "Create Story",
+      "createdat": "Created At",
+      "viewdetails": "View Details",
+      "projectStories": "Project Stories",
+      "editStory": "Edit Story"
     } 
   },
   "Role": {

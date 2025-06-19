@@ -3,10 +3,10 @@
 import React from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import CreateStoryForm from "../../../../../projectStory/components/CreateStoryForm";
+import EditStoryForm from "../../../../../../projectStory/components/EditStoryForm";
 import { useTranslations } from "next-intl";
 
-const CreateStoryPage = () => {
+const EditStoryPage = () => {
   const t = useTranslations();
 
   return (
@@ -17,15 +17,15 @@ const CreateStoryPage = () => {
         height: "100vh",
         m: 0,
         p: 0,
-        overflow: "hidden",
+        overflow: "hidden"
       }}
     >
-      <ModuleHeader name={t("Projects.Stories.createStory")} />
+      <ModuleHeader name={t("Projects.Stories.editStory")} />
       <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
-        <CreateStoryForm />
+        <EditStoryForm />
       </Box>
     </Box>
   );
 };
 
-export default CreateStoryPage;
+export default EditStoryPage;

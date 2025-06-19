@@ -95,6 +95,7 @@ class ProjectStoryController extends BaseController {
       return this.replyError(err);
     }
   }
+  
   async updateStory(requestHelper: RequestHelper, handler: any) {
     try {
       const { storyId } = requestHelper.getAllParams();

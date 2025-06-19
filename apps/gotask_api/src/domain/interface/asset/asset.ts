@@ -19,12 +19,34 @@ const getAssetById = async (id: string): Promise<IAsset | null> => {
   return await Asset.findOne({ id });
 };
 
+const getAssetTypeById = async (id: string): Promise<IAsset | null> => {
+  return await AssetType.findOne({ id });
+};
+
 const getAllAssets = async (): Promise<IAsset[]> => {
   return await Asset.find();
 };
 
+export const updateAsset = async (id: string, payload: Partial<IAsset>): Promise<IAsset | null> => {
+  return await Asset.findOneAndUpdate(
+    { id },
+    { $set: payload },
+    {
+      new: true,
+      runValidators: true
+    }
+  ).lean();
+};
 const update = async (asset: IAsset): Promise<IAsset> => {
   return await asset.save();
 };
 
-export { createAsset, getAssetById, getAllAssets, update, createAssetType, getAllAssetsTypes };
+export {
+  createAsset,
+  getAssetById,
+  getAllAssets,
+  update,
+  createAssetType,
+  getAllAssetsTypes,
+  getAssetTypeById
+};

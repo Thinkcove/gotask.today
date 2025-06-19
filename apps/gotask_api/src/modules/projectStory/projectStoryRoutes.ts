@@ -77,4 +77,17 @@ routes.push({
   }
 });
 
+// Get all tasks by storyId
+routes.push({
+  method: API_METHODS.GET,
+  path: "/story/{storyId}/tasks",
+  handler: (req: Request, h: ResponseToolkit) =>
+    controller.getTasksByStoryId(new RequestHelper(req), h),
+  options: {
+    notes: "Get all tasks linked to a specific story",
+    tags,
+    auth: { strategy: authStrategy.SIMPLE }
+  }
+});
+
 export default routes;

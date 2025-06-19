@@ -6,7 +6,8 @@ import {
   getStoryByIdService,
   addCommentToStory,
   updateStoryService,
-  deleteStoryService
+  deleteStoryService,
+  getTasksByStoryId
 } from "./projectStoryService";
 import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
 
@@ -135,6 +136,24 @@ class ProjectStoryController extends BaseController {
       });
     } catch (err: any) {
       return this.replyError(err);
+    }
+  }
+
+  async getTasksByStoryId(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { storyId } = requestHelper.getAllParams();
+      if (!storyId) {
+        return this.replyError(new Error(storyMessages.TASK.FETCH_FAILED));
+      }
+
+      const tasks = await getTasksByStoryId(storyId);
+
+      return this.sendResponse(handler, {
+        message: storyMessages.TASK.FETCH_SUCCESS,
+        data: tasks
+      });
+    } catch (err: any) {
+      return this.replyError(err, handler);
     }
   }
 }

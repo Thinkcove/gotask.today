@@ -1,4 +1,13 @@
-import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Grid,
+  IconButton,
+  Divider,
+  CircularProgress,
+  Container,
+  Button
+} from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -16,6 +25,9 @@ import TaskComments from "../../editTask/taskComments";
 import { createComment } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import { useState } from "react";
+import RichMarkdownEditor from "@/app/component/richText/richText";
+import RichEditor from "@/app/component/richText/richText";
 
 interface TaskDetailViewProps {
   task: ITask;
@@ -24,6 +36,12 @@ interface TaskDetailViewProps {
 }
 
 const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
+  const [comment, setComment] = useState("");
+
+  const handleSubmit = () => {
+    console.log("Submitted HTML:", comment);
+    // Send to backend or API here
+  };
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { user } = useUser();
   const router = useRouter();
@@ -72,7 +90,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
       </>
     );
   }
-
   return (
     <>
       <ModuleHeader name={transtask("tasks")} />
@@ -152,7 +169,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 {task.description || "-"}
               </Typography>
             </Box>
-
             {/* Meta Info */}
             <Grid container spacing={2} mb={3}>
               <Grid item xs={4} sm={6} md={4}>
@@ -229,10 +245,16 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 />
               </Grid>
             </Grid>
-
             <Divider sx={{ mt: 2, mb: 2 }} />
-
-            <TaskComments comments={task?.comment || []} onSave={submitComment} mutate={mutate} />
+            {/* <TaskComments comments={task?.comment || []} onSave={submitComment} mutate={mutate} /> */}
+            <Container maxWidth="sm">
+              <Box sx={{ my: 2 }}>
+                <RichEditor content={comment} onUpdate={setComment} />
+              </Box>
+              <Button variant="contained" onClick={handleSubmit}>
+                Post Comment
+              </Button>
+            </Container>
           </Box>
         </Box>
       </Box>

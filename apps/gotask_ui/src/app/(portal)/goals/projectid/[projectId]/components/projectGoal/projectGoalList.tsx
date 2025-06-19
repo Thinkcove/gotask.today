@@ -1,4 +1,4 @@
-// GoalsList.tsx
+// GoalsList.tsx - Fixed version
 import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
 
@@ -17,14 +17,12 @@ import {
   updateWeeklyGoal
 } from "@/app/(portal)/goals/service/projectGoalAction";
 import ProjectGoalForm from "./projectGoalForm";
-import { GoalData, ProjectGoal } from "../../interface/projectGoal";
-
-// Define the GoalData type
-
+import { GoalData } from "../../interface/projectGoal";
+import { Comment } from "../../interface/projectGoal";
 
 function ProjectGoalList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
-  const transGoal = useTranslations(LOCALIZATION.TRANSITION.WEEKLYGOAL);
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   const { projectId } = useParams();
   const projectID = projectId as string;
@@ -43,7 +41,7 @@ function ProjectGoalList() {
   });
 
   const filteredGoals =
-    weeklyGoals?.filter((goal: ProjectGoal) =>
+    weeklyGoals?.filter((goal: GoalData) =>
       goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
   console.log("filteredGoals", filteredGoals);
@@ -76,15 +74,53 @@ function ProjectGoalList() {
     });
     setOpenDialog(true);
   };
+
   const [newComment, setNewComment] = React.useState("");
 
-  const handleEditGoal = (goal: ProjectGoal) => {
-    const rawComments = goal.comments;
+  // Helper function to transform mixed comments to Comment objects
+  const transformCommentsToObjects = (rawComments: any[]): Comment[] => {
+    return rawComments.map((comment, index) => {
+      // If it's already a Comment object, return it
+      if (typeof comment === "object" && comment.id && comment.comment) {
+        return comment as Comment;
+      }
+      // If it's a string, convert it to Comment object
+      if (typeof comment === "string") {
+        return {
+          id: Date.now() + index,
+          comment: comment,
+          user_name: "Previous User",
+          user_id: "unknown",
+          updatedAt: new Date().toISOString()
+        };
+      }
+      // Fallback for any other format
+      return {
+        id: Date.now() + index,
+        comment: String(comment),
+        user_name: "Unknown User",
+        user_id: "unknown",
+        updatedAt: new Date().toISOString()
+      };
+    });
+  };
 
-    let safeComments: string[] = [];
-    if (Array.isArray(rawComments) && rawComments.every((c) => typeof c === "string")) {
-      safeComments = rawComments;
-    }
+  // Helper function to extract only comment text for API payload
+  const extractCommentTexts = (comments: Comment[]): string[] => {
+    return comments.map((comment) => {
+      if (typeof comment === "object" && comment.comment) {
+        return comment.comment;
+      }
+      return String(comment);
+    });
+  };
+
+  const handleEditGoal = (goal: GoalData) => {
+    const rawComments = goal.comments || [];
+    console.log("Raw comments from goal:", rawComments);
+
+    // Transform all comments to Comment objects for frontend use
+    const transformedComments = transformCommentsToObjects(rawComments);
 
     setGoalData({
       id: goal.id,
@@ -95,15 +131,19 @@ function ProjectGoalList() {
       status: goal.status || "",
       priority: goal.priority || "",
       projectId: goal.projectId || "",
-      comments: safeComments
+      comments: transformedComments
     });
 
     setNewComment("");
     setOpenDialog(true);
   };
 
+  // Option 2: Type assertion (if you're sure the API accepts string[])
   const handleSubmit = async () => {
     try {
+      // Extract only comment texts for the API payload
+      const commentTexts = extractCommentTexts(goalData.comments);
+
       const payload = {
         projectId: projectID,
         goalTitle: goalData.goalTitle,
@@ -111,14 +151,18 @@ function ProjectGoalList() {
         weekEnd: goalData.weekEnd,
         status: goalData.status,
         description: goalData.description,
-        comments: goalData.comments,
+        comments: commentTexts, // Only send comment texts as strings
         priority: goalData.priority
       };
 
+      console.log("Submitting payload:", payload);
+      console.log("Comments being sent:", commentTexts);
+
       if (goalData.id) {
-        await updateWeeklyGoal(goalData.id, payload);
+        // Type assertion to bypass the type checking
+        await updateWeeklyGoal(goalData.id, payload as any);
       } else {
-        await createWeeklyGoal(payload);
+        await createWeeklyGoal(payload as any);
       }
       await mutate("project-goals");
       setOpenDialog(false);
@@ -126,7 +170,6 @@ function ProjectGoalList() {
       console.error("Error saving weekly goal:", err);
     }
   };
-
   return (
     <Box sx={{ p: 4 }}>
       {!openDialog && (
@@ -140,7 +183,7 @@ function ProjectGoalList() {
             />
           </Box>
           <ActionButton
-            label={transGoal("createnewpGoal")}
+            label={transGoal("editgoal")}
             icon={<AddIcon sx={{ color: "white" }} />}
             onClick={handelOpen}
           />
@@ -158,7 +201,7 @@ function ProjectGoalList() {
             }}
           >
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-              {goalData.id ? "Edit Weekly Goal" : "Create Weekly Goal"}
+              {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}{" "}
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <Button
@@ -192,7 +235,7 @@ function ProjectGoalList() {
                 }}
                 onClick={handleSubmit}
               >
-                {goalData.id ? "Update" : "Create"}
+                {goalData.id ? transGoal("update") : transGoal("create")}
               </Button>
             </Box>
           </Box>

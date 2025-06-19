@@ -1,12 +1,31 @@
-export interface GoalCardProps {
-  goal: {
-    id: string;
-    goalTitle: string;
-    status: string;
-  };
-  onEdit: (goal: any) => void;
+// Updated types/comment.ts - Support both formats
+export interface Comment {
+  id: number;
+  comment: string;
+  user_name: string;
+  user_id: string;
+  updatedAt: string;
 }
 
+// For API payload - simplified format
+export interface CommentPayload {
+  comment: string;
+}
+export interface GoalCardProps {
+  goal: GoalData;
+  onEdit: (goal: GoalData) => void;
+}
+
+export interface ProjectGoalsProps {
+  projectGoals: GoalData[];
+  isLoading: boolean;
+  error: boolean;
+  formatStatus: (status: string) => string;
+  handelOpen: () => void;
+  openDialog: boolean;
+  handleEditGoal: (goal: GoalData) => void;
+  projectId: string;
+}
 export interface GoalData {
   goalTitle: string;
   description: string;
@@ -15,7 +34,20 @@ export interface GoalData {
   status: string;
   priority: string;
   projectId?: string;
-  comments: string[];
+  comments: Comment[]; // Frontend uses full Comment objects
+  id?: string;
+}
+
+// For API submission - simplified format
+export interface GoalDataPayload {
+  goalTitle: string;
+  description: string;
+  weekStart: string;
+  weekEnd: string;
+  status: string;
+  priority: string;
+  projectId?: string;
+  comments: string[]; // API expects array of strings
   id?: string;
 }
 
@@ -24,27 +56,5 @@ export interface ProjectGoalFormProps {
   setGoalData: React.Dispatch<React.SetStateAction<GoalData>>;
   newComment: string;
   setNewComment: React.Dispatch<React.SetStateAction<string>>;
-}
-
-export interface ProjectGoal {
-  comments(comments: any): unknown;
-  priority: string;
-  weekEnd: string;
-  weekStart: string;
-  description: string;
-  id: string;
-  goalTitle: string;
-  status: string;
-  projectId: string;
-}
-
-export interface ProjectGoalsProps {
-  projectGoals: ProjectGoal[];
-  isLoading: boolean;
-  error: boolean;
-  formatStatus: (status: string) => string;
-  openDialog: boolean;
-  handelOpen: (open: boolean) => void;
-  handleEditGoal: (goal: ProjectGoal) => void;
-  projectId: string;
+  onSubmit?: (payload: GoalDataPayload) => void; // Add submit handler
 }

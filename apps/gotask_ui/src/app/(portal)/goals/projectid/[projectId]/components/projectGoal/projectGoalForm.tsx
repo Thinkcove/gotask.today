@@ -1,23 +1,38 @@
-// ProjectGoalForm.tsx
 import React from "react";
 import FormField from "@/app/component/input/formField";
 import Grid from "@mui/material/Grid/Grid";
-import { Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { GoalData, ProjectGoalFormProps } from "../../interface/projectGoal";
-
+import { GoalData, ProjectGoalFormProps, GoalDataPayload } from "../../interface/projectGoal";
+import { Comment } from "../../interface/projectGoal";
+import CommonCommentBox from "./CommonCommentBox";
 
 const statusOptions = ["not-started", "in-progress", "completed", "blocked"];
 const priorityOptions = ["high", "medium", "low"];
 
 const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
   goalData,
-  newComment,
-  setNewComment,
-  setGoalData
+  setGoalData,
+  onSubmit
 }) => {
-  const transGoal = useTranslations(LOCALIZATION.TRANSITION.WEEKLYGOAL);
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
+
+  // Transform GoalData to API payload format
+  const transformToPayload = (data: GoalData): GoalDataPayload => {
+    return {
+      ...data,
+      comments: data.comments.map((comment) => comment.comment) 
+    };
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    if (onSubmit) {
+      const payload = transformToPayload(goalData);
+      onSubmit(payload);
+    }
+  };
 
   return (
     <Grid container spacing={3}>
@@ -41,7 +56,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
             if (value && (typeof value === "string" || value instanceof Date)) {
               const date = new Date(value);
               if (!isNaN(date.getTime())) {
-                setGoalData({ ...goalData, weekStart: date.toISOString() });
+                setGoalData({ ...goalData, weekStart: date.toISOString().split("T")[0] });
               }
             }
           }}
@@ -59,7 +74,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
             if (value && (typeof value === "string" || value instanceof Date)) {
               const date = new Date(value);
               if (!isNaN(date.getTime())) {
-                setGoalData({ ...goalData, weekEnd: date.toISOString() });
+                setGoalData({ ...goalData, weekEnd: date.toISOString().split("T")[0] });
               }
             }
           }}
@@ -100,40 +115,58 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
       </Grid>
 
       <Grid item xs={12}>
-        <FormField
-          label={transGoal("addcomment")}
-          type="text"
-          placeholder={transGoal("addcommentPlaceholder")}
-          value={newComment}
-          onChange={(val) => setNewComment(val as string)}
-        />
-        <Button
-          variant="contained"
-          sx={{ mt: 1, backgroundColor: "#741B92", textTransform: "none" }}
-          onClick={() => {
-            if (newComment.trim()) {
-              setGoalData((prev: GoalData) => ({
-                ...prev,
-                comments: [...(prev.comments || []), newComment.trim()]
-              }));
-              setNewComment("");
-            }
+        <CommonCommentBox
+          comments={goalData.comments}
+          currentUserId={"your-current-user-id"}
+          onSave={(commentText) => {
+            const newComment: Comment = {
+              id: Date.now(),
+              comment: commentText,
+              user_name: "Current User",
+              user_id: "your-current-user-id",
+              updatedAt: new Date().toISOString()
+            };
+
+            setGoalData((prev) => ({
+              ...prev,
+              comments: [...prev.comments, newComment]
+            }));
           }}
-        >
-          {transGoal("addcomment")}
-        </Button>
+          onEdit={(id, updatedComment) => {
+            setGoalData((prev) => ({
+              ...prev,
+              comments: prev.comments.map((c) =>
+                c.id === id
+                  ? { ...c, comment: updatedComment, updatedAt: new Date().toISOString() }
+                  : c
+              )
+            }));
+          }}
+          onDelete={(id) => {
+            setGoalData((prev) => ({
+              ...prev,
+              comments: prev.comments.filter((c) => c.id !== id)
+            }));
+          }}
+        />
       </Grid>
 
-      {goalData?.comments?.length > 0 && (
+      {/* Add submit button if onSubmit is provided */}
+      {onSubmit && (
         <Grid item xs={12}>
-          <Typography variant="subtitle2" sx={{ mt: 2, mb: 1, color: "#741B92" }}>
-            {transGoal("commentlist")}
-          </Typography>
-          <ul style={{ paddingLeft: 20 }}>
-            {goalData.comments.map((comment, index) => (
-              <li key={index}>{comment}</li>
-            ))}
-          </ul>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              sx={{
+                backgroundColor: "#741B92",
+                textTransform: "none",
+                "&:hover": { backgroundColor: "#5a1472" }
+              }}
+            >
+              {transGoal("submit", { default: "Submit" })}
+            </Button>
+          </Box>
         </Grid>
       )}
     </Grid>

@@ -7,7 +7,7 @@ import { ProjectGoalsProps } from "../../interface/projectGoal";
 
 const ProjectGoals: React.FC<ProjectGoalsProps> = ({ projectGoals, projectId, handleEditGoal }) => {
   const filteredGoals = projectGoals.filter((goal) => goal.projectId === projectId);
-  const transGoal = useTranslations(LOCALIZATION.TRANSITION.WEEKLYGOAL);
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   return (
     <Box sx={{ width: "100%" }}>

@@ -18,7 +18,7 @@ export const createWeeklyGoal = async (goalData: {
   weekEnd: string;
   status: string;
   description: string;
-  comments: string[];
+  comments: Comment[];
   priority: string;
 }) => {
   return withAuth(async (token) => {
@@ -36,7 +36,7 @@ export const updateWeeklyGoal = async (
     weekEnd: string;
     status: string;
     description: string;
-    comments: string[];
+    comments: Comment[];
     priority: string;
   }
 ) => {

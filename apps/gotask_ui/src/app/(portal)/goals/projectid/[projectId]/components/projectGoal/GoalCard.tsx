@@ -13,7 +13,7 @@ import { GoalCardProps } from "../../interface/projectGoal";
 
 const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit }) => {
   const color = getStatusColor(goal.status);
-  const transGoal = useTranslations(LOCALIZATION.TRANSITION.WEEKLYGOAL);
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   return (
     <Box
       sx={{

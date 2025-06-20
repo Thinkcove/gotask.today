@@ -12,15 +12,8 @@ import {
   TextFieldProps
 } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  CalendarMonth,
-  Edit,
-  Visibility,
-  VisibilityOff,
-  Send as SendIcon
-} from "@mui/icons-material";
+import { Edit, Visibility, VisibilityOff, Send as SendIcon } from "@mui/icons-material";
 import { SxProps, Theme } from "@mui/material/styles";
-import DatePicker from "react-datepicker";
 
 export interface SelectOption {
   name: string;

@@ -2,6 +2,10 @@ import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
 import { getAssetById } from "../../domain/interface/asset/asset";
 import {
+  createIssuesHistory,
+  getIssuesHistoryById
+} from "../../domain/interface/asset/assetHistory";
+import {
   createAssetIssues,
   createResource,
   getAllIssues,
@@ -112,6 +116,12 @@ class resourceService {
             updatedBy: userInfo.user_id,
             updatedAt: new Date()
           });
+          const issues = await createIssuesHistory({
+            issuesId: payload.id,
+            userId: userInfo.id,
+            formatted_history: payload.status
+          });
+          console.log("issues", issues);
           return { success: true, data: result };
         }
       }
@@ -175,6 +185,40 @@ class resourceService {
       }
       return {
         data,
+        success: true
+      };
+    } catch {
+      return {
+        success: false,
+        error: AssetMessages.FETCH.FAILED_TO_GET_ASSET
+      };
+    }
+  };
+
+  getIssuesById = async (id: string, user: any): Promise<any> => {
+    const userInfo = await findUserByEmail(user.user_id);
+    if (!userInfo) {
+      return {
+        success: false,
+        error: UserMessages.FETCH.NOT_FOUND
+      };
+    }
+    try {
+      const data = await getAssetIssueById(id);
+      if (!data) {
+        return {
+          success: false,
+          error: AssetMessages.FETCH.NOT_FOUND
+        };
+      }
+      console.log("data", data);
+      const issuesHistory = await getIssuesHistoryById(data.id);
+      console.log("issuesHistory", issuesHistory);
+      return {
+        data: {
+          ...data.toObject(),
+          issuesHistory
+        },
         success: true
       };
     } catch {

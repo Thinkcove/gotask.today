@@ -60,6 +60,17 @@ class ResourceController extends BaseController {
       return this.replyError(error);
     }
   }
+
+  async getIssuesById(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const user = requestHelper.getUser();
+      const asset = await resourceServices.getIssuesById(id, user);
+      return this.sendResponse(handler, asset);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
 export default ResourceController;

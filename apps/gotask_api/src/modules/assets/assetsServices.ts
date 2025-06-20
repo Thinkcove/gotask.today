@@ -10,6 +10,7 @@ import {
   getAssetTypeById,
   updateAsset
 } from "../../domain/interface/asset/asset";
+import { createAssetHistory, getAssetHistoryById } from "../../domain/interface/asset/assetHistory";
 import {
   createResource,
   createTag,
@@ -19,8 +20,82 @@ import {
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
 import { IAsset } from "../../domain/model/asset/asset";
+import { formatDate } from "../../constants/utils/common"; // Make sure this handles date formatting properly
 
 class assetService {
+  // generateAssetHistoryEntry = (existingAsset: IAsset, updatedData: Partial<IAsset>): string[] => {
+  //   const historyEntries: string[] = [];
+
+  //   const formatValue = (val: any) => {
+  //     if (val instanceof Date) return formatDate(val);
+  //     if (typeof val === "boolean") return val ? "Yes" : "No";
+  //     return val ?? "N/A";
+  //   };
+
+  //   const fieldsToCheck = Object.keys(updatedData);
+
+  //   for (const field of fieldsToCheck) {
+  //     const oldVal = existingAsset[field];
+  //     const newVal = updatedData[field];
+
+  //     // Special handling for dates
+  //     const isDateField = oldVal instanceof Date || newVal instanceof Date;
+  //     const isChanged = isDateField
+  //       ? new Date(oldVal).getTime() !== new Date(newVal).getTime()
+  //       : oldVal !== newVal;
+
+  //     if (isChanged) {
+  //       historyEntries.push(
+  //         `${field} has been updated from "${formatValue(oldVal)}" to "${formatValue(newVal)}".`
+  //       );
+  //     }
+  //   }
+
+  //   return historyEntries;
+  // };
+
+  generateAssetHistoryEntry = (existingAsset: IAsset, updatedData: Partial<IAsset>): string[] => {
+    const historyEntries: string[] = [];
+
+    const formatValue = (val: any) => {
+      if (val instanceof Date) return formatDate(val);
+      if (typeof val === "boolean") return val ? "Yes" : "No";
+      return val ?? "N/A";
+    };
+
+    const fieldsToCheck = Object.keys(updatedData);
+
+    for (const field of fieldsToCheck) {
+      const oldVal = existingAsset[field];
+      const newVal = updatedData[field];
+
+      const isDateField = oldVal instanceof Date || newVal instanceof Date;
+
+      const isChanged = (() => {
+        if (isDateField) {
+          const oldTime = oldVal ? new Date(oldVal).getTime() : null;
+          const newTime = newVal ? new Date(newVal).getTime() : null;
+          return oldTime !== newTime;
+        }
+
+        const normalizedOld = oldVal ?? "";
+        const normalizedNew = newVal ?? "";
+
+        if (normalizedOld === "" && normalizedNew === "") return false;
+
+        return normalizedOld !== normalizedNew;
+      })();
+
+      if (isChanged) {
+        historyEntries.push(
+          `${field} has been updated from "${formatValue(oldVal)}" to "${formatValue(newVal)}".`
+        );
+      }
+    }
+
+    return historyEntries;
+  };
+
   createOrUpdateAsset = async (payload: any, user: any): Promise<any> => {
     const userInfo = await findUserByEmail(user.user_id);
     if (!userInfo) {
@@ -54,6 +129,17 @@ class assetService {
           result = await updateAsset(payload.id, {
             ...payload
           });
+
+          // Save history if any field changed
+          const historyLogs = this.generateAssetHistoryEntry(existingAsset, payload);
+
+          if (historyLogs.length > 0) {
+            await createAssetHistory({
+              assetId: payload.id,
+              userId: userInfo.id,
+              formatted_history: historyLogs.join(" | ")
+            });
+          }
           return { success: true, data: result };
         }
       }
@@ -168,12 +254,15 @@ class assetService {
           error: AssetMessages.FETCH.NOT_FOUND
         };
       }
+      const assetHistory = await getAssetHistoryById(data.id);
+      console.log("assetHistory", assetHistory);
 
       const tags = await getTagsByAssetId(data.id);
       return {
         data: {
           ...data.toObject(),
-          tags
+          tags,
+          assetHistory
         },
         success: true
       };

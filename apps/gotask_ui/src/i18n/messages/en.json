@@ -466,7 +466,10 @@
     "modelName": "Model",
     "searchAsset": "Search Asset",
     "selectedAsset": "assets",
-    "selectedIssues": "issues"
+    "selectedIssues": "issues",
+    "edit": "edit",
+    "editstatus": "Update status",
+    "showhistory": "Show History"
   },
 
   "Chatbot": {

@@ -11,15 +11,28 @@ export const getStatusColor = (status: string) => {
   }
 };
 
+// export const getIssuesStatusColor = (status: string) => {
+//   switch (status.toLowerCase()) {
+//     case "open":
+//       return "error";
+//     case "resolved":
+//     case "closed":
+//       return "success";
+//     default:
+//       return "default";
+//   }
+// };
+
 export const getIssuesStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case "open":
-      return "error";
+      return "#B1AAAA";
+    case "inprogress":
+      return "#FF9800";
     case "resolved":
-    case "closed":
-      return "success";
+      return "#4caf50";
     default:
-      return "default";
+      return "#9e9e9e";
   }
 };
 

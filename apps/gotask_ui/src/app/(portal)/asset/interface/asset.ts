@@ -17,6 +17,22 @@ export interface ITagData {
   createdAt?: string;
 }
 
+export interface IAssetHistory {
+  id?: string;
+  userId?: string;
+  assetId?: string;
+  formatted_history?: string;
+  created_date?: string;
+}
+
+export interface IIssuesHistory {
+  id?: string;
+  userId?: string;
+  issuesId?: string;
+  formatted_history?: string;
+  created_date?: string;
+}
+
 export interface IAssetAttributes {
   id?: string;
   tags?: ITagData;
@@ -55,6 +71,9 @@ export interface IAssetAttributes {
   insuranceProvider?: string;
   insurancePolicyNumber?: string;
   insuranceExpiry?: Date | "";
+
+  // history
+  assetHistory?: IAssetHistory;
 }
 
 export interface IAssetTags {
@@ -90,4 +109,5 @@ export interface IAssetIssues {
   assetDetails?: AssetDetails;
   assigned?: AssignedDetails;
   reportedDetails?: AssignedDetails;
+  issuesHistory?: IIssuesHistory;
 }

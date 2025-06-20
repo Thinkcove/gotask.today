@@ -50,7 +50,7 @@
   {
     "text": "Asset",
     "icon": "ManageAccountsIcon",
-    "path": "/assets",
+    "path": "/asset/assets",
     "access": "Asset and Resources"
   },
   { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" }

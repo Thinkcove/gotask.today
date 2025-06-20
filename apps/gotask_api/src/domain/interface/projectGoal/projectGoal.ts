@@ -1,6 +1,7 @@
 // src/service/ProjectGoal/ProjectGoalService.ts
 import { v4 as uuidv4 } from "uuid";
 import { IProjectGoal, ProjectGoal } from "../../model/projectGoal/projectGoal";
+import { IProjectComment, ProjectComment } from "../../model/projectGoal/projectGoalComment";
 
 // Create a new Project goal
 const createProjectGoal = async (goalData: Omit<IProjectGoal, "id">): Promise<IProjectGoal> => {
@@ -40,6 +41,51 @@ const findGoalsByUserId = async (userId: string): Promise<IProjectGoal[]> => {
 const findGoalsByProjectId = async (projectId: string): Promise<IProjectGoal[]> => {
   return await ProjectGoal.find({ projectId }).sort({ updatedAt: -1 }).exec();
 };
+const createProjectComment = async (commentData: IProjectComment): Promise<IProjectComment> => {
+  const { goal_id, user_id, comments, user_name } = commentData;
+
+  if (!Array.isArray(comments) || comments.length === 0) {
+    throw new Error("comments field must be a non-empty array.");
+  }
+
+  const goal = await ProjectGoal.findOne({ id: goal_id });
+  if (!goal) throw new Error("Goal not found");
+
+  const newComment = new ProjectComment({
+    id: uuidv4(),
+    goal_id,
+    user_id,
+    comments,
+    user_name,
+    updatedAt: new Date()
+  });
+
+  await newComment.save();
+
+  if (!Array.isArray(goal.comments)) {
+    goal.comments = [];
+  }
+
+  goal.comments.unshift(newComment.id);
+  await goal.save();
+
+  return newComment;
+};
+
+const getCommentsByGoalId = async (goalId: string): Promise<IProjectComment[]> => {
+  return await ProjectComment.find({ goal_id: goalId }).sort({ createdAt: -1 }).exec();
+};
+const updateProjectComment = async (
+  commentId: string,
+  updateData: Partial<IProjectComment>
+): Promise<IProjectComment | null> => {
+  return await ProjectComment.findOneAndUpdate({ id: commentId }, updateData, {
+    new: true
+  }).exec();
+};
+const deleteProjectComment = async (commentId: string): Promise<IProjectComment | null> => {
+  return await ProjectComment.findOneAndDelete({ id: commentId }).exec();
+};
 
 export {
   createProjectGoal,
@@ -48,5 +94,9 @@ export {
   updateProjectGoal,
   deleteProjectGoal,
   findGoalsByUserId,
-  findGoalsByProjectId
+  findGoalsByProjectId,
+  createProjectComment,
+  getCommentsByGoalId,
+  updateProjectComment,
+  deleteProjectComment
 };

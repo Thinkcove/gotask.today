@@ -15,6 +15,7 @@ import { User } from "@/app/(portal)/user/interfaces/userInterface";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import MobileInputs from "../../createAsset/mobileInputs";
+import { ASSET_TYPE } from "@/app/common/constants/asset";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -202,7 +203,8 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
               </Box>
             </Box>
           </Grid>
-          {(selectedAssetType?.name === "Laptop" || selectedAssetType?.name === "Mobile") && (
+          {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
+            selectedAssetType?.name === ASSET_TYPE.MOBILE) && (
             <AssetInput
               formData={formData}
               onChange={handleChange}
@@ -210,7 +212,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
               selectedAssetType={selectedAssetType}
             />
           )}
-          {selectedAssetType?.name === "Mobile" && (
+          {selectedAssetType?.name === ASSET_TYPE.MOBILE && (
             <Grid item xs={12}>
               <MobileInputs formData={formData} onChange={handleChange} errors={errors} />
             </Grid>

@@ -201,7 +201,7 @@ const createProjectCommentService = async (
   } catch (error: any) {
     return {
       success: false,
-      message: error.message
+      message: error.message || ProjectGoalMessages.COMMENT.SUCCESS
     };
   }
 };
@@ -212,10 +212,11 @@ const getCommentsByGoalIdService = async (
     const comments = await getCommentsByGoalId(goalId);
     return {
       success: true,
-      data: comments
+      data: comments,
+      message: ProjectGoalMessages.FETCH.SUCCESS
     };
   } catch (error: any) {
-    return { success: false, message: error.message };
+    return { success: false, message: error.message || ProjectGoalMessages.FETCH.FAILED_ALL };
   }
 };
 
@@ -225,9 +226,13 @@ const updateProjectCommentService = async (
 ): Promise<{ success: boolean; data?: IProjectComment | null; message?: string }> => {
   try {
     const updated = await updateProjectComment(commentId, updateData);
-    return { success: true, data: updated };
+    return {
+      success: true,
+      data: updated,
+      message: ProjectGoalMessages.UPDATE.SUCCESS
+    };
   } catch (error: any) {
-    return { success: false, message: error.message };
+    return { success: false, message: error.message || ProjectGoalMessages.UPDATE.FAILED };
   }
 };
 
@@ -237,11 +242,11 @@ const deleteProjectCommentService = async (
   try {
     const deleted = await deleteProjectComment(commentId);
     if (!deleted) {
-      return { success: false, message: "Comment not found" };
+      return { success: false, message: ProjectGoalMessages.DELETE.NOT_FOUND };
     }
-    return { success: true, message: "Comment deleted successfully" };
+    return { success: true, message: ProjectGoalMessages.DELETE.SUCCESS };
   } catch (error: any) {
-    return { success: false, message: error.message };
+    return { success: false, message: error.message || ProjectGoalMessages.DELETE.FAILED };
   }
 };
 

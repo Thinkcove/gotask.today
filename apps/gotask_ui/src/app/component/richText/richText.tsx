@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { Box, Paper, Tabs, Tab, IconButton, Divider, Typography } from "@mui/material";
-import { useEditor, EditorContent, Editor } from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
@@ -9,7 +9,6 @@ import Link from "@tiptap/extension-link";
 import FormatBoldIcon from "@mui/icons-material/FormatBold";
 import FormatItalicIcon from "@mui/icons-material/FormatItalic";
 import CodeIcon from "@mui/icons-material/Code";
-import LinkIcon from "@mui/icons-material/Link";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
@@ -143,9 +142,6 @@ const RichEditor: React.FC<Props> = ({ content, onUpdate }) => {
             <IconButton onClick={() => exec("code")}>
               <CodeIcon />
             </IconButton>
-            <IconButton onClick={() => exec("link")}>
-              <LinkIcon />
-            </IconButton>
             <IconButton onClick={() => exec("ul")}>
               <FormatListBulletedIcon />
             </IconButton>
@@ -157,7 +153,26 @@ const RichEditor: React.FC<Props> = ({ content, onUpdate }) => {
             </IconButton>
           </Box>
           <Divider />
-          <Box sx={{ p: 2 }}>
+          <Box
+            sx={{
+              p: 1,
+              maxHeight: 200,
+              minHeight: 150,
+              overflowY: "auto",
+              "& .ProseMirror": {
+                outline: "none",
+                boxShadow: "none",
+                padding: "16px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                fontFamily: "Roboto, sans-serif"
+              },
+              "& .ProseMirror img": {
+                maxWidth: "100%",
+                height: "auto"
+              }
+            }}
+          >
             <EditorContent editor={editor} />
           </Box>
         </>

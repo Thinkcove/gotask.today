@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import FormField from "@/app/component/input/formField";
+import RichEditor from "@/app/component/richText/richText";
 import { ITask, ITaskComment } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
@@ -17,12 +17,15 @@ interface TaskCommentsProps {
 const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [newComment, setNewComment] = useState("");
+  const [editorKey, setEditorKey] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
 
   const handleSave = () => {
-    if (newComment.trim()) {
-      onSave(newComment);
+    const trimmed = newComment.trim();
+    if (trimmed) {
+      onSave(trimmed);
       setNewComment("");
+      setEditorKey((prev) => prev + 1);
       setIsFocused(false);
     }
   };
@@ -33,17 +36,13 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate })
         <Typography fontWeight="bold">{transtask("comment")}</Typography>
         <SpeakerNotesOutlined />
       </Box>
-      {/* Comment Input Field */}
-      <FormField
-        label={transtask("labelcomment")}
-        type="text"
-        placeholder={transtask("placeholdercomment")}
-        value={newComment}
-        onChange={(value) => setNewComment(value as string)}
-        multiline
-        height={80}
-        onFocus={() => setIsFocused(true)}
-      />
+      <Box mt={1} onClick={() => setIsFocused(true)}>
+        <RichEditor
+          key={editorKey}
+          content={newComment}
+          onUpdate={(html: string) => setNewComment(html)}
+        />
+      </Box>
 
       {/* Save and Cancel Buttons */}
       {isFocused && (
@@ -75,7 +74,6 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate })
       )}
 
       {/* Previous Comments */}
-
       {comments.length > 0 && <CommentHistory comments={comments} mutate={mutate} />}
     </Box>
   );

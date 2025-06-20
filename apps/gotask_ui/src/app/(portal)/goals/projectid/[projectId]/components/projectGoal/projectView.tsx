@@ -9,7 +9,6 @@ import { ProjectGoalViewProps } from "../../interface/projectGoal";
 
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = false }) => {
-  console.log("goalData", goalData);
 
   const router = useRouter();
 

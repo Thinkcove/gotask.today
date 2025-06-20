@@ -6,7 +6,6 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import SearchBar from "@/app/component/searchBar/searchBar";
 import ProjectGoals from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoals";
 import {
   createWeeklyGoal,
@@ -30,7 +29,6 @@ function ProjectGoalList() {
   const { projectId } = useParams();
   const projectID = projectId as string;
   const [openDialog, setOpenDialog] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const [goalData, setGoalData] = useState<GoalData>({
     goalTitle: "",
@@ -44,9 +42,7 @@ function ProjectGoalList() {
   });
 
   const filteredGoals =
-    weeklyGoals?.filter((goal: GoalData) =>
-      goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
+    weeklyGoals
 
   const handelOpen = () => {
     setGoalData({

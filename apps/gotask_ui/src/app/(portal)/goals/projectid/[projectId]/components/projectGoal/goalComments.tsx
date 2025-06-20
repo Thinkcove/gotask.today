@@ -8,13 +8,10 @@ import {
   GoalCommentProps
 } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 
-const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, onDelete }) => {
+const GoalComments: React.FC<GoalCommentProps> = ({  onSave,  onDelete }) => {
 
-  const [editValue, setEditValue] = useState("");
-  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [commentToDeleteId, setCommentToDeleteId] = useState<string | null>(null);
-  const [showAll, setShowAll] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [isFocused, setIsFocused] = useState(false);
 

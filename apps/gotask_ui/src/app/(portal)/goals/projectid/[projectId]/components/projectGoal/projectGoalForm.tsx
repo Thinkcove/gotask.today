@@ -1,13 +1,10 @@
 import React from "react";
 import FormField from "@/app/component/input/formField";
 import Grid from "@mui/material/Grid/Grid";
-import { Box, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { GoalData, ProjectGoalFormProps, GoalDataPayload } from "../../interface/projectGoal";
-import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import { ProjectGoalFormProps } from "../../interface/projectGoal";
 import { priorityOptions, statusOptions } from "@/app/common/constants/project";
-import GoalComments from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/goalComments";
 
 const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
   goalData,

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import ProjectGoalList from "./components/projectGoal/projectGoalList";
 
 const Page = () => {
-  const transgoal = useTranslations(LOCALIZATION.TRANSITION.WEEKLYGOAL);
+  const transgoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   return (
     <>
       <ModuleHeader name={transgoal("goal")} />

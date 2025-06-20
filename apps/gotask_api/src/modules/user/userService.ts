@@ -14,6 +14,9 @@ import { Role } from "../../domain/model/role/role";
 import { getRoleByIdService } from "../role/roleService";
 import { findRoleByIds } from "../../domain/interface/role/roleInterface";
 import { Organization } from "../../domain/model/organization/organization";
+import { getAssetByUserId } from "../../domain/interface/assetTag/assetTag";
+import { getById } from "../../domain/interface/asset/asset";
+import { IAsset } from "../../domain/model/asset/asset";
 
 class userService {
   // CREATE USER
@@ -165,9 +168,23 @@ class userService {
         orgDetails = orgIds.map((id: string) => organizationMap.get(id)).filter(Boolean);
       }
 
+      const userAsset = await getAssetByUserId(id);
+      let assetData: IAsset[] = [];
+
+      if (userAsset && Array.isArray(userAsset)) {
+        const assetPromises = userAsset.map((ua) => getById(ua.assetId));
+        const assetResults = await Promise.all(assetPromises);
+        // Flatten the array and filter out null/undefined values
+        assetData = assetResults
+          .filter((result): result is IAsset[] => result !== null && result !== undefined)
+          .flat();
+      }
+
       userObj.role = enrichedRole;
       userObj.projectDetails = projectDetails;
       userObj.orgDetails = orgDetails;
+      // userObj.assetDetails = assetData ? assetData.toObject?.() : null;
+      userObj.assetDetails = assetData.map((asset) => asset?.toObject?.() || asset);
 
       return {
         success: true,

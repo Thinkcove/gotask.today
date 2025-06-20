@@ -5,7 +5,7 @@ import { Box, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { GoalData, ProjectGoalFormProps, GoalDataPayload } from "../../interface/projectGoal";
-import { Comment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import CommonCommentBox from "./commentBox";
 import { priorityOptions, statusOptions } from "@/app/common/constants/project";
 
@@ -111,7 +111,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, setGoalData
           comments={goalData.comments}
           currentUserId={"your-current-user-id"}
           onSave={(commentText) => {
-            const newComment: Comment = {
+            const newComment: GoalComment = {
               id: Date.now(),
               comment: commentText,
               user_name: "Current User",

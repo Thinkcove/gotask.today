@@ -15,7 +15,7 @@ import {
 } from "@/app/(portal)/goals/service/projectGoalAction";
 import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
 import { GoalData } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
-import { Comment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { formatStatus } from "@/app/common/constants/project";
 
 function ProjectGoalList() {
@@ -60,31 +60,27 @@ function ProjectGoalList() {
 
   const [newComment, setNewComment] = React.useState("");
 
-  const transformCommentsToObjects = (rawComments: any[]): Comment[] => {
+  const transformCommentsToObjects = (rawComments: any[]): GoalComment[] => {
     return rawComments.map((comment, index) => {
       if (typeof comment === "object" && comment.id && comment.comment) {
-        return comment as Comment;
+        return comment as GoalComment;
       }
       if (typeof comment === "string") {
         return {
           id: Date.now() + index,
           comment: comment,
-          user_name: "Previous User",
-          user_id: "unknown",
           updatedAt: new Date().toISOString()
         };
       }
       return {
         id: Date.now() + index,
         comment: String(comment),
-        user_name: "Unknown User",
-        user_id: "unknown",
         updatedAt: new Date().toISOString()
       };
     });
   };
 
-  const extractCommentTexts = (comments: Comment[]): string[] => {
+  const extractCommentTexts = (comments: GoalComment[]): string[] => {
     return comments.map((comment) => {
       if (typeof comment === "object" && comment.comment) {
         return comment.comment;

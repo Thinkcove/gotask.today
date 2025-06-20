@@ -1,9 +1,9 @@
-export interface Comment {
-  id: number;
+export interface GoalComment {
+  id?: number;
   comment: string;
-  user_name: string;
-  user_id: string;
-  updatedAt: string;
+  user_name?: string;
+  user_id?: string;
+  updatedAt?: string;
 }
 
 export interface CommentPayload {
@@ -14,7 +14,7 @@ export interface GoalCardProps {
   onEdit: (goal: GoalData) => void;
 }
 export interface Props {
-  comments: Comment[];
+  comments: GoalComment[];
   onSave: (comment: string) => void;
   onEdit?: (id: number, comment: string) => void;
   onDelete?: (id: number) => void;
@@ -38,7 +38,7 @@ export interface GoalData {
   status: string;
   priority: string;
   projectId?: string;
-  comments: Comment[]; 
+  comments: GoalComment[];
   id?: string;
 }
 

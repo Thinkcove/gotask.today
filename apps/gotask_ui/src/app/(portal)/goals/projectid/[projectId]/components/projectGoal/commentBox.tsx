@@ -6,13 +6,16 @@ import { useTranslations } from "next-intl";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { Comment, Props } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import {
+  GoalComment,
+  Props
+} from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 
 const CommonCommentBox: React.FC<Props> = ({ comments, onSave, onEdit, onDelete }) => {
   const [editValue, setEditValue] = useState("");
-  const [editingComment, setEditingComment] = useState<Comment | null>(null);
+  const [editingComment, setEditingComment] = useState<GoalComment | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [commentToDelete, setCommentToDelete] = useState<Comment | null>(null);
+  const [commentToDelete, setCommentToDelete] = useState<GoalComment | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -27,12 +30,12 @@ const CommonCommentBox: React.FC<Props> = ({ comments, onSave, onEdit, onDelete 
     }
   };
 
-  const handleStartEdit = (comment: Comment) => {
+  const handleStartEdit = (comment: GoalComment) => {
     setEditingComment(comment);
     setEditValue(comment.comment);
   };
 
-  const handleDeleteClick = (comment: Comment) => {
+  const handleDeleteClick = (comment: GoalComment) => {
     setDeleteDialogOpen(true);
     setCommentToDelete(comment);
   };

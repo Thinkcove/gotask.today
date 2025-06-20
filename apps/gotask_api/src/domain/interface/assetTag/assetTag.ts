@@ -1,6 +1,5 @@
 import { AssetIssue, IAssetIssue } from "../../model/assetIssues/assetIssues";
 import { AssetTag, IAssetTag } from "../../model/assetTag/assetTag";
-import { IUser } from "../../model/user/user";
 
 const createResource = async (resourceData: IAssetTag, assetId?: string): Promise<IAssetTag> => {
   const payload = {
@@ -58,6 +57,10 @@ const updateTag = async (id: string, payload: Partial<IAssetTag>): Promise<IAsse
   ).lean();
 };
 
+const getAssetByUserId = async (userId: string) => {
+  return await AssetTag.findOne({ userId });
+};
+
 export {
   createResource,
   createAssetIssues,
@@ -67,5 +70,6 @@ export {
   getTagsByTypeId,
   getTagsByAssetId,
   getTagById,
-  updateTag
+  updateTag,
+  getAssetByUserId
 };

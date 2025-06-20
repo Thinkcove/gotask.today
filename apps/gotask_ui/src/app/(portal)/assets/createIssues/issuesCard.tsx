@@ -11,20 +11,9 @@ import MonitorIcon from "@mui/icons-material/Monitor";
 import ErrorIcon from "@mui/icons-material/Error";
 import Tooltip from "@mui/material/Tooltip";
 import StatusLabelChip from "@/app/component/chip/chip";
+import { getIssuesStatusColor } from "@/app/common/constants/asset";
 
 const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
-
-export const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "open":
-      return "error";
-    case "resolved":
-    case "closed":
-      return "success";
-    default:
-      return "default";
-  }
-};
 
 const AssetIssueCards: React.FC = () => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -61,7 +50,10 @@ const AssetIssueCards: React.FC = () => {
                       {issue.reportedDetails?.user_id}
                     </Typography>
                   </Box>
-                  <StatusLabelChip label={issue.status} color={getStatusColor(issue.status)} />
+                  <StatusLabelChip
+                    label={issue.status}
+                    color={getIssuesStatusColor(issue.status)}
+                  />
                 </Box>
 
                 <Box display="flex" justifyContent="space-between" alignItems="center">

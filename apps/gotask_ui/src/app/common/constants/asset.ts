@@ -11,18 +11,6 @@ export const getStatusColor = (status: string) => {
   }
 };
 
-// export const getIssuesStatusColor = (status: string) => {
-//   switch (status.toLowerCase()) {
-//     case "open":
-//       return "error";
-//     case "resolved":
-//     case "closed":
-//       return "success";
-//     default:
-//       return "default";
-//   }
-// };
-
 export const getIssuesStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case "open":

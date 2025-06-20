@@ -16,8 +16,8 @@ import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import MobileInputs from "../../createAsset/mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
-import HistoryDrawer from "@/app/(portal)/task/editTask/taskHistory";
 import HistoryIcon from "@mui/icons-material/History";
+import IssueHistoryDrawer from "../../createIssues/issuesDrawer";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -28,7 +28,6 @@ interface EditAssetProps {
 }
 
 const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
-  console.log("useAssetById", data.assetHistory);
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [openHistoryDrawer, setOpenHistoryDrawer] = useState(false);
 
@@ -138,26 +137,6 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
             mb: 2
           }}
         >
-          {/* <Typography variant="h6" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {transasset("updateasset")}
-          </Typography>
-          <Box
-            sx={{
-              textDecoration: "underline",
-              display: "flex",
-              gap: 1,
-              color: "#741B92",
-              px: 2,
-              mt: -1,
-              mb: 2,
-              alignItems: "center",
-              cursor: "pointer"
-            }}
-            onClick={() => setOpenHistoryDrawer(true)}
-          >
-            <HistoryIcon />
-          </Box> */}
-
           <Grid
             container
             spacing={2}
@@ -284,12 +263,26 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
         </Box>
       </Paper>
       {openHistoryDrawer && (
-        <HistoryDrawer
+        <IssueHistoryDrawer
           open={openHistoryDrawer}
           onClose={() => setOpenHistoryDrawer(false)}
-          history={data.assetHistory}
+          mode="asset"
+          history={
+            Array.isArray(data?.assetHistory)
+              ? data.assetHistory.map((item) => ({
+                  id: item.id ?? "",
+                  issuesId: item.assetId ?? "",
+                  formatted_history: item.formatted_history ?? "",
+                  created_date: item.created_date ? new Date(item.created_date) : new Date(),
+                  created_by: item.userId ?? "",
+                  userData: item.userData,
+                  tagData: item.tagData
+                }))
+              : []
+          }
         />
       )}
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

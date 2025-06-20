@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, Stack, Avatar, IconButton } from "@mui/material";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import DescriptionIcon from "@mui/icons-material/Description";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import CardComponent from "@/app/component/card/cardComponent";
 import { IAssetIssues } from "../interface/asset";
 import { createAssetIssues, useAllIssues, useIssuesById } from "../services/assetActions";
-import MonitorIcon from "@mui/icons-material/Monitor";
-import ErrorIcon from "@mui/icons-material/Error";
 import Tooltip from "@mui/material/Tooltip";
-import StatusLabelChip from "@/app/component/chip/chip";
 import { getIssuesStatusColor } from "@/app/common/constants/asset";
 import EditIcon from "@mui/icons-material/Edit";
 import CommonDialog from "@/app/component/dialog/commonDialog";
@@ -18,23 +13,29 @@ import FormField from "@/app/component/input/formField";
 import { statusOptions } from "../assetConstants";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import HistoryIcon from "@mui/icons-material/History";
-import HistoryDrawer from "../../task/editTask/taskHistory";
+import IssueHistoryDrawer from "./issuesDrawer";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
 
 const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 
 const AssetIssueCards: React.FC = () => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
-  const { getAll: allissues } = useAllIssues();
+  const { getAll: allissues, mutate: issuesMutate } = useAllIssues();
   const [editOpen, setEditOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<IAssetIssues | null>(null);
   const [newStatus, setNewStatus] = useState<string>("");
   const [openHistoryDrawer, setOpenHistoryDrawer] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState<string>("");
-  const [refreshDrawer, setRefreshDrawer] = useState(false);
-  const { asset: issueById, isLoading } = useIssuesById(selectedIssueId ?? "");
+  const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
+  const { asset: issueById } = useIssuesById(selectedIssueId ?? "");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
 
   const handleEditClick = (issue: IAssetIssues) => {
-    console.log("issue", issue);
     setSelectedIssue(issue);
     setNewStatus(issue.status);
     setEditOpen(true);
@@ -53,12 +54,19 @@ const AssetIssueCards: React.FC = () => {
     if (!selectedIssue) return;
 
     try {
-      await createAssetIssues({
+      const response = await createAssetIssues({
         ...selectedIssue,
         status: newStatus
       });
-
-      setEditOpen(false);
+      if (response.success) {
+        await issuesMutate();
+        setSnackbar({
+          open: true,
+          message: transasset("issuesupdated"),
+          severity: SNACKBAR_SEVERITY.SUCCESS
+        });
+        setEditOpen(false);
+      }
     } catch (error) {
       console.error("Update failed", error);
     }
@@ -145,21 +153,21 @@ const AssetIssueCards: React.FC = () => {
                   }}
                 >
                   <Typography variant="body2" fontWeight={500}>
-                    Issue Type:{" "}
+                    {trans("issuesType")}{" "}
                     <Typography component="span" fontWeight={400} color="text.secondary">
                       {issue.issueType || "-"}
                     </Typography>
                   </Typography>
 
                   <Typography variant="body2" fontWeight={500}>
-                    Model:{" "}
+                    {trans("model")}{" "}
                     <Typography component="span" fontWeight={400} color="text.secondary">
                       {issue.assetDetails?.modelName || "-"}
                     </Typography>
                   </Typography>
 
                   <Typography variant="body2" fontWeight={500}>
-                    Assigned To:{" "}
+                    {trans("assignedTo")}:{" "}
                     <Typography component="span" fontWeight={400} color="text.secondary">
                       {issue.assigned?.user_id || "-"}
                     </Typography>
@@ -170,7 +178,7 @@ const AssetIssueCards: React.FC = () => {
                     fontWeight={500}
                     sx={{ display: "flex", alignItems: "center" }}
                   >
-                    Description:{" "}
+                    {trans("description")}:{" "}
                     <Tooltip title={issue.description || "-"} placement="top" arrow>
                       <Typography
                         component="span"
@@ -188,56 +196,11 @@ const AssetIssueCards: React.FC = () => {
             </CardComponent>
           </Grid>
         ))}
-        {/* <CommonDialog
-          open={editOpen}
-          onClose={() => setEditOpen(false)}
-          onSubmit={handleStatusUpdate}
-          title={trans("editstatus")}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: 1,
-              mb: 2,
-              px: 1,
-              mt: -1
-            }}
-          >
-            <Box
-              onClick={() => setOpenHistoryDrawer(true)}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                color: "#741B92",
-                cursor: "pointer",
-                px: 1,
-                mb: 2,
-                mt: -1
-              }}
-            >
-              <Typography variant="body2" color="inherit">
-                {trans("showhistory")}
-              </Typography>
-              <HistoryIcon fontSize="small" />
-            </Box>
-          </Box>
-          <FormField
-            type="select"
-            label={trans("status")}
-            placeholder={trans("status")}
-            value={newStatus}
-            options={statusOptions}
-            onChange={(val) => setNewStatus(String(val))}
-          />
-        </CommonDialog> */}
         <CommonDialog
           open={editOpen}
           onClose={() => setEditOpen(false)}
           onSubmit={handleStatusUpdate}
-          title={""} // or " " to suppress the default title
+          title={""}
         >
           {/* Custom header row */}
           <Box
@@ -283,18 +246,20 @@ const AssetIssueCards: React.FC = () => {
             />
           </Box>
           {openHistoryDrawer && selectedIssue?.issuesHistory && (
-            <HistoryDrawer
+            <IssueHistoryDrawer
               open={openHistoryDrawer}
               onClose={() => setOpenHistoryDrawer(false)}
               history={selectedIssue.issuesHistory}
             />
           )}
         </CommonDialog>
-
-        {/* {openHistoryDrawer && (
-          <HistoryDrawer open={openHistoryDrawer} onClose={() => setOpenHistoryDrawer(false)} />
-        )} */}
       </Grid>
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </Box>
   );
 };

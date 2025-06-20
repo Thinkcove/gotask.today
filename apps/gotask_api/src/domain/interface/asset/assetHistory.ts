@@ -1,5 +1,4 @@
 import { AssetHistory, IAssetHistory } from "../../model/asset/assetHistory";
-import { AssetIssue } from "../../model/assetIssues/assetIssues";
 import { IIssuesHistory, IssuesHistory } from "../../model/assetIssues/assetIssuesHistory";
 
 export const createAssetHistory = async (payload: any): Promise<IAssetHistory> => {

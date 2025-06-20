@@ -116,12 +116,11 @@ class resourceService {
             updatedBy: userInfo.user_id,
             updatedAt: new Date()
           });
-          const issues = await createIssuesHistory({
+          await createIssuesHistory({
             issuesId: payload.id,
             userId: userInfo.id,
             formatted_history: payload.status
           });
-          console.log("issues", issues);
           return { success: true, data: result };
         }
       }
@@ -211,13 +210,20 @@ class resourceService {
           error: AssetMessages.FETCH.NOT_FOUND
         };
       }
-      console.log("data", data);
       const issuesHistory = await getIssuesHistoryById(data.id);
-      console.log("issuesHistory", issuesHistory);
+      const enrichedHistory = await Promise.all(
+        issuesHistory.map(async (historyItem: any) => {
+          const userDetail = await findUser(historyItem.userId);
+          return {
+            ...historyItem.toObject(),
+            userData: userDetail
+          };
+        })
+      );
       return {
         data: {
           ...data.toObject(),
-          issuesHistory
+          issuesHistory: enrichedHistory
         },
         success: true
       };

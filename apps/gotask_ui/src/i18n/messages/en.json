@@ -469,7 +469,13 @@
     "selectedIssues": "issues",
     "edit": "edit",
     "editstatus": "Update status",
-    "showhistory": "Show History"
+    "showhistory": "Show History",
+    "issueshistory": "Issues history",
+    "issuesType": "Issue Type:",
+    "assetslog": "Log of who performed the updates in the assets",
+    "isueslog": "Log of who performed the updates in the status",
+    "issuesupdated": "Issues updated successfully",
+    "required": "*"
   },
 
   "Chatbot": {

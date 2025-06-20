@@ -3,15 +3,13 @@ import { Box, Button, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { useTranslations } from "next-intl";
-import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import DateFormats from "@/app/component/dateTime/dateFormat";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import {
-  GoalComment,
   GoalCommentProps
 } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 
 const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, onDelete }) => {
+
   const [editValue, setEditValue] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -47,7 +45,6 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
   };
 
   const displayedComments = showAll ? comments : comments.slice(0, 3);
-  const hasMoreComments = comments.length > 3;
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -111,211 +108,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
             background: "#5a1472"
           }
         }}
-      >
-        {displayedComments.flatMap((item) => {
-          if (Array.isArray(item.comment)) {
-            return item.comment.map((text: string, idx: number) => {
-              const commentId = `${item.id}-${idx}`;
-              const isEditing = editingCommentId === commentId;
-
-              return (
-                <Box key={commentId} sx={{ display: "flex", gap: 2, pt: 2 }}>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography fontWeight="bold">
-                      {item.user_name}{" "}
-                      <Typography component="span" variant="caption" color="text.secondary">
-                        <FormattedDateTime
-                          date={item?.updatedAt ?? ""}
-                          format={DateFormats.FULL_DATE_TIME_12H}
-                        />
-                      </Typography>
-                    </Typography>
-
-                    {isEditing ? (
-                      <>
-                        <FormField
-                          label=""
-                          type="text"
-                          value={editValue}
-                          multiline
-                          height={100}
-                          onChange={(val) => setEditValue(val as string)}
-                        />
-                        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                          <Button
-                            variant="contained"
-                            sx={{
-                              backgroundColor: "#741B92",
-                              textTransform: "none",
-                              "&:hover": { backgroundColor: "#5a1472" }
-                            }}
-                            onClick={handleSaveEdit}
-                          >
-                            {transGoal("update")}
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              color: "black",
-                              border: "2px solid #741B92",
-                              px: 2,
-                              textTransform: "none"
-                            }}
-                            onClick={() => {
-                              setEditingCommentId(null);
-                              setEditValue("");
-                            }}
-                          >
-                            {transGoal("cancelcomment")}
-                          </Button>
-                        </Box>
-                      </>
-                    ) : (
-                      <Typography sx={{ mt: 1, whiteSpace: "pre-wrap" }}>{text}</Typography>
-                    )}
-
-                    {!isEditing && (
-                      <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ cursor: "pointer", color: "primary.main" }}
-                          onClick={() => {
-                            setEditValue(text);
-                            setEditingCommentId(commentId);
-                          }}
-                        >
-                          {transGoal("commentedit")}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            cursor: "pointer",
-                            color: "#741B92",
-                            "&:hover": { color: "#b71c1c" }
-                          }}
-                          onClick={() => {
-                            setDeleteDialogOpen(true);
-                            setCommentToDeleteId(commentId);
-                          }}
-                        >
-                          {transGoal("deletecomment")}
-                        </Typography>
-                      </Box>
-                    )}
-                  </Box>
-                </Box>
-              );
-            });
-          } else if (typeof item.comment === "string") {
-            // fallback for single string comments
-            const commentId = `${item.id}-0`;
-            const isEditing = editingCommentId === commentId;
-            const text = item.comment;
-
-            return (
-              <Box key={commentId} sx={{ display: "flex", gap: 2, pt: 2 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography fontWeight="bold">
-                    {item.user_name}{" "}
-                    <Typography component="span" variant="caption" color="text.secondary">
-                      <FormattedDateTime
-                        date={item?.updatedAt ?? ""}
-                        format={DateFormats.FULL_DATE_TIME_12H}
-                      />
-                    </Typography>
-                  </Typography>
-
-                  {isEditing ? (
-                    <>
-                      <FormField
-                        label=""
-                        type="text"
-                        value={editValue}
-                        multiline
-                        height={100}
-                        onChange={(val) => setEditValue(val as string)}
-                      />
-                      <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            backgroundColor: "#741B92",
-                            textTransform: "none",
-                            "&:hover": { backgroundColor: "#5a1472" }
-                          }}
-                          onClick={handleSaveEdit}
-                        >
-                          {transGoal("update")}
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            color: "black",
-                            border: "2px solid #741B92",
-                            px: 2,
-                            textTransform: "none"
-                          }}
-                          onClick={() => {
-                            setEditingCommentId(null);
-                            setEditValue("");
-                          }}
-                        >
-                          {transGoal("cancelcomment")}
-                        </Button>
-                      </Box>
-                    </>
-                  ) : (
-                    <Typography sx={{ mt: 1, whiteSpace: "pre-wrap" }}>{text}</Typography>
-                  )}
-
-                  {!isEditing && (
-                    <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{ cursor: "pointer", color: "primary.main" }}
-                        onClick={() => {
-                          setEditValue(text);
-                          setEditingCommentId(commentId);
-                        }}
-                      >
-                        {transGoal("commentedit")}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          cursor: "pointer",
-                          color: "#741B92",
-                          "&:hover": { color: "#b71c1c" }
-                        }}
-                        onClick={() => {
-                          setDeleteDialogOpen(true);
-                          setCommentToDeleteId(commentId);
-                        }}
-                      >
-                        {transGoal("deletecomment")}
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
-              </Box>
-            );
-          }
-
-          return null;
-        })}
-      </Box>
-
-      {/* View More / Less */}
-      {hasMoreComments && !showAll && (
-        <Button onClick={() => setShowAll(true)} size="small" sx={{ textTransform: "none" }}>
-          {transGoal("viewMore", { default: "View more" })} ({comments.length - 3} more)
-        </Button>
-      )}
-      {showAll && hasMoreComments && (
-        <Button onClick={() => setShowAll(false)} size="small" sx={{ textTransform: "none" }}>
-          {transGoal("showless", { default: "Show less" })}
-        </Button>
-      )}
+      ></Box>
 
       {/* Delete Dialog */}
       <CommonDialog

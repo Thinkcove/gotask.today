@@ -14,7 +14,6 @@ import {
 } from "@/app/(portal)/goals/service/projectGoalAction";
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = false }) => {
-  console.log("goalData", goalData);
   
   const router = useRouter();
   const [comments, setComments] = useState<GoalComment[]>(goalData?.comments || []);
@@ -60,7 +59,6 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
         )
       );
 
-      console.log("Comment updated successfully");
     } catch (error) {
       console.error("Error updating comment:", error);
     }

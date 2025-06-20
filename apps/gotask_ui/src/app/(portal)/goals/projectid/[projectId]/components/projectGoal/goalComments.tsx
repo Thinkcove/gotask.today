@@ -20,13 +20,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
 
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
-  const handleSaveEdit = () => {
-    if (editValue.trim() && editingCommentId && onEdit) {
-      onEdit(editingCommentId, editValue.trim());
-      setEditValue("");
-      setEditingCommentId(null);
-    }
-  };
+
 
   const handleDeleteConfirm = () => {
     if (commentToDeleteId && onDelete) {
@@ -44,7 +38,6 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
     }
   };
 
-  const displayedComments = showAll ? comments : comments.slice(0, 3);
 
   return (
     <Box sx={{ mt: 2 }}>

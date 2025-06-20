@@ -4,8 +4,6 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ProjectGoalsProps } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import GoalItem from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/goalItem";
-import EmptyState from "@/app/component/emptyState/emptyState";
-import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 
 const ProjectGoals: React.FC<ProjectGoalsProps> = ({
   projectGoals,
@@ -24,23 +22,19 @@ const ProjectGoals: React.FC<ProjectGoalsProps> = ({
         </Typography>
       </Box>
 
-      {filteredGoals.length > 0 ? (
-        <Box sx={{ overflowY: "auto", maxHeight: "calc(100vh - 250px)", px: 2 }}>
-          <Grid container spacing={2}>
-            {filteredGoals.map((goal: any) => (
-              <Grid item key={goal.id} xs={12} sm={6} md={4} lg={4} xl={3}>
-                <GoalItem
-                  goal={goal}
-                  onEdit={handleEditGoal}
-                  onClick={() => projectGoalView(goal.id)}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      ) : (
-        <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
-      )}
+      <Box sx={{ overflowY: "auto", maxHeight: "calc(100vh - 250px)", px: 2 }}>
+        <Grid container spacing={2}>
+          {filteredGoals.map((goal: any) => (
+            <Grid item key={goal.id} xs={12} sm={6} md={4} lg={4} xl={3}>
+              <GoalItem
+                goal={goal}
+                onEdit={handleEditGoal}
+                onClick={() => projectGoalView(goal.id)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
     </Box>
   );
 };

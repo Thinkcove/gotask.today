@@ -16,12 +16,12 @@ import {
   updateWeeklyGoal
 } from "@/app/(portal)/goals/service/projectGoalAction";
 import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
-import {
-  GoalData,
-} from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import { GoalData } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { formatStatus } from "@/app/common/constants/project";
 import ProjectGoalView from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectView";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 
 function ProjectGoalList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
@@ -109,7 +109,7 @@ function ProjectGoalList() {
       console.error("Failed to fetch goal view data:", error);
     }
   };
-  
+
   const handleEditGoal = (goal: GoalData) => {
     const rawComments = goal.comments || [];
     const transformedComments = transformCommentsToObjects(rawComments);
@@ -141,7 +141,7 @@ function ProjectGoalList() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
- 
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
@@ -174,27 +174,15 @@ function ProjectGoalList() {
   return (
     <Box sx={{ p: 4 }}>
       {projectGoalView ? (
-        <ProjectGoalView
-          goalData={projectGoalView}
-        />
+        <ProjectGoalView goalData={projectGoalView} />
       ) : (
         <>
           {!openDialog && (
-            <>
-              <Box mb={3} maxWidth={400}>
-                <SearchBar
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  sx={{ width: "100%" }}
-                  placeholder={transGoal("searchplaceholder")}
-                />
-              </Box>
-              <ActionButton
-                label={transGoal("editgoal")}
-                icon={<AddIcon sx={{ color: "white" }} />}
-                onClick={handelOpen}
-              />
-            </>
+            <ActionButton
+              label={transGoal("editgoal")}
+              icon={<AddIcon sx={{ color: "white" }} />}
+              onClick={handelOpen}
+            />
           )}
 
           {openDialog ? (
@@ -208,7 +196,7 @@ function ProjectGoalList() {
                 }}
               >
                 <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-                  {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}{" "}
+                  {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <Button
@@ -254,6 +242,8 @@ function ProjectGoalList() {
                 errors={errors}
               />
             </>
+          ) : filteredGoals.length === 0 ? (
+            <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
           ) : (
             <ProjectGoals
               projectGoals={filteredGoals}

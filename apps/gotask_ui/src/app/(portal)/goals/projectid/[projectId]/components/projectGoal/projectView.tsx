@@ -128,7 +128,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", p: { xs: 1, sm: 2, md: 3 } }}>
+    <Box>
       <Box
         sx={{
           borderRadius: 4,
@@ -141,102 +141,104 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
         }}
       >
         {/* Header */}
-        <Grid container spacing={2} alignItems="center" mb={3}>
-          <IconButton color="primary" onClick={handleBack}>
-            <ArrowBack />
-          </IconButton>
-          <Grid item xs>
-            <Typography
-              variant="h5"
-              fontWeight={500}
-              sx={{ textTransform: "capitalize", fontSize: { xs: "1.25rem", sm: "1.5rem" } }}
-            >
-              {goalData.goalTitle}
-            </Typography>
-            <Typography variant="subtitle2" color="primary">
-              {goalData.status}
-            </Typography>
-          </Grid>
-          <Grid item xs="auto">
-            <IconButton
-              color="primary"
-              onClick={() => router.push(`/project/goals/edit/${goalData.id}`)}
-            >
-              <Edit />
+        <Box sx={{ maxHeight: "calc(100vh - 160px)", overflowY: "auto" }}>
+          <Grid container  alignItems="center" mb={3}>
+            <IconButton color="primary" onClick={handleBack}>
+              <ArrowBack />
             </IconButton>
+            <Grid item xs>
+              <Typography
+                variant="h5"
+                fontWeight={500}
+                sx={{ textTransform: "capitalize", fontSize: { xs: "1.25rem", sm: "1.5rem" } }}
+              >
+                {goalData.goalTitle}
+              </Typography>
+              <Typography variant="subtitle2" color="primary">
+                {goalData.status}
+              </Typography>
+            </Grid>
+            <Grid item xs="auto">
+              <IconButton
+                color="primary"
+                onClick={() => router.push(`/project/goals/edit/${goalData.id}`)}
+              >
+                <Edit />
+              </IconButton>
+            </Grid>
           </Grid>
-        </Grid>
 
-        {/* Description */}
-        <Box mb={3}>
-          <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-            Description
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              color: "text.primary",
-              lineHeight: 1.6,
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word"
-            }}
-          >
-            {goalData.description || "-"}
-          </Typography>
-        </Box>
+          {/* Description */}
+          <Box mb={3}>
+            <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+              Description
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: "text.primary",
+                lineHeight: 1.6,
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word"
+              }}
+            >
+              {goalData.description || "-"}
+            </Typography>
+          </Box>
 
-        {/* Meta Info */}
-        <Grid container spacing={2} mb={3}>
-          <Grid item xs={12} sm={6} md={4}>
-            <LabelValueText label="Priority" value={goalData.priority || "-"} />
+          {/* Meta Info */}
+          <Grid container spacing={2} mb={3}>
+            <Grid item xs={12} sm={6} md={4}>
+              <LabelValueText label="Priority" value={goalData.priority || "-"} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <LabelValueText
+                label="Created"
+                value={<FormattedDateTime date={goalData.createdAt} />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <LabelValueText
+                label="Updated"
+                value={<FormattedDateTime date={goalData.updatedAt} />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <LabelValueText
+                label="Week Start"
+                value={<FormattedDateTime date={goalData.weekStart} />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <LabelValueText
+                label="Week End"
+                value={<FormattedDateTime date={goalData.weekEnd} />}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <LabelValueText
-              label="Created"
-              value={<FormattedDateTime date={goalData.createdAt} />}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <LabelValueText
-              label="Updated"
-              value={<FormattedDateTime date={goalData.updatedAt} />}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <LabelValueText
-              label="Week Start"
-              value={<FormattedDateTime date={goalData.weekStart} />}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <LabelValueText
-              label="Week End"
-              value={<FormattedDateTime date={goalData.weekEnd} />}
-            />
-          </Grid>
-        </Grid>
 
-        <Divider sx={{ mt: 2, mb: 3 }} />
+          <Divider sx={{ mt: 2, mb: 3 }} />
 
-        {/* Comments Section with Add/Edit/Delete */}
-        <Box>
-          <Typography variant="subtitle1" fontWeight={500} mb={1}>
-            Comments
-          </Typography>
+          {/* Comments Section with Add/Edit/Delete */}
+          <Box>
+            <Typography variant="subtitle1" fontWeight={500} mb={1}>
+              Comments
+            </Typography>
 
-          {commentsLoading ? (
-            <Box display="flex" justifyContent="center" p={2}>
-              <CircularProgress size={24} />
-            </Box>
-          ) : (
-            <GoalComments
-              comments={comments}
-              onSave={handleSaveComment}
-              onEdit={handleEditComment}
-              onDelete={handleDeleteComment}
-              currentUserId={""}
-            />
-          )}
+            {commentsLoading ? (
+              <Box display="flex" justifyContent="center" p={2}>
+                <CircularProgress size={24} />
+              </Box>
+            ) : (
+              <GoalComments
+                comments={comments}
+                onSave={handleSaveComment}
+                onEdit={handleEditComment}
+                onDelete={handleDeleteComment}
+                currentUserId={""}
+              />
+            )}
+          </Box>
         </Box>
       </Box>
     </Box>

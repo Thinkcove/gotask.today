@@ -10,8 +10,12 @@ import {
   Box,
   Typography
 } from "@mui/material";
-import { format, isValid } from "date-fns";
 import { WorkPlannedEntry } from "../interface/workPlanned";
+import StatusIndicator from "@/app/component/status/statusIndicator";
+import { getStatusColor } from "@/app/common/constants/task";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import DateFormats from "@/app/component/dateTime/dateFormat";
+
 
 interface WorkPlannedGridProps {
   data: WorkPlannedEntry[];
@@ -34,15 +38,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
   fromDate,
   toDate,
 }) => {
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString || dateString === null) return "-";
-    try {
-      const date = new Date(dateString);
-      return isValid(date) ? format(date, "yyyy-MM-dd") : "Invalid Date";
-    } catch{
-      return "Invalid Date";
-    }
-  };
+  
 
   const formatEstimation = (estimation: string | number | null | undefined) => {
     if (!estimation || estimation === null || estimation === undefined || estimation === "") {
@@ -86,7 +82,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
           No work planned data found for the selected date range
         </Typography>
         <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-          Date range: {formatDate(fromDate)} to {formatDate(toDate)}
+            Date range: <FormattedDateTime date={fromDate || new Date()} /> to <FormattedDateTime date={toDate || new Date()} />
         </Typography>
       </Box>
     );
@@ -190,7 +186,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
-                User Estimation
+                Estimation
               </TableCell>
             </TableRow>
           </TableHead>
@@ -236,27 +232,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                     </TableCell>
                   )}
                   
-                  {/* Start Date */}
-                  <TableCell sx={{ 
-                    padding: "12px", 
-                    textAlign: "center", 
-                    border: "1px solid #eee",
-                    fontFamily: "monospace",
-                    fontSize: "0.875rem"
-                  }}>
-                    {formatDate(task.start_date)}
-                  </TableCell>
-                  
-                  {/* End Date */}
-                  <TableCell sx={{ 
-                    padding: "12px", 
-                    textAlign: "center", 
-                    border: "1px solid #eee",
-                    fontFamily: "monospace",
-                    fontSize: "0.875rem"
-                  }}>
-                    {formatDate(task.end_date)}
-                  </TableCell>
+                
                   
                   {/* Task */}
                   <TableCell sx={{ 
@@ -265,20 +241,44 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                     border: "1px solid #eee",
                     maxWidth: 250
                   }}>
-                    <Box>
+                    <Box display="flex" flexDirection="column" gap={0.5}>
                       <Typography 
                         variant="body2" 
                         sx={{ 
                           fontWeight: 500,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
+                          textTransform:"capitalize",
                           whiteSpace: "nowrap"
                         }}
                         title={task.task_title || "No task title"}
                       >
                         {task.task_title || "No task title"}
                       </Typography>
+                      <StatusIndicator status={task.status} getColor={getStatusColor} />
                     </Box>
+                         </TableCell>
+                  
+                  {/* Start Date */}
+                  <TableCell sx={{
+                    padding: "12px",
+                    textAlign: "center",
+                    border: "1px solid #eee",
+                    fontFamily: "monospace",
+                    fontSize: "0.875rem"
+                  }}>
+                   <FormattedDateTime date={task.start_date || new Date()} format={DateFormats.DATE_ONLY} />
+                  </TableCell>
+                  
+                  {/* End Date */}
+                  <TableCell sx={{
+                    padding: "12px",
+                    textAlign: "center",
+                    border: "1px solid #eee",
+                    fontFamily: "monospace",
+                    fontSize: "0.875rem"
+                  }}>
+                      <FormattedDateTime date={task.end_date || new Date()} format={DateFormats.DATE_ONLY}  />
                   </TableCell>
                   
                   {/* Task Estimation */}

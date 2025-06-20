@@ -11,7 +11,8 @@ export interface WorkPlannedEntry {
   end_date: string | null;
   user_estimated: string | number | null; 
   task_id?: string;        
-  task_title?: string;       
+  task_title?: string;     
+  status: string;   
   project_id?: string;      
   project_name?: string;     
 }

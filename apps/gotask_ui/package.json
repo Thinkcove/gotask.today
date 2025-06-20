@@ -7,7 +7,7 @@
     "standalone:dev": "PORT=3002 HOSTNAME=localhost node server.js",
     "dev": "next dev",
     "build": "next build",
-    "format": "prettier --write \"src/*/.ts\"",
+    "format": "prettier --write \"src/*/*.ts\"",
     "lint": "next lint",
     "lint:fix": "next lint --fix"
   },

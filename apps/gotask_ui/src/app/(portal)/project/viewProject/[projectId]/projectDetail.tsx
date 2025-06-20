@@ -122,36 +122,35 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             </IconButton>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-  <Box>
-    <Stack direction="row" alignItems="center" spacing={2}>
-      <Typography
-        variant="h4"
-        fontWeight={700}
-        sx={{ textTransform: "capitalize", whiteSpace: "nowrap" }}
-      >
-        {project.name}
-      </Typography>
+              <Box>
+                <Stack direction="row" alignItems="center" spacing={2}>
+                  <Typography
+                    variant="h4"
+                    fontWeight={700}
+                    sx={{ textTransform: "capitalize", whiteSpace: "nowrap" }}
+                  >
+                    {project.name}
+                  </Typography>
 
-      {/* Vertical Divider */}
-      <Divider orientation="vertical" flexItem sx={{ bgcolor: "#ccc" }} />
+                  {/* Vertical Divider */}
+                  <Divider orientation="vertical" flexItem sx={{ bgcolor: "#ccc" }} />
 
-      {/* View Stories Button */}
-      <Button
-        variant="outlined"
-        color="primary"
-        size="small"
-        onClick={() => router.push(`/project/viewProject/${projectID}/stories`)}
-        sx={{ textTransform: "none", borderRadius: 2 }}
-      >
-        View Stories
-      </Button>
-    </Stack>
+                  {/* View Stories Button */}
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    onClick={() => router.push(`/project/viewProject/${projectID}/stories`)}
+                    sx={{ textTransform: "none", borderRadius: 2 }}
+                  >
+                    View Stories
+                  </Button>
+                </Stack>
 
-    {/* Project Status */}
-    <StatusIndicator status={project.status} getColor={getStatusColor} />
-  </Box>
-</Box>
-
+                {/* Project Status */}
+                <StatusIndicator status={project.status} getColor={getStatusColor} />
+              </Box>
+            </Box>
           </Box>
 
           <Grid container spacing={2} flexDirection="column" mb={2}>
@@ -204,13 +203,22 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       flexWrap: "wrap"
                     }}
                   >
-                    <Stack direction="row" spacing={2} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                      sx={{ minWidth: 0, flex: 1 }}
+                    >
                       <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
                       <Box sx={{ minWidth: 0 }}>
                         <Typography
                           fontWeight={600}
                           fontSize="1rem"
-                          sx={{ textTransform: "capitalize", wordBreak: "break-word", maxWidth: 200 }}
+                          sx={{
+                            textTransform: "capitalize",
+                            wordBreak: "break-word",
+                            maxWidth: 200
+                          }}
                         >
                           {user.name}
                         </Typography>

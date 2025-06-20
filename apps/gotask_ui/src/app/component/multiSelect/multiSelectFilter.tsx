@@ -27,9 +27,9 @@ interface MultiSelectFilterProps<T extends Item> {
   selectedIds: string[];
   items: T[];
   onChange: (ids: string[]) => void;
-  translationKey: ReportTranslationKeys;
   noItemsKey: ReportTranslationKeys;
   searchTerm?: string;
+  placeholder?: string;
   onSearchChange?: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -37,8 +37,9 @@ const MultiSelectFilter = <T extends Item>({
   selectedIds,
   items,
   onChange,
-  translationKey,
-  noItemsKey
+  noItemsKey,
+  placeholder,
+  label
 }: MultiSelectFilterProps<T>) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
 
@@ -54,7 +55,7 @@ const MultiSelectFilter = <T extends Item>({
 
   const allSelected = selectedItems.length === items.length;
 
-  const handleChange = (_: any, newValue: T[]) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: T[]) => {
     const isSelectAllClicked = newValue.some((item) => item.id === SELECT_ALL_ID);
 
     if (isSelectAllClicked) {
@@ -101,7 +102,7 @@ const MultiSelectFilter = <T extends Item>({
         );
       }}
       renderInput={(params) => (
-        <TextField {...params} label={transreport(translationKey)} placeholder="" />
+        <TextField {...params} label={label} placeholder={placeholder || label} fullWidth />
       )}
       renderTags={(tagValue, getTagProps) =>
         tagValue.map((option, index) => (

@@ -97,7 +97,6 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
           selectedIds={userIds}
           items={usersList}
           onChange={setUserIds}
-          translationKey="userlist"
           noItemsKey="nousers"
         />
 
@@ -106,7 +105,6 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
           selectedIds={projectIds}
           items={projectsList}
           onChange={setProjectIds}
-          translationKey="projectlist"
           noItemsKey="noprojects"
         />
 

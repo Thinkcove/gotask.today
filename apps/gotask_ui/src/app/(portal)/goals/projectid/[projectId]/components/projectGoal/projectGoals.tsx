@@ -3,7 +3,7 @@ import { Grid, Box, Typography } from "@mui/material";
 import GoalCard from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/GoalCard";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { ProjectGoalsProps } from "../../interface/projectGoal";
+import { ProjectGoalsProps } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 
 const ProjectGoals: React.FC<ProjectGoalsProps> = ({ projectGoals, projectId, handleEditGoal }) => {
   const filteredGoals = projectGoals.filter((goal) => goal.projectId === projectId);

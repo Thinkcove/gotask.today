@@ -4,12 +4,9 @@ import {  Edit } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import { ProjectGoalViewProps } from "../../interface/projectGoal";
 
-interface ProjectGoalViewProps {
-  goalData: any;
-  setGoalData: React.Dispatch<React.SetStateAction<any>>;
-  loading?: boolean;
-}
+
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = false }) => {
   console.log("goalData", goalData);

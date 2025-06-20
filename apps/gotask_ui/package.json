@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "next start",
+    "start": "next start -p 3002",
+    "standalone:dev": "PORT=3002 HOSTNAME=localhost node server.js",
+    "standalone:test": "PORT=3001 HOSTNAME=localhost node server.js",
+    "build:test": "env-cmd -f ./.env.uat next build",
     "dev": "next dev",
     "build": "next build",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --write \"src/*/.ts\"",
     "lint": "next lint",
     "lint:fix": "next lint --fix"
   },
@@ -33,6 +36,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "env-cmd": "^10.1.0",
     "eslint": "^9.26.0",
     "eslint-config-next": "^15.3.2",
     "globals": "^16.0.0",

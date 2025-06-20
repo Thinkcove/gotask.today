@@ -13,7 +13,7 @@ import DateFormats from "@/app/component/dateTime/dateFormat";
 export interface Task {
   id: string;
   status: string;
-  due_date: string;
+  start_date: string;
   title: string;
   user_name: string;
   project_name: string;
@@ -70,11 +70,11 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onTaskClick, view, getStatusC
         divider={<Divider orientation="vertical" flexItem />}
         mb={1.5}
       >
-        {task.due_date && (
+        {task.start_date && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <CalendarToday sx={{ fontSize: 18, color: "text.secondary" }} />
             <Typography variant="body2">
-              <FormattedDateTime date={task.due_date} format={DateFormats.MONTH_DATE} />
+              <FormattedDateTime date={task.start_date} format={DateFormats.MONTH_DATE} />
             </Typography>
           </Stack>
         )}

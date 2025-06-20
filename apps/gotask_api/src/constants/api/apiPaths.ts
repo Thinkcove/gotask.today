@@ -68,25 +68,5 @@ export const API_PATHS = {
 
   //userpreference
   SET_USER_PREFERENCES: "/setPreference",
-  GET_USER_PREFERENCES: "/getPreference",
-,
-
-  //Kpi template
-  CREATE_KPI_TEMPLATE: "/kpi/template",
-  GET_KPI_TEMPLATES: "/kpi/templates",
-  GET_KPI_TEMPLATE_BY_ID: "/kpi/templates/{id}",
-  UPDATE_KPI_TEMPLATE: "/kpi/update/templates/{id}",
-  DELETE_KPI_TEMPLATE: "/kpi/delete/templates/{id}",
-
-  //Kpi employee
-  CREATE_EMPLOYEE_TEMPLATE: "/employee/template",
-  GET_EMPLOYEE_TEMPLATES: "/employee/template",
-  GET_EMPLOYEE_TEMPLATE_BY_ID: "/employee/templates/{id}",
-  UPDATE_EMPLOYEE_TEMPLATE: "/employee/templates/{id}",
-  DELETE_EMPLOYEE_TEMPLATE: "/employee/templates/{id}",
-  CREATE_EMPLOYEE_ASSIGNMENT: "/employee/assignments",
-  GET_EMPLOYEE_ASSIGNMENTS: "/employee/assignments",
-  GET_EMPLOYEE_ASSIGNMENT_BY_ID: "/employee/assignments/{id}",
-  UPDATE_EMPLOYEE_ASSIGNMENT: "/employee/assignments/{id}",
-  DELETE_EMPLOYEE_ASSIGNMENT: "/employee/assignments/{id}"
+  GET_USER_PREFERENCES: "/getPreference"
 };

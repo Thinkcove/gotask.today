@@ -7,7 +7,7 @@ export interface IKpiAssignment extends Document {
   template_id?: string; // References template_id from KpiTemplate
   kpiTitle: string;
   kpiDescription: string;
-  measurementCriteria: string;
+  measurement_Criteria: string;
   frequency: string;
   weightage: number;
   targetValue?: number;
@@ -42,7 +42,7 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
       type: String,
       required: true
     },
-    measurementCriteria: {
+    measurement_Criteria: {
       type: String,
       required: true,
       enum: ["Number", "Percentage", "Rating"]

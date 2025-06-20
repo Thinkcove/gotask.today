@@ -1,21 +1,16 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
-
-import { permission } from "../../middleware/permission";
-import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
 import authStrategy from "../../constants/auth/authStrategy";
 import KpiTemplateController from "./templateController";
 
 const kpiTemplateController = new KpiTemplateController();
-const appName = APPLICATIONS.KPI;
 const tags = [API, "KpiTemplate"];
 const KpiTemplateRoutes = [];
 
 // Route: Create KPI Template
 KpiTemplateRoutes.push({
-  path: API_PATHS.CREATE_KPI_TEMPLATE,
+  path: "/kpi/template",
   method: API_METHODS.POST,
   handler: (request: Request, h: ResponseToolkit, restrictedFields: string[]) =>
     kpiTemplateController.createKpiTemplate(new RequestHelper(request), h, restrictedFields),
@@ -30,7 +25,7 @@ KpiTemplateRoutes.push({
 
 // Route: Get All KPI Templates
 KpiTemplateRoutes.push({
-  path: API_PATHS.GET_KPI_TEMPLATES,
+  path: "/kpi/templates",
   method: API_METHODS.GET,
   handler: (request: Request, h: ResponseToolkit) =>
     kpiTemplateController.getAllKpiTemplates(new RequestHelper(request), h),
@@ -45,7 +40,7 @@ KpiTemplateRoutes.push({
 
 // Route: Get KPI Template by template_id
 KpiTemplateRoutes.push({
-  path: API_PATHS.GET_KPI_TEMPLATE_BY_ID,
+  path: "/kpi/templates/{template_id}",
   method: API_METHODS.GET,
   handler: (request: Request, h: ResponseToolkit) =>
     kpiTemplateController.getKpiTemplateById(new RequestHelper(request), h),
@@ -60,7 +55,7 @@ KpiTemplateRoutes.push({
 
 // Route: Update KPI Template
 KpiTemplateRoutes.push({
-  path: API_PATHS.UPDATE_KPI_TEMPLATE,
+  path: "/kpi/templates/{template_id}",
   method: API_METHODS.PUT,
   handler: (request: Request, h: ResponseToolkit, restrictedFields: string[]) =>
     kpiTemplateController.updateKpiTemplate(new RequestHelper(request), h, restrictedFields),
@@ -75,7 +70,7 @@ KpiTemplateRoutes.push({
 
 // Route: Delete KPI Template
 KpiTemplateRoutes.push({
-  path: API_PATHS.DELETE_KPI_TEMPLATE,
+  path: "/kpi/templates/{template_id}",
   method: API_METHODS.DELETE,
   handler: (request: Request, h: ResponseToolkit) =>
     kpiTemplateController.deleteKpiTemplate(new RequestHelper(request), h),

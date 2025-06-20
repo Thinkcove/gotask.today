@@ -15,7 +15,12 @@ export const KpiAssignmentMessages = {
     FAILED_ALL: "Failed to fetch KPI assignments",
     FAILED_BY_ID: "Failed to fetch KPI assignment by ID",
     NOT_FOUND: "KPI assignment not found",
-    INVALID_USER_IDS: "One or more user IDs not found"
+    INVALID_USER_IDS: "One or more user IDs not found",
+    MISSING_USER_ID: "User Id is missing",
+    REVIEWER_NOT_UPDATABLE: "Reviewer cannot be updated once assigned.",
+    FAILED: "Failed to fetch templates for user.",
+    ASSIGN_ID: "assignment_id is required in path",
+    USER_ID: "authUserId is required in payload"
   },
   UPDATE: {
     EMPLOYEE_OWN_ONLY: "Employees can only update their own KPI assignments",

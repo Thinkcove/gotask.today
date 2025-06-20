@@ -106,3 +106,7 @@ export const saveKpiAsTemplateInDb = async (
     })
   );
 };
+
+export const getAllKpiAssignmentsFromDb = async (): Promise<IKpiAssignment[]> => {
+  return await KpiAssignment.find().select("-_id -id -__v").lean();
+};

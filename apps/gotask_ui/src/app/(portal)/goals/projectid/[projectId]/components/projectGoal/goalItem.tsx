@@ -7,18 +7,20 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { GoalCardProps } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { getStatusColor } from "@/app/common/constants/project";
 
-const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit }) => {
+const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
   const color = getStatusColor(goal.status);
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
+
   return (
     <Box
+      onClick={onClick} 
       sx={{
         p: 2,
         borderRadius: 2,
         backgroundColor: `${color}12`,
         border: `1px solid ${color}40`,
         transition: "all 0.2s ease-in-out",
-        cursor: "default",
+        cursor: onClick ? "pointer" : "default", 
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -49,7 +51,13 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit }) => {
       {/* Edit Button */}
       <Box display="flex" justifyContent="flex-end" mt={2}>
         <Tooltip title="Edit Goal">
-          <IconButton onClick={() => onEdit(goal)} color="primary">
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation(); 
+              onEdit(goal);
+            }}
+            color="primary"
+          >
             <Edit />
           </IconButton>
         </Tooltip>
@@ -58,4 +66,5 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit }) => {
   );
 };
 
-export default GoalCard;
+
+export default GoalItem;

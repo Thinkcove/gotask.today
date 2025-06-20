@@ -45,3 +45,11 @@ export const updateWeeklyGoal = async (
     return await putData(url, updatedGoalData, token);
   });
 };
+// Get Weekly Goal by ID
+export const getWeeklyGoalById = async (goalId: string) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/project/goals/${goalId}`;
+    const { data } = await getData(url, token);
+    return data;
+  });
+};

@@ -9,7 +9,12 @@ import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interfac
 import { priorityOptions, statusOptions } from "@/app/common/constants/project";
 import GoalComments from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/goalComments";
 
-const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, setGoalData, onSubmit }) => {
+const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
+  goalData,
+  errors,
+  setGoalData,
+  onSubmit
+}) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   const transformToPayload = (data: GoalData): GoalDataPayload => {
@@ -34,6 +39,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, setGoalData
           placeholder={transGoal("goaltitlePlaceholder")}
           type="text"
           value={goalData.goalTitle}
+          error={errors.goalTitle}
           onChange={(val) => setGoalData({ ...goalData, goalTitle: val as string })}
         />
       </Grid>
@@ -44,6 +50,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, setGoalData
           inputType="date"
           placeholder={transGoal("startdate")}
           value={goalData.weekStart}
+          error={errors.weekStart}
           onChange={(value) => {
             if (value && (typeof value === "string" || value instanceof Date)) {
               const date = new Date(value);
@@ -62,6 +69,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, setGoalData
           inputType="date"
           placeholder={transGoal("enddate")}
           value={goalData.weekEnd}
+          error={goalData.weekEnd}
           onChange={(value) => {
             if (value && (typeof value === "string" || value instanceof Date)) {
               const date = new Date(value);

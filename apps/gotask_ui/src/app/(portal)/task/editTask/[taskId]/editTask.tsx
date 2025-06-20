@@ -86,7 +86,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
       const updatedFields: Record<string, string | number> = {};
       const formattedDueDate = data?.due_date?.split("T")[0] || "";
-
+      const formattedStartDate = data?.start_date?.split("T")[0] || "";
       const fieldCheck = (field: keyof IFormField, current: string) => {
         return (
           !isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, field) &&
@@ -100,6 +100,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       if (fieldCheck("status", data.status)) updatedFields.status = formData.status;
       if (fieldCheck("severity", data.severity)) updatedFields.severity = formData.severity;
       if (fieldCheck("due_date", formattedDueDate)) updatedFields.due_date = formData.due_date;
+      if (fieldCheck("start_date", formattedStartDate))
+        updatedFields.start_date = formData.start_date;
       if (fieldCheck("description", data.description))
         updatedFields.description = formData.description;
 

@@ -1,28 +1,21 @@
 import { useMemo, useState } from "react";
 import { Box, Button, Grid, Paper, Typography } from "@mui/material";
-import CommonDialog from "@/app/component/dialog/commonDialog";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { KeyedMutator } from "swr";
-import { IAssetAttributes, IAssetType, IAssetTags } from "../../interface/asset";
-import {
-  createAssetAttributes,
-  useAllAssets,
-  useAllTags,
-  useAllTypes
-} from "../../services/assetActions";
+import { IAssetAttributes, IAssetType } from "../../interface/asset";
+import { createAssetAttributes, useAllTypes } from "../../services/assetActions";
 import AssetInput from "../../createAsset/laptopInputs"; // Create similar to ProjectInput
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import FormField from "@/app/component/input/formField";
 import { useRouter } from "next/navigation";
-import { createAssetTags } from "../../services/assetActions";
-import { ACTION_TYPES } from "../../assetConstants";
 import { User } from "@/app/(portal)/user/interfaces/userInterface";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import TagInput from "../../createTag/tagInput";
+import MobileInputs from "../../createAsset/mobileInputs";
+import { ASSET_TYPE } from "@/app/common/constants/asset";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -40,9 +33,6 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-  const [openTagInput, setOpenTagInput] = useState(false);
-  const { getAll: allAssets } = useAllAssets();
-  const { mutate: tagMutate } = useAllTags();
   const [formData, setFormData] = useState<IAssetAttributes>(() => ({
     id: data?.id,
     typeId: data?.typeId || "",
@@ -69,14 +59,6 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     userId: data?.tags?.userId || "",
     tag: data.tags?.id || ""
   }));
-
-  const [tagData, setTagData] = useState<IAssetTags>({
-    userId: "",
-    assetId: "",
-    actionType: "",
-    erk: "",
-    previouslyUsedBy: ""
-  });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const { getAll: allTypes } = useAllTypes();
@@ -110,18 +92,6 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     );
   }, [users]);
 
-  const assetOptions = useMemo(() => {
-    return (
-      allAssets?.map((asset: IAssetAttributes) => ({
-        id: asset.id,
-        name: asset.deviceName
-      })) || []
-    );
-  }, [allAssets]);
-
-  const previousUserOptions = userOptions;
-  const actionTypes = ACTION_TYPES;
-
   const handleSubmit = async () => {
     if (!validateForm()) return;
     try {
@@ -145,29 +115,9 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     }
   };
 
-  const handleTagChange = <K extends keyof IAssetTags>(field: K, value: IAssetTags[K]) => {
-    setTagData((prev) => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleTagSubmit = async () => {
-    try {
-      const response = await createAssetTags(tagData);
-      if (response?.success) {
-        await tagMutate();
-        setSnackbar({
-          open: true,
-          message: transasset("successmessage"),
-          severity: SNACKBAR_SEVERITY.SUCCESS
-        });
-      }
-      onClose();
-    } catch (error) {
-      console.error("API Error:", error);
-    }
-  };
+  const selectedAssetType = useMemo(() => {
+    return allTypes.find((type: IAssetAttributes) => type.id === formData.typeId) || null;
+  }, [formData.typeId, allTypes]);
 
   return (
     <>
@@ -245,7 +195,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
                   label={transasset("assignedTo")}
                   type="select"
                   options={userOptions}
-                  value={formData.userId || ""}
+                  value={formData.userId}
                   onChange={(val) => handleChange("userId", String(val))}
                   placeholder={transasset("assignedTo")}
                   sx={{ flex: 1 }}
@@ -253,23 +203,20 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
               </Box>
             </Box>
           </Grid>
-          <CommonDialog
-            open={openTagInput}
-            onSubmit={handleTagSubmit}
-            onClose={() => setOpenTagInput(false)}
-            title="Tag Asset to User"
-          >
-            <TagInput
-              formData={tagData}
-              onChange={handleTagChange}
-              userOptions={userOptions}
-              assetOptions={assetOptions}
-              previousUserOptions={previousUserOptions}
-              actionTypes={actionTypes}
+          {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
+            selectedAssetType?.name === ASSET_TYPE.MOBILE) && (
+            <AssetInput
+              formData={formData}
+              onChange={handleChange}
+              errors={errors}
+              selectedAssetType={selectedAssetType}
             />
-          </CommonDialog>
-
-          <AssetInput formData={formData} onChange={handleChange} errors={errors} />
+          )}
+          {selectedAssetType?.name === ASSET_TYPE.MOBILE && (
+            <Grid item xs={12}>
+              <MobileInputs formData={formData} onChange={handleChange} errors={errors} />
+            </Grid>
+          )}
         </Box>
       </Paper>
 

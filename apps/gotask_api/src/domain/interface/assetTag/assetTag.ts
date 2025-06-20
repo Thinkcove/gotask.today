@@ -10,6 +10,11 @@ const createResource = async (resourceData: IAssetTag, assetId?: string): Promis
   return await newResource.save();
 };
 
+const createTag = async (payload: any): Promise<IAssetTag> => {
+  const newResource = new AssetTag(payload);
+  return await newResource.save();
+};
+
 const createAssetIssues = async (data: IAssetIssue): Promise<IAssetIssue> => {
   const assetIssues = new AssetIssue(data);
   return await assetIssues.save();
@@ -57,8 +62,8 @@ const updateTag = async (id: string, payload: Partial<IAssetTag>): Promise<IAsse
   ).lean();
 };
 
-const getAssetByUserId = async (userId: string) => {
-  return await AssetTag.findOne({ userId });
+const getAssetByUserId = async (userId: string): Promise<IAssetTag[]> => {
+  return await AssetTag.find({ userId });
 };
 
 export {
@@ -71,5 +76,6 @@ export {
   getTagsByAssetId,
   getTagById,
   updateTag,
-  getAssetByUserId
+  getAssetByUserId,
+  createTag
 };

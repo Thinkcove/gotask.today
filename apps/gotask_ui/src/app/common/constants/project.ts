@@ -19,5 +19,21 @@ export const formatStatus = (status: string) => {
   }
 };
 
+export const getStatusColor = (status: string): string => {
+  switch (status) {
+    case "in-progress":
+      return "#FF9800";
+    case "hold":
+      return "#CE93D8";
+    case "completed":
+      return "#4CAF50";
+    case "not-started":
+      return "#B0BEC5";
+    case "blocked":
+      return "#D32F2F";
+    default:
+      return "000000";
+  }
+};
 export const statusOptions = ["not-started", "in-progress", "completed", "blocked"];
 export const priorityOptions = ["high", "medium", "low"];

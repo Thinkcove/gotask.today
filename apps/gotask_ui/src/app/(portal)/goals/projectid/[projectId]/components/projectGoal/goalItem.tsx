@@ -2,10 +2,10 @@ import React from "react";
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { getStatusColor } from "@/app/common/constants/task";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { GoalCardProps } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import { getStatusColor } from "@/app/common/constants/project";
 
 const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit }) => {
   const color = getStatusColor(goal.status);

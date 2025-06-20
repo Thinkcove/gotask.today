@@ -8,12 +8,7 @@ class WorkPlannedController extends BaseController {
     try {
       const { fromDate, toDate, userIds, selectedProjects } = requestHelper.getPayload();
 
-      const result = await getWorkPlannedService(
-        fromDate,
-        toDate,
-        userIds,
-        selectedProjects
-      );
+      const result = await getWorkPlannedService(fromDate, toDate, userIds, selectedProjects);
 
       return this.sendResponse(handler, result);
     } catch (error) {

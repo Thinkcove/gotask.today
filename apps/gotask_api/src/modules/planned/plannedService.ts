@@ -4,7 +4,7 @@ import { Task } from "../../domain/model/task/task";
 const getWorkPlannedService = async (
   fromDate: string,
   toDate: string,
-  userIds: string[],  
+  userIds: string[],
   selectedProjects?: string[]
 ) => {
   const dateMatch = { $gte: new Date(fromDate), $lte: new Date(toDate) };
@@ -34,11 +34,9 @@ const getWorkPlannedService = async (
     start_date: 1,
     due_date: 1,
     user_estimated: 1,
-     task_id: "$_id", 
+    task_id: "$_id",
     task_title: "$title"
   };
-
-
 
   if (selectedProjects && selectedProjects.length > 0) {
     projectStage.project_id = 1;
@@ -53,11 +51,9 @@ const getWorkPlannedService = async (
     user_name: "$user_name",
     start_date: "$start_date",
     due_date: "$due_date",
-    task_id: "$task_id", 
+    task_id: "$task_id",
     task_title: "$task_title"
   };
-
-
 
   if (selectedProjects && selectedProjects.length > 0) {
     groupId.project_id = "$project_id";
@@ -79,11 +75,9 @@ const getWorkPlannedService = async (
     start_date: "$_id.start_date",
     end_date: "$_id.due_date",
     user_estimated: 1,
-       task_id: "$_id.task_id",
+    task_id: "$_id.task_id",
     task_title: "$_id.task_title"
   };
-
- 
 
   if (selectedProjects && selectedProjects.length > 0) {
     finalProject.project_id = "$_id.project_id";

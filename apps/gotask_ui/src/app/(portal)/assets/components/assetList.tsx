@@ -159,7 +159,11 @@ export const AssetList: React.FC = () => {
             width: { xs: "100%", sm: "300px" }
           }}
         >
-          <SearchBar value={searchText} onChange={setSearchText} placeholder="Search Asset" />
+          <SearchBar
+            value={searchText}
+            onChange={setSearchText}
+            placeholder={transasset("searchAsset")}
+          />
         </Box>
       </Box>
       <Box marginTop={"1px"}>

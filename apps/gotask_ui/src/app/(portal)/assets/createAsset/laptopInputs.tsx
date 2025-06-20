@@ -5,6 +5,7 @@ import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
+import { ASSET_TYPE } from "@/app/common/constants/asset";
 
 interface LaptopInputsProps {
   formData: IAssetAttributes;
@@ -25,7 +26,8 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
     <>
       <Box>
         <Grid container spacing={2}>
-          {(selectedAssetType?.name === "Laptop" || selectedAssetType?.name === "Mobile") && (
+          {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
+            selectedAssetType?.name === ASSET_TYPE.MOBILE) && (
             <>
               <Grid item xs={12} sm={4}>
                 <FormField

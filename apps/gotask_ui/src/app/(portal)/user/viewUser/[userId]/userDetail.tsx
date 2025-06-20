@@ -72,7 +72,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
     emp_id: user.emp_id,
     organization: user.organization,
     roleId: user.roleId._id,
-    user_id: user.user_id
+    user_id: user.user_id,
+  
   });
 
   return (
@@ -112,7 +113,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Box>
             <Box sx={{ flexGrow: 1 }} /> {/* This pushes the next icons to the right */}
             {canAccess(APPLICATIONS.USER, ACTIONS.UPDATE) && (
-              <IconButton color="primary" onClick={() => setEditOpen(true)}>
+              <IconButton
+                color="primary"
+                onClick={() => router.push(`/user/viewUser/${userId}/editUser`)}
+              >
                 <Edit />
               </IconButton>
             )}

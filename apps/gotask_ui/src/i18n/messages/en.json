@@ -351,6 +351,8 @@
     "updatesuccess": "User updated successfully!",
     "updateerror": "Error while updating user",
     "edituser": "Edit User",
+    "updateuser":"Submit",
+    "loading" :"Loading",
     "deletesuccess": "User deleted successfully!",
     "deleteerror": "Error while deleting a user",
     "userdetail": "User Detail View",
@@ -373,7 +375,12 @@
     "labelstate": "Status",
     "placeholderstatus": "Select the status",
     "nousers": "No users available",
-    "searchplaceholder": "Search Users"
+    "searchplaceholder": "Search Users",
+
+    "skills": "Skills",
+    "noskillsadded": "No skills added.",
+    "proficiency": "Proficiency",
+    "experience": "Experience (months)"
   },
   "Appbar": {
     "logout": "Logout"

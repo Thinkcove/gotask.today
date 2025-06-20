@@ -18,9 +18,9 @@ import { useRouter } from "next/navigation";
 const UserList = () => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-
+  
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: users } = useSWR("fetch-user", fetcherUserList);
+  const { data: users, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
   const router = useRouter();
 
   const filteredUsers =
@@ -37,6 +37,7 @@ const UserList = () => {
         p: 3
       }}
     >
+      
       <Box mb={3} maxWidth={400}>
         <SearchBar
           value={searchTerm}
@@ -57,6 +58,7 @@ const UserList = () => {
           onClick={() => router.push("/user/createUser")}
         />
       )}
+      
     </Box>
   );
 };

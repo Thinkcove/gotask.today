@@ -1,6 +1,6 @@
 import env from "@/app/common/env";
 import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
-import { IUserField } from "../interfaces/userInterface";
+import { ISkill, IUserField } from "../interfaces/userInterface";
 import { withAuth } from "@/app/common/utils/authToken";
 
 export const createUser = async (
@@ -78,6 +78,14 @@ export const deleteUser = async (userId: string) => {
   });
 };
 
+export const getUserById = async (userId: string) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/getUserById/${userId}`;
+    const { data } = await getData(url, token);
+    return data;
+  });
+};
+
 //fetch users
 export const fetchUsers = async () => {
   return withAuth(async (token) => {
@@ -98,6 +106,7 @@ export const fetchUsers = async () => {
           projects: string[];
           organizations: string[];
           role: string;
+          skills?: ISkill[];
         }) => ({
           id: user.id,
           first_name: user.first_name,

@@ -238,7 +238,7 @@ function ProjectGoalList() {
                 errors={errors}
               />
             </>
-          ) : filteredGoals.length === 0 ? (
+          ) : filteredGoals?.length === 0 ? (
             <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
           ) : (
             <ProjectGoals

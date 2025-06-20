@@ -16,7 +16,6 @@ import TaskComments from "../../editTask/taskComments";
 import { createComment } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-
 interface TaskDetailViewProps {
   task: ITask;
   loading?: boolean;
@@ -72,7 +71,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
       </>
     );
   }
-
   return (
     <>
       <ModuleHeader name={transtask("tasks")} />
@@ -152,7 +150,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 {task.description || "-"}
               </Typography>
             </Box>
-
             {/* Meta Info */}
             <Grid container spacing={2} mb={3}>
               <Grid item xs={4} sm={6} md={4}>
@@ -229,9 +226,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 />
               </Grid>
             </Grid>
-
             <Divider sx={{ mt: 2, mb: 2 }} />
-
             <TaskComments comments={task?.comment || []} onSave={submitComment} mutate={mutate} />
           </Box>
         </Box>

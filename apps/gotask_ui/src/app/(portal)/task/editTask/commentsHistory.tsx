@@ -5,12 +5,13 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ITask, ITaskComment } from "../interface/taskInterface";
 import { getColorForUser } from "@/app/common/constants/avatar";
 import { useUser } from "@/app/userContext";
-import FormField from "@/app/component/input/formField";
 import { updateComment, deleteComment } from "../service/taskAction";
 import { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
+import DOMPurify from "dompurify";
+import RichEditor from "@/app/component/richText/richText";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
@@ -124,14 +125,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
 
                 {isEditing ? (
                   <>
-                    <FormField
-                      label=""
-                      type="text"
-                      value={editValue}
-                      multiline
-                      height={100}
-                      onChange={(val) => setEditValue(val as string)}
-                    />
+                    <RichEditor content={editValue} onUpdate={(html) => setEditValue(html)} />
                     <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
                       <Button
                         variant="contained"
@@ -159,9 +153,10 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                     </Box>
                   </>
                 ) : (
-                  <Typography sx={{ mt: 1, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                    {comment.comment}
-                  </Typography>
+                  <Box
+                    sx={{ mt: 1 }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.comment) }}
+                  />
                 )}
 
                 {isOwner && !isEditing && (

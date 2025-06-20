@@ -560,8 +560,7 @@
     "update": "Update",
     "create": "Create",
     "titlerequired": "Goal title is required",
-    "startweekrequired":"Start Week is required",
-    "endweekrequired":"Week end date is required"
-
+    "startweekrequired": "Start Week is required",
+    "endweekrequired": "Week end date is required"
   }
 }

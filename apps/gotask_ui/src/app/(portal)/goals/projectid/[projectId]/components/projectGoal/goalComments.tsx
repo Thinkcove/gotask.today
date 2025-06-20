@@ -66,7 +66,6 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
 
   return (
     <Box sx={{ mt: 2 }}>
-      {/* New Comment Input */}
       <Box sx={{ mt: 3 }}>
         <FormField
           label={transGoal("addcomment")}
@@ -131,22 +130,16 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
         }}
       >
         {displayedComments.map((comment, index) => {
-          // FIX: Compare by ID instead of object reference
           const isEditing = editingComment && editingComment.id === comment.id;
-
-    
 
           return (
             <Box key={comment.id || index} sx={{ display: "flex", gap: 2, pt: 2 }}>
-              {/* avatar, name, date */}
-              {/* <Avatar>{comment.user_name?.[0]}</Avatar> */}
-
               <Box sx={{ flex: 1 }}>
                 <Typography fontWeight="bold">
                   {/* {comment.user_name} -{" "} */}
                   <Typography component="span" variant="caption" color="text.secondary">
                     <FormattedDateTime
-                      date={comment.updatedAt ?? ""}
+                      date={comment?.updatedAt ?? ""}
                       format={DateFormats.FULL_DATE_TIME_12H}
                     />
                   </Typography>
@@ -172,7 +165,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
                         }}
                         onClick={handleSaveEdit}
                       >
-                        {transGoal("updatecomment") || "Update"}
+                        {transGoal("update")}
                       </Button>
                       <Button
                         variant="outlined"
@@ -243,7 +236,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
         onSubmit={handleDeleteConfirm}
         title={transGoal("deletetitle")}
         submitLabel={transGoal("deletecomment")}
-        cancelLabel={transGoal("cancelcomments")}
+        cancelLabel={transGoal("cancelcomment")}
         submitColor="#b71c1c"
       >
         <Typography sx={{ pt: 2 }}>{transGoal("commmentmessage")}</Typography>

@@ -155,6 +155,8 @@
     "edittitle": "Edit Project",
     "placeholdeselect": "Select Assignees to the project",
     "searchplaceholder": "Search Projects",
+    "linkgoals": "Goals",
+    "linkstories": "Stories",
 
     "Stories": {
       "noStoriesFound": "No stories found for this project.",
@@ -190,6 +192,7 @@
       "noTasks": "No tasks linked to this story yet.",
       "confirmDelete": "Are you sure you want to delete this story?",
       "fetchError": "Failed to load stories.",
+      "titleWithProject": "{name} Stories",
 
       "placeholders": {
         "title": "Enter story title",

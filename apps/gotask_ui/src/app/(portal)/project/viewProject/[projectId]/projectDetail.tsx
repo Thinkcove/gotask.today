@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
 import { ArrowBack, Delete } from "@mui/icons-material";
@@ -34,9 +36,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const router = useRouter();
-  const handleBack = () => {
-    setTimeout(() => router.back(), 2000);
-  };
   const [editOpen, setEditOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -51,6 +50,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   );
   const { projectId } = useParams();
   const projectID = projectId as string;
+
+  const handleBack = () => {
+    setTimeout(() => router.back(), 2000);
+  };
 
   const handleAddUser = async () => {
     setOpen(false);
@@ -116,43 +119,26 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             border: "1px solid #e0e0e0"
           }}
         >
+          {/* Back and Project Name */}
           <Box display="flex" alignItems="center" mb={3}>
             <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
               <ArrowBack />
             </IconButton>
-
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
               <Box>
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <Typography
-                    variant="h4"
-                    fontWeight={700}
-                    sx={{ textTransform: "capitalize", whiteSpace: "nowrap" }}
-                  >
-                    {project.name}
-                  </Typography>
-
-                  {/* Vertical Divider */}
-                  <Divider orientation="vertical" flexItem sx={{ bgcolor: "#ccc" }} />
-
-                  {/* View Stories Button */}
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    size="small"
-                    onClick={() => router.push(`/project/viewProject/${projectID}/stories`)}
-                    sx={{ textTransform: "none", borderRadius: 2 }}
-                  >
-                    View Stories
-                  </Button>
-                </Stack>
-
-                {/* Project Status */}
+                <Typography
+                  variant="h4"
+                  fontWeight={700}
+                  sx={{ textTransform: "capitalize", whiteSpace: "nowrap" }}
+                >
+                  {project.name}
+                </Typography>
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
               </Box>
             </Box>
           </Box>
 
+          {/* Project Description & Dates */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
               <LabelValueText
@@ -175,9 +161,42 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               />
             </Grid>
           </Grid>
-          <Divider sx={{ mb: 4 }} />
 
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Divider sx={{ mb: 3 }} />
+
+          {/* 🔗 Hyperlinks Above Add Assignee */}
+          <Box display="flex" alignItems="center" ml={205} mb={1} gap={2}>
+            <Typography
+              variant="body1"
+              sx={{
+                color: "#741B92",
+                fontWeight: 600,
+                cursor: "pointer",
+                "&:hover": { textDecoration: "underline" }
+              }}
+              onClick={() => router.push(`/project/viewProject/${projectID}/goals`)}
+            >
+              {transproject("linkgoals")}
+            </Typography>
+
+            <Divider orientation="vertical" flexItem sx={{ height: 20, bgcolor: "#999" }} />
+
+            <Typography
+              variant="body1"
+              sx={{
+                color: "#741B92",
+                fontWeight: 600,
+                cursor: "pointer",
+                "&:hover": { textDecoration: "underline" }
+              }}
+              onClick={() => router.push(`/project/viewProject/${projectID}/stories`)}
+            >
+              {transproject("linkstories")}
+            </Typography>
+          </Box>
+
+          {/* Assignee Section Header & Add Button */}
+          <Box display="flex" justifyContent="space-between" alignItems="center" mr={4} mb={2}>
             <Typography variant="h5" fontWeight={600}>
               {transproject("detailassignee")}
             </Typography>
@@ -192,6 +211,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             )}
           </Box>
 
+          {/* Assignee List */}
           <Grid container spacing={3} sx={{ maxHeight: "500px", overflowY: "auto" }}>
             {project.users.length > 0 ? (
               project.users.map((user) => (
@@ -204,17 +224,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       alignItems: "center",
                       justifyContent: "space-between",
                       bgcolor: "#ffffff",
-                      border: "1px solid #e0e0e0",
-                      overflow: "hidden",
-                      flexWrap: "wrap"
+                      border: "1px solid #e0e0e0"
                     }}
                   >
-                    <Stack
-                      direction="row"
-                      spacing={2}
-                      alignItems="center"
-                      sx={{ minWidth: 0, flex: 1 }}
-                    >
+                    <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1 }}>
                       <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
                       <Box sx={{ minWidth: 0 }}>
                         <Typography
@@ -237,23 +250,20 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                         </Typography>
                       </Box>
                     </Stack>
-
                     {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
-                      <Box sx={{ flexShrink: 0 }}>
-                        <IconButton
-                          color="error"
-                          onClick={() => {
-                            setSelectedUserId(user.id);
-                            setOpenDeleteDialog(true);
-                          }}
-                          sx={{
-                            transition: "0.2s ease",
-                            "&:hover": { transform: "scale(1.1)" }
-                          }}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Box>
+                      <IconButton
+                        color="error"
+                        onClick={() => {
+                          setSelectedUserId(user.id);
+                          setOpenDeleteDialog(true);
+                        }}
+                        sx={{
+                          transition: "0.2s ease",
+                          "&:hover": { transform: "scale(1.1)" }
+                        }}
+                      >
+                        <Delete />
+                      </IconButton>
                     )}
                   </Box>
                 </Grid>
@@ -266,6 +276,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           </Grid>
         </Box>
 
+        {/* Dialogs */}
         <CommonDialog
           open={open}
           onClose={onClose}

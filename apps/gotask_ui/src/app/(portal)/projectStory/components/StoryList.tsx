@@ -26,6 +26,8 @@ const StoryList: React.FC = () => {
     error
   } = useSWR(projectId ? `stories-${projectId}` : null, () => fetcher(projectId as string));
 
+  const projectName = stories[0]?.project?.name ?? "";
+
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -58,7 +60,8 @@ const StoryList: React.FC = () => {
           left: 16,
           display: "flex",
           alignItems: "center",
-          gap: 1
+          gap: 1,
+          flexWrap: "wrap"
         }}
       >
         <IconButton
@@ -69,7 +72,7 @@ const StoryList: React.FC = () => {
           <ArrowBack />
         </IconButton>
         <Typography variant="h6" fontWeight={600}>
-          {t("Stories.projectStories")}
+          {t("Stories.titleWithProject", { name: projectName })}
         </Typography>
       </Box>
 

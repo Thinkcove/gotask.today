@@ -17,19 +17,28 @@ import { useTranslations } from "next-intl";
 
 import {
   getProjectStoryById,
-  deleteProjectStory
+  deleteProjectStory,
+  getTasksByStory
 } from "@/app/(portal)/projectStory/services/projectStoryService";
+
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import TaskItem from "../../task/component/taskLayout/taskItem";
+import { getStatusColor } from "@/app/common/constants/task";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
-  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   const { data: story, isLoading } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
     getProjectStoryById(storyId as string).then((res) => res?.data)
+  );
+
+  const { data: tasks, isLoading: isTasksLoading } = useSWR(
+    storyId ? ["tasksByStory", storyId] : null,
+    () => getTasksByStory(storyId as string).then((res) => res?.data)
   );
 
   const [snackbar, setSnackbar] = React.useState({ open: false, message: "", severity: "success" });
@@ -52,6 +61,10 @@ const ProjectStoryDetail = () => {
       setIsDeleting(false);
       setOpenDeleteDialog(false);
     }
+  };
+
+  const handleTaskClick = (taskId: string) => {
+    router.push(`/task/viewTask/${taskId}`);
   };
 
   if (isLoading) {
@@ -83,7 +96,7 @@ const ProjectStoryDetail = () => {
         overflow: "hidden"
       }}
     >
-      {/* Header Section */}
+      {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Box display="flex" alignItems="center" gap={1}>
           <Tooltip title={t("Stories.backToStories")}>
@@ -122,19 +135,19 @@ const ProjectStoryDetail = () => {
         </Box>
       </Box>
 
-      {/* Description Section */}
+      {/* Content */}
       <Box sx={{ flex: 1, overflowY: "auto", mb: 2 }}>
         <Typography variant="body1" mb={2}>
           {story.description || t("Stories.noDescription")}
         </Typography>
-
         <Typography variant="caption" color="primary" display="block" mb={2}>
           {t("Stories.status")}: {story.status || t("Stories.na")}
         </Typography>
 
         <Divider sx={{ my: 3 }} />
 
-        {/* Task Section */}
+      
+        {/* Tasks Section */}
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h6" fontWeight={600}>
@@ -143,16 +156,42 @@ const ProjectStoryDetail = () => {
             <Button
               variant="contained"
               sx={{ backgroundColor: "#741B92", textTransform: "none", borderRadius: 2 }}
-              onClick={() => router.push(`/task/create?storyId=${storyId}`)}
+              onClick={() => router.push(`/task/createTask?storyId=${storyId}`)}
             >
               {t("Stories.createTask")}
             </Button>
           </Box>
 
-          {/* Placeholder */}
-          <Typography variant="body2" color="text.secondary">
-            {t("Stories.noTasks")}
-          </Typography>
+          {isTasksLoading ? (
+            <CircularProgress size={24} />
+          ) : tasks?.length > 0 ? (
+            <Box sx={{ flexGrow: 1 }}>
+              <Box
+                display="grid"
+                gridTemplateColumns={{
+                  xs: "1fr",
+                  sm: "repeat(2, 1fr)",
+                  md: "repeat(3, 1fr)",
+                  lg: "repeat(4, 1fr)"
+                }}
+                gap={2}
+              >
+                {tasks.map((task: any) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onTaskClick={handleTaskClick}
+                    view="stories"
+                    getStatusColor={getStatusColor}
+                  />
+                ))}
+              </Box>
+            </Box>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              {t("Stories.noTasks")}
+            </Typography>
+          )}
         </Box>
       </Box>
 

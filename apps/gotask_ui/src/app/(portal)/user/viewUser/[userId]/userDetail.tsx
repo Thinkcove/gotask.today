@@ -18,6 +18,9 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import { IAssetAttributes } from "@/app/(portal)/asset/interface/asset";
+import TaskToggle from "../../../../component/toggle/toggle";
+import EllipsisText from "@/app/component/text/ellipsisText";
 
 interface UserDetailProps {
   user: User;
@@ -27,6 +30,8 @@ interface UserDetailProps {
 const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
+  const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
+  const [selectedTab, setSelectedTab] = useState<string>(transuser("projectdetails"));
   const router = useRouter();
   const { userId } = useParams();
   const userID = userId as string;
@@ -201,48 +206,145 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Stack>
           </Grid>
 
-          {/* Divider */}
           <Divider sx={{ my: 2 }} />
 
-          {/* Project Details */}
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            {transuser("projectdetails")}
-          </Typography>
+          <Box sx={{ mb: 3 }}>
+            <TaskToggle
+              options={[transuser("projectdetails"), transasset("assetdetails")]}
+              selected={selectedTab}
+              onChange={setSelectedTab}
+            />
+          </Box>
 
-          {user.projectDetails && user.projectDetails.length > 0 ? (
-            <Grid container spacing={2} sx={{ maxHeight: "300px", overflowY: "auto" }}>
-              {user.projectDetails.map((project) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={project.id}>
+          <Grid container spacing={2}>
+            {selectedTab === transuser("projectdetails") && (
+              <Grid item xs={12} md={8}>
+                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                  {transuser("projectdetails")}
+                </Typography>
+
+                {user.projectDetails && user.projectDetails.length > 0 ? (
+                  <Grid container spacing={2}>
+                    {user.projectDetails.map((project) => (
+                      <Grid item xs={12} sm={6} key={project.id}>
+                        <Box
+                          sx={{
+                            p: 3,
+                            borderRadius: 3,
+                            display: "flex",
+                            flexDirection: "column",
+                            bgcolor: "#ffffff",
+                            border: "1px solid #e0e0e0",
+                            height: "100%",
+                            justifyContent: "space-between"
+                          }}
+                        >
+                          <Stack spacing={1}>
+                            <Typography variant="h4" fontWeight={700} fontSize="1rem">
+                              {project.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {project.description}
+                            </Typography>
+                            <StatusIndicator status={project.status} getColor={getStatusColor} />
+                          </Stack>
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  <Typography color="text.secondary">No projects assigned yet.</Typography>
+                )}
+              </Grid>
+            )}
+            {selectedTab === transasset("assetdetails") && (
+              <Grid item xs={12}>
+                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                  {transasset("assets")}
+                </Typography>
+
+                {user.assetDetails && user.assetDetails.length > 0 && (
                   <Box
                     sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      display: "flex",
-                      flexDirection: "column",
-                      bgcolor: "#ffffff",
-                      border: "1px solid #e0e0e0",
-                      height: "100%",
-                      justifyContent: "space-between"
+                      display: "flex", // ✅ Enables horizontal stacking
+                      overflowX: "auto", // ✅ Enables horizontal scroll
+                      gap: 2, // ✅ Adds spacing between cards
+                      py: 1,
+                      pr: 1
                     }}
                   >
-                    <Stack spacing={1}>
-                      <Typography variant="h4" fontWeight={700} fontSize="1rem">
-                        {project.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {project.description}
-                      </Typography>
-                      <StatusIndicator status={project.status} getColor={getStatusColor} />
-                    </Stack>
+                    {user.assetDetails.map((asset: IAssetAttributes, index: number) => (
+                      <Box
+                        key={asset.id || index}
+                        sx={{
+                          minWidth: 300, // ✅ Ensures each card has a minimum width for scroll
+                          maxWidth: 360,
+                          flex: "0 0 auto", // ✅ Prevents shrinking
+                          p: 3,
+                          borderRadius: 2,
+                          bgcolor: "#ffffff",
+                          border: "1px solid #e0e0e0"
+                        }}
+                      >
+                        <Stack spacing={1}>
+                          <EllipsisText text={asset.deviceName ?? ""} maxWidth="100%" />
+
+                          {asset.modelName && (
+                            <EllipsisText
+                              text={`${transasset("modelname")}: ${asset.modelName}`}
+                              maxWidth={250}
+                            />
+                          )}
+
+                          {asset.os && (
+                            <EllipsisText
+                              text={`${transasset("os")}: ${asset.os}`}
+                              maxWidth={250}
+                            />
+                          )}
+
+                          {asset.processor && (
+                            <EllipsisText
+                              text={`${transasset("processor")}: ${asset.processor}`}
+                              maxWidth={250}
+                            />
+                          )}
+
+                          {asset.ram && (
+                            <EllipsisText
+                              text={`${transasset("ram")}: ${asset.ram}`}
+                              maxWidth={250}
+                            />
+                          )}
+
+                          {asset.storage && (
+                            <EllipsisText
+                              text={`${transasset("storage")}: ${asset.storage}`}
+                              maxWidth={250}
+                            />
+                          )}
+
+                          {asset.serialNumber && (
+                            <EllipsisText
+                              text={`${transasset("serialnumber")}: ${asset.serialNumber}`}
+                              maxWidth={250}
+                            />
+                          )}
+
+                          {asset.dateOfPurchase && (
+                            <EllipsisText
+                              text={`${transasset("dateOfPurchase")}: ${new Date(asset.dateOfPurchase).toLocaleDateString()}`}
+                              maxWidth={250}
+                            />
+                          )}
+                        </Stack>
+                      </Box>
+                    ))}
                   </Box>
-                </Grid>
-              ))}
-            </Grid>
-          ) : (
-            <Grid item xs={12}>
-              <Typography color="text.secondary">No projects assigned yet.</Typography>
-            </Grid>
-          )}
+                )}
+              </Grid>
+            )}
+          </Grid>
         </Box>
 
         {/* Edit User Dialog */}

@@ -455,7 +455,22 @@
     "close": "Close",
     "updateasset": "Update asset",
     "update": "Update",
-    "isrequired": "is requried"
+    "isrequired": "is requried",
+    "imeiNumber": "IMEI number",
+    "screenSize": "Screen size",
+    "batteryCapacity": "Battery capacity",
+    "cameraSpecs": "Camera specs",
+    "simType": "Sim type",
+    "insuranceProvider": "Insurance provider",
+    "insurancePolicyNumber": "Insurance number",
+    "insuranceExpiry": "Insurance expiry",
+    "updatesuccess": "Asset updated successfully",
+    "noasset": "Asset not found",
+    "assetdetails": "Assets Details",
+    "modelName": "Model",
+    "searchAsset": "Search Asset",
+    "selectedAsset": "assets",
+    "selectedIssues": "issues"
   },
 
   "Chatbot": {

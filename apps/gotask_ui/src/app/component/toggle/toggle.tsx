@@ -5,6 +5,7 @@ interface ToggleProps {
   options: string[];
   selected: string;
   onChange: (value: string) => void;
+  
 }
 
 const TaskToggle: React.FC<ToggleProps> = ({ options, selected, onChange }) => {

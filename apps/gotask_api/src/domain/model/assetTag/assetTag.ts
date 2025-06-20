@@ -10,7 +10,7 @@ export interface IAssetTag extends Document {
 
 const AssetTagSchema = new Schema<IAssetTag>(
   {
-    id: { type: String, default: uuidv4, unique: true },
+    id: { type: String, default: uuidv4 },
     userId: { type: String, ref: "User", required: true },
     assetId: { type: String, ref: "Asset", required: true },
     active: { type: Boolean, default: true }

@@ -131,16 +131,23 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
         }}
       >
         {displayedComments.map((comment, index) => {
-          const isEditing = editingComment === comment;
+          // FIX: Compare by ID instead of object reference
+          const isEditing = editingComment && editingComment.id === comment.id;
+
+          // Debug log to help troubleshoot
+          console.log(`Comment ${comment.id}: isEditing = ${isEditing}`, {
+            editingCommentId: editingComment?.id,
+            commentId: comment.id
+          });
 
           return (
             <Box key={comment.id || index} sx={{ display: "flex", gap: 2, pt: 2 }}>
               {/* avatar, name, date */}
-              <Avatar>{comment.user_name?.[0]}</Avatar>
+              {/* <Avatar>{comment.user_name?.[0]}</Avatar> */}
 
               <Box sx={{ flex: 1 }}>
                 <Typography fontWeight="bold">
-                  {comment.user_name} -{" "}
+                  {/* {comment.user_name} -{" "} */}
                   <Typography component="span" variant="caption" color="text.secondary">
                     <FormattedDateTime
                       date={comment.updatedAt ?? ""}
@@ -160,8 +167,26 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
                       onChange={(val) => setEditValue(val as string)}
                     />
                     <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                      <Button onClick={handleSaveEdit}>Save</Button>
                       <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#741B92",
+                          textTransform: "none",
+                          "&:hover": { backgroundColor: "#5a1472" }
+                        }}
+                        onClick={handleSaveEdit}
+                      >
+                        {transGoal("updatecomment") || "Update"}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          color: "black",
+                          border: "2px solid #741B92",
+                          px: 2,
+                          textTransform: "none",
+                          "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
+                        }}
                         onClick={() => {
                           setEditingComment(null);
                           setEditValue("");

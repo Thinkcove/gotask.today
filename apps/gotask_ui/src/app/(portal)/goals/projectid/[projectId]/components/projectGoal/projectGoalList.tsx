@@ -15,7 +15,10 @@ import {
   updateWeeklyGoal
 } from "@/app/(portal)/goals/service/projectGoalAction";
 import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
-import { GoalData } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import {
+  GoalData,
+  GoalDataPayload
+} from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { formatStatus } from "@/app/common/constants/project";
 import ProjectGoalView from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectView";
@@ -131,7 +134,7 @@ function ProjectGoalList() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+ 
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
@@ -164,7 +167,10 @@ function ProjectGoalList() {
   return (
     <Box sx={{ p: 4 }}>
       {projectGoalView ? (
-        <ProjectGoalView goalData={projectGoalView} setGoalData={setprojectGoalView} />
+        <ProjectGoalView
+          goalData={projectGoalView}
+          setGoalData={setprojectGoalView}
+        />
       ) : (
         <>
           {!openDialog && (

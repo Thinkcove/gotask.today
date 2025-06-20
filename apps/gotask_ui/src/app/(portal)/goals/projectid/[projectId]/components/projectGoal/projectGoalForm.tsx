@@ -13,23 +13,10 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
   goalData,
   errors,
   setGoalData,
-  onSubmit
 }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
-  const transformToPayload = (data: GoalData): GoalDataPayload => {
-    return {
-      ...data,
-      comments: data.comments.map((comment) => comment.comment)
-    };
-  };
 
-  const handleSubmit = () => {
-    if (onSubmit) {
-      const payload = transformToPayload(goalData);
-      onSubmit(payload);
-    }
-  };
 
   return (
     <Grid container spacing={3}>
@@ -114,61 +101,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
         />
       </Grid>
 
-      <Grid item xs={12}>
-        <GoalComments
-          comments={goalData.comments}
-          currentUserId={"your-current-user-id"}
-          onSave={(commentText) => {
-            const newComment: GoalComment = {
-              id: Date.now(),
-              comment: commentText,
-              user_name: "Current User",
-              user_id: "your-current-user-id",
-              updatedAt: new Date().toISOString()
-            };
 
-            setGoalData((prev) => ({
-              ...prev,
-              comments: [...prev.comments, newComment]
-            }));
-          }}
-          onEdit={(id, updatedComment) => {
-            setGoalData((prev) => ({
-              ...prev,
-              comments: prev.comments.map((c) =>
-                c.id === id
-                  ? { ...c, comment: updatedComment, updatedAt: new Date().toISOString() }
-                  : c
-              )
-            }));
-          }}
-          onDelete={(id) => {
-            setGoalData((prev) => ({
-              ...prev,
-              comments: prev.comments.filter((c) => c.id !== id)
-            }));
-          }}
-        />
-      </Grid>
-
-      {/* Add submit button if onSubmit is provided */}
-      {onSubmit && (
-        <Grid item xs={12}>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
-              sx={{
-                backgroundColor: "#741B92",
-                textTransform: "none",
-                "&:hover": { backgroundColor: "#5a1472" }
-              }}
-            >
-              {transGoal("submit", { default: "Submit" })}
-            </Button>
-          </Box>
-        </Grid>
-      )}
     </Grid>
   );
 };

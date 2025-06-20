@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Box, Typography } from "@mui/material";
-import GoalCard from "./GoalCard";
+import GoalCard from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/GoalCard";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ProjectGoalsProps } from "../../interface/projectGoal";

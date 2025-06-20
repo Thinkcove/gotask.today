@@ -7,15 +7,15 @@ import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import SearchBar from "@/app/component/searchBar/searchBar";
-import ProjectGoals from "./projectGoals";
+import ProjectGoals from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoals";
 import {
   createWeeklyGoal,
   fetchWeeklyGoals,
   updateWeeklyGoal
 } from "@/app/(portal)/goals/service/projectGoalAction";
-import ProjectGoalForm from "./projectGoalForm";
-import { GoalData } from "../../interface/projectGoal";
-import { Comment } from "../../interface/projectGoal";
+import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
+import { GoalData } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import { Comment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 
 function ProjectGoalList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
@@ -137,10 +137,9 @@ function ProjectGoalList() {
         weekEnd: goalData.weekEnd,
         status: goalData.status,
         description: goalData.description,
-        comments: commentTexts, 
+        comments: commentTexts,
         priority: goalData.priority
       };
-
 
       if (goalData.id) {
         await updateWeeklyGoal(goalData.id, payload as any);
@@ -153,7 +152,7 @@ function ProjectGoalList() {
       console.error("Error saving weekly goal:", err);
     }
   };
-  
+
   return (
     <Box sx={{ p: 4 }}>
       {!openDialog && (

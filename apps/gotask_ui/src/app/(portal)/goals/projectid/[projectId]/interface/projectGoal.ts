@@ -1,4 +1,3 @@
-// Updated types/comment.ts - Support both formats
 export interface Comment {
   id: number;
   comment: string;
@@ -7,7 +6,6 @@ export interface Comment {
   updatedAt: string;
 }
 
-// For API payload - simplified format
 export interface CommentPayload {
   comment: string;
 }
@@ -40,11 +38,10 @@ export interface GoalData {
   status: string;
   priority: string;
   projectId?: string;
-  comments: Comment[]; // Frontend uses full Comment objects
+  comments: Comment[]; 
   id?: string;
 }
 
-// For API submission - simplified format
 export interface GoalDataPayload {
   goalTitle: string;
   description: string;
@@ -53,7 +50,7 @@ export interface GoalDataPayload {
   status: string;
   priority: string;
   projectId?: string;
-  comments: string[]; // API expects array of strings
+  comments: string[]; 
   id?: string;
 }
 
@@ -62,5 +59,5 @@ export interface ProjectGoalFormProps {
   setGoalData: React.Dispatch<React.SetStateAction<GoalData>>;
   newComment: string;
   setNewComment: React.Dispatch<React.SetStateAction<string>>;
-  onSubmit?: (payload: GoalDataPayload) => void; // Add submit handler
+  onSubmit?: (payload: GoalDataPayload) => void; 
 }

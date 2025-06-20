@@ -5,8 +5,8 @@ import { Box, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { GoalData, ProjectGoalFormProps, GoalDataPayload } from "../../interface/projectGoal";
-import { Comment } from "../../interface/projectGoal";
-import CommonCommentBox from "./CommonCommentBox";
+import { Comment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import CommonCommentBox from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/CommonCommentBox";
 
 const statusOptions = ["not-started", "in-progress", "completed", "blocked"];
 const priorityOptions = ["high", "medium", "low"];

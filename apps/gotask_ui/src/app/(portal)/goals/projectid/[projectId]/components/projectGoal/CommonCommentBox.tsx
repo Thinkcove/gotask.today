@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { Comment, Props } from "../../interface/projectGoal";
+import { Comment, Props } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 
 
 

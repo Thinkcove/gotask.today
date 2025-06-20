@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
-import { AssetList } from "./components/assetList";
+import { AssetList } from "../components/assetList";
 
 const Page = () => {
   return (
     <div>
-      <AssetList />
+      <AssetList initialView="issues" />
     </div>
   );
 };

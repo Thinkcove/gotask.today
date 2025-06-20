@@ -19,6 +19,7 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import UserStatusFilter from "@/app/component/filters/userFilter";
 
 import { filterUsers } from "@/app/common/utils/userStatus";
+import router from "next/router";
 
 const UserList = () => {
   const { canAccess } = useUserPermission();
@@ -73,7 +74,7 @@ const UserList = () => {
         <ActionButton
           label={transuser("createusernew")}
           icon={<AddIcon sx={{ color: "white" }} />}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => router.push("/user/createUser")}
         />
       )}
     </Box>

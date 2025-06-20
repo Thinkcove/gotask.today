@@ -6,10 +6,14 @@ import {
   findGoalsByUserId
 } from "../../domain/interface/projectGoal/projectGoal";
 import {
+  createProjectCommentService,
   createProjectGoalService,
+  deleteProjectCommentService,
   deleteProjectGoalService,
   getAllProjectGoalsService,
+  getCommentsByGoalIdService,
   getProjectGoalByIdService,
+  updateProjectCommentService,
   updateProjectGoalService
 } from "../projectgoal/projectGoalService";
 
@@ -102,6 +106,37 @@ class ProjectGoalController extends BaseController {
     } catch (error) {
       return this.replyError(error);
     }
+  }
+  // Create a new Project Comment
+  async createComment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const commentData = requestHelper.getPayload();
+      const newComment = await createProjectCommentService(commentData);
+      return this.sendResponse(handler, newComment);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
+  // Get comments for a goal
+  async getCommentsByGoalId(requestHelper: RequestHelper, handler: any) {
+    const goalId = requestHelper.getParam("goal_id");
+    const result = await getCommentsByGoalIdService(goalId);
+    return this.sendResponse(handler, result);
+  }
+
+  // Update comment
+  async updateComment(requestHelper: RequestHelper, handler: any) {
+    const commentId = requestHelper.getParam("comment_id");
+    const updateData = requestHelper.getPayload();
+    const result = await updateProjectCommentService(commentId, updateData);
+    return this.sendResponse(handler, result);
+  }
+
+  // Delete comment
+  async deleteComment(requestHelper: RequestHelper, handler: any) {
+    const commentId = requestHelper.getParam("comment_id");
+    const result = await deleteProjectCommentService(commentId);
+    return this.sendResponse(handler, result);
   }
 }
 

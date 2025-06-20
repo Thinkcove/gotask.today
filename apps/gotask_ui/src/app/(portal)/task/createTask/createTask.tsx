@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
 import { createTask } from "../service/taskAction";

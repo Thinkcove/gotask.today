@@ -16,6 +16,7 @@ import { findRoleByIds } from "../../domain/interface/role/roleInterface";
 import { Organization } from "../../domain/model/organization/organization";
 import { getAssetByUserId } from "../../domain/interface/assetTag/assetTag";
 import { getAssetById } from "../../domain/interface/asset/asset";
+import { ISkill } from "../../domain/model/user/skills";
 
 class userService {
   // CREATE USER
@@ -376,6 +377,25 @@ class userService {
         success: false,
         message: error.message || UserMessages.QUERY.FAILED
       };
+    }
+  }
+
+  async updateSkills(
+    userId: string,
+    skills: ISkill[]
+  ): Promise<{ success: boolean; data?: any; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user) {
+        return { success: false, message: "User not found" };
+      }
+
+      user.skills = skills;
+      await user.save();
+
+      return { success: true, data: user, message: "Skills updated successfully" };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to update skills" };
     }
   }
 }

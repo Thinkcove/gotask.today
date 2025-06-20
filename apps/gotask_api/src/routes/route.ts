@@ -11,11 +11,13 @@ import * as UserPreferenceRoutes from "../modules/userPreference/userPreferenceR
 import * as QueryRoutes from "../modules/query/queryRoutes";
 import * as AttendanceRoutes from "../modules/attendance/attendanceRoutes";
 import * as QueryTaskRoutes from "../modules/queryTask/queryTaskRoutes";
-import ProjectStoryRoutes from "../modules/projectStory/projectStoryRoutes";
+import * as ProjectStoryRoutes from "../modules/projectStory/projectStoryRoutes";
 import * as AssetRoutes from "../modules/assets/assetsRoutes";
 import * as AssetTagRoutes from "../modules/assetTag/assetTagRoutes";
 import * as WorkPlannedReportRoutes from "../modules/planned/plannedRoute";
 import * as ProjectGoalRoute from "../modules/projectgoal/projectGoalRoute";
+import * as SkillRoutes from "../modules/masters/skills/skillsRoutes";
+
 const routes: ServerRoute[] = [
   ...ProjectRoutes.default,
   ...UserRoutes.default,
@@ -29,10 +31,12 @@ const routes: ServerRoute[] = [
   ...AttendanceRoutes.default,
   ...QueryTaskRoutes.default,
   ...UserPreferenceRoutes.default,
-  ...ProjectStoryRoutes,
+  ...ProjectStoryRoutes.default,
   ...AssetRoutes.default,
   ...AssetTagRoutes.default,
   ...WorkPlannedReportRoutes.default,
-  ...ProjectGoalRoute.default
+  ...ProjectGoalRoute.default,
+  ...SkillRoutes.default
 ];
+
 export default routes;

@@ -166,6 +166,22 @@ class UserController extends BaseController {
       return this.replyError(error);
     }
   }
+
+  async updateUserSkills(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const skills = requestHelper.getPayload();
+
+      if (!Array.isArray(skills) || skills.length === 0) {
+        throw new Error("Skills payload is required and must be an array.");
+      }
+
+      const updatedUser = await userService.updateSkills(id, skills);
+      return this.sendResponse(handler, updatedUser);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
 export default UserController;

@@ -11,7 +11,8 @@ export const APPLICATIONS = {
   PROJECT_STORY: "Project Story",
   ASSET: "Asset and Resources",
   WORK_PLANNED: "WORK_PLANNED",
-  Project_GOAL: "Project Goal"
+  Project_GOAL: "Project Goal",
+  KPI:"KPI System"
 } as const;
 
 export type ApplicationName = (typeof APPLICATIONS)[keyof typeof APPLICATIONS];

@@ -53,5 +53,10 @@
     "path": "/asset/assets",
     "access": "Asset and Resources"
   },
-  { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" }
+  { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" },
+  {"text":"KPI System",
+  "icon":"VpnKeyIcon",
+  "path":"/kpi",
+  "access":"KPI System"
+}
 ]

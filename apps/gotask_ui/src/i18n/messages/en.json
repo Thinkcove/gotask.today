@@ -519,5 +519,10 @@
     "uploadfile": "Upload the files here",
     "uploadsuccess": "Upload successfully",
     "validation": "No valid attendance records processed"
+  },
+  "KPI System":{
+     "viewname": "KPI System",
+     "createnewtemplate":" Create anew template",
+     "searchplaceholder":"Search"
   }
 }

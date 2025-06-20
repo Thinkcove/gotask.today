@@ -44,6 +44,10 @@ const findGoalsByProjectId = async (projectId: string): Promise<IProjectGoal[]> 
 const createProjectComment = async (commentData: IProjectComment): Promise<IProjectComment> => {
   const { goal_id, user_id, comments, user_name } = commentData;
 
+  if (!Array.isArray(comments) || comments.length === 0) {
+    throw new Error("comments field must be a non-empty array.");
+  }
+
   const goal = await ProjectGoal.findOne({ id: goal_id });
   if (!goal) throw new Error("Goal not found");
 
@@ -55,13 +59,14 @@ const createProjectComment = async (commentData: IProjectComment): Promise<IProj
     user_name,
     updatedAt: new Date()
   });
+
   await newComment.save();
 
   if (!Array.isArray(goal.comments)) {
     goal.comments = [];
   }
 
-  goal.comments.unshift(newComment.id); 
+  goal.comments.unshift(newComment.id);
   await goal.save();
 
   return newComment;

@@ -2,7 +2,7 @@ import env from "@/app/common/env";
 import { postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import useSWR from "swr";
-import { WorkPlannedEntry, WorkPlannedApiResponse } from "../interface/workPlanned";
+import { WorkPlannedApiResponse } from "../interface/workPlanned";
 
 const WORK_PLANNED_API_URL = `${env.API_BASE_URL}/work-planned/tasks`;
 

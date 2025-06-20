@@ -1,19 +1,17 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { 
   Box, 
   Grid, 
   CircularProgress, 
   Typography, 
-  Button, 
-  Alert,
-  Paper
+  Button
 } from "@mui/material";
 import { useWorkPlannedReport } from "../services/workPlannedServices";
 import { fetchProject, fetchUser } from "../../task/service/taskAction";
 import useSWR from "swr";
 import EmptyState from "@/app/component/emptyState/emptyState";
-import NoSearchResultsImage from "@assets/placeholderImages/nofilterlog.svg";
+import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import NoReportImage from "@assets/placeholderImages/noreportlog.svg"
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -53,7 +51,6 @@ const getInitialFilters = () => {
 const WorkPlannedReport = () => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const [filters, setFilters] = useState(getInitialFilters);
-  const [lastFetchPayload, setLastFetchPayload] = useState<Payload | null>(null); // Add Payload type
   const isClient = typeof window !== "undefined";
 
   const {
@@ -109,15 +106,27 @@ const WorkPlannedReport = () => {
     data: reportData,
     isLoading: isReportLoading,
     isError: isReportError,
-    error: reportError
   } = useWorkPlannedReport(payload, shouldFetch);
 
-  useEffect(() => {
-    if (shouldFetch) {
-      console.log("Payload changed:", payload);
-      setLastFetchPayload(payload);
-    }
-  }, [shouldFetch, JSON.stringify(payload)]);
+//   useEffect(() => {
+//     if (shouldFetch) {
+//       console.log("Payload changed:", payload);
+//       setLastFetchPayload(payload);
+//     }
+//   }, [shouldFetch, JSON.stringify(payload)]);
+
+const memoizedPayload = useMemo(() => ({
+  fromDate: filters.fromDate,
+  toDate: filters.toDate,
+  userIds: filters.userIds.length > 0 ? filters.userIds : [],
+  selectedProjects: filters.projectIds.length > 0 ? filters.projectIds : []
+}), [filters.fromDate, filters.toDate, filters.userIds, filters.projectIds]);
+
+useEffect(() => {
+  if (shouldFetch) {
+    console.log("Payload changed:", memoizedPayload);
+  }
+}, [shouldFetch, memoizedPayload]);
 
   if (userError) {
     return (
@@ -185,7 +194,7 @@ const WorkPlannedReport = () => {
             </Grid>
              ) : reportData && reportData.length === 0 ? (
             <Grid item xs={12}>
-              <EmptyState imageSrc={NoSearchResultsImage} message={transreport("noDataFound")} />
+              <EmptyState imageSrc={NoSearchResultsImage} message={`No work planned data found for the selected date range`} />
             </Grid>
           ) : reportData ? (
             <WorkPlannedCalendarGrid

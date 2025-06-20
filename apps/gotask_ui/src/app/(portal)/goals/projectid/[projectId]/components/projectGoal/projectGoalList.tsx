@@ -94,7 +94,6 @@ function ProjectGoalList() {
     });
   };
   const handelProjectGoalView = async (goalId: string) => {
-    console.log("goalId", goalId);
 
     try {
       const goal = await getWeeklyGoalById(goalId);

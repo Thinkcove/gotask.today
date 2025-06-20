@@ -13,34 +13,11 @@ import {
   getCommentsByGoalId,
   updateComment
 } from "@/app/(portal)/goals/service/projectGoalAction";
-// Adjust the import path as needed
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = false }) => {
   const router = useRouter();
   const [comments, setComments] = useState<GoalComment[]>(goalData?.comments || []);
   const [commentsLoading, setCommentsLoading] = useState(false);
-
-  // Load comments when component mounts or goalData changes
-  useEffect(() => {
-    if (goalData?.id) {
-      loadComments();
-    }
-  }, [goalData?.id]);
-
-  const loadComments = async () => {
-    if (!goalData?.id) return;
-
-    try {
-      setCommentsLoading(true);
-      const fetchedComments = await getCommentsByGoalId(goalData.id.toString());
-      setComments(fetchedComments);
-    } catch (error) {
-      console.error("Error loading comments:", error);
-      // Optionally show a toast notification for error
-    } finally {
-      setCommentsLoading(false);
-    }
-  };
 
   const handleSaveComment = async (commentText: string) => {
     if (!goalData?.id) return;
@@ -64,12 +41,8 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
       };
 
       setComments((prev) => [...prev, newComment]);
-
-      // Optionally show success message
-      console.log("Comment created successfully");
     } catch (error) {
       console.error("Error creating comment:", error);
-      // Optionally show error toast notification
     }
   };
   const handleBack = () => {
@@ -100,14 +73,10 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
     try {
       await deleteComment(id);
 
-      // Remove from local state
       setComments((prev) => prev.filter((c) => c.id !== id));
 
-      // Optionally show success message
-      console.log("Comment deleted successfully");
     } catch (error) {
       console.error("Error deleting comment:", error);
-      // Optionally show error toast notification
     }
   };
 
@@ -142,7 +111,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
       >
         {/* Header */}
         <Box sx={{ maxHeight: "calc(100vh - 160px)", overflowY: "auto" }}>
-          <Grid container  alignItems="center" mb={3}>
+          <Grid container alignItems="center" mb={3}>
             <IconButton color="primary" onClick={handleBack}>
               <ArrowBack />
             </IconButton>

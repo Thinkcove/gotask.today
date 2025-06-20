@@ -7,21 +7,15 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { GoalData, ProjectGoalFormProps, GoalDataPayload } from "../../interface/projectGoal";
 import { Comment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import CommonCommentBox from "./commentBox";
+import { priorityOptions, statusOptions } from "@/app/common/constants/project";
 
-const statusOptions = ["not-started", "in-progress", "completed", "blocked"];
-const priorityOptions = ["high", "medium", "low"];
-
-const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
-  goalData,
-  setGoalData,
-  onSubmit
-}) => {
+const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, setGoalData, onSubmit }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   const transformToPayload = (data: GoalData): GoalDataPayload => {
     return {
       ...data,
-      comments: data.comments.map((comment) => comment.comment) 
+      comments: data.comments.map((comment) => comment.comment)
     };
   };
 

@@ -16,6 +16,7 @@ import {
 import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
 import { GoalData } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { Comment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import { formatStatus } from "@/app/common/constants/project";
 
 function ProjectGoalList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
@@ -42,20 +43,6 @@ function ProjectGoalList() {
       goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
-  const formatStatus = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "not-started":
-        return "Not Started";
-      case "in-progress":
-        return "In Progress";
-      case "completed":
-        return "Completed";
-      case "blocked":
-        return "Blocked";
-      default:
-        return "Unknown";
-    }
-  };
 
   const handelOpen = () => {
     setGoalData({

@@ -9,8 +9,13 @@ import {
   getProjectGoalById,
   updateProjectGoal,
   deleteProjectGoal,
-  getAllProjectGoals
+  getAllProjectGoals,
+  createProjectComment,
+  deleteProjectComment,
+  updateProjectComment,
+  getCommentsByGoalId
 } from "../../domain/interface/projectGoal/projectGoal";
+import { IProjectComment } from "../../domain/model/projectGoal/projectGoalComment";
 
 // Create a new weekly goal
 const createProjectGoalService = async (
@@ -183,6 +188,67 @@ const deleteProjectGoalService = async (
     };
   }
 };
+// Create a new Project Comment Service
+const createProjectCommentService = async (
+  commentData: IProjectComment
+): Promise<{ success: boolean; data?: IProjectComment; message?: string }> => {
+  try {
+    const newComment = await createProjectComment(commentData);
+    return {
+      success: true,
+      data: newComment
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || ProjectGoalMessages.COMMENT.SUCCESS
+    };
+  }
+};
+const getCommentsByGoalIdService = async (
+  goalId: string
+): Promise<{ success: boolean; data?: IProjectComment[]; message?: string }> => {
+  try {
+    const comments = await getCommentsByGoalId(goalId);
+    return {
+      success: true,
+      data: comments,
+      message: ProjectGoalMessages.FETCH.SUCCESS
+    };
+  } catch (error: any) {
+    return { success: false, message: error.message || ProjectGoalMessages.FETCH.FAILED_ALL };
+  }
+};
+
+const updateProjectCommentService = async (
+  commentId: string,
+  updateData: Partial<IProjectComment>
+): Promise<{ success: boolean; data?: IProjectComment | null; message?: string }> => {
+  try {
+    const updated = await updateProjectComment(commentId, updateData);
+    return {
+      success: true,
+      data: updated,
+      message: ProjectGoalMessages.UPDATE.SUCCESS
+    };
+  } catch (error: any) {
+    return { success: false, message: error.message || ProjectGoalMessages.UPDATE.FAILED };
+  }
+};
+
+const deleteProjectCommentService = async (
+  commentId: string
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const deleted = await deleteProjectComment(commentId);
+    if (!deleted) {
+      return { success: false, message: ProjectGoalMessages.DELETE.NOT_FOUND };
+    }
+    return { success: true, message: ProjectGoalMessages.DELETE.SUCCESS };
+  } catch (error: any) {
+    return { success: false, message: error.message || ProjectGoalMessages.DELETE.FAILED };
+  }
+};
 
 export {
   createProjectGoalService,
@@ -191,5 +257,9 @@ export {
   getProjectGoalsByUserIdService,
   getProjectGoalsByIdService,
   updateProjectGoalService,
-  deleteProjectGoalService
+  deleteProjectGoalService,
+  createProjectCommentService,
+  getCommentsByGoalIdService,
+  updateProjectCommentService,
+  deleteProjectCommentService
 };

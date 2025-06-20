@@ -18,10 +18,6 @@ export const getStatusColor = (status: string): string => {
       return "#CE93D8";
     case "completed":
       return "#4CAF50";
-    case "active":
-      return "#4CAF50";
-    case "inactive":
-      return "#9E9E9E";
     default:
       return "000000";
   }

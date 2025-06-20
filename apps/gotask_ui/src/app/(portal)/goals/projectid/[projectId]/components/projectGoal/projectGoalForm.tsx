@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { GoalData, ProjectGoalFormProps, GoalDataPayload } from "../../interface/projectGoal";
 import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
-import CommonCommentBox from "./commentBox";
 import { priorityOptions, statusOptions } from "@/app/common/constants/project";
+import GoalComments from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/goalComments";
 
 const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, setGoalData, onSubmit }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -107,7 +107,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, setGoalData
       </Grid>
 
       <Grid item xs={12}>
-        <CommonCommentBox
+        <GoalComments
           comments={goalData.comments}
           currentUserId={"your-current-user-id"}
           onSave={(commentText) => {

@@ -13,7 +13,7 @@ export interface GoalCardProps {
   goal: GoalData;
   onEdit: (goal: GoalData) => void;
 }
-export interface Props {
+export interface GoalCommentProps {
   comments: GoalComment[];
   onSave: (comment: string) => void;
   onEdit?: (id: number, comment: string) => void;

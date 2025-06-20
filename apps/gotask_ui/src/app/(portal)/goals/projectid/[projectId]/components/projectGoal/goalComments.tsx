@@ -8,10 +8,10 @@ import DateFormats from "@/app/component/dateTime/dateFormat";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import {
   GoalComment,
-  Props
+  GoalCommentProps
 } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 
-const CommonCommentBox: React.FC<Props> = ({ comments, onSave, onEdit, onDelete }) => {
+const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, onDelete }) => {
   const [editValue, setEditValue] = useState("");
   const [editingComment, setEditingComment] = useState<GoalComment | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -231,4 +231,4 @@ const CommonCommentBox: React.FC<Props> = ({ comments, onSave, onEdit, onDelete 
   );
 };
 
-export default CommonCommentBox;
+export default GoalComments;

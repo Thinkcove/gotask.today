@@ -143,10 +143,18 @@ const ProjectStoryDetail = () => {
         <Typography variant="caption" color="primary" display="block" mb={2}>
           {t("Stories.status")}: {story.status || t("Stories.na")}
         </Typography>
+        <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+          {t("Stories.createdAt")}:{" "}
+          {story.createdAt
+            ? new Intl.DateTimeFormat("en-IN", {
+                dateStyle: "medium",
+                timeStyle: "short"
+              }).format(new Date(story.createdAt))
+            : t("Stories.na")}
+        </Typography>
 
         <Divider sx={{ my: 3 }} />
 
-      
         {/* Tasks Section */}
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>

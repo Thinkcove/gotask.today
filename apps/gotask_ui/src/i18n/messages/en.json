@@ -193,6 +193,7 @@
       "confirmDelete": "Are you sure you want to delete this story?",
       "fetchError": "Failed to load stories.",
       "titleWithProject": "{name} Stories",
+      "createdAt": "Created At",
 
       "placeholders": {
         "title": "Enter story title",

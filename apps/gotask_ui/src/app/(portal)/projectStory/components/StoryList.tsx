@@ -18,7 +18,7 @@ const fetcher = (projectId: string) => getStoriesByProject(projectId).then((res)
 const StoryList: React.FC = () => {
   const { projectId } = useParams();
   const router = useRouter();
-  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   const {
     data: stories = [],
@@ -44,10 +44,6 @@ const StoryList: React.FC = () => {
         </Typography>
       </Box>
     );
-  }
-
-  if (stories.length === 0) {
-    return <EmptyState imageSrc={NoSearchResultsImage} message={t("Stories.noStoriesFound")} />;
   }
 
   return (
@@ -76,18 +72,22 @@ const StoryList: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* Stories Grid */}
+      {/* Stories Grid  */}
       <Box sx={{ px: 2, pt: 10 }}>
-        <Grid container spacing={2}>
-          {stories.map((story: ProjectStory) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={story.id}>
-              <StoryCard story={story} />
-            </Grid>
-          ))}
-        </Grid>
+        {stories.length === 0 ? (
+          <EmptyState imageSrc={NoSearchResultsImage} message={t("Stories.noStoriesFound")} />
+        ) : (
+          <Grid container spacing={2}>
+            {stories.map((story: ProjectStory) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={story.id}>
+                <StoryCard story={story} />
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Box>
 
-      {/* Floating Create Button */}
+      {/* Floating Create Button  */}
       <Tooltip title={t("Stories.createStory")}>
         <Fab
           color="primary"

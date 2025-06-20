@@ -15,15 +15,18 @@ import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiemloyeeModel";
 import { User } from "../../domain/model/user/user";
 
 // Helper to remove restricted fields from an object
-function removeRestrictedFields<T>(data: T, restrictedFields: string[]): Partial<T> {
-  const cleanedData = { ...data } as Record<string, any>;
-  restrictedFields.forEach((field) => {
+const removeRestrictedFields = <T extends Record<string, any>>(
+  data: T,
+  restrictedFields: string[]
+): Partial<T> => {
+  const cleanedData: Record<string, any> = { ...data };
+  for (const field of restrictedFields) {
     if (field in cleanedData) {
       delete cleanedData[field];
     }
-  });
+  }
   return cleanedData as Partial<T>;
-}
+};
 
 // Create a new KPI assignment
 const createKpiAssignment = async (
@@ -42,7 +45,7 @@ const createKpiAssignment = async (
     // Validate required fields
     if (
       !filteredData.user_id ||
-      !filteredData.measurement_Criteria ||
+      !filteredData.measurement_criteria ||
       !filteredData.frequency ||
       !filteredData.weightage ||
       !filteredData.assigned_by ||
@@ -84,7 +87,7 @@ const createKpiAssignment = async (
       }
       filteredData.kpiTitle = template.title;
       filteredData.kpiDescription = template.description;
-      filteredData.measurement_Criteria = template.measurementCriteria;
+      filteredData.measurement_criteria = template.measurement_criteria;
       filteredData.frequency = filteredData.frequency || template.frequency;
     }
 
@@ -93,7 +96,7 @@ const createKpiAssignment = async (
       const templateData: Partial<IKpiTemplate> = {
         title: filteredData.kpiTitle,
         description: filteredData.kpiDescription,
-        measurementCriteria: filteredData.measurement_Criteria,
+        measurement_criteria: filteredData.measurement_criteria,
         frequency: filteredData.frequency,
         isActive: true
       };
@@ -293,7 +296,7 @@ async function getTemplatesByUserId(user_id: string): Promise<{
               id: template.id,
               title: template.title,
               description: template.description,
-              measurementCriteria: template.measurementCriteria,
+              measurement_criteria: template.measurement_criteria,
               frequency: template.frequency,
               isActive: template.isActive
             });
@@ -302,7 +305,7 @@ async function getTemplatesByUserId(user_id: string): Promise<{
           templateArray.push({
             title: assignment.kpiTitle,
             description: assignment.kpiDescription,
-            measurementCriteria: assignment.measurement_Criteria,
+            measurement_criteria: assignment.measurement_criteria,
             frequency: assignment.frequency
           });
         }
@@ -313,7 +316,7 @@ async function getTemplatesByUserId(user_id: string): Promise<{
           template_id,
           kpiTitle,
           kpiDescription,
-          measurement_Criteria,
+          measurement_criteria,
           frequency,
           weightage,
           assigned_by,
@@ -326,7 +329,7 @@ async function getTemplatesByUserId(user_id: string): Promise<{
           template_id,
           kpiTitle,
           kpiDescription,
-          measurement_Criteria,
+          measurement_criteria,
           frequency,
           weightage,
           assigned_by,

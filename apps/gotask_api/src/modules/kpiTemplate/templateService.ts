@@ -27,7 +27,7 @@ const createKpiTemplate = async (
   try {
     const filteredData = removeRestrictedFields(templateData, restrictedFields);
 
-    if (!filteredData.title || !filteredData.description || !filteredData.measurementCriteria) {
+    if (!filteredData.title || !filteredData.description || !filteredData.measurement_criteria) {
       return {
         success: false,
         message: KpiTemplateMessages.CREATE.REQUIRED

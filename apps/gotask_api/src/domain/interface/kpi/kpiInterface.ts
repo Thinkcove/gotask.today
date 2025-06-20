@@ -1,3 +1,4 @@
+import { KPI_FREQUENCY } from "../../../constants/kpiConstants";
 import { IKpiTemplate, KpiTemplate } from "../../model/kpi/kpiModel";
 
 // Create a new KPI template
@@ -7,8 +8,8 @@ export const createKpiTemplateInDb = async (
   const newTemplate = new KpiTemplate({
     title: templateData.title,
     description: templateData.description,
-    measurementCriteria: templateData.measurementCriteria,
-    frequency: templateData.frequency || "Quarterly",
+    measurement_criteria: templateData.measurement_criteria,
+    frequency: templateData.frequency || KPI_FREQUENCY.QUARTERLY,
     isActive: templateData.isActive ?? true
   });
 

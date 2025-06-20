@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { IKpiTemplate, KpiTemplate } from "../../model/kpi/kpiModel";
 import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiemloyeeModel";
+import { KPI_FREQUENCY } from "../../../constants/kpiConstants";
 
 // Create a new KPI assignment
 export const createKpiAssignmentInDb = async (
@@ -89,8 +90,8 @@ export const saveKpiAsTemplateInDb = async (
     template_id: new mongoose.Types.UUID().toString(),
     title: templateData.title,
     description: templateData.description,
-    measurementCriteria: templateData.measurementCriteria,
-    frequency: templateData.frequency || "Quarterly",
+    measurement_criteria: templateData.measurement_criteria,
+    frequency: templateData.frequency || KPI_FREQUENCY.QUARTERLY,
     isActive: templateData.isActive ?? true
   });
   return await newTemplate.save().then((doc) =>

@@ -1,11 +1,12 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { KPI_FREQUENCY, MEASUREMENT_CRITERIA } from "../../../constants/kpiConstants";
 
 export interface IKpiTemplate extends Document {
   template_id: string;
   title: string;
   description: string;
-  measurementCriteria: string;
+  measurement_criteria: string;
   frequency: string;
   isActive: boolean;
   changeHistory: { changedBy: string; changedAt: Date; changes: Record<string, any> }[];
@@ -27,16 +28,16 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
       type: String,
       required: true
     },
-    measurementCriteria: {
+    measurement_criteria: {
       type: String,
-      required: true,
-      enum: ["Number", "Percentage", "Rating"]
+      enum: Object.values(MEASUREMENT_CRITERIA),
+      required: true
     },
     frequency: {
       type: String,
-      required: true,
-      enum: ["Monthly", "Quarterly", "Annually"],
-      default: "Quarterly"
+      enum: Object.values(KPI_FREQUENCY),
+      default: KPI_FREQUENCY.QUARTERLY,
+      required: true
     },
     isActive: {
       type: Boolean,

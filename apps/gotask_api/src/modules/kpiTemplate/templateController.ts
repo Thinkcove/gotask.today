@@ -31,7 +31,7 @@ class KpiTemplateController extends BaseController {
         }
       });
 
-      if (!templateData.title || !templateData.description || !templateData.measurementCriteria) {
+      if (!templateData.title || !templateData.description || !templateData.measurement_criteria) {
         return this.replyError(new Error(KpiTemplateMessages.CREATE.REQUIRED));
       }
 

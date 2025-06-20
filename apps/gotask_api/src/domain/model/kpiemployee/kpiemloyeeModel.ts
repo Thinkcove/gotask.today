@@ -1,18 +1,19 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { KPI_FREQUENCY, MEASUREMENT_CRITERIA } from "../../../constants/kpiConstants";
 
 export interface IKpiAssignment extends Document {
   assignment_id: string;
-  user_id: string; // References `id` from User schema
-  template_id?: string; // References template_id from KpiTemplate
+  user_id: string;
+  template_id?: string;
   kpiTitle: string;
   kpiDescription: string;
-  measurement_Criteria: string;
+  measurement_criteria: string;
   frequency: string;
   weightage: number;
   targetValue?: number;
-  assigned_by: string; // References `id` from User schema
-  reviewer_id?: string; // References `id` from User schema
+  assigned_by: string;
+  reviewer_id?: string;
   comments?: string;
   status: string;
   saveAsTemplate?: boolean;
@@ -29,7 +30,7 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
     user_id: {
       type: String,
       required: true,
-      ref: "User" // Add reference to User model
+      ref: "User"
     },
     template_id: {
       type: String
@@ -42,16 +43,16 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
       type: String,
       required: true
     },
-    measurement_Criteria: {
+    measurement_criteria: {
       type: String,
-      required: true,
-      enum: ["Number", "Percentage", "Rating"]
+      enum: Object.values(MEASUREMENT_CRITERIA),
+      required: true
     },
     frequency: {
       type: String,
-      required: true,
-      enum: ["Monthly", "Quarterly", "Annually"],
-      default: "Quarterly"
+      enum: Object.values(KPI_FREQUENCY),
+      default: KPI_FREQUENCY.QUARTERLY,
+      required: true
     },
     weightage: {
       type: Number,
@@ -63,11 +64,11 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
     assigned_by: {
       type: String,
       required: true,
-      ref: "User" // Add reference to User model
+      ref: "User"
     },
     reviewer_id: {
       type: String,
-      ref: "User" // Add reference to User model
+      ref: "User"
     },
     comments: {
       type: String

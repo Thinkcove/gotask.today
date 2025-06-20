@@ -31,7 +31,7 @@ class KpiAssignmentController extends BaseController {
 
       if (
         !assignmentData.user_id ||
-        !assignmentData.measurement_Criteria ||
+        !assignmentData.measurement_criteria ||
         !assignmentData.frequency ||
         !assignmentData.weightage ||
         !assignmentData.assigned_by ||

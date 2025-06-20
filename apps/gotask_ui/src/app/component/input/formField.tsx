@@ -238,31 +238,22 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
         )}
 
         {type === "date" && (
-          <DatePicker
-            selected={
-              value instanceof Date ? value : value ? new Date(value as string | number) : null
-            }
-            onChange={(date) => onChange?.(date ? date.toISOString().split("T")[0] : "")}
+          <TextField
+            inputRef={ref}
+            variant="standard"
+            required={required}
+            placeholder={placeholder}
+            error={!!error}
+            fullWidth
+            value={value ? new Date(value as Date).toISOString().substring(0, 10) : ""}
             disabled={disabled}
-            dateFormat="dd-MM-yyyy"
-            placeholderText={placeholder}
-            customInput={
-              <TextField
-                variant="standard"
-                fullWidth
-                placeholder={placeholder}
-                error={!!error}
-                InputProps={{
-                  disableUnderline: true,
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <CalendarMonth sx={{ color: "#9C8585" }} />
-                    </InputAdornment>
-                  ),
-                  ...inputProps
-                }}
-              />
-            }
+            onFocus={onFocus}
+            type="date"
+            onChange={(e) => onChange?.(e.target.value)}
+            InputProps={{
+              disableUnderline: true,
+              ...inputProps
+            }}
           />
         )}
 

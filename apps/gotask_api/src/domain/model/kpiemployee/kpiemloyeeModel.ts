@@ -14,7 +14,7 @@ export interface IKpiAssignment extends Document {
   target_Value?: number;
   assigned_by: string;
   reviewer_id?: string;
-  comments?: string;
+  comments?: string[];
   status: string;
   saveAs_Template?: boolean;
   change_History: { changedBy: string; changedAt: Date; changes: Record<string, any> }[];
@@ -70,8 +70,9 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
       type: String,
       ref: "User"
     },
-    comments: {
-      type: String
+   comments: {
+      type: [String],
+      default: []
     },
     status: {
       type: String,
@@ -90,7 +91,26 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
       }
     ]
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toObject: {
+      versionKey: false,
+      virtuals: false,
+      transform: (_, ret) => {
+        delete ret._id;
+        delete ret.id;
+      }
+    },
+    toJSON: {
+      versionKey: false,
+      virtuals: false,
+      transform: (_, ret) => {
+        delete ret._id;
+        delete ret.id;
+      }
+    }
+  }
 );
+
 
 export const KpiAssignment = mongoose.model<IKpiAssignment>("KpiAssignment", KpiAssignmentSchema);

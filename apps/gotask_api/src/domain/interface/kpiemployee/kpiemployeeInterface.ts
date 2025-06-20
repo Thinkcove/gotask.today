@@ -8,32 +8,22 @@ export const createKpiAssignmentInDb = async (
   assignmentData: Partial<IKpiAssignment>
 ): Promise<IKpiAssignment> => {
   const newAssignment = new KpiAssignment(assignmentData);
-  return await newAssignment.save().then((doc) =>
-    doc.toObject({
-      getters: true,
-      virtuals: false,
-      versionKey: false,
-      transform: (doc, ret) => {
-        delete ret._id;
-        delete ret.id;
-        return ret;
-      }
-    })
-  );
+  return await newAssignment.save();
 };
+
 
 // Get all KPI assignments for a user
 export const getKpiAssignmentsByUserIdFromDb = async (
   user_id: string
 ): Promise<IKpiAssignment[]> => {
-  return await KpiAssignment.find({ user_id }).select("-_id -id -__v");
+  return await KpiAssignment.find({ user_id });
 };
 
 // Get a specific KPI assignment by assignment_id
 export const getKpiAssignmentByIdFromDb = async (
   assignment_id: string
 ): Promise<IKpiAssignment | null> => {
-  return await KpiAssignment.findOne({ assignment_id }).select("-_id -id -__v");
+  return await KpiAssignment.findOne({ assignment_id });
 };
 
 // Update a KPI assignment
@@ -42,14 +32,14 @@ export const updateKpiAssignmentInDb = async (
   updateData: Partial<IKpiAssignment>,
   changedBy: string = "system"
 ): Promise<IKpiAssignment | null> => {
-  const currentAssignment = await KpiAssignment.findOne({ assignment_id }).select("-_id -id -__v");
+  const currentAssignment = await KpiAssignment.findOne({ assignment_id });
   if (!currentAssignment) return null;
 
   const changes: Record<string, any> = {};
   for (const key in updateData) {
     if (
       key !== "assignment_id" &&
-      key !== "changeHistory" &&
+      key !== "change_history" &&
       updateData[key as keyof IKpiAssignment] !== undefined
     ) {
       changes[key] = {
@@ -73,7 +63,7 @@ export const updateKpiAssignmentInDb = async (
   return await KpiAssignment.findOneAndUpdate({ assignment_id }, updateData, {
     new: true,
     runValidators: true
-  }).select("-_id -id -__v");
+  });
 };
 
 // Delete a KPI assignment
@@ -94,20 +84,9 @@ export const saveKpiAsTemplateInDb = async (
     frequency: templateData.frequency || KPI_FREQUENCY.QUARTERLY,
     isActive: templateData.isActive ?? true
   });
-  return await newTemplate.save().then((doc) =>
-    doc.toObject({
-      getters: true,
-      virtuals: false,
-      versionKey: false,
-      transform: (doc, ret) => {
-        delete ret._id;
-        delete ret.id;
-        return ret;
-      }
-    })
-  );
+  return await newTemplate.save();
 };
 
 export const getAllKpiAssignmentsFromDb = async (): Promise<IKpiAssignment[]> => {
-  return await KpiAssignment.find().select("-_id -id -__v").lean();
+  return await KpiAssignment.find();
 };

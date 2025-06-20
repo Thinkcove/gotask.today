@@ -207,7 +207,9 @@
         "updateFailed": "Failed to update story.",
         "loadFailed": "Failed to load story.",
         "notFound": "Story not found.",
-        "deleteFailed": "Failed to delete story."
+        "deleteFailed": "Failed to delete story.",
+        "descriptionRequiredMessage": "Description is required.",
+        "descriptionRequired": "Description is required."
       },
       "success": {
         "created": "Story created successfully!",

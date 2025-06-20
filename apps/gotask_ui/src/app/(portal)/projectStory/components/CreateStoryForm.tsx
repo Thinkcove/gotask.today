@@ -9,16 +9,19 @@ import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ArrowBack } from "@mui/icons-material";
+import { useUser } from "@/app/userContext";
 
 const CreateStoryForm = () => {
   const { projectId } = useParams();
   const router = useRouter();
-  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const { user } = useUser();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
 
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -27,24 +30,37 @@ const CreateStoryForm = () => {
   const handleCloseSnackbar = () => setSnackOpen(false);
 
   const handleSubmit = async () => {
+    let hasError = false;
+
     if (!title.trim()) {
       setTitleError(t("Stories.errors.titleRequired"));
       setSnackMessage(t("Stories.errors.titleRequiredMessage"));
+      hasError = true;
+    }
+
+    if (!description.trim()) {
+      setDescriptionError(t("Stories.errors.descriptionRequired"));
+      if (!hasError) {
+        setSnackMessage(t("Stories.errors.descriptionRequiredMessage"));
+      }
+      hasError = true;
+    }
+
+    if (hasError) {
       setSnackSeverity("error");
       setSnackOpen(true);
       return;
     }
 
     setTitleError("");
+    setDescriptionError("");
     setIsSubmitting(true);
-
-    const createdBy = typeof window !== "undefined" ? localStorage.getItem("userId") : "";
 
     const payload = {
       title,
       description,
       projectId: projectId as string,
-      createdBy: createdBy || "anonymous"
+      createdBy: user?.id ?? "anonymous"
     };
 
     try {
@@ -176,7 +192,11 @@ const CreateStoryForm = () => {
           type="text"
           placeholder={t("Stories.placeholders.description")}
           value={description}
-          onChange={(val) => setDescription(val as string)}
+          onChange={(val) => {
+            setDescription(val as string);
+            setDescriptionError("");
+          }}
+          error={descriptionError}
           multiline
           height={180}
         />

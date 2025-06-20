@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, Button, CircularProgress, IconButton, Tooltip, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { getProjectStoryById, updateProjectStory } from "../services/projectStoryService";
@@ -15,7 +15,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 const EditStoryForm = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
-  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -28,29 +28,27 @@ const EditStoryForm = () => {
 
   const handleCloseSnackbar = () => setSnackOpen(false);
 
-  const fetchStory = async () => {
-    const response = await getProjectStoryById(storyId as string);
-    return response?.data;
-  };
-
   const {
     data: story,
-    isLoading,
-    error
-  } = useSWR(storyId ? [`projectStory`, storyId] : null, fetchStory, {
-    onSuccess: (data) => {
-      setTitle(data?.title || "");
-      setDescription(data?.description || "");
+    isLoading
+  } = useSWR(
+    storyId ? [`projectStory`, storyId] : null,
+    async () => {
+      const response = await getProjectStoryById(storyId as string);
+      return response?.data;
+    },
+    {
+      onSuccess: (data) => {
+        setTitle(data?.title || "");
+        setDescription(data?.description || "");
+      },
+      onError: () => {
+        setSnackMessage(t("Stories.errors.loadFailed"));
+        setSnackSeverity("error");
+        setSnackOpen(true);
+      }
     }
-  });
-
-  useEffect(() => {
-    if (error) {
-      setSnackMessage(t("Stories.errors.loadFailed"));
-      setSnackSeverity("error");
-      setSnackOpen(true);
-    }
-  }, [error, t]);
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -12,32 +12,11 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import StatusIndicator from "@/app/component/status/statusIndicator";
+import { getStatusColor } from "@/app/common/constants/task";
 
 interface UserCardProps {
   users: User[] | null;
 }
-
-// Updated getStatusColor function
-const getStatusColor = (status: string) => {
-  if (typeof status !== "string") return "#BDBDBD";
-
-  switch (status.toLowerCase()) {
-    case "to do":
-      return "#1976D2";
-    case "in progress":
-      return "#FFA000";
-    case "completed":
-      return "#4CAF50";
-    case "hold":
-      return "#9E9E9E";
-    case "active":
-      return "#4CAF50";
-    case "inactive":
-      return "#9E9E9E";
-    default:
-      return "#BDBDBD";
-  }
-};
 
 const UserCards: React.FC<UserCardProps> = ({ users }) => {
   const { canAccess } = useUserPermission();

@@ -372,7 +372,7 @@
     "placeholderstatus": "Select the status",
     "nousers": "No users available",
     "searchplaceholder": "Search Users",
-    "filterstatus":"status"
+    "filterstatus": "status"
   },
   "Appbar": {
     "logout": "Logout"

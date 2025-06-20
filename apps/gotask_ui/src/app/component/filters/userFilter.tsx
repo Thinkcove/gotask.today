@@ -3,7 +3,7 @@
 import React, { useRef, useState } from "react";
 import { Box, IconButton } from "@mui/material";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import MultiSelectFilter from "../multiSelect.ts/multiSelectFilter";
+import MultiSelectFilter from "../multiSelect/multiSelectFilter";
 import { STATUS_CONFIG } from "@/app/common/constants/status";
 
 interface Props {
@@ -84,7 +84,6 @@ const UserStatusFilter: React.FC<Props> = ({ userStatus, onStatusChange, transus
             selectedIds={userStatus.includes(STATUS_CONFIG.ALL_STATUS) ? [] : userStatus}
             items={STATUS_CONFIG.STATUS_OPTIONS}
             onChange={handleDropdownChange}
-            noItemsKey="filtertitle"
           />
         </Box>
 

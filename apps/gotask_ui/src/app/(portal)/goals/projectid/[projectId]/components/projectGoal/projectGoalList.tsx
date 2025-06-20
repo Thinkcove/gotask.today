@@ -11,13 +11,13 @@ import ProjectGoals from "@/app/(portal)/goals/projectid/[projectId]/components/
 import {
   createWeeklyGoal,
   fetchWeeklyGoals,
+  getCommentsByGoalId,
   getWeeklyGoalById,
   updateWeeklyGoal
 } from "@/app/(portal)/goals/service/projectGoalAction";
 import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
 import {
   GoalData,
-  GoalDataPayload
 } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { formatStatus } from "@/app/common/constants/project";
@@ -94,14 +94,22 @@ function ProjectGoalList() {
     });
   };
   const handelProjectGoalView = async (goalId: string) => {
-
     try {
-      const goal = await getWeeklyGoalById(goalId);
-      setprojectGoalView(goal);
+      const goal = await getWeeklyGoalById(goalId); // Get goal details
+      const comments = await getCommentsByGoalId(goalId); // Get related comments
+
+      // Merge comments into goal object
+      const fullGoal = {
+        ...goal,
+        comments: comments || []
+      };
+
+      setprojectGoalView(fullGoal); // Set the full goal with comments
     } catch (error) {
-      console.error("Failed to fetch goal by ID:", error);
+      console.error("Failed to fetch goal view data:", error);
     }
   };
+  
   const handleEditGoal = (goal: GoalData) => {
     const rawComments = goal.comments || [];
     const transformedComments = transformCommentsToObjects(rawComments);
@@ -127,7 +135,7 @@ function ProjectGoalList() {
     const newErrors: { [key: string]: string } = {};
 
     if (!goalData.goalTitle) newErrors.goalTitle = transGoal("titlerequired");
-    if (!goalData.weekStart) newErrors.status = transGoal("startweekrequired");
+    if (!goalData.weekStart) newErrors.weekStart = transGoal("startweekrequired");
     if (!goalData.weekEnd) newErrors.weekEnd = transGoal("endweekrequired");
 
     setErrors(newErrors);
@@ -168,7 +176,6 @@ function ProjectGoalList() {
       {projectGoalView ? (
         <ProjectGoalView
           goalData={projectGoalView}
-          setGoalData={setprojectGoalView}
         />
       ) : (
         <>

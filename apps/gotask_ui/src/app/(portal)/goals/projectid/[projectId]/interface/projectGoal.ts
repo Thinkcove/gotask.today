@@ -7,7 +7,6 @@ export interface GoalComment {
 }
 export interface ProjectGoalViewProps {
   goalData: any;
-  setGoalData: React.Dispatch<React.SetStateAction<any>>;
   loading?: boolean;
 }
 export interface CommentPayload {

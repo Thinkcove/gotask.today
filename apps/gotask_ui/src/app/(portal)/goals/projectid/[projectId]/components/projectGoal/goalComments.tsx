@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, Avatar } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { useTranslations } from "next-intl";
@@ -13,9 +13,9 @@ import {
 
 const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, onDelete }) => {
   const [editValue, setEditValue] = useState("");
-  const [editingComment, setEditingComment] = useState<GoalComment | null>(null);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [commentToDelete, setCommentToDelete] = useState<GoalComment | null>(null);
+  const [commentToDeleteId, setCommentToDeleteId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -23,34 +23,19 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   const handleSaveEdit = () => {
-    if (editValue.trim() && editingComment?.id !== undefined && onEdit) {
-      onEdit(editingComment.id, editValue.trim());
+    if (editValue.trim() && editingCommentId && onEdit) {
+      onEdit(editingCommentId, editValue.trim());
       setEditValue("");
-      setEditingComment(null);
+      setEditingCommentId(null);
     }
-  };
-
-  const handleStartEdit = (comment: GoalComment) => {
-    setEditingComment(comment);
-    setEditValue(comment.comment);
-  };
-
-  const handleDeleteClick = (comment: GoalComment) => {
-    setDeleteDialogOpen(true);
-    setCommentToDelete(comment);
   };
 
   const handleDeleteConfirm = () => {
-    if (commentToDelete?.id !== undefined && onDelete) {
-      onDelete(commentToDelete.id);
+    if (commentToDeleteId && onDelete) {
+      onDelete(commentToDeleteId);
     }
     setDeleteDialogOpen(false);
-    setCommentToDelete(null);
-  };
-
-  const handleDeleteCancel = () => {
-    setDeleteDialogOpen(false);
-    setCommentToDelete(null);
+    setCommentToDeleteId(null);
   };
 
   const handlePostComment = () => {
@@ -66,6 +51,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
 
   return (
     <Box sx={{ mt: 2 }}>
+      {/* New Comment Input */}
       <Box sx={{ mt: 3 }}>
         <FormField
           label={transGoal("addcomment")}
@@ -110,10 +96,8 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
         sx={{
           maxHeight: { xs: 300, sm: 400, md: 500 },
           overflowY: "auto",
-          overflowX: "hidden",
           pr: { xs: 0, sm: 1 },
           width: "100%",
-          boxSizing: "border-box",
           "&::-webkit-scrollbar": { width: "6px" },
           "&::-webkit-scrollbar-track": {
             background: "#f1f1f1",
@@ -121,103 +105,207 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
           },
           "&::-webkit-scrollbar-thumb": {
             background: "#741B92",
-            borderRadius: "3px",
-            opacity: 0.7
+            borderRadius: "3px"
           },
           "&::-webkit-scrollbar-thumb:hover": {
             background: "#5a1472"
           }
         }}
       >
-        {displayedComments.map((comment, index) => {
-          const isEditing = editingComment && editingComment.id === comment.id;
+        {displayedComments.flatMap((item) => {
+          if (Array.isArray(item.comment)) {
+            return item.comment.map((text: string, idx: number) => {
+              const commentId = `${item.id}-${idx}`;
+              const isEditing = editingCommentId === commentId;
 
-          return (
-            <Box key={comment.id || index} sx={{ display: "flex", gap: 2, pt: 2 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography fontWeight="bold">
-                  {/* {comment.user_name} -{" "} */}
-                  <Typography component="span" variant="caption" color="text.secondary">
-                    <FormattedDateTime
-                      date={comment?.updatedAt ?? ""}
-                      format={DateFormats.FULL_DATE_TIME_12H}
-                    />
+              return (
+                <Box key={commentId} sx={{ display: "flex", gap: 2, pt: 2 }}>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography fontWeight="bold">
+                      {item.user_name}{" "}
+                      <Typography component="span" variant="caption" color="text.secondary">
+                        <FormattedDateTime
+                          date={item?.updatedAt ?? ""}
+                          format={DateFormats.FULL_DATE_TIME_12H}
+                        />
+                      </Typography>
+                    </Typography>
+
+                    {isEditing ? (
+                      <>
+                        <FormField
+                          label=""
+                          type="text"
+                          value={editValue}
+                          multiline
+                          height={100}
+                          onChange={(val) => setEditValue(val as string)}
+                        />
+                        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                          <Button
+                            variant="contained"
+                            sx={{
+                              backgroundColor: "#741B92",
+                              textTransform: "none",
+                              "&:hover": { backgroundColor: "#5a1472" }
+                            }}
+                            onClick={handleSaveEdit}
+                          >
+                            {transGoal("update")}
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            sx={{
+                              color: "black",
+                              border: "2px solid #741B92",
+                              px: 2,
+                              textTransform: "none"
+                            }}
+                            onClick={() => {
+                              setEditingCommentId(null);
+                              setEditValue("");
+                            }}
+                          >
+                            {transGoal("cancelcomment")}
+                          </Button>
+                        </Box>
+                      </>
+                    ) : (
+                      <Typography sx={{ mt: 1, whiteSpace: "pre-wrap" }}>{text}</Typography>
+                    )}
+
+                    {!isEditing && (
+                      <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{ cursor: "pointer", color: "primary.main" }}
+                          onClick={() => {
+                            setEditValue(text);
+                            setEditingCommentId(commentId);
+                          }}
+                        >
+                          {transGoal("commentedit")}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            cursor: "pointer",
+                            color: "#741B92",
+                            "&:hover": { color: "#b71c1c" }
+                          }}
+                          onClick={() => {
+                            setDeleteDialogOpen(true);
+                            setCommentToDeleteId(commentId);
+                          }}
+                        >
+                          {transGoal("deletecomment")}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                </Box>
+              );
+            });
+          } else if (typeof item.comment === "string") {
+            // fallback for single string comments
+            const commentId = `${item.id}-0`;
+            const isEditing = editingCommentId === commentId;
+            const text = item.comment;
+
+            return (
+              <Box key={commentId} sx={{ display: "flex", gap: 2, pt: 2 }}>
+                <Box sx={{ flex: 1 }}>
+                  <Typography fontWeight="bold">
+                    {item.user_name}{" "}
+                    <Typography component="span" variant="caption" color="text.secondary">
+                      <FormattedDateTime
+                        date={item?.updatedAt ?? ""}
+                        format={DateFormats.FULL_DATE_TIME_12H}
+                      />
+                    </Typography>
                   </Typography>
-                </Typography>
 
-                {isEditing ? (
-                  <>
-                    <FormField
-                      label=""
-                      type="text"
-                      value={editValue}
-                      multiline
-                      height={100}
-                      onChange={(val) => setEditValue(val as string)}
-                    />
+                  {isEditing ? (
+                    <>
+                      <FormField
+                        label=""
+                        type="text"
+                        value={editValue}
+                        multiline
+                        height={100}
+                        onChange={(val) => setEditValue(val as string)}
+                      />
+                      <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                        <Button
+                          variant="contained"
+                          sx={{
+                            backgroundColor: "#741B92",
+                            textTransform: "none",
+                            "&:hover": { backgroundColor: "#5a1472" }
+                          }}
+                          onClick={handleSaveEdit}
+                        >
+                          {transGoal("update")}
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: "black",
+                            border: "2px solid #741B92",
+                            px: 2,
+                            textTransform: "none"
+                          }}
+                          onClick={() => {
+                            setEditingCommentId(null);
+                            setEditValue("");
+                          }}
+                        >
+                          {transGoal("cancelcomment")}
+                        </Button>
+                      </Box>
+                    </>
+                  ) : (
+                    <Typography sx={{ mt: 1, whiteSpace: "pre-wrap" }}>{text}</Typography>
+                  )}
+
+                  {!isEditing && (
                     <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "#741B92",
-                          textTransform: "none",
-                          "&:hover": { backgroundColor: "#5a1472" }
+                      <Typography
+                        variant="body2"
+                        sx={{ cursor: "pointer", color: "primary.main" }}
+                        onClick={() => {
+                          setEditValue(text);
+                          setEditingCommentId(commentId);
                         }}
-                        onClick={handleSaveEdit}
                       >
-                        {transGoal("update")}
-                      </Button>
-                      <Button
-                        variant="outlined"
+                        {transGoal("commentedit")}
+                      </Typography>
+                      <Typography
+                        variant="body2"
                         sx={{
-                          color: "black",
-                          border: "2px solid #741B92",
-                          px: 2,
-                          textTransform: "none",
-                          "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
+                          cursor: "pointer",
+                          color: "#741B92",
+                          "&:hover": { color: "#b71c1c" }
                         }}
                         onClick={() => {
-                          setEditingComment(null);
-                          setEditValue("");
+                          setDeleteDialogOpen(true);
+                          setCommentToDeleteId(commentId);
                         }}
                       >
-                        {transGoal("cancelcomment")}
-                      </Button>
+                        {transGoal("deletecomment")}
+                      </Typography>
                     </Box>
-                  </>
-                ) : (
-                  <Typography sx={{ mt: 1, whiteSpace: "pre-wrap" }}>{comment.comment}</Typography>
-                )}
-
-                {!isEditing && (
-                  <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ cursor: "pointer", color: "primary.main" }}
-                      onClick={() => handleStartEdit(comment)}
-                    >
-                      {transGoal("commentedit")}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        cursor: "pointer",
-                        color: "#741B92",
-                        "&:hover": { color: "#b71c1c" }
-                      }}
-                      onClick={() => handleDeleteClick(comment)}
-                    >
-                      {transGoal("deletecomment")}
-                    </Typography>
-                  </Box>
-                )}
+                  )}
+                </Box>
               </Box>
-            </Box>
-          );
+            );
+          }
+
+          return null;
         })}
       </Box>
 
-      {/* View more / less */}
+      {/* View More / Less */}
       {hasMoreComments && !showAll && (
         <Button onClick={() => setShowAll(true)} size="small" sx={{ textTransform: "none" }}>
           {transGoal("viewMore", { default: "View more" })} ({comments.length - 3} more)
@@ -229,10 +317,10 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
         </Button>
       )}
 
-      {/* Delete confirmation dialog */}
+      {/* Delete Dialog */}
       <CommonDialog
         open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
+        onClose={() => setDeleteDialogOpen(false)}
         onSubmit={handleDeleteConfirm}
         title={transGoal("deletetitle")}
         submitLabel={transGoal("deletecomment")}

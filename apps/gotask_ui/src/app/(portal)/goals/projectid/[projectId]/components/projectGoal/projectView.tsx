@@ -10,14 +10,14 @@ import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interfac
 import {
   createComment,
   deleteComment,
-  getCommentsByGoalId,
   updateComment
 } from "@/app/(portal)/goals/service/projectGoalAction";
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = false }) => {
+  console.log("goalData", goalData);
+  
   const router = useRouter();
   const [comments, setComments] = useState<GoalComment[]>(goalData?.comments || []);
-  const [commentsLoading, setCommentsLoading] = useState(false);
 
   const handleSaveComment = async (commentText: string) => {
     if (!goalData?.id) return;
@@ -52,7 +52,6 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
     try {
       await updateComment(id, { comment: updatedCommentText });
 
-      // Update local state
       setComments((prev) =>
         prev.map((c) =>
           c.id === id
@@ -61,11 +60,9 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
         )
       );
 
-      // Optionally show success message
       console.log("Comment updated successfully");
     } catch (error) {
       console.error("Error updating comment:", error);
-      // Optionally show error toast notification
     }
   };
 
@@ -188,17 +185,12 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
 
           <Divider sx={{ mt: 2, mb: 3 }} />
 
-          {/* Comments Section with Add/Edit/Delete */}
           <Box>
             <Typography variant="subtitle1" fontWeight={500} mb={1}>
               Comments
             </Typography>
 
-            {commentsLoading ? (
-              <Box display="flex" justifyContent="center" p={2}>
-                <CircularProgress size={24} />
-              </Box>
-            ) : (
+      
               <GoalComments
                 comments={comments}
                 onSave={handleSaveComment}
@@ -206,7 +198,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
                 onDelete={handleDeleteComment}
                 currentUserId={""}
               />
-            )}
+
           </Box>
         </Box>
       </Box>

@@ -60,8 +60,8 @@ export const updateKpiAssignmentInDb = async (
   }
 
   if (Object.keys(changes).length > 0) {
-    updateData.changeHistory = [
-      ...(currentAssignment.changeHistory || []),
+    updateData.change_History = [
+      ...(currentAssignment.change_History || []),
       {
         changedBy,
         changedAt: new Date(),

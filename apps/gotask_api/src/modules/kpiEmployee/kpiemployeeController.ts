@@ -36,7 +36,7 @@ class KpiAssignmentController extends BaseController {
         !assignmentData.weightage ||
         !assignmentData.assigned_by ||
         (!assignmentData.template_id &&
-          (!assignmentData.kpiTitle || !assignmentData.kpiDescription))
+          (!assignmentData.kpi_Title || !assignmentData.kpi_Description))
       ) {
         return this.replyError(new Error(KpiAssignmentMessages.CREATE.REQUIRED));
       }
@@ -113,7 +113,7 @@ class KpiAssignmentController extends BaseController {
         }
       });
 
-      const authUserId = payloadAny.authUserId || "system";
+      const authUserId = payloadAny.authUserId;
       if (!authUserId) {
         return this.replyError(new Error(KpiAssignmentMessages.FETCH.USER_ID));
       }

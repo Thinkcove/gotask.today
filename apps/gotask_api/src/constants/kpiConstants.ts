@@ -9,3 +9,9 @@ export const KPI_FREQUENCY = {
   QUARTERLY: "Quarterly",
   ANNUALLY: "Annually"
 };
+
+export const STATUS ={
+  ACTIVE:"Active",
+  INACTIVE:"Inactive",
+  LOCKED:"Locked"
+}

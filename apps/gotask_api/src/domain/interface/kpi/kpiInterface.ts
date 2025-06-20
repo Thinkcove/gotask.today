@@ -18,14 +18,14 @@ export const createKpiTemplateInDb = async (
 
 // Get all KPI templates
 export const getAllKpiTemplatesFromDb = async (): Promise<IKpiTemplate[]> => {
-  return await KpiTemplate.find().select("-_id -id -__v");
+  return await KpiTemplate.find();
 };
 
 // Get KPI template by template_id
 export const getKpiTemplateByIdFromDb = async (
   template_id: string
 ): Promise<IKpiTemplate | null> => {
-  return await KpiTemplate.findOne({ template_id }).select("-_id -id -__v");
+  return await KpiTemplate.findOne({ template_id });
 };
 
 // Update KPI template by template_id
@@ -34,14 +34,14 @@ export const updateKpiTemplateInDb = async (
   updateData: Partial<IKpiTemplate>,
   changedBy: string = "system"
 ): Promise<IKpiTemplate | null> => {
-  const currentTemplate = await KpiTemplate.findOne({ template_id }).select("-_id -id -__v");
+  const currentTemplate = await KpiTemplate.findOne({ template_id });
   if (!currentTemplate) return null;
 
   const changes: Record<string, any> = {};
   for (const key in updateData) {
     if (
       key !== "template_id" &&
-      key !== "changeHistory" &&
+      key !== "change_history" &&
       updateData[key as keyof IKpiTemplate] !== undefined
     ) {
       changes[key] = {
@@ -52,8 +52,8 @@ export const updateKpiTemplateInDb = async (
   }
 
   if (Object.keys(changes).length > 0) {
-    updateData.changeHistory = [
-      ...(currentTemplate.changeHistory || []),
+    updateData.change_history = [
+      ...(currentTemplate.change_history || []),
       {
         changedBy: changedBy,
         changedAt: new Date(),
@@ -65,7 +65,7 @@ export const updateKpiTemplateInDb = async (
   return await KpiTemplate.findOneAndUpdate({ template_id }, updateData, {
     new: true,
     runValidators: true
-  }).select("-_id -id -__v");
+  });
 };
 
 // Delete KPI template by template_id

@@ -1,23 +1,23 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { KPI_FREQUENCY, MEASUREMENT_CRITERIA } from "../../../constants/kpiConstants";
+import { KPI_FREQUENCY, MEASUREMENT_CRITERIA, STATUS } from "../../../constants/kpiConstants";
 
 export interface IKpiAssignment extends Document {
   assignment_id: string;
   user_id: string;
   template_id?: string;
-  kpiTitle: string;
-  kpiDescription: string;
+  kpi_Title: string;
+  kpi_Description: string;
   measurement_criteria: string;
   frequency: string;
   weightage: number;
-  targetValue?: number;
+  target_Value?: number;
   assigned_by: string;
   reviewer_id?: string;
   comments?: string;
   status: string;
-  saveAsTemplate?: boolean;
-  changeHistory: { changedBy: string; changedAt: Date; changes: Record<string, any> }[];
+  saveAs_Template?: boolean;
+  change_History: { changedBy: string; changedAt: Date; changes: Record<string, any> }[];
 }
 
 const KpiAssignmentSchema = new Schema<IKpiAssignment>(
@@ -35,11 +35,11 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
     template_id: {
       type: String
     },
-    kpiTitle: {
+    kpi_Title: {
       type: String,
       required: true
     },
-    kpiDescription: {
+    kpi_Description: {
       type: String,
       required: true
     },
@@ -58,7 +58,7 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
       type: Number,
       required: true
     },
-    targetValue: {
+    target_Value: {
       type: Number
     },
     assigned_by: {
@@ -75,17 +75,17 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
     },
     status: {
       type: String,
-      enum: ["Active", "Inactive", "Locked"],
-      default: "Active"
+      enum:Object.values(STATUS),
+      default: STATUS.ACTIVE
     },
-    saveAsTemplate: {
+    saveAs_Template: {
       type: Boolean,
       default: false
     },
-    changeHistory: [
+    change_History: [
       {
-        changedBy: { type: String, required: true, ref: "User" }, // Reference User.id
-        changedAt: { type: Date, default: Date.now },
+        changed_By: { type: String, required: true, ref: "User" },
+        changed_At: { type: Date, default: Date.now },
         changes: { type: Object, default: {} }
       }
     ]

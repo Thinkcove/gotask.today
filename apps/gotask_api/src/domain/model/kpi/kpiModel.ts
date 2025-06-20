@@ -9,7 +9,7 @@ export interface IKpiTemplate extends Document {
   measurement_criteria: string;
   frequency: string;
   isActive: boolean;
-  changeHistory: { changedBy: string; changedAt: Date; changes: Record<string, any> }[];
+  change_history: { changedBy: string; changedAt: Date; changes: Record<string, any> }[];
 }
 
 const KpiTemplateSchema = new Schema<IKpiTemplate>(
@@ -43,7 +43,7 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
       type: Boolean,
       default: true
     },
-    changeHistory: [
+    change_history: [
       {
         changedBy: { type: String, required: true },
         changedAt: { type: Date, default: Date.now },
@@ -53,5 +53,12 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
   },
   { timestamps: true }
 );
+KpiTemplateSchema.set("toJSON", {
+  transform: function (doc, ret) {
+    delete ret._id;
+    delete ret.__v;
+    return ret;
+  }
+});
 
 export const KpiTemplate = mongoose.model<IKpiTemplate>("KpiTemplate", KpiTemplateSchema);

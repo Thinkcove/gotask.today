@@ -1,9 +1,7 @@
 "use client";
-
 import React from "react";
-import { Box } from "@mui/material";
-import ModuleHeader from "@/app/component/header/moduleHeader";
 import CreateStoryForm from "../../../../../projectStory/components/CreateStoryForm";
+import { Box, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
@@ -11,21 +9,27 @@ const CreateStoryPage = () => {
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        m: 0,
-        p: 0,
-        overflow: "hidden"
-      }}
-    >
-      <ModuleHeader name={t("Stories.createStory")} />
-      <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
-        <CreateStoryForm />
+    <>
+      <Box
+        sx={{
+          backgroundColor: "#741B92",
+          color: "white",
+          p: 1.5,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "600", textTransform: "capitalize" }}
+        >
+          {t("Stories.story")}
+        </Typography>
       </Box>
-    </Box>
+
+      <CreateStoryForm />
+    </>
   );
 };
 

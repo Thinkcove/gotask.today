@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  TextField,
   IconButton,
   Tooltip,
   Typography
@@ -19,6 +18,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import Heading from "@/app/component/header/title";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useSWR from "swr";
+import FormField from "@/app/component/input/formField";
 
 const EditStoryForm = () => {
   const { storyId, projectId } = useParams();
@@ -35,7 +35,7 @@ const EditStoryForm = () => {
 
   const handleCloseSnackbar = () => setSnackOpen(false);
 
-  // SWR Fetcher
+  // Fetch story details
   const fetchStory = async () => {
     const response = await getProjectStoryById(storyId as string);
     return response?.data;
@@ -143,6 +143,7 @@ const EditStoryForm = () => {
             gap: 2
           }}
         >
+          {/* Header with Back Button */}
           <Box display="flex" alignItems="center" gap={1}>
             <Tooltip title="Back to Story Details">
               <IconButton
@@ -158,56 +159,29 @@ const EditStoryForm = () => {
           </Box>
 
           {/* Title Field */}
-          <Box sx={{ maxWidth: 400, width: "100%" }}>
-            <TextField
-              label="Title"
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-                setShowTitleError(false);
-              }}
-              fullWidth
-              required
-              autoFocus
-              placeholder="Update story title"
-              error={showTitleError}
-              helperText={showTitleError ? "Title is required" : " "}
-              InputLabelProps={{ shrink: true }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 1,
-                  backgroundColor: "#fff",
-                  "& fieldset": { borderColor: "#ccc" },
-                  "&:hover fieldset": { borderColor: "#741B92" },
-                  "&.Mui-focused fieldset": { borderColor: "#741B92" },
-                  "& input": { py: "16px" }
-                }
-              }}
-            />
-          </Box>
+          <FormField
+            label="Title"
+            type="text"
+            placeholder="Update story title"
+            required
+            value={title}
+            onChange={(val) => {
+              setTitle(val as string);
+              setShowTitleError(false);
+            }}
+            error={showTitleError ? "Title is required" : ""}
+          />
 
           {/* Description Field */}
-          <Box sx={{ width: "100%" }}>
-            <TextField
-              label="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              fullWidth
-              multiline
-              rows={12}
-              margin="normal"
-              placeholder="Update story description"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 1,
-                  backgroundColor: "#fff",
-                  "& fieldset": { borderColor: "#ccc" },
-                  "&:hover fieldset": { borderColor: "#741B92" },
-                  "&.Mui-focused fieldset": { borderColor: "#741B92" }
-                }
-              }}
-            />
-          </Box>
+          <FormField
+            label="Description"
+            type="text"
+            placeholder="Update story description"
+            multiline
+            height={150}
+            value={description}
+            onChange={(val) => setDescription(val as string)}
+          />
         </Box>
 
         {/* Footer Buttons */}
@@ -255,7 +229,6 @@ const EditStoryForm = () => {
         </Box>
       </Box>
 
-      {/* Snackbar */}
       <CustomSnackbar
         open={snackOpen}
         message={snackMessage}

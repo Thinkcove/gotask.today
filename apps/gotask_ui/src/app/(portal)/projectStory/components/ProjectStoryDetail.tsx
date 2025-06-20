@@ -20,17 +20,14 @@ import {
 } from "@/app/(portal)/projectStory/services/projectStoryService";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
-import CommentBox from "@/app/(portal)/projectStory/components/CommentBox";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
 
-  // SWR: Fetch story using existing service
   const {
     data: story,
-    isLoading,
-    mutate
+    isLoading
   } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
     getProjectStoryById(storyId as string).then((res) => res?.data)
   );
@@ -129,32 +126,6 @@ const ProjectStoryDetail = () => {
         <Typography variant="caption" color="primary" display="block" mb={2}>
           Status: {story.status || "N/A"}
         </Typography>
-
-        {/* Comment Box */}
-        <CommentBox storyId={storyId as string} onCommentAdded={() => mutate()} />
-
-        {/* Comment List */}
-        <Box mt={2}>
-          <Typography variant="h6" fontWeight={600} mb={1}>
-            Comments
-          </Typography>
-          {story?.comments?.length ? (
-            story.comments.map((comment: { comment: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; user_id: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; created_at: string | number | Date; }, index: React.Key | null | undefined) => (
-              <Box key={index} mb={1} p={1} border="1px solid #ccc" borderRadius={2}>
-                <Typography variant="body2" fontWeight={500}>
-                  {comment.comment}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  By: {comment.user_id} • {new Date(comment.created_at).toLocaleString()}
-                </Typography>
-              </Box>
-            ))
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              No comments yet.
-            </Typography>
-          )}
-        </Box>
 
         <Divider sx={{ my: 3 }} />
 

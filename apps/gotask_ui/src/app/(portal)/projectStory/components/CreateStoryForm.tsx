@@ -4,22 +4,27 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
-  TextField,
-  CircularProgress
+  Typography,
+  IconButton,
+  Tooltip
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { createProjectStory } from "@/app/(portal)/projectStory/services/projectStoryService";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import Heading from "@/app/component/header/title";
+import FormField from "@/app/component/input/formField";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { ArrowBack } from "@mui/icons-material";
 
 const CreateStoryForm = () => {
   const { projectId } = useParams();
   const router = useRouter();
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showTitleError, setShowTitleError] = useState(false);
+  const [titleError, setTitleError] = useState("");
 
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -27,17 +32,16 @@ const CreateStoryForm = () => {
 
   const handleCloseSnackbar = () => setSnackOpen(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!title.trim()) {
+      setTitleError("Title is required.");
       setSnackMessage("Title is required to create a story.");
       setSnackSeverity("error");
       setSnackOpen(true);
-      setShowTitleError(true);
       return;
     }
 
+    setTitleError("");
     setIsSubmitting(true);
 
     const createdBy = typeof window !== "undefined" ? localStorage.getItem("userId") : "";
@@ -51,7 +55,6 @@ const CreateStoryForm = () => {
 
     try {
       await createProjectStory(payload);
-
       setSnackMessage("Story created successfully!");
       setSnackSeverity("success");
       setSnackOpen(true);
@@ -72,133 +75,117 @@ const CreateStoryForm = () => {
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "87vh",
-        width: "100%",
-        bgcolor: "white",
-        borderRadius: 2,
-        boxShadow: 3,
-        p: 2,
-        overflow: "hidden"
+        maxWidth: "1400px",
+        margin: "0 auto",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column"
       }}
     >
+      {/* Sticky Header */}
       <Box
-        component="form"
-        onSubmit={handleSubmit}
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          flex: 1
+          position: "sticky",
+          top: 0,
+          px: 2,
+          py: 2,
+          zIndex: 1000,
+          bgcolor: "#fff"
         }}
       >
-        {/* Scrollable Content */}
         <Box
           sx={{
-            flex: 1,
-            overflowY: "auto",
-            minHeight: 0,
             display: "flex",
-            flexDirection: "column",
-            gap: 2
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%"
           }}
         >
-          <Heading title="Create New Story" />
-
-          {/* Title Field */}
-          <Box sx={{ maxWidth: 400, width: "100%" }}>
-            <TextField
-              label="Title"
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-                setShowTitleError(false);
-              }}
-              fullWidth
-              required
-              autoFocus
-              placeholder="Enter story title"
-              error={showTitleError}
-              helperText={showTitleError ? "Title is required" : " "}
-              InputLabelProps={{ shrink: true }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 1,
-                  backgroundColor: "#fff",
-                  "& fieldset": { borderColor: "#ccc" },
-                  "&:hover fieldset": { borderColor: "#741B92" },
-                  "&.Mui-focused fieldset": { borderColor: "#741B92" },
-                  "& input": { py: "16px" }
-                }
-              }}
-            />
+          <Box display="flex" alignItems="center" gap={1}>
+            <Tooltip title="Back to Stories">
+              <IconButton onClick={() => router.back()} color="primary">
+                <ArrowBack />
+              </IconButton>
+            </Tooltip>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+              {t("Stories.createStory")}
+            </Typography>
           </Box>
 
-          {/* Description Field */}
-          <Box sx={{ width: "100%" }}>
-            <TextField
-              label="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              fullWidth
-              multiline
-              rows={12}
-              margin="normal"
-              placeholder="Enter story description (optional)"
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={() => router.back()}
               sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 1,
-                  backgroundColor: "#fff",
-                  "& fieldset": { borderColor: "#ccc" },
-                  "&:hover fieldset": { borderColor: "#741B92" },
-                  "&.Mui-focused fieldset": { borderColor: "#741B92" }
+                borderRadius: "30px",
+                color: "black",
+                border: "2px solid  #741B92",
+                px: 2,
+                textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.2)"
                 }
               }}
-            />
+            >
+              {t("Stories.cancel")}
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              sx={{
+                borderRadius: "30px",
+                backgroundColor: "#741B92",
+                color: "white",
+                px: 2,
+                textTransform: "none",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "rgb(202, 187, 201)"
+                }
+              }}
+            >
+              {isSubmitting ? "Creating..." : t("Stories.create")}
+            </Button>
           </Box>
         </Box>
+      </Box>
 
-        {/* Footer Buttons - pinned to bottom inside form */}
-        <Box
-          sx={{
-            borderTop: "1px solid #eee",
-            pt: 2,
-            mt: 2,
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 1
+      {/* Form Content */}
+      <Box
+        sx={{
+          px: 2,
+          pb: 2,
+          maxHeight: "calc(100vh - 150px)",
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2
+        }}
+      >
+        <FormField
+          label="Title"
+          type="text"
+          required
+          placeholder="Enter story title"
+          value={title}
+          onChange={(val) => {
+            setTitle(val as string);
+            setTitleError("");
           }}
-        >
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => router.push(`/project/viewProject/${projectId}/stories`)}
-            sx={{
-              minWidth: 120,
-              borderRadius: 1,
-              textTransform: "none",
-              "&:hover": { bgcolor: "#f5f5f5" }
-            }}
-          >
-            Cancel
-          </Button>
+          error={titleError}
+        />
 
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={isSubmitting}
-            sx={{
-              minWidth: 120,
-              borderRadius: 1,
-              textTransform: "none",
-              bgcolor: "#741B92",
-              "&:hover": { bgcolor: "#5e1675" }
-            }}
-          >
-            {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Create Story"}
-          </Button>
-        </Box>
+        <FormField
+          label="Description"
+          type="text"
+          placeholder="Enter story description (optional)"
+          value={description}
+          onChange={(val) => setDescription(val as string)}
+          multiline
+          height={180}
+        />
       </Box>
 
       {/* Snackbar */}

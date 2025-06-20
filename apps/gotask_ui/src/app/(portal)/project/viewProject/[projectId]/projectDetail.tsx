@@ -167,7 +167,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               {transproject("detailassignee")}
             </Typography>
             <Box display="flex" justifyContent="flex-end" gap={2}>
-              <Link  href={`/goals/projectid/${projectID}`}>Goal</Link>
+              <Link href={`/goals/projectid/${projectID}`}> {transproject("goal")}</Link>
 
               {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
                 <Button

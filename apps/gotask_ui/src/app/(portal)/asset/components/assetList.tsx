@@ -18,9 +18,13 @@ import AssetFilters from "./assetFilter";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 
-export const AssetList: React.FC = () => {
+interface AssetListProps {
+  initialView?: "assets" | "issues";
+}
+
+export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
-  const [selectedView, setSelectedView] = useState("Asset");
+  const [view, setView] = useState<"assets" | "issues">(initialView);
   const [assignedToFilter, setAssignedToFilter] = useState<string[]>([]);
   const [modelNameFilter, setModelNameFilter] = useState<string[]>([]);
 
@@ -32,16 +36,38 @@ export const AssetList: React.FC = () => {
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
     if (originalAsset) {
-      router.push(`/assets/editAsset/${originalAsset.id}`);
+      router.push(`/asset/editAsset/${originalAsset.id}`);
     }
   };
+
+  const labels = {
+    assets: transasset("assets"),
+    issues: transasset("issues")
+  };
+
+  // options for toggle
+  const toggleOptions = [labels.assets, labels.issues];
+
+  const handleToggleChange = (selectedLabel: string) => {
+    const nextView = labelToKey[selectedLabel];
+    if (nextView !== view) {
+      setView(nextView);
+      router.push(`/asset/${nextView}`);
+    }
+  };
+
+  // map translated label back to key
+  const labelToKey = {
+    [labels.assets]: "assets",
+    [labels.issues]: "issues"
+  } as const;
 
   const assetColumns = getAssetColumns(transasset, handleEdit);
 
   const handleActionClick = () => {
-    if (selectedView === transasset("assets")) {
-      router.push("/assets/createAsset");
-    } else if (selectedView === transasset("issues")) {
+    if (initialView === transasset("selectedAsset")) {
+      router.push("/asset/createAsset");
+    } else if (initialView === transasset("selectedIssues")) {
       setCreateIssueOpen(true);
     }
   };
@@ -130,7 +156,7 @@ export const AssetList: React.FC = () => {
 
   return (
     <>
-      <ModuleHeader name={transasset("assets")} />
+      <ModuleHeader name={"assets"} />
       <Box
         sx={{
           display: "flex",
@@ -146,9 +172,9 @@ export const AssetList: React.FC = () => {
         {/* Toggle - comes first on mobile */}
         <Box sx={{ order: { xs: 0, sm: 1 } }}>
           <TaskToggle
-            options={[transasset("assets"), transasset("issues")]}
-            selected={selectedView}
-            onChange={setSelectedView}
+            options={toggleOptions}
+            selected={labels[view]}
+            onChange={handleToggleChange}
           />
         </Box>
 
@@ -193,7 +219,7 @@ export const AssetList: React.FC = () => {
           overflowY: "auto"
         }}
       >
-        {selectedView === transasset("assets") && (
+        {initialView === transasset("selectedAsset") && (
           <Grid container spacing={1}>
             <Grid item xs={12}>
               {mappedAssets.length === 0 ? (
@@ -227,15 +253,15 @@ export const AssetList: React.FC = () => {
           </Grid>
         )}
 
-        {selectedView === transasset("issues") && <AssetIssueCards />}
+        {initialView === transasset("selectedIssues") && <AssetIssueCards />}
       </Box>
 
       {/* Floating Action Button */}
       <ActionButton
         label={
-          selectedView === transasset("assets")
+          initialView === transasset("selectedAsset")
             ? transasset("createasset")
-            : selectedView === transasset("tag")
+            : initialView === transasset("tag")
               ? transasset("createtag")
               : transasset("createissue")
         }

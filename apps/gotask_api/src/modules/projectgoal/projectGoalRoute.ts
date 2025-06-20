@@ -101,4 +101,17 @@ ProjectGoalRoutes.push({
   }
 });
 
+ProjectGoalRoutes.push({
+  path: "/project/goals/comments",
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectGoalController.createComment(new RequestHelper(request), handler),
+  config: {
+    notes: "Add a comment to a project goal",
+    tags: ["api", "projectGoal"],
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
 export default ProjectGoalRoutes;

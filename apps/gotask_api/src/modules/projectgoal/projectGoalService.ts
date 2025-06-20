@@ -9,8 +9,10 @@ import {
   getProjectGoalById,
   updateProjectGoal,
   deleteProjectGoal,
-  getAllProjectGoals
+  getAllProjectGoals,
+  createProjectComment
 } from "../../domain/interface/projectGoal/projectGoal";
+import { IProjectComment } from "../../domain/model/projectGoal/projectGoalComment";
 
 // Create a new weekly goal
 const createProjectGoalService = async (
@@ -183,7 +185,23 @@ const deleteProjectGoalService = async (
     };
   }
 };
-
+// Create a new Project Comment Service
+const createProjectCommentService = async (
+  commentData: IProjectComment
+): Promise<{ success: boolean; data?: IProjectComment; message?: string }> => {
+  try {
+    const newComment = await createProjectComment(commentData);
+    return {
+      success: true,
+      data: newComment
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message 
+    };
+  }
+};
 export {
   createProjectGoalService,
   getAllProjectGoalsService,
@@ -191,5 +209,6 @@ export {
   getProjectGoalsByUserIdService,
   getProjectGoalsByIdService,
   updateProjectGoalService,
-  deleteProjectGoalService
+  deleteProjectGoalService,
+  createProjectCommentService
 };

@@ -483,7 +483,9 @@
     "noasset": "Asset not found",
     "assetdetails": "Assets Details",
     "modelName": "Model",
-    "searchAsset": "Search Asset"
+    "searchAsset": "Search Asset",
+    "selectedAsset": "assets",
+    "selectedIssues": "issues"
   },
 
   "Chatbot": {

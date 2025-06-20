@@ -1,4 +1,4 @@
-import { IAssetAttributes } from "../../assets/interface/asset";
+import { IAssetAttributes } from "../../asset/interface/asset";
 
 export interface IUserField {
   name: string;

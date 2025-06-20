@@ -1,3 +1,5 @@
+import { IAssetAttributes } from "../../assets/interface/asset";
+
 export interface IUserField {
   name: string;
   status: boolean;
@@ -31,6 +33,7 @@ export interface User {
   emp_id?: string;
   first_name: string;
   last_name: string;
+  assetDetails?: IAssetAttributes[];
 }
 
 export interface RoleData {

@@ -48,7 +48,7 @@
     "access": "User Report"
   },
   {
-    "text": "Asset and Resource",
+    "text": "Asset",
     "icon": "ManageAccountsIcon",
     "path": "/assets",
     "access": "Asset and Resources"

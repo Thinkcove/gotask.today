@@ -212,21 +212,17 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                   label={transtask("variationt")}
                   value={formatTimeValue(task.variation || "-", true)}
                 />
-                {task.variation?.startsWith("-") ? (
-                  <Typography variant="caption" color="success.main">
-                    {transtask("variation")}
-                  </Typography>
-                ) : task.variation && task.variation !== "0d0h0m" ? (
-                  <Typography variant="caption" color="error">
-                    {transtask("variationalert")}
-                  </Typography>
+                {task.variation && task.variation !== "0d0h" && task.variation !== "0d0h0m" ? (
+                  task.variation.startsWith("-") ? (
+                    <Typography variant="caption" color="success.main">
+                      {transtask("variation")}
+                    </Typography>
+                  ) : (
+                    <Typography variant="caption" color="error">
+                      {transtask("variationalert")}
+                    </Typography>
+                  )
                 ) : null}
-              </Grid>
-              <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText
-                  label={transtask("userestit")}
-                  value={formatTimeValue(task.user_estimated || "-")}
-                />
               </Grid>
             </Grid>
 

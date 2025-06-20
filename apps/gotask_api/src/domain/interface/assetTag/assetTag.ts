@@ -1,12 +1,16 @@
 import { AssetIssue, IAssetIssue } from "../../model/assetIssues/assetIssues";
 import { AssetTag, IAssetTag } from "../../model/assetTag/assetTag";
-import { IUser } from "../../model/user/user";
 
 const createResource = async (resourceData: IAssetTag, assetId?: string): Promise<IAssetTag> => {
   const payload = {
     ...resourceData,
     assetId
   };
+  const newResource = new AssetTag(payload);
+  return await newResource.save();
+};
+
+const createTag = async (payload: any): Promise<IAssetTag> => {
   const newResource = new AssetTag(payload);
   return await newResource.save();
 };
@@ -58,6 +62,10 @@ const updateTag = async (id: string, payload: Partial<IAssetTag>): Promise<IAsse
   ).lean();
 };
 
+const getAssetByUserId = async (userId: string): Promise<IAssetTag[]> => {
+  return await AssetTag.find({ userId });
+};
+
 export {
   createResource,
   createAssetIssues,
@@ -67,5 +75,7 @@ export {
   getTagsByTypeId,
   getTagsByAssetId,
   getTagById,
-  updateTag
+  updateTag,
+  getAssetByUserId,
+  createTag
 };

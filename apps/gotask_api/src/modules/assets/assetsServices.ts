@@ -12,16 +12,24 @@ import {
 } from "../../domain/interface/asset/asset";
 import {
   createResource,
+  createTag,
   getTagsByAssetId,
   getTagsByTypeId,
   updateTag
 } from "../../domain/interface/assetTag/assetTag";
-import { findUser, findUserByEmail, findUserById } from "../../domain/interface/user/userInterface";
+import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
 import { IAsset } from "../../domain/model/asset/asset";
-import { IAssetTag } from "../../domain/model/assetTag/assetTag";
 
 class assetService {
   createOrUpdateAsset = async (payload: any, user: any): Promise<any> => {
+    const userInfo = await findUserByEmail(user.user_id);
+    if (!userInfo) {
+      return {
+        success: false,
+        error: UserMessages.FETCH.NOT_FOUND
+      };
+    }
+
     if (!payload) {
       return {
         success: false,
@@ -30,34 +38,30 @@ class assetService {
     }
 
     try {
-      const userInfo = await findUserByEmail(user.user_id);
-      if (!userInfo) {
-        return {
-          success: false,
-          error: UserMessages.FETCH.NOT_FOUND
-        };
-      }
-
-      // Update tag if both tag and userId are provided
       if (payload.userId && payload.tag) {
-        const updated = await updateTag(payload.tag, { userId: payload.userId });
+        await updateTag(payload.tag, { userId: payload.userId });
+      } else if (payload.userId && payload.id && !payload.tag) {
+        const assetsTag = {
+          ...payload,
+          assetId: payload.id
+        };
+        await createTag(assetsTag);
       }
-
       let result;
-
-      // Update existing asset
       if (payload.id) {
         const existingAsset = await getAssetById(payload.id);
         if (existingAsset) {
-          result = await updateAsset(payload.id, { ...payload });
+          result = await updateAsset(payload.id, {
+            ...payload
+          });
           return { success: true, data: result };
         }
       }
 
-      // Create new asset
-      result = await createAsset({ ...payload });
+      result = await createAsset({
+        ...payload
+      });
 
-      // Create resource if userId and asset ID exist
       if (payload.userId && result?.id) {
         await createResource(payload, result.id);
       }

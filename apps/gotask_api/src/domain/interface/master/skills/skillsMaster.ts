@@ -10,8 +10,7 @@ const SkillMasterSchema = new Schema<ISkillMaster>(
   {
     id: {
       type: String,
-      default: uuidv4,
-      unique: true
+      default: uuidv4
     },
     name: {
       type: String,

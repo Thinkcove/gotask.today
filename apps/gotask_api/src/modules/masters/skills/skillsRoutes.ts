@@ -1,26 +1,41 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import SkillsController from "./skillsController";
-import { API_METHODS } from "../../../constants/api/apiMethods";
-import RequestHelper from "../../../helpers/requestHelper";
+import { API, API_METHODS } from "../../../constants/api/apiMethods";
 import authStrategy from "../../../constants/auth/authStrategy";
+import RequestHelper from "../../../helpers/requestHelper";
+import SkillsController from "./skillsController";
 
 const skillsController = new SkillsController();
-const tags = [API, "Skills"];
-const SkillRoutes = [];
+const tags = [API, "skills"];
+const skillsRoutes = [];
 
-SkillRoutes.push(
-    {
-      path: `/createSkills`,
-      method: API_METHODS.POST,
-      handler: (request: Request, handler: ResponseToolkit) =>
-        skillsController.createSkill(new RequestHelper(request), handler),
-      config: {
-        notes: "Create a master skill",
-        tags,
-        auth: {
-          strategy: authStrategy.SIMPLE
-        }
-      }
-    }),
+// Route: Create skills
+skillsRoutes.push({
+  path: "/createSkills",
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    skillsController.createSkill(new RequestHelper(request), handler),
+  config: {
+    notes: "Create a new skills",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
 
-export default SkillRoutes;
+// Route: Get All skillss
+skillsRoutes.push({
+  path: "/getAllSkills",
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    skillsController.getAllSkills(new RequestHelper(request), handler),
+  config: {
+    notes: "Get all skills",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+export default skillsRoutes;

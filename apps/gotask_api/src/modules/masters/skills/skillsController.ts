@@ -1,11 +1,28 @@
-import RequestHelper from "../../helpers/requestHelper";
-import BaseController from "../../common/baseController";
-import jwt from "jsonwebtoken";
-import { getRoleByIdService } from "../role/roleService";
-import UserMessages from "../../constants/apiMessages/userMessage";
-import { comparePassword } from "../../constants/utils/common";
-import userService from "./userService";
+import BaseController from "../../../common/baseController";
+import RequestHelper from "../../../helpers/requestHelper";
+import { SkillService } from "./skillsService";
 
-class skillMasterController extends BaseController {}
+class SkillsController extends BaseController {
+  async createSkill(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { name } = requestHelper.getPayload();
+      if (!name) throw new Error("Skill name is required");
 
-export default skillMasterController;
+      const result = await SkillService.createSkill(name);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async getAllSkills(_: any, handler: any) {
+    try {
+      const result = await SkillService.getAllSkills();
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+}
+
+export default SkillsController;

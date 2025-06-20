@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
-import { Edit } from "@mui/icons-material";
+import { ArrowBack, Edit } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
@@ -72,7 +72,9 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
       // Optionally show error toast notification
     }
   };
-
+  const handleBack = () => {
+    router.back();
+  };
   const handleEditComment = async (id: number | string, updatedCommentText: string) => {
     try {
       await updateComment(id, { comment: updatedCommentText });
@@ -140,6 +142,9 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
       >
         {/* Header */}
         <Grid container spacing={2} alignItems="center" mb={3}>
+          <IconButton color="primary" onClick={handleBack}>
+            <ArrowBack />
+          </IconButton>
           <Grid item xs>
             <Typography
               variant="h5"

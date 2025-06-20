@@ -134,11 +134,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({ comments, onSave, onEdit, on
           // FIX: Compare by ID instead of object reference
           const isEditing = editingComment && editingComment.id === comment.id;
 
-          // Debug log to help troubleshoot
-          console.log(`Comment ${comment.id}: isEditing = ${isEditing}`, {
-            editingCommentId: editingComment?.id,
-            commentId: comment.id
-          });
+    
 
           return (
             <Box key={comment.id || index} sx={{ display: "flex", gap: 2, pt: 2 }}>

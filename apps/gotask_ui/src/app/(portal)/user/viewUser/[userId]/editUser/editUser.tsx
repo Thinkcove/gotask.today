@@ -25,22 +25,24 @@ const EditUser = () => {
     severity: SNACKBAR_SEVERITY.INFO
   });
 
-  const fetchUser = async () => {
-    try {
-      const response = await getUserById(userId as string);
-      setFormData(response);
-    } catch (err) {
-      setSnackbar({
-        open: true,
-        message: transuser("fetcherror"),
-        severity: SNACKBAR_SEVERITY.ERROR
-      });
-    }
-  };
-
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await getUserById(userId as string);
+        setFormData(response);
+      } catch (err) {
+        console.log(err);
+        setSnackbar({
+          open: true,
+          message: transuser("fetcherror"),
+          severity: SNACKBAR_SEVERITY.ERROR
+        });
+      }
+    };
+
     fetchUser();
-  }, []);
+  }, [userId, transuser]);
+  
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};

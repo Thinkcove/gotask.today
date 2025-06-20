@@ -20,7 +20,7 @@ const UserList = () => {
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: users, mutate: UserUpdate } = useSWR("fetch-user", fetcherUserList);
+  const { data: users } = useSWR("fetch-user", fetcherUserList);
   const router = useRouter();
 
   const filteredUsers =

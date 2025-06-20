@@ -34,6 +34,7 @@ const getWorkPlannedService = async (
     start_date: 1,
     due_date: 1,
     user_estimated: 1,
+    status: 1,
     task_id: "$_id",
     task_title: "$title"
   };
@@ -51,6 +52,7 @@ const getWorkPlannedService = async (
     user_name: "$user_name",
     start_date: "$start_date",
     due_date: "$due_date",
+    status: "$status",
     task_id: "$task_id",
     task_title: "$task_title"
   };
@@ -75,6 +77,7 @@ const getWorkPlannedService = async (
     start_date: "$_id.start_date",
     end_date: "$_id.due_date",
     user_estimated: 1,
+    status: "$_id.status",
     task_id: "$_id.task_id",
     task_title: "$_id.task_title"
   };

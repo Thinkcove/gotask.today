@@ -400,7 +400,11 @@
     "totalworklog": "Total Work Log",
     "error": "Error loading data",
     "all": "All",
-    "reset": "Reset Filter"
+    "reset": "Reset Filter",
+    "labelUser": "User",
+    "labelProject": "Project",
+    "placeholderUser": "User",
+    "placeholderProject": "Project"
   },
   "Assets": {
     "asset": "Assets and Resources",

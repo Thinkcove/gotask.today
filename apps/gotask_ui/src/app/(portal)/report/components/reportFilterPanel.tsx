@@ -93,19 +93,19 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
         </Box>
 
         <MultiSelectFilter
-          label="user"
+          label={transreport("labelUser")}
+          placeholder={transreport("placeholderUser")}
           selectedIds={userIds}
           items={usersList}
           onChange={setUserIds}
-          noItemsKey="nousers"
         />
 
         <MultiSelectFilter
-          label="project"
+          label={transreport("labelProject")}
+          placeholder={transreport("placeholderProject")}
           selectedIds={projectIds}
           items={projectsList}
           onChange={setProjectIds}
-          noItemsKey="noprojects"
         />
 
         <Stack direction="row" spacing={2}>

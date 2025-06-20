@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import { Autocomplete, TextField, Checkbox, Chip } from "@mui/material";
-import { useTranslations } from "next-intl";
-import { LOCALIZATION } from "@/app/common/constants/localization";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
@@ -11,48 +9,30 @@ interface Item {
   name: string | null | undefined;
 }
 
-type ReportTranslationKeys =
-  | "userlist"
-  | "projectlist"
-  | "nousers"
-  | "noprojects"
-  | "all"
-  | "filtertitle"
-  | "from"
-  | "to"
-  | "showtasks";
-
 interface MultiSelectFilterProps<T extends Item> {
   label: string;
   selectedIds: string[];
   items: T[];
   onChange: (ids: string[]) => void;
-  noItemsKey: ReportTranslationKeys;
   searchTerm?: string;
-  placeholder?: string;
-  onSearchChange?: React.Dispatch<React.SetStateAction<string>>;
+  placeholder: string;
 }
 
 const MultiSelectFilter = <T extends Item>({
   selectedIds,
   items,
   onChange,
-  noItemsKey,
-  placeholder,
-  label
+  label,
+  placeholder
 }: MultiSelectFilterProps<T>) => {
-  const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
-
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   const SELECT_ALL_ID = "__all__";
-  const selectAllItem = { id: SELECT_ALL_ID, name: transreport("all") } as T;
+  const selectAllItem = { id: SELECT_ALL_ID, name: "All" } as T;
   const options = [selectAllItem, ...items];
 
-  //   const selectedItems = items.filter((item) => selectedIds.includes(item.id));
-  const selectedItems = (items || []).filter((item) => selectedIds.includes(item.id));
-
+  const selectedItems = items.filter((item) => selectedIds.includes(item.id));
   const allSelected = selectedItems.length === items.length;
 
   const handleChange = (_: React.SyntheticEvent, newValue: T[]) => {
@@ -60,9 +40,9 @@ const MultiSelectFilter = <T extends Item>({
 
     if (isSelectAllClicked) {
       if (allSelected) {
-        onChange([]); // Deselect all
+        onChange([]);
       } else {
-        onChange(items.map((item) => item.id)); // Select all
+        onChange(items.map((item) => item.id));
       }
     } else {
       onChange(newValue.map((item) => item.id));
@@ -79,8 +59,11 @@ const MultiSelectFilter = <T extends Item>({
       getOptionLabel={(option) => option.name || option.id}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       sx={{
+        width: "360px",
         "& .MuiInputBase-root": {
-          padding: "14px 14px"
+          padding: "14px",
+          minHeight: "48px",
+          borderRadius: "8px"
         },
         "& .MuiInputBase-input": {
           padding: 0
@@ -109,7 +92,6 @@ const MultiSelectFilter = <T extends Item>({
           <Chip label={option.name || option.id} {...getTagProps({ index })} key={option.id} />
         ))
       }
-      noOptionsText={transreport(noItemsKey)}
     />
   );
 };

@@ -101,4 +101,56 @@ ProjectGoalRoutes.push({
   }
 });
 
+ProjectGoalRoutes.push({
+  path: "/project/goals/comments",
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectGoalController.createComment(new RequestHelper(request), handler),
+  config: {
+    notes: "Add a comment to a project goal",
+    tags: ["api", "projectGoal"],
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+// GET: Get all comments for a goal
+ProjectGoalRoutes.push({
+  path: "/project/goals/comments/{goal_id}",
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectGoalController.getCommentsByGoalId(new RequestHelper(request), handler),
+  config: {
+    notes: "Get all comments for a goal",
+    tags: ["api", "projectGoal"],
+    auth: { strategy: authStrategy.SIMPLE }
+  }
+});
+
+// PUT: Update a comment
+ProjectGoalRoutes.push({
+  path: "/project/goals/comments/{comment_id}",
+  method: API_METHODS.PUT,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectGoalController.updateComment(new RequestHelper(request), handler),
+  config: {
+    notes: "Update a comment",
+    tags: ["api", "projectGoal"],
+    auth: { strategy: authStrategy.SIMPLE }
+  }
+});
+
+// DELETE: Delete a comment
+ProjectGoalRoutes.push({
+  path: "/project/goals/comments/{comment_id}",
+  method: API_METHODS.DELETE,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    projectGoalController.deleteComment(new RequestHelper(request), handler),
+  config: {
+    notes: "Delete a comment",
+    tags: ["api", "projectGoal"],
+    auth: { strategy: authStrategy.SIMPLE }
+  }
+});
+
 export default ProjectGoalRoutes;

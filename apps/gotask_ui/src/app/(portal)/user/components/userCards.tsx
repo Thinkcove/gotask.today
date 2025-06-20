@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Typography,
-  Grid,
-  CircularProgress,
-  Box,
-  Stack,
-  Divider
-} from "@mui/material";
+import { Typography, Grid, CircularProgress, Box, Stack, Divider } from "@mui/material";
 import { Business, ArrowForward, Email } from "@mui/icons-material";
 import CardComponent from "@/app/component/card/cardComponent";
 import { User } from "../interfaces/userInterface";
@@ -74,11 +67,7 @@ const UserCards: React.FC<UserCardProps> = ({ users }) => {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
                   <Box>
-                    <Typography
-                      variant="h6"
-                      fontWeight={600}
-                      sx={{ textTransform: "capitalize" }}
-                    >
+                    <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
                       {user.name}
                     </Typography>
 
@@ -92,7 +81,11 @@ const UserCards: React.FC<UserCardProps> = ({ users }) => {
                         {user.role?.name || "No Role Assigned"}
                       </Typography>
 
-                      <Divider orientation="vertical" flexItem sx={{ mx: 1, height: 16 }} />
+                      <Divider
+                        orientation="vertical"
+                        flexItem
+                        sx={{ mx: 1, height: 20, alignSelf: "center" }}
+                      />
 
                       <StatusIndicator
                         status={user.status ? "active" : "inactive"}

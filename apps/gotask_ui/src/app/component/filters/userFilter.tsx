@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Box, IconButton, Link } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import FilterDropdown from "@/app/component/input/filterDropDown";
+import MultiSelectFilter from "../multiSelect.ts/multiSelectFilter";
+import { STATUS_CONFIG } from "@/app/common/constants/status";
 
 interface Props {
   userStatus: string[];
@@ -12,20 +13,10 @@ interface Props {
   transuser: (key: string) => string;
 }
 
-const ALL_STATUS = "All";
-const STATUS_OPTIONS = [ALL_STATUS, "Active", "Inactive"];
-
-const UserStatusFilter: React.FC<Props> = ({
-  userStatus,
-  onStatusChange,
-  onClearStatus,
-  transuser,
-}) => {
+const UserStatusFilter: React.FC<Props> = ({ userStatus, onStatusChange, transuser }) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const appliedFilterCount = userStatus.length;
 
   const updateScrollButtons = () => {
     const el = scrollRef.current;
@@ -46,18 +37,12 @@ const UserStatusFilter: React.FC<Props> = ({
   };
 
   const handleDropdownChange = (newValue: string[]) => {
-    if (newValue.includes(ALL_STATUS)) {
-      onStatusChange([]);
+    if (newValue.includes("__all__")) {
+      onStatusChange([STATUS_CONFIG.ALL_STATUS]);
     } else {
       onStatusChange(newValue);
     }
   };
-
-const handleClearAll = () => {
-//   onStatusChange([]); // or call your parent `onClearStatus([])` appropriately
-  onClearStatus();
-};
-
 
   return (
     <Box>
@@ -72,7 +57,7 @@ const handleClearAll = () => {
               transform: "translateY(-50%)",
               zIndex: 2,
               backgroundColor: "white",
-              boxShadow: 1,
+              boxShadow: 1
             }}
           >
             <ChevronLeft />
@@ -89,15 +74,17 @@ const handleClearAll = () => {
             px: 3,
             pb: 1,
             "&::-webkit-scrollbar": {
-              display: "none",
-            },
+              display: "none"
+            }
           }}
         >
-          <FilterDropdown
+          <MultiSelectFilter
             label={transuser("filterstatus")}
-            options={STATUS_OPTIONS}
-            selected={userStatus}
+            placeholder={transuser("filterstatus")}
+            selectedIds={userStatus.includes(STATUS_CONFIG.ALL_STATUS) ? [] : userStatus}
+            items={STATUS_CONFIG.STATUS_OPTIONS}
             onChange={handleDropdownChange}
+            noItemsKey="filtertitle"
           />
         </Box>
 
@@ -111,26 +98,13 @@ const handleClearAll = () => {
               transform: "translateY(-50%)",
               zIndex: 2,
               backgroundColor: "white",
-              boxShadow: 1,
+              boxShadow: 1
             }}
           >
             <ChevronRight />
           </IconButton>
         )}
       </Box>
-
-      {appliedFilterCount > 0 && (
-        <Box sx={{ pl: 3, pb: 1 }}>
-          <Link
-            component="button"
-            onClick={handleClearAll}
-            underline="always"
-            sx={{ fontSize: 14 }}
-          >
-            {`Clear All (${appliedFilterCount})`}
-          </Link>
-        </Box>
-      )}
     </Box>
   );
 };

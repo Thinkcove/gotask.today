@@ -145,7 +145,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
               </Grid>
             </>
           )}
-          {selectedAssetType?.name === "Laptop" && (
+          {selectedAssetType?.name === ASSET_TYPE.LAPTOP && (
             <>
               <Grid item xs={12} sm={4}>
                 <FormField

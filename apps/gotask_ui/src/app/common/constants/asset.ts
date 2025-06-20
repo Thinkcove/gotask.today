@@ -22,3 +22,8 @@ export const getIssuesStatusColor = (status: string) => {
       return "default";
   }
 };
+
+export const ASSET_TYPE = {
+  LAPTOP: "Laptop",
+  MOBILE: "Mobile"
+};

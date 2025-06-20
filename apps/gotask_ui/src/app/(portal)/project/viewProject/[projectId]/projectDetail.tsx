@@ -168,6 +168,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 value={project.createdAt ? <FormattedDateTime date={project.createdAt} /> : "-"}
               />
             </Grid>
+            <Grid item xs={4} sm={6} md={4}>
+              <LabelValueText
+                label={transproject("detailupdateon")}
+                value={project.updatedAt ? <FormattedDateTime date={project.updatedAt} /> : "-"}
+              />
+            </Grid>
           </Grid>
           <Divider sx={{ mb: 4 }} />
 

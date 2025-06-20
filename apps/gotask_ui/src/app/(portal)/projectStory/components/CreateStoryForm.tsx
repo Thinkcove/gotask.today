@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  IconButton,
-  Tooltip
-} from "@mui/material";
+import { Box, Button, Typography, IconButton, Tooltip } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { createProjectStory } from "@/app/(portal)/projectStory/services/projectStoryService";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -19,7 +13,7 @@ import { ArrowBack } from "@mui/icons-material";
 const CreateStoryForm = () => {
   const { projectId } = useParams();
   const router = useRouter();
-  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -34,8 +28,8 @@ const CreateStoryForm = () => {
 
   const handleSubmit = async () => {
     if (!title.trim()) {
-      setTitleError("Title is required.");
-      setSnackMessage("Title is required to create a story.");
+      setTitleError(t("Stories.errors.titleRequired"));
+      setSnackMessage(t("Stories.errors.titleRequiredMessage"));
       setSnackSeverity("error");
       setSnackOpen(true);
       return;
@@ -55,7 +49,7 @@ const CreateStoryForm = () => {
 
     try {
       await createProjectStory(payload);
-      setSnackMessage("Story created successfully!");
+      setSnackMessage(t("Stories.success.created"));
       setSnackSeverity("success");
       setSnackOpen(true);
 
@@ -64,7 +58,7 @@ const CreateStoryForm = () => {
       }, 800);
     } catch (error) {
       console.error("Failed to create story:", error);
-      setSnackMessage("Failed to create story.");
+      setSnackMessage(t("Stories.errors.creationFailed"));
       setSnackSeverity("error");
       setSnackOpen(true);
     } finally {
@@ -102,7 +96,7 @@ const CreateStoryForm = () => {
           }}
         >
           <Box display="flex" alignItems="center" gap={1}>
-            <Tooltip title="Back to Stories">
+            <Tooltip title={t("Stories.backToStories")}>
               <IconButton onClick={() => router.back()} color="primary">
                 <ArrowBack />
               </IconButton>
@@ -146,7 +140,7 @@ const CreateStoryForm = () => {
                 }
               }}
             >
-              {isSubmitting ? "Creating..." : t("Stories.create")}
+              {isSubmitting ? t("Stories.creating") : t("Stories.create")}
             </Button>
           </Box>
         </Box>
@@ -165,10 +159,10 @@ const CreateStoryForm = () => {
         }}
       >
         <FormField
-          label="Title"
+          label={t("Stories.title")}
           type="text"
           required
-          placeholder="Enter story title"
+          placeholder={t("Stories.placeholders.title")}
           value={title}
           onChange={(val) => {
             setTitle(val as string);
@@ -178,9 +172,9 @@ const CreateStoryForm = () => {
         />
 
         <FormField
-          label="Description"
+          label={t("Stories.description")}
           type="text"
-          placeholder="Enter story description (optional)"
+          placeholder={t("Stories.placeholders.description")}
           value={description}
           onChange={(val) => setDescription(val as string)}
           multiline

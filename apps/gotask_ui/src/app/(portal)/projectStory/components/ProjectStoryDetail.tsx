@@ -13,6 +13,7 @@ import {
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
+import { useTranslations } from "next-intl";
 
 import {
   getProjectStoryById,
@@ -20,15 +21,14 @@ import {
 } from "@/app/(portal)/projectStory/services/projectStoryService";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
 
-  const {
-    data: story,
-    isLoading
-  } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
+  const { data: story, isLoading } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
     getProjectStoryById(storyId as string).then((res) => res?.data)
   );
 
@@ -40,14 +40,14 @@ const ProjectStoryDetail = () => {
     try {
       setIsDeleting(true);
       const response = await deleteProjectStory(storyId as string);
-      const message = response?.message || "Story deleted successfully";
+      const message = response?.message || t("Stories.success.deleted");
 
       setSnackbar({ open: true, message, severity: "success" });
 
       setTimeout(() => router.push(`/project/viewProject/${projectId}/stories`), 500);
     } catch (error) {
       console.error("Failed to delete story:", error);
-      setSnackbar({ open: true, message: "Failed to delete story", severity: "error" });
+      setSnackbar({ open: true, message: t("Stories.errors.deleteFailed"), severity: "error" });
     } finally {
       setIsDeleting(false);
       setOpenDeleteDialog(false);
@@ -65,7 +65,7 @@ const ProjectStoryDetail = () => {
   if (!story) {
     return (
       <Box textAlign="center" mt={4}>
-        <Typography>Story not found.</Typography>
+        <Typography>{t("Stories.errors.notFound")}</Typography>
       </Box>
     );
   }
@@ -86,8 +86,11 @@ const ProjectStoryDetail = () => {
       {/* Header Section */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Box display="flex" alignItems="center" gap={1}>
-          <Tooltip title="Back to Stories">
-            <IconButton onClick={() => router.push(`/project/viewProject/${projectId}/stories`)} color="primary">
+          <Tooltip title={t("Stories.backToStories")}>
+            <IconButton
+              onClick={() => router.push(`/project/viewProject/${projectId}/stories`)}
+              color="primary"
+            >
               <ArrowBack />
             </IconButton>
           </Tooltip>
@@ -97,15 +100,17 @@ const ProjectStoryDetail = () => {
         </Box>
 
         <Box display="flex" gap={1}>
-          <Tooltip title="Edit Story">
+          <Tooltip title={t("Stories.editStory")}>
             <IconButton
-              onClick={() => router.push(`/project/viewProject/${projectId}/stories/edit/${storyId}`)}
+              onClick={() =>
+                router.push(`/project/viewProject/${projectId}/stories/edit/${storyId}`)
+              }
               color="primary"
             >
               <Edit />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete Story">
+          <Tooltip title={t("Stories.deleteStory")}>
             <IconButton
               onClick={() => setOpenDeleteDialog(true)}
               color="error"
@@ -120,11 +125,11 @@ const ProjectStoryDetail = () => {
       {/* Description Section */}
       <Box sx={{ flex: 1, overflowY: "auto", mb: 2 }}>
         <Typography variant="body1" mb={2}>
-          {story.description || "No description provided."}
+          {story.description || t("Stories.noDescription")}
         </Typography>
 
         <Typography variant="caption" color="primary" display="block" mb={2}>
-          Status: {story.status || "N/A"}
+          {t("Stories.status")}: {story.status || t("Stories.na")}
         </Typography>
 
         <Divider sx={{ my: 3 }} />
@@ -133,20 +138,20 @@ const ProjectStoryDetail = () => {
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h6" fontWeight={600}>
-              Tasks for this Story
+              {t("Stories.taskSectionTitle")}
             </Typography>
             <Button
               variant="contained"
               sx={{ backgroundColor: "#741B92", textTransform: "none", borderRadius: 2 }}
               onClick={() => router.push(`/task/create?storyId=${storyId}`)}
             >
-              + Create Task
+              {t("Stories.createTask")}
             </Button>
           </Box>
 
           {/* Placeholder */}
           <Typography variant="body2" color="text.secondary">
-            No tasks linked to this story yet.
+            {t("Stories.noTasks")}
           </Typography>
         </Box>
       </Box>
@@ -156,11 +161,11 @@ const ProjectStoryDetail = () => {
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
         onSubmit={handleDelete}
-        title="Delete Story"
-        submitLabel="Delete"
+        title={t("Stories.deleteStory")}
+        submitLabel={t("Stories.delete")}
       >
         <Typography variant="body1" color="text.secondary">
-          Are you sure you want to delete this story?
+          {t("Stories.confirmDelete")}
         </Typography>
       </CommonDialog>
 

@@ -2,15 +2,7 @@
 
 import React from "react";
 import useSWR from "swr";
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Grid,
-  IconButton,
-  Fab,
-  Tooltip
-} from "@mui/material";
+import { Box, Typography, CircularProgress, Grid, IconButton, Fab, Tooltip } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowBack, Add as AddIcon } from "@mui/icons-material";
 import { getStoriesByProject } from "../services/projectStoryService";
@@ -18,20 +10,21 @@ import { ProjectStory } from "../interfaces/projectStory";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import { useTranslations } from "next-intl";
-import StoryCard from "../components/StoryCard"; // adjust path if needed
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import StoryCard from "../components/StoryCard";
 
-const fetcher = (projectId: string) =>
-  getStoriesByProject(projectId).then((res) => res?.data);
+const fetcher = (projectId: string) => getStoriesByProject(projectId).then((res) => res?.data);
 
 const StoryList: React.FC = () => {
   const { projectId } = useParams();
   const router = useRouter();
-  const t = useTranslations("Projects.Stories");
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
 
-  const { data: stories = [], isLoading, error } = useSWR(
-    projectId ? `stories-${projectId}` : null,
-    () => fetcher(projectId as string)
-  );
+  const {
+    data: stories = [],
+    isLoading,
+    error
+  } = useSWR(projectId ? `stories-${projectId}` : null, () => fetcher(projectId as string));
 
   if (isLoading) {
     return (
@@ -45,24 +38,19 @@ const StoryList: React.FC = () => {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <Typography variant="body1" color="error">
-          {t("fetchError")}
+          {t("Stories.fetchError")}
         </Typography>
       </Box>
     );
   }
 
   if (stories.length === 0) {
-    return (
-      <EmptyState
-        imageSrc={NoSearchResultsImage}
-        message={t("noStoriesFound")}
-      />
-    );
+    return <EmptyState imageSrc={NoSearchResultsImage} message={t("Stories.noStoriesFound")} />;
   }
 
   return (
     <Box sx={{ position: "relative", p: 2, width: "100%" }}>
-      {/* Header with Back Icon and Route Context */}
+      {/* Header with Back Icon and Title */}
       <Box
         sx={{
           position: "absolute",
@@ -81,7 +69,7 @@ const StoryList: React.FC = () => {
           <ArrowBack />
         </IconButton>
         <Typography variant="h6" fontWeight={600}>
-          Stories
+          {t("Stories.projectStories")}
         </Typography>
       </Box>
 
@@ -97,12 +85,10 @@ const StoryList: React.FC = () => {
       </Box>
 
       {/* Floating Create Button */}
-      <Tooltip title={t("createStory")}>
+      <Tooltip title={t("Stories.createStory")}>
         <Fab
           color="primary"
-          onClick={() =>
-            router.push(`/project/viewProject/${projectId}/stories/create`)
-          }
+          onClick={() => router.push(`/project/viewProject/${projectId}/stories/create`)}
           sx={{
             position: "fixed",
             bottom: 35,

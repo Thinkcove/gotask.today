@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const StoryDetailPage = () => {
-  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); 
 
   return (
     <Box

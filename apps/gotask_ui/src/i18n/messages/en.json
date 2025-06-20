@@ -155,16 +155,20 @@
     "edittitle": "Edit Project",
     "placeholdeselect": "Select Assignees to the project",
     "searchplaceholder": "Search Projects",
+
     "Stories": {
       "noStoriesFound": "No stories found for this project.",
-      "createStory": "Create Story",
       "createdat": "Created At",
       "viewdetails": "View Details",
       "projectStories": "Project Stories",
       "editStory": "Edit Story",
-      "story": "Story",
+      "story": "Create Story",
+      "createStory": "Create Story",
+      "title": "Title",
+      "description": "Description",
       "cancel": "Cancel",
       "create": "Create",
+      "creating": "Creating...",
       "addcomment": "Add Comment",
       "commentlabel": "Your Comment",
       "commentplaceholder": "Type your comment here",
@@ -172,8 +176,42 @@
       "commentempty": "Comment cannot be empty",
       "usernotidentified": "Unable to identify user",
       "commentaddsuccess": "Comment added!",
-      "commentaddfail": "Failed to add comment"
-    } 
+      "commentaddfail": "Failed to add comment",
+      "update": "Update Story",
+      "backToStoryDetails": "Back to Story Details",
+      "deleteStory": "Delete Story",
+      "delete": "Delete",
+      "backToStories": "Back to Stories",
+      "noDescription": "No description provided.",
+      "status": "Status",
+      "na": "N/A",
+      "taskSectionTitle": "Tasks for this Story",
+      "createTask": "+ Create Task",
+      "noTasks": "No tasks linked to this story yet.",
+      "confirmDelete": "Are you sure you want to delete this story?",
+      "fetchError": "Failed to load stories.",
+
+      "placeholders": {
+        "title": "Enter story title",
+        "description": "Enter story description (optional)",
+        "titleUpdate": "Update story title",
+        "descriptionUpdate": "Update story description"
+      },
+      "errors": {
+        "titleRequired": "Title is required.",
+        "titleRequiredMessage": "Title is required to create a story.",
+        "creationFailed": "Failed to create story.",
+        "updateFailed": "Failed to update story.",
+        "loadFailed": "Failed to load story.",
+        "notFound": "Story not found.",
+        "deleteFailed": "Failed to delete story."
+      },
+      "success": {
+        "created": "Story created successfully!",
+        "updated": "Story updated successfully!",
+        "deleted": "Story deleted successfully"
+      }
+    }
   },
   "Role": {
     "rolename": "Role Name is required",

@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import CreateStoryForm from "../../../../../projectStory/components/CreateStoryForm";
 import { Box, Typography } from "@mui/material";
@@ -6,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const CreateStoryPage = () => {
-  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); 
 
   return (
     <>
@@ -20,11 +21,8 @@ const CreateStoryPage = () => {
           alignItems: "center"
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: "600", textTransform: "capitalize" }}
-        >
-          {t("Stories.story")}
+        <Typography variant="h6" sx={{ fontWeight: "600", textTransform: "capitalize" }}>
+          {t("Stories.story", { default: "Create Story" })}
         </Typography>
       </Box>
 

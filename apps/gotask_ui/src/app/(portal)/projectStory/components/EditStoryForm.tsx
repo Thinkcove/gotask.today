@@ -1,28 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Typography
-} from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Tooltip, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import {
-  getProjectStoryById,
-  updateProjectStory
-} from "../services/projectStoryService";
+import { getProjectStoryById, updateProjectStory } from "../services/projectStoryService";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import Heading from "@/app/component/header/title";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useSWR from "swr";
 import FormField from "@/app/component/input/formField";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const EditStoryForm = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -35,37 +28,36 @@ const EditStoryForm = () => {
 
   const handleCloseSnackbar = () => setSnackOpen(false);
 
-  // Fetch story details
   const fetchStory = async () => {
     const response = await getProjectStoryById(storyId as string);
     return response?.data;
   };
 
-  const { data: story, isLoading, error } = useSWR(
-    storyId ? [`projectStory`, storyId] : null,
-    fetchStory,
-    {
-      onSuccess: (data) => {
-        setTitle(data?.title || "");
-        setDescription(data?.description || "");
-      }
+  const {
+    data: story,
+    isLoading,
+    error
+  } = useSWR(storyId ? [`projectStory`, storyId] : null, fetchStory, {
+    onSuccess: (data) => {
+      setTitle(data?.title || "");
+      setDescription(data?.description || "");
     }
-  );
+  });
 
   useEffect(() => {
     if (error) {
-      setSnackMessage("Failed to load story.");
+      setSnackMessage(t("Stories.errors.loadFailed"));
       setSnackSeverity("error");
       setSnackOpen(true);
     }
-  }, [error]);
+  }, [error, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim()) {
       setShowTitleError(true);
-      setSnackMessage("Title is required.");
+      setSnackMessage(t("Stories.errors.titleRequired"));
       setSnackSeverity("error");
       setSnackOpen(true);
       return;
@@ -77,7 +69,7 @@ const EditStoryForm = () => {
       const payload = { title, description };
       await updateProjectStory(storyId as string, payload);
 
-      setSnackMessage("Story updated successfully!");
+      setSnackMessage(t("Stories.success.updated"));
       setSnackSeverity("success");
       setSnackOpen(true);
 
@@ -86,7 +78,7 @@ const EditStoryForm = () => {
       }, 800);
     } catch (error) {
       console.error("Failed to update story:", error);
-      setSnackMessage("Failed to update story.");
+      setSnackMessage(t("Stories.errors.updateFailed"));
       setSnackSeverity("error");
       setSnackOpen(true);
     } finally {
@@ -105,7 +97,7 @@ const EditStoryForm = () => {
   if (!story) {
     return (
       <Box textAlign="center" mt={4}>
-        <Typography color="error">Story not found.</Typography>
+        <Typography color="error">{t("Stories.errors.notFound")}</Typography>
       </Box>
     );
   }
@@ -145,38 +137,36 @@ const EditStoryForm = () => {
         >
           {/* Header with Back Button */}
           <Box display="flex" alignItems="center" gap={1}>
-            <Tooltip title="Back to Story Details">
+            <Tooltip title={t("Stories.backToStoryDetails")}>
               <IconButton
-                onClick={() =>
-                  router.push(`/project/viewProject/${projectId}/stories/${storyId}`)
-                }
+                onClick={() => router.push(`/project/viewProject/${projectId}/stories/${storyId}`)}
                 color="primary"
               >
                 <ArrowBackIcon />
               </IconButton>
             </Tooltip>
-            <Heading title="Edit Story" />
+            <Heading title={t("Stories.editStory")} />
           </Box>
 
           {/* Title Field */}
           <FormField
-            label="Title"
+            label={t("Stories.title")}
             type="text"
-            placeholder="Update story title"
+            placeholder={t("Stories.placeholders.titleUpdate")}
             required
             value={title}
             onChange={(val) => {
               setTitle(val as string);
               setShowTitleError(false);
             }}
-            error={showTitleError ? "Title is required" : ""}
+            error={showTitleError ? t("Stories.errors.titleRequired") : ""}
           />
 
           {/* Description Field */}
           <FormField
-            label="Description"
+            label={t("Stories.description")}
             type="text"
-            placeholder="Update story description"
+            placeholder={t("Stories.placeholders.descriptionUpdate")}
             multiline
             height={150}
             value={description}
@@ -198,9 +188,7 @@ const EditStoryForm = () => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() =>
-              router.push(`/project/viewProject/${projectId}/stories/${storyId}`)
-            }
+            onClick={() => router.push(`/project/viewProject/${projectId}/stories/${storyId}`)}
             sx={{
               minWidth: 120,
               borderRadius: 1,
@@ -208,7 +196,7 @@ const EditStoryForm = () => {
               "&:hover": { bgcolor: "#f5f5f5" }
             }}
           >
-            Cancel
+            {t("Stories.cancel")}
           </Button>
 
           <Button
@@ -224,7 +212,7 @@ const EditStoryForm = () => {
               "&:hover": { bgcolor: "#5e1675" }
             }}
           >
-            {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Update Story"}
+            {isSubmitting ? <CircularProgress size={20} color="inherit" /> : t("Stories.update")}
           </Button>
         </Box>
       </Box>

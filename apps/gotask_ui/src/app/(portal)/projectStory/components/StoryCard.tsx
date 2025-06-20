@@ -1,17 +1,13 @@
 "use client";
 
 import React from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Stack
-} from "@mui/material";
+import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowForward } from "@mui/icons-material";
 import { ProjectStory } from "../interfaces/projectStory";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 interface StoryCardProps {
   story: ProjectStory;
@@ -20,6 +16,7 @@ interface StoryCardProps {
 const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
   const router = useRouter();
   const { projectId } = useParams();
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
 
   const handleClick = () => {
     router.push(`/project/viewProject/${projectId}/stories/${story.id}`);
@@ -29,13 +26,13 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
     <Card
       sx={{
         borderRadius: 3,
-        height: 180,          // Fixed height
-        width: "100%",        // Responsive to Grid column
+        height: 180,
+        width: "100%",
         boxShadow: 2,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        cursor: "default",
+        cursor: "default"
       }}
     >
       <CardContent
@@ -73,20 +70,20 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
             {story.description || "-"}
           </Typography>
 
-          {/* Status & Created At in one row */}
+          {/* Status & Created At */}
           <Stack direction="row" spacing={2} justifyContent="space-between">
             <Typography variant="caption" color="text.secondary">
-              Status: <strong>{story.status || "N/A"}</strong>
+              {t("Stories.status")}: <strong>{story.status || t("Stories.na")}</strong>
             </Typography>
             {story.createdAt && (
               <Typography variant="caption" color="text.secondary">
-                Created: <FormattedDateTime date={story.createdAt} />
+                {t("Stories.createdat")}: <FormattedDateTime date={story.createdAt} />
               </Typography>
             )}
           </Stack>
         </Box>
 
-        {/* View Details (always at bottom) */}
+        {/* View Details */}
         <Box
           mt={2}
           display="flex"
@@ -101,7 +98,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           }}
         >
           <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-            View Details
+            {t("Stories.viewdetails")}
           </Typography>
           <ArrowForward fontSize="small" />
         </Box>

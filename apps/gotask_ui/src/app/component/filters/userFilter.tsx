@@ -71,7 +71,7 @@ const UserStatusFilter: React.FC<Props> = ({ userStatus, onStatusChange, transus
             display: "flex",
             gap: 2,
             overflowX: "auto",
-            px: 3,
+            pl: { xs: 0, md: 0 },
             pb: 1,
             "&::-webkit-scrollbar": {
               display: "none"

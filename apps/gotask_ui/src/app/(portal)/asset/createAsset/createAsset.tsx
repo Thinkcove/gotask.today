@@ -93,7 +93,7 @@ export const CreateAsset: React.FC = () => {
     if (!formData.os) newErrors.os = transasset("os");
     if (!formData.processor) newErrors.processor = transasset("processor");
 
-    if (selectedAssetType?.name === "Mobile") {
+    if (selectedAssetType?.name === ASSET_TYPE.MOBILE) {
       if (!formData.imeiNumber) newErrors.imeiNumber = transasset("imeiNumber");
     }
     setErrors(newErrors);
@@ -121,7 +121,7 @@ export const CreateAsset: React.FC = () => {
           message: transasset("assetsuccess"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
-        router.push("/assets");
+        router.push("/asset");
       }
     } catch (err) {
       console.error("Failed to create asset", err);

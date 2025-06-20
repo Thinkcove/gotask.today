@@ -8,8 +8,6 @@ export interface IProjectComment extends Document {
   user_id: string;
   user_name?: string;
   comments: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 const ProjectCommentSchema = new Schema<IProjectComment>(

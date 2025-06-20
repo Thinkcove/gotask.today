@@ -18,7 +18,7 @@ const ProjectCommentSchema = new Schema<IProjectComment>(
     goal_id: { type: String, ref: "ProjectGoal", required: true },
     user_id: { type: String, ref: "User", required: true },
     user_name: { type: String },
-    comments: [{ type: String, required: true }] ,
+    comments: [{ type: String, required: true }]
   },
   { timestamps: true }
 );

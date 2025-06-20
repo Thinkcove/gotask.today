@@ -10,7 +10,10 @@ import {
   updateProjectGoal,
   deleteProjectGoal,
   getAllProjectGoals,
-  createProjectComment
+  createProjectComment,
+  deleteProjectComment,
+  updateProjectComment,
+  getCommentsByGoalId
 } from "../../domain/interface/projectGoal/projectGoal";
 import { IProjectComment } from "../../domain/model/projectGoal/projectGoalComment";
 
@@ -198,10 +201,50 @@ const createProjectCommentService = async (
   } catch (error: any) {
     return {
       success: false,
-      message: error.message 
+      message: error.message
     };
   }
 };
+const getCommentsByGoalIdService = async (
+  goalId: string
+): Promise<{ success: boolean; data?: IProjectComment[]; message?: string }> => {
+  try {
+    const comments = await getCommentsByGoalId(goalId);
+    return {
+      success: true,
+      data: comments
+    };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+};
+
+const updateProjectCommentService = async (
+  commentId: string,
+  updateData: Partial<IProjectComment>
+): Promise<{ success: boolean; data?: IProjectComment | null; message?: string }> => {
+  try {
+    const updated = await updateProjectComment(commentId, updateData);
+    return { success: true, data: updated };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+};
+
+const deleteProjectCommentService = async (
+  commentId: string
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const deleted = await deleteProjectComment(commentId);
+    if (!deleted) {
+      return { success: false, message: "Comment not found" };
+    }
+    return { success: true, message: "Comment deleted successfully" };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+};
+
 export {
   createProjectGoalService,
   getAllProjectGoalsService,
@@ -210,5 +253,8 @@ export {
   getProjectGoalsByIdService,
   updateProjectGoalService,
   deleteProjectGoalService,
-  createProjectCommentService
+  createProjectCommentService,
+  getCommentsByGoalIdService,
+  updateProjectCommentService,
+  deleteProjectCommentService
 };

@@ -72,6 +72,20 @@ const createProjectComment = async (commentData: IProjectComment): Promise<IProj
   return newComment;
 };
 
+const getCommentsByGoalId = async (goalId: string): Promise<IProjectComment[]> => {
+  return await ProjectComment.find({ goal_id: goalId }).sort({ createdAt: -1 }).exec();
+};
+const updateProjectComment = async (
+  commentId: string,
+  updateData: Partial<IProjectComment>
+): Promise<IProjectComment | null> => {
+  return await ProjectComment.findOneAndUpdate({ id: commentId }, updateData, {
+    new: true
+  }).exec();
+};
+const deleteProjectComment = async (commentId: string): Promise<IProjectComment | null> => {
+  return await ProjectComment.findOneAndDelete({ id: commentId }).exec();
+};
 
 export {
   createProjectGoal,
@@ -81,5 +95,8 @@ export {
   deleteProjectGoal,
   findGoalsByUserId,
   findGoalsByProjectId,
-  createProjectComment
+  createProjectComment,
+  getCommentsByGoalId,
+  updateProjectComment,
+  deleteProjectComment
 };

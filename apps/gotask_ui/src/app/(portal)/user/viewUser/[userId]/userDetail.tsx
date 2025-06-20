@@ -18,7 +18,7 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import { IAssetAttributes } from "@/app/(portal)/assets/interface/asset";
+import { IAssetAttributes } from "@/app/(portal)/asset/interface/asset";
 import TaskToggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
 

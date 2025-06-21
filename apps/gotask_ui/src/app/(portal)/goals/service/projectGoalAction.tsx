@@ -57,7 +57,7 @@ export const getWeeklyGoalById = async (goalId: string) => {
 // Create a new comment
 export const createComment = async (commentData: {
   goal_id: string;
-  comment: string;
+  comments: string[];
   user_id?: string;
 }) => {
   return withAuth(async (token) => {
@@ -79,7 +79,7 @@ export const getCommentsByGoalId = async (goalId: string) => {
 export const updateComment = async (
   commentId: string | number,
   updatedCommentData: {
-    comment: string;
+    comments: string[];
   }
 ) => {
   return withAuth(async (token) => {

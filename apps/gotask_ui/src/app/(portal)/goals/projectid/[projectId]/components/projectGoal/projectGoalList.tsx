@@ -8,15 +8,17 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import ProjectGoals from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoals";
 import {
+  createComment,
   createWeeklyGoal,
+  deleteComment,
   fetchWeeklyGoals,
   getCommentsByGoalId,
   getWeeklyGoalById,
+  updateComment,
   updateWeeklyGoal
 } from "@/app/(portal)/goals/service/projectGoalAction";
 import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
 import { GoalData } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
-import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { formatStatus } from "@/app/common/constants/project";
 import ProjectGoalView from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectView";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -37,12 +39,11 @@ function ProjectGoalList() {
     weekEnd: "",
     status: "",
     priority: "",
-    comments: [],
     projectId: projectID
   });
 
-  const filteredGoals =
-    weeklyGoals
+  const filteredGoals = weeklyGoals;
+  console.log("filteredGoals", filteredGoals);
 
   const handelOpen = () => {
     setGoalData({
@@ -50,7 +51,6 @@ function ProjectGoalList() {
       projectId: projectID,
       status: "",
       description: "",
-      comments: [],
       priority: "",
       weekStart: "",
       weekEnd: ""
@@ -58,37 +58,8 @@ function ProjectGoalList() {
     setOpenDialog(true);
   };
 
-  const [newComment, setNewComment] = React.useState("");
   const [projectGoalView, setprojectGoalView] = React.useState("");
 
-  const transformCommentsToObjects = (rawComments: any[]): GoalComment[] => {
-    return rawComments.map((comment, index) => {
-      if (typeof comment === "object" && comment.id && comment.comment) {
-        return comment as GoalComment;
-      }
-      if (typeof comment === "string") {
-        return {
-          id: Date.now() + index,
-          comment: comment,
-          updatedAt: new Date().toISOString()
-        };
-      }
-      return {
-        id: Date.now() + index,
-        comment: String(comment),
-        updatedAt: new Date().toISOString()
-      };
-    });
-  };
-
-  const extractCommentTexts = (comments: GoalComment[]): string[] => {
-    return comments.map((comment) => {
-      if (typeof comment === "object" && comment.comment) {
-        return comment.comment;
-      }
-      return String(comment);
-    });
-  };
   const handelProjectGoalView = async (goalId: string) => {
     try {
       const goal = await getWeeklyGoalById(goalId); // Get goal details
@@ -107,9 +78,6 @@ function ProjectGoalList() {
   };
 
   const handleEditGoal = (goal: GoalData) => {
-    const rawComments = goal.comments || [];
-    const transformedComments = transformCommentsToObjects(rawComments);
-
     setGoalData({
       id: goal.id,
       goalTitle: goal.goalTitle || "",
@@ -118,11 +86,9 @@ function ProjectGoalList() {
       weekEnd: goal.weekEnd || "",
       status: goal.status || "",
       priority: goal.priority || "",
-      projectId: goal.projectId || "",
-      comments: transformedComments
+      projectId: goal.projectId || ""
     });
 
-    setNewComment("");
     setOpenDialog(true);
   };
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -142,8 +108,6 @@ function ProjectGoalList() {
     if (!validateForm()) return;
 
     try {
-      const commentTexts = extractCommentTexts(goalData.comments);
-
       const payload = {
         projectId: projectID,
         goalTitle: goalData.goalTitle,
@@ -151,7 +115,7 @@ function ProjectGoalList() {
         weekEnd: goalData.weekEnd,
         status: goalData.status,
         description: goalData.description,
-        comments: commentTexts,
+        // comments: commentTexts,
         priority: goalData.priority
       };
 
@@ -167,10 +131,64 @@ function ProjectGoalList() {
     }
   };
 
+  const handleSaveComment = async (commentData: {
+    goal_id: string;
+    comment: string;
+    user_id?: string;
+  }) => {
+    try {
+      const payload = {
+        goal_id: commentData.goal_id,
+        user_id: commentData.user_id,
+        comments: [commentData.comment]
+      };
+
+      await createComment(payload);
+
+      await handelProjectGoalView(commentData.goal_id);
+
+      console.log("Comment saved successfully");
+    } catch (error) {
+      console.error("Failed to save comment:", error);
+    }
+  };
+
+  const handleEditComment = async (
+    commentId: string | number,
+    updatedComment: { comment: string }
+  ) => {
+    console.log("comment", updatedComment);
+
+    try {
+      await updateComment(commentId, {
+        comments: [updatedComment.comment] // ✅ convert single string to array
+      });
+    } catch (error) {
+      console.error("Failed to update comment:", error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string | number) => {
+    try {
+      await deleteComment(commentId);
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+    }
+  };
+  const handleBack = () => {
+    setprojectGoalView("");
+  };
+
   return (
     <Box sx={{ p: 4 }}>
       {projectGoalView ? (
-        <ProjectGoalView goalData={projectGoalView} />
+        <ProjectGoalView
+          goalData={projectGoalView}
+          handleSaveComment={handleSaveComment}
+          handleEditComment={handleEditComment}
+          handleDeleteComment={handleDeleteComment}
+          handleBack={handleBack}
+        />
       ) : (
         <>
           {!openDialog && (
@@ -230,13 +248,7 @@ function ProjectGoalList() {
                   </Button>
                 </Box>
               </Box>
-              <ProjectGoalForm
-                newComment={newComment}
-                setNewComment={setNewComment}
-                goalData={goalData}
-                setGoalData={setGoalData}
-                errors={errors}
-              />
+              <ProjectGoalForm goalData={goalData} setGoalData={setGoalData} errors={errors} />
             </>
           ) : filteredGoals?.length === 0 ? (
             <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />

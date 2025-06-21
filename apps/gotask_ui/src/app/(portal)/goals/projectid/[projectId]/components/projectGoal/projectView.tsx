@@ -1,79 +1,27 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
-import { ArrowBack, Edit } from "@mui/icons-material";
+import { ArrowBack} from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import { ProjectGoalViewProps } from "../../interface/projectGoal";
 import GoalComments from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/goalComments";
 import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
-import {
-  createComment,
-  deleteComment,
-  updateComment
-} from "@/app/(portal)/goals/service/projectGoalAction";
+import StatusIndicator from "@/app/component/status/statusIndicator";
+import { getStatusColor } from "@/app/common/constants/project";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
-const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = false }) => {
-  
+const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
+  goalData,
+  loading = false,
+  handleSaveComment,
+  handleEditComment,
+  handleDeleteComment
+}) => {
   const router = useRouter();
-  const [comments, setComments] = useState<GoalComment[]>(goalData?.comments || []);
-
-  const handleSaveComment = async (commentText: string) => {
-    if (!goalData?.id) return;
-
-    try {
-      const commentData = {
-        goal_id: goalData.id.toString(),
-        comment: commentText,
-        user_id: "your-current-user-id" // Replace with actual current user ID
-      };
-
-      const response = await createComment(commentData);
-
-      // Add the new comment to local state
-      const newComment: GoalComment = {
-        id: response.data?.id || Date.now(),
-        comment: commentText,
-        user_name: "Current User", // Replace with actual current user name
-        user_id: "your-current-user-id",
-        updatedAt: new Date().toISOString()
-      };
-
-      setComments((prev) => [...prev, newComment]);
-    } catch (error) {
-      console.error("Error creating comment:", error);
-    }
-  };
-  const handleBack = () => {
-    router.back();
-  };
-  const handleEditComment = async (id: number | string, updatedCommentText: string) => {
-    try {
-      await updateComment(id, { comment: updatedCommentText });
-
-      setComments((prev) =>
-        prev.map((c) =>
-          c.id === id
-            ? { ...c, comment: updatedCommentText, updatedAt: new Date().toISOString() }
-            : c
-        )
-      );
-
-    } catch (error) {
-      console.error("Error updating comment:", error);
-    }
-  };
-
-  const handleDeleteComment = async (id: number | string) => {
-    try {
-      await deleteComment(id);
-
-      setComments((prev) => prev.filter((c) => c.id !== id));
-
-    } catch (error) {
-      console.error("Error deleting comment:", error);
-    }
-  };
+  const comments: GoalComment[] = goalData?.comments || [];
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   if (loading || !goalData) {
     return (
@@ -107,9 +55,11 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
         {/* Header */}
         <Box sx={{ maxHeight: "calc(100vh - 160px)", overflowY: "auto" }}>
           <Grid container alignItems="center" mb={3}>
-            <IconButton color="primary" onClick={handleBack}>
-              <ArrowBack />
-            </IconButton>
+            <Grid item xs="auto">
+              <IconButton color="primary" onClick={() => router.back()}>
+                <ArrowBack />
+              </IconButton>
+            </Grid>
             <Grid item xs>
               <Typography
                 variant="h5"
@@ -118,24 +68,14 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
               >
                 {goalData.goalTitle}
               </Typography>
-              <Typography variant="subtitle2" color="primary">
-                {goalData.status}
-              </Typography>
-            </Grid>
-            <Grid item xs="auto">
-              <IconButton
-                color="primary"
-                onClick={() => router.push(`/project/goals/edit/${goalData.id}`)}
-              >
-                <Edit />
-              </IconButton>
+              <StatusIndicator status={goalData.status} getColor={getStatusColor} />
             </Grid>
           </Grid>
 
           {/* Description */}
           <Box mb={3}>
             <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-              Description
+              {transGoal("description")}
             </Typography>
             <Typography
               variant="body1"
@@ -185,18 +125,17 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({ goalData, loading = f
 
           <Box>
             <Typography variant="subtitle1" fontWeight={500} mb={1}>
-              Comments
+              {transGoal("comment")}
             </Typography>
 
-      
-              <GoalComments
-                comments={comments}
-                onSave={handleSaveComment}
-                onEdit={handleEditComment}
-                onDelete={handleDeleteComment}
-                currentUserId={""}
-              />
-
+            <GoalComments
+              comments={comments}
+              onSave={handleSaveComment}
+              onEdit={handleEditComment}
+              onDelete={handleDeleteComment}
+              goalId={goalData.id?.toString() || ""} // Add this
+              currentUserId={""} // Replace with actual current user ID
+            />
           </Box>
         </Box>
       </Box>

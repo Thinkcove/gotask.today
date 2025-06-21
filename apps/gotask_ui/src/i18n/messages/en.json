@@ -561,6 +561,8 @@
     "create": "Create",
     "titlerequired": "Goal title is required",
     "startweekrequired": "Start Week is required",
-    "endweekrequired": "Week end date is required"
+    "endweekrequired": "Week end date is required",
+    "saving":"Saving...",
+    "comment":"Comments"
   }
 }

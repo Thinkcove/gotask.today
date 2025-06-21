@@ -27,6 +27,7 @@ import ProjectGoalView from "@/app/(portal)/goals/projectid/[projectId]/componen
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useUser } from "@/app/userContext";
+import SearchBar from "@/app/component/searchBar/searchBar";
 
 function ProjectGoalList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
@@ -45,8 +46,11 @@ function ProjectGoalList() {
     priority: "",
     projectId: projectID
   });
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredGoals = weeklyGoals;
+  const filteredGoals = weeklyGoals?.filter((goal: any) =>
+    goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handelOpen = () => {
     setGoalData({
@@ -193,6 +197,18 @@ function ProjectGoalList() {
 
   return (
     <Box sx={{ p: 4 }}>
+      {filteredGoals?.length === 0 ? (
+        ""
+      ) : (
+        <Box mb={3} maxWidth={400}>
+          <SearchBar
+            value={searchTerm}
+            onChange={setSearchTerm}
+            sx={{ width: "100%" }}
+            placeholder={transGoal("searchplaceholder")}
+          />
+        </Box>
+      )}
       {projectGoalView ? (
         <ProjectGoalView
           goalData={projectGoalView}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
-import { ArrowBack} from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
@@ -11,6 +11,7 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/project";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { SpeakerNotesOutlined } from "@mui/icons-material";
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   goalData,
@@ -125,17 +126,18 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
           <Divider sx={{ mt: 2, mb: 3 }} />
 
           <Box>
-            <Typography variant="subtitle1" fontWeight={500} mb={1}>
-              {transGoal("comment")}
-            </Typography>
-
+            <Typography variant="subtitle1" fontWeight={500} mb={1}></Typography>
+            <Box sx={{ display: "flex", gap: 1, color: "#741B92", alignItems: "center" }}>
+              <Typography fontWeight="bold"> {transGoal("comment")}</Typography>
+              <SpeakerNotesOutlined />
+            </Box>
             <GoalComments
               comments={comments}
               onSave={handleSaveComment}
               onEdit={handleEditComment}
               onDelete={handleDeleteComment}
-              goalId={goalData.id?.toString() || ""} 
-              user={user} 
+              goalId={goalData.id?.toString() || ""}
+              user={user}
             />
           </Box>
         </Box>

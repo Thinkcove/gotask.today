@@ -210,10 +210,16 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
                         color: "#741B92",
                         cursor: "pointer",
                         justifyContent: "flex-end",
-                        mt: 1
+                        mt: 1,
+                        textDecoration: "underline"
                       }}
                     >
-                      <Typography variant="body2">{trans("showhistory")}</Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ textDecoration: "underline", cursor: "pointer" }}
+                      >
+                        {trans("showhistory")}
+                      </Typography>
                       <HistoryIcon fontSize="small" />
                     </Box>
                   </Box>

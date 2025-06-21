@@ -10,6 +10,7 @@ import {
   getAssetTypeById,
   updateAsset
 } from "../../domain/interface/asset/asset";
+import { createAssetHistory, getAssetHistoryById } from "../../domain/interface/asset/assetHistory";
 import {
   createResource,
   createTag,
@@ -19,6 +20,7 @@ import {
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
 import { IAsset } from "../../domain/model/asset/asset";
+import { generateAssetHistoryEntry } from "./utils/assetHistory";
 
 class assetService {
   createOrUpdateAsset = async (payload: any, user: any): Promise<any> => {
@@ -54,6 +56,18 @@ class assetService {
           result = await updateAsset(payload.id, {
             ...payload
           });
+
+          // Save history if any field changed
+          const historyLogs = await generateAssetHistoryEntry(existingAsset, payload);
+          const filteredLogs = historyLogs.filter((entry) => !entry.toLowerCase().includes("tag"));
+          if (filteredLogs.length > 0) {
+            await createAssetHistory({
+              assetId: payload.id,
+              userId: userInfo.id,
+              formatted_history: filteredLogs.join(" | "),
+              created_by: userInfo.name
+            });
+          }
           return { success: true, data: result };
         }
       }
@@ -168,12 +182,14 @@ class assetService {
           error: AssetMessages.FETCH.NOT_FOUND
         };
       }
+      const assetHistory = await getAssetHistoryById(data.id);
 
       const tags = await getTagsByAssetId(data.id);
       return {
         data: {
           ...data.toObject(),
-          tags
+          tags,
+          assetHistory
         },
         success: true
       };

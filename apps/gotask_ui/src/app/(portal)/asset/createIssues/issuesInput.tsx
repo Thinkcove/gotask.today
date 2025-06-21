@@ -5,6 +5,7 @@ import FormField from "@/app/component/input/formField";
 import { IAssetIssues } from "../interface/asset";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { commonIssueTypes } from "../assetConstants";
 
 interface IssueInputProps {
   formData: IAssetIssues;
@@ -50,9 +51,10 @@ const IssueInput: React.FC<IssueInputProps> = ({
         </Grid>
         <Grid item xs={12}>
           <FormField
-            type="text"
+            type="select"
             label={transasset("issuestype")}
             placeholder={transasset("issuestype")}
+            options={commonIssueTypes}
             value={formData.issueType}
             onChange={(v) => onChange("issueType", String(v))}
           />

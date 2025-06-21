@@ -152,19 +152,41 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  justifyContent: { xs: "center", sm: "flex-start" },
-                  color: "#741B92",
-                  cursor: "pointer"
+                  flexDirection: "column",
+                  alignItems: { xs: "center", sm: "flex-start" },
+                  gap: 0.5
                 }}
-                onClick={() => setOpenHistoryDrawer(true)}
               >
-                <Typography variant="h6" sx={{ fontWeight: "bold", color: "#741B92" }}>
+                {/* Title */}
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: "bold",
+                    color: "#741B92",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1
+                  }}
+                >
                   {transasset("updateasset")}
                 </Typography>
-                <HistoryIcon fontSize="medium" />
-                <Typography variant="body2">{transasset("showhistory")}</Typography>
+
+                {/* Show History link with icon */}
+                <Box
+                  onClick={() => setOpenHistoryDrawer(true)}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    color: "#741B92",
+                    cursor: "pointer"
+                  }}
+                >
+                  <Typography variant="body2" sx={{ textDecoration: "underline" }}>
+                    {transasset("showhistory")}
+                  </Typography>
+                  <HistoryIcon fontSize="small" />
+                </Box>
               </Box>
             </Grid>
 

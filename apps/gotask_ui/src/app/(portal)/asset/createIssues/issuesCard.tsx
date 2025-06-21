@@ -16,10 +16,17 @@ import HistoryIcon from "@mui/icons-material/History";
 import IssueHistoryDrawer from "./issuesDrawer";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+
+interface AssetIssueCardsProps {
+  searchText: string;
+  statusFilter: string[];
+}
 
 const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 
-const AssetIssueCards: React.FC = () => {
+const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFilter }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { getAll: allissues, mutate: issuesMutate } = useAllIssues();
 
@@ -40,6 +47,17 @@ const AssetIssueCards: React.FC = () => {
     setNewStatus(issue.status);
     setDialogOpen(true);
   };
+
+  const filteredIssues = allissues.filter((issue: IAssetIssues) => {
+    const matchesSearch =
+      searchText.trim() === "" ||
+      issue.status?.toLowerCase().includes(searchText.toLowerCase()) ||
+      issue.issueType?.toLowerCase().includes(searchText.toLowerCase());
+
+    const matchesStatus = statusFilter.length === 0 || statusFilter.includes(issue.status);
+
+    return matchesSearch && matchesStatus;
+  });
 
   const handleStatusUpdate = async () => {
     if (!issueById) return;
@@ -73,14 +91,6 @@ const AssetIssueCards: React.FC = () => {
     setOpenHistoryDrawer(true);
   };
 
-  if (!allissues?.length) {
-    return (
-      <Box textAlign="center" mt={5} px={2}>
-        <Typography variant="body1"></Typography>
-      </Box>
-    );
-  }
-
   return (
     <Box
       sx={{
@@ -92,126 +102,126 @@ const AssetIssueCards: React.FC = () => {
       }}
     >
       <Grid container spacing={3}>
-        {allissues.map((issue: IAssetIssues) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={issue.id}>
-            <CardComponent
-              sx={{
-                p: 2,
-                borderRadius: 3,
-                background: "linear-gradient(135deg, #fff, #f9f9f9)",
-                transition: "0.3s ease",
-                height: "100%"
-              }}
-            >
-              <Stack spacing={0.5}>
-                {/* Header */}
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  flexWrap="wrap"
-                  rowGap={1}
-                >
-                  {/* Left: Avatar + Email */}
-                  <Stack direction="row" alignItems="center" spacing={1.5}>
-                    <Avatar sx={{ bgcolor: "#ff9800", width: 40, height: 40 }}>
-                      {getInitial(String(issue?.reportedDetails?.user_id))}
-                    </Avatar>
-                    <Typography
-                      variant="subtitle2"
-                      fontWeight={600}
-                      sx={{
-                        fontSize: { xs: "0.85rem", sm: "1rem" },
-                        wordBreak: "break-word"
-                      }}
-                    >
-                      {issue.reportedDetails?.user_id}
-                    </Typography>
-                  </Stack>
-
-                  {/* Right: Status + Edit icon */}
+        {!allissues?.length || filteredIssues.length === 0 ? (
+          <Grid item xs={12}>
+            <EmptyState
+              imageSrc={NoAssetsImage}
+              message={searchText || statusFilter.length ? trans("nodata") : trans("noissues")}
+            />
+          </Grid>
+        ) : (
+          filteredIssues.map((issue: IAssetIssues) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={issue.id}>
+              <CardComponent
+                sx={{
+                  p: 2,
+                  borderRadius: 3,
+                  background: "linear-gradient(135deg, #fff, #f9f9f9)",
+                  transition: "0.3s ease",
+                  height: "100%"
+                }}
+              >
+                <Stack spacing={0.5}>
                   <Stack
                     direction="row"
+                    justifyContent="space-between"
                     alignItems="center"
-                    spacing={0.5}
-                    sx={{ mt: { xs: 0.5, sm: 0 }, ml: "auto" }}
+                    flexWrap="wrap"
+                    rowGap={1}
                   >
-                    <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />
-
-                    <Tooltip title={trans("edit")}>
-                      <IconButton size="small" onClick={() => handleEditClick(issue)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Stack>
-                </Stack>
-
-                {/* Body - Key Value */}
-                <Box
-                  sx={{
-                    p: 1.5,
-                    borderRadius: 2
-                  }}
-                >
-                  <Typography variant="body2" fontWeight={500}>
-                    {trans("issuesType")}{" "}
-                    <Typography component="span" fontWeight={400} color="text.secondary">
-                      {issue.issueType || "-"}
-                    </Typography>
-                  </Typography>
-
-                  <Typography variant="body2" fontWeight={500}>
-                    {trans("model")}{" "}
-                    <Typography component="span" fontWeight={400} color="text.secondary">
-                      {issue.assetDetails?.modelName || "-"}
-                    </Typography>
-                  </Typography>
-
-                  <Typography variant="body2" fontWeight={500}>
-                    {trans("assignedTo")}:{" "}
-                    <Typography component="span" fontWeight={400} color="text.secondary">
-                      {issue.assigned?.user_id || "-"}
-                    </Typography>
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    fontWeight={500}
-                    sx={{ display: "flex", alignItems: "center" }}
-                  >
-                    {trans("description")}:{" "}
-                    <Tooltip title={issue.description || "-"} placement="top" arrow>
+                    <Stack direction="row" alignItems="center" spacing={1.5}>
+                      <Avatar sx={{ bgcolor: "#ff9800", width: 40, height: 40 }}>
+                        {getInitial(String(issue?.reportedDetails?.user_id))}
+                      </Avatar>
                       <Typography
-                        component="span"
-                        fontWeight={400}
-                        color="text.secondary"
-                        noWrap
-                        sx={{ maxWidth: "180px", ml: 0.5 }}
+                        variant="subtitle2"
+                        fontWeight={600}
+                        sx={{
+                          fontSize: { xs: "0.85rem", sm: "1rem" },
+                          wordBreak: "break-word"
+                        }}
                       >
-                        {issue.description || "-"}
+                        {issue.reportedDetails?.user_id}
                       </Typography>
-                    </Tooltip>
-                  </Typography>
-                  <Box
-                    onClick={() => handleShowHistory(issue.id!)}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      color: "#741B92",
-                      cursor: "pointer",
-                      justifyContent: "flex-end",
-                      mt: 1
-                    }}
-                  >
-                    <Typography variant="body2">{trans("showhistory")}</Typography>
-                    <HistoryIcon fontSize="small" />
+                    </Stack>
+
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={0.5}
+                      sx={{ mt: { xs: 0.5, sm: 0 }, ml: "auto" }}
+                    >
+                      <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />
+                      <Tooltip title={trans("edit")}>
+                        <IconButton size="small" onClick={() => handleEditClick(issue)}>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </Stack>
+
+                  <Box sx={{ p: 1.5, borderRadius: 2 }}>
+                    <Typography variant="body2" fontWeight={500}>
+                      {trans("issuesType")}{" "}
+                      <Typography component="span" fontWeight={400} color="text.secondary">
+                        {issue.issueType || "-"}
+                      </Typography>
+                    </Typography>
+
+                    <Typography variant="body2" fontWeight={500}>
+                      {trans("model")}{" "}
+                      <Typography component="span" fontWeight={400} color="text.secondary">
+                        {issue.assetDetails?.modelName || "-"}
+                      </Typography>
+                    </Typography>
+
+                    <Typography variant="body2" fontWeight={500}>
+                      {trans("assignedTo")}:{" "}
+                      <Typography component="span" fontWeight={400} color="text.secondary">
+                        {issue.assigned?.user_id || "-"}
+                      </Typography>
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      fontWeight={500}
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
+                      {trans("description")}:{" "}
+                      <Tooltip title={issue.description || "-"} placement="top" arrow>
+                        <Typography
+                          component="span"
+                          fontWeight={400}
+                          color="text.secondary"
+                          noWrap
+                          sx={{ maxWidth: "180px", ml: 0.5 }}
+                        >
+                          {issue.description || "-"}
+                        </Typography>
+                      </Tooltip>
+                    </Typography>
+
+                    <Box
+                      onClick={() => handleShowHistory(issue.id!)}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        color: "#741B92",
+                        cursor: "pointer",
+                        justifyContent: "flex-end",
+                        mt: 1
+                      }}
+                    >
+                      <Typography variant="body2">{trans("showhistory")}</Typography>
+                      <HistoryIcon fontSize="small" />
+                    </Box>
                   </Box>
-                </Box>
-              </Stack>
-            </CardComponent>
-          </Grid>
-        ))}
+                </Stack>
+              </CardComponent>
+            </Grid>
+          ))
+        )}
         {dialogOpen && issueById && (
           <CommonDialog
             open={dialogOpen}

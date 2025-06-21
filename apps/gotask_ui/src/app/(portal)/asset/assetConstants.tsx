@@ -81,3 +81,5 @@ export const commonIssueTypes = [
   { id: "Hardware Failure", name: "Hardware Failure" },
   { id: "Software Crash", name: "Software Crash" }
 ];
+
+export const issueStatuses = ["Open", "InProgress", "Resolved"];

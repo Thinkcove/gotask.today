@@ -14,7 +14,7 @@ import { storyMessages } from "../../constants/apiMessages/projectStoryMessages"
 class ProjectStoryController extends BaseController {
   async createStory(requestHelper: RequestHelper, handler: any) {
     try {
-      const { title, description } = requestHelper.getPayload() || {};
+      const { title, description, status } = requestHelper.getPayload() || {};
       const { projectId } = requestHelper.getAllParams();
       const user = requestHelper.getUser();
       const userId = user?.id;
@@ -26,9 +26,11 @@ class ProjectStoryController extends BaseController {
       const story = await createStoryService({
         title,
         description,
+        status,
         projectId,
         createdBy: userId
       });
+      
 
       return this.sendResponse(handler, {
         message: storyMessages.CREATE.SUCCESS,
@@ -95,18 +97,21 @@ class ProjectStoryController extends BaseController {
       return this.replyError(err);
     }
   }
+  
   async updateStory(requestHelper: RequestHelper, handler: any) {
     try {
       const { storyId } = requestHelper.getAllParams();
-      const { title, description } = requestHelper.getPayload();
+      const { title, description, status } = requestHelper.getPayload();
 
-      if (!title && !description) {
+
+      if (!title && !description && !status) {
         return this.replyError(new Error(storyMessages.UPDATE.NO_FIELDS));
       }
 
       const updatedStory = await updateStoryService(storyId, {
         title,
-        description
+        description,
+        status
       });
 
       if (!updatedStory) {

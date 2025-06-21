@@ -19,7 +19,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { User } from "../interfaces/userInterface";
 import UserStatusFilter from "@/app/component/filters/userFilter";
-import { STATUS_CONFIG } from "@/app/common/constants/status";
+import { STATUS_CONFIG,getUserStatusColor } from "@/app/common/constants/status";
 
 const UserList = () => {
   const { canAccess } = useUserPermission();
@@ -75,7 +75,7 @@ const UserList = () => {
         transuser={transuser}
       />
 
-      <UserCards users={filteredUsers} />
+      <UserCards users={filteredUsers} getUserStatusColor={getUserStatusColor} />
 
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
 

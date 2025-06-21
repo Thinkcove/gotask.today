@@ -12,13 +12,13 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { getStatusColor } from "@/app/common/constants/task";
 
 interface UserCardProps {
   users: User[] | null;
+  getUserStatusColor: (status: string) => string;
 }
 
-const UserCards: React.FC<UserCardProps> = ({ users }) => {
+const UserCards: React.FC<UserCardProps> = ({ users, getUserStatusColor }) => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const router = useRouter();
@@ -68,7 +68,7 @@ const UserCards: React.FC<UserCardProps> = ({ users }) => {
 
                       <StatusIndicator
                         status={user.status ? "active" : "inactive"}
-                        getColor={getStatusColor}
+                        getColor={getUserStatusColor}
                         dotSize={8}
                         capitalize
                       />

@@ -2,14 +2,11 @@ import React from "react";
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { useTranslations } from "next-intl";
-import { LOCALIZATION } from "@/app/common/constants/localization";
 import { getStatusColor } from "@/app/common/constants/project";
 import { GoalCardProps } from "../interface/projectGoal";
 
 const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
   const color = getStatusColor(goal.status);
-  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   return (
     <Box
@@ -36,12 +33,11 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
           {goal.goalTitle}
         </Typography>
 
-        <StatusIndicator status={goal.status} getColor={getStatusColor} />
-        <Box sx={{ display: "flex", alignItems:"center"}}>
-          <Typography variant="body2" sx={{  }}>
-            {transGoal("completion")}
-          </Typography>
-          <input type="checkbox" disabled checked />
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <StatusIndicator status={goal.status} getColor={getStatusColor} />
+
+          {goal.status === "completed" && <input type="checkbox" disabled checked />}
+
           <Box sx={{ ml: "auto" }}>
             <Tooltip title="Edit Goal">
               <IconButton

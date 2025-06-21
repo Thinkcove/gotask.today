@@ -12,6 +12,7 @@ export interface IFormField {
   start_date: string;
   user_estimated: string;
   projects?: string;
+  story_id?: string;
 }
 
 export interface IGroup {

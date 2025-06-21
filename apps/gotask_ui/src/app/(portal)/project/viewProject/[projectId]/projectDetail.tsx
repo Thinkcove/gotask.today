@@ -184,17 +184,22 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             </Typography>
             <Box display="flex" justifyContent="flex-end" gap={2}>
               <Button
-                variant="contained"
+                variant="text" 
                 onClick={() => setProjectGoalOpean(true)}
                 sx={{
                   textTransform: "none",
-                  borderRadius: 2
+                  borderRadius: 0,
+                  borderBottom: "2px solid #741B92", 
+                  borderTop: "none",
+                  borderLeft: "none",
+                  borderRight: "none",
+                  boxShadow: "none", 
+                  backgroundColor: "transparent" 
                 }}
               >
-                {transproject("detailaddassignee")}
+                {transproject("goal")}
               </Button>
 
-              {/* <Link href={`/goals/projectid/${projectID}`}> {transproject("goal")}</Link> */}
 
               {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
                 <Button
@@ -337,11 +342,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           onClose={() => setSnackbar({ ...snackbar, open: false })}
         />
       </Box>
-      {/* {projectGoalOpean && (
-        <ProjectGoalList
-        // onClose={() => setProjectGoalOpean(false)} // optional if your component supports it
-        />
-      )} */}
     </>
   );
 };

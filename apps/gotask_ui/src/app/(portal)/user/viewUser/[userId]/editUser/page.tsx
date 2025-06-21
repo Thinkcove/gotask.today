@@ -32,11 +32,8 @@ const EditUserPage: React.FC = () => {
       <ModuleHeader name={transuser("edituser")} />
       <EditUser
         data={user}
-        open={true}
-        onClose={() => {}}
         userID={userId as string}
-        mutate={mutate}
-      />
+        mutate={mutate} />
     </>
   ) : null;
 };

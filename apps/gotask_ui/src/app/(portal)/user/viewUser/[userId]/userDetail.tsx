@@ -4,7 +4,6 @@ import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { IUserField, User } from "../../interfaces/userInterface";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import EditUser from "./editUser";
 import { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { deleteUser } from "../../services/userAction";
@@ -21,6 +20,7 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import { IAssetAttributes } from "@/app/(portal)/asset/interface/asset";
 import TaskToggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
+import EditUser from "./editUser/editUser";
 
 interface UserDetailProps {
   user: User;
@@ -35,7 +35,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const router = useRouter();
   const { userId } = useParams();
   const userID = userId as string;
-  const [editOpen, setEditOpen] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -77,8 +76,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
     emp_id: user.emp_id,
     organization: user.organization,
     roleId: user.roleId._id,
-    user_id: user.user_id,
-  
+    user_id: user.user_id
   });
 
   return (
@@ -135,12 +133,14 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           {/* Basic Details */}
 
           <Grid container spacing={2} flexDirection="column" mb={2}>
+
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={transuser("uesrid")} value={user.user_id} />
             </Grid>
           </Grid>
 
           <Grid container spacing={2} mb={1}>
+
             <Grid item xs={6} sm={6} md={4}>
               <LabelValueText
                 label={transuser("labelfirst_name")}
@@ -270,9 +270,9 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 {user.assetDetails && user.assetDetails.length > 0 && (
                   <Box
                     sx={{
-                      display: "flex", // ✅ Enables horizontal stacking
-                      overflowX: "auto", // ✅ Enables horizontal scroll
-                      gap: 2, // ✅ Adds spacing between cards
+                      display: "flex", //  Enables horizontal stacking
+                      overflowX: "auto", //  Enables horizontal scroll
+                      gap: 2, //  Adds spacing between cards
                       py: 1,
                       pr: 1
                     }}
@@ -281,9 +281,9 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                       <Box
                         key={asset.id || index}
                         sx={{
-                          minWidth: 300, // ✅ Ensures each card has a minimum width for scroll
+                          minWidth: 300, //  Ensures each card has a minimum width for scroll
                           maxWidth: 360,
-                          flex: "0 0 auto", // ✅ Prevents shrinking
+                          flex: "0 0 auto", //  Prevents shrinking
                           p: 3,
                           borderRadius: 2,
                           bgcolor: "#ffffff",
@@ -353,8 +353,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
         {/* Edit User Dialog */}
         <EditUser
-          open={editOpen}
-          onClose={() => setEditOpen(false)}
           data={mapUserToUserField(user)}
           mutate={mutate}
           userID={userID}

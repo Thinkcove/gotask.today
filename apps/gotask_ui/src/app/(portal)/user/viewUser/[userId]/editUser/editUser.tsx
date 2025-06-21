@@ -1,23 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import UserInput from "@/app/(portal)/user/components/userInputs";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { IUserField } from "@/app/(portal)/user/interfaces/userInterface";
-import { getUserById, updateUser } from "@/app/(portal)/user/services/userAction";
+import { IUserField, User } from "@/app/(portal)/user/interfaces/userInterface";
+import { updateUser } from "@/app/(portal)/user/services/userAction";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
+import { KeyedMutator } from "swr";
 
-const EditUser = () => {
+interface EditUserProps {
+  data: IUserField;
+  userID: string;
+  mutate: KeyedMutator<User>;
+}
+
+const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const router = useRouter();
-  const { userId } = useParams();
 
-  const [formData, setFormData] = useState<IUserField | null>(null);
+  const [formData, setFormData] = useState<IUserField>(() => ({
+    first_name: data.first_name || "",
+    last_name: data.last_name || "",
+    name: data.name || "",
+    status: data.status ?? true,
+    organization: data.organization || "",
+    roleId: data.roleId || "",
+    user_id: data.user_id || "",
+    mobile_no: data.mobile_no || "",
+    joined_date: data.joined_date || new Date(),
+    emp_id: data.emp_id || ""
+  }));
+  
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -25,32 +43,15 @@ const EditUser = () => {
     severity: SNACKBAR_SEVERITY.INFO
   });
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await getUserById(userId as string);
-        setFormData(response);
-      } catch (err) {
-        console.log(err);
-        setSnackbar({
-          open: true,
-          message: transuser("fetcherror"),
-          severity: SNACKBAR_SEVERITY.ERROR
-        });
-      }
-    };
-
-    fetchUser();
-  }, [userId, transuser]);
-  
-
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData?.first_name) newErrors.first_name = transuser("firstname");
-    if (!formData?.last_name) newErrors.last_name = transuser("lastname");
-    if (!formData?.name) newErrors.name = transuser("username");
-    if (!formData?.roleId) newErrors.roleId = transuser("userrole");
-    if (!formData?.user_id) newErrors.user_id = transuser("useremail");
+    if (!formData.first_name) newErrors.first_name = transuser("firstname");
+    if (!formData.last_name) newErrors.last_name = transuser("lastname");
+    if (!formData.name) newErrors.name = transuser("username");
+    if (!formData.roleId) newErrors.roleId = transuser("userrole");
+    if (formData.status === undefined || formData.status === null)
+      newErrors.status = transuser("userstatus");
+    if (!formData.user_id) newErrors.user_id = transuser("useremail");
     else if (!validateEmail(formData.user_id)) newErrors.user_id = transuser("validmail");
 
     setErrors(newErrors);
@@ -58,22 +59,23 @@ const EditUser = () => {
   };
 
   const handleChange = (field: keyof IUserField, value: string | string[] | boolean) => {
-    if (!formData) return;
-    setFormData((prev) => ({ ...prev!, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
-    if (!formData || !validateForm()) return;
+    if (!validateForm()) return;
 
     try {
-      await updateUser(userId as string, formData);
+      await updateUser(userID, formData);
+      await mutate();
       setSnackbar({
         open: true,
         message: transuser("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+
       setTimeout(() => {
-        router.push("/user");
+        router.push(`/user/viewUser/${userID}`);
       }, 1500);
     } catch {
       setSnackbar({
@@ -84,16 +86,8 @@ const EditUser = () => {
     }
   };
 
-  if (!formData) {
-    return (
-      <Box p={4}>
-        <Typography>{transuser("loading")}</Typography>
-      </Box>
-    );
-  }
-
   return (
-        <Box sx={{ maxWidth: "1400px", mx: "auto", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ maxWidth: "1400px", mx: "auto", display: "flex", flexDirection: "column" }}>
       {/* Header */}
       <Box sx={{ position: "sticky", top: 0, px: 2, py: 2, zIndex: 1000, backgroundColor: "#fff" }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -143,7 +137,6 @@ const EditUser = () => {
           formData={formData}
           handleChange={handleChange}
           errors={errors}
-          isEdit={true}
           readOnlyFields={["name"]}
         />
       </Box>

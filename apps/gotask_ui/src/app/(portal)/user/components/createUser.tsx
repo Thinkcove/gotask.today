@@ -118,7 +118,6 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
           formData={formData}
           handleChange={handleChange}
           errors={errors}
-          isEdit={true}
           readOnlyFields={["status"]}
         />
       </CommonDialog>

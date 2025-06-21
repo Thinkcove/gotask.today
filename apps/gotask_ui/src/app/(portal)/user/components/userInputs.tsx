@@ -34,7 +34,7 @@ const UserInput = ({
   const [selectedOrganizationIds, setSelectedOrganizationIds] = useState<string[]>(
     formData.organization || [] // Initialize with the formData.organization value
   );
-
+  
   return (
     <Grid container spacing={1} sx={{ mt: 0, mb: 0 }}>
       <Grid item xs={12} md={4}>

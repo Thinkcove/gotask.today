@@ -1,18 +1,12 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { 
-  Box, 
-  Grid, 
-  CircularProgress, 
-  Typography, 
-  Button
-} from "@mui/material";
+import { Box, Grid, CircularProgress, Typography, Button } from "@mui/material";
 import { useWorkPlannedReport } from "../services/workPlannedServices";
 import { fetchProject, fetchUser } from "../../task/service/taskAction";
 import useSWR from "swr";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
-import NoReportImage from "@assets/placeholderImages/noreportlog.svg"
+import NoReportImage from "@assets/placeholderImages/noreportlog.svg";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import WorkPlannedCalendarGrid from "./workPlannedCalendarGrid";
@@ -21,8 +15,7 @@ import { Project } from "../../task/interface/taskInterface";
 import WorkPlannedFiltersPanel from "./workPlannedFilterPanel";
 import { Filters } from "../interface/workPlanned";
 
-
-const getStoredFilters = (): Filters | null     => {
+const getStoredFilters = (): Filters | null => {
   if (typeof window === "undefined") return null;
   const saved = localStorage.getItem("workplanned_filters");
   return saved ? JSON.parse(saved) : null;
@@ -33,15 +26,17 @@ const saveFiltersToStorage = (filters: Filters) => {
   }
 };
 
-const getInitialFilters = () : Filters => {
+const getInitialFilters = (): Filters => {
   const stored = getStoredFilters();
 
-  return stored || {
-    fromDate: "",
-    toDate: "",
-    userIds: [],
-    projectIds: []
-  };
+  return (
+    stored || {
+      fromDate: "",
+      toDate: "",
+      userIds: [],
+      projectIds: []
+    }
+  );
 };
 
 const WorkPlannedReport = () => {
@@ -75,20 +70,15 @@ const WorkPlannedReport = () => {
       userIds: filters.userIds.length > 0 ? filters.userIds : [],
       selectedProjects: filters.projectIds.length > 0 ? filters.projectIds : []
     };
-    
-    // Optional: Add logging here if needed for debugging
-    if (filters.fromDate && filters.toDate) {
-      console.log("Payload changed:", newPayload);
-    }
-    
+
     return newPayload;
   }, [filters.fromDate, filters.toDate, filters.userIds, filters.projectIds]);
-    const shouldFetch = filters.fromDate !== "" && filters.toDate !== "";
+  const shouldFetch = filters.fromDate !== "" && filters.toDate !== "";
 
   const {
     data: reportData,
     isLoading: isReportLoading,
-    isError: isReportError,
+    isError: isReportError
   } = useWorkPlannedReport(payload, shouldFetch);
 
   // Optimized update function with automatic persistence
@@ -108,10 +98,8 @@ const WorkPlannedReport = () => {
       projectIds: []
     };
     setFilters(cleared);
-     saveFiltersToStorage(cleared);
+    saveFiltersToStorage(cleared);
   };
-
- 
 
   if (userError) {
     return (
@@ -168,18 +156,19 @@ const WorkPlannedReport = () => {
 
         <Grid item xs={12} md={9}>
           {isReportLoading && <CircularProgress />}
-          
-          {isReportError && (
-            <Typography color="error">{transreport("error")}</Typography>
-          )}
-          
+
+          {isReportError && <Typography color="error">{transreport("error")}</Typography>}
+
           {!filters.fromDate || !filters.toDate ? (
             <Grid item xs={12}>
               <EmptyState imageSrc={NoReportImage} message={transreport("loghelper")} />
             </Grid>
-             ) : reportData && reportData.length === 0 ? (
+          ) : reportData && reportData.length === 0 ? (
             <Grid item xs={12}>
-              <EmptyState imageSrc={NoSearchResultsImage} message={`No work planned data found for the selected date range`} />
+              <EmptyState
+                imageSrc={NoSearchResultsImage}
+                message={`No work planned data found for the selected date range`}
+              />
             </Grid>
           ) : reportData ? (
             <WorkPlannedCalendarGrid

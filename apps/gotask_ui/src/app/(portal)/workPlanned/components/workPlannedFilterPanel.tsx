@@ -30,7 +30,7 @@ interface WorkPlannedFiltersPanelProps {
   setUserIds: (ids: string[]) => void;
   usersList: User[];
   setProjectIds: (ids: string[]) => void;
-  projectsList: Project[]; 
+  projectsList: Project[];
 }
 
 const WorkPlannedFiltersPanel: React.FC<WorkPlannedFiltersPanelProps> = ({
@@ -46,14 +46,14 @@ const WorkPlannedFiltersPanel: React.FC<WorkPlannedFiltersPanelProps> = ({
   projectsList
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
-  const transworkplanned= useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
-  
+  const transworkplanned = useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
+
   const handleUserChange = (event: SelectChangeEvent<string[]>) => {
     setUserIds(event.target.value as string[]);
   };
 
   const ALL_PROJECTS_ID = "ALL";
-  
+
   const handleProjectChange = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value as string[];
     const isAllSelected = value.includes(ALL_PROJECTS_ID);
@@ -84,9 +84,9 @@ const WorkPlannedFiltersPanel: React.FC<WorkPlannedFiltersPanelProps> = ({
     >
       <Stack spacing={2}>
         <Typography variant="body2" color="text.secondary" fontWeight={600} fontSize="1rem">
-           {transworkplanned("filterHeader")}
+          {transworkplanned("filterHeader")}
         </Typography>
-        
+
         {/* Date Range Filters */}
         <Box sx={{ display: "flex", gap: 2 }}>
           <TextField

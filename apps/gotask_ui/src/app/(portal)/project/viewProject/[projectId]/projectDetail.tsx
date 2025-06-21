@@ -108,7 +108,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
         <ModuleHeader name={transproject("detailview")} />
         <ProjectGoalList
           onClose={() => {
-            console.log("Closing ProjectGoalList");
             setProjectGoalOpean(false);
           }}
         />

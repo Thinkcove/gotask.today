@@ -421,7 +421,7 @@ class userService {
       user.skills = existingSkills;
       await user.save();
 
-      return { success: true, data: user, message: "Skills added successfully" };
+      return { success: true, data: existingSkills, message: "Skills added successfully" };
     } catch (error: any) {
       return { success: false, message: error.message || "Failed to update skills" };
     }
@@ -431,7 +431,7 @@ class userService {
     userId: string,
     skillId: string,
     updatedSkill: Partial<ISkill>
-  ): Promise<{ success: boolean; data?: any; message?: string }> {
+  ): Promise<{ success: boolean; data?: ISkill; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
 
@@ -439,9 +439,8 @@ class userService {
         return { success: false, message: "User not found" };
       }
 
-      // Initialize skills array if undefined
       if (!user.skills) {
-        user.skills = [];
+        return { success: false, message: "User has no skills" };
       }
 
       const skillIndex = user.skills.findIndex((skill) => skill.skill_id === skillId);
@@ -463,7 +462,7 @@ class userService {
 
       await user.save();
 
-      return { success: true, data: user, message: "Skill updated successfully" };
+      return { success: true, data: skill, message: "Skill updated successfully" };
     } catch (error: any) {
       return { success: false, message: error.message || "Failed to update skill" };
     }

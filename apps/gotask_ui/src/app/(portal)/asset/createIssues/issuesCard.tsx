@@ -200,6 +200,7 @@ const AssetIssueCards: React.FC = () => {
                       gap: 1,
                       color: "#741B92",
                       cursor: "pointer",
+                      justifyContent: "flex-end",
                       mt: 1
                     }}
                   >

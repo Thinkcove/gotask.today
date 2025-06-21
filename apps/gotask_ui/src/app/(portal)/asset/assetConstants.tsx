@@ -69,3 +69,15 @@ export const statusOptions = [
   { id: "InProgress", name: "In Progress" },
   { id: "Resolved", name: "Resolved" }
 ];
+
+export const commonIssueTypes = [
+  { id: "Processor Issue", name: "Processor Issue" },
+  { id: "OS Issue", name: "OS Issue" },
+  { id: "RAM Fault", name: "RAM Fault" },
+  { id: "Screen Damage", name: "Screen Damage" },
+  { id: "Battery Issue", name: "Battery Issue" },
+  { id: "Network Issue", name: "Network Issue" },
+  { id: "Performance Lag", name: "Performance Lag" },
+  { id: "Hardware Failure", name: "Hardware Failure" },
+  { id: "Software Crash", name: "Software Crash" }
+];

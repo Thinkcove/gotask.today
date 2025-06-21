@@ -211,7 +211,7 @@ function ProjectGoalList() {
       }
       setSnackbar({
         open: true,
-        message: transGoal("goalupdate") || "Goal saved successfully!",
+        message: transGoal("goalupdate"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
     } catch (error) {

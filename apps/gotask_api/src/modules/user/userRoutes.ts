@@ -133,12 +133,39 @@ UserRoutes.push({
 
 UserRoutes.push({
   path: `/skills/{id}`,
-  method: API_METHODS.PUT,
-  handler: permission(appName, ACTIONS.UPDATE, (request: Request, handler: ResponseToolkit) =>
-    userController.updateUserSkills(new RequestHelper(request), handler)
-  ),
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.addUserSkills(new RequestHelper(request), handler),
   config: {
     notes: "Update skills of a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+UserRoutes.push({
+  path: `/skills/{id}/{skill_id}`,
+  method: API_METHODS.PUT,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.updateUserSkill(new RequestHelper(request), handler),
+  config: {
+    notes: "Update a specific skill of a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+UserRoutes.push({
+  path: `/skills/{id}/{skill_id}`,
+  method: API_METHODS.DELETE,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.deleteUserSkill(new RequestHelper(request), handler),
+  config: {
+    notes: "Delete a specific skill from a user",
     tags,
     auth: {
       strategy: authStrategy.SIMPLE

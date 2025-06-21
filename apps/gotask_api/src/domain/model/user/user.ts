@@ -53,7 +53,10 @@ const UserSchema = new Schema<IUser>(
     roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true },
     organization: { type: [String], default: [] },
     projects: { type: [String], default: [] },
-    skills: { type: [SkillSchema] },
+    skills: {
+      type: [SkillSchema],
+      default: []
+    },
     certificates: { type: [CertificateSchema] },
     increment_history: { type: [IncrementSchema] }
   },

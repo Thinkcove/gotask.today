@@ -58,11 +58,6 @@ const MultiSelectFilter = <T extends Item>({
       onChange={handleChange}
       getOptionLabel={(option) => option.name || option.id}
       isOptionEqualToValue={(option, value) => option.id === value.id}
-      ListboxProps={{
-        style: {
-          maxHeight: "288px"
-        }
-      }}
       sx={{
         width: "100%",
         minWidth: "200px",

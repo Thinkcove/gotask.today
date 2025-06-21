@@ -103,7 +103,6 @@ function ProjectGoalList() {
         weekEnd: goalData.weekEnd,
         status: goalData.status,
         description: goalData.description,
-        // comments: commentTexts,
         priority: goalData.priority
       };
 
@@ -124,16 +123,15 @@ function ProjectGoalList() {
 
   const handelProjectGoalView = async (goalId: string) => {
     try {
-      const goal = await getWeeklyGoalById(goalId); // Get goal details
-      const comments = await getCommentsByGoalId(goalId); // Get related comments
+      const goal = await getWeeklyGoalById(goalId); 
+      const comments = await getCommentsByGoalId(goalId); 
 
-      // Merge comments into goal object
       const fullGoal = {
         ...goal,
         comments: comments || []
       };
 
-      setprojectGoalView(fullGoal); // Set the full goal with comments
+      setprojectGoalView(fullGoal); 
     } catch (error) {
       console.error("Failed to fetch goal view data:", error);
     }

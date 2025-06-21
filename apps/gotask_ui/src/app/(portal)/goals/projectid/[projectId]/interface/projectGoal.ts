@@ -48,7 +48,7 @@ export interface ProjectGoalsProps {
   openDialog: boolean;
   handleEditGoal: (goal: GoalData) => void;
   projectId: string;
-  projectGoalView: (goalId: string) => void; // ✅ fixed
+  projectGoalView: (goalId: string) => void; 
 }
 export interface GoalData {
   goalTitle: string;

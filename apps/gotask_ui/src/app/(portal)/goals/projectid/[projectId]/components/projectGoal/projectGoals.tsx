@@ -13,9 +13,7 @@ const ProjectGoals: React.FC<ProjectGoalsProps> = ({
 }) => {
   const filteredGoals = projectGoals?.filter((goal) => goal.projectId === projectId);
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
-  {
-    transGoal("comment");
-  }
+
 
   return (
     <Box sx={{ width: "100%" }}>

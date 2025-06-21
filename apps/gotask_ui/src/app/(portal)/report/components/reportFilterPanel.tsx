@@ -1,24 +1,19 @@
+"use client";
 import React from "react";
 import {
   TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  OutlinedInput,
-  Chip,
-  MenuItem,
-  Checkbox,
-  ListItemText,
   FormControlLabel,
   Box,
   Stack,
   Typography,
   Paper,
-  SelectChangeEvent
+  Checkbox
 } from "@mui/material";
-import { User } from "../interface/timeLog";
+import { User } from "../../user/interfaces/userInterface";
+import { Project } from "../../project/interfaces/projectInterface";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import MultiSelectFilter from "@/app/component/multiSelect/multiSelectFilter";
 
 interface FiltersPanelProps {
   fromDate: string;
@@ -30,7 +25,7 @@ interface FiltersPanelProps {
   setUserIds: (ids: string[]) => void;
   usersList: User[];
   setProjectIds: (ids: string[]) => void;
-  projectsList: User[];
+  projectsList: Project[];
   showTasks: boolean;
   setShowTasks: (value: boolean) => void;
 }
@@ -50,30 +45,6 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
   setShowTasks
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
-  const handleUserChange = (event: SelectChangeEvent<string[]>) => {
-    setUserIds(event.target.value as string[]);
-  };
-
-  const ALL_PROJECTS_ID = "ALL";
-
-  const handleProjectChange = (event: SelectChangeEvent<string[]>) => {
-    const value = event.target.value as string[];
-
-    const isAllSelected = value.includes(ALL_PROJECTS_ID);
-    const allProjectIds = projectsList.map((p) => p.id);
-
-    if (isAllSelected) {
-      // If already all selected, deselect all
-      const allSelected = allProjectIds.every((id) => value.includes(id));
-      if (allSelected) {
-        setProjectIds([]);
-      } else {
-        setProjectIds(allProjectIds);
-      }
-    } else {
-      setProjectIds(value);
-    }
-  };
 
   return (
     <Paper
@@ -89,6 +60,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
         <Typography variant="body2" color="text.secondary" fontWeight={600} fontSize="1rem">
           {transreport("filtertitle")}
         </Typography>
+
         <Box sx={{ display: "flex", gap: 2 }}>
           <TextField
             label={transreport("from")}
@@ -99,15 +71,9 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
             size="small"
             InputLabelProps={{
               shrink: true,
-              sx: {
-                fontSize: "1.3rem"
-              }
+              sx: { fontSize: "1.3rem" }
             }}
-            InputProps={{
-              sx: {
-                height: 50
-              }
-            }}
+            InputProps={{ sx: { height: 50 } }}
           />
 
           <TextField
@@ -119,107 +85,40 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
             size="small"
             InputLabelProps={{
               shrink: true,
-              sx: {
-                fontSize: "1.3rem"
-              }
+              sx: { fontSize: "1.3rem" }
             }}
-            InputProps={{
-              sx: {
-                height: 50
-              }
-            }}
+            InputProps={{ sx: { height: 50 } }}
           />
         </Box>
-        <FormControl fullWidth>
-          <InputLabel id="user-id-label"> {transreport("userlist")}</InputLabel>
-          <Select
-            labelId="user-id-label"
-            id="user-ids"
-            multiple
-            value={userIds}
-            onChange={handleUserChange}
-            input={<OutlinedInput label={transreport("userlist")} />}
-            renderValue={(selected) => (
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {selected.map((id) => {
-                  const user = usersList.find((user) => user.id === id);
-                  return (
-                    <Chip
-                      key={id}
-                      label={user?.name || id}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      onDelete={(e) => {
-                        e.stopPropagation();
-                        const updatedUserIds = userIds.filter((uid) => uid !== id);
-                        setUserIds(updatedUserIds);
-                      }}
-                    />
-                  );
-                })}
-              </Box>
-            )}
-          >
-            {usersList && usersList.length > 0 ? (
-              usersList.map((user) => (
-                <MenuItem key={user.id} value={user.id}>
-                  <Checkbox checked={userIds.indexOf(user.id) > -1} />
-                  <ListItemText primary={user.name} />
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem disabled>{transreport("nousers")}</MenuItem>
-            )}
-          </Select>
-        </FormControl>
-        <FormControl fullWidth>
-          <InputLabel id="project-id-label"> {transreport("projectlist")}</InputLabel>
-          <Select
-            labelId="project-id-label"
-            id="project-ids"
-            multiple
-            value={projectIds}
-            onChange={handleProjectChange}
-            input={<OutlinedInput label={transreport("projectlist")} />}
-            renderValue={(selected) => {
-              if (selected.includes(ALL_PROJECTS_ID)) {
-                return <Chip label={transreport("all")} />;
-              }
-              return (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((id) => {
-                    const project = projectsList.find((p) => p.id === id);
-                    return (
-                      <Chip
-                        key={id}
-                        label={project?.name || id}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onDelete={(e) => {
-                          e.stopPropagation();
-                          const updated = projectIds.filter((pid) => pid !== id);
-                          setProjectIds(updated);
-                        }}
-                      />
-                    );
-                  })}
-                </Box>
-              );
-            }}
-          >
-            <MenuItem value={ALL_PROJECTS_ID}>
-              <Checkbox
-                checked={projectsList.length > 0 && projectIds.length === projectsList.length}
-              />
-              <ListItemText primary={transreport("all")} />
-            </MenuItem>
 
-            {projectsList.map((project) => (
-              <MenuItem key={project.id} value={project.id}>
-                <Checkbox checked={projectIds.includes(project.id)} />
-                <ListItemText primary={project.name} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <MultiSelectFilter
+          label={transreport("labelUser")}
+          placeholder={transreport("placeholderUser")}
+          selectedIds={userIds}
+          items={usersList}
+          onChange={setUserIds}
+          listBoxProps={{
+            style: {
+              maxHeight: 5 * 48,
+              overflowY: "auto"
+            }
+          }}
+        />
+
+        <MultiSelectFilter
+          label={transreport("labelProject")}
+          placeholder={transreport("placeholderProject")}
+          selectedIds={projectIds}
+          items={projectsList}
+          onChange={setProjectIds}
+          listBoxProps={{
+            style: {
+              maxHeight: 5 * 48,
+              overflowY: "auto"
+            }
+          }}
+        />
+
         <Stack direction="row" spacing={2}>
           <FormControlLabel
             control={

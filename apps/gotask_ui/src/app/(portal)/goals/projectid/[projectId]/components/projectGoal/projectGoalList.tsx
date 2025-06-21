@@ -18,7 +18,10 @@ import {
   updateWeeklyGoal
 } from "@/app/(portal)/goals/service/projectGoalAction";
 import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
-import { GoalData } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+import {
+  GoalComment,
+  GoalData
+} from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { formatStatus } from "@/app/common/constants/project";
 import ProjectGoalView from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalView";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -56,25 +59,6 @@ function ProjectGoalList() {
       weekEnd: ""
     });
     setOpenDialog(true);
-  };
-
-  const [projectGoalView, setprojectGoalView] = React.useState("");
-
-  const handelProjectGoalView = async (goalId: string) => {
-    try {
-      const goal = await getWeeklyGoalById(goalId); // Get goal details
-      const comments = await getCommentsByGoalId(goalId); // Get related comments
-
-      // Merge comments into goal object
-      const fullGoal = {
-        ...goal,
-        comments: comments || []
-      };
-
-      setprojectGoalView(fullGoal); // Set the full goal with comments
-    } catch (error) {
-      console.error("Failed to fetch goal view data:", error);
-    }
   };
 
   const handleEditGoal = (goal: GoalData) => {
@@ -130,7 +114,26 @@ function ProjectGoalList() {
       console.error("Error saving weekly goal:", err);
     }
   };
+  const [projectGoalView, setprojectGoalView] = useState<
+    (GoalData & { comments: GoalComment[] }) | null
+  >(null);
 
+  const handelProjectGoalView = async (goalId: string) => {
+    try {
+      const goal = await getWeeklyGoalById(goalId); // Get goal details
+      const comments = await getCommentsByGoalId(goalId); // Get related comments
+
+      // Merge comments into goal object
+      const fullGoal = {
+        ...goal,
+        comments: comments || []
+      };
+
+      setprojectGoalView(fullGoal); // Set the full goal with comments
+    } catch (error) {
+      console.error("Failed to fetch goal view data:", error);
+    }
+  };
   const handleSaveComment = async (commentData: {
     goal_id: string;
     comment: string;
@@ -161,8 +164,12 @@ function ProjectGoalList() {
 
     try {
       await updateComment(commentId, {
-        comments: [updatedComment.comment] // ✅ convert single string to array
+        comments: [updatedComment.comment]
       });
+
+      if (projectGoalView?.id) {
+        await handelProjectGoalView(projectGoalView.id);
+      }
     } catch (error) {
       console.error("Failed to update comment:", error);
     }
@@ -171,12 +178,16 @@ function ProjectGoalList() {
   const handleDeleteComment = async (commentId: string | number) => {
     try {
       await deleteComment(commentId);
+      if (projectGoalView?.id) {
+        await handelProjectGoalView(projectGoalView.id);
+      }
     } catch (error) {
       console.error("Failed to delete comment:", error);
     }
   };
+
   const handleBack = () => {
-    setprojectGoalView("");
+    setprojectGoalView(null);
   };
   const { user } = useUser();
 

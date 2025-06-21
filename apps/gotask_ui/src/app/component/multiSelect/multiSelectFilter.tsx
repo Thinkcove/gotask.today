@@ -11,11 +11,16 @@ interface Item {
 
 interface MultiSelectFilterProps<T extends Item> {
   label: string;
+  placeholder: string;
   selectedIds: string[];
   items: T[];
   onChange: (ids: string[]) => void;
   searchTerm?: string;
-  placeholder: string;
+  sxRoot?: object;
+  sxInputBase?: object;
+  sxInput?: object;
+  sxChip?: object;
+  listBoxProps?: Partial<React.HTMLAttributes<HTMLElement>>;
 }
 
 const MultiSelectFilter = <T extends Item>({
@@ -23,7 +28,12 @@ const MultiSelectFilter = <T extends Item>({
   items,
   onChange,
   label,
-  placeholder
+  placeholder,
+  sxRoot = {},
+  sxInputBase = {},
+  sxInput = {},
+  sxChip = {},
+  listBoxProps = {}
 }: MultiSelectFilterProps<T>) => {
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -58,16 +68,28 @@ const MultiSelectFilter = <T extends Item>({
       onChange={handleChange}
       getOptionLabel={(option) => option.name || option.id}
       isOptionEqualToValue={(option, value) => option.id === value.id}
+      ListboxProps={listBoxProps}
       sx={{
-        width: "360px",
+        width: "auto",
+        minWidth: "400px",
+        maxWidth: "60%",
         "& .MuiInputBase-root": {
-          padding: "14px",
-          minHeight: "48px",
-          borderRadius: "8px"
+          padding: "10px 12px",
+          minHeight: "36px",
+          borderRadius: "8px",
+          ...sxInputBase
         },
         "& .MuiInputBase-input": {
-          padding: 0
-        }
+          padding: "0 !important",
+          minHeight: "0",
+          ...sxInput
+        },
+        "& .MuiChip-root": {
+          height: "24px",
+          fontSize: "0.8rem",
+          ...sxChip
+        },
+        ...sxRoot
       }}
       renderOption={(props, option, { selected }) => {
         const isSelectAllOption = option.id === SELECT_ALL_ID;

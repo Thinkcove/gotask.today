@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, IconButton, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -30,6 +30,8 @@ import { useUser } from "@/app/userContext";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { ArrowBack } from "@mui/icons-material";
+import router from "next/router";
 
 function ProjectGoalList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
@@ -244,22 +246,45 @@ function ProjectGoalList() {
   };
 
   const handleBack = () => {
-    setprojectGoalView(null);
+    router.back();
   };
   const { user } = useUser();
-
+  if (!filteredGoals) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+        }}
+      >
+        <CircularProgress size={50} thickness={4} />
+      </Box>
+    );
+  }
   return (
     <>
       <Box sx={{ p: 4 }}>
-        {!openDialog && !projectGoalView && filteredGoals?.length !== 0 && (
-          <Box mb={3} maxWidth={400}>
-            <SearchBar
-              value={searchTerm}
-              onChange={setSearchTerm}
-              sx={{ width: "100%" }}
-              placeholder={transGoal("searchplaceholder")}
-            />
-          </Box>
+        {!openDialog && !projectGoalView && (
+          <>
+            <Box display="flex" gap={2}>
+              <Grid item xs="auto">
+                <IconButton color="primary" onClick={() => handleBack}>
+                  <ArrowBack />
+                </IconButton>
+              </Grid>
+              <Box mb={3} maxWidth={400}>
+                <SearchBar
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  sx={{ width: "100%" }}
+                  placeholder={transGoal("searchplaceholder")}
+                />
+              </Box>
+            </Box>
+          </>
         )}
 
         {projectGoalView ? (

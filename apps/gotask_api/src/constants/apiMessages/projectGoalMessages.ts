@@ -42,6 +42,14 @@ const ProjectGoalMessages = {
     MISSING_FIELDS: "Missing required query parameters",
     FAILED: "Failed to query project goals",
     SUCCESS: "project goals query successful"
+  },
+
+  COMMENT: {
+    REQUIRED: "project goal data is required",
+    MISSING_FIELDS:
+      "Missing required fields: user_id, project_id, title, start_date, end_date, status",
+    FAILED: "Failed to create project goal",
+    SUCCESS: "project goal created successfully"
   }
 };
 

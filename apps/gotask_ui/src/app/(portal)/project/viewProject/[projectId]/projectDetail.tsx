@@ -22,6 +22,7 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
+import ProjectGoalList from "./projectGoal/projectGoalList";
 
 interface ProjectDetailProps {
   project: Project;
@@ -32,6 +33,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
+  const [projectGoalOpean, setProjectGoalOpean] = useState(false);
+
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const router = useRouter();
@@ -99,6 +102,19 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
       });
     }
   };
+  if (projectGoalOpean) {
+    return (
+      <>
+        <ModuleHeader name={transproject("detailview")} />
+        <ProjectGoalList
+          onClose={() => {
+            console.log("Closing ProjectGoalList");
+            setProjectGoalOpean(false);
+          }}
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -120,8 +136,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
         >
           {/* Back and Project Name */}
           <Box display="flex" alignItems="center" mb={3}>
-            <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
-              <ArrowBack />
+            <IconButton color="primary" sx={{ mr: 2 }}>
+              <ArrowBack onClick={handleBack} />
             </IconButton>
             <Box
               sx={{
@@ -173,7 +189,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 cursor: "pointer",
                 "&:hover": { textDecoration: "underline" }
               }}
-              onClick={() => router.push(`/project/viewProject/${projectID}/goals`)}
+              onClick={() => setProjectGoalOpean(true)}
             >
               {transproject("linkgoals")}
             </Typography>
@@ -201,15 +217,20 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             <Typography variant="h5" fontWeight={600}>
               {transproject("detailassignee")}
             </Typography>
-            {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
-              <Button
-                variant="contained"
-                onClick={() => setOpen(true)}
-                sx={{ textTransform: "none", borderRadius: 2 }}
-              >
-                {transproject("detailaddassignee")}
-              </Button>
-            )}
+            <Box display="flex" justifyContent="flex-end" gap={2}>
+              {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
+                <Button
+                  variant="contained"
+                  onClick={() => setOpen(true)}
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: 2
+                  }}
+                >
+                  {transproject("detailaddassignee")}
+                </Button>
+              )}
+            </Box>
           </Box>
 
           {/* Assignee List */}

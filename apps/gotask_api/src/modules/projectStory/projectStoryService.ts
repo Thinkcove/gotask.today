@@ -6,7 +6,7 @@ import { storyMessages } from "../../constants/apiMessages/projectStoryMessages"
 export const createStoryService = async (data: {
   title: string;
   description?: string;
-  status?: string; 
+  status?: string;
   projectId: string;
   createdBy: string;
 }): Promise<IProjectStory> => {
@@ -19,9 +19,8 @@ export const createStoryService = async (data: {
       title: data.title,
       description: data.description || "",
       project_id: data.projectId,
-      status: data.status || "to-do" 
+      status: data.status || "to-do"
     });
-    
   } catch (error: any) {
     throw new Error(error.message || storyMessages.CREATE.FAILED);
   }
@@ -102,7 +101,6 @@ export const updateStoryService = async (
     if (data.title) updateData.title = data.title;
     if (data.description) updateData.description = data.description;
     if (data.status) updateData.status = data.status;
-
 
     return await ProjectStory.findOneAndUpdate(
       { id: storyId },

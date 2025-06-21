@@ -81,7 +81,6 @@ export const fetcher = async () => {
   return fetchProjects();
 };
 
-
 export const fetchWeeklyGoals = async () => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/project/goals`;

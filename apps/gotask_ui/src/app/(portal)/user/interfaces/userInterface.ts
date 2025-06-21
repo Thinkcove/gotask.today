@@ -6,7 +6,6 @@ export interface IUserField {
   organization: string[];
   roleId: string;
   user_id: string;
-  password?: string;
   mobile_no?: string;
   joined_date?: Date | string;
   emp_id?: string;

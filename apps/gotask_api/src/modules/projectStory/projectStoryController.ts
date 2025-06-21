@@ -30,7 +30,6 @@ class ProjectStoryController extends BaseController {
         projectId,
         createdBy: userId
       });
-      
 
       return this.sendResponse(handler, {
         message: storyMessages.CREATE.SUCCESS,
@@ -97,12 +96,11 @@ class ProjectStoryController extends BaseController {
       return this.replyError(err);
     }
   }
-  
+
   async updateStory(requestHelper: RequestHelper, handler: any) {
     try {
       const { storyId } = requestHelper.getAllParams();
       const { title, description, status } = requestHelper.getPayload();
-
 
       if (!title && !description && !status) {
         return this.replyError(new Error(storyMessages.UPDATE.NO_FIELDS));

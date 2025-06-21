@@ -3,7 +3,6 @@
     "gotask": "Go Task Today",
     "worksmarter": "Seamless Workflow Management",
     "labelemail": "Email",
-    "labelpassword": "password",
     "labelotp": "OTP",
     "sendotp": "Send OTP",
     "verifyotp": "Verify OTP",
@@ -399,7 +398,7 @@
     "placeholderfirst_name": "Enter First Name",
     "labellast_name": "Last Name *",
     "placeholderlast_name": "Enter Last Name",
-    "labeluser": "Preferred Name ",
+    "labeluser": "Preferred Name *",
     "placeholderuser": "Enter preferred name",
     "labelemp_id": "Emp Id",
     "placeholderemp_id": "Enter Employee ID",
@@ -421,6 +420,8 @@
     "updatesuccess": "User updated successfully!",
     "updateerror": "Error while updating user",
     "edituser": "Edit User",
+    "updateuser": "Submit",
+    "loading": "Loading",
     "deletesuccess": "User deleted successfully!",
     "deleteerror": "Error while deleting a user",
     "userdetail": "User Detail View",
@@ -444,7 +445,14 @@
     "placeholderstatus": "Select the status",
     "nousers": "No users available",
     "searchplaceholder": "Search Users",
-    "filterstatus": "status"
+    "filterstatus": "status",
+    "skills": "Skills",
+    "noskillsadded": "No skills added.",
+    "proficiency": "Proficiency",
+    "experience": "Experience (months)",
+    "cancel": "Cancel",
+    "save": "Save",
+    "failedfetch": "Failed to fetch user data"
   },
   "Appbar": {
     "logout": "Logout"
@@ -610,13 +618,13 @@
     "nodata": "No work planned data found for the selected date range",
     "date": " Date range:",
     "to": "to",
-    "user":"User",
+    "user": "User",
     "testimation": "Total Estimation",
     "task": "Task",
     "startDate": "Start Date",
-    "endDate":"End Date",
+    "endDate": "End Date",
     "estimation": "Estimation",
-    "filterHeader":"Work Planned Filters",
+    "filterHeader": "Work Planned Filters",
     "from": "From"
   },
   "ProjectGoal": {

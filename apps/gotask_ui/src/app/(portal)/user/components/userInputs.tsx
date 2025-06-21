@@ -15,16 +15,9 @@ interface IUserInputProps {
   handleChange: (field: keyof IUserField, value: string | string[] | boolean) => void;
   errors: { [key: string]: string };
   readOnlyFields?: string[];
-  isEdit?: boolean;
 }
 
-const UserInput = ({
-  formData,
-  handleChange,
-  errors,
-  readOnlyFields = [],
-  isEdit = false
-}: IUserInputProps) => {
+const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUserInputProps) => {
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const { getOrganizations } = useAllOrganizations();
   const { getRoles } = useAllRoles();
@@ -171,20 +164,6 @@ const UserInput = ({
           disabled={isReadOnly("organization")}
         />
       </Grid>
-      {isEdit && (
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={transuser("labelpassword")}
-            type="text"
-            inputType="password"
-            placeholder={transuser("placeholderpassword")}
-            required
-            error={errors?.password}
-            value={formData.password || ""}
-            onChange={(v) => handleChange("password", String(v))}
-          />
-        </Grid>
-      )}
     </Grid>
   );
 };

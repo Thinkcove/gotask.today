@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Box, Divider } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -21,10 +20,12 @@ import { useRouter } from "next/navigation";
 const UserList = () => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [userStatusFilter, setUserStatusFilter] = useState<string[]>(["All"]);
   const { data: users } = useSWR("fetch-user", fetcherUserList);
   const router = useRouter();
+
   const filteredUsers =
     users
       ?.filter((user: User) => user.name.toLowerCase().includes(searchTerm.toLowerCase()))

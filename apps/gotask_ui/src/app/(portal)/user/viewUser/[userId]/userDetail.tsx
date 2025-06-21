@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { Box, Typography, IconButton, Divider, Stack, Chip, Grid } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
-import { IUserField, User } from "../../interfaces/userInterface";
+import { User } from "../../interfaces/userInterface";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import EditUser from "./editUser";
 import { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { deleteUser } from "../../services/userAction";
@@ -21,6 +20,7 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import { IAssetAttributes } from "@/app/(portal)/asset/interface/asset";
 import TaskToggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
+import CardComponent from "@/app/component/card/cardComponent";
 
 interface UserDetailProps {
   user: User;
@@ -35,7 +35,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const router = useRouter();
   const { userId } = useParams();
   const userID = userId as string;
-  const [editOpen, setEditOpen] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -66,19 +65,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
       });
     }
   };
-
-  const mapUserToUserField = (user: User): IUserField => ({
-    first_name: user.first_name,
-    last_name: user.last_name,
-    name: user.name,
-    status: user.status,
-    mobile_no: user.mobile_no,
-    joined_date: user.joined_date,
-    emp_id: user.emp_id,
-    organization: user.organization,
-    roleId: user.roleId._id,
-    user_id: user.user_id
-  });
 
   return (
     <>
@@ -117,7 +103,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Box>
             <Box sx={{ flexGrow: 1 }} /> {/* This pushes the next icons to the right */}
             {canAccess(APPLICATIONS.USER, ACTIONS.UPDATE) && (
-              <IconButton color="primary" onClick={() => setEditOpen(true)}>
+              <IconButton color="primary" onClick={() => router.push(`/user/editUser/${userId}`)}>
                 <Edit />
               </IconButton>
             )}
@@ -129,232 +115,248 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           </Box>
 
           {/* Basic Details */}
-
-          <Grid container spacing={2} flexDirection="column" mb={2}>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={transuser("uesrid")} value={user.user_id} />
+          <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
+            <Grid container spacing={2} flexDirection="column" mb={2}>
+              <Grid item xs={12} sm={6} md={4}>
+                <LabelValueText label={transuser("uesrid")} value={user.user_id} />
+              </Grid>
             </Grid>
-          </Grid>
 
-          <Grid container spacing={2} mb={1}>
+            <Grid container spacing={2} mb={1}>
+              <Grid item xs={6} sm={6} md={4}>
+                <LabelValueText
+                  label={transuser("labelfirst_name")}
+                  value={user?.first_name || "-"}
+                  sx={{ textTransform: "capitalize" }}
+                />
+              </Grid>
+
+              <Grid item xs={6} sm={6} md={4}>
+                <LabelValueText
+                  label={transuser("labellast_name")}
+                  value={user?.last_name || "-"}
+                  sx={{ textTransform: "capitalize" }}
+                />
+              </Grid>
+
+              <Grid item xs={6} sm={6} md={4}>
+                <LabelValueText
+                  label={transuser("labeluser")}
+                  value={user?.name || "-"}
+                  sx={{ textTransform: "capitalize" }}
+                />
+              </Grid>
+
+              <Grid item xs={6} sm={6} md={4}>
+                <LabelValueText
+                  label={transuser("labelmobile_no")}
+                  value={user?.mobile_no || "-"}
+                />
+              </Grid>
+
+              <Grid item xs={6} sm={6} md={4}>
+                <LabelValueText
+                  label={transuser("labeljoined_date")}
+                  value={user?.joined_date ? <FormattedDateTime date={user?.joined_date} /> : "-"}
+                />
+              </Grid>
+
+              <Grid item xs={6} sm={6} md={4}>
+                <LabelValueText label={transuser("labelemp_id")} value={user?.emp_id || "-"} />
+              </Grid>
+
+              <Grid item xs={6} sm={6} md={4}>
+                <LabelValueText
+                  label={transuser("roleid")}
+                  value={user?.roleId.name}
+                  sx={{ textTransform: "capitalize" }}
+                />
+              </Grid>
+            </Grid>
             <Grid item xs={6} sm={6} md={4}>
-              <LabelValueText
-                label={transuser("labelfirst_name")}
-                value={user?.first_name || "-"}
-                sx={{ textTransform: "capitalize" }}
+              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                {transuser("organization")}
+              </Typography>
+              <Stack direction="row" spacing={1} flexWrap="wrap">
+                {user.orgDetails && user.orgDetails.length > 0 ? (
+                  user.orgDetails.map((orgId) => (
+                    <Chip
+                      key={orgId.id}
+                      label={orgId.name}
+                      variant="outlined"
+                      sx={{ textTransform: "capitalize" }}
+                    />
+                  ))
+                ) : (
+                  <Typography variant="body2" color="text.disabled">
+                    {transuser("noorganzationuser")}
+                  </Typography>
+                )}
+              </Stack>
+            </Grid>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ mb: 3 }}>
+              <TaskToggle
+                options={[transuser("projectdetails"), transasset("assetdetails")]}
+                selected={selectedTab}
+                onChange={setSelectedTab}
               />
-            </Grid>
+            </Box>
 
-            <Grid item xs={6} sm={6} md={4}>
-              <LabelValueText
-                label={transuser("labellast_name")}
-                value={user?.last_name || "-"}
-                sx={{ textTransform: "capitalize" }}
-              />
-            </Grid>
-
-            <Grid item xs={6} sm={6} md={4}>
-              <LabelValueText
-                label={transuser("labeluser")}
-                value={user?.name || "-"}
-                sx={{ textTransform: "capitalize" }}
-              />
-            </Grid>
-
-            <Grid item xs={6} sm={6} md={4}>
-              <LabelValueText label={transuser("labelmobile_no")} value={user?.mobile_no || "-"} />
-            </Grid>
-
-            <Grid item xs={6} sm={6} md={4}>
-              <LabelValueText
-                label={transuser("labeljoined_date")}
-                value={user?.joined_date ? <FormattedDateTime date={user?.joined_date} /> : "-"}
-              />
-            </Grid>
-
-            <Grid item xs={6} sm={6} md={4}>
-              <LabelValueText label={transuser("labelemp_id")} value={user?.emp_id || "-"} />
-            </Grid>
-
-            <Grid item xs={6} sm={6} md={4}>
-              <LabelValueText
-                label={transuser("roleid")}
-                value={user?.roleId.name}
-                sx={{ textTransform: "capitalize" }}
-              />
-            </Grid>
-          </Grid>
-          <Grid item xs={6} sm={6} md={4}>
-            <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-              {transuser("organization")}
-            </Typography>
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-              {user.orgDetails && user.orgDetails.length > 0 ? (
-                user.orgDetails.map((orgId) => (
-                  <Chip
-                    key={orgId.id}
-                    label={orgId.name}
-                    variant="outlined"
-                    sx={{ textTransform: "capitalize" }}
-                  />
-                ))
-              ) : (
-                <Typography variant="body2" color="text.disabled">
-                  {transuser("noorganzationuser")}
-                </Typography>
+            <Grid container spacing={2}>
+              {selectedTab === transuser("projectdetails") && (
+                <Grid item xs={12} md={8}>
+                  {user.projectDetails && user.projectDetails.length > 0 ? (
+                    <Grid container spacing={2}>
+                      {user.projectDetails.map((project) => (
+                        <Grid item xs={12} sm={6} key={project.id}>
+                          <Box
+                            sx={{
+                              p: 3,
+                              borderRadius: 3,
+                              display: "flex",
+                              flexDirection: "column",
+                              bgcolor: "#ffffff",
+                              border: "1px solid #e0e0e0",
+                              height: "100%",
+                              justifyContent: "space-between"
+                            }}
+                          >
+                            <Stack spacing={1}>
+                              <Typography variant="h4" fontWeight={700} fontSize="1rem">
+                                {project.name}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                {project.description}
+                              </Typography>
+                              <StatusIndicator status={project.status} getColor={getStatusColor} />
+                            </Stack>
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  ) : (
+                    <Typography color="text.secondary">No projects assigned yet.</Typography>
+                  )}
+                </Grid>
               )}
-            </Stack>
-          </Grid>
-
-          <Divider sx={{ my: 2 }} />
-
-          <Box sx={{ mb: 3 }}>
-            <TaskToggle
-              options={[transuser("projectdetails"), transasset("assetdetails")]}
-              selected={selectedTab}
-              onChange={setSelectedTab}
-            />
-          </Box>
-
-          <Grid container spacing={2}>
-            {selectedTab === transuser("projectdetails") && (
-              <Grid item xs={12} md={8}>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  {transuser("projectdetails")}
-                </Typography>
-
-                {user.projectDetails && user.projectDetails.length > 0 ? (
-                  <Grid container spacing={2}>
-                    {user.projectDetails.map((project) => (
-                      <Grid item xs={12} sm={6} key={project.id}>
-                        <Box
+              {selectedTab === transasset("assetdetails") && (
+                <Grid item xs={12}>
+                  {user.assetDetails && user.assetDetails.length > 0 ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        overflowX: "auto",
+                        gap: 2,
+                        py: 1,
+                        pr: 1
+                      }}
+                    >
+                      {user.assetDetails.map((asset: IAssetAttributes, index: number) => (
+                        <CardComponent
+                          key={asset.id || index}
                           sx={{
-                            p: 3,
-                            borderRadius: 3,
-                            display: "flex",
-                            flexDirection: "column",
-                            bgcolor: "#ffffff",
-                            border: "1px solid #e0e0e0",
-                            height: "100%",
-                            justifyContent: "space-between"
+                            minWidth: 300,
+                            maxWidth: 360,
+                            flex: "0 0 auto"
                           }}
                         >
                           <Stack spacing={1}>
-                            <Typography variant="h4" fontWeight={700} fontSize="1rem">
-                              {project.name}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {project.description}
-                            </Typography>
-                            <StatusIndicator status={project.status} getColor={getStatusColor} />
+                            {/* Device Name */}
+                            <Box>
+                              <Typography variant="body2" fontWeight="bold" color="text.primary">
+                                {asset.deviceName ?? ""}
+                              </Typography>
+                            </Box>
+
+                            {/* Model Name */}
+                            {asset.modelName && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography variant="body2" fontWeight="bold" color="text.primary">
+                                  {transasset("modelname")}:
+                                </Typography>
+                                <EllipsisText text={asset.modelName} maxWidth={160} />
+                              </Box>
+                            )}
+
+                            {/* OS */}
+                            {asset.os && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography variant="body2" fontWeight="bold" color="text.primary">
+                                  {transasset("os")}:
+                                </Typography>
+                                <EllipsisText text={asset.os} maxWidth={160} />
+                              </Box>
+                            )}
+
+                            {/* Processor */}
+                            {asset.processor && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography variant="body2" fontWeight="bold" color="text.primary">
+                                  {transasset("processor")}:
+                                </Typography>
+                                <EllipsisText text={asset.processor} maxWidth={160} />
+                              </Box>
+                            )}
+
+                            {/* RAM */}
+                            {asset.ram && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography variant="body2" fontWeight="bold" color="text.primary">
+                                  {transasset("ram")}:
+                                </Typography>
+                                <EllipsisText text={asset.ram} maxWidth={160} />
+                              </Box>
+                            )}
+
+                            {/* Storage */}
+                            {asset.storage && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography variant="body2" fontWeight="bold" color="text.primary">
+                                  {transasset("storage")}:
+                                </Typography>
+                                <EllipsisText text={asset.storage} maxWidth={160} />
+                              </Box>
+                            )}
+
+                            {/* Serial Number */}
+                            {asset.serialNumber && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography variant="body2" fontWeight="bold" color="text.primary">
+                                  {transasset("serialnumber")}:
+                                </Typography>
+                                <EllipsisText text={asset.serialNumber} maxWidth={160} />
+                              </Box>
+                            )}
+
+                            {/* Date of Purchase */}
+                            {asset.dateOfPurchase && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography variant="body2" fontWeight="bold" color="text.primary">
+                                  {transasset("dateOfPurchase")}:
+                                </Typography>
+                                <EllipsisText
+                                  text={new Date(asset.dateOfPurchase).toLocaleDateString()}
+                                  maxWidth={160}
+                                />
+                              </Box>
+                            )}
                           </Stack>
-                        </Box>
-                      </Grid>
-                    ))}
-                  </Grid>
-                ) : (
-                  <Typography color="text.secondary">No projects assigned yet.</Typography>
-                )}
-              </Grid>
-            )}
-            {selectedTab === transasset("assetdetails") && (
-              <Grid item xs={12}>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  {transasset("assets")}
-                </Typography>
-
-                {user.assetDetails && user.assetDetails.length > 0 && (
-                  <Box
-                    sx={{
-                      display: "flex", // ✅ Enables horizontal stacking
-                      overflowX: "auto", // ✅ Enables horizontal scroll
-                      gap: 2, // ✅ Adds spacing between cards
-                      py: 1,
-                      pr: 1
-                    }}
-                  >
-                    {user.assetDetails.map((asset: IAssetAttributes, index: number) => (
-                      <Box
-                        key={asset.id || index}
-                        sx={{
-                          minWidth: 300, // ✅ Ensures each card has a minimum width for scroll
-                          maxWidth: 360,
-                          flex: "0 0 auto", // ✅ Prevents shrinking
-                          p: 3,
-                          borderRadius: 2,
-                          bgcolor: "#ffffff",
-                          border: "1px solid #e0e0e0"
-                        }}
-                      >
-                        <Stack spacing={1}>
-                          <EllipsisText text={asset.deviceName ?? ""} maxWidth="100%" />
-
-                          {asset.modelName && (
-                            <EllipsisText
-                              text={`${transasset("modelname")}: ${asset.modelName}`}
-                              maxWidth={250}
-                            />
-                          )}
-
-                          {asset.os && (
-                            <EllipsisText
-                              text={`${transasset("os")}: ${asset.os}`}
-                              maxWidth={250}
-                            />
-                          )}
-
-                          {asset.processor && (
-                            <EllipsisText
-                              text={`${transasset("processor")}: ${asset.processor}`}
-                              maxWidth={250}
-                            />
-                          )}
-
-                          {asset.ram && (
-                            <EllipsisText
-                              text={`${transasset("ram")}: ${asset.ram}`}
-                              maxWidth={250}
-                            />
-                          )}
-
-                          {asset.storage && (
-                            <EllipsisText
-                              text={`${transasset("storage")}: ${asset.storage}`}
-                              maxWidth={250}
-                            />
-                          )}
-
-                          {asset.serialNumber && (
-                            <EllipsisText
-                              text={`${transasset("serialnumber")}: ${asset.serialNumber}`}
-                              maxWidth={250}
-                            />
-                          )}
-
-                          {asset.dateOfPurchase && (
-                            <EllipsisText
-                              text={`${transasset("dateOfPurchase")}: ${new Date(asset.dateOfPurchase).toLocaleDateString()}`}
-                              maxWidth={250}
-                            />
-                          )}
-                        </Stack>
-                      </Box>
-                    ))}
-                  </Box>
-                )}
-              </Grid>
-            )}
-          </Grid>
+                        </CardComponent>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography color="text.secondary" fontStyle="italic">
+                      No assets assigned yet.
+                    </Typography>
+                  )}
+                </Grid>
+              )}
+            </Grid>
+          </Box>
         </Box>
-
-        {/* Edit User Dialog */}
-        <EditUser
-          open={editOpen}
-          onClose={() => setEditOpen(false)}
-          data={mapUserToUserField(user)}
-          mutate={mutate}
-          userID={userID}
-        />
 
         <CommonDialog
           open={openDeleteDialog}

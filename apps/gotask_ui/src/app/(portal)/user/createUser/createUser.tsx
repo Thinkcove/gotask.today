@@ -22,8 +22,7 @@ const initialFormState: IUserField = {
   roleId: "",
   user_id: "",
   mobile_no: "",
-  joined_date: "",
-  password: ""
+  joined_date: ""
 };
 
 const CreateUser = () => {
@@ -158,7 +157,6 @@ const CreateUser = () => {
           formData={formData}
           handleChange={handleChange}
           errors={errors}
-          isEdit={true}
           readOnlyFields={["status"]}
         />
       </Box>

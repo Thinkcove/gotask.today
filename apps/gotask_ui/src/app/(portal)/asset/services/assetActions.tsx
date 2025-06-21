@@ -130,3 +130,28 @@ export const useAssetById = (id: string) => {
     error: error ? error.message : null
   };
 };
+
+const getIssuesById = async ([, id]: [string, string]): Promise<IAssetIssues | null> => {
+  const result = await withAuth(async (token) => {
+    return await getData(`${env.API_BASE_URL}/getissuesbyid/${id}`, token);
+  });
+
+  if (!result || isErrorResult(result)) {
+    return null;
+  }
+
+  return result.data;
+};
+
+export const useIssuesById = (id: string) => {
+  const { data, error, isLoading, mutate } = useSWR([`fetchIssuesById`, id], getIssuesById, {
+    revalidateOnFocus: false
+  });
+
+  return {
+    asset: data ?? null,
+    isLoading,
+    mutate,
+    error: error ? error.message : null
+  };
+};

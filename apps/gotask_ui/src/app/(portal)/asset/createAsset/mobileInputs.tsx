@@ -19,10 +19,11 @@ const MobileInputs: React.FC<MobileInputsProps> = ({ formData, onChange, errors 
     <Grid container spacing={2}>
       <Grid item xs={12} sm={4}>
         <FormField
-          label={transasset("imeiNumber")}
+          label={`${transasset("imeiNumber")} ${transasset("required")}`}
           type="text"
           value={formData.imeiNumber}
           error={errors?.imeiNumber}
+          placeholder={transasset("imeiNumber")}
           onChange={(val) => onChange("imeiNumber", String(val))}
         />
       </Grid>
@@ -30,6 +31,7 @@ const MobileInputs: React.FC<MobileInputsProps> = ({ formData, onChange, errors 
         <FormField
           label={transasset("screenSize")}
           type="text"
+          placeholder={transasset("screenSize")}
           value={formData.screenSize}
           onChange={(val) => onChange("screenSize", String(val))}
         />
@@ -38,6 +40,7 @@ const MobileInputs: React.FC<MobileInputsProps> = ({ formData, onChange, errors 
         <FormField
           label={transasset("batteryCapacity")}
           type="text"
+          placeholder={transasset("batteryCapacity")}
           value={formData.batteryCapacity}
           onChange={(val) => onChange("batteryCapacity", String(val))}
         />
@@ -46,6 +49,7 @@ const MobileInputs: React.FC<MobileInputsProps> = ({ formData, onChange, errors 
         <FormField
           label={transasset("cameraSpecs")}
           type="text"
+          placeholder={transasset("cameraSpecs")}
           value={formData.cameraSpecs}
           onChange={(val) => onChange("cameraSpecs", String(val))}
         />
@@ -54,6 +58,7 @@ const MobileInputs: React.FC<MobileInputsProps> = ({ formData, onChange, errors 
         <FormField
           label={transasset("simType")}
           type="text"
+          placeholder={transasset("simType")}
           value={formData.simType}
           onChange={(val) => onChange("simType", String(val))}
         />
@@ -62,6 +67,7 @@ const MobileInputs: React.FC<MobileInputsProps> = ({ formData, onChange, errors 
         <FormField
           label={transasset("insuranceProvider")}
           type="text"
+          placeholder={transasset("insuranceProvider")}
           value={formData.insuranceProvider}
           onChange={(val) => onChange("insuranceProvider", String(val))}
         />
@@ -70,6 +76,7 @@ const MobileInputs: React.FC<MobileInputsProps> = ({ formData, onChange, errors 
         <FormField
           label={transasset("insurancePolicyNumber")}
           type="text"
+          placeholder={transasset("insurancePolicyNumber")}
           value={formData.insurancePolicyNumber}
           onChange={(val) => onChange("insurancePolicyNumber", String(val))}
         />
@@ -78,6 +85,7 @@ const MobileInputs: React.FC<MobileInputsProps> = ({ formData, onChange, errors 
         <FormField
           label={transasset("insuranceExpiry")}
           type="date"
+          placeholder={transasset("insuranceExpiry")}
           value={formData.insuranceExpiry}
           onChange={(val) => onChange("insuranceExpiry", new Date(val as string))}
         />

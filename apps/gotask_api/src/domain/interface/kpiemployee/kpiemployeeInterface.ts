@@ -11,7 +11,6 @@ export const createKpiAssignmentInDb = async (
   return await newAssignment.save();
 };
 
-
 // Get all KPI assignments for a user
 export const getKpiAssignmentsByUserIdFromDb = async (
   user_id: string

@@ -98,6 +98,12 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
           selectedIds={userIds}
           items={usersList}
           onChange={setUserIds}
+          listBoxProps={{
+            style: {
+              maxHeight: 5 * 48,
+              overflowY: "auto"
+            }
+          }}
         />
 
         <MultiSelectFilter
@@ -106,6 +112,12 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
           selectedIds={projectIds}
           items={projectsList}
           onChange={setProjectIds}
+          listBoxProps={{
+            style: {
+              maxHeight: 5 * 48,
+              overflowY: "auto"
+            }
+          }}
         />
 
         <Stack direction="row" spacing={2}>

@@ -10,6 +10,7 @@ export const APPLICATIONS = {
   UPLOAD: "Upload",
   PROJECT_STORY: "Project Story",
   ASSET: "Asset and Resources",
+  KPI: "KPI System",
   WORK_PLANNED: "WORK_PLANNED",
   Project_GOAL: "Project Goal",
   KPI:"KPI System"

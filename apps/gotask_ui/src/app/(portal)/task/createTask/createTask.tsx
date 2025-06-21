@@ -1,10 +1,11 @@
 "use client";
+
 import React, { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
 import { createTask } from "../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { IFormField, Project, User } from "../interface/taskInterface";
@@ -14,6 +15,10 @@ import moment from "moment-timezone";
 
 const CreateTask: React.FC = () => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const storyId = searchParams.get("storyId");
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -30,12 +35,13 @@ const CreateTask: React.FC = () => {
     created_on: moment().format("YYYY-MM-DD"),
     due_date: "",
     start_date: "",
-    user_estimated: ""
+    user_estimated: "",
+    story_id: storyId || "" 
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  // Handle form field changes
+  // Handle input changes
   const handleInputChange = (name: string, value: string | Date | Project[] | User[]) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -43,7 +49,7 @@ const CreateTask: React.FC = () => {
     }));
   };
 
-  // Validate required fields
+  // Validate form fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.title) newErrors.title = transtask("tasktitle");
@@ -56,12 +62,11 @@ const CreateTask: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
+  // Submit handler
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
     try {
-      // Create the task
       await createTask(formData);
 
       setSnackbar({
@@ -70,7 +75,12 @@ const CreateTask: React.FC = () => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
 
-      router.push("/task/projects?refresh=true");
+      if (storyId) {
+        router.push(`/project/viewProject/${formData.project_id}/stories/${storyId}`);
+      } else {
+        router.push("/task/projects?refresh=true");
+      }
+      
     } catch (error) {
       console.error("Error while creating task:", error);
       setSnackbar({
@@ -80,8 +90,6 @@ const CreateTask: React.FC = () => {
       });
     }
   };
-
-  const router = useRouter();
 
   return (
     <Box
@@ -110,12 +118,10 @@ const CreateTask: React.FC = () => {
             width: "100%"
           }}
         >
-          {/* Title with Gradient Effect */}
           <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
             {transtask("create")}
           </Typography>
 
-          {/* Buttons with Soft Hover Effects */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Button
               variant="outlined"
@@ -137,7 +143,7 @@ const CreateTask: React.FC = () => {
               variant="contained"
               sx={{
                 borderRadius: "30px",
-                backgroundColor: " #741B92",
+                backgroundColor: "#741B92",
                 color: "white",
                 px: 2,
                 textTransform: "none",
@@ -154,22 +160,22 @@ const CreateTask: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Scrollable TaskInput Container */}
       <Box
         sx={{
           px: 2,
           pb: 2,
-          maxHeight: "calc(100vh - 150px)", // Adjust height dynamically
-          overflowY: "auto" // Enables vertical scrolling
+          maxHeight: "calc(100vh - 150px)",
+          overflowY: "auto"
         }}
       >
         <TaskInput
           formData={formData}
           handleInputChange={handleInputChange}
           errors={errors}
-          readOnlyFields={["status"]}
+          readOnlyFields={storyId ? ["status"] : ["status"]}
         />
       </Box>
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

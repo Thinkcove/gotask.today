@@ -55,7 +55,7 @@
   },
   { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" },
   {"text":"KPI System",
-  "icon":"VpnKeyIcon",
+  "icon":"InsightsIcon",
   "path":"/kpi",
   "access":"KPI System"
 }

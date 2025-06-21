@@ -14,6 +14,6 @@ export const LOCALIZATION = {
     REPORT: "Report",
     CHATBOT: "Chatbot",
     ASSETS: "Assets",
-    KPI:"KPI Systems"
+    KPI:"KPI System"
   }
 };

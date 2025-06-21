@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { KPI_FREQUENCY, MEASUREMENT_CRITERIA } from "../../../constants/kpiConstants";
+import { KPI_FREQUENCY, MEASUREMENT_CRITERIA, STATUS } from "../../../constants/kpiConstants";
 
 export interface IKpiTemplate extends Document {
   template_id: string;
@@ -8,7 +8,7 @@ export interface IKpiTemplate extends Document {
   description: string;
   measurement_criteria: string;
   frequency: string;
-  isActive: boolean;
+  status: string;
   change_history: { changedBy: string; changedAt: Date; changes: Record<string, any> }[];
 }
 
@@ -30,7 +30,6 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
     },
     measurement_criteria: {
       type: String,
-      enum: Object.values(MEASUREMENT_CRITERIA),
       required: true
     },
     frequency: {
@@ -39,9 +38,9 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
       default: KPI_FREQUENCY.QUARTERLY,
       required: true
     },
-    isActive: {
-      type: Boolean,
-      default: true
+    status: {
+      type: String,
+      enum:Object.values(STATUS)
     },
     change_history: [
       {

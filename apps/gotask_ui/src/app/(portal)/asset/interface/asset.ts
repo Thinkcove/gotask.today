@@ -29,21 +29,32 @@ export interface IAssetAttributes {
   storage?: string;
   processor?: string;
   seller?: string;
-  dateOfPurchase?: Date;
+  dateOfPurchase?: Date | "";
   erk?: string;
   warrantyPeriod?: string;
-  warrantyDate?: Date;
+  warrantyDate?: Date | "";
   active?: boolean;
   createdBy?: string;
   updatedBy?: string;
   antivirus?: string;
   recoveryKey?: string;
   isEncrypted?: boolean;
-  lastServicedDate?: Date;
+  lastServicedDate?: Date | "";
   commentService?: string;
   assetType?: IAssetType;
   tagData?: ITagData[];
   userId?: string;
+
+  //mobile
+  imeiNumber?: string;
+  screenSize?: string;
+  batteryCapacity?: string;
+  cameraSpecs?: string;
+  simType?: string;
+  is5GSupported?: boolean;
+  insuranceProvider?: string;
+  insurancePolicyNumber?: string;
+  insuranceExpiry?: Date | "";
 }
 
 export interface IAssetTags {

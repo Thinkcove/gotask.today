@@ -58,15 +58,27 @@ const MultiSelectFilter = <T extends Item>({
       onChange={handleChange}
       getOptionLabel={(option) => option.name || option.id}
       isOptionEqualToValue={(option, value) => option.id === value.id}
+      ListboxProps={{
+        style: {
+          maxHeight: "288px"
+        }
+      }}
       sx={{
-        width: "360px",
+        width: "100%",
+        minWidth: "200px",
+        maxWidth: "100%",
         "& .MuiInputBase-root": {
-          padding: "14px",
-          minHeight: "48px",
+          padding: "10px 12px",
+          minHeight: "36px",
           borderRadius: "8px"
         },
         "& .MuiInputBase-input": {
-          padding: 0
+          padding: "0 !important",
+          minHeight: "0"
+        },
+        "& .MuiChip-root": {
+          height: "24px",
+          fontSize: "2.5rem"
         }
       }}
       renderOption={(props, option, { selected }) => {

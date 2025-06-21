@@ -156,6 +156,8 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         message: transGoal("viewerror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
+      console.error("Error Project Goal View:", error);
+
     }
   };
   const handleSaveComment = async (commentData: {
@@ -186,6 +188,8 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         message: transGoal("goalfiled"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
+      console.error("Error Project Goal View:", error);
+
     }
   };
 
@@ -206,12 +210,14 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         message: transGoal("goalupdate"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-    } catch (error) {
+    } catch (err) {
       setSnackbar({
         open: true,
         message: transGoal("goalfiled"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
+      console.error("Error Project Goal View:", err);
+
     }
   };
 
@@ -226,12 +232,16 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         message: transGoal("deletegoal"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+      console.error("Error Project Goal Delete:", error);
+
     } catch (error) {
       setSnackbar({
         open: true,
         message: transGoal("deletegoalfiled"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
+      console.error("Error Project Goal Delete:", error);
+
     }
   };
 
@@ -256,7 +266,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   }
   return (
     <>
-      <Box sx={{ p: 4 }}>
+      <Box sx={{ p: 2 }}>
         {!openDialog && !projectGoalView && (
           <>
             <Box display="flex" gap={2}>

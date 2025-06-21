@@ -21,7 +21,6 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import Link from "next/link";
 import ProjectGoalList from "./projectGoal/projectGoalList";
 
 interface ProjectDetailProps {

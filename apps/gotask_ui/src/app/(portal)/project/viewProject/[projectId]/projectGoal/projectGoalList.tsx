@@ -312,54 +312,56 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
 
             {openDialog ? (
               <>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    width: "100%"
-                  }}
-                >
-                  <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-                    {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
-                  </Typography>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Button
-                      variant="outlined"
-                      sx={{
-                        borderRadius: "30px",
-                        color: "black",
-                        border: "2px solid  #741B92",
-                        px: 2,
-                        textTransform: "none",
-                        "&:hover": {
-                          backgroundColor: "rgba(255, 255, 255, 0.2)"
-                        }
-                      }}
-                      onClick={() => setOpenDialog(false)}
-                    >
-                      {transGoal("cancel")}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        borderRadius: "30px",
-                        backgroundColor: " #741B92",
-                        color: "white",
-                        px: 2,
-                        textTransform: "none",
-                        fontWeight: "bold",
-                        "&:hover": {
-                          backgroundColor: "rgb(202, 187, 201)"
-                        }
-                      }}
-                      onClick={handleSubmit}
-                    >
-                      {goalData.id ? transGoal("update") : transGoal("create")}
-                    </Button>
+                <Box sx={{ p: 2 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%"
+                    }}
+                  >
+                    <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+                      {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
+                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          borderRadius: "30px",
+                          color: "black",
+                          border: "2px solid  #741B92",
+                          px: 2,
+                          textTransform: "none",
+                          "&:hover": {
+                            backgroundColor: "rgba(255, 255, 255, 0.2)"
+                          }
+                        }}
+                        onClick={() => setOpenDialog(false)}
+                      >
+                        {transGoal("cancel")}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          borderRadius: "30px",
+                          backgroundColor: " #741B92",
+                          color: "white",
+                          px: 2,
+                          textTransform: "none",
+                          fontWeight: "bold",
+                          "&:hover": {
+                            backgroundColor: "rgb(202, 187, 201)"
+                          }
+                        }}
+                        onClick={handleSubmit}
+                      >
+                        {goalData.id ? transGoal("update") : transGoal("create")}
+                      </Button>
+                    </Box>
                   </Box>
+                  <ProjectGoalForm goalData={goalData} setGoalData={setGoalData} errors={errors} />
                 </Box>
-                <ProjectGoalForm goalData={goalData} setGoalData={setGoalData} errors={errors} />
               </>
             ) : filteredGoals?.length === 0 ? (
               <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />

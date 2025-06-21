@@ -9,7 +9,7 @@
     "build:test": "env-cmd -f ./.env.uat next build",
     "dev": "next dev",
     "build": "next build",
-    "format": "prettier --write \"src/*/.ts\"",
+    "format": "prettier --write \"src/*/*.ts\"",
     "lint": "next lint",
     "lint:fix": "next lint --fix"
   },

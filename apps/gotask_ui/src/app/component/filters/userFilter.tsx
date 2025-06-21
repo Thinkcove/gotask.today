@@ -79,7 +79,6 @@ const UserStatusFilter: React.FC<Props> = ({ userStatus, onStatusChange, transus
           }}
         >
           <MultiSelectFilter
-            label={transuser("filterstatus")}
             placeholder={transuser("filterstatus")}
             selectedIds={userStatus.includes(STATUS_CONFIG.ALL_STATUS) ? [] : userStatus}
             items={STATUS_CONFIG.STATUS_OPTIONS}

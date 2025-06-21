@@ -11,7 +11,6 @@ interface Item {
 }
 
 interface MultiSelectFilterProps<T extends Item> {
-  label: string;
   placeholder: string;
   selectedIds: string[];
   items: T[];
@@ -29,7 +28,6 @@ const MultiSelectFilter = <T extends Item>({
   selectedIds,
   items,
   onChange,
-  label,
   placeholder,
   sxRoot = {},
   sxInputBase = {},
@@ -87,7 +85,18 @@ const MultiSelectFilter = <T extends Item>({
         );
       }}
       renderInput={(params) => (
-        <TextField {...params} label={label} placeholder={placeholder} fullWidth />
+        <TextField
+          {...params}
+          placeholder={placeholder}
+          fullWidth
+          InputLabelProps={{
+            shrink: true
+          }}
+          InputProps={{
+            ...params.InputProps,
+            style: { alignItems: "center" }
+          }}
+        />
       )}
       renderTags={(tagValue, getTagProps) =>
         tagValue.map((option, index) => (

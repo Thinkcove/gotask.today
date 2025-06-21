@@ -17,7 +17,8 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   loading = false,
   handleSaveComment,
   handleEditComment,
-  handleDeleteComment
+  handleDeleteComment,
+  user
 }) => {
   const router = useRouter();
   const comments: GoalComment[] = goalData?.comments || [];
@@ -133,8 +134,8 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
               onSave={handleSaveComment}
               onEdit={handleEditComment}
               onDelete={handleDeleteComment}
-              goalId={goalData.id?.toString() || ""} // Add this
-              currentUserId={""} // Replace with actual current user ID
+              goalId={goalData.id?.toString() || ""} 
+              user={user} 
             />
           </Box>
         </Box>

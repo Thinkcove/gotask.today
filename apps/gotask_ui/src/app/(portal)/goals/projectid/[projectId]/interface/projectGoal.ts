@@ -7,6 +7,7 @@ export interface GoalComment {
 }
 export interface ProjectGoalViewProps {
   goalData: any;
+  user:any;
   loading?: boolean;
   handleSaveComment: (commentData: {
     goal_id: string;
@@ -18,7 +19,7 @@ export interface ProjectGoalViewProps {
     updatedComment: { comment: string }
   ) => Promise<void>;
   handleDeleteComment: (commentId: string | number) => Promise<void>;
-  handleBack?: () => void; 
+  handleBack?: () => void;
 }
 export interface CommentPayload {
   comment: string;
@@ -34,7 +35,7 @@ export interface GoalCommentProps {
   onEdit: (id: number | string, updatedComment: { comment: string }) => Promise<void>;
   onDelete: (id: number | string) => Promise<void>;
   goalId: string;
-  currentUserId?: string;
+  user?: any;
 }
 
 

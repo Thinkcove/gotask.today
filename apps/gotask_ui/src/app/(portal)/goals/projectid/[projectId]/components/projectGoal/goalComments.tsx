@@ -18,7 +18,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({
   onEdit,
   onDelete,
   goalId,
-  currentUserId
+  user
 }) => {
   const [editValue, setEditValue] = useState("");
   const [editingComment, setEditingComment] = useState<GoalComment | null>(null);
@@ -86,7 +86,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({
       await onSave({
         goal_id: goalId,
         comment: newComment.trim(),
-        user_id: currentUserId
+        user_id: user.id
       });
       setNewComment("");
       setIsFocused(false);
@@ -169,24 +169,25 @@ const GoalComments: React.FC<GoalCommentProps> = ({
       >
         {displayedComments.map((comment, index) => {
           const isEditing = editingComment?.id === comment.id;
-          const isOwner = comment.user_id === currentUserId;
+          const isOwner = comment.user_id === user.id;
+          const username = user.name;
 
           return (
             <Box key={comment.id || index} sx={{ display: "flex", gap: 2, pt: 2 }}>
               <Avatar
                 sx={{
-                  backgroundColor: getColorForUser(comment.user_name || ""),
+                  backgroundColor: getColorForUser(username || ""),
                   width: 40,
                   height: 40,
                   flexShrink: 0
                 }}
               >
-                {comment.user_name?.charAt(0)}
+                {username?.charAt(0)}
               </Avatar>
 
               <Box sx={{ flex: 1 }}>
                 <Typography fontWeight="bold">
-                  {comment.user_name} -{" "}
+                  {username} -{" "}
                   <Typography component="span" variant="caption" color="text.secondary">
                     <FormattedDateTime
                       date={comment.updatedAt ?? ""}

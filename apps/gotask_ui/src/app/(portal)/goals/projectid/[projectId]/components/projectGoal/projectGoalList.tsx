@@ -23,6 +23,7 @@ import { formatStatus } from "@/app/common/constants/project";
 import ProjectGoalView from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalView";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+import { useUser } from "@/app/userContext";
 
 function ProjectGoalList() {
   const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
@@ -43,7 +44,6 @@ function ProjectGoalList() {
   });
 
   const filteredGoals = weeklyGoals;
-  console.log("filteredGoals", filteredGoals);
 
   const handelOpen = () => {
     setGoalData({
@@ -178,6 +178,7 @@ function ProjectGoalList() {
   const handleBack = () => {
     setprojectGoalView("");
   };
+  const { user } = useUser();
 
   return (
     <Box sx={{ p: 4 }}>
@@ -188,6 +189,7 @@ function ProjectGoalList() {
           handleEditComment={handleEditComment}
           handleDeleteComment={handleDeleteComment}
           handleBack={handleBack}
+          user={user}
         />
       ) : (
         <>

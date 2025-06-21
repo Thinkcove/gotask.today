@@ -443,7 +443,8 @@
     "labelstate": "Status",
     "placeholderstatus": "Select the status",
     "nousers": "No users available",
-    "searchplaceholder": "Search Users"
+    "searchplaceholder": "Search Users",
+    "filterstatus": "status"
   },
   "Appbar": {
     "logout": "Logout"

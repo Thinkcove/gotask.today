@@ -3,6 +3,7 @@ import React from "react";
 import { Autocomplete, TextField, Checkbox, Chip } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import { getMultiSelectStyles } from "./multiSelect";
 
 interface Item {
   id: string;
@@ -21,6 +22,7 @@ interface MultiSelectFilterProps<T extends Item> {
   sxInput?: object;
   sxChip?: object;
   listBoxProps?: Partial<React.HTMLAttributes<HTMLElement>>;
+  customWidth?: string | number | object;
 }
 
 const MultiSelectFilter = <T extends Item>({
@@ -33,7 +35,8 @@ const MultiSelectFilter = <T extends Item>({
   sxInputBase = {},
   sxInput = {},
   sxChip = {},
-  listBoxProps = {}
+  listBoxProps = {},
+  customWidth
 }: MultiSelectFilterProps<T>) => {
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -47,7 +50,6 @@ const MultiSelectFilter = <T extends Item>({
 
   const handleChange = (_: React.SyntheticEvent, newValue: T[]) => {
     const isSelectAllClicked = newValue.some((item) => item.id === SELECT_ALL_ID);
-
     if (isSelectAllClicked) {
       if (allSelected) {
         onChange([]);
@@ -69,31 +71,9 @@ const MultiSelectFilter = <T extends Item>({
       getOptionLabel={(option) => option.name || option.id}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       ListboxProps={listBoxProps}
-      sx={{
-        width: "auto",
-        minWidth: "400px",
-        maxWidth: "60%",
-        "& .MuiInputBase-root": {
-          padding: "10px 12px",
-          minHeight: "36px",
-          borderRadius: "8px",
-          ...sxInputBase
-        },
-        "& .MuiInputBase-input": {
-          padding: "0 !important",
-          minHeight: "0",
-          ...sxInput
-        },
-        "& .MuiChip-root": {
-          height: "24px",
-          fontSize: "0.8rem",
-          ...sxChip
-        },
-        ...sxRoot
-      }}
+      sx={getMultiSelectStyles(sxRoot, sxInputBase, sxInput, sxChip, customWidth)}
       renderOption={(props, option, { selected }) => {
-        const isSelectAllOption = option.id === SELECT_ALL_ID;
-
+        const isSelectAllOption = option.id === "__all__";
         return (
           <li {...props}>
             <Checkbox
@@ -107,7 +87,7 @@ const MultiSelectFilter = <T extends Item>({
         );
       }}
       renderInput={(params) => (
-        <TextField {...params} label={label} placeholder={placeholder || label} fullWidth />
+        <TextField {...params} label={label} placeholder={placeholder} fullWidth />
       )}
       renderTags={(tagValue, getTagProps) =>
         tagValue.map((option, index) => (

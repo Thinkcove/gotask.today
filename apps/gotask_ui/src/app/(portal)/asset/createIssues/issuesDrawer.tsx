@@ -99,15 +99,20 @@ const IssueHistoryDrawer: React.FC<IssueHistoryDrawerProps> = ({
                 <Stack direction="row" alignItems="center" spacing={2} mb={1}>
                   <Avatar
                     sx={{
-                      bgcolor: getColorForUser(item.userData?.name ?? "U"),
+                      bgcolor: getColorForUser(
+                        mode === "asset" ? (item.created_by ?? "U") : (item.userData?.name ?? "U")
+                      ),
                       height: 32,
                       width: 32
                     }}
                   >
-                    {(item.userData?.name ?? "U").charAt(0)}
+                    {(mode === "asset"
+                      ? (item.created_by ?? "U")
+                      : (item.userData?.name ?? "U")
+                    ).charAt(0)}
                   </Avatar>
                   <Typography variant="subtitle1" fontWeight="bold">
-                    {item.userData?.name}
+                    {mode === "asset" ? item.created_by : item.userData?.name}
                   </Typography>
                 </Stack>
 

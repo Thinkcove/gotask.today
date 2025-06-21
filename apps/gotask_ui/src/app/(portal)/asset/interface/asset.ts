@@ -25,6 +25,7 @@ export interface IAssetHistory {
   created_date?: string;
   userData?: User;
   tagData?: ITagData;
+  created_by?: string;
 }
 
 export interface IIssuesHistory {

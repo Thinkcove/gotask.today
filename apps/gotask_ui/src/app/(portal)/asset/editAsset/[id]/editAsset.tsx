@@ -52,7 +52,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     warrantyPeriod: data?.warrantyPeriod || "",
     warrantyDate: data?.warrantyDate || undefined,
     active: data?.active ?? true,
-    createdBy: data?.createdBy || "",
+    created_by: data?.createdBy || "",
     updatedBy: data?.updatedBy || "",
     antivirus: data?.antivirus || "",
     recoveryKey: data?.recoveryKey || "",
@@ -296,7 +296,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
                   issuesId: item.assetId ?? "",
                   formatted_history: item.formatted_history ?? "",
                   created_date: item.created_date ? new Date(item.created_date) : new Date(),
-                  created_by: item.userId ?? "",
+                  created_by: item.created_by ?? "",
                   userData: item.userData,
                   tagData: item.tagData
                 }))

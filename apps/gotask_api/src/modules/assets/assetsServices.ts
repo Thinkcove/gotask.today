@@ -64,7 +64,8 @@ class assetService {
             await createAssetHistory({
               assetId: payload.id,
               userId: userInfo.id,
-              formatted_history: filteredLogs.join(" | ")
+              formatted_history: filteredLogs.join(" | "),
+              created_by: userInfo.name
             });
           }
           return { success: true, data: result };

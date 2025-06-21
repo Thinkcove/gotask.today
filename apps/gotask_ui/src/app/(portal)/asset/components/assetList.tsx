@@ -10,7 +10,7 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { IAssetAttributes } from "../interface/asset";
-import { getAssetColumns, IAssetDisplayRow } from "../assetConstants";
+import { getAssetColumns, IAssetDisplayRow, issueStatuses } from "../assetConstants";
 import AssetIssueCards from "../createIssues/issuesCard";
 import CreateIssue from "../createIssues/createIssues";
 import SearchBar from "@/app/component/searchBar/searchBar";
@@ -32,6 +32,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [searchText, setSearchText] = useState<string>("");
   const router = useRouter();
   const { getAll: allAssets } = useAllAssets();
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -177,8 +178,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             onChange={handleToggleChange}
           />
         </Box>
-
-        {/* Search - comes second on mobile */}
         <Box
           sx={{
             order: { xs: 1, sm: 0 },
@@ -192,21 +191,40 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           />
         </Box>
       </Box>
+
       <Box marginTop={"1px"}>
-        <AssetFilters
-          modelNameFilter={modelNameFilter}
-          assignedToFilter={assignedToFilter}
-          allModelNames={modelNames}
-          allUsers={assignedUserNames}
-          onModelNameChange={setModelNameFilter}
-          onAssignedToChange={setAssignedToFilter}
-          onClearFilters={() => {
-            setModelNameFilter([]);
-            setAssignedToFilter([]);
-            setSearchText("");
-          }}
-          trans={transasset}
-        />
+        {view === "assets" ? (
+          <AssetFilters
+            modelNameFilter={modelNameFilter}
+            assignedToFilter={assignedToFilter}
+            allModelNames={modelNames}
+            allUsers={assignedUserNames}
+            onModelNameChange={setModelNameFilter}
+            onAssignedToChange={setAssignedToFilter}
+            onClearFilters={() => {
+              setModelNameFilter([]);
+              setAssignedToFilter([]);
+              setSearchText("");
+            }}
+            trans={transasset}
+          />
+        ) : (
+          <AssetFilters
+            modelNameFilter={[]}
+            assignedToFilter={[]}
+            allModelNames={[]}
+            allUsers={[]}
+            onModelNameChange={() => {}}
+            onAssignedToChange={() => {}}
+            onClearFilters={() => setStatusFilter([])}
+            trans={transasset}
+            hideModelNameFilter
+            hideAssignedToFilter
+            allStatuses={issueStatuses}
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+          />
+        )}
       </Box>
 
       {/* Updated Box with reduced padding and spacing */}
@@ -253,7 +271,9 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           </Grid>
         )}
 
-        {initialView === transasset("selectedIssues") && <AssetIssueCards />}
+        {initialView === transasset("selectedIssues") && (
+          <AssetIssueCards searchText={searchText} statusFilter={statusFilter} />
+        )}
       </Box>
 
       {/* Floating Action Button */}

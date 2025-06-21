@@ -13,6 +13,10 @@ interface Props {
   trans: (key: string) => string;
   hideModelNameFilter?: boolean;
   hideAssignedToFilter?: boolean;
+
+  statusFilter?: string[];
+  allStatuses?: string[];
+  onStatusChange?: (val: string[]) => void;
 }
 
 const AssetFilters: React.FC<Props> = ({
@@ -25,7 +29,10 @@ const AssetFilters: React.FC<Props> = ({
   onClearFilters,
   trans,
   hideModelNameFilter,
-  hideAssignedToFilter
+  hideAssignedToFilter,
+  statusFilter,
+  allStatuses,
+  onStatusChange
 }) => {
   const appliedFilterCount =
     (hideModelNameFilter ? 0 : modelNameFilter.length > 0 ? 1 : 0) +
@@ -59,6 +66,14 @@ const AssetFilters: React.FC<Props> = ({
             options={allUsers}
             selected={assignedToFilter}
             onChange={onAssignedToChange}
+          />
+        )}
+        {allStatuses && onStatusChange && (
+          <FilterDropdown
+            label={trans("status")}
+            options={allStatuses}
+            selected={statusFilter || []}
+            onChange={onStatusChange}
           />
         )}
       </Box>

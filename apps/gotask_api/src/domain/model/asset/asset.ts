@@ -40,6 +40,7 @@ export interface IAsset extends Document {
   lastServicedDate?: Date;
   commentService?: string;
   erk?: string;
+  [key: string]: any;
 }
 
 const AssetSchema = new Schema<IAsset>(

@@ -16,6 +16,8 @@ import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import MobileInputs from "../../createAsset/mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
+import HistoryIcon from "@mui/icons-material/History";
+import IssueHistoryDrawer from "../../createIssues/issuesDrawer";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -27,6 +29,8 @@ interface EditAssetProps {
 
 const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
+  const [openHistoryDrawer, setOpenHistoryDrawer] = useState(false);
+
   const router = useRouter();
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -48,7 +52,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     warrantyPeriod: data?.warrantyPeriod || "",
     warrantyDate: data?.warrantyDate || undefined,
     active: data?.active ?? true,
-    createdBy: data?.createdBy || "",
+    created_by: data?.createdBy || "",
     updatedBy: data?.updatedBy || "",
     antivirus: data?.antivirus || "",
     recoveryKey: data?.recoveryKey || "",
@@ -61,6 +65,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   }));
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   const { getAll: allTypes } = useAllTypes();
   const { data: users } = useSWR("fetch-user", fetcherUserList);
 
@@ -121,7 +126,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
 
   return (
     <>
-      <ModuleHeader name={transasset("asset")} />
+      <ModuleHeader name={transasset("assets")} />
 
       <Paper elevation={2} sx={{ p: 2 }}>
         <Box
@@ -132,40 +137,100 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
             mb: 2
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {transasset("updateasset")}
-          </Typography>
+          <Grid
+            container
+            spacing={2}
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{
+              flexDirection: { xs: "column", sm: "row" },
+              mb: 2
+            }}
+          >
+            {/* Title + Icon */}
+            <Grid item xs={12} sm={6}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: { xs: "center", sm: "flex-start" },
+                  gap: 0.5
+                }}
+              >
+                {/* Title */}
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: "bold",
+                    color: "#741B92",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1
+                  }}
+                >
+                  {transasset("updateasset")}
+                </Typography>
 
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Button
-              variant="outlined"
-              sx={{
-                borderRadius: "30px",
-                color: "#741B92",
-                border: "2px solid #741B92",
-                px: 3,
-                textTransform: "none"
-              }}
-              onClick={() => router.back()}
-            >
-              {transasset("cancel")}
-            </Button>
+                {/* Show History link with icon */}
+                <Box
+                  onClick={() => setOpenHistoryDrawer(true)}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    color: "#741B92",
+                    cursor: "pointer"
+                  }}
+                >
+                  <Typography variant="body2" sx={{ textDecoration: "underline" }}>
+                    {transasset("showhistory")}
+                  </Typography>
+                  <HistoryIcon fontSize="small" />
+                </Box>
+              </Box>
+            </Grid>
 
-            <Button
-              variant="contained"
-              sx={{
-                borderRadius: "30px",
-                backgroundColor: "#741B92",
-                color: "white",
-                px: 3,
-                textTransform: "none",
-                fontWeight: "bold"
-              }}
-              onClick={handleSubmit}
-            >
-              {transasset("update")}
-            </Button>
-          </Box>
+            {/* Buttons */}
+            <Grid item xs={12} sm="auto">
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: { xs: "center", sm: "flex-end" },
+                  gap: 2,
+                  flexWrap: "wrap"
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "30px",
+                    color: "#741B92",
+                    border: "2px solid #741B92",
+                    px: 3,
+                    textTransform: "none"
+                  }}
+                  onClick={() => router.back()}
+                >
+                  {transasset("cancel")}
+                </Button>
+
+                <Button
+                  variant="contained"
+                  sx={{
+                    borderRadius: "30px",
+                    backgroundColor: "#741B92",
+                    color: "white",
+                    px: 3,
+                    textTransform: "none",
+                    fontWeight: "bold"
+                  }}
+                  onClick={handleSubmit}
+                >
+                  {transasset("update")}
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
         </Box>
 
         <Box
@@ -219,6 +284,26 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
           )}
         </Box>
       </Paper>
+      {openHistoryDrawer && (
+        <IssueHistoryDrawer
+          open={openHistoryDrawer}
+          onClose={() => setOpenHistoryDrawer(false)}
+          mode="asset"
+          history={
+            Array.isArray(data?.assetHistory)
+              ? data.assetHistory.map((item) => ({
+                  id: item.id ?? "",
+                  issuesId: item.assetId ?? "",
+                  formatted_history: item.formatted_history ?? "",
+                  created_date: item.created_date ? new Date(item.created_date) : new Date(),
+                  created_by: item.created_by ?? "",
+                  userData: item.userData,
+                  tagData: item.tagData
+                }))
+              : []
+          }
+        />
+      )}
 
       <CustomSnackbar
         open={snackbar.open}

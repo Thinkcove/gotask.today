@@ -18,7 +18,7 @@ const ProjectGoals: React.FC<ProjectGoalsProps> = ({
   return (
     <Box sx={{ width: "100%" }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography variant="h5" fontWeight={600}>
+        <Typography variant="h5" fontWeight={600} sx={{pl:2}}>
           {transGoal("projectgoals")}
         </Typography>
       </Box>

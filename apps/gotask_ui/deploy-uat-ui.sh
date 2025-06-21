@@ -7,7 +7,7 @@ ipaddr="13.127.153.17"
 appFolder="/home/ec2-user/gotask/test/app/"
 
 #Create Build
-bash test-build.sh
+bash uat-build.sh
  
 echo "Removing the Previous build"
 # Remove the previous build in the server

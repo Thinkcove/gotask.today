@@ -7,7 +7,7 @@ appname="test-gotask-api"
 appFolder="/home/$user/gotask/test/api"
 buildFolder="lib"
 configFolder="config"
-env="test" 
+env="uat" 
 
 cleanup_old_build "$buildFolder"
 create_build "$appFolder"

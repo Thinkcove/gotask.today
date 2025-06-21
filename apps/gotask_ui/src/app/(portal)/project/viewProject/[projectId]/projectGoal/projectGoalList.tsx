@@ -15,7 +15,16 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { ArrowBack } from "@mui/icons-material";
 import router from "next/router";
-import { createComment, createWeeklyGoal, deleteComment, fetchWeeklyGoals, getCommentsByGoalId, getWeeklyGoalById, updateComment, updateWeeklyGoal } from "../../../services/projectAction";
+import {
+  createComment,
+  createWeeklyGoal,
+  deleteComment,
+  fetchWeeklyGoals,
+  getCommentsByGoalId,
+  getWeeklyGoalById,
+  updateComment,
+  updateWeeklyGoal
+} from "../../../services/projectAction";
 import { GoalComment, GoalData } from "../interface/projectGoal";
 import ProjectGoalView from "./projectGoalView";
 import ProjectGoalForm from "./projectGoalForm";
@@ -157,7 +166,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         severity: SNACKBAR_SEVERITY.ERROR
       });
       console.error("Error Project Goal View:", error);
-
     }
   };
   const handleSaveComment = async (commentData: {
@@ -189,7 +197,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         severity: SNACKBAR_SEVERITY.ERROR
       });
       console.error("Error Project Goal View:", error);
-
     }
   };
 
@@ -217,7 +224,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         severity: SNACKBAR_SEVERITY.ERROR
       });
       console.error("Error Project Goal View:", err);
-
     }
   };
 
@@ -233,7 +239,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       console.error("Error Project Goal Delete:", error);
-
     } catch (error) {
       setSnackbar({
         open: true,
@@ -241,7 +246,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         severity: SNACKBAR_SEVERITY.ERROR
       });
       console.error("Error Project Goal Delete:", error);
-
     }
   };
 
@@ -266,13 +270,12 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   }
   return (
     <>
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ pt: 2 }}>
         {!openDialog && !projectGoalView && (
           <>
             <Box display="flex" gap={2}>
               <Grid item xs="auto">
-                <IconButton color="primary" onClick={() => onClose?.()}>
-                  {" "}
+                <IconButton color="primary" onClick={() => onClose?.()} sx={{ ml: 1 }}>
                   <ArrowBack />
                 </IconButton>
               </Grid>

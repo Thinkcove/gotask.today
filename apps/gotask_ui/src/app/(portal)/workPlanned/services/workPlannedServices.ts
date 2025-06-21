@@ -26,10 +26,8 @@ export const useWorkPlannedReport = (
     async ([, payloadString]) => {
       try {
         const parsedPayload = JSON.parse(payloadString);
-        console.log("Fetching work planned report with payload:", parsedPayload);
         
         const response = await fetchWorkPlannedReport(parsedPayload);
-        console.log("Work planned report response:", response);
         
         if (response && response.success) {
           return response.data || [];

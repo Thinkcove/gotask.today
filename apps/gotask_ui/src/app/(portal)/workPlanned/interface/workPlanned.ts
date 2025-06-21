@@ -31,3 +31,18 @@ export interface WorkPlannedApiResponse {
   count?: number;
   error?: string;
 }
+
+
+export interface Payload {
+  fromDate: string;
+  toDate: string;
+  userIds: string[];
+  selectedProjects: string[];
+}
+
+export interface Filters {
+  fromDate: string;
+  toDate: string;
+  userIds: string[];
+  projectIds: string[];
+}

@@ -15,6 +15,12 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
+import { ESTIMATION_FORMAT } from "@/app/common/constants/regex";
+import { formatTimeValue } from "@/app/common/utils/taskTime";
+
+
 
 
 interface WorkPlannedGridProps {
@@ -38,13 +44,15 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
   fromDate,
   toDate,
 }) => {
-  
+  const transworkplanned= useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
 
   const formatEstimation = (estimation: string | number | null | undefined) => {
     if (!estimation || estimation === null || estimation === undefined || estimation === "") {
       return "-";
     }
-    return estimation.toString();
+    
+    // Use the formatTimeValue function from taskTime.ts
+    return formatTimeValue(estimation.toString());
   };
 
   // Helper function to extract numeric value from estimation
@@ -52,7 +60,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     if (!estimation || estimation === null || estimation === undefined || estimation === "") {
       return 0;
     }
-    const numericValue = parseFloat(estimation.toString().replace(/[^\d.]/g, ''));
+    const numericValue = parseFloat(estimation.toString().replace( ESTIMATION_FORMAT, ''));
     return isNaN(numericValue) ? 0 : numericValue;
   };
 
@@ -79,10 +87,10 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     return (
       <Box sx={{ p: 4, textAlign: 'center' }}>
         <Typography variant="h6" color="textSecondary">
-          No work planned data found for the selected date range
+           {transworkplanned("nodata")}
         </Typography>
         <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-            Date range: <FormattedDateTime date={fromDate || new Date()} /> to <FormattedDateTime date={toDate || new Date()} />
+          {transworkplanned("date")}<FormattedDateTime date={fromDate} />  {transworkplanned("to")} <FormattedDateTime date={toDate} />
         </Typography>
       </Box>
     );
@@ -107,7 +115,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
-                User
+                {transworkplanned("user")}
               </TableCell>
               <TableCell 
                 rowSpan={2} 
@@ -124,7 +132,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
-                Total Estimation
+                {transworkplanned("testimation")}
               </TableCell>
               <TableCell 
                 rowSpan={2} 
@@ -139,7 +147,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
-                Task
+                {transworkplanned("task")}
               </TableCell>
               <TableCell
                 rowSpan={2}
@@ -154,7 +162,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
-                Start Date
+                {transworkplanned("startDate")}
               </TableCell>
               <TableCell 
                 rowSpan={2} 
@@ -169,7 +177,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
-                End Date
+                {transworkplanned("endDate")}
               </TableCell>
               <TableCell 
                 rowSpan={2} 
@@ -186,7 +194,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
-                Estimation
+                {transworkplanned("estimation")}
               </TableCell>
             </TableRow>
           </TableHead>
@@ -267,7 +275,11 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                     fontFamily: "monospace",
                     fontSize: "0.875rem"
                   }}>
-                   <FormattedDateTime date={task.start_date || new Date()} format={DateFormats.DATE_ONLY} />
+                   {task.start_date ? (
+                      <FormattedDateTime date={task.start_date} format={DateFormats.DATE_ONLY} />
+                    ) : (
+                      "-"
+                    )}
                   </TableCell>
                   
                   {/* End Date */}
@@ -278,7 +290,11 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                     fontFamily: "monospace",
                     fontSize: "0.875rem"
                   }}>
-                      <FormattedDateTime date={task.end_date || new Date()} format={DateFormats.DATE_ONLY}  />
+                        {task.end_date ? (
+                      <FormattedDateTime date={task.end_date} format={DateFormats.DATE_ONLY} />
+                    ) : (
+                      "-"
+                    )}
                   </TableCell>
                   
                   {/* Task Estimation */}

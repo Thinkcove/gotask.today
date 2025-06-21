@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { 
   Box, 
   Grid, 
@@ -16,31 +16,27 @@ import NoReportImage from "@assets/placeholderImages/noreportlog.svg"
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import WorkPlannedCalendarGrid from "./workPlannedCalendarGrid";
-import { User } from "../interface/workPlanned";
+import { Payload, User } from "../interface/workPlanned";
 import { Project } from "../../task/interface/taskInterface";
 import WorkPlannedFiltersPanel from "./workPlannedFilterPanel";
+import { Filters } from "../interface/workPlanned";
 
-// Define the payload type
-interface Payload {
-  fromDate: string;
-  toDate: string;
-  userIds: string[];
-  selectedProjects: string[];
-}
 
-const getInitialFilters = () => {
+const getStoredFilters = (): Filters | null     => {
+  if (typeof window === "undefined") return null;
+  const saved = localStorage.getItem("workplanned_filters");
+  return saved ? JSON.parse(saved) : null;
+};
+const saveFiltersToStorage = (filters: Filters) => {
   if (typeof window !== "undefined") {
-    const saved = localStorage.getItem("workplanned_filters");
-    return saved
-      ? JSON.parse(saved)
-      : {
-          fromDate: "",
-          toDate: "",
-          userIds: [],
-          projectIds: []
-        };
+    localStorage.setItem("workplanned_filters", JSON.stringify(filters));
   }
-  return {
+};
+
+const getInitialFilters = () : Filters => {
+  const stored = getStoredFilters();
+
+  return stored || {
     fromDate: "",
     toDate: "",
     userIds: [],
@@ -50,7 +46,7 @@ const getInitialFilters = () => {
 
 const WorkPlannedReport = () => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
-  const [filters, setFilters] = useState(getInitialFilters);
+  const [filters, setFilters] = useState<Filters>(getInitialFilters);
   const isClient = typeof window !== "undefined";
 
   const {
@@ -72,35 +68,22 @@ const WorkPlannedReport = () => {
   const usersList: User[] = fetchedUserData?.data || [];
   const projectsList: Project[] = fetchedProjectData?.data || [];
 
-  const updateFilter = (updated: Partial<typeof filters>) => {
-    const newFilters = { ...filters, ...updated };
-    setFilters(newFilters);
-    if (isClient) {
-      localStorage.setItem("workplanned_filters", JSON.stringify(newFilters));
-    }
-  };
-
-  const resetFilters = () => {
-    const cleared = {
-      fromDate: "",
-      toDate: "",
-      userIds: [],
-      projectIds: []
+  const payload: Payload = useMemo(() => {
+    const newPayload = {
+      fromDate: filters.fromDate,
+      toDate: filters.toDate,
+      userIds: filters.userIds.length > 0 ? filters.userIds : [],
+      selectedProjects: filters.projectIds.length > 0 ? filters.projectIds : []
     };
-    setFilters(cleared);
-    if (isClient) {
-      localStorage.setItem("workplanned_filters", JSON.stringify(cleared));
+    
+    // Optional: Add logging here if needed for debugging
+    if (filters.fromDate && filters.toDate) {
+      console.log("Payload changed:", newPayload);
     }
-  };
-
-  const payload: Payload = {
-    fromDate: filters.fromDate,
-    toDate: filters.toDate,
-    userIds: filters.userIds.length > 0 ? filters.userIds : [],
-    selectedProjects: filters.projectIds.length > 0 ? filters.projectIds : []
-  };
-  
-  const shouldFetch = filters.fromDate !== "" && filters.toDate !== "";
+    
+    return newPayload;
+  }, [filters.fromDate, filters.toDate, filters.userIds, filters.projectIds]);
+    const shouldFetch = filters.fromDate !== "" && filters.toDate !== "";
 
   const {
     data: reportData,
@@ -108,25 +91,27 @@ const WorkPlannedReport = () => {
     isError: isReportError,
   } = useWorkPlannedReport(payload, shouldFetch);
 
-//   useEffect(() => {
-//     if (shouldFetch) {
-//       console.log("Payload changed:", payload);
-//       setLastFetchPayload(payload);
-//     }
-//   }, [shouldFetch, JSON.stringify(payload)]);
+  // Optimized update function with automatic persistence
+  const updateFilter = (updated: Partial<typeof filters>) => {
+    setFilters((prevFilters: Filters) => {
+      const newFilters = { ...prevFilters, ...updated };
+      saveFiltersToStorage(newFilters);
+      return newFilters;
+    });
+  };
 
-const memoizedPayload = useMemo(() => ({
-  fromDate: filters.fromDate,
-  toDate: filters.toDate,
-  userIds: filters.userIds.length > 0 ? filters.userIds : [],
-  selectedProjects: filters.projectIds.length > 0 ? filters.projectIds : []
-}), [filters.fromDate, filters.toDate, filters.userIds, filters.projectIds]);
+  const resetFilters = () => {
+    const cleared: Filters = {
+      fromDate: "",
+      toDate: "",
+      userIds: [],
+      projectIds: []
+    };
+    setFilters(cleared);
+     saveFiltersToStorage(cleared);
+  };
 
-useEffect(() => {
-  if (shouldFetch) {
-    console.log("Payload changed:", memoizedPayload);
-  }
-}, [shouldFetch, memoizedPayload]);
+ 
 
   if (userError) {
     return (

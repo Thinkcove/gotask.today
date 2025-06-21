@@ -16,7 +16,7 @@ import {
   SelectChangeEvent
 } from "@mui/material";
 import { User } from "../interface/workPlanned";
-import { Project } from "../../task/interface/taskInterface"; // Import proper Project interface
+import { Project } from "../../task/interface/taskInterface";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
@@ -30,7 +30,7 @@ interface WorkPlannedFiltersPanelProps {
   setUserIds: (ids: string[]) => void;
   usersList: User[];
   setProjectIds: (ids: string[]) => void;
-  projectsList: Project[]; // Use proper Project interface
+  projectsList: Project[]; 
 }
 
 const WorkPlannedFiltersPanel: React.FC<WorkPlannedFiltersPanelProps> = ({
@@ -46,6 +46,7 @@ const WorkPlannedFiltersPanel: React.FC<WorkPlannedFiltersPanelProps> = ({
   projectsList
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
+  const transworkplanned= useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
   
   const handleUserChange = (event: SelectChangeEvent<string[]>) => {
     setUserIds(event.target.value as string[]);
@@ -83,7 +84,7 @@ const WorkPlannedFiltersPanel: React.FC<WorkPlannedFiltersPanelProps> = ({
     >
       <Stack spacing={2}>
         <Typography variant="body2" color="text.secondary" fontWeight={600} fontSize="1rem">
-          Work Planned Filters
+           {transworkplanned("filterHeader")}
         </Typography>
         
         {/* Date Range Filters */}

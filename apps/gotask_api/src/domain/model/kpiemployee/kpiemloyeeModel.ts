@@ -70,13 +70,13 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
       type: String,
       ref: "User"
     },
-   comments: {
+    comments: {
       type: [String],
       default: []
     },
     status: {
       type: String,
-      enum:Object.values(STATUS),
+      enum: Object.values(STATUS),
       default: STATUS.ACTIVE
     },
     saveAs_Template: {
@@ -111,6 +111,5 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
     }
   }
 );
-
 
 export const KpiAssignment = mongoose.model<IKpiAssignment>("KpiAssignment", KpiAssignmentSchema);

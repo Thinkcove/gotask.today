@@ -72,7 +72,6 @@ export const verifyOtpService = async (
   const accessToken = generateOtpToken(user, roleResult.data, rememberMe);
 
   const userObject = user.toObject();
-  delete userObject.password;
   userObject.role = roleResult.data;
 
   return {

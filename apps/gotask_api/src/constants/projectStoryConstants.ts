@@ -8,4 +8,3 @@ export const PROJECT_STORY_STATUS = {
 } as const;
 
 export type ProjectStoryStatus = (typeof PROJECT_STORY_STATUS)[keyof typeof PROJECT_STORY_STATUS];
-  

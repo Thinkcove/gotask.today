@@ -7,7 +7,7 @@ export interface GoalComment {
 }
 export interface ProjectGoalViewProps {
   goalData: any;
-  user:any;
+  user: any;
   loading?: boolean;
   handleSaveComment: (commentData: {
     goal_id: string;
@@ -38,7 +38,6 @@ export interface GoalCommentProps {
   user?: any;
 }
 
-
 export interface ProjectGoalsProps {
   projectGoals: GoalData[];
   isLoading: boolean;
@@ -48,7 +47,7 @@ export interface ProjectGoalsProps {
   openDialog: boolean;
   handleEditGoal: (goal: GoalData) => void;
   projectId: string;
-  projectGoalView: (goalId: string) => void; 
+  projectGoalView: (goalId: string) => void;
 }
 export interface GoalData {
   goalTitle: string;

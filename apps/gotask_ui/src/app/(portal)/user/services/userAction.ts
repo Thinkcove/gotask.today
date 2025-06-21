@@ -1,6 +1,6 @@
 import env from "@/app/common/env";
 import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
-import { ISkill, IUserField } from "../interfaces/userInterface";
+import { IUserField } from "../interfaces/userInterface";
 import { withAuth } from "@/app/common/utils/authToken";
 
 export const createUser = async (
@@ -106,7 +106,6 @@ export const fetchUsers = async () => {
           projects: string[];
           organizations: string[];
           role: string;
-          skills?: ISkill[];
         }) => ({
           id: user.id,
           first_name: user.first_name,

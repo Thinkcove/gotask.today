@@ -145,7 +145,6 @@ class userService {
       const enrichedRole = roleResult.data;
 
       const userObj = user.toObject() as any;
-      delete userObj.password;
 
       const projectIds = (userObj.projects || []).filter(
         (id: string | undefined) => id !== undefined

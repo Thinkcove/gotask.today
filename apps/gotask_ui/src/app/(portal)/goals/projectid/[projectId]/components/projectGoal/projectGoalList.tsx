@@ -197,9 +197,7 @@ function ProjectGoalList() {
 
   return (
     <Box sx={{ p: 4 }}>
-      {filteredGoals?.length === 0 ? (
-        ""
-      ) : (
+      {!openDialog && filteredGoals?.length !== 0 && (
         <Box mb={3} maxWidth={400}>
           <SearchBar
             value={searchTerm}
@@ -209,6 +207,7 @@ function ProjectGoalList() {
           />
         </Box>
       )}
+
       {projectGoalView ? (
         <ProjectGoalView
           goalData={projectGoalView}

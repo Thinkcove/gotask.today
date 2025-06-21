@@ -20,7 +20,7 @@ import {
 import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
 import { GoalData } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { formatStatus } from "@/app/common/constants/project";
-import ProjectGoalView from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectView";
+import ProjectGoalView from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalView";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 

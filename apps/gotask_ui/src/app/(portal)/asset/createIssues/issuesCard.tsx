@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, Grid, Typography, Stack, Avatar, IconButton } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -22,13 +22,13 @@ const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 const AssetIssueCards: React.FC = () => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { getAll: allissues, mutate: issuesMutate } = useAllIssues();
-  const [editOpen, setEditOpen] = useState(false);
-  const [selectedIssue, setSelectedIssue] = useState<IAssetIssues | null>(null);
+
   const [newStatus, setNewStatus] = useState<string>("");
-  const [openHistoryDrawer, setOpenHistoryDrawer] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState<string>("");
-  const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
-  const { asset: issueById } = useIssuesById(selectedIssueId ?? "");
+  const { asset: issueById } = useIssuesById(selectedIssueId);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [openHistoryDrawer, setOpenHistoryDrawer] = useState(false);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -36,40 +36,41 @@ const AssetIssueCards: React.FC = () => {
   });
 
   const handleEditClick = (issue: IAssetIssues) => {
-    setSelectedIssue(issue);
+    setSelectedIssueId(issue.id!);
     setNewStatus(issue.status);
-    setEditOpen(true);
-    setSelectedIssueId(issue.id ?? "");
+    setDialogOpen(true);
   };
 
-  useEffect(() => {
-    if (issueById) {
-      setSelectedIssue(issueById);
-      setNewStatus(issueById.status);
-      setEditOpen(true);
-    }
-  }, [issueById]);
-
   const handleStatusUpdate = async () => {
-    if (!selectedIssue) return;
+    if (!issueById) return;
 
     try {
       const response = await createAssetIssues({
-        ...selectedIssue,
+        ...issueById,
         status: newStatus
       });
+
       if (response.success) {
         await issuesMutate();
         setSnackbar({
           open: true,
-          message: transasset("issuesupdated"),
+          message: trans("issuesupdated"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
-        setEditOpen(false);
+
+        // Reset
+        setDialogOpen(false);
+        setSelectedIssueId("");
+        setNewStatus("");
       }
     } catch (error) {
       console.error("Update failed", error);
     }
+  };
+
+  const handleShowHistory = (issueId: string) => {
+    setSelectedIssueId(issueId);
+    setOpenHistoryDrawer(true);
   };
 
   if (!allissues?.length) {
@@ -191,69 +192,71 @@ const AssetIssueCards: React.FC = () => {
                       </Typography>
                     </Tooltip>
                   </Typography>
+                  <Box
+                    onClick={() => handleShowHistory(issue.id!)}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      color: "#741B92",
+                      cursor: "pointer",
+                      mt: 1
+                    }}
+                  >
+                    <Typography variant="body2">{trans("showhistory")}</Typography>
+                    <HistoryIcon fontSize="small" />
+                  </Box>
                 </Box>
               </Stack>
             </CardComponent>
           </Grid>
         ))}
-        <CommonDialog
-          open={editOpen}
-          onClose={() => setEditOpen(false)}
-          onSubmit={handleStatusUpdate}
-          title={""}
-        >
-          {/* Custom header row */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              px: 2,
-              pt: 1,
-              pb: 1
+        {dialogOpen && issueById && (
+          <CommonDialog
+            open={dialogOpen}
+            onClose={() => {
+              setDialogOpen(false);
+              setSelectedIssueId("");
+              setNewStatus("");
             }}
+            onSubmit={handleStatusUpdate}
+            title={trans("editstatus")}
           >
-            <Typography variant="h6" fontWeight={600}>
-              {trans("editstatus")}
-            </Typography>
-
+            {/* Show History Button */}
             <Box
-              onClick={() => setOpenHistoryDrawer(true)}
               sx={{
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
                 color: "#741B92",
-                cursor: "pointer"
+                cursor: "pointer",
+                px: 2,
+                pt: 1
               }}
-            >
-              <Typography variant="body2" color="inherit">
-                {trans("showhistory")}
-              </Typography>
-              <HistoryIcon fontSize="small" />
-            </Box>
-          </Box>
+            ></Box>
 
-          {/* Divider if needed */}
-          <Box sx={{ px: 2 }}>
-            <FormField
-              type="select"
-              label={trans("status")}
-              placeholder={trans("status")}
-              value={newStatus}
-              options={statusOptions}
-              onChange={(val) => setNewStatus(String(val))}
-            />
-          </Box>
-          {openHistoryDrawer && selectedIssue?.issuesHistory && (
-            <IssueHistoryDrawer
-              open={openHistoryDrawer}
-              onClose={() => setOpenHistoryDrawer(false)}
-              history={selectedIssue.issuesHistory}
-            />
-          )}
-        </CommonDialog>
+            {/* Status Dropdown */}
+            <Box sx={{ px: 2, mt: 2 }}>
+              <FormField
+                type="select"
+                label={trans("status")}
+                placeholder={trans("status")}
+                value={newStatus}
+                options={statusOptions}
+                onChange={(val) => setNewStatus(String(val))}
+              />
+            </Box>
+          </CommonDialog>
+        )}
       </Grid>
+      {openHistoryDrawer && issueById?.issuesHistory && (
+        <IssueHistoryDrawer
+          open={openHistoryDrawer}
+          onClose={() => setOpenHistoryDrawer(false)}
+          history={issueById.issuesHistory}
+        />
+      )}
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

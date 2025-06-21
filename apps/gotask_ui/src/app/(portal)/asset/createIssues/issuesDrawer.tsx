@@ -6,21 +6,12 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { getColorForUser } from "@/app/common/constants/avatar";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
-import { User } from "../../user/interfaces/userInterface";
-
-export interface IIssuesHistory {
-  id: string;
-  issuesId: string;
-  formatted_history: string;
-  created_date: Date | "";
-  created_by: string;
-  userData?: User;
-}
+import { IIssuesHistories } from "../interface/asset";
 
 interface IssueHistoryDrawerProps {
   open: boolean;
   onClose: () => void;
-  history: IIssuesHistory[];
+  history: IIssuesHistories[];
   mode?: "asset" | "issues";
 }
 

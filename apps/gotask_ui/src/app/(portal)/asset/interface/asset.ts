@@ -115,3 +115,12 @@ export interface IAssetIssues {
   reportedDetails?: AssignedDetails;
   issuesHistory?: IIssuesHistory[];
 }
+
+export interface IIssuesHistories {
+  id: string;
+  issuesId: string;
+  formatted_history: string;
+  created_date: Date | "";
+  created_by: string;
+  userData?: User;
+}

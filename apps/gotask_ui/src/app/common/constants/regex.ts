@@ -22,3 +22,5 @@ export const DURATION_PARSE_FORMAT = "/^(-?\d+)d(?:(\d+)h)?(?:(\d+)m)?$/";
 //Numeric value estimatioin
 
 export const ESTIMATION_FORMAT = /[^\d.]/g;
+
+export const TRAILING_DOTS_REGEX = /\.+$/;

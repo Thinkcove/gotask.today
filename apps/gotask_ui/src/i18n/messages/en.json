@@ -532,11 +532,22 @@
     "insuranceExpiry": "Insurance expiry",
     "updatesuccess": "Asset updated successfully",
     "noasset": "Asset not found",
+    "noissues": "Issues not found",
     "assetdetails": "Assets Details",
-    "modelName": "Model",
+    "modelName": "Model:",
     "searchAsset": "Search Asset",
     "selectedAsset": "assets",
-    "selectedIssues": "issues"
+    "selectedIssues": "issues",
+    "edit": "edit",
+    "editstatus": "Update status",
+    "showhistory": "Show History",
+    "issueshistory": "Issues history",
+    "issuesType": "Issue Type:",
+    "assetslog": "Log of who performed the updates in the assets",
+    "isueslog": "Log of who performed the updates in the status",
+    "issuesupdated": "Issues updated successfully",
+    "required": "*",
+    "statuschanges": "Status changed to"
   },
 
   "Chatbot": {

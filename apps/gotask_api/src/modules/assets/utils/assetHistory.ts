@@ -1,6 +1,7 @@
 import { findUser } from "../../../domain/interface/user/userInterface";
 import { IAsset } from "../../../domain/model/asset/asset";
 import { formatDate } from "../../../constants/utils/common";
+import { capitalizeFirstLetter, insertSpaceBeforeCapital } from "../../../constants/utils/regex";
 
 export const generateAssetHistoryEntry = async (
   existingAsset: IAsset,
@@ -45,7 +46,7 @@ export const generateAssetHistoryEntry = async (
         return null;
       }
 
-      const label = field.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
+      const label = capitalizeFirstLetter(field.replace(insertSpaceBeforeCapital, " $1"));
 
       return `${label} has been updated from "${formatValue(oldVal)}" to "${formatValue(newVal)}".`;
     })

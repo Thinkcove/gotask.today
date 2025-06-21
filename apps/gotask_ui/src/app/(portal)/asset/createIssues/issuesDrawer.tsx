@@ -7,6 +7,7 @@ import { getColorForUser } from "@/app/common/constants/avatar";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { IIssuesHistories } from "../interface/asset";
+import { TRAILING_DOTS_REGEX } from "@/app/common/constants/regex";
 
 interface IssueHistoryDrawerProps {
   open: boolean;
@@ -118,13 +119,14 @@ const IssueHistoryDrawer: React.FC<IssueHistoryDrawerProps> = ({
                       .map((entry, index) => (
                         <Box key={index} sx={{ mb: 1.5 }}>
                           <Typography variant="body2" sx={{ ml: 2 }}>
-                            {entry.trim().replace(/\.+$/, "")}
+                            {entry.trim().replace(TRAILING_DOTS_REGEX, "")}
                           </Typography>
                         </Box>
                       ))
                   : !item.formatted_history.toLowerCase().includes("tag") && (
                       <Typography variant="body2" sx={{ ml: 2, mb: 1.5 }}>
-                        Status changed to {item.formatted_history.trim().replace(/\.+$/, "")}
+                        {transasset("statuschanges")}{" "}
+                        {item.formatted_history.trim().replace(TRAILING_DOTS_REGEX, "")}
                       </Typography>
                     )}
                 <Box sx={{ textAlign: "right", width: "100%", mt: 1 }}>

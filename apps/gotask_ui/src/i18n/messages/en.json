@@ -476,7 +476,8 @@
     "assetslog": "Log of who performed the updates in the assets",
     "isueslog": "Log of who performed the updates in the status",
     "issuesupdated": "Issues updated successfully",
-    "required": "*"
+    "required": "*",
+    "statuschanges": "Status changed to"
   },
 
   "Chatbot": {

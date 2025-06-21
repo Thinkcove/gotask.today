@@ -29,6 +29,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
+import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
@@ -115,7 +116,10 @@ const ProjectStoryDetail = () => {
             <Typography variant="h5" fontWeight={600} textTransform="capitalize">
               {story.title}
             </Typography>
-            <StatusIndicator status={story.status} getColor={getStatusColor} />
+            <StatusIndicator
+              status={story.status}
+              getColor={(s) => STORY_STATUS_COLOR[s as StoryStatus]}
+            />
           </Box>
         </Box>
 

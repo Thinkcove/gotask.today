@@ -6,8 +6,10 @@ import { useRouter, useParams } from "next/navigation";
 import { ArrowForward } from "@mui/icons-material";
 import { ProjectStory } from "../interfaces/projectStory";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
 
 interface StoryCardProps {
   story: ProjectStory;
@@ -16,7 +18,12 @@ interface StoryCardProps {
 const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
   const router = useRouter();
   const { projectId } = useParams();
-  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS); // "Projects"
+  const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+
+  const status = (story.status as StoryStatus) || "to-do";
+  const color = STORY_STATUS_COLOR[status] || "#ccc";
+  const bg = `${color}22`;
+  const border = `${color}88`;
 
   const handleClick = () => {
     router.push(`/project/viewProject/${projectId}/stories/${story.id}`);
@@ -24,7 +31,10 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
 
   return (
     <Card
+      onClick={handleClick}
       sx={{
+        backgroundColor: bg,
+        border: `1px solid ${border}`,
         borderRadius: 3,
         height: 180,
         width: "100%",
@@ -32,20 +42,21 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        cursor: "default"
+        cursor: "pointer",
+        transition: "background-color 0.3s, border-color 0.3s",
+        "&:hover": { boxShadow: 4 }
       }}
     >
       <CardContent
         sx={{
-          height: "100%",
+          p: 2,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          p: 2
+          height: "100%"
         }}
       >
-        {/* Title + Description */}
-        <Box>
+        {/* Top: Title & Description */}
+        <Box sx={{ flex: 1 }}>
           <Typography
             variant="h6"
             fontWeight={600}
@@ -67,14 +78,15 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
               mb: 1
             }}
           >
-            {story.description || "-"}
+            {story.description || t("Stories.noDescriptionShort")}
           </Typography>
 
-          {/* Status & Created At */}
-          <Stack direction="row" spacing={2} justifyContent="space-between">
-            <Typography variant="caption" color="text.secondary">
-              {t("Stories.status")}: <strong>{story.status || t("Stories.na")}</strong>
-            </Typography>
+          {/* Status Badge and CreatedAt */}
+          <Stack direction="row" spacing={2} alignItems="center" mt={1}>
+            <StatusIndicator
+              status={status}
+              getColor={(s) => STORY_STATUS_COLOR[s as StoryStatus]}
+            />
             {story.createdAt && (
               <Typography variant="caption" color="text.secondary">
                 {t("Stories.createdat")}: <FormattedDateTime date={story.createdAt} />
@@ -83,24 +95,27 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           </Stack>
         </Box>
 
-        {/* View Details */}
+        {/* Bottom: View Details */}
         <Box
-          mt={2}
-          display="flex"
-          justifyContent="flex-end"
-          alignItems="center"
-          onClick={handleClick}
           sx={{
-            color: "#741B92",
-            fontWeight: 500,
-            cursor: "pointer",
-            ":hover": { textDecoration: "underline" }
+            mt: 2,
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center"
           }}
         >
-          <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
+          <Typography
+            sx={{
+              textTransform: "capitalize",
+              mr: 0.5,
+              color: "#741B92",
+              fontWeight: 500,
+              ":hover": { textDecoration: "underline" }
+            }}
+          >
             {t("Stories.viewdetails")}
           </Typography>
-          <ArrowForward fontSize="small" />
+          <ArrowForward fontSize="small" sx={{ color: "#741B92" }} />
         </Box>
       </CardContent>
     </Card>

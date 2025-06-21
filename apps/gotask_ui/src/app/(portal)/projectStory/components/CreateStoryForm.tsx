@@ -19,6 +19,7 @@ const CreateStoryForm = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [status] = useState("to-do"); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
@@ -59,6 +60,7 @@ const CreateStoryForm = () => {
     const payload = {
       title,
       description,
+      status,
       projectId: projectId as string,
       createdBy: user?.id ?? "anonymous"
     };
@@ -200,6 +202,9 @@ const CreateStoryForm = () => {
           multiline
           height={180}
         />
+
+        {/* Disabled Status Field */}
+        <FormField label={t("Stories.status")} type="text" value={status} disabled />
       </Box>
 
       {/* Snackbar */}

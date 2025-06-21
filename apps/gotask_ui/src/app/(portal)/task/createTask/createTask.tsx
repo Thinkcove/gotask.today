@@ -75,7 +75,12 @@ const CreateTask: React.FC = () => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
 
-      router.push("/task/projects?refresh=true");
+      if (storyId) {
+        router.push(`/project/viewProject/${formData.project_id}/stories/${storyId}`);
+      } else {
+        router.push("/task/projects?refresh=true");
+      }
+      
     } catch (error) {
       console.error("Error while creating task:", error);
       setSnackbar({

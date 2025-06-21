@@ -194,6 +194,12 @@
       "fetchError": "Failed to load stories.",
       "titleWithProject": "{name} Stories",
       "createdAt": "Created At",
+      "noDescriptionShort": "No description available",
+      "statusOptions": {
+        "to-do": "To Do",
+        "in-progress": "In Progress",
+        "done": "Done"
+      },
 
       "placeholders": {
         "title": "Enter story title",

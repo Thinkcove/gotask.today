@@ -48,7 +48,6 @@ const StoryList: React.FC = () => {
 
   return (
     <Box sx={{ position: "relative", p: 2, width: "100%" }}>
-      {/* Header with Back Icon and Title */}
       <Box
         sx={{
           position: "absolute",
@@ -87,7 +86,6 @@ const StoryList: React.FC = () => {
         )}
       </Box>
 
-      {/* Floating Create Button  */}
       <Tooltip title={t("Stories.createStory")}>
         <Fab
           color="primary"

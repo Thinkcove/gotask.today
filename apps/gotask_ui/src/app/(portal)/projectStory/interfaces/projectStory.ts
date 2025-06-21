@@ -20,11 +20,13 @@ export interface CreateStoryPayload {
   description?: string;
   projectId: string;
   createdBy: string;
+  status?: string;
 }
 
 export interface UpdateStoryPayload {
   title?: string;
   description?: string;
+  status?: string;
 }
 
 export interface AddCommentPayload {

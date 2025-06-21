@@ -11,7 +11,7 @@ import { useWorkPlannedReport } from "../services/workPlannedServices";
 import { fetchProject, fetchUser } from "../../task/service/taskAction";
 import useSWR from "swr";
 import EmptyState from "@/app/component/emptyState/emptyState";
-import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
+import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
 import NoReportImage from "@assets/placeholderImages/noreportlog.svg"
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";

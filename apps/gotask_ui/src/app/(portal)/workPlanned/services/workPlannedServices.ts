@@ -6,7 +6,9 @@ import { WorkPlannedApiResponse } from "../interface/workPlanned";
 
 const WORK_PLANNED_API_URL = `${env.API_BASE_URL}/work-planned/tasks`;
 
-const fetchWorkPlannedReport = async (payload: Record<string, unknown>): Promise<WorkPlannedApiResponse> => {
+const fetchWorkPlannedReport = async (
+  payload: Record<string, unknown>
+): Promise<WorkPlannedApiResponse> => {
   return withAuth((token) => {
     return postData(WORK_PLANNED_API_URL, payload, token);
   });
@@ -26,13 +28,13 @@ export const useWorkPlannedReport = (
     async ([, payloadString]) => {
       try {
         const parsedPayload = JSON.parse(payloadString);
-        
+
         const response = await fetchWorkPlannedReport(parsedPayload);
-        
+
         if (response && response.success) {
           return response.data || [];
         }
-        
+
         console.warn("API response indicates failure:", response);
         return [];
       } catch (err) {
@@ -44,7 +46,7 @@ export const useWorkPlannedReport = (
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       errorRetryCount: 2,
-      errorRetryInterval: 1000,
+      errorRetryInterval: 1000
     }
   );
 
@@ -53,6 +55,6 @@ export const useWorkPlannedReport = (
     isLoading,
     isError: !!error,
     error,
-    mutate, // Expose mutate for manual refresh if needed
+    mutate // Expose mutate for manual refresh if needed
   };
 };

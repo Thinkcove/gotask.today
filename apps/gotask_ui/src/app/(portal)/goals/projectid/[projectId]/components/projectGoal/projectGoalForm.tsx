@@ -6,11 +6,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ProjectGoalFormProps } from "../../interface/projectGoal";
 import { priorityOptions, statusOptions } from "@/app/common/constants/project";
 
-const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
-  goalData,
-  errors,
-  setGoalData,
-}) => {
+const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, errors, setGoalData }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   return (
     <Grid container spacing={3}>
@@ -50,7 +46,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
           inputType="date"
           placeholder={transGoal("enddate")}
           value={goalData.weekEnd}
-          error={goalData.weekEnd}
+          error={errors.weekEnd}
           onChange={(value) => {
             if (value && (typeof value === "string" || value instanceof Date)) {
               const date = new Date(value);
@@ -94,8 +90,6 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
           onChange={(val) => setGoalData({ ...goalData, description: val as string })}
         />
       </Grid>
-
-
     </Grid>
   );
 };

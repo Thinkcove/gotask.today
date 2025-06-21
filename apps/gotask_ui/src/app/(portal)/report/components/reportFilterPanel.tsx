@@ -16,7 +16,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import MultiSelectFilter from "@/app/component/multiSelect/multiSelectFilter";
 
 interface FiltersPanelProps {
-  label: string;
   fromDate: string;
   toDate: string;
   userIds: string[];

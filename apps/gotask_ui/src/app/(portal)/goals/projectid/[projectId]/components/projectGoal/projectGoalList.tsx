@@ -120,14 +120,14 @@ function ProjectGoalList() {
         await updateWeeklyGoal(goalData.id, payload as any);
         setSnackbar({
           open: true,
-          message: transGoal("savegoal"),
+          message: transGoal("goalupdate"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
       } else {
         await createWeeklyGoal(payload as any);
         setSnackbar({
           open: true,
-          message: transGoal("goalupdate"),
+          message: transGoal("savegoal"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
       }
@@ -201,7 +201,6 @@ function ProjectGoalList() {
     commentId: string | number,
     updatedComment: { comment: string }
   ) => {
-
     try {
       await updateComment(commentId, {
         comments: [updatedComment.comment]
@@ -252,7 +251,7 @@ function ProjectGoalList() {
   return (
     <>
       <Box sx={{ p: 4 }}>
-        {!openDialog && filteredGoals?.length !== 0 && (
+        {!openDialog && !projectGoalView && filteredGoals?.length !== 0 && (
           <Box mb={3} maxWidth={400}>
             <SearchBar
               value={searchTerm}

@@ -6,11 +6,9 @@ import { useTranslations } from "next-intl";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import {
-  GoalComment,
-  GoalCommentProps
-} from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
+
 import { getColorForUser } from "@/app/common/constants/avatar";
+import { GoalComment, GoalCommentProps } from "../interface/projectGoal";
 
 const GoalComments: React.FC<GoalCommentProps> = ({
   comments,

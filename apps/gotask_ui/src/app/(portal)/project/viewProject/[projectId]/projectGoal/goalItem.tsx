@@ -4,8 +4,8 @@ import { Edit } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { GoalCardProps } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { getStatusColor } from "@/app/common/constants/project";
+import { GoalCardProps } from "../interface/projectGoal";
 
 const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
   const color = getStatusColor(goal.status);

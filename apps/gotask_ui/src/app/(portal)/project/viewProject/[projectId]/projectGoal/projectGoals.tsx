@@ -2,8 +2,8 @@ import React from "react";
 import { Grid, Box, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { ProjectGoalsProps } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
-import GoalItem from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/goalItem";
+import { ProjectGoalsProps } from "../interface/projectGoal";
+import GoalItem from "./goalItem";
 
 const ProjectGoals: React.FC<ProjectGoalsProps> = ({
   projectGoals,

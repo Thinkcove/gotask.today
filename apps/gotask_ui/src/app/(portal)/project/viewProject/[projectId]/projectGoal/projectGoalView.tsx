@@ -4,14 +4,13 @@ import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import { ProjectGoalViewProps } from "../../interface/projectGoal";
-import GoalComments from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/goalComments";
-import { GoalComment } from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/project";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
+import { GoalComment, ProjectGoalViewProps } from "../interface/projectGoal";
+import GoalComments from "./goalComments";
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   goalData,

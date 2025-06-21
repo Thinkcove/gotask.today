@@ -6,24 +6,7 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import ProjectGoals from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoals";
-import {
-  createComment,
-  createWeeklyGoal,
-  deleteComment,
-  fetchWeeklyGoals,
-  getCommentsByGoalId,
-  getWeeklyGoalById,
-  updateComment,
-  updateWeeklyGoal
-} from "@/app/(portal)/goals/service/projectGoalAction";
-import ProjectGoalForm from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalForm";
-import {
-  GoalComment,
-  GoalData
-} from "@/app/(portal)/goals/projectid/[projectId]/interface/projectGoal";
 import { formatStatus } from "@/app/common/constants/project";
-import ProjectGoalView from "@/app/(portal)/goals/projectid/[projectId]/components/projectGoal/projectGoalView";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useUser } from "@/app/userContext";
@@ -32,8 +15,15 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { ArrowBack } from "@mui/icons-material";
 import router from "next/router";
-
-function ProjectGoalList() {
+import { createComment, createWeeklyGoal, deleteComment, fetchWeeklyGoals, getCommentsByGoalId, getWeeklyGoalById, updateComment, updateWeeklyGoal } from "../../../services/projectAction";
+import { GoalComment, GoalData } from "../interface/projectGoal";
+import ProjectGoalView from "./projectGoalView";
+import ProjectGoalForm from "./projectGoalForm";
+import ProjectGoals from "./projectGoals";
+interface ProjectGoalListProps {
+  onClose?: () => void; // optional callback prop
+}
+function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
@@ -271,7 +261,8 @@ function ProjectGoalList() {
           <>
             <Box display="flex" gap={2}>
               <Grid item xs="auto">
-                <IconButton color="primary" onClick={() => handleBack}>
+                <IconButton color="primary" onClick={() => onClose?.()}>
+                  {" "}
                   <ArrowBack />
                 </IconButton>
               </Grid>

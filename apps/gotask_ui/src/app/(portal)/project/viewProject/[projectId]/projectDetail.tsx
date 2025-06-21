@@ -22,6 +22,7 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import Link from "next/link";
+import ProjectGoalList from "./projectGoal/projectGoalList";
 
 interface ProjectDetailProps {
   project: Project;
@@ -32,6 +33,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
+  const [projectGoalOpean, setProjectGoalOpean] = useState(false);
+
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // state for the delete confirmation dialog
   const router = useRouter();
@@ -96,6 +99,20 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
       });
     }
   };
+  if (projectGoalOpean) {
+    return (
+      <>
+        <ModuleHeader name={transproject("detailview")} />
+
+        <ProjectGoalList
+          onClose={() => {
+            console.log("Closing ProjectGoalList");
+            setProjectGoalOpean(false);
+          }}
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -118,8 +135,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
         >
           {/* User Info Header */}
           <Box display="flex" alignItems="center" mb={3}>
-            <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
-              <ArrowBack />
+            <IconButton color="primary" sx={{ mr: 2 }}>
+              <ArrowBack onClick={handleBack} />
             </IconButton>
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -167,7 +184,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               {transproject("detailassignee")}
             </Typography>
             <Box display="flex" justifyContent="flex-end" gap={2}>
-              <Link href={`/goals/projectid/${projectID}`}> {transproject("goal")}</Link>
+              <Button
+                variant="contained"
+                onClick={() => setProjectGoalOpean(true)}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2
+                }}
+              >
+                {transproject("detailaddassignee")}
+              </Button>
+
+              {/* <Link href={`/goals/projectid/${projectID}`}> {transproject("goal")}</Link> */}
 
               {canAccess(APPLICATIONS.PROJECT, ACTIONS.ASSIGN) && (
                 <Button
@@ -310,6 +338,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           onClose={() => setSnackbar({ ...snackbar, open: false })}
         />
       </Box>
+      {/* {projectGoalOpean && (
+        <ProjectGoalList
+        // onClose={() => setProjectGoalOpean(false)} // optional if your component supports it
+        />
+      )} */}
     </>
   );
 };

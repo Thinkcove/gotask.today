@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography, IconButton, Divider, Stack, Chip, Grid } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
-import { IUserField, User } from "../../interfaces/userInterface";
+import { User } from "../../interfaces/userInterface";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
@@ -64,19 +64,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
       });
     }
   };
-
-  const mapUserToUserField = (user: User): IUserField => ({
-    first_name: user.first_name,
-    last_name: user.last_name,
-    name: user.name,
-    status: user.status,
-    mobile_no: user.mobile_no,
-    joined_date: user.joined_date,
-    emp_id: user.emp_id,
-    organization: user.organization,
-    roleId: user.roleId._id,
-    user_id: user.user_id
-  });
 
   return (
     <>

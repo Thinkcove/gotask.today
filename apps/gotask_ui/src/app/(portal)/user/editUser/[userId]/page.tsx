@@ -5,7 +5,7 @@ import useSWR from "swr";
 import env from "@/app/common/env";
 import { withAuth } from "@/app/common/utils/authToken";
 import { getData } from "@/app/common/utils/apiData";
-import EditUser from "./editUser";
+import EditUser from "../editUser";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -30,10 +30,7 @@ const EditUserPage: React.FC = () => {
   return user ? (
     <>
       <ModuleHeader name={transuser("edituser")} />
-      <EditUser
-        data={user}
-        userID={userId as string}
-        mutate={mutate} />
+      <EditUser data={user} userID={userId as string} mutate={mutate} />
     </>
   ) : null;
 };

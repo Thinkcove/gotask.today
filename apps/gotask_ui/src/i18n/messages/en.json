@@ -563,6 +563,15 @@
     "startweekrequired": "Start Week is required",
     "endweekrequired": "Week end date is required",
     "saving":"Saving...",
-    "comment":"Comments"
+    "comment":"Comments",
+    "saveerror":"Something went wrong while saving",
+    "viewerror":"Failed to fetch Goal view data",
+    "goalSaved":"Goal saved successfully!",
+    "goalfiled":"Failed Goal Save data",
+    "goalupdate":"Goal Update successfully!",
+    "deletegoal":"Goal Delete successfully!",
+    "deletegoalfiled":"Failed Goal Delete data",
+    "savegoal":"Goal Created successfully!"
+
   }
 }

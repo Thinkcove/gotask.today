@@ -18,3 +18,7 @@ export const PHONE_PATTERN = /^\+?[1-9](?:\d\s?){7,14}$/;
 
 //Time Parsing
 export const DURATION_PARSE_FORMAT = "/^(-?\d+)d(?:(\d+)h)?(?:(\d+)m)?$/";
+
+//Numeric value estimatioin
+
+export const ESTIMATION_FORMAT = /[^\d.]/g;

@@ -14,6 +14,7 @@ export const LOCALIZATION = {
     REPORT: "Report",
     CHATBOT: "Chatbot",
     ASSETS: "Assets",
+    KPI:"KPI System",
     WORKPLANNED: "WorkPlanned",
     PROJECTGOAL: "ProjectGoal"
   }

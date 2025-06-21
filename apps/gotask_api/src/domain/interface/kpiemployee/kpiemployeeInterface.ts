@@ -81,7 +81,7 @@ export const saveKpiAsTemplateInDb = async (
     description: templateData.description,
     measurement_criteria: templateData.measurement_criteria,
     frequency: templateData.frequency || KPI_FREQUENCY.QUARTERLY,
-    isActive: templateData.isActive ?? true
+    status: templateData.status ?? true
   });
   return await newTemplate.save();
 };

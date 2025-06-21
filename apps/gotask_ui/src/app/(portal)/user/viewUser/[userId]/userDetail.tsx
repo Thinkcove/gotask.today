@@ -20,7 +20,6 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import { IAssetAttributes } from "@/app/(portal)/asset/interface/asset";
 import TaskToggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
-import EditUser from "./editUser/editUser";
 
 interface UserDetailProps {
   user: User;
@@ -350,13 +349,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             )}
           </Grid>
         </Box>
-
-        {/* Edit User Dialog */}
-        <EditUser
-          data={mapUserToUserField(user)}
-          mutate={mutate}
-          userID={userID}
-        />
 
         <CommonDialog
           open={openDeleteDialog}

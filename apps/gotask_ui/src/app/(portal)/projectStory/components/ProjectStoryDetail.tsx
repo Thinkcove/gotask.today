@@ -26,6 +26,9 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import TaskItem from "../../task/component/taskLayout/taskItem";
 import { getStatusColor } from "@/app/common/constants/task";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import LabelValueText from "@/app/component/text/labelValueText";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
@@ -97,8 +100,8 @@ const ProjectStoryDetail = () => {
       }}
     >
       {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Box display="flex" alignItems="center" gap={1}>
+      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+        <Box display="flex" alignItems="flex-start" gap={1}>
           <Tooltip title={t("Stories.backToStories")}>
             <IconButton
               onClick={() => router.push(`/project/viewProject/${projectId}/stories`)}
@@ -107,11 +110,16 @@ const ProjectStoryDetail = () => {
               <ArrowBack />
             </IconButton>
           </Tooltip>
-          <Typography variant="h5" fontWeight={600} color="#741B92">
-            {story.title}
-          </Typography>
+
+          <Box>
+            <Typography variant="h5" fontWeight={600} textTransform="capitalize">
+              {story.title}
+            </Typography>
+            <StatusIndicator status={story.status} getColor={getStatusColor} />
+          </Box>
         </Box>
 
+        {/* Right Section: Edit/Delete buttons */}
         <Box display="flex" gap={1}>
           <Tooltip title={t("Stories.editStory")}>
             <IconButton
@@ -140,19 +148,10 @@ const ProjectStoryDetail = () => {
         <Typography variant="body1" mb={2}>
           {story.description || t("Stories.noDescription")}
         </Typography>
-        <Typography variant="caption" color="primary" display="block" mb={2}>
-          {t("Stories.status")}: {story.status || t("Stories.na")}
-        </Typography>
-        <Typography variant="caption" color="text.secondary" display="block" mb={2}>
-          {t("Stories.createdAt")}:{" "}
-          {story.createdAt
-            ? new Intl.DateTimeFormat("en-IN", {
-                dateStyle: "medium",
-                timeStyle: "short"
-              }).format(new Date(story.createdAt))
-            : t("Stories.na")}
-        </Typography>
-
+        <LabelValueText
+          label={t("Stories.createdAt")}
+          value={<FormattedDateTime date={story.createdAt} />}
+        />
         <Divider sx={{ my: 3 }} />
 
         {/* Tasks Section */}

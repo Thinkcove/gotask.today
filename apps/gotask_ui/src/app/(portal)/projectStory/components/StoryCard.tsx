@@ -5,7 +5,6 @@ import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowForward } from "@mui/icons-material";
 import { ProjectStory } from "../interfaces/projectStory";
-import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -87,11 +86,6 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
               status={status}
               getColor={(s) => STORY_STATUS_COLOR[s as StoryStatus]}
             />
-            {story.createdAt && (
-              <Typography variant="caption" color="text.secondary">
-                {t("Stories.createdat")}: <FormattedDateTime date={story.createdAt} />
-              </Typography>
-            )}
           </Stack>
         </Box>
 

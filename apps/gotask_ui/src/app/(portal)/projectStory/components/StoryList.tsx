@@ -47,7 +47,7 @@ const StoryList: React.FC = () => {
   }
 
   return (
-    <Box sx={{ position: "relative", p: 2, width: "100%" }}>
+    <Box sx={{ position: "relative", width: "100%" }}>
       <Box
         sx={{
           position: "absolute",
@@ -72,7 +72,7 @@ const StoryList: React.FC = () => {
       </Box>
 
       {/* Stories Grid  */}
-      <Box sx={{ px: 2, pt: 10 }}>
+      <Box sx={{ px: 2, pt: 8 }}>
         {stories.length === 0 ? (
           <EmptyState imageSrc={NoSearchResultsImage} message={t("Stories.noStoriesFound")} />
         ) : (

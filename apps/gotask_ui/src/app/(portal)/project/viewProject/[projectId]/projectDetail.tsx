@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
-import { ArrowBack, Delete } from "@mui/icons-material";
+import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { Project } from "../../interfaces/projectInterface";
 import { useAllUsers } from "@/app/(portal)/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
@@ -22,7 +22,6 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 
 interface ProjectDetailProps {
   project: Project;
@@ -124,7 +123,14 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
               <ArrowBack />
             </IconButton>
-            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%"
+              }}
+            >
               <Box>
                 <Typography
                   variant="h4"
@@ -134,6 +140,17 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                   {project.name}
                 </Typography>
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
+              </Box>
+              <Box
+                sx={{
+                  display: "flex"
+                }}
+              >
+                {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
+                  <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+                    <Edit />
+                  </IconButton>
+                )}
               </Box>
             </Box>
           </Box>
@@ -147,25 +164,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               />
             </Grid>
           </Grid>
-          <Grid container spacing={2} mb={3}>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transproject("detailcreatedon")}
-                value={project.createdAt ? <FormattedDateTime date={project.createdAt} /> : "-"}
-              />
-            </Grid>
-            <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText
-                label={transproject("detailupdateon")}
-                value={project.updatedAt ? <FormattedDateTime date={project.updatedAt} /> : "-"}
-              />
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ mb: 3 }} />
-
-          {/* 🔗 Hyperlinks Above Add Assignee */}
-          <Box display="flex" alignItems="center" ml={205} mb={1} gap={2}>
+          <Box display="flex" alignItems="center" mb={1} gap={2}>
             <Typography
               variant="body1"
               sx={{
@@ -194,6 +193,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               {transproject("linkstories")}
             </Typography>
           </Box>
+
+          <Divider sx={{ mb: 3 }} />
 
           {/* Assignee Section Header & Add Button */}
           <Box display="flex" justifyContent="space-between" alignItems="center" mr={4} mb={2}>
@@ -227,7 +228,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       border: "1px solid #e0e0e0"
                     }}
                   >
-                    <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1 }}>
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                      sx={{ minWidth: 0, flex: 1 }}
+                    >
                       <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
                       <Box sx={{ minWidth: 0 }}>
                         <Typography
@@ -251,19 +257,23 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                       </Box>
                     </Stack>
                     {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
-                      <IconButton
-                        color="error"
-                        onClick={() => {
-                          setSelectedUserId(user.id);
-                          setOpenDeleteDialog(true);
-                        }}
-                        sx={{
-                          transition: "0.2s ease",
-                          "&:hover": { transform: "scale(1.1)" }
-                        }}
-                      >
-                        <Delete />
-                      </IconButton>
+                      <Box sx={{ flexShrink: 0 }}>
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            setSelectedUserId(user.id);
+                            setOpenDeleteDialog(true);
+                          }}
+                          sx={{
+                            transition: "0.2s ease",
+                            "&:hover": {
+                              transform: "scale(1.1)"
+                            }
+                          }}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </Box>
                     )}
                   </Box>
                 </Grid>

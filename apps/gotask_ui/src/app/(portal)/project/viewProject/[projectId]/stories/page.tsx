@@ -7,7 +7,7 @@ import StoryList from "@/app/(portal)/projectStory/components/StoryList";
 import { useTranslations } from "next-intl";
 
 const StoriesPage = () => {
-  const t = useTranslations("Projects.Stories"); 
+  const t = useTranslations("Projects.Stories");
 
   return (
     <Box
@@ -24,7 +24,7 @@ const StoriesPage = () => {
       <ModuleHeader name={t("projectStories")} />
 
       {/* Content Section */}
-      <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
+      <Box sx={{ flex: 1, overflowY: "auto" }}>
         <StoryList />
       </Box>
     </Box>

@@ -59,7 +59,7 @@ const findProjectsByIds = async (projectIds: string[]) => {
 };
 
 // Find all userby id
-const findUser = async (id: string): Promise<IUser[] | null> => {
+const findUser = async (id: string): Promise<IUser | null> => {
   return await User.findOne({ id });
 };
 

@@ -31,7 +31,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
             <>
               <Grid item xs={12} sm={4}>
                 <FormField
-                  label={transasset("devicename")}
+                  label={`${transasset("devicename")} ${transasset("required")}`}
                   type="text"
                   placeholder={transasset("devicename")}
                   value={formData.deviceName}
@@ -51,7 +51,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
               </Grid>
               <Grid item xs={12} sm={4}>
                 <FormField
-                  label={transasset("modelname")}
+                  label={`${transasset("modelname")} ${transasset("required")}`}
                   type="text"
                   error={errors?.modelName}
                   placeholder={transasset("modelname")}
@@ -61,7 +61,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
               </Grid>
               <Grid item xs={12} sm={4}>
                 <FormField
-                  label={transasset("os")}
+                  label={`${transasset("os")} ${transasset("required")}`}
                   type="text"
                   error={errors?.os}
                   placeholder={transasset("os")}
@@ -71,7 +71,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
               </Grid>
               <Grid item xs={12} sm={4}>
                 <FormField
-                  label={transasset("ram")}
+                  label={`${transasset("ram")} ${transasset("required")}`}
                   type="text"
                   error={errors?.ram}
                   placeholder={transasset("ram")}
@@ -90,7 +90,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
               </Grid>
               <Grid item xs={12} sm={4}>
                 <FormField
-                  label={transasset("processor")}
+                  label={`${transasset("processor")} ${transasset("required")}`}
                   type="text"
                   error={errors?.processor}
                   placeholder={transasset("processor")}

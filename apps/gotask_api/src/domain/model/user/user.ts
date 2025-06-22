@@ -1,6 +1,5 @@
 import { Document, Schema, model, Types } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import bcrypt from "bcrypt";
 import { ALPHANUMERIC_REGEX } from "../../../constants/utils/regex";
 import { ISkill, SkillSchema } from "./skills";
 import { CertificateSchema, ICertificate } from "./certificate";
@@ -12,7 +11,6 @@ export interface IUser extends Document {
   last_name: string;
   emp_id?: string;
   name: string;
-  password: string;
   user_id: string;
   mobile_no: string;
   joined_date: Date;
@@ -45,7 +43,6 @@ const UserSchema = new Schema<IUser>(
       }
     },
     name: { type: String, required: true },
-    password: { type: String, required: true },
     user_id: { type: String, required: true, unique: true },
     mobile_no: { type: String, required: true },
     joined_date: { type: Date, required: true },
@@ -64,12 +61,5 @@ const UserSchema = new Schema<IUser>(
     timestamps: true
   }
 );
-
-UserSchema.pre<IUser>("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
 
 export const User = model<IUser>("User", UserSchema);

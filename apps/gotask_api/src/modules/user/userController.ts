@@ -3,15 +3,14 @@ import BaseController from "../../common/baseController";
 import jwt from "jsonwebtoken";
 import { getRoleByIdService } from "../role/roleService";
 import UserMessages from "../../constants/apiMessages/userMessage";
-import { comparePassword } from "../../constants/utils/common";
 import userService from "./userService";
 
 class UserController extends BaseController {
   async createUser(requestHelper: RequestHelper, handler: any) {
     try {
       const userData = requestHelper.getPayload();
-      const { name, user_id, roleId, password, status } = userData;
-      if (!name || !user_id || !roleId || !password || typeof status === "undefined") {
+      const { name, user_id, roleId, status } = userData;
+      if (!name || !user_id || !roleId || typeof status === "undefined") {
         throw new Error(UserMessages.CREATE.MISSING_FIELDS);
       }
       const newUser = await userService.createUser(userData);
@@ -63,8 +62,8 @@ class UserController extends BaseController {
 
   async loginUser(requestHelper: RequestHelper, handler: any) {
     try {
-      const { user_id, password } = requestHelper.getPayload();
-      if (!user_id || !password) {
+      const { user_id } = requestHelper.getPayload();
+      if (!user_id) {
         return this.sendResponse(handler, {
           success: false,
           error: UserMessages.LOGIN.MISSING_FIELDS
@@ -77,13 +76,7 @@ class UserController extends BaseController {
           error: message || UserMessages.LOGIN.USER_NOT_FOUND
         });
       }
-      const isMatch = await comparePassword(password, user.password);
-      if (!isMatch) {
-        return this.sendResponse(handler, {
-          success: false,
-          error: UserMessages.LOGIN.INVALID_CREDENTIALS
-        });
-      }
+
       const roleId = user.roleId?.id?.toString();
       if (!roleId) {
         return this.sendResponse(handler, {

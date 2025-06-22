@@ -5,13 +5,13 @@ import { Box, Grid, CircularProgress, Typography, Button } from "@mui/material";
 import { useUserTimeLogReport } from "../services/reportService";
 import { fetchProject, fetchUser } from "../../task/service/taskAction";
 import useSWR from "swr";
-import { User } from "../interface/timeLog";
 import FiltersPanel from "./reportFilterPanel";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoReportImage from "@assets/placeholderImages/noreportlog.svg";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { Project } from "../../task/interface/taskInterface";
+import { User } from "../../user/interfaces/userInterface";
+import { Project } from "../../project/interfaces/projectInterface";
 
 import TimeLogCalendarGrid from "./timeLogCalenderGrid";
 

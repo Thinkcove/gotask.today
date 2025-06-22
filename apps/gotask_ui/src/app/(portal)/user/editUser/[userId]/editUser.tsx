@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Box } from "@mui/material";
-import CommonDialog from "@/app/component/dialog/commonDialog";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -10,16 +9,18 @@ import { updateUser } from "../../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
+import { ArrowBack } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 interface EditUserProps {
   data: IUserField;
-  open: boolean;
-  onClose: () => void;
   userID: string;
   mutate: KeyedMutator<User>;
 }
 
-const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate }) => {
+const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
+  const router = useRouter();
+  const handleBack = () => router.back();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -73,7 +74,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
         message: transuser("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      onClose();
+      setTimeout(() => router.back(), 2000);
     } catch {
       setSnackbar({
         open: true,
@@ -82,41 +83,66 @@ const EditUser: React.FC<EditUserProps> = ({ data, open, onClose, userID, mutate
       });
     }
   };
+
   return (
     <Box
       sx={{
-        maxWidth: "1400px",
+        maxWidth: "1450px",
         margin: "0 auto",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column"
       }}
     >
-      <Box
-        sx={{
-          position: "sticky",
-          top: 0,
-          px: 2,
-          pt: 2,
-          zIndex: 1000,
-          flexDirection: "column",
-          gap: 2
-        }}
-      ></Box>
+      <Box sx={{ position: "sticky", top: 0, pt: 2, zIndex: 1000 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton color="primary" onClick={handleBack}>
+              <ArrowBack />
+            </IconButton>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+              {transuser("edituser")}
+            </Typography>
+          </Box>
 
-      <CommonDialog
-        open={open}
-        onClose={onClose}
-        onSubmit={handleSubmit}
-        title={transuser("edituser")}
-      >
-        <UserInput
-          formData={formData}
-          handleChange={handleChange}
-          readOnlyFields={["name"]}
-          errors={errors}
-        />
-      </CommonDialog>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="outlined"
+              sx={{
+                borderRadius: "30px",
+                color: "black",
+                border: "2px solid #741B92",
+                px: 2,
+                textTransform: "none"
+              }}
+              onClick={handleBack}
+            >
+              {transuser("cancel")}
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                borderRadius: "30px",
+                backgroundColor: "#741B92",
+                color: "white",
+                px: 2,
+                textTransform: "none",
+                fontWeight: "bold"
+              }}
+              onClick={handleSubmit}
+            >
+              {transuser("save")}
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+      <UserInput
+        formData={formData}
+        handleChange={handleChange}
+        readOnlyFields={["name"]}
+        errors={errors}
+      />
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

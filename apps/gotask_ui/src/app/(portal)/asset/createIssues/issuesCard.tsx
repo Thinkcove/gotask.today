@@ -1,30 +1,95 @@
-import React from "react";
-import { Box, Grid, Typography, Stack, Avatar } from "@mui/material";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import DescriptionIcon from "@mui/icons-material/Description";
+import React, { useState } from "react";
+import { Box, Grid, Typography, Stack, Avatar, IconButton } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import CardComponent from "@/app/component/card/cardComponent";
 import { IAssetIssues } from "../interface/asset";
-import { useAllIssues } from "../services/assetActions";
-import MonitorIcon from "@mui/icons-material/Monitor";
-import ErrorIcon from "@mui/icons-material/Error";
+import { createAssetIssues, useAllIssues, useIssuesById } from "../services/assetActions";
 import Tooltip from "@mui/material/Tooltip";
-import StatusLabelChip from "@/app/component/chip/chip";
 import { getIssuesStatusColor } from "@/app/common/constants/asset";
+import EditIcon from "@mui/icons-material/Edit";
+import CommonDialog from "@/app/component/dialog/commonDialog";
+import FormField from "@/app/component/input/formField";
+import { statusOptions } from "../assetConstants";
+import StatusIndicator from "@/app/component/status/statusIndicator";
+import HistoryIcon from "@mui/icons-material/History";
+import IssueHistoryDrawer from "./issuesDrawer";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+
+interface AssetIssueCardsProps {
+  searchText: string;
+  statusFilter: string[];
+}
 
 const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 
-const AssetIssueCards: React.FC = () => {
+const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFilter }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
-  const { getAll: allissues } = useAllIssues();
-  if (!allissues?.length) {
-    return (
-      <Box textAlign="center" mt={5} px={2}>
-        <Typography variant="body1"></Typography>
-      </Box>
-    );
-  }
+  const { getAll: allissues, mutate: issuesMutate } = useAllIssues();
+
+  const [newStatus, setNewStatus] = useState<string>("");
+  const [selectedIssueId, setSelectedIssueId] = useState<string>("");
+  const { asset: issueById } = useIssuesById(selectedIssueId);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [openHistoryDrawer, setOpenHistoryDrawer] = useState(false);
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
+
+  const handleEditClick = (issue: IAssetIssues) => {
+    setSelectedIssueId(issue.id!);
+    setNewStatus(issue.status);
+    setDialogOpen(true);
+  };
+
+  const filteredIssues = allissues.filter((issue: IAssetIssues) => {
+    const matchesSearch =
+      searchText.trim() === "" ||
+      issue.status?.toLowerCase().includes(searchText.toLowerCase()) ||
+      issue.issueType?.toLowerCase().includes(searchText.toLowerCase());
+
+    const matchesStatus = statusFilter.length === 0 || statusFilter.includes(issue.status);
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const handleStatusUpdate = async () => {
+    if (!issueById) return;
+
+    try {
+      const response = await createAssetIssues({
+        ...issueById,
+        status: newStatus
+      });
+
+      if (response.success) {
+        await issuesMutate();
+        setSnackbar({
+          open: true,
+          message: trans("issuesupdated"),
+          severity: SNACKBAR_SEVERITY.SUCCESS
+        });
+
+        // Reset
+        setDialogOpen(false);
+        setSelectedIssueId("");
+        setNewStatus("");
+      }
+    } catch (error) {
+      console.error("Update failed", error);
+    }
+  };
+
+  const handleShowHistory = (issueId: string) => {
+    setSelectedIssueId(issueId);
+    setOpenHistoryDrawer(true);
+  };
 
   return (
     <Box
@@ -37,66 +102,184 @@ const AssetIssueCards: React.FC = () => {
       }}
     >
       <Grid container spacing={3}>
-        {allissues.map((issue: IAssetIssues) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={issue.id}>
-            <CardComponent>
-              <Stack spacing={1.2}>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Avatar sx={{ bgcolor: "#ff9800", width: 36, height: 36 }}>
-                      {getInitial(String(issue?.reportedDetails?.user_id))}
-                    </Avatar>
-                    <Typography variant="subtitle2" fontWeight={600}>
-                      {issue.reportedDetails?.user_id}
-                    </Typography>
-                  </Box>
-                  <StatusLabelChip
-                    label={issue.status}
-                    color={getIssuesStatusColor(issue.status)}
-                  />
-                </Box>
+        {!allissues?.length || filteredIssues.length === 0 ? (
+          <Grid item xs={12}>
+            <EmptyState
+              imageSrc={NoAssetsImage}
+              message={searchText || statusFilter.length ? trans("nodata") : trans("noissues")}
+            />
+          </Grid>
+        ) : (
+          filteredIssues.map((issue: IAssetIssues) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={issue.id}>
+              <CardComponent
+                sx={{
+                  p: 2,
+                  borderRadius: 3,
+                  background: "linear-gradient(135deg, #fff, #f9f9f9)",
+                  transition: "0.3s ease",
+                  height: "100%"
+                }}
+              >
+                <Stack spacing={0.5}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    flexWrap="wrap"
+                    rowGap={1}
+                  >
+                    <Stack direction="row" alignItems="center" spacing={1.5}>
+                      <Avatar sx={{ bgcolor: "#ff9800", width: 40, height: 40 }}>
+                        {getInitial(String(issue?.reportedDetails?.user_id))}
+                      </Avatar>
+                      <Typography
+                        variant="subtitle2"
+                        fontWeight={600}
+                        sx={{
+                          fontSize: { xs: "0.85rem", sm: "1rem" },
+                          wordBreak: "break-word"
+                        }}
+                      >
+                        {issue.reportedDetails?.user_id}
+                      </Typography>
+                    </Stack>
 
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <MonitorIcon sx={{ fontSize: 18, color: "#741B92" }} />
-                    <Typography variant="body2" color="text.secondary">
-                      {issue.assetDetails?.modelName || "-"}
-                    </Typography>
-                  </Box>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <ErrorIcon sx={{ fontSize: 18, color: "#741B92" }} />
-                    <Typography variant="body2" color="text.secondary">
-                      {issue.issueType || "-"}
-                    </Typography>
-                  </Box>
-                </Box>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={0.5}
+                      sx={{ mt: { xs: 0.5, sm: 0 }, ml: "auto" }}
+                    >
+                      <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />
+                      <Tooltip title={trans("edit")}>
+                        <IconButton size="small" onClick={() => handleEditClick(issue)}>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </Stack>
 
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Tooltip title={trans("assignedTo")}>
-                      <AssignmentIndIcon sx={{ fontSize: 18, color: "#741B92" }} />
-                    </Tooltip>
-                    <Typography variant="body2" color="text.secondary">
-                      {issue.assigned?.user_id || "-"}
+                  <Box sx={{ p: 1.5, borderRadius: 2 }}>
+                    <Typography variant="body2" fontWeight={500}>
+                      {trans("issuesType")}{" "}
+                      <Typography component="span" fontWeight={400} color="text.secondary">
+                        {issue.issueType || "-"}
+                      </Typography>
                     </Typography>
-                  </Box>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <DescriptionIcon sx={{ fontSize: 18, color: "#741B92" }} />
+
+                    <Typography variant="body2" fontWeight={500}>
+                      {trans("model")}{" "}
+                      <Typography component="span" fontWeight={400} color="text.secondary">
+                        {issue.assetDetails?.modelName || "-"}
+                      </Typography>
+                    </Typography>
+
+                    <Typography variant="body2" fontWeight={500}>
+                      {trans("assignedTo")}:{" "}
+                      <Typography component="span" fontWeight={400} color="text.secondary">
+                        {issue.assigned?.user_id || "-"}
+                      </Typography>
+                    </Typography>
+
                     <Typography
                       variant="body2"
-                      color="text.secondary"
-                      noWrap
-                      sx={{ maxWidth: 100 }}
+                      fontWeight={500}
+                      sx={{ display: "flex", alignItems: "center" }}
                     >
-                      {issue.description || "-"}
+                      {trans("description")}:{" "}
+                      <Tooltip title={issue.description || "-"} placement="top" arrow>
+                        <Typography
+                          component="span"
+                          fontWeight={400}
+                          color="text.secondary"
+                          noWrap
+                          sx={{ maxWidth: "180px", ml: 0.5 }}
+                        >
+                          {issue.description || "-"}
+                        </Typography>
+                      </Tooltip>
                     </Typography>
+
+                    <Box
+                      onClick={() => handleShowHistory(issue.id!)}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        color: "#741B92",
+                        cursor: "pointer",
+                        justifyContent: "flex-end",
+                        mt: 1,
+                        textDecoration: "underline"
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{ textDecoration: "underline", cursor: "pointer" }}
+                      >
+                        {trans("showhistory")}
+                      </Typography>
+                      <HistoryIcon fontSize="small" />
+                    </Box>
                   </Box>
-                </Box>
-              </Stack>
-            </CardComponent>
-          </Grid>
-        ))}
+                </Stack>
+              </CardComponent>
+            </Grid>
+          ))
+        )}
+        {dialogOpen && issueById && (
+          <CommonDialog
+            open={dialogOpen}
+            onClose={() => {
+              setDialogOpen(false);
+              setSelectedIssueId("");
+              setNewStatus("");
+            }}
+            onSubmit={handleStatusUpdate}
+            title={trans("editstatus")}
+          >
+            {/* Show History Button */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                color: "#741B92",
+                cursor: "pointer",
+                px: 2,
+                pt: 1
+              }}
+            ></Box>
+
+            {/* Status Dropdown */}
+            <Box sx={{ px: 2, mt: 2 }}>
+              <FormField
+                type="select"
+                label={trans("status")}
+                placeholder={trans("status")}
+                value={newStatus}
+                options={statusOptions}
+                onChange={(val) => setNewStatus(String(val))}
+              />
+            </Box>
+          </CommonDialog>
+        )}
       </Grid>
+      {openHistoryDrawer && issueById?.issuesHistory && (
+        <IssueHistoryDrawer
+          open={openHistoryDrawer}
+          onClose={() => setOpenHistoryDrawer(false)}
+          history={issueById.issuesHistory}
+        />
+      )}
+
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </Box>
   );
 };

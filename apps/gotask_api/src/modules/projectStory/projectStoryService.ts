@@ -76,7 +76,6 @@ export const getStoriesByProjectService = async ({
   }
 };
 
-
 // GET a story by its UUID
 export const getStoryByIdService = async (storyId: string): Promise<IProjectStory | null> => {
   try {

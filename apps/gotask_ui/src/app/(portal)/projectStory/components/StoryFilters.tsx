@@ -3,25 +3,16 @@
 import React from "react";
 import { Box, Button, Tooltip } from "@mui/material";
 import FilterDropdown from "../../../component/input/filterDropDown";
-import DateDropdown from "@/app/component/input/dateDropdown";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
 interface Props {
   status: string[];
-  startDate: string;
   onStatusChange: (val: string[]) => void;
-  onStartDateChange: (val: string) => void;
   onClearFilters: () => void;
 }
 
-const StoryFilters: React.FC<Props> = ({
-  status,
-  startDate,
-  onStatusChange,
-  onStartDateChange,
-  onClearFilters
-}) => {
+const StoryFilters: React.FC<Props> = ({ status, onStatusChange, onClearFilters }) => {
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   const statusOptions = [
@@ -42,21 +33,6 @@ const StoryFilters: React.FC<Props> = ({
             .filter((opt) => selectedLabels.includes(opt.label))
             .map((opt) => opt.value);
           onStatusChange(matchedValues);
-        }}
-      />
-
-      {/* Use created date only (startDate) */}
-      <DateDropdown
-        dateFrom={startDate}
-        dateTo={startDate} // same value so user sees one date
-        onDateChange={(from) => {
-          onStartDateChange(from); // store only FROM (startDate)
-        }}
-        transtask={(key: string) => {
-          if (key === "filterduedate") return t("Stories.filters.createdDate");
-          if (key === "filterclear") return t("Stories.filters.clear");
-          if (key === "filterapply") return t("Stories.filters.apply");
-          return key;
         }}
       />
 

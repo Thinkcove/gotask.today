@@ -162,7 +162,7 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
 
                   <Box sx={{ p: 1.5, borderRadius: 2 }}>
                     <Typography variant="body2" fontWeight={500}>
-                      {trans("issuesType")}{" "}
+                      {trans("issuesTypes")}{" "}
                       <Typography component="span" fontWeight={400} color="text.secondary">
                         {issue.issueType || "-"}
                       </Typography>

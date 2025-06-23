@@ -1,6 +1,7 @@
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Column } from "@/app/component/table/table";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export interface IAssetDisplayRow {
   id?: string;
@@ -14,7 +15,8 @@ export interface IAssetDisplayRow {
 
 export const getAssetColumns = (
   transasset: (key: string) => string,
-  onEdit: (row: IAssetDisplayRow) => void
+  onEdit: (row: IAssetDisplayRow) => void,
+  onView: (row: IAssetDisplayRow) => void
 ): Column<IAssetDisplayRow>[] => [
   {
     id: "assetType",
@@ -51,9 +53,14 @@ export const getAssetColumns = (
     id: "actions",
     label: transasset("actions"),
     render: (_: unknown, row: IAssetDisplayRow) => (
-      <IconButton onClick={() => onEdit(row)} color="primary" aria-label="edit">
-        <EditIcon />
-      </IconButton>
+      <>
+        <IconButton onClick={() => onEdit(row)} color="primary" aria-label="edit">
+          <EditIcon />
+        </IconButton>
+        <IconButton onClick={() => onView(row)} color="primary" aria-label="view">
+          <VisibilityIcon />
+        </IconButton>
+      </>
     )
   }
 ];

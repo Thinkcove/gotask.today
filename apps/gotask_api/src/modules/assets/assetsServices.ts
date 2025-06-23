@@ -182,6 +182,8 @@ class assetService {
           error: AssetMessages.FETCH.NOT_FOUND
         };
       }
+      const assetType = await getAssetTypeById(data.typeId);
+
       const assetHistory = await getAssetHistoryById(data.id);
 
       const tags = await getTagsByAssetId(data.id);
@@ -189,7 +191,8 @@ class assetService {
         data: {
           ...data.toObject(),
           tags,
-          assetHistory
+          assetHistory,
+          assetType
         },
         success: true
       };

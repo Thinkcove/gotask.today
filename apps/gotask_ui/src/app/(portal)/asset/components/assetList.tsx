@@ -41,6 +41,10 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     }
   };
 
+  const handleView = (row: IAssetDisplayRow) => {
+    router.push(`/asset/viewAsset/${row.id}`);
+  };
+
   const labels = {
     assets: transasset("assets"),
     issues: transasset("issues")
@@ -63,7 +67,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     [labels.issues]: "issues"
   } as const;
 
-  const assetColumns = getAssetColumns(transasset, handleEdit);
+  const assetColumns = getAssetColumns(transasset, handleEdit, handleView);
 
   const handleActionClick = () => {
     if (initialView === transasset("selectedAsset")) {

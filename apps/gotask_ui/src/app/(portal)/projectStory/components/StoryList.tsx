@@ -1,17 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import useSWR from "swr";
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Grid,
-  IconButton,
-  Fab,
-  Tooltip,
-  Pagination
-} from "@mui/material";
+import React, { useCallback, useRef, useState } from "react";
+import useSWRInfinite from "swr/infinite";
+import { Box, Typography, CircularProgress, Grid, IconButton, Fab, Tooltip } from "@mui/material";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowBack, Add as AddIcon } from "@mui/icons-material";
 
@@ -28,6 +19,8 @@ interface StoryListProps {
   onProjectNameFetch?: (name: string) => void;
 }
 
+const limit = 12;
+
 const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
   const { projectId } = useParams();
   const router = useRouter();
@@ -35,49 +28,62 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   const initialStatus = searchParams.getAll("status");
-  const initialPage = Number(searchParams.get("page")) || 1;
   const initialStartDate = searchParams.get("startDate") || "";
 
   const [status, setStatus] = useState<string[]>(initialStatus);
-  const [page, setPage] = useState<number>(initialPage);
   const [startDate, setStartDate] = useState<string>(initialStartDate);
 
-  const limit = 8;
+  const getKey = (pageIndex: number, previousPageData: any) => {
+    if (previousPageData && !previousPageData.data.length) return null; // reached end
+    return `stories-${projectId}-${status.join(",")}-${startDate}-page-${pageIndex + 1}`;
+  };
 
-  const fetcher = async () => {
+  const fetcher = async (_key: string) => {
+    const page = Number(_key.split("page-").pop()) || 1;
     return await getStoriesByProject(projectId as string, {
       status,
+      startDate,
       page,
-      limit,
-      startDate
+      limit
     });
   };
 
-  const swrKey = `stories-${projectId}-${status.join(",") || "all"}-${page}-${startDate || "all"}`;
-  const { data, isLoading, error } = useSWR(swrKey, fetcher);
+  const { data, size, setSize, isLoading, isValidating, error } = useSWRInfinite(getKey, fetcher);
 
-  const stories: ProjectStory[] = data?.data || [];
-  const totalPages = data?.pagination?.totalPages || 1;
-  const projectName = stories[0]?.project?.name ?? "";
+  const allStories: ProjectStory[] = data?.flatMap((page) => page.data) || [];
+  const totalCount = data?.[0]?.pagination?.totalCount || 0;
+  const hasMore = allStories.length < totalCount;
 
-  // Trigger project name callback
+  const projectName = allStories[0]?.project?.name ?? "";
   if (projectName && onProjectNameFetch) {
     onProjectNameFetch(projectName);
   }
 
-  const updateQueryParams = (
-    newStatus: string[],
-    newPage: number = 1,
-    newStartDate = startDate
-  ) => {
+  // Intersection observer for infinite scroll
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const lastStoryRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node || isLoading || isValidating || !hasMore) return;
+
+      if (observerRef.current) observerRef.current.disconnect();
+
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setSize((prev) => prev + 1);
+        }
+      });
+
+      observerRef.current.observe(node);
+    },
+    [isLoading, isValidating, hasMore]
+  );
+
+  const updateQueryParams = (newStatus: string[], newStartDate = "") => {
     const params = new URLSearchParams();
 
-    if (newStatus.length > 0) {
-      newStatus.forEach((s) => params.append("status", s));
-    }
+    if (newStatus.length > 0) newStatus.forEach((s) => params.append("status", s));
     if (newStartDate) params.set("startDate", newStartDate);
 
-    params.set("page", newPage.toString());
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
@@ -115,25 +121,25 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
         startDate={startDate}
         onStatusChange={(val) => {
           setStatus(val);
-          setPage(1);
-          updateQueryParams(val, 1);
+          setSize(1);
+          updateQueryParams(val, startDate);
         }}
-        onStartDateChange={(newDate) => {
-          setStartDate(newDate);
-          setPage(1);
-          updateQueryParams(status, 1, newDate);
+        onStartDateChange={(val) => {
+          setStartDate(val);
+          setSize(1);
+          updateQueryParams(status, val);
         }}
         onClearFilters={() => {
           setStatus([]);
           setStartDate("");
-          setPage(1);
+          setSize(1);
           router.replace("?", { scroll: false });
         }}
       />
 
       {/* Story List */}
       <Box sx={{ px: 2, pt: 2 }}>
-        {isLoading ? (
+        {isLoading && size === 1 ? (
           <Box display="flex" justifyContent="center" mt={5}>
             <CircularProgress />
           </Box>
@@ -141,32 +147,29 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
           <Typography color="error" textAlign="center">
             {t("Stories.fetchError")}
           </Typography>
-        ) : stories.length === 0 ? (
+        ) : allStories.length === 0 ? (
           <EmptyState imageSrc={NoSearchResultsImage} message={t("Stories.noStoriesFound")} />
         ) : (
-          <>
-            <Grid container spacing={2}>
-              {stories.map((story: ProjectStory) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={story.id}>
-                  <StoryCard story={story} />
-                </Grid>
-              ))}
-            </Grid>
-
-            {totalPages > 1 && (
-              <Box display="flex" justifyContent="center" mt={4}>
-                <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={(e, value) => {
-                    setPage(value);
-                    updateQueryParams(status, value);
-                  }}
-                  color="primary"
-                />
-              </Box>
-            )}
-          </>
+          <Grid container spacing={2}>
+            {allStories.map((story, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                lg={3}
+                key={story.id}
+                ref={index === allStories.length - 1 ? lastStoryRef : null}
+              >
+                <StoryCard story={story} />
+              </Grid>
+            ))}
+          </Grid>
+        )}
+        {isValidating && hasMore && (
+          <Box display="flex" justifyContent="center" mt={3}>
+            <CircularProgress />
+          </Box>
         )}
       </Box>
 

@@ -17,7 +17,6 @@ export const createProjectStory = async (formData: CreateStoryPayload) => {
   });
 };
 
-
 //  Update a Project Story
 export const updateProjectStory = async (storyId: string, updatedFields: UpdateStoryPayload) => {
   return withAuth((token) => {
@@ -66,8 +65,6 @@ export const getStoriesByProject = async (
     return getData(url, token);
   });
 };
-
-
 
 //  Get Single Story by ID
 export const getProjectStoryById = async (storyId: string) => {

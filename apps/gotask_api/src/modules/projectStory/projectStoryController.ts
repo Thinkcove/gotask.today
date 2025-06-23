@@ -43,15 +43,13 @@ class ProjectStoryController extends BaseController {
   async getStoriesByProject(requestHelper: RequestHelper, handler: any) {
     try {
       const { projectId } = requestHelper.getAllParams();
-      const { status, startDate, endDate, page = 1, limit = 10 } = requestHelper.getQuery();
+      const { status, startDate, endDate } = requestHelper.getQuery();
 
       const stories = await getStoriesByProjectService({
         projectId,
         status,
         startDate,
-        endDate,
-        page: Number(page),
-        limit: Number(limit)
+        endDate
       });
 
       return this.sendResponse(handler, {

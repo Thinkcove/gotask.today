@@ -31,16 +31,12 @@ export const getStoriesByProjectService = async ({
   projectId,
   status,
   startDate,
-  endDate,
-  page,
-  limit
+  endDate
 }: {
   projectId: string;
   status?: string | string[];
   startDate?: string;
   endDate?: string;
-  page?: number;
-  limit?: number;
 }): Promise<IProjectStory[]> => {
   try {
     if (!projectId) {
@@ -49,32 +45,30 @@ export const getStoriesByProjectService = async ({
 
     const query: any = { project_id: projectId };
 
-    // Filter by status (single or multiple)
+    // ✅ Filter by status
     if (status) {
-      if (Array.isArray(status)) {
-        query.status = { $in: status };
-      } else {
-        query.status = status;
-      }
+      query.status = Array.isArray(status) ? { $in: status } : status;
     }
 
-    // Filter by createdAt range
-    if (startDate || endDate) {
-      query.createdAt = {};
-      if (startDate) query.createdAt.$gte = new Date(startDate);
-      if (endDate) query.createdAt.$lte = new Date(endDate);
+    // ✅ Filter by a specific createdAt date (startDate only)
+    if (startDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0); // Start of day
+
+      const end = new Date(startDate);
+      end.setHours(23, 59, 59, 999); // End of day
+
+      query.createdAt = { $gte: start, $lte: end };
     }
 
-    const skip = ((page || 1) - 1) * (limit || 10);
-
-    return await ProjectStory.find(query)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit || 10);
+    return await ProjectStory.find(query).sort({ createdAt: -1 });
   } catch (error: any) {
     throw new Error(error.message || storyMessages.FETCH.FAILED);
   }
 };
+
+
+
 
 // GET a story by its UUID
 export const getStoryByIdService = async (storyId: string): Promise<IProjectStory | null> => {

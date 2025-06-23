@@ -3,16 +3,25 @@
 import React from "react";
 import { Box, Button, Tooltip } from "@mui/material";
 import FilterDropdown from "../../../component/input/filterDropDown";
+import DateDropdown from "@/app/component/input/dateDropdown";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
 interface Props {
   status: string[];
+  startDate: string;
   onStatusChange: (val: string[]) => void;
+  onStartDateChange: (val: string) => void;
   onClearFilters: () => void;
 }
 
-const StoryFilters: React.FC<Props> = ({ status, onStatusChange, onClearFilters }) => {
+const StoryFilters: React.FC<Props> = ({
+  status,
+  startDate,
+  onStatusChange,
+  onStartDateChange,
+  onClearFilters
+}) => {
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   const statusOptions = [
@@ -23,7 +32,7 @@ const StoryFilters: React.FC<Props> = ({ status, onStatusChange, onClearFilters 
 
   return (
     <Box display="flex" gap={2} px={2} pt={10} alignItems="center" flexWrap="wrap">
-      {/*  Multi-select Status Filter */}
+      {/* Multi-select Status Filter */}
       <FilterDropdown
         label={t("Stories.filters.status")}
         options={statusOptions.map((opt) => opt.label)}
@@ -36,7 +45,24 @@ const StoryFilters: React.FC<Props> = ({ status, onStatusChange, onClearFilters 
         }}
       />
 
-      {/* Clear All Filters */}
+      {/* Single-Date (Created Date) Filter */}
+      <DateDropdown
+        dateFrom={startDate}
+        dateTo={startDate}
+        singleDateMode={true} 
+        onDateChange={(from) => {
+          onStartDateChange(from);
+        }}
+        transtask={(key: string) => {
+          if (key === "filterduedate") return t("Stories.filters.createdDate");
+          if (key === "filtercreateddate") return t("Stories.filters.createdDate");
+          if (key === "filterclear") return t("Stories.filters.clear");
+          if (key === "filterapply") return t("Stories.filters.apply");
+          return key;
+        }}
+      />
+
+      {/* Clear Filters Button */}
       <Tooltip title={t("Stories.filters.clearTooltip")}>
         <Button variant="outlined" size="small" onClick={onClearFilters} sx={{ height: 40 }}>
           {t("Stories.filters.clearFilters")}

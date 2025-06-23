@@ -24,18 +24,23 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
 import StoryFilters from "../components/StoryFilters";
 
-const StoryList: React.FC = () => {
+interface StoryListProps {
+  onProjectNameFetch?: (name: string) => void;
+}
+
+const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
   const { projectId } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  // ✅ Get filters from URL
   const initialStatus = searchParams.getAll("status");
   const initialPage = Number(searchParams.get("page")) || 1;
+  const initialStartDate = searchParams.get("startDate") || "";
 
   const [status, setStatus] = useState<string[]>(initialStatus);
   const [page, setPage] = useState<number>(initialPage);
+  const [startDate, setStartDate] = useState<string>(initialStartDate);
 
   const limit = 8;
 
@@ -43,23 +48,34 @@ const StoryList: React.FC = () => {
     return await getStoriesByProject(projectId as string, {
       status,
       page,
-      limit
+      limit,
+      startDate
     });
   };
 
-  const swrKey = `stories-${projectId}-${status.join(",") || "all"}-${page}`;
+  const swrKey = `stories-${projectId}-${status.join(",") || "all"}-${page}-${startDate || "all"}`;
   const { data, isLoading, error } = useSWR(swrKey, fetcher);
 
   const stories: ProjectStory[] = data?.data || [];
   const totalPages = data?.pagination?.totalPages || 1;
   const projectName = stories[0]?.project?.name ?? "";
 
-  const updateQueryParams = (newStatus: string[], newPage: number = 1) => {
+  // Trigger project name callback
+  if (projectName && onProjectNameFetch) {
+    onProjectNameFetch(projectName);
+  }
+
+  const updateQueryParams = (
+    newStatus: string[],
+    newPage: number = 1,
+    newStartDate = startDate
+  ) => {
     const params = new URLSearchParams();
 
     if (newStatus.length > 0) {
       newStatus.forEach((s) => params.append("status", s));
     }
+    if (newStartDate) params.set("startDate", newStartDate);
 
     params.set("page", newPage.toString());
     router.replace(`?${params.toString()}`, { scroll: false });
@@ -86,27 +102,36 @@ const StoryList: React.FC = () => {
         >
           <ArrowBack />
         </IconButton>
-        <Typography variant="h6" fontWeight={600}>
-          {t("Stories.titleWithProject", { name: projectName })}
-        </Typography>
+        {projectName && (
+          <Typography variant="h6" fontWeight={600}>
+            {t("Stories.titleWithProject", { name: projectName })}
+          </Typography>
+        )}
       </Box>
 
       {/* Filters */}
       <StoryFilters
         status={status}
+        startDate={startDate}
         onStatusChange={(val) => {
           setStatus(val);
           setPage(1);
           updateQueryParams(val, 1);
         }}
+        onStartDateChange={(newDate) => {
+          setStartDate(newDate);
+          setPage(1);
+          updateQueryParams(status, 1, newDate);
+        }}
         onClearFilters={() => {
           setStatus([]);
+          setStartDate("");
           setPage(1);
           router.replace("?", { scroll: false });
         }}
       />
 
-      {/* Content */}
+      {/* Story List */}
       <Box sx={{ px: 2, pt: 2 }}>
         {isLoading ? (
           <Box display="flex" justifyContent="center" mt={5}>

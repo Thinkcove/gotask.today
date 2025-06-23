@@ -11,7 +11,7 @@ interface DateDropdownProps {
   dateTo: string;
   onDateChange: (from: string, to: string) => void;
   transtask: (key: string) => string;
-  singleDateMode?: boolean; // ✅ NEW optional prop
+  singleDateMode?: boolean; 
 }
 
 const StyledTrigger = styled(Button)(({ theme }) => ({
@@ -60,7 +60,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
   dateTo,
   onDateChange,
   transtask,
-  singleDateMode = false // ✅ default false
+  singleDateMode = false 
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [tempFrom, setTempFrom] = useState(dateFrom);
@@ -75,7 +75,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
   const handleApply = () => {
     setAnchorEl(null);
     if (singleDateMode) {
-      onDateChange(tempFrom, tempFrom); // ✅ send same date for both
+      onDateChange(tempFrom, tempFrom); 
     } else {
       onDateChange(tempFrom, tempTo);
     }

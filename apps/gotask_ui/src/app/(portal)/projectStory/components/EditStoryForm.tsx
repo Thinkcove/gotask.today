@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Box, Button, CircularProgress, IconButton, Tooltip, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import { getProjectStoryById, updateProjectStory } from "../services/projectStoryService";
+import { getProjectStoryById, updateProjectStory } from "../services/projectStoryActions";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useSWR from "swr";

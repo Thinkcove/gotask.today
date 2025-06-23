@@ -15,7 +15,7 @@ import {
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowBack, Add as AddIcon } from "@mui/icons-material";
 
-import { getStoriesByProject } from "../services/projectStoryService";
+import { getStoriesByProject } from "../services/projectStoryActions";
 import { ProjectStory } from "../interfaces/projectStory";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";

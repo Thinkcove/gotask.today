@@ -9,21 +9,14 @@ import {
   PaginatedStoryResponse
 } from "../interfaces/projectStory";
 
-//  Create a new Project Story
+// Create a new Project Story
 export const createProjectStory = async (formData: CreateStoryPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/createStory/${formData.projectId}`;
-
-    const payload: Record<string, unknown> = {
-      title: formData.title,
-      description: formData.description ?? "",
-      status: formData.status ?? "to-do",
-      createdBy: formData.createdBy
-    };
-
-    return postData(url, payload, token);
+    return postData(url, formData as unknown as Record<string, unknown>, token);
   });
 };
+
 
 //  Update a Project Story
 export const updateProjectStory = async (storyId: string, updatedFields: UpdateStoryPayload) => {

@@ -19,7 +19,7 @@ import {
   getProjectStoryById,
   deleteProjectStory,
   getTasksByStory
-} from "@/app/(portal)/projectStory/services/projectStoryService";
+} from "@/app/(portal)/projectStory/services/projectStoryActions";
 
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
@@ -30,6 +30,7 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
+import EllipsisText from "../../../component/text/ellipsisText";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
@@ -151,9 +152,12 @@ const ProjectStoryDetail = () => {
       <Box sx={{ flex: 1, overflowY: "auto", mb: 2 }}>
         <Box mb={3}>
           <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-            {t("Stories.descriptionLabel") /* Add this key in your localization */}
+            {t("Stories.descriptionLabel")}
           </Typography>
-          <Typography variant="body1">{story.description || t("Stories.noDescription")}</Typography>
+          <EllipsisText
+            text={story.description || t("Stories.noDescription")}
+            maxWidth="100%"
+          />
         </Box>
 
         <LabelValueText

@@ -6,6 +6,7 @@ import FilterDropdown from "../../../component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { getTranslatedStoryStatusOptions } from "@/app/common/constants/storyStatus";
 
 interface Props {
   status: string[];
@@ -23,16 +24,10 @@ const StoryFilters: React.FC<Props> = ({
   onClearFilters
 }) => {
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-
-  const statusOptions = [
-    { label: t("Stories.filters.toDo"), value: "to-do" },
-    { label: t("Stories.filters.inProgress"), value: "in-progress" },
-    { label: t("Stories.filters.done"), value: "done" }
-  ];
+  const statusOptions = getTranslatedStoryStatusOptions(t);
 
   return (
     <Box display="flex" gap={2} px={2} pt={10} alignItems="center" flexWrap="wrap">
-      {/* Multi-select Status Filter */}
       <FilterDropdown
         label={t("Stories.filters.status")}
         options={statusOptions.map((opt) => opt.label)}
@@ -45,11 +40,10 @@ const StoryFilters: React.FC<Props> = ({
         }}
       />
 
-      {/* Single-Date (Created Date) Filter */}
       <DateDropdown
         dateFrom={startDate}
         dateTo={startDate}
-        singleDateMode={true} 
+        singleDateMode={true}
         onDateChange={(from) => {
           onStartDateChange(from);
         }}
@@ -62,7 +56,6 @@ const StoryFilters: React.FC<Props> = ({
         }}
       />
 
-      {/* Clear Filters Button */}
       <Tooltip title={t("Stories.filters.clearTooltip")}>
         <Button variant="outlined" size="small" onClick={onClearFilters} sx={{ height: 40 }}>
           {t("Stories.filters.clearFilters")}

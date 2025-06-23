@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, IconButton, Tooltip } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import { createProjectStory } from "@/app/(portal)/projectStory/services/projectStoryService";
+import { createProjectStory } from "@/app/(portal)/projectStory/services/projectStoryActions";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
@@ -20,7 +20,7 @@ const CreateStoryForm = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status] = useState<string>(STORY_STATUS.TO_DO); // always 'to-do'
+  const [status] = useState<string>(STORY_STATUS.TO_DO);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
@@ -210,7 +210,7 @@ const CreateStoryForm = () => {
           height={180}
         />
 
-        {/* ✅ Disabled Status Field */}
+        {/* Disabled Status Field */}
         <FormField
           label={t("Stories.status")}
           type="select"

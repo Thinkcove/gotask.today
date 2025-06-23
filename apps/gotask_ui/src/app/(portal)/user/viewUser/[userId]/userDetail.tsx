@@ -277,7 +277,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                               cursor: "pointer",
                               transition: "transform 0.2s",
                               "&:hover": {
-                                transform: "scale(1.02)", // Optional: hover effect
+                                transform: "scale(1.02)",
                                 boxShadow: 4
                               }
                             }}

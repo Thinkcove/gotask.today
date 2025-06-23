@@ -10,8 +10,11 @@ import { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
-import DOMPurify from "dompurify";
-import RichEditor from "@/app/component/richText/richText";
+import RichEditor from "@/app/component/richText/textEditor";
+import { RichTextReadOnly } from "mui-tiptap";
+import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
@@ -23,25 +26,23 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
   const [showAll, setShowAll] = useState(false);
   const { user } = useUser();
   const [editingComment, setEditingComment] = useState<ITaskComment | null>(null);
-  const [editValue, setEditValue] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<ITaskComment | null>(null);
 
   const handleStartEdit = (comment: ITaskComment) => {
     setEditingComment(comment);
-    setEditValue(comment.comment);
   };
 
-  const handleSaveEdit = async () => {
-    if (editingComment && editingComment.id && editValue.trim()) {
+  const handleSaveEdit = async (html: string) => {
+    const trimmedHtml = html.trim();
+    if (editingComment && editingComment.id && trimmedHtml) {
       const updatedComment: ITaskComment = {
         ...editingComment,
-        comment: editValue.trim()
+        comment: trimmedHtml
       };
 
       await updateComment(updatedComment);
       setEditingComment(null);
-      setEditValue("");
       await mutate();
     }
   };
@@ -68,6 +69,14 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
   const displayedComments = showAll ? comments : comments.slice(0, 3);
   const hasMoreComments = comments.length > 3;
 
+  const extensions = [
+    StarterKit,
+    Link,
+    Image.configure({
+      inline: false,
+      allowBase64: true
+    })
+  ];
   return (
     <Box sx={{ mt: 2 }}>
       <Box
@@ -78,21 +87,14 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
           pr: { xs: 0, sm: 1 },
           width: "100%",
           boxSizing: "border-box",
-          "&::-webkit-scrollbar": {
-            width: "6px"
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "#f1f1f1",
-            borderRadius: "3px"
-          },
+          "&::-webkit-scrollbar": { width: "6px" },
+          "&::-webkit-scrollbar-track": { background: "#f1f1f1", borderRadius: "3px" },
           "&::-webkit-scrollbar-thumb": {
             background: "#741B92",
             borderRadius: "3px",
             opacity: 0.7
           },
-          "&::-webkit-scrollbar-thumb:hover": {
-            background: "#5a1472"
-          }
+          "&::-webkit-scrollbar-thumb:hover": { background: "#5a1472" }
         }}
       >
         {displayedComments.map((comment) => {
@@ -125,15 +127,8 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
 
                 {isEditing ? (
                   <>
-                    <RichEditor content={editValue} onUpdate={(html) => setEditValue(html)} />
+                    <RichEditor content={comment.comment} onSave={handleSaveEdit} />
                     <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                      <Button
-                        variant="contained"
-                        sx={{ backgroundColor: "#741B92", textTransform: "none" }}
-                        onClick={handleSaveEdit}
-                      >
-                        {transtask("savecomment")}
-                      </Button>
                       <Button
                         variant="outlined"
                         sx={{
@@ -143,20 +138,14 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                           textTransform: "none",
                           "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
                         }}
-                        onClick={() => {
-                          setEditingComment(null);
-                          setEditValue("");
-                        }}
+                        onClick={() => setEditingComment(null)}
                       >
                         {transtask("cancelcomment")}
                       </Button>
                     </Box>
                   </>
                 ) : (
-                  <Box
-                    sx={{ mt: 1 }}
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.comment) }}
-                  />
+                  <RichTextReadOnly content={comment.comment} extensions={extensions} />
                 )}
 
                 {isOwner && !isEditing && (
@@ -168,7 +157,6 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                     >
                       {transtask("commentedit")}
                     </Typography>
-
                     <Typography
                       variant="body2"
                       sx={{
@@ -194,18 +182,11 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
         </Button>
       )}
       {showAll && hasMoreComments && (
-        <Button
-          onClick={() => setShowAll(false)}
-          size="small"
-          sx={{
-            textTransform: "none"
-          }}
-        >
+        <Button onClick={() => setShowAll(false)} size="small" sx={{ textTransform: "none" }}>
           {transtask("showless", { default: "Show less" })}
         </Button>
       )}
 
-      {/* Delete Confirmation Dialog using CommonDialog */}
       <CommonDialog
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}

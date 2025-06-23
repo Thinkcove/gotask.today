@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { ITask, ITaskComment } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import CommentHistory from "./commentsHistory";
 import { KeyedMutator } from "swr";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
-import RichEditor from "@/app/component/richText/richText";
+import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface TaskCommentsProps {
   comments: ITaskComment[];
@@ -16,17 +16,13 @@ interface TaskCommentsProps {
 
 const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const [newComment, setNewComment] = useState("");
   const [editorKey, setEditorKey] = useState(0);
-  const [isFocused, setIsFocused] = useState(false);
 
-  const handleSave = () => {
-    const trimmed = newComment.trim();
+  const handleSave = (html: string) => {
+    const trimmed = html.trim();
     if (trimmed) {
       onSave(trimmed);
-      setNewComment("");
       setEditorKey((prev) => prev + 1);
-      setIsFocused(false);
     }
   };
 
@@ -36,44 +32,14 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate })
         <Typography fontWeight="bold">{transtask("comment")}</Typography>
         <SpeakerNotesOutlined />
       </Box>
-      <Box mt={1} onClick={() => setIsFocused(true)}>
-        <RichEditor
+      <Box mt={1}>
+        <ReusableEditor
           key={editorKey}
-          content={newComment}
-          onUpdate={(html: string) => setNewComment(html)}
+          onSave={handleSave}
+          placeholder="Write your content here..."
         />
       </Box>
 
-      {/* Save and Cancel Buttons */}
-      {isFocused && (
-        <Box display="flex" gap={1} mt={1}>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#741B92", textTransform: "none" }}
-            onClick={handleSave}
-          >
-            {transtask("savecomment")}
-          </Button>
-          <Button
-            variant="outlined"
-            sx={{
-              color: "black",
-              border: "2px solid #741B92",
-              px: 2,
-              textTransform: "none",
-              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
-            }}
-            onClick={() => {
-              setNewComment("");
-              setIsFocused(false);
-            }}
-          >
-            {transtask("cancelcomment")}
-          </Button>
-        </Box>
-      )}
-
-      {/* Previous Comments */}
       {comments.length > 0 && <CommentHistory comments={comments} mutate={mutate} />}
     </Box>
   );

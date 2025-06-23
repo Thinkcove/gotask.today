@@ -8,7 +8,8 @@ import {
   TableRow,
   Paper,
   Box,
-  Typography
+  Typography,
+  Link
 } from "@mui/material";
 import { WorkPlannedEntry } from "../interface/workPlanned";
 import StatusIndicator from "@/app/component/status/statusIndicator";
@@ -243,19 +244,43 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
                     }}
                   >
                     <Box display="flex" flexDirection="column" gap={0.5}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 500,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          textTransform: "capitalize",
-                          whiteSpace: "nowrap"
-                        }}
-                        title={task.task_title || "No task title"}
-                      >
-                        {task.task_title || "No task title"}
-                      </Typography>
+                       {task.task_id ? (
+                        <Link
+                          href={`/task/viewTask/${task.task_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          underline="none"
+                          sx={{
+                            color: "black",
+                            cursor: "pointer",
+                            fontWeight: 500,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            textTransform: "capitalize",
+                            whiteSpace: "nowrap",
+                            "&:hover": {
+                              textDecoration: "underline"
+                            }
+                          }}
+                          title={task.task_title || "No task title"}
+                        >
+                          {task.task_title || "No task title"}
+                        </Link>
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 500,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            textTransform: "capitalize",
+                            whiteSpace: "nowrap"
+                          }}
+                          title={task.task_title || "No task title"}
+                        >
+                          {task.task_title || "No task title"}
+                        </Typography>
+                      )}
                       <StatusIndicator status={task.status} getColor={getStatusColor} />
                     </Box>
                   </TableCell>

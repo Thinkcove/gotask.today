@@ -41,6 +41,7 @@ const getInitialFilters = (): Filters => {
 
 const WorkPlannedReport = () => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
+  const transworkplanned = useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
   const [filters, setFilters] = useState<Filters>(getInitialFilters);
   const isClient = typeof window !== "undefined";
 
@@ -167,7 +168,7 @@ const WorkPlannedReport = () => {
             <Grid item xs={12}>
               <EmptyState
                 imageSrc={NoSearchResultsImage}
-                message={`No work planned data found for the selected date range`}
+                message={transworkplanned("nodata")}
               />
             </Grid>
           ) : reportData ? (

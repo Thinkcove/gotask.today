@@ -625,7 +625,11 @@
     "endDate": "End Date",
     "estimation": "Estimation",
     "filterHeader": "Work Planned Filters",
-    "from": "From"
+    "from": "From",
+    "labelU": "user-id-label",
+    "idU":"user-ids",
+    "labelP": "project-id-label",
+    "idP": "project-ids"
   },
   "ProjectGoal": {
     "goal": "Project Goal",

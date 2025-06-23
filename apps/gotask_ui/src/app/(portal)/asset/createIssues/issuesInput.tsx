@@ -6,6 +6,7 @@ import { IAssetIssues } from "../interface/asset";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { commonIssueTypes } from "../assetConstants";
+import { useUser } from "@/app/userContext";
 
 interface IssueInputProps {
   formData: IAssetIssues;
@@ -27,6 +28,9 @@ const IssueInput: React.FC<IssueInputProps> = ({
   errors
 }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
+  const { user } = useUser();
+  const autoFillReporter = !formData.reportedBy && user?.id;
+  if (autoFillReporter) onChange("reportedBy", user.id);
 
   return (
     <>

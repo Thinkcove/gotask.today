@@ -88,6 +88,16 @@ const CreateIssue: React.FC<CreateIssueProps> = ({ onClose, open }) => {
           message: transasset("issuessuccess"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
+        setFormData({
+          assetId: "",
+          reportedBy: "",
+          issueType: "",
+          description: "",
+          status: "",
+          assignedTo: "",
+          comment: "",
+          updatedBy: ""
+        });
         onClose();
       }
     } catch (error) {

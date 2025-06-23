@@ -453,7 +453,8 @@
     "cancel": "Cancel",
     "save": "Save",
     "failedfetch": "Failed to fetch user data",
-    "userskill":"Skills"
+    "userskill": "Skills",
+    "general": "General"
   },
   "Appbar": {
     "logout": "Logout"

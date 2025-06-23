@@ -145,9 +145,8 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
 
       {/* Tabs */}
       <Tabs value={tabIndex} onChange={handleTabChange} centered>
-        <Tab label="General Details" />
-        <Tab label="Skills" />
-
+        <Tab label={transuser("general")} />
+        <Tab label={transuser("skills")} />
       </Tabs>
 
       {/* Tab Content */}
@@ -181,7 +180,6 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
             ))}
         </Box>
       )}
-
 
       {/* Snackbar */}
       <CustomSnackbar

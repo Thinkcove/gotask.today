@@ -159,6 +159,48 @@ class UserController extends BaseController {
       return this.replyError(error);
     }
   }
+
+  async addUserSkills(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const payload = requestHelper.getPayload();
+      const skills = payload.skills;
+
+      if (!Array.isArray(skills) || skills.length === 0) {
+        throw new Error("Skills payload is required and must be an array.");
+      }
+
+      const updatedUser = await userService.addSkills(id, skills);
+      return this.sendResponse(handler, updatedUser);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async updateUserSkill(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const skillId = requestHelper.getParam("skill_id");
+      const updatedSkill = requestHelper.getPayload();
+
+      const result = await userService.updateSkill(userId, skillId, updatedSkill);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async deleteUserSkill(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const skillId = requestHelper.getParam("skill_id");
+
+      const deletedUser = await userService.deleteSkill(userId, skillId);
+      return this.sendResponse(handler, deletedUser);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
 export default UserController;

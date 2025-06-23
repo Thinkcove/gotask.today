@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, IconButton, Typography, Tabs, Tab, Divider } from "@mui/material";
+import { Box, Button, IconButton, Typography, Tabs, Tab } from "@mui/material";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { SyntheticEvent } from "react";
 
 interface EditUserProps {
   data: IUserField;
@@ -84,9 +85,9 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (field: keyof IUserField, value: any) => {
+  const handleChange = <K extends keyof IUserField>(field: K, value: IUserField[K]) => {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
-  };
+  };  
 
   const handleSkillsChange = (updatedSkills: ISkill[]) => {
     setFormData((prevData) => ({ ...prevData, skills: updatedSkills }));
@@ -112,8 +113,10 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
     }
   };
 
-  const handleTabChange = (_: any, newValue: number) => setTabIndex(newValue);
-
+  const handleTabChange = (_event: SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
+  
   return (
     <Box sx={{ maxWidth: "1450px", mx: "auto", py: 2 }}>
       {/* Header */}

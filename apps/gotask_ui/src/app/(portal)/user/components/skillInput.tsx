@@ -8,7 +8,6 @@ import { ISkill } from "../interfaces/userInterface";
 import {
   getAllSkills,
   createSkill,
-  addUserSkills,
   updateUserSkill,
   deleteUserSkill
 } from "../services/userAction";
@@ -19,13 +18,6 @@ interface SkillInputProps {
   skills: ISkill[];
   onChange: (skills: ISkill[]) => void;
 }
-
-const proficiencyFields = [
-  { key: "knowledge", label: "Knowledge" },
-  { key: "can_work", label: "Can Work" },
-  { key: "work_exposure", label: "Have Work Exposure" },
-  { key: "can_train", label: "Can Train Others" }
-];
 
 const proficiencyDescriptions: { [key: number]: string } = {
   1: "Knowledge",
@@ -42,39 +34,14 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   const fetchOptions = async () => {
     setLoading(true);
     const data = await getAllSkills();
-    setOptions(data.map((s: any) => s.name));
+    setOptions((data as { name: string }[]).map((s) => s.name));
     setLoading(false);
-  };
+  };  
 
   useEffect(() => {
     fetchOptions();
   }, []);
 
-  //   if (!name.trim() || skills.find((s) => s.name.toLowerCase() === name.toLowerCase())) return;
-
-  //   try {
-  //     //  Create skill using just name
-  //     await createSkill(name);
-
-  //     //  Refresh skill master options
-  //     await fetchOptions();
-
-  //     const newSkill: ISkill = {
-  //       skill_id: "", // will be assigned later when user saves
-  //       name,
-  //       knowledge: 0,
-  //       can_work: 0,
-  //       work_exposure: 0,
-  //       can_train: 0,
-  //       proficiency: 0
-  //     };
-
-  //     const updated = [...skills, newSkill];
-  //     onChange(updated);
-  //   } catch (error) {
-  //     console.error(" Create skill failed", error);
-  //   }
-  // };
   const onAdd = async (name: string) => {
     if (!name.trim() || skills.find((s) => s.name.toLowerCase() === name.toLowerCase())) return;
 

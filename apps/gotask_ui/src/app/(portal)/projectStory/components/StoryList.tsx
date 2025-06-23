@@ -10,16 +10,11 @@ import {
   IconButton,
   Fab,
   Tooltip,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  TextField,
-  Pagination,
-  Button
+  Pagination
 } from "@mui/material";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowBack, Add as AddIcon } from "@mui/icons-material";
+
 import { getStoriesByProject } from "../services/projectStoryService";
 import { ProjectStory } from "../interfaces/projectStory";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -27,35 +22,58 @@ import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
+import StoryFilters from "../components/StoryFilters";
 
 const StoryList: React.FC = () => {
   const { projectId } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  const [status, setStatus] = useState<string>("");
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
-  const [page, setPage] = useState<number>(1);
+  // ✅ Get filters from URL
+  const initialStatus = searchParams.getAll("status");
+  const initialStartDate = searchParams.get("startDate") || "";
+  const initialPage = Number(searchParams.get("page")) || 1;
+
+  const [status, setStatus] = useState<string[]>(initialStatus);
+  const [startDate, setStartDate] = useState<string>(initialStartDate);
+  const [page, setPage] = useState<number>(initialPage);
+
   const limit = 8;
 
+  // ✅ SWR fetcher
   const fetcher = async () => {
-    const response = await getStoriesByProject(projectId as string, {
+    return await getStoriesByProject(projectId as string, {
       status,
       startDate,
-      endDate,
       page,
       limit
     });
-    return response;
   };
 
-  const swrKey = `stories-${projectId}-${status}-${startDate}-${endDate}-${page}`;
+  const swrKey = `stories-${projectId}-${status.join(",") || "all"}-${startDate}-${page}`;
   const { data, isLoading, error } = useSWR(swrKey, fetcher);
 
   const stories: ProjectStory[] = data?.data || [];
   const totalPages = data?.pagination?.totalPages || 1;
   const projectName = stories[0]?.project?.name ?? "";
+
+  // ✅ Update URL query parameters when filters/pagination change
+  const updateQueryParams = (newStatus: string[], newStartDate: string, newPage: number = 1) => {
+    const params = new URLSearchParams();
+
+    if (newStatus.length > 0) {
+      newStatus.forEach((s) => params.append("status", s));
+    }
+
+    if (newStartDate) {
+      params.set("startDate", newStartDate);
+    }
+
+    params.set("page", newPage.toString());
+
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
@@ -84,75 +102,26 @@ const StoryList: React.FC = () => {
       </Box>
 
       {/* Filters */}
-      <Box display="flex" gap={2} px={2} pt={10} alignItems="center" flexWrap="wrap">
-        {/* Status Filter */}
-        <FormControl sx={{ minWidth: 200 }} size="small">
-          <InputLabel id="status-label" shrink>
-            {t("Stories.filters.status")}
-          </InputLabel>
-          <Select
-            labelId="status-label"
-            id="status-select"
-            value={status}
-            label={t("Stories.filters.status")}
-            displayEmpty
-            onChange={(e) => {
-              setPage(1);
-              setStatus(e.target.value);
-            }}
-          >
-            <MenuItem value="">{t("Stories.filters.all")}</MenuItem>
-            <MenuItem value="to-do">{t("Stories.filters.toDo")}</MenuItem>
-            <MenuItem value="in-progress">{t("Stories.filters.inProgress")}</MenuItem>
-            <MenuItem value="done">{t("Stories.filters.done")}</MenuItem>
-          </Select>
-        </FormControl>
-
-        {/* Start Date */}
-        <TextField
-          type="date"
-          label={t("Stories.filters.startDate")}
-          size="small"
-          InputLabelProps={{ shrink: true }}
-          value={startDate}
-          onChange={(e) => {
-            setPage(1);
-            setStartDate(e.target.value);
-          }}
-          sx={{ minWidth: 200 }}
-        />
-
-        {/* End Date */}
-        <TextField
-          type="date"
-          label={t("Stories.filters.endDate")}
-          size="small"
-          InputLabelProps={{ shrink: true }}
-          value={endDate}
-          onChange={(e) => {
-            setPage(1);
-            setEndDate(e.target.value);
-          }}
-          sx={{ minWidth: 200 }}
-        />
-
-        {/* Clear Filters Button */}
-        <Tooltip title={t("Stories.filters.clearTooltip")}>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => {
-              setStatus("");
-              setStartDate("");
-              setEndDate("");
-              setPage(1);
-            }}
-            sx={{ height: 40 }}
-          >
-            {t("Stories.filters.clearFilters")}
-          </Button>
-        </Tooltip>
-      </Box>
+      <StoryFilters
+        status={status}
+        startDate={startDate}
+        onStatusChange={(val) => {
+          setStatus(val);
+          setPage(1);
+          updateQueryParams(val, startDate, 1);
+        }}
+        onStartDateChange={(val) => {
+          setStartDate(val);
+          setPage(1);
+          updateQueryParams(status, val, 1);
+        }}
+        onClearFilters={() => {
+          setStatus([]);
+          setStartDate("");
+          setPage(1);
+          router.replace("?", { scroll: false });
+        }}
+      />
 
       {/* Content */}
       <Box sx={{ px: 2, pt: 2 }}>
@@ -182,7 +151,10 @@ const StoryList: React.FC = () => {
                 <Pagination
                   count={totalPages}
                   page={page}
-                  onChange={(e, value) => setPage(value)}
+                  onChange={(e, value) => {
+                    setPage(value);
+                    updateQueryParams(status, startDate, value);
+                  }}
                   color="primary"
                 />
               </Box>
@@ -191,17 +163,12 @@ const StoryList: React.FC = () => {
         )}
       </Box>
 
-      {/* Floating Add Button */}
+      {/* Add Story Button */}
       <Tooltip title={t("Stories.createStory")}>
         <Fab
           color="primary"
           onClick={() => router.push(`/project/viewProject/${projectId}/stories/create`)}
-          sx={{
-            position: "fixed",
-            bottom: 35,
-            right: 35,
-            zIndex: 1000
-          }}
+          sx={{ position: "fixed", bottom: 35, right: 35, zIndex: 1000 }}
         >
           <AddIcon />
         </Fab>

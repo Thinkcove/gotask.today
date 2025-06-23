@@ -36,7 +36,7 @@ export const getStoriesByProjectService = async ({
   limit
 }: {
   projectId: string;
-  status?: string;
+  status?: string | string[];
   startDate?: string;
   endDate?: string;
   page?: number;
@@ -49,9 +49,13 @@ export const getStoriesByProjectService = async ({
 
     const query: any = { project_id: projectId };
 
-    // Filter by status
+    // Filter by status (single or multiple)
     if (status) {
-      query.status = status;
+      if (Array.isArray(status)) {
+        query.status = { $in: status };
+      } else {
+        query.status = status;
+      }
     }
 
     // Filter by createdAt range
@@ -71,6 +75,7 @@ export const getStoriesByProjectService = async ({
     throw new Error(error.message || storyMessages.FETCH.FAILED);
   }
 };
+
 
 // GET a story by its UUID
 export const getStoryByIdService = async (storyId: string): Promise<IProjectStory | null> => {

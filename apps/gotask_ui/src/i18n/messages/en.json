@@ -157,6 +157,9 @@
     "goal": "Goal",
     "linkgoals": "Goals",
     "linkstories": "Stories",
+    "filterduedate": "Select Due Date",
+    "filterclear": "Clear",
+    "filterapply": "Apply",
 
     "Stories": {
       "noStoriesFound": "No stories found for this project.",
@@ -195,6 +198,7 @@
       "titleWithProject": "{name} Stories",
       "createdAt": "Created At",
       "noDescriptionShort": "No description available",
+      "descriptionLabel": "Description",
       
       "statusOptions": {
         "to-do": "To Do",
@@ -210,7 +214,10 @@
         "startDate": "Start Date",
         "endDate": "End Date",
         "clearFilters": "Clear Filters",
-        "clearTooltip": "Clear all filters"
+        "clearTooltip": "Clear all filters",
+        "createdDate": "Created Date",
+        "clear": "Clear",
+        "apply": "Apply"
       },
 
       "placeholders": {

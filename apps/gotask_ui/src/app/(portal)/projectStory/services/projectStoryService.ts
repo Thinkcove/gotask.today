@@ -52,14 +52,29 @@ export const addCommentToProjectStory = async (storyId: string, payload: AddComm
 //  Get Stories with Filters & Pagination
 export const getStoriesByProject = async (
   projectId: string,
-  queryParams: StoryQueryParams = {}
+  queryParams: Omit<StoryQueryParams, "endDate"> = {}
 ): Promise<PaginatedStoryResponse> => {
   return withAuth((token) => {
-    const query = new URLSearchParams(queryParams as Record<string, string>).toString();
-    const url = `${env.API_BASE_URL}/getStories/${projectId}?${query}`;
+    const query = new URLSearchParams();
+
+    // Handle multi-status values correctly
+    if (queryParams.status) {
+      const statuses = Array.isArray(queryParams.status)
+        ? queryParams.status
+        : [queryParams.status];
+      statuses.forEach((s) => query.append("status", s));
+    }
+
+    if (queryParams.startDate) query.set("startDate", queryParams.startDate);
+    if (queryParams.page) query.set("page", String(queryParams.page));
+    if (queryParams.limit) query.set("limit", String(queryParams.limit));
+
+    const url = `${env.API_BASE_URL}/getStories/${projectId}?${query.toString()}`;
     return getData(url, token);
   });
 };
+
+
 
 //  Get Single Story by ID
 export const getProjectStoryById = async (storyId: string) => {

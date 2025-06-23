@@ -53,25 +53,32 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           height: "100%"
         }}
       >
-        {/* Top: Title & Description */}
-        <Box sx={{ flex: 1 }}>
+        {/* Content Section (title, desc, status) */}
+        <Box sx={{ flex: 1, overflow: "hidden" }}>
+          {/* Title */}
           <Typography
             variant="h6"
             fontWeight={600}
-            sx={{ textTransform: "capitalize" }}
+            sx={{
+              textTransform: "capitalize",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}
             gutterBottom
           >
             {story.title}
           </Typography>
 
-          <Box mb={1}>
+          {/* Description */}
+          <Box mb={1} sx={{ maxHeight: 40, overflow: "hidden" }}>
             <EllipsisText
               text={story.description || t("Stories.noDescriptionShort")}
               maxWidth="100%"
             />
           </Box>
 
-          {/* Status Badge and CreatedAt */}
+          {/* Status */}
           <Stack direction="row" spacing={2} alignItems="center" mt={1}>
             <StatusIndicator
               status={status}
@@ -80,10 +87,10 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           </Stack>
         </Box>
 
-        {/* Bottom: View Details */}
+        {/* View Details Section (fixed bottom) */}
         <Box
           sx={{
-            mt: 2,
+            pt: 1,
             display: "flex",
             justifyContent: "flex-end",
             alignItems: "center"

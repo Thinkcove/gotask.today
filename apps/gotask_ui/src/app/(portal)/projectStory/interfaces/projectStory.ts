@@ -35,14 +35,14 @@ export interface AddCommentPayload {
   comment: string;
 }
 
-// Pagination Query
 export interface StoryQueryParams {
-  status?: string;
+  status?: string[]; 
   startDate?: string;
   endDate?: string;
   page?: number;
   limit?: number;
 }
+
 
 // Paginated Response
 export interface PaginatedStoryResponse {

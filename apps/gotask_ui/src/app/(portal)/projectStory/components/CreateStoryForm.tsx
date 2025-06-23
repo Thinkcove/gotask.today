@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ArrowBack } from "@mui/icons-material";
 import { useUser } from "@/app/userContext";
+import { STORY_STATUS, STORY_STATUS_OPTIONS } from "@/app/common/constants/storyStatus";
 
 const CreateStoryForm = () => {
   const { projectId } = useParams();
@@ -19,7 +20,7 @@ const CreateStoryForm = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status] = useState("to-do"); 
+  const [status] = useState<string>(STORY_STATUS.TO_DO); // always 'to-do'
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
@@ -29,6 +30,12 @@ const CreateStoryForm = () => {
   const [snackSeverity, setSnackSeverity] = useState<"success" | "error">("success");
 
   const handleCloseSnackbar = () => setSnackOpen(false);
+
+  // Format dropdown options with uppercase display
+  const statusDropdownOptions = STORY_STATUS_OPTIONS.map((opt) => ({
+    id: opt.id,
+    name: opt.name.toUpperCase()
+  }));
 
   const handleSubmit = async () => {
     let hasError = false;
@@ -60,7 +67,7 @@ const CreateStoryForm = () => {
     const payload = {
       title,
       description,
-      status,
+      status, // remains lowercase 'to-do'
       projectId: projectId as string,
       createdBy: user?.id ?? "anonymous"
     };
@@ -203,11 +210,16 @@ const CreateStoryForm = () => {
           height={180}
         />
 
-        {/* Disabled Status Field */}
-        <FormField label={t("Stories.status")} type="text" value={status} disabled />
+        {/* ✅ Disabled Status Field */}
+        <FormField
+          label={t("Stories.status")}
+          type="select"
+          options={statusDropdownOptions}
+          value={status}
+          disabled
+        />
       </Box>
 
-      {/* Snackbar */}
       <CustomSnackbar
         open={snackOpen}
         message={snackMessage}

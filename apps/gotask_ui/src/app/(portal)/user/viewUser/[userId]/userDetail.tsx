@@ -194,6 +194,46 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 )}
               </Stack>
             </Grid>
+            <Divider sx={{ my: 2 }} />
+
+            {/* User Skills */}
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                {transuser("userskill")}
+              </Typography>
+
+              {user.skills && user.skills.length > 0 && (
+                <>
+                  <Grid container spacing={2}>
+                    {user.skills.map((skill, index) => (
+                      <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Box sx={{ border: "1px solid #ccc", borderRadius: 2, p: 2 }}>
+                          <Typography variant="subtitle1" fontWeight={600}>
+                            {skill.name}
+                          </Typography>
+                          <Typography variant="body2">
+                            Proficiency:{" "}
+                            {
+                              {
+                                1: "Knowledge",
+                                2: "Can Work",
+                                3: "Have Work Exposure",
+                                4: "Has exposure, can provide solution, and train others"
+                              }[skill.proficiency]
+                            }
+                          </Typography>
+                          {skill.proficiency >= 3 && skill.experience && (
+                            <Typography variant="body2">
+                              Experience: {skill.experience} months
+                            </Typography>
+                          )}
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </>
+              )}
+            </Box>
 
             <Divider sx={{ my: 2 }} />
 

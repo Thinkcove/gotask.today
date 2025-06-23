@@ -452,7 +452,8 @@
     "experience": "Experience (months)",
     "cancel": "Cancel",
     "save": "Save",
-    "failedfetch": "Failed to fetch user data"
+    "failedfetch": "Failed to fetch user data",
+    "userskill":"Skills"
   },
   "Appbar": {
     "logout": "Logout"

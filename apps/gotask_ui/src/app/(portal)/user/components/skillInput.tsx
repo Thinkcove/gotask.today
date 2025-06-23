@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, TextField, IconButton, Grid, Divider } from "@mui/material";
+import { Box, Typography, TextField, IconButton, Grid, Divider, Stack } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import StarIcon from "@mui/icons-material/Star";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ISkill } from "../interfaces/userInterface";
-import Tooltip from "@mui/material/Tooltip";
 
 import {
   getAllSkills,
@@ -51,7 +50,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     fetchOptions();
   }, []);
 
-  // const onAdd = async (name: string) => {
   //   if (!name.trim() || skills.find((s) => s.name.toLowerCase() === name.toLowerCase())) return;
 
   //   try {
@@ -141,8 +139,23 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         loading={loading}
         renderInput={(params) => <TextField {...params} label="Add Skill" fullWidth />}
       />
-
-      <Box mt={2}>
+      <Box
+        mt={2}
+        sx={{
+          maxHeight: "600px", 
+          overflowY: "auto",
+          pr: 1,
+          pb: 2, 
+          scrollbarWidth: "thin",
+          "&::-webkit-scrollbar": {
+            width: "6px"
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#999",
+            borderRadius: "4px"
+          }
+        }}
+      >
         {skills.map((s, idx) => {
           const requiresExperience = s.proficiency >= 3;
 
@@ -161,68 +174,24 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
               <Divider sx={{ my: 1 }} />
 
-              {/* <Typography variant="body2" sx={{ mb: 1 }}>
-                Proficiency:
-              </Typography> */}
-
-              {/* <Grid container spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                <Grid item xs={12}>
-                  {[1, 2, 3, 4].map((star) => (
-                    <IconButton
-                      key={star}
-                      onClick={() => {
-                        const updatedSkill = {
-                          ...s,
-                          proficiency: star,
-                          // Clear experience if proficiency lowered
-                          experience: star < 3 ? undefined : s.experience
-                        };
-                        updateSkill(idx, updatedSkill);
-                      }}
-                    >
-                      <StarIcon color={s.proficiency >= star ? "primary" : "disabled"} />
-                    </IconButton>
-                  ))}
-                </Grid>
-              </Grid> */}
-              {/* <Grid container spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                <Grid item xs={4}>
-                  <Typography variant="body2">Proficiency</Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  {[1, 2, 3, 4].map((star) => (
-                    <IconButton
-                      key={star}
-                      onClick={() => {
-                        const updatedSkill = {
-                          ...s,
-                          proficiency: star,
-                          experience: s.experience // retain existing value
-                        };
-                        updateSkill(idx, updatedSkill);
-                      }}
-                    >
-                      <StarIcon color={s.proficiency >= star ? "primary" : "disabled"} />
-                    </IconButton>
-                  ))}
-                  {s.proficiency > 0 && (
-                    <Typography
-                      variant="caption"
-                      sx={{ mt: 1, display: "block", color: "text.secondary" }}
-                    >
-                      {proficiencyDescriptions[s.proficiency]}
-                    </Typography>
-                  )}
-                </Grid>
-              </Grid> */}
               <Grid container spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                <Grid item xs={4}>
-                  <Typography variant="body2">Proficiency</Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  {[1, 2, 3, 4].map((star) => (
-                    <Tooltip key={star} title={proficiencyDescriptions[star]} arrow>
-                      <IconButton
+                <Grid item xs={12}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    Proficiency
+                  </Typography>
+                  <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+                    {[1, 2, 3, 4].map((star) => (
+                      <Box
+                        key={star}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 0.5,
+                          cursor: "pointer",
+                          px: 1,
+                          py: 0.5,
+                          borderRadius: 1
+                        }}
                         onClick={() => {
                           const updatedSkill = {
                             ...s,
@@ -233,17 +202,12 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                         }}
                       >
                         <StarIcon color={s.proficiency >= star ? "primary" : "disabled"} />
-                      </IconButton>
-                    </Tooltip>
-                  ))}
-                  {s.proficiency > 0 && (
-                    <Typography
-                      variant="caption"
-                      sx={{ mt: 1, display: "block", color: "text.secondary", fontStyle: "italic" }}
-                    >
-                      Selected: {proficiencyDescriptions[s.proficiency]}
-                    </Typography>
-                  )}
+                        <Typography variant="caption" sx={{ whiteSpace: "nowrap" }}>
+                          {proficiencyDescriptions[star]}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Stack>
                 </Grid>
               </Grid>
 
@@ -257,8 +221,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                     updateSkill(idx, { ...s, experience: value });
                   }}
                   inputProps={{ min: 1 }}
-                  fullWidth
-                  sx={{ mt: 2 }}
+                  sx={{ width: "25%", mt: 2 }}
                 />
               )}
             </Box>

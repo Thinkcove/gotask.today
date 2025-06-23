@@ -1,8 +1,10 @@
 import { Document, Schema, model, Types } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { ALPHANUMERIC_REGEX } from "../../../constants/utils/regex";
+import { ISkill, SkillSchema } from "./skills";
+import { CertificateSchema, ICertificate } from "./certificate";
+import { IIncrementHistory, IncrementSchema } from "./increment";
 
-// Interface for the User document
 export interface IUser extends Document {
   id: string;
   first_name: string;
@@ -16,9 +18,11 @@ export interface IUser extends Document {
   roleId: Types.ObjectId;
   organization?: string[];
   projects?: string[];
+  skills?: ISkill[];
+  certificates?: ICertificate[];
+  increment_history?: IIncrementHistory[];
 }
 
-// User Schema
 const UserSchema = new Schema<IUser>(
   {
     first_name: { type: String, required: true },
@@ -29,10 +33,10 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       sparse: true,
       required: false,
-      set: (v: string) => (v === "" ? undefined : v), //  convert "" to undefined
+      set: (v: string) => (v === "" ? undefined : v),
       validate: {
         validator: function (v: string) {
-          if (!v) return true; // allow undefined/null
+          if (!v) return true;
           return ALPHANUMERIC_REGEX.test(v);
         },
         message: (props) => `${props.value} is not valid! Only letters and numbers allowed.`
@@ -41,21 +45,17 @@ const UserSchema = new Schema<IUser>(
     name: { type: String, required: true },
     user_id: { type: String, required: true, unique: true },
     mobile_no: { type: String, required: true },
-    joined_date: { type: Date, requied: true },
+    joined_date: { type: Date, required: true },
     status: { type: Boolean, default: true },
-
-    // Reference to Role
     roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true },
-
-    // Optional organizations and projects
-    organization: {
-      type: [String],
+    organization: { type: [String], default: [] },
+    projects: { type: [String], default: [] },
+    skills: {
+      type: [SkillSchema],
       default: []
     },
-    projects: {
-      type: [String],
-      default: []
-    }
+    certificates: { type: [CertificateSchema] },
+    increment_history: { type: [IncrementSchema] }
   },
   {
     timestamps: true

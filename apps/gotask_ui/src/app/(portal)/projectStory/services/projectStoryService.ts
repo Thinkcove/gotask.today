@@ -4,18 +4,28 @@ import { withAuth } from "@/app/common/utils/authToken";
 import {
   CreateStoryPayload,
   UpdateStoryPayload,
-  AddCommentPayload
+  AddCommentPayload,
+  StoryQueryParams,
+  PaginatedStoryResponse
 } from "../interfaces/projectStory";
 
-//create story
+//  Create a new Project Story
 export const createProjectStory = async (formData: CreateStoryPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/createStory/${formData.projectId}`;
-    return postData(url, formData as unknown as Record<string, unknown>, token);
+
+    const payload: Record<string, unknown> = {
+      title: formData.title,
+      description: formData.description ?? "",
+      status: formData.status ?? "to-do",
+      createdBy: formData.createdBy
+    };
+
+    return postData(url, payload, token);
   });
 };
 
-// 🔹 Update a Project Story
+//  Update a Project Story
 export const updateProjectStory = async (storyId: string, updatedFields: UpdateStoryPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/update/${storyId}`;
@@ -23,7 +33,7 @@ export const updateProjectStory = async (storyId: string, updatedFields: UpdateS
   });
 };
 
-// 🔹 Delete a Project Story
+//  Delete a Project Story
 export const deleteProjectStory = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/delete/${storyId}`;
@@ -31,7 +41,7 @@ export const deleteProjectStory = async (storyId: string) => {
   });
 };
 
-// 🔹 Add Comment to Story
+//  Add Comment to a Story
 export const addCommentToProjectStory = async (storyId: string, payload: AddCommentPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/comment/${storyId}`;
@@ -39,15 +49,19 @@ export const addCommentToProjectStory = async (storyId: string, payload: AddComm
   });
 };
 
-// 🔹 Get All Stories by Project ID
-export const getStoriesByProject = async (projectId: string) => {
+//  Get Stories with Filters & Pagination
+export const getStoriesByProject = async (
+  projectId: string,
+  queryParams: StoryQueryParams = {}
+): Promise<PaginatedStoryResponse> => {
   return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/getStories/${projectId}`;
+    const query = new URLSearchParams(queryParams as Record<string, string>).toString();
+    const url = `${env.API_BASE_URL}/getStories/${projectId}?${query}`;
     return getData(url, token);
   });
 };
 
-// 🔹 Get One Story by ID
+//  Get Single Story by ID
 export const getProjectStoryById = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/${storyId}`;
@@ -55,7 +69,7 @@ export const getProjectStoryById = async (storyId: string) => {
   });
 };
 
-// 🔹 Get Tasks under a Story
+//  Get Tasks by Story ID
 export const getTasksByStory = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/${storyId}/tasks`;

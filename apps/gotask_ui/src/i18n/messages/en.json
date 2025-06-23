@@ -195,10 +195,22 @@
       "titleWithProject": "{name} Stories",
       "createdAt": "Created At",
       "noDescriptionShort": "No description available",
+      
       "statusOptions": {
         "to-do": "To Do",
         "in-progress": "In Progress",
         "done": "Done"
+      },
+      "filters": {
+        "status": "Status",
+        "all": "All",
+        "toDo": "To Do",
+        "inProgress": "In Progress",
+        "done": "Done",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "clearFilters": "Clear Filters",
+        "clearTooltip": "Clear all filters"
       },
 
       "placeholders": {

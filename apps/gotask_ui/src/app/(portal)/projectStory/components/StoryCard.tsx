@@ -9,6 +9,7 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
+import EllipsisText from "../../../component/text/ellipsisText";
 
 interface StoryCardProps {
   story: ProjectStory;
@@ -30,7 +31,6 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
 
   return (
     <Card
-      onClick={handleClick}
       sx={{
         backgroundColor: bg,
         border: `1px solid ${border}`,
@@ -41,7 +41,6 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        cursor: "pointer",
         transition: "background-color 0.3s, border-color 0.3s",
         "&:hover": { boxShadow: 4 }
       }}
@@ -65,20 +64,12 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
             {story.title}
           </Typography>
 
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              mb: 1
-            }}
-          >
-            {story.description || t("Stories.noDescriptionShort")}
-          </Typography>
+          <Box mb={1}>
+            <EllipsisText
+              text={story.description || t("Stories.noDescriptionShort")}
+              maxWidth="100%"
+            />
+          </Box>
 
           {/* Status Badge and CreatedAt */}
           <Stack direction="row" spacing={2} alignItems="center" mt={1}>
@@ -99,11 +90,14 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           }}
         >
           <Typography
+            component="span"
+            onClick={handleClick}
             sx={{
               textTransform: "capitalize",
               mr: 0.5,
               color: "#741B92",
               fontWeight: 500,
+              cursor: "pointer",
               ":hover": { textDecoration: "underline" }
             }}
           >

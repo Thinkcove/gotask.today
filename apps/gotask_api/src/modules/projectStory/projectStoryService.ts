@@ -27,13 +27,46 @@ export const createStoryService = async (data: {
 };
 
 // GET all stories for a specific project by UUID
-export const getStoriesByProjectService = async (projectId: string): Promise<IProjectStory[]> => {
+export const getStoriesByProjectService = async ({
+  projectId,
+  status,
+  startDate,
+  endDate,
+  page,
+  limit
+}: {
+  projectId: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}): Promise<IProjectStory[]> => {
   try {
     if (!projectId) {
       throw new Error(storyMessages.FETCH.PROJECT_ID_REQUIRED);
     }
 
-    return await ProjectStory.find({ project_id: projectId }).sort({ createdAt: -1 });
+    const query: any = { project_id: projectId };
+
+    // Filter by status
+    if (status) {
+      query.status = status;
+    }
+
+    // Filter by createdAt range
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
+
+    const skip = ((page || 1) - 1) * (limit || 10);
+
+    return await ProjectStory.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit || 10);
   } catch (error: any) {
     throw new Error(error.message || storyMessages.FETCH.FAILED);
   }

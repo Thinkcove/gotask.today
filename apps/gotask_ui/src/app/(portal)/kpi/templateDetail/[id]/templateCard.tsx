@@ -5,16 +5,19 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { Template } from "../../service/templateInterface";
 import { useRouter } from "next/navigation";
-import { Cancel, CheckCircle } from "@mui/icons-material";
+import StatusIndicator from "@/app/component/status/statusIndicator";
+import { getUserStatusColor } from "@/app/common/constants/status";
+import { mildStatusColor } from "@/app/common/constants/kpi";
 
 interface TemplateCardsProps {
   templates: Template[] | null;
-  onDelete: (templateId: string) => void;
-  onUpdate: (templateId: string, updatedFields: Partial<Template>) => void;
+  onDelete: (templateId: string) => Promise<void>;
+  onUpdate: (templateId: string, updatedFields: Partial<Template>) => Promise<void>;
   onView?: (templateId: string) => void;
+  getUserStatusColor?: (status: string) => string;
 }
 
-const TemplateCards: React.FC<TemplateCardsProps> = ({ templates }) => {
+const TemplateCards: React.FC<TemplateCardsProps> = ({ templates, onView }) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
 
@@ -29,33 +32,42 @@ const TemplateCards: React.FC<TemplateCardsProps> = ({ templates }) => {
   }
 
   return (
-    <>
-      <Grid container spacing={3}>
-        {templates.map((template) => (
+    <Grid container spacing={3}>
+      {templates.map((template) => {
+        const status = template.status ? template.status.toLowerCase() : "inactive";
+        return (
           <Grid item xs={12} sm={6} md={4} key={template.id || Math.random()}>
             <Card
               elevation={3}
               sx={{
                 cursor: "pointer",
-                backgroundColor: "#f3e5f5",
-                border: "1px solid #ccc",
+                backgroundColor: mildStatusColor(status),
                 borderRadius: 4,
-                transition: "border-color 0.2s ease-in-out",
+                border: `1px solid ${getUserStatusColor?.(status)}`,
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                boxShadow: "none",
                 "&:hover": {
-                  borderColor: "primary.main"
+                  transform: "scale(1.03)",
+                  boxShadow: "none"
                 }
               }}
-              onClick={() => router.push(`/kpi/templateDetail/${template.id}`)}
+              onClick={() => {
+                if (onView) {
+                  onView(template.id);
+                } else {
+                  router.push(`/kpi/templateDetail/${template.id}`);
+                }
+              }}
             >
               <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                   <Typography variant="h6" fontWeight="bold">
-                    {template.name}
+                    {template.title}
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" mt={1}>
                   <Typography variant="body1">
-                    {transkpi("weightage")}: <strong>{template.weightage}</strong>
+                    {transkpi("weightage")}: <strong>{template.measurement_criteria}</strong>
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between">
@@ -64,34 +76,19 @@ const TemplateCards: React.FC<TemplateCardsProps> = ({ templates }) => {
                   </Typography>
                 </Box>
                 <Box display="flex" alignItems="center" gap={1} mt={2}>
-                  {template.status === "Active" ? (
-                    <>
-                      <CheckCircle sx={{ color: "green", fontSize: 18 }} />
-                      <Typography variant="body2" sx={{ color: "green" }}>
-                        {transkpi("active")}
-                      </Typography>
-                    </>
-                  ) : template.status === "Inactive" ? (
-                    <>
-                      <Cancel sx={{ color: "grey", fontSize: 18 }} />
-                      <Typography variant="body2" sx={{ color: "grey" }}>
-                        {transkpi("inactive")}
-                      </Typography>
-                    </>
-                  ) : (
-                    <>
-                      <Typography variant="body2" sx={{ color: "orange" }}>
-                        {transkpi("locked")}
-                      </Typography>
-                    </>
-                  )}
+                  <StatusIndicator
+                    status={status}
+                    getColor={getUserStatusColor}
+                    dotSize={8}
+                    capitalize
+                  />
                 </Box>
               </CardContent>
             </Card>
           </Grid>
-        ))}
-      </Grid>
-    </>
+        );
+      })}
+    </Grid>
   );
 };
 

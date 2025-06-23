@@ -1,9 +1,8 @@
-// templateInterface.ts
 export interface Template {
   id: string;
-  name: string;
+  title: string;
   description?: string;
-  weightage: string; // Aligns with measurement_criteria
+  measurement_criteria: string;
   frequency?: string;
   status: string;
   createdAt?: string;

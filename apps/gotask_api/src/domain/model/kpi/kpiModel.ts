@@ -16,8 +16,7 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
   {
     template_id: {
       type: String,
-      default: uuidv4,
-      unique: true
+      default: uuidv4
     },
     title: {
       type: String,

@@ -8,18 +8,17 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import SearchBar from "@/app/component/searchBar/searchBar";
-import Chat from "../../chatbot/components/chat";
-import { fetcher, deleteTemplate, updateTemplate } from "../service/templateAction";
-import { Template } from "../service/templateInterface";
-import CreateTemplate from "./createTemplate";
-import TemplateCards from "../templateDetail/[id]/templateCard";
+import { useRouter } from "next/navigation";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
-import router from "next/router";
+import { deleteTemplate, fetcher, updateTemplate } from "../service/templateAction";
+import { Template } from "../service/templateInterface";
+import TemplateCards from "../templateDetail/[id]/templateCard";
+import Chat from "../../chatbot/components/chat";
 
 const TemplateList = () => {
   const { canAccess } = useUserPermission();
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const {
     data: templates,
@@ -29,11 +28,6 @@ const TemplateList = () => {
     revalidateOnFocus: false,
     revalidateOnReconnect: true
   });
-
-  const filteredTemplates =
-    templates?.filter((template: Template) =>
-      template.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
 
   const handleDelete = async (templateId: string) => {
     try {
@@ -81,7 +75,6 @@ const TemplateList = () => {
         p: 3
       }}
     >
-      <CreateTemplate open={isModalOpen} onClose={() => setIsModalOpen(false)} mutate={mutate} />
       <Box mb={3} maxWidth={400}>
         <SearchBar
           value={searchTerm}
@@ -101,7 +94,7 @@ const TemplateList = () => {
         <ActionButton
           label={transkpi("createnewtemplate")}
           icon={<AddIcon sx={{ color: "white" }} />}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => router.push("/kpi/createTemplate")}
         />
       )}
     </Box>

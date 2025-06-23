@@ -158,7 +158,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
                   zIndex: 2
                 }}
               >
-                {transworkplanned("startDate")}
+                {transworkplanned("startdate")}
               </TableCell>
               <TableCell
                 rowSpan={2}
@@ -173,7 +173,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
                   zIndex: 2
                 }}
               >
-                {transworkplanned("endDate")}
+                {transworkplanned("enddate")}
               </TableCell>
               <TableCell
                 rowSpan={2}
@@ -262,9 +262,9 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
                               textDecoration: "underline"
                             }
                           }}
-                          title={task.task_title || "No task title"}
+                          title={task.task_title || transworkplanned("notask")}
                         >
-                          {task.task_title || "No task title"}
+                          {task.task_title || transworkplanned("notask")}
                         </Link>
                       ) : (
                         <Typography
@@ -276,9 +276,9 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
                             textTransform: "capitalize",
                             whiteSpace: "nowrap"
                           }}
-                          title={task.task_title || "No task title"}
+                          title={task.task_title ||transworkplanned("notask")}
                         >
-                          {task.task_title || "No task title"}
+                          {task.task_title || transworkplanned("notask")}
                         </Typography>
                       )}
                       <StatusIndicator status={task.status} getColor={getStatusColor} />

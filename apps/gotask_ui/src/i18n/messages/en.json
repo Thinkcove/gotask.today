@@ -621,15 +621,16 @@
     "user": "User",
     "testimation": "Total Estimation",
     "task": "Task",
-    "startDate": "Start Date",
-    "endDate": "End Date",
+    "startdate": "Start Date",
+    "enddate": "End Date",
     "estimation": "Estimation",
-    "filterHeader": "Work Planned Filters",
+    "filterheader": "Work Planned Filters",
     "from": "From",
-    "labelU": "user-id-label",
-    "idU":"user-ids",
-    "labelP": "project-id-label",
-    "idP": "project-ids"
+    "notask": "No task title",
+    "labelu": "user-id-label",
+    "idu":"user-ids",
+    "labelp": "project-id-label",
+    "idp": "project-ids"
   },
   "ProjectGoal": {
     "goal": "Project Goal",

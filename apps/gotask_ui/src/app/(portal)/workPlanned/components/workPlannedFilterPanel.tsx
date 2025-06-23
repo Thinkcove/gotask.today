@@ -55,7 +55,7 @@ const WorkPlannedFiltersPanel: React.FC<WorkPlannedFiltersPanelProps> = ({
     >
       <Stack spacing={2}>
         <Typography variant="body2" color="text.secondary" fontWeight={600} fontSize="1rem">
-          {transworkplanned("filterHeader")}
+          {transworkplanned("filterheader")}
         </Typography>
 
         {/* Date Range Filters */}

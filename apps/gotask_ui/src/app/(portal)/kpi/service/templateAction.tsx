@@ -15,10 +15,8 @@ export const createTemplate = async (template: Partial<Template>) => {
         status: template.status
       };
 
-      console.log("Sending payload:", payload);
       const response = await postData(url, payload, token);
-      console.log("createTemplate Raw Response:", response);
-      const data = response.data || response; // Handle flat or wrapped response
+      const data = response.data || response;
       if (!data.template_id) {
         throw new Error("Missing template_id in response");
       }
@@ -35,8 +33,7 @@ export const createTemplate = async (template: Partial<Template>) => {
     });
     return { success: true, data: response };
   } catch (error: any) {
-    console.error("Error in createTemplate:", error);
-    return { success: false, message: error.message || "Failed to create template" };
+    return { success: false, message: error.message };
   }
 };
 
@@ -44,9 +41,7 @@ export const fetchTemplates = async () => {
   try {
     const response = await withAuth(async (token) => {
       const response = await getData(`${env.API_BASE_URL}/kpi/templates`, token);
-      console.log("fetchTemplates Raw Response:", response);
       const data = Array.isArray(response) ? response : response.data || [];
-      console.log("fetchTemplates Processed Data:", data);
       return (
         data.map(
           (template: {
@@ -73,8 +68,7 @@ export const fetchTemplates = async () => {
     });
     return response;
   } catch (error: any) {
-    console.error("Error in fetchTemplates:", error);
-    throw error; // Let SWR handle the error
+    throw error;
   }
 };
 
@@ -82,7 +76,6 @@ export const fetchTemplateById = async (templateId: string) => {
   try {
     const response = await withAuth(async (token) => {
       const response = await getData(`${env.API_BASE_URL}/kpi/templates/${templateId}`, token);
-      console.log("fetchTemplateById Raw Response:", response);
       const data = response.data || response;
       return {
         id: data.template_id,
@@ -97,7 +90,6 @@ export const fetchTemplateById = async (templateId: string) => {
     });
     return response;
   } catch (error: any) {
-    console.error("Error in fetchTemplateById:", error);
     throw error;
   }
 };
@@ -114,7 +106,6 @@ export const updateTemplate = async (templateId: string, updatedFields: Partial<
         status: updatedFields.status
       };
       const response = await putData(url, payload, token);
-      console.log("updateTemplate Raw Response:", response);
       const data = response.data || response;
       return {
         id: data.template_id,
@@ -129,8 +120,7 @@ export const updateTemplate = async (templateId: string, updatedFields: Partial<
     });
     return { success: true, data: response };
   } catch (error: any) {
-    console.error("Error in updateTemplate:", error);
-    return { success: false, message: error.message || "Failed to update template" };
+    return { success: false, message: error.message };
   }
 };
 
@@ -142,7 +132,6 @@ export const deleteTemplate = async (templateId: string) => {
     });
     return response;
   } catch (error: any) {
-    console.error("Error in deleteTemplate:", error);
     throw error;
   }
 };

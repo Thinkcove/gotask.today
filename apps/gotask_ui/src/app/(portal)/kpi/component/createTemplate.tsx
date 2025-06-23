@@ -59,7 +59,6 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ open, onClose, mutate }
 
     try {
       const result = await createTemplate(newTemplate);
-      console.log("createTemplate Result:", result);
       if (!result.success) {
         setError(result.message);
         return;
@@ -119,8 +118,6 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ open, onClose, mutate }
             onChange={(val) => setStatus(val as string)}
             error={!status && error ? transkpi("validationerror") : ""}
           />
-
-          {/* Keep the radio button group as-is for weightage */}
           <FormControl component="fieldset">
             <FormLabel component="legend">{transkpi("weightage")}</FormLabel>
             <RadioGroup row value={weightage} onChange={(e) => setWeightage(e.target.value)}>

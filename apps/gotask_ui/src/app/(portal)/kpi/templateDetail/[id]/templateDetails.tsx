@@ -54,17 +54,14 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
   const [status, setStatus] = useState("");
 
   const handleBack = () => {
-    console.log("Navigating back from TemplateDetail");
     router.back();
   };
 
   const handleDeleteClick = () => {
-    console.log("Delete button clicked for template ID:", template.id);
     setOpenDialog(true);
   };
 
   const handleDeleteConfirm = async () => {
-    console.log("Confirming deletion for template ID:", template.id);
     try {
       await deleteTemplate(template.id);
 
@@ -84,7 +81,6 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
           : status === 404
             ? transkpi("notemplate")
             : error.message || transkpi("deleteFailed");
-      console.error("Deletion error:", errorMessage, error);
       setSnackbarMessage(errorMessage);
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
@@ -93,12 +89,10 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
   };
 
   const handleDialogClose = () => {
-    console.log("Closing delete confirmation dialog");
     setOpenDialog(false);
   };
 
   const handleEditOpen = (template: Template) => {
-    console.log("Opening edit dialog for template ID:", template.id);
     setEditTemplate(template);
     setName(template.name);
     setDescription(template.description || "");
@@ -115,14 +109,6 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
     }
 
     try {
-      console.log("Saving edited template:", {
-        id: editTemplate.id,
-        name,
-        description,
-        weightage,
-        frequency,
-        status
-      });
       await updateTemplate(editTemplate.id, {
         name,
         description: description || undefined,
@@ -139,7 +125,6 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
       setError("");
       mutate();
     } catch (err) {
-      console.error("Error updating template:", err);
       setError(transkpi("updateerror"));
     }
   };

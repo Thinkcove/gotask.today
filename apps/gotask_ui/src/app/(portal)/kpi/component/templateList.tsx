@@ -30,14 +30,10 @@ const TemplateList = () => {
     revalidateOnReconnect: true
   });
 
-  console.log("TemplateList SWR Data:", { templates, error, searchTerm });
-
   const filteredTemplates =
     templates?.filter((template: Template) =>
       template.name.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
-
-  console.log("TemplateList Filtered Templates:", filteredTemplates);
 
   const handleDelete = async (templateId: string) => {
     try {

@@ -27,6 +27,12 @@ interface UserDetailProps {
   mutate: KeyedMutator<User>;
 }
 
+const labelTextStyle = {
+  variant: "body2",
+  fontWeight: "bold",
+  color: "text.primary"
+} as const;
+
 const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
@@ -285,7 +291,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                             <Stack spacing={1}>
                               {/* Device Name */}
                               <Box>
-                                <Typography variant="body2" fontWeight="bold" color="text.primary">
+                                <Typography {...labelTextStyle}>
                                   {asset.deviceName ?? ""}
                                 </Typography>
                               </Box>
@@ -293,11 +299,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                               {/* Model Name */}
                               {asset.modelName && (
                                 <Box display="flex" justifyContent="space-between">
-                                  <Typography
-                                    variant="body2"
-                                    fontWeight="bold"
-                                    color="text.primary"
-                                  >
+                                  <Typography {...labelTextStyle}>
                                     {transasset("modelname")}:
                                   </Typography>
                                   <EllipsisText text={asset.modelName} maxWidth={160} />
@@ -307,13 +309,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                               {/* OS */}
                               {asset.os && (
                                 <Box display="flex" justifyContent="space-between">
-                                  <Typography
-                                    variant="body2"
-                                    fontWeight="bold"
-                                    color="text.primary"
-                                  >
-                                    {transasset("os")}:
-                                  </Typography>
+                                  <Typography {...labelTextStyle}>{transasset("os")}:</Typography>
                                   <EllipsisText text={asset.os} maxWidth={160} />
                                 </Box>
                               )}
@@ -321,11 +317,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                               {/* Processor */}
                               {asset.processor && (
                                 <Box display="flex" justifyContent="space-between">
-                                  <Typography
-                                    variant="body2"
-                                    fontWeight="bold"
-                                    color="text.primary"
-                                  >
+                                  <Typography {...labelTextStyle}>
                                     {transasset("processor")}:
                                   </Typography>
                                   <EllipsisText text={asset.processor} maxWidth={160} />
@@ -335,13 +327,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                               {/* RAM */}
                               {asset.ram && (
                                 <Box display="flex" justifyContent="space-between">
-                                  <Typography
-                                    variant="body2"
-                                    fontWeight="bold"
-                                    color="text.primary"
-                                  >
-                                    {transasset("ram")}:
-                                  </Typography>
+                                  <Typography {...labelTextStyle}>{transasset("ram")}:</Typography>
                                   <EllipsisText text={asset.ram} maxWidth={160} />
                                 </Box>
                               )}
@@ -349,11 +335,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                               {/* Storage */}
                               {asset.storage && (
                                 <Box display="flex" justifyContent="space-between">
-                                  <Typography
-                                    variant="body2"
-                                    fontWeight="bold"
-                                    color="text.primary"
-                                  >
+                                  <Typography {...labelTextStyle}>
                                     {transasset("storage")}:
                                   </Typography>
                                   <EllipsisText text={asset.storage} maxWidth={160} />
@@ -363,11 +345,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                               {/* Serial Number */}
                               {asset.serialNumber && (
                                 <Box display="flex" justifyContent="space-between">
-                                  <Typography
-                                    variant="body2"
-                                    fontWeight="bold"
-                                    color="text.primary"
-                                  >
+                                  <Typography {...labelTextStyle}>
                                     {transasset("serialnumber")}:
                                   </Typography>
                                   <EllipsisText text={asset.serialNumber} maxWidth={160} />
@@ -377,17 +355,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                               {/* Date of Purchase */}
                               {asset.dateOfPurchase && (
                                 <Box display="flex" justifyContent="space-between">
-                                  <Typography
-                                    variant="body2"
-                                    fontWeight="bold"
-                                    color="text.primary"
-                                  >
+                                  <Typography {...labelTextStyle}>
                                     {transasset("dateOfPurchase")}:
                                   </Typography>
-                                  <EllipsisText
-                                    text={new Date(asset.dateOfPurchase).toLocaleDateString()}
-                                    maxWidth={160}
-                                  />
+                                  <FormattedDateTime date={asset.dateOfPurchase} />
                                 </Box>
                               )}
                             </Stack>

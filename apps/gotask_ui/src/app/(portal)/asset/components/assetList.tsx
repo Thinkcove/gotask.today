@@ -37,7 +37,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
     if (originalAsset) {
-      router.push(`/asset/editAsset/${originalAsset.id}`);
+      router.push(`/asset/${originalAsset.id}`);
     }
   };
 
@@ -150,6 +150,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     assetType: asset.assetType?.name || "-",
     assetName: asset.deviceName || "-",
     modelName: asset.modelName || "-",
+    warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString(): "-",
     purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-",
     users:
       asset.tagData

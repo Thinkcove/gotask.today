@@ -5,19 +5,19 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { KeyedMutator } from "swr";
-import { IAssetAttributes, IAssetTags, IAssetType } from "../../interface/asset";
-import { createAssetAttributes, useAllTypes } from "../../services/assetActions";
-import AssetInput from "../../createAsset/laptopInputs"; // Create similar to ProjectInput
+import { IAssetAttributes, IAssetTags, IAssetType } from "../interface/asset";
+import { createAssetAttributes, useAllTypes } from "../services/assetActions";
+import AssetInput from "../createAsset/laptopInputs"; // Create similar to ProjectInput
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import FormField from "@/app/component/input/formField";
 import { useRouter } from "next/navigation";
 import { User } from "@/app/(portal)/user/interfaces/userInterface";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import MobileInputs from "../../createAsset/mobileInputs";
+import MobileInputs from "../createAsset/mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
 import HistoryIcon from "@mui/icons-material/History";
-import IssueHistoryDrawer from "../../createIssues/issuesDrawer";
+import IssueHistoryDrawer from "../createIssues/issuesDrawer";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -192,21 +192,23 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
                 </Typography>
 
                 {/* Show History link with icon */}
-                <Box
-                  onClick={() => setOpenHistoryDrawer(true)}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                    color: "#741B92",
-                    cursor: "pointer"
-                  }}
-                >
-                  <Typography variant="body2" sx={{ textDecoration: "underline" }}>
-                    {transasset("showhistory")}
-                  </Typography>
-                  <HistoryIcon fontSize="small" />
-                </Box>
+                {Array.isArray(data.assetHistory) && data.assetHistory.length > 0 && (
+                  <Box
+                    onClick={() => setOpenHistoryDrawer(true)}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      color: "#741B92",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ textDecoration: "underline" }}>
+                      {transasset("showhistory")}
+                    </Typography>
+                    <HistoryIcon fontSize="small" />
+                  </Box>
+                )}
               </Box>
             </Grid>
 

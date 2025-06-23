@@ -555,7 +555,7 @@
     "editstatus": "Update status",
     "showhistory": "Show History",
     "issueshistory": "Issues history",
-    "issuesTypes": "Issue Type:",
+    "issuestypes": "Issue Type:",
     "assetslog": "Log of who performed the updates in the assets",
     "isueslog": "Log of who performed the updates in the status",
     "issuesupdated": "Issues updated successfully",
@@ -630,7 +630,7 @@
     "from": "From",
     "notask": "No task title",
     "labelu": "user-id-label",
-    "idu":"user-ids",
+    "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids"
   },

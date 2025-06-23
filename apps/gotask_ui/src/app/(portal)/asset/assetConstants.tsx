@@ -11,6 +11,7 @@ export interface IAssetDisplayRow {
   purchaseDate: string;
   users: string;
   encrypted?: boolean;
+  warrantyDate?: string;
 }
 
 export const getAssetColumns = (
@@ -26,6 +27,11 @@ export const getAssetColumns = (
   {
     id: "assetName",
     label: transasset("type"),
+    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
+  },
+  {
+    id: "warrantyDate",
+    label: transasset("warrantyDate"),
     render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
   {

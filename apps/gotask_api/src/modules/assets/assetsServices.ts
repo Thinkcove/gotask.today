@@ -190,12 +190,17 @@ class assetService {
       const assetHistory = await getAssetHistoryById(data.id);
 
       const tags = await getTagsByAssetId(data.id);
+      let userData = null;
+      if (tags) {
+        userData = await findUser(tags.userId);
+      }
       return {
         data: {
           ...data.toObject(),
           tags,
           assetHistory,
-          type: assetType?.name
+          type: assetType?.name,
+          assignedTo: userData?.name
         },
         success: true
       };

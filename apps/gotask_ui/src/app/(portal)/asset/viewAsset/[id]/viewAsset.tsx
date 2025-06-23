@@ -59,7 +59,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
             <Grid item xs="auto">
               <IconButton
                 color="primary"
-                onClick={() => router.push(`/asset/editAsset/${asset?.id}`)}
+                onClick={() => router.push(`/asset/${asset?.id}`)}
               >
                 <Edit />
               </IconButton>
@@ -73,14 +73,16 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
               <LabelValueText label={trans("modelname")} value={asset?.modelName || "-"} />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("assignedTo")} value={asset?.tags?.userId || "-"} />
+              <LabelValueText label={trans("assignedTo")} value={asset?.assignedTo || "-"} />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText
-                label={trans("previouslyUsedBy")}
-                value={asset?.tags?.userId || "-"}
-              />
-            </Grid>
+            {asset?.tags?.previouslyUsedBy && (
+              <Grid item xs={12} sm={6} md={4}>
+                <LabelValueText
+                  label={trans("previouslyUsedBy")}
+                  value={asset?.tags?.previouslyUsedBy || "-"}
+                />
+              </Grid>
+            )}
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={trans("serialnumber")} value={asset?.serialNumber || "-"} />
             </Grid>

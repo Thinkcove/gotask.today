@@ -35,7 +35,7 @@ const getWorkPlannedService = async (
     due_date: 1,
     user_estimated: 1,
     status: 1,
-    task_id: "$_id",
+    task_id: "$id",
     task_title: "$title"
   };
 

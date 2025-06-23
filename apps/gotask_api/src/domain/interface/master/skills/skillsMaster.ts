@@ -19,9 +19,16 @@ const SkillMasterSchema = new Schema<ISkillMaster>(
     }
   },
   {
-    _id: false,
     timestamps: true
   }
 );
+
+SkillMasterSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  }
+});
 
 export const SkillMaster = model<ISkillMaster>("SkillMaster", SkillMasterSchema);

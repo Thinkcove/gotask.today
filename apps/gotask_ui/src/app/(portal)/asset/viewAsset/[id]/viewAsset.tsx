@@ -121,7 +121,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
             </Grid>
 
             {/* Laptop Fields */}
-            {asset?.assetType?.name === ASSET_TYPE.LAPTOP && (
+            {asset?.type === ASSET_TYPE.LAPTOP && (
               <>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText label={trans("isencrypted")} value={asset.erk || "-"} />
@@ -154,7 +154,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* Mobile Fields */}
-            {asset?.assetType?.name === ASSET_TYPE.MOBILE && (
+            {asset?.type === ASSET_TYPE.MOBILE && (
               <>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText label={trans("imeiNumber")} value={asset.imeiNumber || "-"} />

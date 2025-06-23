@@ -15,11 +15,11 @@ import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
 
 // Styled table cell
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+const StyledTableCell = styled(TableCell)(({}) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#D8C7DD",
-    color: theme.palette.common.white,
-    fontWeight: "bold"
+    fontSize: "14px",
+    color: "#000000"
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14

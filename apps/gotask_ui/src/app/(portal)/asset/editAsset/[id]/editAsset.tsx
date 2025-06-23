@@ -5,7 +5,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { KeyedMutator } from "swr";
-import { IAssetAttributes, IAssetType } from "../../interface/asset";
+import { IAssetAttributes, IAssetTags, IAssetType } from "../../interface/asset";
 import { createAssetAttributes, useAllTypes } from "../../services/assetActions";
 import AssetInput from "../../createAsset/laptopInputs"; // Create similar to ProjectInput
 import ModuleHeader from "@/app/component/header/moduleHeader";
@@ -37,6 +37,12 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
+  const [previousUserName, setPreviousUserName] = useState<string | null>(() => {
+    return data?.tags?.userName || null;
+  });
+
+  const [isAssignedToUpdated, setIsAssignedToUpdated] = useState(false);
+
   const [formData, setFormData] = useState<IAssetAttributes>(() => ({
     id: data?.id,
     typeId: data?.typeId || "",
@@ -83,9 +89,18 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   };
 
   const handleChange = <K extends keyof IAssetAttributes>(field: K, value: IAssetAttributes[K]) => {
-    if (formData) {
-      setFormData({ ...formData, [field]: value });
+    if (field === "userId" && value !== formData.userId) {
+      const prevUser = userOptions.find((u: IAssetTags) => u.id === formData.userId);
+      if (prevUser) {
+        setPreviousUserName(prevUser.name);
+      }
+      if (value !== data.tags?.userId) {
+        setIsAssignedToUpdated(true);
+      } else {
+        setIsAssignedToUpdated(false);
+      }
     }
+    setFormData({ ...formData, [field]: value });
   };
 
   const userOptions = useMemo(() => {
@@ -100,7 +115,12 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
     try {
-      await createAssetAttributes(formData);
+      const payload = {
+        ...formData,
+        previouslyUsedBy: previousUserName || undefined,
+        ...(isAssignedToUpdated ? { isAssignedToUpdated: true } : {})
+      };
+      await createAssetAttributes(payload);
       await mutate();
       setSnackbar({
         open: true,

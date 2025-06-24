@@ -614,8 +614,8 @@
     "uploadsuccess": "Upload successfully",
     "validation": "No valid attendance records processed"
   },
-  "KPI System":{
-     "viewname": "KPI System",
+  "KPI":{
+     "viewname": "KPI Template",
      "createnewtemplate":" Create new template",
      "searchplaceholder":"Search",
      "validationerror":"Name,Weightage,frequency fields are required",
@@ -652,7 +652,9 @@
      "statuserror":"Status is required",
      "weightageerror":"Weightage is required",
      "update":"Update",
-     "updatesuccess":"Template updated successfully"
+     "updatesuccess":"Template updated successfully",
+     "templatelabel":"Template",
+     "assigneelabbel":"Assignee"
   },
   "WorkPlanned": {
     "nodata": "No work planned data found for the selected date range",

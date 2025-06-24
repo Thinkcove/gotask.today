@@ -60,7 +60,7 @@
     "access": "Asset and Resources"
   },
   { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" },
-  {"text":"KPI System",
+  {"text":"KPI Template",
   "icon":"InsightsIcon",
   "path":"/kpi",
   "access":"KPI System"

@@ -45,7 +45,7 @@ const TemplateInput: React.FC<TemplateInputProps> = ({ formData, handleChange, e
           placeholder={transkpi("entername")}
           value={formData.title}
           onChange={(val) => handleChange("title", String(val))}
-          error={errors.name}
+          error={errors.title}
         />
         <FormField
           label={`${transkpi("frequency")} ${transkpi("required")}`}
@@ -92,9 +92,9 @@ const TemplateInput: React.FC<TemplateInputProps> = ({ formData, handleChange, e
             />
           ))}
         </RadioGroup>
-        {errors.weightage && (
+        {errors.measurement_criteria && (
           <Typography color="error.main" fontSize="0.875rem" sx={{ mt: 1 }}>
-            {errors.weightage}
+            {errors.measurement_criteria}
           </Typography>
         )}
       </FormControl>

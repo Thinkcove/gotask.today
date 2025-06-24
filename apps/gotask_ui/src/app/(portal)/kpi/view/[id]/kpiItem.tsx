@@ -55,7 +55,7 @@ const TemplateCards: React.FC<TemplateCardsProps> = ({ templates, onView }) => {
                 if (onView) {
                   onView(template.id);
                 } else {
-                  router.push(`/kpi/templateDetail/${template.id}`);
+                  router.push(`/kpi/view/${template.id}`);
                 }
               }}
             >

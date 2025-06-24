@@ -76,7 +76,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       setTimeout(() => {
-        router.push("/kpi");
+        router.push(`/kpi/view/${template.id}`);
       }, 1500);
     } catch {
       setSnackbar({
@@ -95,44 +95,97 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
     <>
       <Box
         sx={{
+          maxWidth: "1400px",
+          margin: "0 auto",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
           minHeight: "100vh",
-          overflowY: "auto",
-          p: { xs: 2, md: 3 },
-          pb: 16
+          overflowY: "auto"
         }}
       >
-        <Typography variant="h5" gutterBottom>
-          {transkpi("edittemplate")}
-        </Typography>
-
-        <TemplateInput formData={formData} handleChange={handleChange} errors={errors} />
-
-        {errors.general && (
-          <Typography color="error.main" fontSize="0.875rem" mb={2}>
-            {errors.general}
-          </Typography>
-        )}
-
+        {/* Sticky Top Bar */}
         <Box
           sx={{
             position: "sticky",
-            bottom: 0,
-            background: "inherit",
-            p: { xs: 2, md: 3 },
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 2,
-            zIndex: 10
+            top: 0,
+            px: 2,
+            py: 2,
+            zIndex: 1000,
+            backgroundColor: "#fff"
           }}
         >
-          <Button onClick={handleCancel} color="secondary">
-            {transkpi("cancel")}
-          </Button>
-          <Button onClick={handleUpdate} color="primary" variant="contained">
-            {transkpi("update")}
-          </Button>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%"
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+              {transkpi("edittemplate")}
+            </Typography>
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderRadius: "30px",
+                  color: "black",
+                  border: "2px solid #741B92",
+                  px: 2,
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.2)"
+                  }
+                }}
+                onClick={handleCancel}
+              >
+                {transkpi("cancel")}
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: "30px",
+                  backgroundColor: "#741B92",
+                  color: "white",
+                  px: 2,
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    backgroundColor: "rgb(202, 187, 201)"
+                  }
+                }}
+                onClick={handleUpdate}
+              >
+                {transkpi("update")}
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Scrollable Form Section */}
+        <Box
+          sx={{
+            px: 2,
+            pb: 2,
+            maxHeight: "calc(100vh - 150px)",
+            overflowY: "auto",
+            width: "100%"
+          }}
+        >
+          <TemplateInput formData={formData} handleChange={handleChange} errors={errors} />
+
+          {errors.general && (
+            <Typography color="error.main" fontSize="0.875rem" mb={2}>
+              {errors.general}
+            </Typography>
+          )}
         </Box>
       </Box>
+
+      {/* Snackbar */}
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

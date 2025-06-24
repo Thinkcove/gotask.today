@@ -12,8 +12,8 @@ import { useRouter } from "next/navigation";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { deleteTemplate, fetcher, updateTemplate } from "../service/templateAction";
 import { Template } from "../service/templateInterface";
-import TemplateCards from "../templateDetail/[id]/templateCard";
 import Chat from "../../chatbot/components/chat";
+import TemplateCards from "../view/[id]/kpiItem";
 
 const TemplateList = () => {
   const { canAccess } = useUserPermission();
@@ -87,7 +87,7 @@ const TemplateList = () => {
         templates={templates}
         onDelete={handleDelete}
         onUpdate={handleUpdate}
-        onView={(id) => router.push(`/kpi/templateDetail/${id}`)}
+        onView={(id) => router.push(`/kpi/view/${id}`)}
       />
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
       {canAccess(APPLICATIONS.KPI, ACTIONS.CREATE) && (

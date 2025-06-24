@@ -58,7 +58,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
   };
 
   const handleEditOpen = () => {
-    router.push(`/kpi/editTemplate/${template.id}`);
+    router.push(`/kpi/edit/${template.id}`);
   };
 
   return (

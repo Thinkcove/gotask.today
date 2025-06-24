@@ -157,8 +157,15 @@ export const updateWeeklyGoal = async (
 export const getWeeklyGoalById = async (goalId: string) => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/projectgoals/${goalId}`;
-    const { data } = await getData(url, token);
-    return data;
+    const response = await getData(url, token);
+    console.log("✅ Full Goal DataApi Response:", response);
+
+    // ✅ The path is correct: response.data.goal.data
+    const goalData = response;
+    if (!goalData) {
+      throw new Error("Goal data missing in response");
+    }
+    return goalData;
   });
 };
 

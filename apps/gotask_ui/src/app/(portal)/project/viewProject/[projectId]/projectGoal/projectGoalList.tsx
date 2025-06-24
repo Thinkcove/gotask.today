@@ -31,7 +31,7 @@ import ProjectGoalForm from "./projectGoalForm";
 import ProjectGoals from "./projectGoals";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import FilterDropdown from "@/app/component/input/filterDropDown";
-import HistoryDrawer from "@/app/(portal)/task/editTask/taskHistory";
+import HistoryDrawer from "./history";
 
 interface ProjectGoalListProps {
   onClose?: () => void; // optional callback prop
@@ -92,7 +92,36 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
       }
     }
   );
+  const [projectGoalHistory, setProjectGoalHistory] = useState<{
+    updateHistory?: any[];
+  } | null>(null);
+  const fieldLabelMap = {
+    goalTitle: "Goal Title",
+    description: "Description",
+    priority: "Priority",
+    projectId: "Project ID",
+    status: "Status",
+    weekEnd: "Week End",
+    weekStart: "Week Start"
+  };
 
+  // Create a new array with formatted history
+  const formattedHistory =
+    projectGoalHistory?.updateHistory?.map((item: any) => {
+      const formattedChanges = Object.entries(item.update_data)
+        .filter(([_, value]) => value !== "") // skip empty fields
+        .map(([key, value]) => {
+          const label = fieldLabelMap[key] || key;
+          return `${label} updated to "${value}"`;
+        });
+
+      return {
+        loginuser_name: "System", // or map from item.updated_by if needed
+        formatted_history: formattedChanges.join(". "),
+        created_date: item.timestamp
+      };
+    }) ?? [];
+  
   const handelOpen = () => {
     setGoalData({
       goalTitle: "",
@@ -106,7 +135,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     setOpenDialog(true);
   };
 
-  const handleEditGoal = (goal: GoalData) => {
+  const handleEditGoal = async (goal: GoalData) => {
     setGoalData({
       id: goal.id,
       goalTitle: goal.goalTitle || "",
@@ -117,10 +146,21 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
       priority: goal.priority || "",
       projectId: goal.projectId || ""
     });
-    handelProjectGoalView(goal.id || "");
-    setOpenDialog(true);
 
+    try {
+      const fetchedGoal = await getWeeklyGoalById(goal.id); // renamed to avoid conflict
+      console.log("Goal Data:", fetchedGoal);
+
+      setProjectGoalHistory({
+        updateHistory: fetchedGoal.updateHistory || []
+      });
+
+      setOpenDialog(true);
+    } catch (error) {
+      console.error("Error fetching goal for edit:", error);
+    }
   };
+  
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -176,25 +216,34 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   const [projectGoalView, setprojectGoalView] = useState<
     (GoalData & { comments: GoalComment[] }) | null
   >(null);
-  console.log("projectGoalView", projectGoalView);
+
+
+
+  console.log("projectGoalHistory", projectGoalHistory);
 
   const handelProjectGoalView = async (goalId: string) => {
+    console.log("Goal Data goalId:", goalId);
+
     try {
       const goal = await getWeeklyGoalById(goalId);
       console.log("Goal Data:", goal);
-      
+
       const comments = await getCommentsByGoalId(goalId);
-      const fullGoal = { ...goal, comments: comments || [] };
+      const fullGoal = {
+        ...goal.goal.data,
+        comments: comments || []
+      };
+
       setprojectGoalView(fullGoal);
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: transGoal("viewerror"),
-        severity: SNACKBAR_SEVERITY.ERROR
+
+      setProjectGoalHistory({
+        updateHistory: goal.updateHistory || []
       });
-      console.error("Error Project Goal View:", error);
+    } catch (error) {
+      console.error("Error fetching goal details:", error);
     }
   };
+
 
   const handleSaveComment = async (commentData: {
     goal_id: string;
@@ -275,6 +324,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   };
 
   const { user } = useUser();
+console.log();
 
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
@@ -452,7 +502,12 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
                   </Box>
                 </Box>
 
-                <ProjectGoalForm goalData={goalData} setGoalData={setGoalData} errors={errors} />
+                <ProjectGoalForm
+                  // projectGoalView={projectGoalView}
+                  goalData={goalData}
+                  setGoalData={setGoalData}
+                  errors={errors}
+                />
               </Box>
             ) : filteredGoals?.length === 0 ? (
               <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
@@ -462,7 +517,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
                   projectGoals={filteredGoals}
                   isLoading={isLoading}
                   error={!!error}
-                  formatStatus={formatStatus} 
+                  formatStatus={formatStatus}
                   handleEditGoal={handleEditGoal}
                   projectId={projectID}
                   projectGoalView={handelProjectGoalView}
@@ -478,7 +533,11 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
           severity={snackbar.severity}
           onClose={handleSnackbarClose}
         />
-        <HistoryDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} history={[]} />
+        <HistoryDrawer
+          open={openDrawer}
+          onClose={() => setOpenDrawer(false)}
+          history={formattedHistory}
+        />
       </Box>
     </>
   );

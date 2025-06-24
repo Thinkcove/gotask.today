@@ -13,8 +13,6 @@ import {
   Paper
 } from "@mui/material";
 import { InfoOutlined } from "@mui/icons-material";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
 import { getColorForUser } from "@/app/common/constants/avatar";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";

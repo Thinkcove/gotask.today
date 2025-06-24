@@ -4,14 +4,13 @@ import Autocomplete from "@mui/material/Autocomplete";
 import StarIcon from "@mui/icons-material/Star";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ISkill } from "../interfaces/userInterface";
-
+import { useTranslations } from "next-intl";
 import {
   getAllSkills,
   createSkill,
   updateUserSkill,
   deleteUserSkill
 } from "../services/userAction";
-
 
 interface SkillInputProps {
   userId: string;
@@ -30,13 +29,14 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   const [options, setOptions] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const transuser = useTranslations("User");
 
   const fetchOptions = async () => {
     setLoading(true);
     const data = await getAllSkills();
     setOptions((data as { name: string }[]).map((s) => s.name));
     setLoading(false);
-  };  
+  };
 
   useEffect(() => {
     fetchOptions();
@@ -61,7 +61,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
       console.error("Create skill failed", error);
     }
   };
-  
+
   const updateSkill = async (index: number, updated: ISkill) => {
     const newSkills = [...skills];
     newSkills[index] = updated;
@@ -83,9 +83,13 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     if (removed.skill_id) await deleteUserSkill(userId, removed.skill_id);
   };
 
+  const SkillInput = () => {
+    const transuser = useTranslations();
+    
+  };
   return (
     <Box>
-      <Typography variant="h6">Skills</Typography>
+      <Typography variant="h6">{transuser("skills")}</Typography>
 
       <Autocomplete
         freeSolo
@@ -109,10 +113,10 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
       <Box
         mt={2}
         sx={{
-          maxHeight: "600px", 
+          maxHeight: "600px",
           overflowY: "auto",
           pr: 1,
-          pb: 2, 
+          pb: 2,
           scrollbarWidth: "thin",
           "&::-webkit-scrollbar": {
             width: "6px"

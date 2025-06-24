@@ -454,8 +454,14 @@
     "save": "Save",
     "failedfetch": "Failed to fetch user data",
     "userskill": "Skills",
-    "general": "General"
+    "general": "General",
+    "projects": "Projects",
+    "assets": "Assets",
+    "noProject":"No projects assigned yet.",
+    "noAssets": "No assets assigned yet.",
+    "noskills": "No skills added yet."
   },
+
   "Appbar": {
     "logout": "Logout"
   },

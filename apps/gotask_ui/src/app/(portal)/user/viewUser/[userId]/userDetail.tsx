@@ -21,17 +21,12 @@ import { IAssetAttributes } from "@/app/(portal)/asset/interface/asset";
 import TaskToggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import CardComponent from "@/app/component/card/cardComponent";
+import { labelTextStyle } from "@/app/(portal)/asset/assetConstants";
 
 interface UserDetailProps {
   user: User;
   mutate: KeyedMutator<User>;
 }
-
-const labelTextStyle = {
-  variant: "body2",
-  fontWeight: "bold",
-  color: "text.primary"
-} as const;
 
 const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const { canAccess } = useUserPermission();
@@ -263,7 +258,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                       {user.assetDetails.map((asset: IAssetAttributes, index: number) => (
                         <Box
                           key={asset.id || index}
-                          onClick={() => router.push(`/asset/viewAsset/${asset.id}`)}
+                          onClick={() => router.push(`/asset/view/${asset.id}`)}
                           sx={{
                             minWidth: 300,
                             maxWidth: 360,

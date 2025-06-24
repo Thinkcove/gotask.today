@@ -152,7 +152,11 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
                     >
                       <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />
                       <Tooltip title={trans("edit")}>
-                        <IconButton size="small" onClick={() => handleEditClick(issue)}>
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleEditClick(issue)}
+                        >
                           <EditIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>

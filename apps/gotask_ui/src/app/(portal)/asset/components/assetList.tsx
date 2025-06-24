@@ -42,7 +42,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   };
 
   const handleView = (row: IAssetDisplayRow) => {
-    router.push(`/asset/viewAsset/${row.id}`);
+    router.push(`/asset/view/${row.id}`);
   };
 
   const labels = {

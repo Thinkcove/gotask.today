@@ -1,4 +1,5 @@
-import type { EditorOptions } from "@tiptap/core";
+import type { Extension } from "@tiptap/core";
+import { useMemo } from "react";
 import { Blockquote } from "@tiptap/extension-blockquote";
 import { Bold } from "@tiptap/extension-bold";
 import { BulletList } from "@tiptap/extension-bullet-list";
@@ -32,41 +33,33 @@ import { Text } from "@tiptap/extension-text";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Underline } from "@tiptap/extension-underline";
-import { useMemo } from "react";
-import { FontSize, HeadingWithAnchor, LinkBubbleMenuHandler, TableImproved } from "mui-tiptap";
-import { mentionSuggestionOptions } from "./mentionSuggestionOptions";
 
 import Image from "@tiptap/extension-image";
+import { FontSize, HeadingWithAnchor, LinkBubbleMenuHandler, TableImproved } from "mui-tiptap";
+import { createMentionSuggestionOptions } from "./mentionSuggestionOptions";
 
 export type UseExtensionsOptions = {
-  placeholder?: string;
+  placeholder: string;
+  userList: { id: string; mentionLabel: string }[];
 };
 
-// Custom versions to avoid extension conflicts
-const CustomLinkExtension = Link.extend({
-  inclusive: false
-});
-
-const CustomSubscript = Subscript.extend({
-  excludes: "superscript"
-});
-
-const CustomSuperscript = Superscript.extend({
-  excludes: "subscript"
-});
+const CustomLinkExtension = Link.extend({ inclusive: false });
+const CustomSubscript = Subscript.extend({ excludes: "superscript" });
+const CustomSuperscript = Superscript.extend({ excludes: "subscript" });
 
 export default function useExtensions({
-  placeholder
-}: UseExtensionsOptions = {}): EditorOptions["extensions"] {
+  placeholder,
+  userList
+}: {
+  placeholder: string;
+  userList: { id: string; mentionLabel: string }[];
+}): Extension[] {
   return useMemo(() => {
     return [
-      TableImproved.configure({
-        resizable: true
-      }),
+      TableImproved.configure({ resizable: true }),
       TableRow,
       TableHeader,
       TableCell,
-
       BulletList,
       CodeBlock,
       Document,
@@ -77,54 +70,35 @@ export default function useExtensions({
       CustomSubscript,
       CustomSuperscript,
       Text,
-
       Bold,
       Blockquote,
       Code,
       Italic,
       Underline,
       Strike,
-
-      CustomLinkExtension.configure({
-        autolink: true,
-        linkOnPaste: true,
-        openOnClick: false
-      }),
+      CustomLinkExtension.configure({ autolink: true, linkOnPaste: true, openOnClick: false }),
       LinkBubbleMenuHandler,
-
       Gapcursor,
       HeadingWithAnchor,
-      TextAlign.configure({
-        types: ["heading", "paragraph", "image"]
-      }),
+      TextAlign.configure({ types: ["heading", "paragraph", "image"] }),
       TextStyle,
       Color,
       FontFamily,
       FontSize,
       Highlight.configure({ multicolor: true }),
       HorizontalRule,
-
-      Image.configure({
-        inline: false,
-        allowBase64: true
-      }),
-
+      Image.configure({ inline: false, allowBase64: true }),
       Dropcursor,
-
       TaskList,
-      TaskItem.configure({
-        nested: true
-      }),
-
+      TaskItem.configure({ nested: true }),
       Mention.configure({
-        suggestion: mentionSuggestionOptions
+        HTMLAttributes: {
+          class: "mention"
+        },
+        suggestion: createMentionSuggestionOptions(userList)
       }),
-
-      Placeholder.configure({
-        placeholder
-      }),
-
+      Placeholder.configure({ placeholder }),
       History
-    ];
-  }, [placeholder]);
+    ] as Extension[];
+  }, [placeholder, userList]);
 }

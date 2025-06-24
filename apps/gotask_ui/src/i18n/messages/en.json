@@ -307,7 +307,11 @@
     "cancelcomments": "Cancel",
     "commmentmessage": "Are You Sure You Want to Delete This Comment?",
     "variation": "Task is ahead of estimate",
-    "variationalert": "Task is taking longer than estimated"
+    "variationalert": "Task is taking longer than estimated",
+    "placeholdercontent": "Write your here...",
+    "loadinguser": "Loading user mentions...",
+    "reuseplaceholder": "Write something here...",
+    "saved": "Save"
   },
   "User": {
     "firstname": "First name is required",
@@ -372,7 +376,7 @@
     "placeholderstatus": "Select the status",
     "nousers": "No users available",
     "searchplaceholder": "Search Users",
-    "filterstatus":"status"
+    "filterstatus": "status"
   },
   "Appbar": {
     "logout": "Logout"

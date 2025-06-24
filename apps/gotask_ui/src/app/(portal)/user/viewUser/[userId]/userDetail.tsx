@@ -21,7 +21,7 @@ import { IAssetAttributes } from "@/app/(portal)/asset/interface/asset";
 import TaskToggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import CardComponent from "@/app/component/card/cardComponent";
-import { labelTextStyle } from "@/app/(portal)/asset/assetConstants";
+import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
 
 interface UserDetailProps {
   user: User;

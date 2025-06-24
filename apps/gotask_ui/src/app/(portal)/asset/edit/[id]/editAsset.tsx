@@ -1,23 +1,24 @@
 import { useMemo, useState } from "react";
-import { Box, Button, Grid, Paper, Typography } from "@mui/material";
+import { Box, Button, Grid, IconButton, Paper, Typography } from "@mui/material";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { KeyedMutator } from "swr";
-import { IAssetAttributes, IAssetTags, IAssetType } from "../interface/asset";
-import { createAssetAttributes, useAllTypes } from "../services/assetActions";
-import AssetInput from "../createAsset/laptopInputs"; // Create similar to ProjectInput
+import { IAssetAttributes, IAssetTags, IAssetType } from "../../interface/asset";
+import { createAssetAttributes, useAllTypes } from "../../services/assetActions";
+import AssetInput from "../../createAsset/laptopInputs"; // Create similar to ProjectInput
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import FormField from "@/app/component/input/formField";
 import { useRouter } from "next/navigation";
 import { User } from "@/app/(portal)/user/interfaces/userInterface";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import MobileInputs from "../createAsset/mobileInputs";
+import MobileInputs from "../../createAsset/mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
 import HistoryIcon from "@mui/icons-material/History";
-import IssueHistoryDrawer from "../createIssues/issuesDrawer";
+import IssueHistoryDrawer from "../../createIssues/issuesDrawer";
+import { ArrowBack } from "@mui/icons-material";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -74,6 +75,8 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
 
   const { getAll: allTypes } = useAllTypes();
   const { data: users } = useSWR("fetch-user", fetcherUserList);
+
+  const handleBack = () => router.back();
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -177,20 +180,24 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
                   gap: 0.5
                 }}
               >
-                {/* Title */}
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#741B92",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1
-                  }}
-                >
-                  {transasset("updateasset")}
-                </Typography>
-
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <IconButton color="primary" onClick={handleBack}>
+                    <ArrowBack />
+                  </IconButton>
+                  {/* Title */}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      color: "#741B92",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1
+                    }}
+                  >
+                    {transasset("updateasset")}
+                  </Typography>
+                </Box>
                 {/* Show History link with icon */}
                 {Array.isArray(data.assetHistory) && data.assetHistory.length > 0 && (
                   <Box

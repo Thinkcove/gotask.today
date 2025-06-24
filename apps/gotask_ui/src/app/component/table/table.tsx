@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
+import { PAGE_OPTIONS } from "./tableConstants";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -87,8 +88,12 @@ const CustomTable = <T extends object>({
   columns,
   rows,
   minWidth = 700,
-  rowsPerPageOptions = [5, 10, 25],
-  defaultRowsPerPage = 5,
+  rowsPerPageOptions = [
+    PAGE_OPTIONS.DEFAULT_ROWS_5,
+    PAGE_OPTIONS.DEFAULT_ROWS_10,
+    PAGE_OPTIONS.DEFAULT_ROWS_25
+  ],
+  defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_5,
   maxHeight = "60vh"
 }: CustomTableProps<T>) => {
   const [page, setPage] = useState(0);

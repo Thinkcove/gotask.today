@@ -57,7 +57,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
               <Typography variant="h5">{asset?.deviceName}</Typography>
             </Grid>
             <Grid item xs="auto">
-              <IconButton color="primary" onClick={() => router.push(`/asset/${asset?.id}`)}>
+              <IconButton color="primary" onClick={() => router.push(`/asset/edit/${asset?.id}`)}>
                 <Edit />
               </IconButton>
             </Grid>

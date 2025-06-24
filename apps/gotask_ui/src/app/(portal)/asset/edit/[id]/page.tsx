@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import EditAsset from "./editAsset";
-import { useAssetById } from "../services/assetActions";
+import { useAssetById } from "../../services/assetActions";
 
 const EditAction: React.FC = () => {
   const { id } = useParams();

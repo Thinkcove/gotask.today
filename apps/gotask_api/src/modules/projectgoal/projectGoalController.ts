@@ -74,16 +74,10 @@ class ProjectGoalController extends BaseController {
       const id = requestHelper.getParam("id");
       const updateData = requestHelper.getPayload();
 
-      // Get userId either from payload (temporary for testing) or from auth
       const userId = updateData.updated_by || requestHelper.getParam("user_id");
 
-      // Log the user performing the update
-      console.log(
-        `[ProjectGoal Update] User ${userId} is updating goal ${id} with data:`,
-        updateData
-      );
+  
 
-      // Clean out `updated_by` before saving
       delete updateData.updated_by;
 
       const updatedGoal = await updateProjectGoalService(id, updateData, userId);

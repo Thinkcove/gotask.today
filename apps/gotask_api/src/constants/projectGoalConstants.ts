@@ -8,7 +8,7 @@ export const PROJECTGOAL_STATUS = {
   NOT_STARTED: "not started "
 };
 
-export const PROJECT_SEVERITY = {
+export const PROJECT_GOAL_SEVERITY = {
   LOW: "low",
   MEDIUM: "medium",
   HIGH: "high",

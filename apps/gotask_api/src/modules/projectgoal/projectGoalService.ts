@@ -9,7 +9,6 @@ import {
   getProjectGoalById,
   updateProjectGoal,
   deleteProjectGoal,
-  getAllProjectGoals,
   createProjectComment,
   deleteProjectComment,
   updateProjectComment,
@@ -184,7 +183,24 @@ const updateProjectGoalService = async (
   userId: string
 ): Promise<{ success: boolean; data?: IProjectGoal | null; message?: string }> => {
   try {
+    const existingGoal = await ProjectGoal.findOne({ id });
+
+    if (!existingGoal) {
+      return {
+        success: false,
+        message: ProjectGoalMessages.UPDATE.NOT_FOUND
+      };
+    }
+
+    const changedFields: Record<string, any> = {};
+    for (const key of Object.keys(updateData)) {
+      if (updateData[key as keyof IProjectGoal] !== existingGoal[key as keyof IProjectGoal]) {
+        changedFields[key] = updateData[key as keyof IProjectGoal];
+      }
+    }
+
     const updatedGoal = await updateProjectGoal(id, updateData);
+
     if (!updatedGoal) {
       return {
         success: false,
@@ -192,12 +208,13 @@ const updateProjectGoalService = async (
       };
     }
 
-    // ✅ Save update history
-    await ProjectGoalUpdateHistory.create({
-      goal_id: id,
-      updated_by: userId,
-      update_data: updateData
-    });
+    if (Object.keys(changedFields).length > 0) {
+      await ProjectGoalUpdateHistory.create({
+        goal_id: id,
+        updated_by: userId,
+        update_data: changedFields
+      });
+    }
 
     return {
       success: true,

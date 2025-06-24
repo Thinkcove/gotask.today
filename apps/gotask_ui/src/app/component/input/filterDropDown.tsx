@@ -5,8 +5,8 @@ import React from "react";
 interface FilterDropdownProps {
   label: string;
   options: string[];
-  selected: string[];
-  onChange: (newSelection: string[]) => void;
+  selected: string | string[];
+  onChange: (newSelection: any) => void;
   singleSelect?: boolean;
 }
 

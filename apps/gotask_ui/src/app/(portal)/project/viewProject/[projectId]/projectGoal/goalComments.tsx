@@ -18,6 +18,8 @@ const GoalComments: React.FC<GoalCommentProps> = ({
   goalId,
   user
 }) => {
+  console.log("usr", user);
+  
   const [editValue, setEditValue] = useState("");
   const [editingComment, setEditingComment] = useState<GoalComment | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

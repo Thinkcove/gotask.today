@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
-import { Box, Button, CircularProgress, Grid, IconButton, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { formatStatus } from "@/app/common/constants/project";
+import { formatStatus, PROGECT_GOAL_SEVERITY, PROJECT_GOAL } from "@/app/common/constants/project";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useUser } from "@/app/userContext";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, History } from "@mui/icons-material";
 import router from "next/router";
 import {
   createComment,
@@ -29,13 +29,16 @@ import { GoalComment, GoalData } from "../interface/projectGoal";
 import ProjectGoalView from "./projectGoalView";
 import ProjectGoalForm from "./projectGoalForm";
 import ProjectGoals from "./projectGoals";
+import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
+import FilterDropdown from "@/app/component/input/filterDropDown";
+import HistoryDrawer from "@/app/(portal)/task/editTask/taskHistory";
+
 interface ProjectGoalListProps {
   onClose?: () => void; // optional callback prop
 }
-function ProjectGoalList({ onClose }: ProjectGoalListProps) {
-  const { data: weeklyGoals, error, isLoading } = useSWR("project-goals", fetchWeeklyGoals);
-  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
+function ProjectGoalList({ onClose }: ProjectGoalListProps) {
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const { projectId } = useParams();
   const projectID = projectId as string;
   const [openDialog, setOpenDialog] = useState(false);
@@ -58,9 +61,36 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   const handleSnackbarClose = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [allGoals, setAllGoals] = useState<GoalData[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [severityFilter, setSeverityFilter] = useState<string[]>([]);
 
-  const filteredGoals = weeklyGoals?.filter((goal: any) =>
-    goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase())
+  const swrKey = [page, statusFilter, severityFilter, searchTerm];
+
+  const { data, isLoading, error } = useSWR(
+    swrKey,
+    () =>
+      fetchWeeklyGoals({
+        page,
+        pageSize: 10,
+        status: statusFilter.length ? statusFilter[0] : undefined,
+        priority: severityFilter.length ? severityFilter[0] : undefined
+      }),
+    {
+      revalidateOnFocus: false,
+      onSuccess: (res) => {
+        if (res?.goals?.length < 10) {
+          setHasMore(false); // No more pages
+        }
+        setAllGoals((prev) => {
+          const existingIds = new Set(prev.map((goal) => goal.id));
+          const newGoals = (res?.goals || []).filter((goal: any) => !existingIds.has(goal.id));
+          return [...prev, ...newGoals];
+        });
+      }
+    }
   );
 
   const handelOpen = () => {
@@ -87,25 +117,24 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
       priority: goal.priority || "",
       projectId: goal.projectId || ""
     });
-
+    handelProjectGoalView(goal.id || "");
     setOpenDialog(true);
+
   };
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-
     if (!goalData.goalTitle) newErrors.goalTitle = transGoal("titlerequired");
     if (!goalData.weekStart) newErrors.weekStart = transGoal("startweekrequired");
     if (!goalData.weekEnd) newErrors.weekEnd = transGoal("endweekrequired");
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
     try {
       const payload = {
         projectId: projectID,
@@ -116,9 +145,9 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         description: goalData.description,
         priority: goalData.priority
       };
-
       if (goalData.id) {
         await updateWeeklyGoal(goalData.id, payload as any);
+        await handelProjectGoalView(goalData.id);
         setSnackbar({
           open: true,
           message: transGoal("goalupdate"),
@@ -147,17 +176,15 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   const [projectGoalView, setprojectGoalView] = useState<
     (GoalData & { comments: GoalComment[] }) | null
   >(null);
+  console.log("projectGoalView", projectGoalView);
 
   const handelProjectGoalView = async (goalId: string) => {
     try {
       const goal = await getWeeklyGoalById(goalId);
+      console.log("Goal Data:", goal);
+      
       const comments = await getCommentsByGoalId(goalId);
-
-      const fullGoal = {
-        ...goal,
-        comments: comments || []
-      };
-
+      const fullGoal = { ...goal, comments: comments || [] };
       setprojectGoalView(fullGoal);
     } catch (error) {
       setSnackbar({
@@ -168,6 +195,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
       console.error("Error Project Goal View:", error);
     }
   };
+
   const handleSaveComment = async (commentData: {
     goal_id: string;
     comment: string;
@@ -179,11 +207,8 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         user_id: commentData.user_id,
         comments: [commentData.comment]
       };
-
       await createComment(payload);
-
       await handelProjectGoalView(commentData.goal_id);
-
       setSnackbar({
         open: true,
         message: transGoal("goalSaved"),
@@ -205,10 +230,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     updatedComment: { comment: string }
   ) => {
     try {
-      await updateComment(commentId, {
-        comments: [updatedComment.comment]
-      });
-
+      await updateComment(commentId, { comments: [updatedComment.comment] });
       if (projectGoalView?.id) {
         await handelProjectGoalView(projectGoalView.id);
       }
@@ -238,7 +260,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         message: transGoal("deletegoal"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      console.error("Error Project Goal Delete:", error);
     } catch (error) {
       setSnackbar({
         open: true,
@@ -252,7 +273,38 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   const handleBack = () => {
     router.back();
   };
+
   const { user } = useUser();
+
+  const onStatusChange = (selected: string[]) => {
+    setStatusFilter(selected);
+  };
+  const onSeverityChange = (selected: string[]) => {
+    setSeverityFilter(selected);
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    console.log("scrolling", scrollTop + clientHeight, scrollHeight);
+    if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
+      setPage((prev) => prev + 1);
+    }
+    // let tepvab= allGoals.push(data?.goals || []);
+
+    // setAllGoals((prev) => [...prev, ...(data.goals || [])]);
+  };
+
+  const filteredGoals = allGoals?.filter((goal) => {
+    const matchesSearchTerm =
+      goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      goal.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter.length ? statusFilter.includes(goal.status) : true;
+    const matchesSeverity = severityFilter.length ? severityFilter.includes(goal.priority) : true;
+    return matchesSearchTerm && matchesStatus && matchesSeverity;
+  });
+  const [openDrawer, setOpenDrawer] = useState(false);
+  console.log("openDrawer", openDrawer);
+
   if (!filteredGoals) {
     return (
       <Box
@@ -268,23 +320,45 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
       </Box>
     );
   }
+
   return (
     <>
       <Box sx={{ pt: 2 }}>
         {!openDialog && !projectGoalView && (
           <>
-            <Box display="flex" gap={2}>
-              <Grid item xs="auto">
-                <IconButton color="primary" onClick={() => onClose?.()} sx={{ ml: 1 }}>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              pb={2}
+              pr={2}
+              flexWrap="wrap"
+              gap={2}
+            >
+              <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+                <IconButton color="primary" onClick={() => onClose?.()}>
                   <ArrowBack />
                 </IconButton>
-              </Grid>
-              <Box mb={3} maxWidth={400}>
-                <SearchBar
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  sx={{ width: "100%" }}
-                  placeholder={transGoal("searchplaceholder")}
+                <Box maxWidth={400}>
+                  <SearchBar
+                    value={searchTerm}
+                    onChange={setSearchTerm}
+                    sx={{ width: "100%" }}
+                    placeholder={transGoal("searchplaceholder")}
+                  />
+                </Box>
+              </Box>
+              <Box display="flex" alignItems="center" gap={2} mt={{ xs: 2, md: 0 }}>
+                <FilterDropdown
+                  label="Priority"
+                  options={Object.values(PROJECT_GOAL)}
+                  selected={statusFilter}
+                  onChange={onStatusChange}
+                />
+                <FilterDropdown
+                  label="Severity"
+                  options={Object.values(PROGECT_GOAL_SEVERITY)}
+                  selected={severityFilter}
+                  onChange={onSeverityChange}
                 />
               </Box>
             </Box>
@@ -302,6 +376,24 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
           />
         ) : (
           <>
+            <Box
+              onClick={() => {
+                console.log("Show History clicked");
+                setOpenDrawer(true);
+              }}
+              sx={{
+                textDecoration: "underline",
+                display: "flex",
+                gap: 1,
+                color: "#741B92",
+                px: 2,
+                cursor: "pointer",
+                alignItems: "center"
+              }}
+            >
+              <Typography>{transGoal("showhistory")}</Typography>
+              <History />
+            </Box>
             {!openDialog && (
               <ActionButton
                 label={transGoal("editgoal")}
@@ -311,72 +403,72 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
             )}
 
             {openDialog ? (
-              <>
-                <Box sx={{ p: 2 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      width: "100%"
-                    }}
-                  >
-                    <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-                      {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
-                    </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <Button
-                        variant="outlined"
-                        sx={{
-                          borderRadius: "30px",
-                          color: "black",
-                          border: "2px solid  #741B92",
-                          px: 2,
-                          textTransform: "none",
-                          "&:hover": {
-                            backgroundColor: "rgba(255, 255, 255, 0.2)"
-                          }
-                        }}
-                        onClick={() => setOpenDialog(false)}
-                      >
-                        {transGoal("cancel")}
-                      </Button>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          borderRadius: "30px",
-                          backgroundColor: " #741B92",
-                          color: "white",
-                          px: 2,
-                          textTransform: "none",
-                          fontWeight: "bold",
-                          "&:hover": {
-                            backgroundColor: "rgb(202, 187, 201)"
-                          }
-                        }}
-                        onClick={handleSubmit}
-                      >
-                        {goalData.id ? transGoal("update") : transGoal("create")}
-                      </Button>
-                    </Box>
+              <Box sx={{ p: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%"
+                  }}
+                >
+                  <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+                    {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        borderRadius: "30px",
+                        color: "black",
+                        border: "2px solid #741B92",
+                        px: 2,
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "rgba(255, 255, 255, 0.2)"
+                        }
+                      }}
+                      onClick={() => setOpenDialog(false)}
+                    >
+                      {transGoal("cancel")}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        borderRadius: "30px",
+                        backgroundColor: "#741B92",
+                        color: "white",
+                        px: 2,
+                        textTransform: "none",
+                        fontWeight: "bold",
+                        "&:hover": {
+                          backgroundColor: "rgb(202, 187, 201)"
+                        }
+                      }}
+                      onClick={handleSubmit}
+                    >
+                      {goalData.id ? transGoal("update") : transGoal("create")}
+                    </Button>
                   </Box>
-                  <ProjectGoalForm goalData={goalData} setGoalData={setGoalData} errors={errors} />
                 </Box>
-              </>
+
+                <ProjectGoalForm goalData={goalData} setGoalData={setGoalData} errors={errors} />
+              </Box>
             ) : filteredGoals?.length === 0 ? (
               <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
             ) : (
-              <ProjectGoals
-                projectGoals={filteredGoals}
-                isLoading={isLoading}
-                error={!!error}
-                formatStatus={formatStatus}
-                handelOpen={handelOpen}
-                openDialog={openDialog}
-                handleEditGoal={handleEditGoal}
-                projectId={projectID}
-                projectGoalView={handelProjectGoalView}
-              />
+              <>
+                <ProjectGoals
+                  projectGoals={filteredGoals}
+                  isLoading={isLoading}
+                  error={!!error}
+                  formatStatus={formatStatus} 
+                  handleEditGoal={handleEditGoal}
+                  projectId={projectID}
+                  projectGoalView={handelProjectGoalView}
+                  handleScroll={handleScroll} // Placeholder for scroll handling if needed
+                />
+              </>
             )}
           </>
         )}
@@ -386,6 +478,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
           severity={snackbar.severity}
           onClose={handleSnackbarClose}
         />
+        <HistoryDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} history={[]} />
       </Box>
     </>
   );

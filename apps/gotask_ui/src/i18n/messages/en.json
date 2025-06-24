@@ -680,6 +680,7 @@
     "goalupdate": "Goal Update successfully!",
     "deletegoal": "Goal Delete successfully!",
     "deletegoalfiled": "Failed Goal Delete data",
-    "savegoal": "Goal Created successfully!"
+    "savegoal": "Goal Created successfully!",
+    "showhistory": "Show History"
   }
 }

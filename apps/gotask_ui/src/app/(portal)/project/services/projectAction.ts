@@ -80,14 +80,43 @@ export const removeUsersFromProject = async (userIds: string[], projectId: strin
 export const fetcher = async () => {
   return fetchProjects();
 };
-
-export const fetchWeeklyGoals = async () => {
+export const fetchWeeklyGoals = async ({
+  page = 1,
+  pageSize = 10,
+  priority,
+  status,
+  startDate,
+  endDate,
+  goalTitle
+}: {
+  page?: number;
+  pageSize?: number;
+  priority?: string ;
+  status?: string ;
+  startDate?: string;
+  endDate?: string;
+  goalTitle?: string;
+}) => {
   return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/project/goals`;
-    const { data } = await getData(url, token);
-    return data || [];
+    // Construct the payload with only the provided parameters
+    const payload: { [key: string]: any } = {
+      page,
+      pageSize
+    };
+
+    if (priority) payload.priority = priority;
+    if (status) payload.status = status;
+    if (startDate) payload.startDate = startDate;
+    if (endDate) payload.endDate = endDate;
+    if (goalTitle) payload.goalTitle = goalTitle;
+
+    const url = `${env.API_BASE_URL}/projectgoals`;
+    const { data } = await postData(url, payload, token);
+    return data || { items: [], totalPages: 1 };
   });
 };
+
+
 
 // Create Weekly Goal
 export const createWeeklyGoal = async (goalData: {
@@ -120,14 +149,14 @@ export const updateWeeklyGoal = async (
   }
 ) => {
   return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/project/goals/${goalId}`;
+    const url = `${env.API_BASE_URL}/projectgoals/${goalId}`;
     return await putData(url, updatedGoalData, token);
   });
 };
 // Get Weekly Goal by ID
 export const getWeeklyGoalById = async (goalId: string) => {
   return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/project/goals/${goalId}`;
+    const url = `${env.API_BASE_URL}/projectgoals/${goalId}`;
     const { data } = await getData(url, token);
     return data;
   });
@@ -150,7 +179,7 @@ export const getCommentsByGoalId = async (goalId: string) => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/project/goals/comments/${goalId}`;
     const { data } = await getData(url, token);
-    return data || [];
+    return data;
   });
 };
 

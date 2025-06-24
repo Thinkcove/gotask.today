@@ -43,11 +43,10 @@ export interface ProjectGoalsProps {
   isLoading: boolean;
   error: boolean;
   formatStatus: (status: string) => string;
-  handelOpen: () => void;
-  openDialog: boolean;
   handleEditGoal: (goal: GoalData) => void;
   projectId: string;
   projectGoalView: (goalId: string) => void;
+  handleScroll: (e: React.UIEvent<HTMLElement>) => void;
 }
 export interface GoalData {
   goalTitle: string;

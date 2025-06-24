@@ -19,18 +19,19 @@ import { getColorForUser } from "@/app/common/constants/avatar";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 interface HistoryItem {
-    loginuser_name: string;
-    formatted_history: string;
-    created_date: string;
-  }
+  loginuser_name: string;
+  formatted_history: string;
+  created_date: string;
+}
 interface HistoryDrawerProps {
   open: boolean;
   onClose: () => void;
   history: HistoryItem[];
+  heading?: string;
+  text?: string;
 }
 
-const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history }) => {
-  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, heading, text, onClose, history }) => {
   return (
     <Drawer
       anchor="right"
@@ -62,7 +63,7 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history })
           }}
         >
           <Typography variant="h6" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {transtask("taskhistory")}
+            {heading}
           </Typography>
 
           {/* Log Info Box */}
@@ -98,7 +99,7 @@ const HistoryDrawer: React.FC<HistoryDrawerProps> = ({ open, onClose, history })
                   alignItems: "center"
                 }}
               >
-                {transtask("log")}
+                {text}{" "}
               </Typography>
             </Paper>
           )}

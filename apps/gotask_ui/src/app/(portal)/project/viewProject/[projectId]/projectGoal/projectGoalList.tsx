@@ -32,6 +32,7 @@ import ProjectGoals from "./projectGoals";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import HistoryDrawer from "./history";
+import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 
 interface ProjectGoalListProps {
   onClose?: () => void; // optional callback prop
@@ -100,7 +101,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     updateHistory?: any[];
   } | null>(null);
 
-
   const fieldLabelMap: { [key: string]: string } = {
     goalTitle: "Goal Title",
     description: "Description",
@@ -110,24 +110,26 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     weekEnd: "Week End",
     weekStart: "Week Start"
   };
+  const { data: users } = useSWR("fetch-user", fetcherUserList);
 
   const formattedHistory =
     projectGoalHistory?.updateHistory?.map((item: any) => {
+      const updatedUser = users?.find((user: any) => user.id === item.updated_by);
+      const loginuser_name = updatedUser?.first_name || updatedUser?.name || "System";
+
       const formattedChanges = Object.entries(item.update_data)
-        .filter(([_, value]) => value !== "") // skip empty fields
+        .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
         .map(([key, value]) => {
           const label = fieldLabelMap[key] || key;
           return `${label} updated to "${value}"`;
         });
 
       return {
-        loginuser_name: "System", // or map from item.updated_by if needed
+        loginuser_name: loginuser_name,
         formatted_history: formattedChanges.join(". "),
-        created_date: item.timestamp
+        created_date: item.timestamp // show timestamp, not weekEnd
       };
     }) ?? [];
-  
-
 
   const handelOpen = () => {
     setGoalData({
@@ -141,7 +143,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     });
     setOpenDialog(true);
   };
-
 
   const handleEditGoal = async (goal: GoalData) => {
     setGoalData({
@@ -173,7 +174,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
       console.error("Error fetching goal for edit:", error);
     }
   };
-  
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateForm = () => {
@@ -183,6 +184,11 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     if (!goalData.weekEnd) newErrors.weekEnd = transGoal("endweekrequired");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+  const handleCancel = () => {
+    // Optional: Reset form state or errors here
+    setOpenDialog(false);
+    setprojectGoalView(null);
   };
 
   const handleSubmit = async () => {
@@ -485,7 +491,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
                           backgroundColor: "rgba(255, 255, 255, 0.2)"
                         }
                       }}
-                      onClick={() => setOpenDialog(false)}
+                      onClick={handleCancel}
                     >
                       {transGoal("cancel")}
                     </Button>
@@ -509,12 +515,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
                   </Box>
                 </Box>
 
-                <ProjectGoalForm
-                  // projectGoalView={projectGoalView}
-                  goalData={goalData}
-                  setGoalData={setGoalData}
-                  errors={errors}
-                />
+                <ProjectGoalForm goalData={goalData} setGoalData={setGoalData} errors={errors} />
               </Box>
             ) : filteredGoals?.length === 0 ? (
               <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
@@ -544,6 +545,8 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
           open={openDrawer}
           onClose={() => setOpenDrawer(false)}
           history={formattedHistory}
+          text={transGoal("log")}
+          heading={transGoal("projectgoalhistory")}
         />
       </Box>
     </>

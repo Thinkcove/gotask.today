@@ -681,6 +681,8 @@
     "deletegoal": "Goal Delete successfully!",
     "deletegoalfiled": "Failed Goal Delete data",
     "savegoal": "Goal Created successfully!",
-    "showhistory": "Show History"
+    "showhistory": "Show History",
+    "log": "Log of who performed the updates in the goal",
+    "projectgoalhistory": "Goal History"
   }
 }

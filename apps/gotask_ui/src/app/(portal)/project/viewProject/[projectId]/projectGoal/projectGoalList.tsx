@@ -176,6 +176,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   };
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [history, setHistory] = useState(false);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -352,6 +353,10 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
       setPage((prev) => prev + 1);
     }
+    if (scrollTop <= (scrollHeight - clientHeight) / 2) {
+      console.log("User scrolled up past the middle");
+      setPage((prev) => Math.max(prev - 1, 1)); // or whatever logic you want
+    }
     // let tepvab= allGoals.push(data?.goals || []);
 
     // setAllGoals((prev) => [...prev, ...(data.goals || [])]);
@@ -397,6 +402,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
               flexWrap="wrap"
               gap={2}
             >
+              {/* Left section: Back arrow + Search */}
               <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
                 <IconButton color="primary" onClick={() => onClose?.()}>
                   <ArrowBack />
@@ -410,7 +416,17 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
                   />
                 </Box>
               </Box>
-              <Box display="flex" alignItems="center" gap={2} mt={{ xs: 2, md: 0 }}>
+
+              {/* Right section: Filters aligned to flex-end */}
+              <Box
+                display="flex"
+                alignItems="center"
+                gap={2}
+                justifyContent="flex-end"
+                flexWrap="wrap"
+                mt={{ xs: 2, md: 0 }}
+                sx={{ flexGrow: 1 }} // Optional: allows it to push to the right properly
+              >
                 <FilterDropdown
                   label="Priority"
                   options={Object.values(PROJECT_GOAL)}
@@ -439,24 +455,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
           />
         ) : (
           <>
-            <Box
-              onClick={() => {
-                console.log("Show History clicked");
-                setOpenDrawer(true);
-              }}
-              sx={{
-                textDecoration: "underline",
-                display: "flex",
-                gap: 1,
-                color: "#741B92",
-                px: 2,
-                cursor: "pointer",
-                alignItems: "center"
-              }}
-            >
-              <Typography>{transGoal("showhistory")}</Typography>
-              <History />
-            </Box>
             {!openDialog && (
               <ActionButton
                 label={transGoal("editgoal")}
@@ -464,21 +462,44 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
                 onClick={handelOpen}
               />
             )}
-
-            {openDialog ? (
-              <Box sx={{ p: 2 }}>
+            {openDialog && (
+              <>
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    width: "100%"
+                    width: "100%",
+                    flexWrap: "wrap",
+                    gap: 2
                   }}
                 >
-                  <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-                    {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
-                  </Typography>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  {/* Left Section: Arrow + Title */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      alignItems: "center"
+                      // gap: 2
+                    }}
+                  >
+                    <IconButton color="primary" onClick={() => router.back()}>
+                      <ArrowBack />
+                    </IconButton>
+                    <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+                      {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
+                    </Typography>
+                  </Box>
+
+                  {/* Right Section: Buttons */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      alignItems: "center",
+                      gap: 2
+                    }}
+                  >
                     <Button
                       variant="outlined"
                       sx={{
@@ -515,6 +536,28 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
                   </Box>
                 </Box>
 
+                <Box
+                  onClick={() => {
+                    console.log("Show History clicked");
+                    setHistory(true);
+                  }}
+                  sx={{
+                    textDecoration: "underline",
+                    display: "flex",
+                    gap: 1,
+                    color: "#741B92",
+                    px: 2,
+                    cursor: "pointer",
+                    alignItems: "center"
+                  }}
+                >
+                  <Typography>{transGoal("showhistory")}</Typography>
+                  <History />
+                </Box>
+              </>
+            )}
+            {openDialog ? (
+              <Box sx={{ p: 2 }}>
                 <ProjectGoalForm goalData={goalData} setGoalData={setGoalData} errors={errors} />
               </Box>
             ) : filteredGoals?.length === 0 ? (
@@ -529,7 +572,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
                   handleEditGoal={handleEditGoal}
                   projectId={projectID}
                   projectGoalView={handelProjectGoalView}
-                  handleScroll={handleScroll} // Placeholder for scroll handling if needed
+                  handleScroll={handleScroll}
                 />
               </>
             )}
@@ -542,8 +585,8 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
           onClose={handleSnackbarClose}
         />
         <HistoryDrawer
-          open={openDrawer}
-          onClose={() => setOpenDrawer(false)}
+          open={history}
+          onClose={() => setHistory(false)}
           history={formattedHistory}
           text={transGoal("log")}
           heading={transGoal("projectgoalhistory")}

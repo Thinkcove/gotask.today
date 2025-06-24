@@ -56,6 +56,7 @@ export interface GoalData {
   status: string;
   priority: string;
   projectId?: string;
+  updated_by?: string;
   id?: string;
 }
 

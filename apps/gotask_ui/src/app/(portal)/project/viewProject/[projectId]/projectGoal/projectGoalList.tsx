@@ -40,6 +40,9 @@ interface ProjectGoalListProps {
 function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const { projectId } = useParams();
+
+  const { user } = useUser();
+  console.log("user", user);
   const projectID = projectId as string;
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -50,7 +53,8 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     weekEnd: "",
     status: "",
     priority: "",
-    projectId: projectID
+    projectId: projectID,
+    updated_by: ""
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [snackbar, setSnackbar] = useState({
@@ -95,7 +99,9 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   const [projectGoalHistory, setProjectGoalHistory] = useState<{
     updateHistory?: any[];
   } | null>(null);
-  const fieldLabelMap = {
+
+
+  const fieldLabelMap: { [key: string]: string } = {
     goalTitle: "Goal Title",
     description: "Description",
     priority: "Priority",
@@ -105,7 +111,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     weekStart: "Week Start"
   };
 
-  // Create a new array with formatted history
   const formattedHistory =
     projectGoalHistory?.updateHistory?.map((item: any) => {
       const formattedChanges = Object.entries(item.update_data)
@@ -122,6 +127,8 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
       };
     }) ?? [];
   
+
+
   const handelOpen = () => {
     setGoalData({
       goalTitle: "",
@@ -135,6 +142,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     setOpenDialog(true);
   };
 
+
   const handleEditGoal = async (goal: GoalData) => {
     setGoalData({
       id: goal.id,
@@ -147,8 +155,13 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
       projectId: goal.projectId || ""
     });
 
+    if (!goal.id) {
+      console.error("Goal ID is missing");
+      return;
+    }
+
     try {
-      const fetchedGoal = await getWeeklyGoalById(goal.id); // renamed to avoid conflict
+      const fetchedGoal = await getWeeklyGoalById(goal.id); // ✅ goal.id is definitely a string here
       console.log("Goal Data:", fetchedGoal);
 
       setProjectGoalHistory({
@@ -161,7 +174,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     }
   };
   
-
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateForm = () => {
@@ -183,7 +195,8 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
         weekEnd: goalData.weekEnd,
         status: goalData.status,
         description: goalData.description,
-        priority: goalData.priority
+        priority: goalData.priority,
+        updated_by: user?.id
       };
       if (goalData.id) {
         await updateWeeklyGoal(goalData.id, payload as any);
@@ -217,8 +230,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
     (GoalData & { comments: GoalComment[] }) | null
   >(null);
 
-
-
   console.log("projectGoalHistory", projectGoalHistory);
 
   const handelProjectGoalView = async (goalId: string) => {
@@ -243,7 +254,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
       console.error("Error fetching goal details:", error);
     }
   };
-
 
   const handleSaveComment = async (commentData: {
     goal_id: string;
@@ -322,9 +332,6 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
   const handleBack = () => {
     router.back();
   };
-
-  const { user } = useUser();
-console.log();
 
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);

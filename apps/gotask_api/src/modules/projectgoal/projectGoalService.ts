@@ -178,31 +178,6 @@ const getProjectGoalsByIdService = async (
   }
 };
 
-// Update a weekly goal
-// const updateProjectGoalService = async (
-//   id: string,
-//   updateData: Partial<IProjectGoal>
-// ): Promise<{ success: boolean; data?: IProjectGoal | null; message?: string }> => {
-//   try {
-//     const updatedGoal = await updateProjectGoal(id, updateData);
-//     if (!updatedGoal) {
-//       return {
-//         success: false,
-//         message: ProjectGoalMessages.UPDATE.NOT_FOUND
-//       };
-//     }
-
-//     return {
-//       success: true,
-//       data: updatedGoal
-//     };
-//   } catch (error: any) {
-//     return {
-//       success: false,
-//       message: error.message || ProjectGoalMessages.UPDATE.FAILED
-//     };
-//   }
-// };
 const updateProjectGoalService = async (
   id: string,
   updateData: Partial<IProjectGoal>,

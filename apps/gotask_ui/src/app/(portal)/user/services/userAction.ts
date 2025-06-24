@@ -134,6 +134,20 @@ export const getAllSkills = async () => {
   });
 };
 
+// SWR fetcher for skills
+export const fetchSkills = async (url: string): Promise<string[]> => {
+  return withAuth(async (token) => {
+    const response = await getData(url, token);
+
+    if (!Array.isArray(response.data)) {
+      console.error("Invalid response from /getAllSkills:", response.data);
+      return [];
+    }
+
+    return response.data.map((s: { name: string }) => s.name);
+  });
+};
+
 export const createSkill = async (name: string) => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/createSkills`;

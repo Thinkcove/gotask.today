@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import env from "@/app/common/env";
 import { withAuth } from "@/app/common/utils/authToken";
 import { getData } from "@/app/common/utils/apiData";
-import { IUserField, User } from "../../interfaces/userInterface";
+import { IUserField, User } from "../interfaces/userInterface";
 import EditUser from "./editUser";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { CircularProgress, Box, Typography } from "@mui/material";
@@ -41,7 +41,7 @@ const EditUserPage = () => {
     organization: user.organization,
     roleId: user.roleId._id,
     user_id: user.user_id,
-    skills: user.skills || [] 
+    skills: user.skills || []
   });
 
   return (

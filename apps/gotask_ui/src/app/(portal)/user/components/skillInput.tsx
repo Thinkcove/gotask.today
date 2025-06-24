@@ -7,33 +7,18 @@ import StarIcon from "@mui/icons-material/Star";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ISkill } from "../interfaces/userInterface";
 import useSWR from "swr";
-import { withAuth } from "@/app/common/utils/authToken";
-import { getData } from "@/app/common/utils/apiData";
 import env from "@/app/common/env";
 import { createSkill, updateUserSkill, deleteUserSkill } from "../services/userAction";
 import AddIcon from "@mui/icons-material/Add";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import { useTranslations } from "next-intl";
+import { fetchSkills } from "../services/userAction";
 
 interface SkillInputProps {
   userId: string;
   skills: ISkill[];
   onChange: (skills: ISkill[]) => void;
 }
-
-// SWR fetcher for skills
-const fetchSkills = async (url: string): Promise<string[]> => {
-  return await withAuth(async (token) => {
-    const response = await getData(url, token);
-
-    if (!Array.isArray(response.data)) {
-      console.error("Invalid response from /getAllSkills:", response.data);
-      return [];
-    }
-
-    return response.data.map((s: { name: string }) => s.name);
-  });
-};
 
 const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => {
   const [inputValue, setInputValue] = useState("");

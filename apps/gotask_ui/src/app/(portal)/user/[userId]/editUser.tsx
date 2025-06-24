@@ -3,10 +3,10 @@ import { Box, Button, IconButton, Typography, Tabs, Tab } from "@mui/material";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { IUserField, User, ISkill } from "../../interfaces/userInterface";
-import UserInput from "../../components/userInputs";
-import SkillInput from "../../components/skillInput";
-import { updateUser } from "../../services/userAction";
+import { IUserField, User, ISkill } from "../interfaces/userInterface";
+import UserInput from "../components/userInputs";
+import SkillInput from "../components/skillInput";
+import { updateUser } from "../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
@@ -87,7 +87,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
 
   const handleChange = <K extends keyof IUserField>(field: K, value: IUserField[K]) => {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
-  };  
+  };
 
   const handleSkillsChange = (updatedSkills: ISkill[]) => {
     setFormData((prevData) => ({ ...prevData, skills: updatedSkills }));
@@ -116,7 +116,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
   const handleTabChange = (_event: SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
-  
+
   return (
     <Box sx={{ maxWidth: "1450px", mx: "auto", py: 2 }}>
       {/* Header */}

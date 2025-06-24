@@ -57,16 +57,24 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
               <Typography variant="h5">{asset?.deviceName}</Typography>
             </Grid>
             <Grid item xs="auto">
-              <IconButton
-                color="primary"
-                onClick={() => router.push(`/asset/${asset?.id}`)}
-              >
+              <IconButton color="primary" onClick={() => router.push(`/asset/${asset?.id}`)}>
                 <Edit />
               </IconButton>
             </Grid>
           </Grid>
 
           {/* Description */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+              {trans("description")}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{ color: "text.primary", lineHeight: 1.6, whiteSpace: "pre-wrap" }}
+            >
+              {asset?.commentService || "-"}
+            </Typography>
+          </Grid>
           <Grid container spacing={2} mb={3}>
             {/* Common Fields */}
             <Grid item xs={12} sm={6} md={4}>
@@ -202,18 +210,6 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                 </Grid>
               </>
             )}
-
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                {trans("description")}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ color: "text.primary", lineHeight: 1.6, whiteSpace: "pre-wrap" }}
-              >
-                {asset?.commentService || "-"}
-              </Typography>
-            </Grid>
           </Grid>
         </Paper>
       </Box>

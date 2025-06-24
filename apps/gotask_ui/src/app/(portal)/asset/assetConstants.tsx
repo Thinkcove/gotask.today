@@ -1,4 +1,4 @@
-import { IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Column } from "@/app/component/table/table";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -22,7 +22,10 @@ export const getAssetColumns = (
   {
     id: "assetType",
     label: transasset("assets"),
-    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
+
+    render: (value: string | boolean | undefined) => (
+      <Box>{typeof value === "string" ? value : "-"}</Box>
+    )
   },
   {
     id: "assetName",
@@ -36,28 +39,27 @@ export const getAssetColumns = (
   },
   {
     id: "modelName",
+    align: "center" as const,
     label: transasset("model"),
     render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
   {
     id: "purchaseDate",
+    align: "center" as const,
     label: transasset("purchaseDate"),
     render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
   {
     id: "users",
+    align: "center" as const,
     label: transasset("assignedTo"),
     render: (value: string | string[] | boolean | undefined) =>
       Array.isArray(value) ? value.join(", ") : typeof value === "string" ? value : "-"
   },
   {
-    id: "encrypted",
-    label: transasset("isencrypted"),
-    render: (value: string | boolean | undefined) => (value === true ? "Encrypted" : "-")
-  },
-  {
     id: "actions",
     label: transasset("actions"),
+    align: "center" as const,
     render: (_: unknown, row: IAssetDisplayRow) => (
       <>
         <IconButton onClick={() => onEdit(row)} color="primary" aria-label="edit">

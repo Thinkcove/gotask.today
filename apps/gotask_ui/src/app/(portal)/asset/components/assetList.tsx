@@ -166,27 +166,19 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 2,
           width: "100%",
+          gap: 1,
+          px: 2,
           mt: 2,
-          px: 2
+          flexWrap: "nowrap"
         }}
       >
-        {/* Toggle - comes first on mobile */}
-        <Box sx={{ order: { xs: 0, sm: 1 } }}>
-          <TaskToggle
-            options={toggleOptions}
-            selected={labels[view]}
-            onChange={handleToggleChange}
-          />
-        </Box>
         <Box
           sx={{
-            order: { xs: 1, sm: 0 },
-            width: { xs: "100%", sm: "300px" }
+            flex: "1 1 auto",
+            maxWidth: "300px"
           }}
         >
           <SearchBar
@@ -195,9 +187,17 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             placeholder={transasset("searchAsset")}
           />
         </Box>
+
+        <Box sx={{ flexShrink: 0 }}>
+          <TaskToggle
+            options={toggleOptions}
+            selected={labels[view]}
+            onChange={handleToggleChange}
+          />
+        </Box>
       </Box>
 
-      <Box marginTop={"1px"}>
+      <Box marginTop={"15px"}>
         {view === "assets" ? (
           <AssetFilters
             modelNameFilter={modelNameFilter}
@@ -236,7 +236,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       <Box
         sx={{
           width: "100%",
-          height: "calc(100vh - 200px)", // Adjust based on your header/filter height
           display: "flex",
           flexDirection: "column",
           overflowY: "auto"
@@ -258,14 +257,13 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                 <Paper
                   sx={{
                     p: 2,
-                    height: "100%",
                     overflow: "auto",
                     display: "flex",
                     flexDirection: "column",
                     overflowY: "auto"
                   }}
                 >
-                  <Box sx={{ width: "100%", mt: 2, flex: 1 }}>
+                  <Box sx={{ width: "100%", flex: 1 }}>
                     <Box sx={{ minWidth: 800 }}>
                       <Table<IAssetDisplayRow> columns={assetColumns} rows={mappedAssets} />
                     </Box>
@@ -282,18 +280,26 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       </Box>
 
       {/* Floating Action Button */}
-      <ActionButton
-        label={
-          initialView === transasset("selectedAsset")
-            ? transasset("createasset")
-            : initialView === transasset("tag")
-              ? transasset("createtag")
-              : transasset("createissue")
-        }
-        icon={<AddIcon sx={{ color: "white" }} />}
-        onClick={handleActionClick}
-      />
-
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 16,
+          right: 16,
+          zIndex: 1300
+        }}
+      >
+        <ActionButton
+          label={
+            initialView === transasset("selectedAsset")
+              ? transasset("createasset")
+              : initialView === transasset("tag")
+                ? transasset("createtag")
+                : transasset("createissue")
+          }
+          icon={<AddIcon sx={{ color: "white" }} />}
+          onClick={handleActionClick}
+        />
+      </Box>
       <CreateIssue open={createIssueOpen} onClose={() => setCreateIssueOpen(false)} />
     </>
   );

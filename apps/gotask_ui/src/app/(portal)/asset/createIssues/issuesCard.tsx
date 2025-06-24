@@ -29,7 +29,6 @@ const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFilter }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { getAll: allissues, mutate: issuesMutate } = useAllIssues();
-
   const [newStatus, setNewStatus] = useState<string>("");
   const [selectedIssueId, setSelectedIssueId] = useState<string>("");
   const { asset: issueById } = useIssuesById(selectedIssueId);
@@ -162,7 +161,7 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
 
                   <Box sx={{ p: 1.5, borderRadius: 2 }}>
                     <Typography variant="body2" fontWeight={500}>
-                      {trans("issuesTypes")}{" "}
+                      {trans("issuestypes")}{" "}
                       <Typography component="span" fontWeight={400} color="text.secondary">
                         {issue.issueType || "-"}
                       </Typography>
@@ -200,28 +199,29 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
                         </Typography>
                       </Tooltip>
                     </Typography>
-
-                    <Box
-                      onClick={() => handleShowHistory(issue.id!)}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        color: "#741B92",
-                        cursor: "pointer",
-                        justifyContent: "flex-end",
-                        mt: 1,
-                        textDecoration: "underline"
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{ textDecoration: "underline", cursor: "pointer" }}
+                    {Array.isArray(issue.issuesHistory) && issue.issuesHistory.length > 0 && (
+                      <Box
+                        onClick={() => handleShowHistory(issue.id!)}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          color: "#741B92",
+                          cursor: "pointer",
+                          justifyContent: "flex-end",
+                          mt: 1,
+                          textDecoration: "underline"
+                        }}
                       >
-                        {trans("showhistory")}
-                      </Typography>
-                      <HistoryIcon fontSize="small" />
-                    </Box>
+                        <Typography
+                          variant="body2"
+                          sx={{ textDecoration: "underline", cursor: "pointer" }}
+                        >
+                          {trans("showhistory")}
+                        </Typography>
+                        <HistoryIcon fontSize="small" />
+                      </Box>
+                    )}
                   </Box>
                 </Stack>
               </CardComponent>

@@ -25,7 +25,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
   const border = `${color}88`;
 
   const handleClick = () => {
-    router.push(`/project/viewProject/${projectId}/stories/${story.id}`);
+    router.push(`/project/${projectId}/stories/${story.id}`);
   };
 
   return (

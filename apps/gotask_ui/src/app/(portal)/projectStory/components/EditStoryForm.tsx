@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Tooltip, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { getProjectStoryById, updateProjectStory } from "../services/projectStoryService";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -77,7 +70,7 @@ const EditStoryForm: React.FC = () => {
       setSnackSeverity("success");
       setSnackOpen(true);
       setTimeout(() => {
-        router.push(`/project/viewProject/${projectId}/stories/${storyId}`);
+        router.push(`/project/${projectId}/stories/${storyId}`);
       }, 800);
     } catch (err) {
       console.error(err);
@@ -137,7 +130,7 @@ const EditStoryForm: React.FC = () => {
           <Box display="flex" alignItems="center" gap={1}>
             <Tooltip title={t("Stories.backToStoryDetails")}>
               <IconButton
-                onClick={() => router.push(`/project/viewProject/${projectId}/stories/${storyId}`)}
+                onClick={() => router.push(`/project/${projectId}/stories/${storyId}`)}
                 color="primary"
               >
                 <ArrowBackIcon />
@@ -151,7 +144,7 @@ const EditStoryForm: React.FC = () => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Button
               variant="outlined"
-              onClick={() => router.push(`/project/viewProject/${projectId}/stories/${storyId}`)}
+              onClick={() => router.push(`/project/${projectId}/stories/${storyId}`)}
               sx={{
                 borderRadius: "30px",
                 color: "black",

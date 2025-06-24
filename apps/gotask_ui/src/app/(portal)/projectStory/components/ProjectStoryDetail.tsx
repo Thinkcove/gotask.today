@@ -57,7 +57,7 @@ const ProjectStoryDetail = () => {
 
       setSnackbar({ open: true, message, severity: "success" });
 
-      setTimeout(() => router.push(`/project/viewProject/${projectId}/stories`), 500);
+      setTimeout(() => router.push(`/project/${projectId}/stories`), 500);
     } catch (error) {
       console.error("Failed to delete story:", error);
       setSnackbar({ open: true, message: t("Stories.errors.deleteFailed"), severity: "error" });
@@ -105,7 +105,7 @@ const ProjectStoryDetail = () => {
         <Box display="flex" alignItems="flex-start" gap={1}>
           <Tooltip title={t("Stories.backToStories")}>
             <IconButton
-              onClick={() => router.push(`/project/viewProject/${projectId}/stories`)}
+              onClick={() => router.push(`/project/${projectId}/stories`)}
               color="primary"
             >
               <ArrowBack />
@@ -127,9 +127,7 @@ const ProjectStoryDetail = () => {
         <Box display="flex" gap={1}>
           <Tooltip title={t("Stories.editStory")}>
             <IconButton
-              onClick={() =>
-                router.push(`/project/viewProject/${projectId}/stories/edit/${storyId}`)
-              }
+              onClick={() => router.push(`/project/${projectId}/stories/edit/${storyId}`)}
               color="primary"
             >
               <Edit />

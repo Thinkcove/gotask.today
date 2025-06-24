@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Button, Divider, Stack } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
-import { Project } from "../../interfaces/projectInterface";
+
 import { useAllUsers } from "@/app/(portal)/task/service/taskAction";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import FormField, { SelectOption } from "@/app/component/input/formField";
 import { useParams, useRouter } from "next/navigation";
-import { assignUsersToProject, removeUsersFromProject } from "../../services/projectAction";
+
 import { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
@@ -23,6 +23,8 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import ProjectGoalList from "./projectGoal/projectGoalList";
+import { Project } from "../../project/interfaces/projectInterface";
+import { assignUsersToProject, removeUsersFromProject } from "../../project/services/projectAction";
 
 interface ProjectDetailProps {
   project: Project;

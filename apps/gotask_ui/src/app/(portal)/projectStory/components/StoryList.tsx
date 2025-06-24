@@ -60,7 +60,7 @@ const StoryList: React.FC = () => {
         }}
       >
         <IconButton
-          onClick={() => router.push(`/project/viewProject/${projectId}`)}
+          onClick={() => router.push(`/project/${projectId}`)}
           color="primary"
           size="small"
         >
@@ -89,7 +89,7 @@ const StoryList: React.FC = () => {
       <Tooltip title={t("Stories.createStory")}>
         <Fab
           color="primary"
-          onClick={() => router.push(`/project/viewProject/${projectId}/stories/create`)}
+          onClick={() => router.push(`/project/${projectId}/stories/create`)}
           sx={{
             position: "fixed",
             bottom: 35,

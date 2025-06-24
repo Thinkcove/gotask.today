@@ -19,7 +19,7 @@ const CreateStoryForm = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status] = useState("to-do"); 
+  const [status] = useState("to-do");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
@@ -72,7 +72,7 @@ const CreateStoryForm = () => {
       setSnackOpen(true);
 
       setTimeout(() => {
-        router.push(`/project/viewProject/${projectId}/stories`);
+        router.push(`/project/${projectId}/stories`);
       }, 800);
     } catch (error) {
       console.error("Failed to create story:", error);

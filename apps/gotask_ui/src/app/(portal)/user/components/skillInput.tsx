@@ -83,10 +83,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     if (removed.skill_id) await deleteUserSkill(userId, removed.skill_id);
   };
 
-  const SkillInput = () => {
-    const transuser = useTranslations();
-    
-  };
   return (
     <Box>
       <Typography variant="h6">{transuser("skills")}</Typography>
@@ -148,7 +144,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
               <Grid container spacing={1} alignItems="center" sx={{ mb: 1 }}>
                 <Grid item xs={12}>
                   <Typography variant="body2" sx={{ mb: 1 }}>
-                    Proficiency
+                    {transuser("proficiency")}
                   </Typography>
                   <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
                     {[1, 2, 3, 4].map((star) => (

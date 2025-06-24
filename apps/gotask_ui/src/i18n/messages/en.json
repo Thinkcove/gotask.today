@@ -459,7 +459,9 @@
     "assets": "Assets",
     "noProject":"No projects assigned yet.",
     "noAssets": "No assets assigned yet.",
-    "noskills": "No skills added yet."
+    "noskills": "No skills added yet.",
+    "exp":" Experience",
+    "months": " months"
   },
 
   "Appbar": {

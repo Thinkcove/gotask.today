@@ -22,9 +22,6 @@ import TaskToggle from "../../../../component/toggle/toggle";
 import CardComponent from "@/app/component/card/cardComponent";
 import { Tabs, Tab } from "@mui/material";
 
-const SkillInput = () => {
-  const transuser = useTranslations();
-}
 interface UserDetailProps {
   user: User;
   mutate: KeyedMutator<User>;
@@ -340,7 +337,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                             {skill.name}
                           </Typography>
                           <Typography variant="body2">
-                            Proficiency:{" "}
+                            {transuser("proficiency")} : {" "}
                             {
                               {
                                 1: "Knowledge",
@@ -352,7 +349,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                           </Typography>
                           {skill.proficiency >= 3 && skill.experience && (
                             <Typography variant="body2">
-                              Experience: {skill.experience} months
+                              {transuser("exp")} : {skill.experience} {transuser("months")}
                             </Typography>
                           )}
                         </Box>

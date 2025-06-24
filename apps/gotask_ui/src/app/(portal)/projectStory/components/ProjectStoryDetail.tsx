@@ -154,10 +154,9 @@ const ProjectStoryDetail = () => {
           <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
             {t("Stories.descriptionLabel")}
           </Typography>
-          <EllipsisText
-            text={story.description || t("Stories.noDescription")}
-            maxWidth="100%"
-          />
+          <Typography variant="body1" color="text.primary" sx={{ whiteSpace: "pre-line" }}>
+            {story.description || t("Stories.noDescription")}
+          </Typography>
         </Box>
 
         <LabelValueText

@@ -30,13 +30,11 @@ export const createStoryService = async (data: {
 export const getStoriesByProjectService = async ({
   projectId,
   status,
-  startDate,
-  endDate
+  startDate
 }: {
   projectId: string;
   status?: string | string[];
   startDate?: string;
-  endDate?: string;
 }): Promise<IProjectStory[]> => {
   try {
     if (!projectId) {
@@ -45,12 +43,12 @@ export const getStoriesByProjectService = async ({
 
     const query: any = { project_id: projectId };
 
-    // ✅ Filter by status
+    // Filter by status
     if (status) {
       query.status = Array.isArray(status) ? { $in: status } : status;
     }
 
-    // ✅ Filter by a specific createdAt date (startDate only)
+    // Filter by a specific createdAt date (startDate only)
     if (startDate) {
       const start = new Date(startDate);
       start.setHours(0, 0, 0, 0); // Start of day
@@ -66,9 +64,6 @@ export const getStoriesByProjectService = async ({
     throw new Error(error.message || storyMessages.FETCH.FAILED);
   }
 };
-
-
-
 
 // GET a story by its UUID
 export const getStoryByIdService = async (storyId: string): Promise<IProjectStory | null> => {

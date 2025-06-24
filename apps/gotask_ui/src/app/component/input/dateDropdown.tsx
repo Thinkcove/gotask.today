@@ -11,7 +11,7 @@ interface DateDropdownProps {
   dateTo: string;
   onDateChange: (from: string, to: string) => void;
   transtask: (key: string) => string;
-  singleDateMode?: boolean; 
+  singleDateMode?: boolean;
 }
 
 const StyledTrigger = styled(Button)(({ theme }) => ({
@@ -60,7 +60,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
   dateTo,
   onDateChange,
   transtask,
-  singleDateMode = false 
+  singleDateMode = false
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [tempFrom, setTempFrom] = useState(dateFrom);
@@ -75,7 +75,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
   const handleApply = () => {
     setAnchorEl(null);
     if (singleDateMode) {
-      onDateChange(tempFrom, tempFrom); 
+      onDateChange(tempFrom, tempFrom);
     } else {
       onDateChange(tempFrom, tempTo);
     }
@@ -123,7 +123,6 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
       >
         <Stack spacing={2}>
           {singleDateMode ? (
-            //  Only 1 date field
             <StyledTextField
               label={transtask("filtercreateddate")}
               type="date"
@@ -132,17 +131,16 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
               onChange={(e) => setTempFrom(e.target.value)}
             />
           ) : (
-            //  Full range
             <Stack direction="row" spacing={2}>
               <StyledTextField
-                label="From"
+                label={transtask("filterfrom")}
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 value={tempFrom}
                 onChange={(e) => setTempFrom(e.target.value)}
               />
               <StyledTextField
-                label="To"
+                label={transtask("filterto")}
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 value={tempTo}

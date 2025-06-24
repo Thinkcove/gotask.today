@@ -48,8 +48,7 @@ class ProjectStoryController extends BaseController {
       const stories = await getStoriesByProjectService({
         projectId,
         status,
-        startDate,
-        endDate
+        startDate
       });
 
       return this.sendResponse(handler, {

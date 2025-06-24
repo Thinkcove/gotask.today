@@ -200,11 +200,7 @@
       "noDescriptionShort": "No description available",
       "descriptionLabel": "Description",
       
-      "statusOptions": {
-        "to-do": "To Do",
-        "in-progress": "In Progress",
-        "done": "Done"
-      },
+    
       "filters": {
         "status": "Status",
         "all": "All",

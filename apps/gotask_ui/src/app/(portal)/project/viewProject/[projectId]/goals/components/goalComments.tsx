@@ -8,7 +8,7 @@ import DateFormats from "@/app/component/dateTime/dateFormat";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
 import { getColorForUser } from "@/app/common/constants/avatar";
-import { GoalComment, GoalCommentProps } from "../../interface/projectGoal";
+import { GoalComment, GoalCommentProps } from "../interface/projectGoal";
 
 const GoalComments: React.FC<GoalCommentProps> = ({
   comments,

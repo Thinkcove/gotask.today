@@ -24,12 +24,11 @@ import {
   getWeeklyGoalById,
   updateComment,
   updateWeeklyGoal
-} from "../../../../services/projectAction";
-import { GoalComment, GoalData } from "../../interface/projectGoal";
+} from "../goalservices/projectGoalAction";
+import { GoalComment, GoalData } from "../interface/projectGoal";
 import ProjectGoalView from "./projectGoalView";
 import ProjectGoalForm from "./projectGoalForm";
 import ProjectGoals from "./projectGoals";
-import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import HistoryDrawer from "./history";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";

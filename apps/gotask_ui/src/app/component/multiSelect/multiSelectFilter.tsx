@@ -21,7 +21,6 @@ interface MultiSelectFilterProps<T extends Item> {
   sxInput?: object;
   sxChip?: object;
   listBoxProps?: Partial<React.HTMLAttributes<HTMLElement>>;
-  customWidth?: string | number | object;
 }
 
 const MultiSelectFilter = <T extends Item>({
@@ -33,8 +32,7 @@ const MultiSelectFilter = <T extends Item>({
   sxInputBase = {},
   sxInput = {},
   sxChip = {},
-  listBoxProps = {},
-  customWidth
+  listBoxProps = {}
 }: MultiSelectFilterProps<T>) => {
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -69,7 +67,7 @@ const MultiSelectFilter = <T extends Item>({
       getOptionLabel={(option) => option.name || option.id}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       ListboxProps={listBoxProps}
-      sx={getMultiSelectStyles(sxRoot, sxInputBase, sxInput, sxChip, customWidth)}
+      sx={getMultiSelectStyles(sxRoot, sxInputBase, sxInput, sxChip)}
       renderOption={(props, option, { selected }) => {
         const isSelectAllOption = option.id === "__all__";
         return (

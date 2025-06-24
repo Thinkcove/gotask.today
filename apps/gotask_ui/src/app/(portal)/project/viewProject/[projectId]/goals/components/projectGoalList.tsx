@@ -24,8 +24,8 @@ import {
   getWeeklyGoalById,
   updateComment,
   updateWeeklyGoal
-} from "../../../services/projectAction";
-import { GoalComment, GoalData } from "../interface/projectGoal";
+} from "../../../../services/projectAction";
+import { GoalComment, GoalData } from "../../interface/projectGoal";
 import ProjectGoalView from "./projectGoalView";
 import ProjectGoalForm from "./projectGoalForm";
 import ProjectGoals from "./projectGoals";
@@ -457,7 +457,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
           <>
             {!openDialog && (
               <ActionButton
-                label={transGoal("editgoal")}
+                label={goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
                 icon={<AddIcon sx={{ color: "white" }} />}
                 onClick={handelOpen}
               />
@@ -483,7 +483,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
                       // gap: 2
                     }}
                   >
-                    <IconButton color="primary" onClick={() => router.back()}>
+                    <IconButton color="primary" onClick={() => setOpenDialog(false)}>
                       <ArrowBack />
                     </IconButton>
                     <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>

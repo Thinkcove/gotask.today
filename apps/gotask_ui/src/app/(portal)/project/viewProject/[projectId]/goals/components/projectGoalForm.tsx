@@ -4,7 +4,7 @@ import Grid from "@mui/material/Grid/Grid";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { priorityOptions, statusOptions } from "@/app/common/constants/project";
-import { ProjectGoalFormProps } from "../interface/projectGoal";
+import { ProjectGoalFormProps } from "../../interface/projectGoal";
 
 const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, errors, setGoalData }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);

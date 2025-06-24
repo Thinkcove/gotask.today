@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Box } from "@mui/material";
-import { ProjectGoalsProps } from "../interface/projectGoal";
+import { ProjectGoalsProps } from "../../interface/projectGoal";
 import GoalItem from "./goalItem";
 
 const ProjectGoals: React.FC<ProjectGoalsProps> = ({

@@ -8,7 +8,7 @@ import DateFormats from "@/app/component/dateTime/dateFormat";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
 import { getColorForUser } from "@/app/common/constants/avatar";
-import { GoalComment, GoalCommentProps } from "../interface/projectGoal";
+import { GoalComment, GoalCommentProps } from "../../interface/projectGoal";
 
 const GoalComments: React.FC<GoalCommentProps> = ({
   comments,
@@ -19,7 +19,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({
   user
 }) => {
   console.log("usr", user);
-  
+
   const [editValue, setEditValue] = useState("");
   const [editingComment, setEditingComment] = useState<GoalComment | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

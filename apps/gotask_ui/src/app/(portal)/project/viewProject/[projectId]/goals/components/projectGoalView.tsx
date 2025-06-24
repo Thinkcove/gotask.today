@@ -9,7 +9,7 @@ import { getStatusColor } from "@/app/common/constants/project";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
-import { GoalComment, ProjectGoalViewProps } from "../interface/projectGoal";
+import { GoalComment, ProjectGoalViewProps } from "../../interface/projectGoal";
 import GoalComments from "./goalComments";
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({

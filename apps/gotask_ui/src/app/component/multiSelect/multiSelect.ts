@@ -1,22 +1,5 @@
-export const getMultiSelectStyles = (
-  sxRoot = {},
-  sxInputBase = {},
-  sxInput = {},
-  sxChip = {},
-  customWidth?: string | number | object
-) => {
+export const getMultiSelectStyles = (sxRoot = {}, sxInputBase = {}, sxInput = {}, sxChip = {}) => {
   return {
-    width: customWidth ?? {
-      xs: "100%",
-      sm: "100%",
-      md: "60%",
-      lg: "400px"
-    },
-    minWidth: {
-      xs: "100%",
-      sm: "300px",
-      md: "360px"
-    },
     "& .MuiInputBase-root": {
       padding: "10px 12px",
       minHeight: "40px",

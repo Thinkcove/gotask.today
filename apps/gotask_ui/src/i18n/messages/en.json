@@ -170,7 +170,6 @@
       "story": "Create Story",
       "createStory": "Create Story",
       "title": "Title",
-      "description": "Description",
       "cancel": "Cancel",
       "create": "Create",
       "creating": "Creating...",
@@ -200,8 +199,9 @@
       "noDescriptionShort": "No description available",
       "descriptionLabel": "Description",
       "stories": "Stories",
-      "storyTitle": "Story Title",
       "suffixtoday": "Today",
+      "storyTitle": "Story Title *",
+      "description": "Description *",
 
       "filters": {
         "status": "Status",

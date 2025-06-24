@@ -1,17 +1,19 @@
-import { useState, useEffect } from "react";
+"use client";
+
+import { useState } from "react";
 import { Box, Typography, TextField, IconButton, Grid, Divider, Stack } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import StarIcon from "@mui/icons-material/Star";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ISkill } from "../interfaces/userInterface";
-
-import {
-  getAllSkills,
-  createSkill,
-  updateUserSkill,
-  deleteUserSkill
-} from "../services/userAction";
-
+import useSWR from "swr";
+import { withAuth } from "@/app/common/utils/authToken";
+import { getData } from "@/app/common/utils/apiData";
+import env from "@/app/common/env";
+import { createSkill, updateUserSkill, deleteUserSkill } from "../services/userAction";
+import AddIcon from "@mui/icons-material/Add";
+import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
+import { useTranslations } from "next-intl";
 
 interface SkillInputProps {
   userId: string;
@@ -19,35 +21,37 @@ interface SkillInputProps {
   onChange: (skills: ISkill[]) => void;
 }
 
-const proficiencyDescriptions: { [key: number]: string } = {
-  1: "Knowledge",
-  2: "Can Work",
-  3: "Have Work Exposure",
-  4: "Has exposure, can provide solution, and train others"
+// SWR fetcher for skills
+const fetchSkills = async (url: string): Promise<string[]> => {
+  return await withAuth(async (token) => {
+    const response = await getData(url, token);
+
+    if (!Array.isArray(response.data)) {
+      console.error("Invalid response from /getAllSkills:", response.data);
+      return [];
+    }
+
+    return response.data.map((s: { name: string }) => s.name);
+  });
 };
 
 const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => {
-  const [options, setOptions] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const fetchOptions = async () => {
-    setLoading(true);
-    const data = await getAllSkills();
-    setOptions((data as { name: string }[]).map((s) => s.name));
-    setLoading(false);
-  };  
-
-  useEffect(() => {
-    fetchOptions();
-  }, []);
+  const skillUrl = `${env.API_BASE_URL}/getAllSkills`;
+  const {
+    data: options = [],
+    isLoading,
+    mutate
+  } = useSWR(skillUrl, fetchSkills, {
+    revalidateOnFocus: false
+  });
 
   const onAdd = async (name: string) => {
     if (!name.trim() || skills.find((s) => s.name.toLowerCase() === name.toLowerCase())) return;
 
     try {
       await createSkill(name);
-      await fetchOptions();
+      await mutate();
 
       const newSkill: ISkill = {
         skill_id: "",
@@ -55,13 +59,12 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         proficiency: 0
       };
 
-      const updated = [...skills, newSkill];
-      onChange(updated);
+      onChange([...skills, newSkill]);
     } catch (error) {
       console.error("Create skill failed", error);
     }
   };
-  
+
   const updateSkill = async (index: number, updated: ISkill) => {
     const newSkills = [...skills];
     newSkills[index] = updated;
@@ -82,6 +85,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     onChange([...skills]);
     if (removed.skill_id) await deleteUserSkill(userId, removed.skill_id);
   };
+  const transuser = useTranslations("User"); 
 
   return (
     <Box>
@@ -89,38 +93,67 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
       <Autocomplete
         freeSolo
-        filterOptions={(opts) => opts}
-        options={options.concat(
-          inputValue && !options.includes(inputValue) ? [`➕ Add "${inputValue}"`] : []
-        )}
+        filterOptions={(options) => {
+          const filtered = options
+            .filter((opt) => opt.toLowerCase().includes(inputValue.toLowerCase()))
+            .sort((a, b) => a.localeCompare(b)); // sort alphabetically
+
+          const addOption =
+            inputValue && !options.some((opt) => opt.toLowerCase() === inputValue.toLowerCase())
+              ? [`__add__${inputValue}`]
+              : [];
+
+          return [...addOption, ...filtered];
+        }}
+        options={options}
         inputValue={inputValue}
         onInputChange={(_, val) => setInputValue(val)}
         onChange={(_, val) => {
           if (!val) return;
-          const isAddOption = typeof val === "string" && val.startsWith("➕ Add ");
-          const skillName = isAddOption ? val.replace(/^➕ Add "/, "").replace(/"$/, "") : val;
+          const isAddOption = typeof val === "string" && val.startsWith("__add__");
+          const skillName = isAddOption ? val.replace("__add__", "") : val;
           onAdd(skillName);
           setInputValue("");
         }}
-        onOpen={fetchOptions}
-        loading={loading}
+        loading={isLoading}
+        getOptionLabel={(option) => {
+          if (typeof option === "string" && option.startsWith("__add__")) {
+            return option.replace("__add__", "");
+          }
+          return option;
+        }}
         renderInput={(params) => <TextField {...params} label="Add Skill" fullWidth />}
+        renderOption={(props, option) => {
+          const isAddOption = typeof option === "string" && option.startsWith("__add__");
+          const skillName = isAddOption ? option.replace("__add__", "") : option;
+
+          return (
+            <li {...props}>
+              {isAddOption ? (
+                <Box display="flex" alignItems="center">
+                  <AddIcon fontSize="small" sx={{ mr: 1 }} />
+                  <Typography variant="body2">
+                    {transuser("add")} "{skillName}"
+                  </Typography>
+                </Box>
+              ) : (
+                <Typography variant="body2">{skillName}</Typography>
+              )}
+            </li>
+          );
+        }}
       />
+
       <Box
         mt={2}
         sx={{
-          maxHeight: "600px", 
+          maxHeight: "450px",
           overflowY: "auto",
           pr: 1,
-          pb: 2, 
+          pb: 2,
           scrollbarWidth: "thin",
-          "&::-webkit-scrollbar": {
-            width: "6px"
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#999",
-            borderRadius: "4px"
-          }
+          "&::-webkit-scrollbar": { width: "6px" },
+          "&::-webkit-scrollbar-thumb": { backgroundColor: "#999", borderRadius: "4px" }
         }}
       >
         {skills.map((s, idx) => {
@@ -147,33 +180,36 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                     Proficiency
                   </Typography>
                   <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-                    {[1, 2, 3, 4].map((star) => (
-                      <Box
-                        key={star}
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 0.5,
-                          cursor: "pointer",
-                          px: 1,
-                          py: 0.5,
-                          borderRadius: 1
-                        }}
-                        onClick={() => {
-                          const updatedSkill = {
-                            ...s,
-                            proficiency: star,
-                            experience: s.experience
-                          };
-                          updateSkill(idx, updatedSkill);
-                        }}
-                      >
-                        <StarIcon color={s.proficiency >= star ? "primary" : "disabled"} />
-                        <Typography variant="caption" sx={{ whiteSpace: "nowrap" }}>
-                          {proficiencyDescriptions[star]}
-                        </Typography>
-                      </Box>
-                    ))}
+                    {Object.entries(PROFICIENCY_DESCRIPTIONS).map(([value, label]) => {
+                      const level = Number(value);
+                      return (
+                        <Box
+                          key={level}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                            cursor: "pointer",
+                            px: 1,
+                            py: 0.5,
+                            borderRadius: 1
+                          }}
+                          onClick={() => {
+                            const updatedSkill = {
+                              ...s,
+                              proficiency: level,
+                              experience: s.experience
+                            };
+                            updateSkill(idx, updatedSkill);
+                          }}
+                        >
+                          <StarIcon color={s.proficiency >= level ? "primary" : "disabled"} />
+                          <Typography variant="caption" sx={{ whiteSpace: "nowrap" }}>
+                            {label}
+                          </Typography>
+                        </Box>
+                      );
+                    })}
                   </Stack>
                 </Grid>
               </Grid>

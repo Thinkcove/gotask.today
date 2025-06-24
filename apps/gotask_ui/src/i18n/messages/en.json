@@ -454,7 +454,8 @@
     "save": "Save",
     "failedfetch": "Failed to fetch user data",
     "userskill": "Skills",
-    "general": "General"
+    "general": "General",
+    "add":"Add"
   },
   "Appbar": {
     "logout": "Logout"

@@ -134,17 +134,10 @@ export const getAllSkills = async () => {
   });
 };
 
-// export const createSkill = async (name: string) => {
-//   return withAuth(async (token) => {
-//     const url = `${env.API_BASE_URL}/createSkills`;
-//     const response = await postData(url, { name }, token);
-//     return response;
-//   });
-// };
 export const createSkill = async (name: string) => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/createSkills`;
-    const payload = { name }; // ensure it sends JSON like { name: "React" }
+    const payload = { name };
     const response = await postData(url, payload, token);
     return response;
   });

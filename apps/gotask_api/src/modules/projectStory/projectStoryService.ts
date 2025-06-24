@@ -2,6 +2,7 @@ import { ProjectStory, IProjectStory } from "../../domain/model/projectStory/pro
 import { Task } from "../../domain/model/task/task";
 import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
 import { buildStartsWithRegex } from "../../constants/utils/regex";
+import { getStartAndEndOfDay } from "../../constants/utils/date";
 
 // CREATE a new story
 export const createStoryService = async (data: {
@@ -46,20 +47,19 @@ export const getStoriesByProjectService = async ({
 
     const query: any = { project_id: projectId };
 
-    //  Use externalized regex function
+    // Search by title
     if (search) {
       query.title = { $regex: buildStartsWithRegex(search) };
     }
 
+    // Filter by status
     if (status) {
       query.status = Array.isArray(status) ? { $in: status } : status;
     }
 
+    // Filter by creation date range
     if (startDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      const end = new Date(startDate);
-      end.setHours(23, 59, 59, 999);
+      const { start, end } = getStartAndEndOfDay(startDate);
       query.createdAt = { $gte: start, $lte: end };
     }
 
@@ -68,6 +68,7 @@ export const getStoriesByProjectService = async ({
     throw new Error(error.message || storyMessages.FETCH.FAILED);
   }
 };
+
 
 
 

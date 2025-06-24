@@ -1,7 +1,5 @@
-"use client";
-
 import React from "react";
-import { Box, Button, Tooltip } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import FilterDropdown from "../../../component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { useTranslations } from "next-intl";
@@ -26,41 +24,60 @@ const StoryFilters: React.FC<Props> = ({
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const statusOptions = getTranslatedStoryStatusOptions(t);
 
+  const filtersApplied = status.length > 0 || !!startDate;
+
   return (
-    <Box display="flex" gap={2} px={2} pt={10} alignItems="center" flexWrap="wrap">
-      <FilterDropdown
-        label={t("Stories.filters.status")}
-        options={statusOptions.map((opt) => opt.label)}
-        selected={statusOptions.filter((opt) => status.includes(opt.value)).map((opt) => opt.label)}
-        onChange={(selectedLabels) => {
-          const matchedValues = statusOptions
-            .filter((opt) => selectedLabels.includes(opt.label))
-            .map((opt) => opt.value);
-          onStatusChange(matchedValues);
-        }}
-      />
+    <Box px={2} pt={10}>
+      {/* Filters Row */}
+      <Box display="flex" gap={2} alignItems="center" flexWrap="wrap">
+        {/* Status Filter */}
+        <FilterDropdown
+          label={t("Stories.filters.status")}
+          options={statusOptions.map((opt) => opt.label)}
+          selected={statusOptions
+            .filter((opt) => status.includes(opt.value))
+            .map((opt) => opt.label)}
+          onChange={(selectedLabels) => {
+            const matchedValues = statusOptions
+              .filter((opt) => selectedLabels.includes(opt.label))
+              .map((opt) => opt.value);
+            onStatusChange(matchedValues);
+          }}
+        />
 
-      <DateDropdown
-        dateFrom={startDate}
-        dateTo={startDate}
-        singleDateMode={true}
-        onDateChange={(from) => {
-          onStartDateChange(from);
-        }}
-        transtask={(key: string) => {
-          if (key === "filterduedate") return t("Stories.filters.createdDate");
-          if (key === "filtercreateddate") return t("Stories.filters.createdDate");
-          if (key === "filterclear") return t("Stories.filters.clear");
-          if (key === "filterapply") return t("Stories.filters.apply");
-          return key;
-        }}
-      />
+        {/* Date Filter */}
+        <DateDropdown
+          dateFrom={startDate}
+          dateTo={startDate}
+          singleDateMode={true}
+          onDateChange={(from) => {
+            onStartDateChange(from);
+          }}
+          transtask={(key: string) => {
+            if (key === "filterduedate") return t("Stories.filters.createdDate");
+            if (key === "filtercreateddate") return t("Stories.filters.createdDate");
+            if (key === "filterclear") return t("Stories.filters.clear");
+            if (key === "filterapply") return t("Stories.filters.apply");
+            return key;
+          }}
+        />
 
-      <Tooltip title={t("Stories.filters.clearTooltip")}>
-        <Button variant="outlined" size="small" onClick={onClearFilters} sx={{ height: 40 }}>
-          {t("Stories.filters.clearFilters")}
-        </Button>
-      </Tooltip>
+        {/* Inline Clear All */}
+        {filtersApplied && (
+          <Link
+            component="button"
+            onClick={onClearFilters}
+            underline="always"
+            sx={{
+              fontSize: "1rem",
+              color: "primary.main",
+              whiteSpace: "nowrap"
+            }}
+          >
+            {t("Stories.filters.clearAll")}
+          </Link>
+        )}
+      </Box>
     </Box>
   );
 };

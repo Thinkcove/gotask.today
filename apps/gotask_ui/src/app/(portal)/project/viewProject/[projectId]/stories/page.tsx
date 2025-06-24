@@ -14,6 +14,9 @@ const StoriesPage = () => {
   const initialProjectName = searchParams.get("name") || "";
   const [projectName, setProjectName] = useState(initialProjectName);
 
+  const suffixToday = t("suffixToday"); 
+  const cleanedName = projectName.replace(new RegExp(`${suffixToday}$`, "i"), "").trim();
+
   return (
     <Box
       sx={{
@@ -26,9 +29,7 @@ const StoriesPage = () => {
       }}
     >
       {/* Header */}
-      <ModuleHeader
-        name={projectName ? `${t("projectStories")} - ${projectName}` : t("projectStories")}
-      />
+      <ModuleHeader name={cleanedName ? `${cleanedName} ${t("stories")}` : t("projectStories")} />
 
       {/* Content */}
       <Box sx={{ flex: 1, overflowY: "auto" }}>

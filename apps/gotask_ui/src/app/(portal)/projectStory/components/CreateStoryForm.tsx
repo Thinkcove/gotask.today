@@ -191,7 +191,7 @@ const CreateStoryForm = () => {
         }}
       >
         <FormField
-          label={t("Stories.title")}
+          label={`${t("Stories.storyTitle")} *`}
           type="text"
           required
           placeholder={t("Stories.placeholders.title")}
@@ -204,7 +204,7 @@ const CreateStoryForm = () => {
         />
 
         <FormField
-          label={t("Stories.description")}
+          label={`${t("Stories.description")} *`}
           type="text"
           placeholder={t("Stories.placeholders.description")}
           value={description}

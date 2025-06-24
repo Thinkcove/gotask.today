@@ -2,7 +2,7 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import useSWRInfinite from "swr/infinite";
-import { Box, Typography, CircularProgress, Grid, IconButton, Fab, Tooltip } from "@mui/material";
+import { Box, Typography, CircularProgress, Grid, IconButton, Fab } from "@mui/material";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowBack, Add as AddIcon } from "@mui/icons-material";
 
@@ -34,7 +34,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
   const [startDate, setStartDate] = useState<string>(initialStartDate);
 
   const getKey = (pageIndex: number, previousPageData: any) => {
-    if (previousPageData && !previousPageData.data.length) return null; // reached end
+    if (previousPageData && !previousPageData.data.length) return null;
     return `stories-${projectId}-${status.join(",")}-${startDate}-page-${pageIndex + 1}`;
   };
 
@@ -59,7 +59,6 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
     onProjectNameFetch(projectName);
   }
 
-  // Intersection observer for infinite scroll
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastStoryRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -80,10 +79,8 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
 
   const updateQueryParams = (newStatus: string[], newStartDate = "") => {
     const params = new URLSearchParams();
-
     if (newStatus.length > 0) newStatus.forEach((s) => params.append("status", s));
     if (newStartDate) params.set("startDate", newStartDate);
-
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
@@ -174,15 +171,13 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
       </Box>
 
       {/* Add Story */}
-      <Tooltip title={t("Stories.createStory")}>
-        <Fab
-          color="primary"
-          onClick={() => router.push(`/project/viewProject/${projectId}/stories/create`)}
-          sx={{ position: "fixed", bottom: 35, right: 35, zIndex: 1000 }}
-        >
-          <AddIcon />
-        </Fab>
-      </Tooltip>
+      <Fab
+        color="primary"
+        onClick={() => router.push(`/project/viewProject/${projectId}/stories/create`)}
+        sx={{ position: "fixed", bottom: 35, right: 35, zIndex: 1000 }}
+      >
+        <AddIcon />
+      </Fab>
     </Box>
   );
 };

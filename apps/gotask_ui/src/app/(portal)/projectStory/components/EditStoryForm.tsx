@@ -13,6 +13,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import {
   STORY_STATUS_OPTIONS,
   STORY_STATUS,
+  STORY_STATUS_TRANSITIONS,
   StoryStatus
 } from "@/app/common/constants/storyStatus";
 
@@ -60,6 +61,18 @@ const EditStoryForm: React.FC = () => {
       return;
     }
 
+    // Validate status transition
+    const originalStatus = story?.status as StoryStatus;
+    const allowedNextStatuses = STORY_STATUS_TRANSITIONS[originalStatus] || [];
+    const isValidTransition = status === originalStatus || allowedNextStatuses.includes(status!);
+
+    if (!isValidTransition) {
+      setSnackMessage(t("Stories.errors.invalidStatusTransition"));
+      setSnackSeverity("error");
+      setSnackOpen(true);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await updateProjectStory(storyId as string, {
@@ -98,6 +111,11 @@ const EditStoryForm: React.FC = () => {
       </Box>
     );
   }
+
+  // Filter valid status options (only current + allowed transitions)
+  const currentStatus = story.status as StoryStatus;
+  const allowedStatuses = [currentStatus, ...(STORY_STATUS_TRANSITIONS[currentStatus] || [])];
+  const statusOptions = STORY_STATUS_OPTIONS.filter((opt) => allowedStatuses.includes(opt.id));
 
   return (
     <Box
@@ -151,10 +169,7 @@ const EditStoryForm: React.FC = () => {
                 color: "black",
                 border: "2px solid  #741B92",
                 px: 2,
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.2)"
-                }
+                textTransform: "none"
               }}
             >
               {t("Stories.cancel")}
@@ -170,10 +185,7 @@ const EditStoryForm: React.FC = () => {
                 color: "white",
                 px: 2,
                 textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201)"
-                }
+                fontWeight: "bold"
               }}
             >
               {isSubmitting ? <CircularProgress size={20} color="inherit" /> : t("Stories.update")}
@@ -195,7 +207,7 @@ const EditStoryForm: React.FC = () => {
         }}
       >
         <FormField
-          label={t("Stories.title")}
+          label={t("Stories.storyTitle")}
           type="text"
           required
           value={title ?? ""}
@@ -219,9 +231,9 @@ const EditStoryForm: React.FC = () => {
         <FormField
           label={t("Stories.status")}
           type="select"
-          options={STORY_STATUS_OPTIONS}
           value={status ?? STORY_STATUS.TO_DO}
           onChange={(val) => setStatus(val as StoryStatus)}
+          options={statusOptions}
         />
       </Box>
 

@@ -41,8 +41,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        transition: "background-color 0.3s, border-color 0.3s",
-        "&:hover": { boxShadow: 4 }
+        transition: "background-color 0.3s, border-color 0.3s"
       }}
     >
       <CardContent
@@ -53,9 +52,8 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           height: "100%"
         }}
       >
-        {/* Content Section (title, desc, status) */}
+        {/* Content Section */}
         <Box sx={{ flex: 1, overflow: "hidden" }}>
-          {/* Title */}
           <Typography
             variant="h6"
             fontWeight={600}
@@ -70,7 +68,6 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
             {story.title}
           </Typography>
 
-          {/* Description */}
           <Box mb={1} sx={{ maxHeight: 40, overflow: "hidden" }}>
             <EllipsisText
               text={story.description || t("Stories.noDescriptionShort")}
@@ -78,7 +75,6 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
             />
           </Box>
 
-          {/* Status */}
           <Stack direction="row" spacing={2} alignItems="center" mt={1}>
             <StatusIndicator
               status={status}
@@ -87,7 +83,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           </Stack>
         </Box>
 
-        {/* View Details Section (fixed bottom) */}
+        {/* View Details */}
         <Box
           sx={{
             pt: 1,

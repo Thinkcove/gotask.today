@@ -41,8 +41,11 @@ class assetService {
 
     try {
       if (payload.userId && payload.tag) {
-        await updateTag(payload.tag, { userId: payload.userId });
-      } else if (payload.userId && payload.id && !payload.tag) {
+        await updateTag(payload.tag, {
+          userId: payload.userId,
+          previouslyUsedBy: payload?.previouslyUsedBy || ""
+        });
+      } else if (payload.userId && payload.id && payload.tag === "") {
         const assetsTag = {
           ...payload,
           assetId: payload.id
@@ -182,14 +185,22 @@ class assetService {
           error: AssetMessages.FETCH.NOT_FOUND
         };
       }
+      const assetType = await getAssetTypeById(data.typeId);
+
       const assetHistory = await getAssetHistoryById(data.id);
 
       const tags = await getTagsByAssetId(data.id);
+      let userData = null;
+      if (tags) {
+        userData = await findUser(tags.userId);
+      }
       return {
         data: {
           ...data.toObject(),
           tags,
-          assetHistory
+          assetHistory,
+          type: assetType?.name,
+          assignedTo: userData?.name
         },
         success: true
       };
@@ -233,6 +244,36 @@ class assetService {
       success: true,
       message: AssetMessages.DELETE.SUCCESS
     };
+  };
+
+  getUserByAssetId = async (id: string, user: any): Promise<any> => {
+    const userInfo = await findUserByEmail(user.user_id);
+    if (!userInfo) {
+      return {
+        success: false,
+        error: UserMessages.FETCH.NOT_FOUND
+      };
+    }
+    try {
+      const data = await getTagsByAssetId(id);
+      if (!data) {
+        return {
+          success: false,
+          error: AssetMessages.FETCH.NOT_FOUND
+        };
+      }
+
+      const users = await findUser(data.userId);
+      return {
+        data: users,
+        success: true
+      };
+    } catch {
+      return {
+        success: false,
+        error: AssetMessages.FETCH.FAILED_TO_GET_ASSET
+      };
+    }
   };
 }
 

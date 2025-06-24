@@ -516,11 +516,11 @@
     "issuessuccess": "Issue created successfully",
     "isencrypted": "Is Encrypted",
     "createtag": "Create tag",
-    "assignedTo": "Assigned To",
+    "assignedTo": "Assigned to",
     "assettype": "Asset Type",
-    "previouslyUsedBy": "Previously User By",
+    "previouslyUsedBy": "Previously used by",
     "actionType": "Action Type",
-    "createissue": "Crete issues",
+    "createissue": "Create issues",
     "reportedby": "Reported by",
     "issuestype": "Issues type",
     "description": "Description",
@@ -555,12 +555,14 @@
     "editstatus": "Update status",
     "showhistory": "Show History",
     "issueshistory": "Issues history",
-    "issuesType": "Issue Type:",
+    "issuestypes": "Issue Type:",
     "assetslog": "Log of who performed the updates in the assets",
     "isueslog": "Log of who performed the updates in the status",
     "issuesupdated": "Issues updated successfully",
     "required": "*",
-    "statuschanges": "Status changed to"
+    "statuschanges": "Status changed to",
+    "enc": "Encrypted",
+    "notenc": "Not Encrypted"
   },
 
   "Chatbot": {
@@ -628,7 +630,7 @@
     "from": "From",
     "notask": "No task title",
     "labelu": "user-id-label",
-    "idu":"user-ids",
+    "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids"
   },

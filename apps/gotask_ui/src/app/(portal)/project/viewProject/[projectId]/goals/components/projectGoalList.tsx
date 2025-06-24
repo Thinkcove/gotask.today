@@ -33,11 +33,7 @@ import FilterDropdown from "@/app/component/input/filterDropDown";
 import HistoryDrawer from "./history";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 
-interface ProjectGoalListProps {
-  onClose?: () => void; // optional callback prop
-}
-
-function ProjectGoalList({ onClose }: ProjectGoalListProps) {
+function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const { projectId } = useParams();
 
@@ -403,7 +399,7 @@ function ProjectGoalList({ onClose }: ProjectGoalListProps) {
             >
               {/* Left section: Back arrow + Search */}
               <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-                <IconButton color="primary" onClick={() => onClose?.()}>
+                <IconButton color="primary" onClick={handleBack}>
                   <ArrowBack />
                 </IconButton>
                 <Box maxWidth={400}>

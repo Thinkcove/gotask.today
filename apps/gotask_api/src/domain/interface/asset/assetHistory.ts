@@ -11,7 +11,7 @@ export const getAssetHistoryById = async (assetId: string) => {
 };
 
 export const getIssuesHistoryById = async (issuesId: string) => {
-  return await IssuesHistory.find({ issuesId });
+  return await IssuesHistory.find({ issuesId }).sort({ created_date: -1 });
 };
 
 export const createIssuesHistory = async (payload: any): Promise<IIssuesHistory> => {

@@ -120,7 +120,8 @@ class resourceService {
           await createIssuesHistory({
             issuesId: payload.id,
             userId: userInfo.id,
-            formatted_history: payload.status
+            formatted_history: payload.status,
+            previousStatus: payload.previousStatus
           });
           return { success: true, data: result };
         }

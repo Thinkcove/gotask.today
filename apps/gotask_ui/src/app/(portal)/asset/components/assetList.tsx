@@ -89,18 +89,18 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     [allAssets]
   );
 
-  const assignedUserNames: string[] = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          allAssets.flatMap(
-            (a: IAssetAttributes) =>
-              a.tagData?.map((tag) => tag.user?.name).filter((n): n is string => !!n) ?? []
-          )
+  const assignedUserNames: string[] = useMemo(() => {
+    const users = Array.from(
+      new Set(
+        allAssets.flatMap(
+          (a: IAssetAttributes) =>
+            a.tagData?.map((tag) => tag.user?.name).filter((n): n is string => !!n) ?? []
         )
-      ),
-    [allAssets]
-  );
+      )
+    ) as string[];
+
+    return users.sort((a, b) => a.localeCompare(b));
+  }, [allAssets]);
 
   const filterAssets = (
     assets: IAssetAttributes[],

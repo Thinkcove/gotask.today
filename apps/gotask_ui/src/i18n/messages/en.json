@@ -562,7 +562,9 @@
     "required": "*",
     "statuschanges": "Status changed to",
     "enc": "Encrypted",
-    "notenc": "Not Encrypted"
+    "notenc": "Not Encrypted",
+    "statusupdated": "Status has been updated from",
+    "to": "to"
   },
 
   "Chatbot": {

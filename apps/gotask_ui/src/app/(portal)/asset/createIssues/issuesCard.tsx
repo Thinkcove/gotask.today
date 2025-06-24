@@ -31,6 +31,7 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
   const { getAll: allissues, mutate: issuesMutate } = useAllIssues();
   const [newStatus, setNewStatus] = useState<string>("");
   const [selectedIssueId, setSelectedIssueId] = useState<string>("");
+  const [previousStatus, setPreviousStatus] = useState<string>("");
   const { asset: issueById } = useIssuesById(selectedIssueId);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [openHistoryDrawer, setOpenHistoryDrawer] = useState(false);
@@ -44,6 +45,7 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
   const handleEditClick = (issue: IAssetIssues) => {
     setSelectedIssueId(issue.id!);
     setNewStatus(issue.status);
+    setPreviousStatus(issue.status);
     setDialogOpen(true);
   };
 
@@ -64,7 +66,8 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
     try {
       const response = await createAssetIssues({
         ...issueById,
-        status: newStatus
+        status: newStatus,
+        previousStatus
       });
 
       if (response.success) {
@@ -79,6 +82,7 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
         setDialogOpen(false);
         setSelectedIssueId("");
         setNewStatus("");
+        setPreviousStatus("");
       }
     } catch (error) {
       console.error("Update failed", error);

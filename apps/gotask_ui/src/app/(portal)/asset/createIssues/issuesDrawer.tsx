@@ -23,7 +23,6 @@ const IssueHistoryDrawer: React.FC<IssueHistoryDrawerProps> = ({
   mode
 }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
-
   return (
     <Drawer
       anchor="right"
@@ -130,7 +129,8 @@ const IssueHistoryDrawer: React.FC<IssueHistoryDrawerProps> = ({
                       ))
                   : !item.formatted_history.toLowerCase().includes("tag") && (
                       <Typography variant="body2" sx={{ ml: 2, mb: 1.5 }}>
-                        {transasset("statuschanges")}{" "}
+                        {transasset("statusupdated")} {item?.previousStatus || "-"}{" "}
+                        {transasset("to")}{" "}
                         {item.formatted_history.trim().replace(TRAILING_DOTS_REGEX, "")}
                       </Typography>
                     )}

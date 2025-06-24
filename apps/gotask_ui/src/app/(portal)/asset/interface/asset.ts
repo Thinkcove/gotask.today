@@ -120,6 +120,7 @@ export interface IAssetIssues {
   assigned?: AssignedDetails;
   reportedDetails?: AssignedDetails;
   issuesHistory?: IIssuesHistory[];
+  previousStatus?: string;
 }
 
 export interface IIssuesHistories {
@@ -129,4 +130,5 @@ export interface IIssuesHistories {
   created_date: Date | "";
   created_by: string;
   userData?: User;
+  previousStatus?: string;
 }

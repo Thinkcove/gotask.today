@@ -14,7 +14,7 @@ const StoriesPage = () => {
   const initialProjectName = searchParams.get("name") || "";
   const [projectName, setProjectName] = useState(initialProjectName);
 
-  const suffixToday = t("suffixToday"); 
+  const suffixToday = t("suffixtoday"); 
   const cleanedName = projectName.replace(new RegExp(`${suffixToday}$`, "i"), "").trim();
 
   return (

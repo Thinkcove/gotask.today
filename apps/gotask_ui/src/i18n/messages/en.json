@@ -201,7 +201,7 @@
       "descriptionLabel": "Description",
       "stories": "Stories",
       "storyTitle": "Story Title",
-      "suffixToday": "Today",
+      "suffixtoday": "Today",
 
       "filters": {
         "status": "Status",

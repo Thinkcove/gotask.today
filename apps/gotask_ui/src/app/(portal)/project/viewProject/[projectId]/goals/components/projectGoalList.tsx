@@ -203,11 +203,13 @@ function ProjectGoalList() {
       if (goalData.id) {
         await updateWeeklyGoal(goalData.id, payload as any);
         await handelProjectGoalView(goalData.id);
+        setprojectGoalView(null);
         setSnackbar({
           open: true,
           message: transGoal("goalupdate"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
+        await mutate("project-goals");
       } else {
         await createWeeklyGoal(payload as any);
         setSnackbar({
@@ -215,8 +217,8 @@ function ProjectGoalList() {
           message: transGoal("savegoal"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
+        await mutate("project-goals");
       }
-      await mutate("project-goals");
       setOpenDialog(false);
     } catch (err) {
       console.error("Error saving weekly goal:", err);
@@ -332,11 +334,13 @@ function ProjectGoalList() {
   };
 
   const handleBack = () => {
-    router.back();
+    setOpenDialog(false);
+    setprojectGoalView(null);
   };
 
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
+    router.push(`/project/viewProject/${projectID}/goals`);
   };
   const onSeverityChange = (selected: string[]) => {
     setSeverityFilter(selected);
@@ -365,8 +369,6 @@ function ProjectGoalList() {
     const matchesSeverity = severityFilter.length ? severityFilter.includes(goal.priority) : true;
     return matchesSearchTerm && matchesStatus && matchesSeverity;
   });
-  const [openDrawer, setOpenDrawer] = useState(false);
-  console.log("openDrawer", openDrawer);
 
   if (!filteredGoals) {
     return (
@@ -383,6 +385,8 @@ function ProjectGoalList() {
       </Box>
     );
   }
+  console.log("openDialog", openDialog);
+  
 
   return (
     <>

@@ -203,6 +203,7 @@ function ProjectGoalList() {
       if (goalData.id) {
         await updateWeeklyGoal(goalData.id, payload as any);
         await handelProjectGoalView(goalData.id);
+        setprojectGoalView(null);
         setSnackbar({
           open: true,
           message: transGoal("goalupdate"),
@@ -219,6 +220,7 @@ function ProjectGoalList() {
         await mutate("project-goals");
       }
       setOpenDialog(false);
+      setprojectGoalView(null);
     } catch (err) {
       console.error("Error saving weekly goal:", err);
       setSnackbar({
@@ -333,12 +335,14 @@ function ProjectGoalList() {
   };
 
   const handleBack = () => {
-    router.back();
+    setOpenDialog(false);
+    setprojectGoalView(null);
   };
 
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
   };
+
   const onSeverityChange = (selected: string[]) => {
     setSeverityFilter(selected);
   };

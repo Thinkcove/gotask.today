@@ -208,6 +208,7 @@ function ProjectGoalList() {
           message: transGoal("goalupdate"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
+        await mutate("project-goals");
       } else {
         await createWeeklyGoal(payload as any);
         setSnackbar({
@@ -215,8 +216,8 @@ function ProjectGoalList() {
           message: transGoal("savegoal"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
+        await mutate("project-goals");
       }
-      await mutate("project-goals");
       setOpenDialog(false);
     } catch (err) {
       console.error("Error saving weekly goal:", err);

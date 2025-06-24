@@ -1,6 +1,7 @@
 import { ProjectStory, IProjectStory } from "../../domain/model/projectStory/projectStory";
 import { Task } from "../../domain/model/task/task";
 import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
+import { buildStartsWithRegex } from "../../constants/utils/regex";
 
 // CREATE a new story
 export const createStoryService = async (data: {
@@ -30,11 +31,13 @@ export const createStoryService = async (data: {
 export const getStoriesByProjectService = async ({
   projectId,
   status,
-  startDate
+  startDate,
+  search
 }: {
   projectId: string;
   status?: string | string[];
   startDate?: string;
+  search?: string;
 }): Promise<IProjectStory[]> => {
   try {
     if (!projectId) {
@@ -43,19 +46,20 @@ export const getStoriesByProjectService = async ({
 
     const query: any = { project_id: projectId };
 
-    // Filter by status
+    //  Use externalized regex function
+    if (search) {
+      query.title = { $regex: buildStartsWithRegex(search) };
+    }
+
     if (status) {
       query.status = Array.isArray(status) ? { $in: status } : status;
     }
 
-    // Filter by a specific createdAt date (startDate only)
     if (startDate) {
       const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0); // Start of day
-
+      start.setHours(0, 0, 0, 0);
       const end = new Date(startDate);
-      end.setHours(23, 59, 59, 999); // End of day
-
+      end.setHours(23, 59, 59, 999);
       query.createdAt = { $gte: start, $lte: end };
     }
 
@@ -64,6 +68,8 @@ export const getStoriesByProjectService = async ({
     throw new Error(error.message || storyMessages.FETCH.FAILED);
   }
 };
+
+
 
 // GET a story by its UUID
 export const getStoryByIdService = async (storyId: string): Promise<IProjectStory | null> => {

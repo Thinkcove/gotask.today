@@ -29,13 +29,15 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
 
   const initialStatus = searchParams.getAll("status");
   const initialStartDate = searchParams.get("startDate") || "";
+  const initialSearch = searchParams.get("search") || "";
 
   const [status, setStatus] = useState<string[]>(initialStatus);
   const [startDate, setStartDate] = useState<string>(initialStartDate);
+  const [searchTerm, setSearchTerm] = useState<string>(initialSearch);
 
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.data.length) return null;
-    return `stories-${projectId}-${status.join(",")}-${startDate}-page-${pageIndex + 1}`;
+    return `stories-${projectId}-${status.join(",")}-${startDate}-${searchTerm}-page-${pageIndex + 1}`;
   };
 
   const fetcher = async (_key: string) => {
@@ -43,6 +45,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
     return await getStoriesByProject(projectId as string, {
       status,
       startDate,
+      search: searchTerm,
       page,
       limit
     });
@@ -77,10 +80,11 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
     [isLoading, isValidating, hasMore]
   );
 
-  const updateQueryParams = (newStatus: string[], newStartDate = "") => {
+  const updateQueryParams = (newStatus: string[], newStartDate = "", newSearch = "") => {
     const params = new URLSearchParams();
     if (newStatus.length > 0) newStatus.forEach((s) => params.append("status", s));
     if (newStartDate) params.set("startDate", newStartDate);
+    if (newSearch) params.set("search", newSearch);
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
@@ -90,8 +94,8 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
       <Box
         sx={{
           position: "absolute",
-          top: 16,
-          left: 16,
+          top: 26,
+          left: 20,
           display: "flex",
           alignItems: "center",
           gap: 1,
@@ -116,19 +120,26 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
       <StoryFilters
         status={status}
         startDate={startDate}
+        searchTerm={searchTerm}
         onStatusChange={(val) => {
           setStatus(val);
           setSize(1);
-          updateQueryParams(val, startDate);
+          updateQueryParams(val, startDate, searchTerm);
         }}
         onStartDateChange={(val) => {
           setStartDate(val);
           setSize(1);
-          updateQueryParams(status, val);
+          updateQueryParams(status, val, searchTerm);
+        }}
+        onSearchChange={(val) => {
+          setSearchTerm(val);
+          setSize(1);
+          updateQueryParams(status, startDate, val);
         }}
         onClearFilters={() => {
           setStatus([]);
           setStartDate("");
+          setSearchTerm("");
           setSize(1);
           router.replace("?", { scroll: false });
         }}
@@ -170,7 +181,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
         )}
       </Box>
 
-      {/* Add Story */}
+      {/* Add Story FAB */}
       <Fab
         color="primary"
         onClick={() => router.push(`/project/viewProject/${projectId}/stories/create`)}

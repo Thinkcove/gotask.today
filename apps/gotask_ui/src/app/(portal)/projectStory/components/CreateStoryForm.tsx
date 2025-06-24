@@ -25,7 +25,7 @@ const CreateStoryForm = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState<StoryStatus>(STORY_STATUS.TO_DO);
+  const [status] = useState<StoryStatus>(STORY_STATUS.TO_DO);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");

@@ -61,6 +61,9 @@ export const getStoriesByProject = async (
     if (queryParams.page) query.set("page", String(queryParams.page));
     if (queryParams.limit) query.set("limit", String(queryParams.limit));
 
+    // Added to support search filter
+    if (queryParams.search) query.set("search", queryParams.search);
+
     const url = `${env.API_BASE_URL}/getStories/${projectId}?${query.toString()}`;
     return getData(url, token);
   });

@@ -39,6 +39,7 @@ export interface StoryQueryParams {
   status?: string[];
   startDate?: string;
   endDate?: string;
+  search?: string;
   page?: number;
   limit?: number;
 }

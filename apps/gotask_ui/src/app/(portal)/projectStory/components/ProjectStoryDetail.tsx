@@ -30,7 +30,6 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
-import EllipsisText from "../../../component/text/ellipsisText";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();

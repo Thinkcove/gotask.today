@@ -34,5 +34,5 @@ export const getTranslatedStoryStatusOptions = (
 export const STORY_STATUS_TRANSITIONS: Record<StoryStatus, StoryStatus[]> = {
   [STORY_STATUS.TO_DO]: [STORY_STATUS.IN_PROGRESS],
   [STORY_STATUS.IN_PROGRESS]: [STORY_STATUS.DONE],
-  [STORY_STATUS.DONE]: [] 
+  [STORY_STATUS.DONE]: []
 };

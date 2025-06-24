@@ -38,7 +38,6 @@ function ProjectGoalList() {
   const { projectId } = useParams();
 
   const { user } = useUser();
-  console.log("user", user);
   const projectID = projectId as string;
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -158,7 +157,6 @@ function ProjectGoalList() {
 
     try {
       const fetchedGoal = await getWeeklyGoalById(goal.id); // ✅ goal.id is definitely a string here
-      console.log("Goal Data:", fetchedGoal);
 
       setProjectGoalHistory({
         updateHistory: fetchedGoal.updateHistory || []
@@ -235,14 +233,11 @@ function ProjectGoalList() {
     (GoalData & { comments: GoalComment[] }) | null
   >(null);
 
-  console.log("projectGoalHistory", projectGoalHistory);
 
   const handelProjectGoalView = async (goalId: string) => {
-    console.log("Goal Data goalId:", goalId);
 
     try {
       const goal = await getWeeklyGoalById(goalId);
-      console.log("Goal Data:", goal);
 
       const comments = await getCommentsByGoalId(goalId);
       const fullGoal = {
@@ -349,17 +344,12 @@ function ProjectGoalList() {
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    console.log("scrolling", scrollTop + clientHeight, scrollHeight);
     if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
       setPage((prev) => prev + 1);
     }
     if (scrollTop <= (scrollHeight - clientHeight) / 2) {
-      console.log("User scrolled up past the middle");
-      setPage((prev) => Math.max(prev - 1, 1)); // or whatever logic you want
+      setPage((prev) => Math.max(prev - 1, 1)); 
     }
-    // let tepvab= allGoals.push(data?.goals || []);
-
-    // setAllGoals((prev) => [...prev, ...(data.goals || [])]);
   };
 
   const filteredGoals = allGoals?.filter((goal) => {
@@ -370,8 +360,6 @@ function ProjectGoalList() {
     const matchesSeverity = severityFilter.length ? severityFilter.includes(goal.priority) : true;
     return matchesSearchTerm && matchesStatus && matchesSeverity;
   });
-  const [openDrawer, setOpenDrawer] = useState(false);
-  console.log("openDrawer", openDrawer);
 
   if (!filteredGoals) {
     return (

@@ -1,9 +1,9 @@
 import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { TASK_SEVERITY } from "../../../constants/taskConstant";
-import { PROJECTGOAL_STATUS } from "../../../constants/projectGoalConstants";
+import { PROJECT_SEVERITY, PROJECTGOAL_STATUS } from "../../../constants/projectGoalConstants";
 
-export type TaskSeverity = (typeof TASK_SEVERITY)[keyof typeof TASK_SEVERITY];
+export type ProjectGoalSeverity = (typeof PROJECT_SEVERITY)[keyof typeof PROJECT_SEVERITY];
 export type ProjectGoalStatus = (typeof PROJECTGOAL_STATUS)[keyof typeof PROJECTGOAL_STATUS];
 
 // Interface for TypeScript
@@ -14,7 +14,7 @@ export interface IProjectGoal extends Document {
   weekStart: Date;
   weekEnd: Date;
   comments: string[];
-  priority: TaskSeverity;
+  priority: ProjectGoalSeverity;
   description?: string;
   status: ProjectGoalStatus;
 }

@@ -19,7 +19,7 @@ import {
   getProjectStoryById,
   deleteProjectStory,
   getTasksByStory
-} from "@/app/(portal)/projectStory/services/projectStoryService";
+} from "@/app/(portal)/projectStory/services/projectStoryActions";
 
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
@@ -149,9 +149,15 @@ const ProjectStoryDetail = () => {
 
       {/* Content */}
       <Box sx={{ flex: 1, overflowY: "auto", mb: 2 }}>
-        <Typography variant="body1" mb={2}>
-          {story.description || t("Stories.noDescription")}
-        </Typography>
+        <Box mb={3}>
+          <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+            {t("Stories.descriptionLabel")}
+          </Typography>
+          <Typography variant="body1" color="text.primary" sx={{ whiteSpace: "pre-line" }}>
+            {story.description || t("Stories.noDescription")}
+          </Typography>
+        </Box>
+
         <LabelValueText
           label={t("Stories.createdAt")}
           value={<FormattedDateTime date={story.createdAt} />}

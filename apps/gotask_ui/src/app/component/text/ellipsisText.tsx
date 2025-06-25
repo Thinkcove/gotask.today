@@ -1,4 +1,4 @@
-import { Typography, Tooltip } from "@mui/material";
+import { Typography } from "@mui/material";
 
 interface EllipsisTextProps {
   text: string;
@@ -7,21 +7,18 @@ interface EllipsisTextProps {
 
 const EllipsisText = ({ text, maxWidth = 200 }: EllipsisTextProps) => {
   return (
-    <Tooltip title={text} placement="top-start" arrow>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{
-          maxWidth,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          cursor: "pointer"
-        }}
-      >
-        {text}
-      </Typography>
-    </Tooltip>
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      sx={{
+        maxWidth,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }}
+    >
+      {text}
+    </Typography>
   );
 };
 

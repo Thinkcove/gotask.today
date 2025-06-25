@@ -15,6 +15,8 @@ export interface ITagData {
   user?: User;
   actionType?: string;
   createdAt?: string;
+  userName?: string;
+  previouslyUsedBy?: string;
 }
 
 export interface IAssetHistory {
@@ -79,6 +81,8 @@ export interface IAssetAttributes {
 
   // history
   assetHistory?: IAssetHistory[];
+  type?: string;
+  assignedTo?: string;
 }
 
 export interface IAssetTags {
@@ -89,6 +93,7 @@ export interface IAssetTags {
   erk: string;
   previouslyUsedBy: string;
   tags?: string;
+  data?: User;
 }
 
 interface AssetDetails {

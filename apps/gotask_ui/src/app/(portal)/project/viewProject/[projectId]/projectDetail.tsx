@@ -54,7 +54,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const projectID = projectId as string;
 
   const handleBack = () => {
-    setTimeout(() => router.back(), 2000);
+    setTimeout(() => router.push("/project"), 2000);
   };
 
   const handleAddUser = async () => {
@@ -203,7 +203,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 cursor: "pointer",
                 "&:hover": { textDecoration: "underline" }
               }}
-              onClick={() => router.push(`/project/viewProject/${projectID}/stories`)}
+              onClick={() => router.push(
+                `/project/viewProject/${projectID}/stories?name=${encodeURIComponent(project.name)}`
+              )}
             >
               {transproject("linkstories")}
             </Typography>

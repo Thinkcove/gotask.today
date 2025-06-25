@@ -74,6 +74,17 @@ class AssetController extends BaseController {
       return this.replyError(error);
     }
   }
+
+  async getUserByAssetId(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const user = requestHelper.getUser();
+      const asset = await assetServices.getUserByAssetId(id, user);
+      return this.sendResponse(handler, asset);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
 export default AssetController;

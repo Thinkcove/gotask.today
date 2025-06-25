@@ -38,7 +38,6 @@ function ProjectGoalList() {
   const { projectId } = useParams();
 
   const { user } = useUser();
-  console.log("user", user);
   const projectID = projectId as string;
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -109,6 +108,7 @@ function ProjectGoalList() {
 
   const formattedHistory =
     projectGoalHistory?.updateHistory?.map((item: any) => {
+
       const updatedUser = users?.find((user: any) => user.id === item.user_id);
       const loginuser_name = updatedUser?.first_name || updatedUser?.name;
 
@@ -122,11 +122,9 @@ function ProjectGoalList() {
       return {
         loginuser_name: loginuser_name,
         formatted_history: formattedChanges.join(". "),
-        created_date: item.timestamp || "" 
+        created_date: item.timestamp || ""
       };
     }) ?? [];
-
-
 
   const handelOpen = () => {
     setGoalData({
@@ -159,9 +157,7 @@ function ProjectGoalList() {
     }
 
     try {
-      const fetchedGoal = await getWeeklyGoalById(goal.id); // ✅ goal.id is definitely a string here
-      console.log("Goal Data:", fetchedGoal);
-
+      const fetchedGoal = await getWeeklyGoalById(goal.id);
       setProjectGoalHistory({
         updateHistory: fetchedGoal.data.updateHistory || []
       });
@@ -236,14 +232,11 @@ function ProjectGoalList() {
     (GoalData & { comments: GoalComment[] }) | null
   >(null);
 
-  console.log("projectGoalHistory", projectGoalHistory);
 
   const handelProjectGoalView = async (goalId: string) => {
-    console.log("Goal Data goalId:", goalId);
 
     try {
       const goal = await getWeeklyGoalById(goalId);
-      console.log("Goal Data:", goal);
 
       const comments = await getCommentsByGoalId(goalId);
       const fullGoal = {
@@ -350,17 +343,14 @@ function ProjectGoalList() {
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    console.log("scrolling", scrollTop + clientHeight, scrollHeight);
+
     if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
       setPage((prev) => prev + 1);
     }
     if (scrollTop <= (scrollHeight - clientHeight) / 2) {
-      console.log("User scrolled up past the middle");
-      setPage((prev) => Math.max(prev - 1, 1)); // or whatever logic you want
+      setPage((prev) => Math.max(prev - 1, 1)); 
     }
-    // let tepvab= allGoals.push(data?.goals || []);
-
-    // setAllGoals((prev) => [...prev, ...(data.goals || [])]);
+ 
   };
 
   const filteredGoals = allGoals?.filter((goal) => {
@@ -387,7 +377,6 @@ function ProjectGoalList() {
       </Box>
     );
   }
-  console.log("openDialog", openDialog);
 
   return (
     <>
@@ -538,7 +527,6 @@ function ProjectGoalList() {
 
                 <Box
                   onClick={() => {
-                    console.log("Show History clicked");
                     setHistory(true);
                   }}
                   sx={{

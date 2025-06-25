@@ -48,7 +48,7 @@ function ProjectGoalList() {
     status: "",
     priority: "",
     projectId: projectID,
-    updated_by: ""
+    user_id: ""
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [snackbar, setSnackbar] = useState({
@@ -107,10 +107,10 @@ function ProjectGoalList() {
 
   const formattedHistory =
     projectGoalHistory?.updateHistory?.map((item: any) => {
-      const updatedUser = users?.find((user: any) => user.id === item.updated_by);
+      const updatedUser = users?.find((user: any) => user.id === item.user_id);
       const loginuser_name = updatedUser?.first_name || updatedUser?.name || "System";
 
-      const formattedChanges = Object.entries(item.update_data)
+      const formattedChanges = Object.entries(item.history_data)
         .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
         .map(([key, value]) => {
           const label = fieldLabelMap[key] || key;
@@ -132,7 +132,7 @@ function ProjectGoalList() {
       description: "",
       priority: "",
       weekStart: "",
-      weekEnd: ""
+      weekEnd: "",
     });
     setOpenDialog(true);
   };
@@ -195,7 +195,7 @@ function ProjectGoalList() {
         status: goalData.status,
         description: goalData.description,
         priority: goalData.priority,
-        updated_by: user?.id
+        user_id: user?.id
       };
       if (goalData.id) {
         await updateWeeklyGoal(goalData.id, payload as any);

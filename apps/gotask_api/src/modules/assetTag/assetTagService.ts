@@ -1,6 +1,6 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
-import { getAssetById } from "../../domain/interface/asset/asset";
+import { getAssetById, getById } from "../../domain/interface/asset/asset";
 import {
   createIssuesHistory,
   getIssueHistoryByAssetId,
@@ -213,6 +213,21 @@ class resourceService {
           error: AssetMessages.FETCH.NOT_FOUND
         };
       }
+
+      let reportedUser = null;
+      let assignedUser = null;
+      let assetDetails = null;
+
+      if (data?.reportedBy) {
+        reportedUser = await findUser(data.reportedBy);
+      }
+      if (data?.assignedTo) {
+        assignedUser = await findUser(data.assignedTo);
+      }
+      if (data?.assetId) {
+        assetDetails = await getAssetById(data.assetId);
+      }
+
       const issuesHistory = await getIssuesHistoryById(data.id);
       const enrichedHistory = await Promise.all(
         issuesHistory.map(async (historyItem: any) => {
@@ -226,7 +241,10 @@ class resourceService {
       return {
         data: {
           ...data.toObject(),
-          issuesHistory: enrichedHistory
+          issuesHistory: enrichedHistory,
+          reportedUser: reportedUser?.user_id,
+          assignedUser: assignedUser?.user_id,
+          asset: assetDetails?.deviceName
         },
         success: true
       };

@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import { IAssetAttributes } from "../interface/asset";
 import { getAssetColumns, IAssetDisplayRow, issueStatuses } from "../assetConstants";
 import AssetIssueCards from "../createIssues/issuesCard";
-import CreateIssue from "../createIssues/createIssues";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -27,8 +26,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [view, setView] = useState<"assets" | "issues">(initialView);
   const [assignedToFilter, setAssignedToFilter] = useState<string[]>([]);
   const [modelNameFilter, setModelNameFilter] = useState<string[]>([]);
-
-  const [createIssueOpen, setCreateIssueOpen] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
   const router = useRouter();
   const { getAll: allAssets } = useAllAssets();
@@ -73,7 +70,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     if (initialView === transasset("selectedAsset")) {
       router.push("/asset/createAsset");
     } else if (initialView === transasset("selectedIssues")) {
-      setCreateIssueOpen(true);
+      router.push("/asset/createIssues");
     }
   };
 
@@ -300,7 +297,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           onClick={handleActionClick}
         />
       </Box>
-      <CreateIssue open={createIssueOpen} onClose={() => setCreateIssueOpen(false)} />
     </>
   );
 };

@@ -564,7 +564,11 @@
     "enc": "Encrypted",
     "notenc": "Not Encrypted",
     "statusupdated": "Status has been updated from",
-    "to": "to"
+    "to": "to",
+    "editissue": "Update issues",
+    "viewdetails": "View Details",
+    "noupdates": "No updates",
+    "modeasset": "asset"
   },
 
   "Chatbot": {

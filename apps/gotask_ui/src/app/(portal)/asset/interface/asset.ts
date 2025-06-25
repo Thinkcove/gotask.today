@@ -114,13 +114,16 @@ export interface IAssetIssues {
   description: string;
   status: string;
   assignedTo: string;
-  comment: string;
-  updatedBy: string;
+  comment?: string;
+  updatedBy?: string;
   assetDetails?: AssetDetails;
   assigned?: AssignedDetails;
   reportedDetails?: AssignedDetails;
   issuesHistory?: IIssuesHistory[];
   previousStatus?: string;
+  reportedUser?: string;
+  assignedUser?: string;
+  asset?: string;
 }
 
 export interface IIssuesHistories {

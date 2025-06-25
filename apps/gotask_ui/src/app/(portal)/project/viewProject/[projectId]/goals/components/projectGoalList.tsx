@@ -95,13 +95,12 @@ function ProjectGoalList() {
   } | null>(null);
 
   const fieldLabelMap: { [key: string]: string } = {
-    goalTitle: "Goal Title",
-    description: "Description",
-    priority: "Priority",
-    projectId: "Project ID",
-    status: "Status",
-    weekEnd: "Week End",
-    weekStart: "Week Start"
+    goalTitle: transGoal("goaltitle"),
+    description: transGoal("description"),
+    priority: transGoal("priority"),
+    status: transGoal("status"),
+    weekEnd: transGoal("startdate"),
+    weekStart: transGoal("enddate")
   };
   const { data: users } = useSWR("fetch-user", fetcherUserList);
 
@@ -132,7 +131,7 @@ function ProjectGoalList() {
       description: "",
       priority: "",
       weekStart: "",
-      weekEnd: "",
+      weekEnd: ""
     });
     setOpenDialog(true);
   };

@@ -30,6 +30,7 @@ import { ACTIONS, ActionType, ApplicationName } from "@/app/common/utils/permiss
 import ChatIcon from "@mui/icons-material/Chat";
 import { UploadFileOutlined } from "../../../../node_modules/@mui/icons-material/index";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import InsightsIcon from "@mui/icons-material/Insights";
 
 const iconMap: Record<string, React.ReactNode> = {
   DashboardIcon: <GridViewIcon />,
@@ -42,7 +43,8 @@ const iconMap: Record<string, React.ReactNode> = {
   BarChartIcon: <BarChartIcon />,
   ChatIcon: <ChatIcon />,
   UploadIcon: <UploadFileOutlined />,
-  ManageAccountsIcon: <ManageAccountsIcon />
+  ManageAccountsIcon: <ManageAccountsIcon />,
+  InsightsIcon: <InsightsIcon />
 };
 
 const drawerWidth = 260;

@@ -335,7 +335,6 @@ function ProjectGoalList() {
 
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
-    router.push(`/project/viewProject/${projectID}/goals`);
   };
   const onSeverityChange = (selected: string[]) => {
     setSeverityFilter(selected);

@@ -17,7 +17,7 @@ interface TemplateCardsProps {
   getUserStatusColor?: (status: string) => string;
 }
 
-const TemplateCards: React.FC<TemplateCardsProps> = ({ templates, onView }) => {
+const KpiItem: React.FC<TemplateCardsProps> = ({ templates, onView }) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
 
@@ -92,4 +92,4 @@ const TemplateCards: React.FC<TemplateCardsProps> = ({ templates, onView }) => {
   );
 };
 
-export default TemplateCards;
+export default KpiItem;

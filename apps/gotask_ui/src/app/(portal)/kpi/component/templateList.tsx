@@ -13,7 +13,7 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { deleteTemplate, fetcher, updateTemplate } from "../service/templateAction";
 import { Template } from "../service/templateInterface";
 import Chat from "../../chatbot/components/chat";
-import TemplateCards from "../view/[id]/kpiItem";
+import KpiItem from "../view/[id]/kpiItem";
 
 const TemplateList = () => {
   const { canAccess } = useUserPermission();
@@ -83,7 +83,7 @@ const TemplateList = () => {
           placeholder={transkpi("searchplaceholder")}
         />
       </Box>
-      <TemplateCards
+      <KpiItem
         templates={templates}
         onDelete={handleDelete}
         onUpdate={handleUpdate}

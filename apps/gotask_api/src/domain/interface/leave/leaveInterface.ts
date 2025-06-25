@@ -1,6 +1,7 @@
 import { ILeave, Leave } from "../../model/leave/leaveModel";
 import { User } from "../../model/user/user";
 import logger from "../../../common/logger";
+import { LEAVE_CONST } from "../../../constants/leaveConstant";
 
 export interface FilterQuery {
   user_id?: string;
@@ -10,7 +11,7 @@ export interface FilterQuery {
   page?: number;
   page_size?: number;
   sort_field?: string;
-  sort_order?: "asc" | "desc";
+  sort_order?: string;
 }
 
 const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> => {
@@ -52,7 +53,7 @@ const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> =>
 
   const sort: any = {};
   if (filters.sort_field) {
-    sort[filters.sort_field] = filters.sort_order === "desc" ? -1 : 1;
+    sort[filters.sort_field] = filters.sort_order === LEAVE_CONST.DESC ? -1 : 1;
   } else {
     sort.created_on = -1; // Default sort
   }

@@ -7,7 +7,7 @@ import {
   findLeavesWithFilters
 } from "../../domain/interface/leave/leaveInterface";
 import { ILeave, Leave } from "../../domain/model/leave/leaveModel";
-
+import { LEAVE_CONST, PAGE } from "../../constants/leaveConstant";
 const createLeaveService = async (leaveData: Partial<ILeave>) => {
   try {
     if (new Date(leaveData.from_date!) > new Date(leaveData.to_date!)) {
@@ -139,7 +139,7 @@ const getLeavesWithFiltersService = async (filters: {
   page?: number;
   page_size?: number;
   sort_field?: string;
-  sort_order?: "asc" | "desc";
+  sort_order?: typeof LEAVE_CONST.ASC | typeof LEAVE_CONST.DESC;
 }) => {
   try {
     // Validate dates when both are provided
@@ -150,8 +150,8 @@ const getLeavesWithFiltersService = async (filters: {
     }
 
     // Set default pagination values
-    const page = filters.page || 1;
-    const page_size = filters.page_size || 10;
+    const page = filters.page || parseInt(PAGE.ONE);
+    const page_size = filters.page_size || parseInt(PAGE.TEN);
 
     // Fetch filtered leaves
     const leaves = await findLeavesWithFilters(filters);
@@ -193,7 +193,7 @@ const getLeavesWithFiltersService = async (filters: {
       data: {
         leaves,
         total_count,
-        total_pages: Math.ceil(total_count / page_size),
+        total_pages: Math.ceil(total_count/page_size),
         current_page: page
       }
     };

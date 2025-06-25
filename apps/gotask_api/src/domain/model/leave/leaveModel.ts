@@ -1,12 +1,7 @@
 import { Document } from "mongoose";
 import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-
-export enum LEAVE_TYPE {
-  SICK_LEAVE = "Sick",
-  PERSONAL_LEAVE = "Personal"
-}
-
+import { LEAVE_TYPE } from "../../../constants/leaveConstant";
 export interface ILeave extends Document {
   id: string;
   user_id: string;

@@ -1,6 +1,7 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { createPermissionService, deletePermissionService, getAllPermissionsService, getPermissionByIdService, getPermissionsWithFiltersService, updatePermissionService } from "./permissionServices";
+import { createPermissionComment, createPermissionService, deletePermissionComment, deletePermissionService, getAllPermissionsService, getPermissionByIdService, getPermissionsWithFiltersService, updatePermissionComment, updatePermissionService } from "./permissionServices";
+import { IPermissionComment } from "../../domain/model/permission/permissionComment";
 
 
 class PermissionController extends BaseController {
@@ -15,7 +16,7 @@ class PermissionController extends BaseController {
 
       const permissionDataWithUserId = {
         ...permissionData,
-        user_id: user.id
+        user_id: user.id,
       };
 
       const result = await createPermissionService(permissionDataWithUserId);
@@ -111,6 +112,51 @@ class PermissionController extends BaseController {
       }
 
       const result = await deletePermissionService(id);
+       return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
+  async createPermissionComment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const commentData = requestHelper.getPayload();
+      const user = requestHelper.getUser();
+      if (!user || !user.id) {
+        throw new Error("User ID not found");
+      }
+      const commentDataWithUser = {
+       permission_id: commentData.permission_id,
+        user_id: user.id,
+        comment: commentData.comment
+      };
+      const result = await createPermissionComment(commentDataWithUser);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
+  async updatePermissionComment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const updateData = requestHelper.getPayload() as Partial<IPermissionComment>;
+      const user = requestHelper.getUser();
+      if (!user || !user.id) {
+        throw new Error("User ID not found");
+      }
+      const result = await updatePermissionComment(id, updateData);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error, handler);
+    }
+  }
+  async deletePermissionComment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const user = requestHelper.getUser();
+      if (!user || !user.id) {
+        throw new Error("User ID not found");
+      }
+      const result = await deletePermissionComment(id);
       return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error, handler);

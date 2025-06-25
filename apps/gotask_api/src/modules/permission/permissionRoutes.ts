@@ -99,4 +99,47 @@ PermissionRoutes.push({
   }
 });
 
+// Create permission comment
+PermissionRoutes.push({
+  path: "/permission/comment",
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    permissionController.createPermissionComment(new RequestHelper(request), handler),
+  config: {
+    notes: "Add a comment to a permission request",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+// Update permission comment
+PermissionRoutes.push({
+  path: "/permission/comment/{id}",
+  method: API_METHODS.PUT,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    permissionController.updatePermissionComment(new RequestHelper(request), handler),
+  config: {
+    notes: "Update a comment on a permission request",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+// Delete permission comment
+PermissionRoutes.push({
+  path: "/permission/comment/{id}",
+  method: API_METHODS.DELETE,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    permissionController.deletePermissionComment(new RequestHelper(request), handler),
+  config: {
+    notes: "Delete a comment from a permission request",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
 export default PermissionRoutes;

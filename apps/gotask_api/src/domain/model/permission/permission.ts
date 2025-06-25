@@ -1,5 +1,5 @@
-import { Document } from "mongoose";
-import mongoose, { Schema } from "mongoose";
+import { Document, Schema } from "mongoose";
+import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 export interface IPermission extends Document {
@@ -9,7 +9,7 @@ export interface IPermission extends Document {
   date: Date;
   start_time: string;
   end_time?: string;
-  comments: string[];
+  comments: string[]; 
 }
 
 const PermissionSchema = new Schema<IPermission>(
@@ -20,7 +20,7 @@ const PermissionSchema = new Schema<IPermission>(
     date: { type: Date, required: true },
     start_time: { type: String, required: true },
     end_time: { type: String, required: false },
-    comments: { type: [String], default: [] }
+    comments: { type: [String], default: [] }, 
   },
   { timestamps: true }
 );

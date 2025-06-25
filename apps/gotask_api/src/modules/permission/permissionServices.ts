@@ -1,12 +1,18 @@
+import { PER_CONST } from "../../constants/permissionConstant";
+import { SortOrder } from "../../constants/taskConstant";
 import {
   createNewPermission,
   findAllPermissions,
   findPermissionById,
   updateAPermission,
   deleteByPermissionId,
-  findPermissionsWithFilters
+  findPermissionsWithFilters,
+  deleteCommentFromPermission,
+  updateCommentInPermission,
+  createCommentInPermission
 } from "../../domain/interface/permission/permissionInterface";
 import { IPermission, Permission } from "../../domain/model/permission/permission";
+import { IPermissionComment } from "../../domain/model/permission/permissionComment";
 
 
 const createPermissionService = async (permissionData: Partial<IPermission>) => {
@@ -30,7 +36,7 @@ const createPermissionService = async (permissionData: Partial<IPermission>) => 
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to create permission request",
+      message: error.message,
       data: null
     };
   }
@@ -47,7 +53,7 @@ const getAllPermissionsService = async () => {
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to retrieve permission requests",
+      message: error.message,
       data: []
     };
   }
@@ -71,7 +77,7 @@ const getPermissionByIdService = async (id: string) => {
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to retrieve permission request",
+      message: error.message,
       data: null
     };
   }
@@ -105,7 +111,7 @@ const updatePermissionService = async (id: string, updateData: Partial<IPermissi
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to update permission request",
+      message: error.message,
       data: null
     };
   }
@@ -129,7 +135,7 @@ const deletePermissionService = async (id: string) => {
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to delete permission request",
+      message: error.message,
       data: null
     };
   }
@@ -143,7 +149,7 @@ const getPermissionsWithFiltersService = async (filters: {
   page?: number;
   page_size?: number;
   sort_field?: string;
-  sort_order?: "asc" | "desc";
+  sort_order?: typeof PER_CONST.ASC | typeof PER_CONST.DESC;
 }) => {
   try {
     // Validate dates when both are provided
@@ -201,11 +207,81 @@ const getPermissionsWithFiltersService = async (filters: {
   }
 };
 
+const createPermissionComment = async (
+  commentData: Partial<IPermissionComment>
+): Promise<{ success: boolean; data?: IPermissionComment; message?: string }> => {
+  try {
+    const newComment = await createCommentInPermission(commentData as IPermissionComment);
+    return {
+      success: true,
+      data: newComment,
+      message: "Comment added successfully"
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to add comment"
+    };
+  }
+};
+
+const updatePermissionComment = async (
+  id: string,
+  newCommentText: Partial<IPermissionComment>
+): Promise<{ success: boolean; data?: IPermissionComment; message?: string }> => {
+  try {
+    const updatedComment = await updateCommentInPermission(id, newCommentText);
+    if (!updatedComment) {
+      return {
+        success: false,
+        message: "Comment not found"
+      };
+    }
+    return {
+      success: true,
+      data: updatedComment,
+      message: "Comment updated successfully"
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to update comment"
+    };
+  }
+};
+
+const deletePermissionComment = async (
+  id: string
+): Promise<{ success: boolean; data?: IPermissionComment; message?: string }> => {
+  try {
+    const deletedComment = await deleteCommentFromPermission(id);
+    if (!deletedComment) {
+      return {
+        success: false,
+        message: "Comment not found"
+      };
+    }
+    return {
+      success: true,
+      data: deletedComment,
+      message: "Comment deleted successfully"
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to delete comment"
+    };
+  }
+};
+
 export {
   createPermissionService,
   getAllPermissionsService,
   getPermissionByIdService,
   updatePermissionService,
   deletePermissionService,
-  getPermissionsWithFiltersService
+  getPermissionsWithFiltersService,
+  createPermissionComment,
+  updatePermissionComment,
+  deletePermissionComment
 };

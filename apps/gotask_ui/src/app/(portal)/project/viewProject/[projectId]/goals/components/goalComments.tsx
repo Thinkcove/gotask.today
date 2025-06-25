@@ -119,7 +119,6 @@ const GoalComments: React.FC<GoalCommentProps> = ({
               variant="contained"
               sx={{ backgroundColor: "#741B92", textTransform: "none" }}
               onClick={handlePostComment}
-              disabled={isSubmitting || !newComment.trim()}
             >
               {isSubmitting ? transGoal("saving") : transGoal("savecomment")}
             </Button>
@@ -220,7 +219,6 @@ const GoalComments: React.FC<GoalCommentProps> = ({
                           border: "2px solid #741B92",
                           px: 2,
                           textTransform: "none",
-                          "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
                         }}
                         onClick={() => {
                           setEditingComment(null);

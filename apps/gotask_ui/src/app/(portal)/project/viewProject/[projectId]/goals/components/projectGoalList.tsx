@@ -108,7 +108,6 @@ function ProjectGoalList() {
 
   const formattedHistory =
     projectGoalHistory?.updateHistory?.map((item: any) => {
-
       const updatedUser = users?.find((user: any) => user.id === item.user_id);
       const loginuser_name = updatedUser?.first_name || updatedUser?.name;
 
@@ -232,23 +231,17 @@ function ProjectGoalList() {
     (GoalData & { comments: GoalComment[] }) | null
   >(null);
 
-
   const handelProjectGoalView = async (goalId: string) => {
-
     try {
       const goal = await getWeeklyGoalById(goalId);
 
       const comments = await getCommentsByGoalId(goalId);
       const fullGoal = {
-        ...goal.goal.data,
+        ...goal.data,
         comments: comments || []
       };
 
       setprojectGoalView(fullGoal);
-
-      // setProjectGoalHistory({
-      //   updateHistory: goal.updateHistory || []
-      // });
     } catch (error) {
       console.error("Error fetching goal details:", error);
     }
@@ -347,9 +340,8 @@ function ProjectGoalList() {
       setPage((prev) => prev + 1);
     }
     if (scrollTop <= (scrollHeight - clientHeight) / 2) {
-      setPage((prev) => Math.max(prev - 1, 1)); 
+      setPage((prev) => Math.max(prev - 1, 1));
     }
- 
   };
 
   const filteredGoals = allGoals?.filter((goal) => {

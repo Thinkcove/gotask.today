@@ -3,8 +3,8 @@ import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 export enum LEAVE_TYPE {
-  SICK_LEAVE = "Sick leave",
-  PERSONAL_LEAVE = "Personal leave"
+  SICK_LEAVE = "Sick",
+  PERSONAL_LEAVE = "Personal"
 }
 
 export interface ILeave extends Document {
@@ -14,8 +14,6 @@ export interface ILeave extends Document {
   from_date: Date;
   to_date: Date;
   leave_type: string;
-  created_on: Date;
-  updated_on: Date;
 }
 
 const LeaveSchema = new Schema<ILeave>(
@@ -29,9 +27,7 @@ const LeaveSchema = new Schema<ILeave>(
       type: String,
       enum: Object.values(LEAVE_TYPE),
       required: true
-    },
-    created_on: { type: Date, default: Date.now },
-    updated_on: { type: Date, default: Date.now }
+    }
   },
   { timestamps: true }
 );

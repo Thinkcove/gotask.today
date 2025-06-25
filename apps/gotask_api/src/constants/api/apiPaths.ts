@@ -68,16 +68,5 @@ export const API_PATHS = {
 
   //userpreference
   SET_USER_PREFERENCES: "/setPreference",
-  GET_USER_PREFERENCES: "/getPreference",
-
-  //leavemodule
-  CREATE_LEAVE: "/leave",
-  GET_ALL_LEAVES: "/getleave",
-  GET_LEAVE_BY_ID: "/getleavebyid/{id}",
-  GET_LEAVES: "/getleave",
-  UPDATE_LEAVE: "/leave/{id}",
-  DELETE_LEAVE: "/leave/{id}",
-  GET_LEAVES_BY_USER: "/leave/user",
-  GET_LEAVES_BY_DATE_RANGE: "/leave/daterange",
-  GET_LEAVES_BY_TYPE: "/leave/type"
+  GET_USER_PREFERENCES: "/getPreference"
 };

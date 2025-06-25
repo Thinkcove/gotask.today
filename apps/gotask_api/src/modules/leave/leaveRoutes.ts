@@ -1,5 +1,4 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { API_PATHS } from "../../constants/api/apiPaths";
 import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
 import authStrategy from "../../constants/auth/authStrategy";
@@ -11,7 +10,7 @@ const tags = [API, "Leave"];
 const LeaveRoutes = [];
 
 LeaveRoutes.push({
-  path: API_PATHS.CREATE_LEAVE,
+  path: "/leave",
   method: API_METHODS.POST,
   handler: (request: Request, handler: ResponseToolkit) =>
     leaveController.createLeave(new RequestHelper(request), handler),
@@ -25,7 +24,7 @@ LeaveRoutes.push({
 });
 
 LeaveRoutes.push({
-  path: API_PATHS.GET_ALL_LEAVES,
+  path: "/getallleave",
   method: API_METHODS.GET,
   handler: (request: Request, handler: ResponseToolkit) =>
     leaveController.getAllLeaves(new RequestHelper(request), handler),
@@ -39,7 +38,7 @@ LeaveRoutes.push({
 });
 
 LeaveRoutes.push({
-  path: API_PATHS.GET_LEAVES,
+  path: "/getleaves",
   method: API_METHODS.POST,
   handler: (request: Request, handler: ResponseToolkit) =>
     leaveController.getLeavesWithFilters(new RequestHelper(request), handler),
@@ -53,7 +52,7 @@ LeaveRoutes.push({
 });
 
 LeaveRoutes.push({
-  path: API_PATHS.GET_LEAVE_BY_ID,
+  path: "/getleavebyid/{id}",
   method: API_METHODS.GET,
   handler: (request: Request, handler: ResponseToolkit) =>
     leaveController.getLeaveById(new RequestHelper(request), handler),
@@ -67,7 +66,7 @@ LeaveRoutes.push({
 });
 
 LeaveRoutes.push({
-  path: API_PATHS.UPDATE_LEAVE,
+  path: "/leave/{id}",
   method: API_METHODS.PUT,
   handler: (request: Request, handler: ResponseToolkit) =>
     leaveController.updateLeave(new RequestHelper(request), handler),
@@ -81,7 +80,7 @@ LeaveRoutes.push({
 });
 
 LeaveRoutes.push({
-  path: API_PATHS.DELETE_LEAVE,
+  path: "/leave/{id}",
   method: API_METHODS.DELETE,
   handler: (request: Request, handler: ResponseToolkit) =>
     leaveController.deleteLeave(new RequestHelper(request), handler),

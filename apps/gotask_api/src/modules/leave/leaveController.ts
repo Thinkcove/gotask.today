@@ -16,7 +16,7 @@ class LeaveController extends BaseController {
       const user = requestHelper.getUser();
 
       if (!user || !user.id) {
-        throw new Error("User not authenticated or user ID not found");
+        throw new Error("user ID not found");
       }
 
       const leaveDataWithUserId = {
@@ -45,7 +45,7 @@ class LeaveController extends BaseController {
       const user = requestHelper.getUser();
 
       if (!user || !user.id) {
-        throw new Error("User not authenticated");
+        throw new Error("user ID not found");
       }
 
       const filters = requestHelper.getPayload();
@@ -63,7 +63,7 @@ class LeaveController extends BaseController {
       const user = requestHelper.getUser();
 
       if (!user || !user.id) {
-        throw new Error("User not authenticated");
+        throw new Error("user ID not found");
       }
 
       const result = await getLeaveByIdService(id);
@@ -80,7 +80,7 @@ class LeaveController extends BaseController {
       const user = requestHelper.getUser();
 
       if (!user || !user.id) {
-        throw new Error("User not authenticated");
+        throw new Error("user ID not found");
       }
 
       const existingLeave = await getLeaveByIdService(id);
@@ -107,7 +107,7 @@ class LeaveController extends BaseController {
       const user = requestHelper.getUser();
 
       if (!user || !user.id) {
-        throw new Error("User not authenticated");
+        throw new Error("user ID not found");
       }
 
       const existingLeave = await getLeaveByIdService(id);

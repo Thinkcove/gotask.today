@@ -80,7 +80,7 @@ function ProjectGoalList() {
       revalidateOnFocus: false,
       onSuccess: (res) => {
         if (res?.goals?.length < 10) {
-          setHasMore(false); // No more pages
+          setHasMore(false); 
         }
         setAllGoals((prev) => {
           const existingIds = new Set(prev.map((goal) => goal.id));
@@ -107,7 +107,7 @@ function ProjectGoalList() {
   const formattedHistory =
     projectGoalHistory?.updateHistory?.map((item: any) => {
       const updatedUser = users?.find((user: any) => user.id === item.user_id);
-      const loginuser_name = updatedUser?.first_name || updatedUser?.name || "System";
+      const loginuser_name = updatedUser?.first_name || updatedUser?.name;
 
       const formattedChanges = Object.entries(item.history_data)
         .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")

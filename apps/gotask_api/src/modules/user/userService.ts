@@ -14,6 +14,10 @@ import { Role } from "../../domain/model/role/role";
 import { getRoleByIdService } from "../role/roleService";
 import { findRoleByIds } from "../../domain/interface/role/roleInterface";
 import { Organization } from "../../domain/model/organization/organization";
+import { getAssetByUserId } from "../../domain/interface/assetTag/assetTag";
+import { getById } from "../../domain/interface/asset/asset";
+import { IAsset } from "../../domain/model/asset/asset";
+import { ISkill } from "../../domain/model/user/skills";
 
 class userService {
   // CREATE USER
@@ -142,7 +146,6 @@ class userService {
       const enrichedRole = roleResult.data;
 
       const userObj = user.toObject() as any;
-      delete userObj.password;
 
       const projectIds = (userObj.projects || []).filter(
         (id: string | undefined) => id !== undefined
@@ -165,9 +168,23 @@ class userService {
         orgDetails = orgIds.map((id: string) => organizationMap.get(id)).filter(Boolean);
       }
 
+      const userAsset = await getAssetByUserId(id);
+      let assetData: IAsset[] = [];
+
+      if (userAsset && Array.isArray(userAsset)) {
+        const assetPromises = userAsset.map((ua) => getById(ua.assetId));
+        const assetResults = await Promise.all(assetPromises);
+        // Flatten the array and filter out null/undefined values
+        assetData = assetResults
+          .filter((result): result is IAsset[] => result !== null && result !== undefined)
+          .flat();
+      }
+
       userObj.role = enrichedRole;
       userObj.projectDetails = projectDetails;
       userObj.orgDetails = orgDetails;
+      // userObj.assetDetails = assetData ? assetData.toObject?.() : null;
+      userObj.assetDetails = assetData.map((asset) => asset?.toObject?.() || asset);
 
       return {
         success: true,
@@ -365,6 +382,120 @@ class userService {
         success: false,
         message: error.message || UserMessages.QUERY.FAILED
       };
+    }
+  }
+
+  async addSkills(
+    id: string,
+    newSkills: ISkill[]
+  ): Promise<{ success: boolean; data?: any; message?: string }> {
+    try {
+      const user = await User.findOne({ id: id });
+      if (!user) {
+        return { success: false, message: "User not found" };
+      }
+
+      const existingSkills = user.skills || [];
+
+      // Create a map for quick lookup of existing skills by name
+      const skillMap = new Map<string, ISkill>();
+      for (const skill of existingSkills) {
+        skillMap.set(skill.name.toLowerCase(), skill);
+      }
+
+      for (const newSkill of newSkills) {
+        const existingSkill = skillMap.get(newSkill.name.toLowerCase());
+        if (!existingSkill) {
+          // If skill does not exist, add it
+          existingSkills.push(newSkill);
+        } else {
+          // Optional: You can choose to update the existing skill, e.g.:
+          existingSkill.proficiency = newSkill.proficiency;
+          if (newSkill.experience !== undefined) {
+            existingSkill.experience = newSkill.experience;
+          }
+        }
+      }
+
+      user.skills = existingSkills;
+      await user.save();
+
+      return { success: true, data: existingSkills, message: "Skills added successfully" };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to update skills" };
+    }
+  }
+
+  async updateSkill(
+    userId: string,
+    skillId: string,
+    updatedSkill: Partial<ISkill>
+  ): Promise<{ success: boolean; data?: ISkill; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+
+      if (!user) {
+        return { success: false, message: "User not found" };
+      }
+
+      if (!user.skills) {
+        return { success: false, message: "User has no skills" };
+      }
+
+      const skillIndex = user.skills.findIndex((skill) => skill.skill_id === skillId);
+      if (skillIndex === -1) {
+        return { success: false, message: "Skill not found" };
+      }
+
+      const skill = user.skills[skillIndex];
+
+      if (updatedSkill.name !== undefined) {
+        skill.name = updatedSkill.name;
+      }
+      if (updatedSkill.proficiency !== undefined) {
+        skill.proficiency = updatedSkill.proficiency;
+      }
+      if (updatedSkill.experience !== undefined) {
+        skill.experience = updatedSkill.experience;
+      }
+
+      await user.save();
+
+      return { success: true, data: skill, message: "Skill updated successfully" };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to update skill" };
+    }
+  }
+
+  async deleteSkill(
+    userId: string,
+    skillId: string
+  ): Promise<{ success: boolean; data?: any; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+
+      if (!user) {
+        return { success: false, message: "User not found" };
+      }
+
+      // Ensure skills array exists
+      if (!Array.isArray(user.skills)) {
+        return { success: false, message: "User has no skills" };
+      }
+
+      const initialLength = user.skills.length;
+
+      user.skills = user.skills.filter((skill) => skill.skill_id !== skillId);
+
+      if (user.skills.length === initialLength) {
+        return { success: false, message: "Skill not found" };
+      }
+
+      await user.save();
+
+      return { success: true, message: "Skill deleted successfully" };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to delete skill" };
     }
   }
 }

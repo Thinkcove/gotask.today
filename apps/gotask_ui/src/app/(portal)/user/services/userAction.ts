@@ -78,6 +78,14 @@ export const deleteUser = async (userId: string) => {
   });
 };
 
+export const getUserById = async (userId: string) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/getUserById/${userId}`;
+    const { data } = await getData(url, token);
+    return data;
+  });
+};
+
 //fetch users
 export const fetchUsers = async () => {
   return withAuth(async (token) => {

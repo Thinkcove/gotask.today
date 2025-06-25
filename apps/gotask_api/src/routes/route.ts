@@ -11,10 +11,16 @@ import * as UserPreferenceRoutes from "../modules/userPreference/userPreferenceR
 import * as QueryRoutes from "../modules/query/queryRoutes";
 import * as AttendanceRoutes from "../modules/attendance/attendanceRoutes";
 import * as QueryTaskRoutes from "../modules/queryTask/queryTaskRoutes";
-import ProjectStoryRoutes from "../modules/projectStory/projectStoryRoutes";
+import * as ProjectStoryRoutes from "../modules/projectStory/projectStoryRoutes";
+import * as KpiemployeeRoutes from "../modules/kpiEmployee/kpiemployeeRoutes";
 import * as AssetRoutes from "../modules/assets/assetsRoutes";
 import * as AssetTagRoutes from "../modules/assetTag/assetTagRoutes";
+import * as KpiTemplateRoutes from "../modules/kpiTemplate/templateRoutes";
+import * as WorkPlannedReportRoutes from "../modules/planned/plannedRoute";
 import * as ProjectGoalRoute from "../modules/projectgoal/projectGoalRoute";
+import * as SkillRoutes from "../modules/masters/skills/skillsRoutes";
+import * as LeaveRoutes from "../modules/leave/leaveRoutes";
+
 const routes: ServerRoute[] = [
   ...ProjectRoutes.default,
   ...UserRoutes.default,
@@ -28,9 +34,15 @@ const routes: ServerRoute[] = [
   ...AttendanceRoutes.default,
   ...QueryTaskRoutes.default,
   ...UserPreferenceRoutes.default,
-  ...ProjectStoryRoutes,
+  ...ProjectStoryRoutes.default,
   ...AssetRoutes.default,
   ...AssetTagRoutes.default,
-  ...ProjectGoalRoute.default
+  ...KpiTemplateRoutes.default,
+  ...KpiemployeeRoutes.default,
+  ...WorkPlannedReportRoutes.default,
+  ...ProjectGoalRoute.default,
+  ...SkillRoutes.default,
+  ...LeaveRoutes.default
 ];
+
 export default routes;

@@ -74,6 +74,21 @@ ResourceRoutes.push({
 });
 
 ResourceRoutes.push({
+  path: "/getissuesbyid/{id}",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>
+    resourceController.getIssuesById(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Get issues by id",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+ResourceRoutes.push({
   path: "/gettagbyid/{id}",
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.CREATE, (request: Request, handler: ResponseToolkit) =>

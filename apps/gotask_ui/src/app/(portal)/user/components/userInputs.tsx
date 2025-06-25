@@ -15,16 +15,9 @@ interface IUserInputProps {
   handleChange: (field: keyof IUserField, value: string | string[] | boolean) => void;
   errors: { [key: string]: string };
   readOnlyFields?: string[];
-  isEdit?: boolean;
 }
 
-const UserInput = ({
-  formData,
-  handleChange,
-  errors,
-  readOnlyFields = [],
-  isEdit = false
-}: IUserInputProps) => {
+const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUserInputProps) => {
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const { getOrganizations } = useAllOrganizations();
   const { getRoles } = useAllRoles();
@@ -36,38 +29,37 @@ const UserInput = ({
   );
 
   return (
-    <Grid container spacing={1}>
-      <Grid item xs={12}>
+    <Grid container spacing={1} sx={{ mt: 0, mb: 0 }}>
+      <Grid item xs={12} md={4}>
         <FormField
           label={transuser("labelfirst_name")}
           type="text"
           value={formData.first_name}
-          onChange={(value) => handleChange("first_name", String(value))}
-          required={true}
+          onChange={(v) => handleChange("first_name", String(v))}
+          required
           error={errors.first_name}
           disabled={isReadOnly("first_name")}
           placeholder={transuser("placeholderfirst_name")}
         />
       </Grid>
-
-      <Grid item xs={12}>
+      <Grid item xs={12} md={4}>
         <FormField
           label={transuser("labellast_name")}
           type="text"
           value={formData.last_name}
-          onChange={(value) => handleChange("last_name", String(value))}
-          required={true}
+          onChange={(v) => handleChange("last_name", String(v))}
+          required
           error={errors.last_name}
           disabled={isReadOnly("last_name")}
           placeholder={transuser("placeholderlast_name")}
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} md={4}>
         <FormField
           label={transuser("labeluser")}
           type="text"
           value={formData.name}
-          onChange={(value) => handleChange("name", String(value))}
+          onChange={(v) => handleChange("name", String(v))}
           required
           error={errors.name}
           disabled={isReadOnly("name")}
@@ -75,23 +67,18 @@ const UserInput = ({
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} md={4}>
         <FormField
           label={transuser("labelemp_id")}
           type="text"
           value={formData.emp_id}
-          onChange={(value) => {
-            const alphanumeric = String(value).replace(ONLY_ALPHANUMERIC_REGEX, "");
-            handleChange("emp_id", alphanumeric);
-          }}
-          required={false}
+          onChange={(v) => handleChange("emp_id", String(v).replace(ONLY_ALPHANUMERIC_REGEX, ""))}
           error={errors.emp_id}
           disabled={isReadOnly("emp_id")}
           placeholder={transuser("placeholderemp_id")}
         />
       </Grid>
-
-      <Grid item xs={12}>
+      <Grid item xs={12} md={4}>
         <FormField
           label={transuser("labelemail")}
           type="text"
@@ -99,13 +86,12 @@ const UserInput = ({
           placeholder={transuser("placeholderemail")}
           required
           value={formData.user_id}
-          onChange={(value) => handleChange("user_id", String(value))}
+          onChange={(v) => handleChange("user_id", String(v))}
           error={errors?.user_id}
           disabled={isReadOnly("user_id")}
         />
       </Grid>
-
-      <Grid item xs={12}>
+      <Grid item xs={12} md={4}>
         <FormField
           label={transuser("labelmobile_no")}
           type="text"
@@ -113,39 +99,34 @@ const UserInput = ({
           placeholder={transuser("placeholdermobile_no")}
           required
           value={formData.mobile_no}
-          onChange={(value) => {
-            const sanitized = String(value).replace(DIGIT_ONLY_REGEX, ""); // Remove non-digits
-            if (sanitized.length <= 10) {
-              handleChange("mobile_no", sanitized);
-            }
+          onChange={(v) => {
+            const sanitized = String(v).replace(DIGIT_ONLY_REGEX, "");
+            if (sanitized.length <= 10) handleChange("mobile_no", sanitized);
           }}
           error={errors?.mobile_no}
           disabled={isReadOnly("mobile_no")}
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} md={4}>
         <FormField
           label={transuser("labeljoined_date")}
           type="date"
           inputType="date"
           value={formData.joined_date}
-          onChange={(value) => {
-            if (value !== undefined && (typeof value === "string" || value instanceof Date)) {
-              const date = new Date(value); // only called if value is defined and valid
-              if (!isNaN(date.getTime())) {
-                handleChange("joined_date", date.toISOString());
-              }
+          onChange={(v) => {
+            if (v && (typeof v === "string" || v instanceof Date)) {
+              const d = new Date(v);
+              if (!isNaN(d.getTime())) handleChange("joined_date", d.toISOString());
             }
           }}
-          required={true}
+          required
           error={errors?.joinDate}
           disabled={isReadOnly("joined_date")}
           placeholder={transuser("placeholderjoined_date")}
         />
       </Grid>
-
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} md={4}>
         <FormField
           label={transuser("labelrole")}
           type="select"
@@ -153,10 +134,10 @@ const UserInput = ({
           options={getRoles}
           error={errors?.roleId}
           value={formData.roleId || ""}
-          onChange={(value) => handleChange("roleId", String(value))}
+          onChange={(v) => handleChange("roleId", String(v))}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} md={4}>
         <FormField
           label={transuser("labelstate")}
           type="select"
@@ -164,7 +145,7 @@ const UserInput = ({
           options={statusOptions}
           error={errors?.status}
           value={formData.status.toString()}
-          onChange={(value) => handleChange("status", value === "true")}
+          onChange={(v) => handleChange("status", v === "true")}
           disabled={isReadOnly("status")}
         />
       </Grid>
@@ -176,29 +157,13 @@ const UserInput = ({
           options={getOrganizations}
           value={selectedOrganizationIds}
           onChange={(ids) => {
-            const selectedIds = ids as string[]; // Ensure selectedIds is an array of strings
+            const selectedIds = ids as string[];
             setSelectedOrganizationIds(selectedIds);
-
-            // Set formData.organization to the selected array
             handleChange("organization", selectedIds);
           }}
           disabled={isReadOnly("organization")}
         />
       </Grid>
-      {isEdit && (
-        <Grid item xs={12}>
-          <FormField
-            label={transuser("labelpassword")}
-            type="text"
-            inputType="password"
-            placeholder={transuser("placeholderpassword")}
-            required
-            error={errors?.password}
-            value={formData.password || ""}
-            onChange={(value) => handleChange("password", String(value))}
-          />
-        </Grid>
-      )}
     </Grid>
   );
 };

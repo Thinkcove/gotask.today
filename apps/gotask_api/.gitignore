@@ -144,3 +144,5 @@ sonar-project.properties
 .sonar_lock
 report-task.txt
 
+# env
+.env.uat

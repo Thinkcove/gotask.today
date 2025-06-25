@@ -1,10 +1,11 @@
+import { IAssetAttributes } from "../../asset/interface/asset";
+
 export interface IUserField {
   name: string;
   status: boolean;
   organization: string[];
   roleId: string;
   user_id: string;
-  password?: string;
   mobile_no?: string;
   joined_date?: Date | string;
   emp_id?: string;
@@ -31,6 +32,7 @@ export interface User {
   emp_id?: string;
   first_name: string;
   last_name: string;
+  assetDetails?: IAssetAttributes[];
 }
 
 export interface RoleData {

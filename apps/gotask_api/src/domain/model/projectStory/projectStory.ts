@@ -1,6 +1,7 @@
 import { Document } from "mongoose";
 import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { ProjectStoryStatus, PROJECT_STORY_STATUS } from "../../../constants/projectStoryConstants";
 
 // Embedded Comment Schema Interface
 interface IProjectStoryComment {
@@ -14,6 +15,7 @@ export interface IProjectStory extends Document {
   project_id: string;
   title: string;
   description: string;
+  status: ProjectStoryStatus;
   comments: IProjectStoryComment[];
 }
 
@@ -52,6 +54,11 @@ const ProjectStorySchema = new Schema<IProjectStory>(
       type: String,
       required: true,
       maxlength: 2000
+    },
+    status: {
+      type: String,
+      enum: Object.values(PROJECT_STORY_STATUS),
+      default: PROJECT_STORY_STATUS.TO_DO
     },
     comments: [ProjectStoryCommentSchema]
   },

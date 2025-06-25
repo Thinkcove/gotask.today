@@ -3,15 +3,14 @@ import BaseController from "../../common/baseController";
 import jwt from "jsonwebtoken";
 import { getRoleByIdService } from "../role/roleService";
 import UserMessages from "../../constants/apiMessages/userMessage";
-import { comparePassword } from "../../constants/utils/common";
 import userService from "./userService";
 
 class UserController extends BaseController {
   async createUser(requestHelper: RequestHelper, handler: any) {
     try {
       const userData = requestHelper.getPayload();
-      const { name, user_id, roleId, password, status } = userData;
-      if (!name || !user_id || !roleId || !password || typeof status === "undefined") {
+      const { name, user_id, roleId, status } = userData;
+      if (!name || !user_id || !roleId || typeof status === "undefined") {
         throw new Error(UserMessages.CREATE.MISSING_FIELDS);
       }
       const newUser = await userService.createUser(userData);
@@ -63,8 +62,8 @@ class UserController extends BaseController {
 
   async loginUser(requestHelper: RequestHelper, handler: any) {
     try {
-      const { user_id, password } = requestHelper.getPayload();
-      if (!user_id || !password) {
+      const { user_id } = requestHelper.getPayload();
+      if (!user_id) {
         return this.sendResponse(handler, {
           success: false,
           error: UserMessages.LOGIN.MISSING_FIELDS
@@ -77,13 +76,7 @@ class UserController extends BaseController {
           error: message || UserMessages.LOGIN.USER_NOT_FOUND
         });
       }
-      const isMatch = await comparePassword(password, user.password);
-      if (!isMatch) {
-        return this.sendResponse(handler, {
-          success: false,
-          error: UserMessages.LOGIN.INVALID_CREDENTIALS
-        });
-      }
+
       const roleId = user.roleId?.id?.toString();
       if (!roleId) {
         return this.sendResponse(handler, {
@@ -162,6 +155,48 @@ class UserController extends BaseController {
       }
       const response = await userService.getUsersByProjectId(projectId);
       return this.sendResponse(handler, response);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async addUserSkills(requestHelper: RequestHelper, handler: any) {
+    try {
+      const id = requestHelper.getParam("id");
+      const payload = requestHelper.getPayload();
+      const skills = payload.skills;
+
+      if (!Array.isArray(skills) || skills.length === 0) {
+        throw new Error("Skills payload is required and must be an array.");
+      }
+
+      const updatedUser = await userService.addSkills(id, skills);
+      return this.sendResponse(handler, updatedUser);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async updateUserSkill(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const skillId = requestHelper.getParam("skill_id");
+      const updatedSkill = requestHelper.getPayload();
+
+      const result = await userService.updateSkill(userId, skillId, updatedSkill);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async deleteUserSkill(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const skillId = requestHelper.getParam("skill_id");
+
+      const deletedUser = await userService.deleteSkill(userId, skillId);
+      return this.sendResponse(handler, deletedUser);
     } catch (error) {
       return this.replyError(error);
     }

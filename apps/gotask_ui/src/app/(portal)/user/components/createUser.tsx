@@ -28,8 +28,7 @@ const initialFormState: IUserField = {
   roleId: "",
   user_id: "",
   mobile_no: "",
-  joined_date: "",
-  password: ""
+  joined_date: ""
 };
 
 const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
@@ -52,7 +51,6 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     if (formData.status === undefined || formData.status === null) {
       newErrors.status = transuser("userstatus");
     }
-    if (!formData.password) newErrors.password = transuser("userpwd");
     if (!formData.user_id) {
       newErrors.user_id = transuser("useremail");
     } else if (!validateEmail(formData.user_id)) {
@@ -61,7 +59,6 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
     if (formData.emp_id && !ALPHANUMERIC_REGEX.test(formData.emp_id)) {
       newErrors.emp_id = transuser("empid");
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -118,7 +115,6 @@ const CreateUser = ({ open, onClose, mutate }: CreateUserProps) => {
           formData={formData}
           handleChange={handleChange}
           errors={errors}
-          isEdit={true}
           readOnlyFields={["status"]}
         />
       </CommonDialog>

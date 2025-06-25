@@ -110,9 +110,9 @@ function ProjectGoalList() {
   const formattedHistory =
     projectGoalHistory?.updateHistory?.map((item: any) => {
       const updatedUser = users?.find((user: any) => user.id === item.user_id);
-      const loginuser_name = updatedUser?.first_name || updatedUser?.name || "System";
+      const loginuser_name = updatedUser?.first_name || updatedUser?.name;
 
-      const formattedChanges = Object.entries(item.history_data)
+      const formattedChanges = Object.entries(item.update_data || {})
         .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
         .map(([key, value]) => {
           const label = fieldLabelMap[key] || key;
@@ -122,9 +122,27 @@ function ProjectGoalList() {
       return {
         loginuser_name: loginuser_name,
         formatted_history: formattedChanges.join(". "),
-        created_date: item.timestamp // show timestamp, not weekEnd
+        created_date: item.timestamp || "" // fallback if timestamp is missing
       };
     }) ?? [];
+
+  //   projectGoalHistory?.updateHistory?.map((item: any) => {
+  //     const updatedUser = users?.find((user: any) => user.id === item.user_id);
+  //     const loginuser_name = updatedUser?.first_name || updatedUser?.name || "System";
+
+  //     const formattedChanges = Object.entries(item.history_data)
+  //       .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
+  //       .map(([key, value]) => {
+  //         const label = fieldLabelMap[key] || key;
+  //         return `${label} updated to "${value}"`;
+  //       });
+
+  //     return {
+  //       loginuser_name: loginuser_name,
+  //       formatted_history: formattedChanges.join(". "),
+  //       created_date: item.timestamp // show timestamp, not weekEnd
+  //     };
+  //   }) ?? [];
 
   const handelOpen = () => {
     setGoalData({
@@ -161,7 +179,7 @@ function ProjectGoalList() {
       console.log("Goal Data:", fetchedGoal);
 
       setProjectGoalHistory({
-        updateHistory: fetchedGoal.updateHistory || []
+        updateHistory: fetchedGoal.data.updateHistory || []
       });
 
       setOpenDialog(true);
@@ -251,9 +269,9 @@ function ProjectGoalList() {
 
       setprojectGoalView(fullGoal);
 
-      setProjectGoalHistory({
-        updateHistory: goal.updateHistory || []
-      });
+      // setProjectGoalHistory({
+      //   updateHistory: goal.updateHistory || []
+      // });
     } catch (error) {
       console.error("Error fetching goal details:", error);
     }
@@ -386,7 +404,6 @@ function ProjectGoalList() {
     );
   }
   console.log("openDialog", openDialog);
-  
 
   return (
     <>

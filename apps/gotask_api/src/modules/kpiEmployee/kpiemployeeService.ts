@@ -98,7 +98,7 @@ const createKpiAssignment = async (
         description: filteredData.kpi_Description,
         measurement_criteria: filteredData.measurement_criteria,
         frequency: filteredData.frequency,
-        isActive: true
+        status: filteredData.status
       };
       await saveKpiAsTemplateInDb(templateData);
     }
@@ -298,7 +298,7 @@ async function getTemplatesByUserId(user_id: string): Promise<{
               description: template.description,
               measurement_criteria: template.measurement_criteria,
               frequency: template.frequency,
-              isActive: template.isActive
+              status: template.status
             });
           }
         } else {

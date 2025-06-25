@@ -1,12 +1,17 @@
-import React, { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
-import FormField from "@/app/component/input/formField";
+"use client";
+
+import React, { useState, useMemo } from "react";
+import { Box, Typography } from "@mui/material";
 import { ITask, ITaskComment } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import CommentHistory from "./commentsHistory";
 import { KeyedMutator } from "swr";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
+import ReusableEditor from "@/app/component/richText/textEditor";
+import useSWR from "swr";
+import { fetchUsers } from "../../user/services/userAction";
+import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 
 interface TaskCommentsProps {
   comments: ITaskComment[];
@@ -16,65 +21,40 @@ interface TaskCommentsProps {
 
 const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const [newComment, setNewComment] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const transcmt = useTranslations(LOCALIZATION.TRANSITION.COMMENTS);
 
-  const handleSave = () => {
-    if (newComment.trim()) {
-      onSave(newComment);
-      setNewComment("");
-      setIsFocused(false);
+  const [editorKey, setEditorKey] = useState(0);
+
+  const { data: fetchedUsers = [], isLoading } = useSWR("userList", fetchUsers);
+
+  const userList = useMemo(() => {
+    return mapUsersToMentions(fetchedUsers || []);
+  }, [fetchedUsers]);
+
+  const handleSave = (html: string) => {
+    const trimmed = html.trim();
+    if (trimmed) {
+      onSave(trimmed);
+      setEditorKey((prev) => prev + 1);
     }
   };
 
   return (
     <Box>
       <Box sx={{ display: "flex", gap: 1, color: "#741B92", alignItems: "center" }}>
-        <Typography fontWeight="bold">{transtask("comment")}</Typography>
+        <Typography fontWeight="bold">{transcmt("comment")}</Typography>
         <SpeakerNotesOutlined />
       </Box>
-      {/* Comment Input Field */}
-      <FormField
-        label={transtask("labelcomment")}
-        type="text"
-        placeholder={transtask("placeholdercomment")}
-        value={newComment}
-        onChange={(value) => setNewComment(value as string)}
-        multiline
-        height={80}
-        onFocus={() => setIsFocused(true)}
-      />
 
-      {/* Save and Cancel Buttons */}
-      {isFocused && (
-        <Box display="flex" gap={1} mt={1}>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#741B92", textTransform: "none" }}
-            onClick={handleSave}
-          >
-            {transtask("savecomment")}
-          </Button>
-          <Button
-            variant="outlined"
-            sx={{
-              color: "black",
-              border: "2px solid #741B92",
-              px: 2,
-              textTransform: "none",
-              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
-            }}
-            onClick={() => {
-              setNewComment("");
-              setIsFocused(false);
-            }}
-          >
-            {transtask("cancelcomment")}
-          </Button>
-        </Box>
-      )}
-
-      {/* Previous Comments */}
+      <Box mt={1}>
+        {isLoading ? (
+          <Typography variant="body2" color="text.secondary">
+            {transtask("loadinguser")}
+          </Typography>
+        ) : (
+          <ReusableEditor key={editorKey} onSave={handleSave} userList={userList} />
+        )}
+      </Box>
 
       {comments.length > 0 && <CommentHistory comments={comments} mutate={mutate} />}
     </Box>

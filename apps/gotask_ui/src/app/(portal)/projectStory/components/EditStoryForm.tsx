@@ -1,16 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Tooltip, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import { getProjectStoryById, updateProjectStory } from "../services/projectStoryService";
+import { getProjectStoryById, updateProjectStory } from "../services/projectStoryActions";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useSWR from "swr";
@@ -18,8 +11,9 @@ import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import {
-  STORY_STATUS,
   STORY_STATUS_OPTIONS,
+  STORY_STATUS,
+  STORY_STATUS_TRANSITIONS,
   StoryStatus
 } from "@/app/common/constants/storyStatus";
 
@@ -28,11 +22,12 @@ const EditStoryForm: React.FC = () => {
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState<StoryStatus>(STORY_STATUS.TO_DO);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [title, setTitle] = useState<string | undefined>();
+  const [description, setDescription] = useState<string | undefined>();
+  const [status, setStatus] = useState<StoryStatus | undefined>();
   const [titleError, setTitleError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -45,24 +40,20 @@ const EditStoryForm: React.FC = () => {
     async () => {
       const resp = await getProjectStoryById(storyId as string);
       return resp?.data;
-    },
-    {
-      onSuccess: (data) => {
-        setTitle(data?.title ?? "");
-        setDescription(data?.description ?? "");
-        setStatus((data?.status as StoryStatus) ?? STORY_STATUS.TO_DO);
-      },
-      onError: () => {
-        setSnackMessage(t("Stories.errors.loadFailed"));
-        setSnackSeverity("error");
-        setSnackOpen(true);
-      }
     }
   );
 
+  // Initialize state from story once
+  if (story && !hasInitialized) {
+    setTitle(story.title ?? "");
+    setDescription(story.description ?? "");
+    setStatus((story.status as StoryStatus) ?? STORY_STATUS.TO_DO);
+    setHasInitialized(true);
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) {
+    if (!title?.trim()) {
       setTitleError(true);
       setSnackMessage(t("Stories.errors.titleRequired"));
       setSnackSeverity("error");
@@ -70,9 +61,25 @@ const EditStoryForm: React.FC = () => {
       return;
     }
 
+    // Validate status transition
+    const originalStatus = story?.status as StoryStatus;
+    const allowedNextStatuses = STORY_STATUS_TRANSITIONS[originalStatus] || [];
+    const isValidTransition = status === originalStatus || allowedNextStatuses.includes(status!);
+
+    if (!isValidTransition) {
+      setSnackMessage(t("Stories.errors.invalidStatusTransition"));
+      setSnackSeverity("error");
+      setSnackOpen(true);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await updateProjectStory(storyId as string, { title, description, status });
+      await updateProjectStory(storyId as string, {
+        title,
+        description: description ?? undefined,
+        status: status ?? undefined
+      });
       setSnackMessage(t("Stories.success.updated"));
       setSnackSeverity("success");
       setSnackOpen(true);
@@ -105,6 +112,11 @@ const EditStoryForm: React.FC = () => {
     );
   }
 
+  // Filter valid status options (only current + allowed transitions)
+  const currentStatus = story.status as StoryStatus;
+  const allowedStatuses = [currentStatus, ...(STORY_STATUS_TRANSITIONS[currentStatus] || [])];
+  const statusOptions = STORY_STATUS_OPTIONS.filter((opt) => allowedStatuses.includes(opt.id));
+
   return (
     <Box
       sx={{
@@ -115,7 +127,7 @@ const EditStoryForm: React.FC = () => {
         flexDirection: "column"
       }}
     >
-      {/* Sticky Header */}
+      {/* Header */}
       <Box
         sx={{
           position: "sticky",
@@ -157,10 +169,7 @@ const EditStoryForm: React.FC = () => {
                 color: "black",
                 border: "2px solid  #741B92",
                 px: 2,
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.2)"
-                }
+                textTransform: "none"
               }}
             >
               {t("Stories.cancel")}
@@ -176,10 +185,7 @@ const EditStoryForm: React.FC = () => {
                 color: "white",
                 px: 2,
                 textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201)"
-                }
+                fontWeight: "bold"
               }}
             >
               {isSubmitting ? <CircularProgress size={20} color="inherit" /> : t("Stories.update")}
@@ -188,7 +194,7 @@ const EditStoryForm: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Form Content */}
+      {/* Form */}
       <Box
         sx={{
           px: 2,
@@ -201,10 +207,10 @@ const EditStoryForm: React.FC = () => {
         }}
       >
         <FormField
-          label={t("Stories.title")}
+          label={t("Stories.storyTitle")}
           type="text"
           required
-          value={title}
+          value={title ?? ""}
           onChange={(val) => {
             setTitle(val as string);
             setTitleError(false);
@@ -218,20 +224,19 @@ const EditStoryForm: React.FC = () => {
           placeholder={t("Stories.placeholders.descriptionUpdate")}
           multiline
           height={180}
-          value={description}
+          value={description ?? ""}
           onChange={(val) => setDescription(val as string)}
         />
 
         <FormField
           label={t("Stories.status")}
           type="select"
-          options={STORY_STATUS_OPTIONS}
-          value={status}
+          value={status ?? STORY_STATUS.TO_DO}
           onChange={(val) => setStatus(val as StoryStatus)}
+          options={statusOptions}
         />
       </Box>
 
-      {/* Snackbar */}
       <CustomSnackbar
         open={snackOpen}
         message={snackMessage}

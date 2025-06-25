@@ -111,7 +111,7 @@ function ProjectGoalList() {
       const updatedUser = users?.find((user: any) => user.id === item.user_id);
       const loginuser_name = updatedUser?.first_name || updatedUser?.name;
 
-      const formattedChanges = Object.entries(item.update_data || {})
+      const formattedChanges = Object.entries(item.history_data || {})
         .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
         .map(([key, value]) => {
           const label = fieldLabelMap[key] || key;
@@ -200,12 +200,12 @@ function ProjectGoalList() {
       if (goalData.id) {
         await updateWeeklyGoal(goalData.id, payload as any);
         await handelProjectGoalView(goalData.id);
-        setprojectGoalView(null);
         setSnackbar({
           open: true,
           message: transGoal("goalupdate"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
+        setprojectGoalView(null);
         await mutate("project-goals");
       } else {
         await createWeeklyGoal(payload as any);
@@ -214,6 +214,7 @@ function ProjectGoalList() {
           message: transGoal("savegoal"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
+        setprojectGoalView(null);
         await mutate("project-goals");
       }
       setOpenDialog(false);
@@ -451,7 +452,8 @@ function ProjectGoalList() {
                     justifyContent: "space-between",
                     width: "100%",
                     flexWrap: "wrap",
-                    gap: 2
+                    gap: 2,
+                    pr: 2
                   }}
                 >
                   {/* Left Section: Arrow + Title */}
@@ -515,24 +517,25 @@ function ProjectGoalList() {
                     </Button>
                   </Box>
                 </Box>
-
-                <Box
-                  onClick={() => {
-                    setHistory(true);
-                  }}
-                  sx={{
-                    textDecoration: "underline",
-                    display: "flex",
-                    gap: 1,
-                    color: "#741B92",
-                    px: 2,
-                    cursor: "pointer",
-                    alignItems: "center"
-                  }}
-                >
-                  <Typography>{transGoal("showhistory")}</Typography>
-                  <History />
-                </Box>
+                {goalData.id && (
+                  <Box
+                    onClick={() => {
+                      setHistory(true);
+                    }}
+                    sx={{
+                      textDecoration: "underline",
+                      display: "flex",
+                      gap: 1,
+                      color: "#741B92",
+                      px: 2,
+                      cursor: "pointer",
+                      alignItems: "center"
+                    }}
+                  >
+                    <Typography>{transGoal("showhistory")}</Typography>
+                    <History />
+                  </Box>
+                )}
               </>
             )}
             {openDialog ? (

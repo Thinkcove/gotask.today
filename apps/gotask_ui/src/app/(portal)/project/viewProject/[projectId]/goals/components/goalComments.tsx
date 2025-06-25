@@ -120,7 +120,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({
               sx={{ backgroundColor: "#741B92", textTransform: "none" }}
               onClick={handlePostComment}
             >
-              {isSubmitting ? transGoal("saving") : transGoal("savecomment")}
+              {transGoal("savecomment")}
             </Button>
             <Button
               variant="outlined"

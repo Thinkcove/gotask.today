@@ -112,7 +112,7 @@ function ProjectGoalList() {
       const updatedUser = users?.find((user: any) => user.id === item.updated_by);
       const loginuser_name = updatedUser?.first_name || updatedUser?.name || "System";
 
-      const formattedChanges = Object?.entries(item.history_data)
+      const formattedChanges = Object.entries(item.update_data)
         .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
         .map(([key, value]) => {
           const label = fieldLabelMap[key] || key;

@@ -75,7 +75,7 @@ class ProjectGoalController extends BaseController {
       const updateData = requestHelper.getPayload();
 
       // Get userId either from payload (temporary for testing) or from auth
-      const userId = updateData.updated_by || requestHelper.getParam("user_id");
+      const userId = updateData.user_id || requestHelper.getParam("user_id");
 
       // Log the user performing the update
       console.log(
@@ -83,8 +83,7 @@ class ProjectGoalController extends BaseController {
         updateData
       );
 
-      // Clean out `updated_by` before saving
-      delete updateData.updated_by;
+      delete updateData.user_id;
 
       const updatedGoal = await updateProjectGoalService(id, updateData, userId);
 

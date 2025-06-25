@@ -237,8 +237,8 @@ const updateProjectGoalService = async (
     if (Object.keys(changedFields).length > 0) {
       await ProjectGoalUpdateHistory.create({
         goal_id: id,
-        updated_by: userId,
-        update_data: changedFields
+        user_id: userId,
+        history_data: changedFields
       });
     }
 

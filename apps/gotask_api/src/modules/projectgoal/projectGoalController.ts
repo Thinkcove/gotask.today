@@ -53,11 +53,12 @@ class ProjectGoalController extends BaseController {
       if (!goalResponse || !goalResponse.data) throw new Error("Goal not found");
 
       const updateHistory = await ProjectGoalUpdateHistory.find({ goal_id: id })
-        .sort({ timestamp: -1 }) 
+        .sort({ timestamp: -1 })
         .lean()
         .exec();
 
       const goalDoc = goalResponse.data as any;
+
       const goalWithHistory = {
         ...goalDoc._doc,
         updateHistory

@@ -1,3 +1,4 @@
+import { PAGE, SORT_ORDER } from "../../constants/commonConstants/commonConstants";
 import {
   createNewLeave,
   findAllLeaves,
@@ -7,7 +8,6 @@ import {
   findLeavesWithFilters
 } from "../../domain/interface/leave/leaveInterface";
 import { ILeave, Leave } from "../../domain/model/leave/leaveModel";
-import { LEAVE_CONST, PAGE } from "../../constants/leaveConstant";
 const createLeaveService = async (leaveData: Partial<ILeave>) => {
   try {
     if (new Date(leaveData.from_date!) > new Date(leaveData.to_date!)) {
@@ -25,7 +25,6 @@ const createLeaveService = async (leaveData: Partial<ILeave>) => {
     return {
       success: false,
       message: error.message || "Failed to create leave request",
-      data: null
     };
   }
 };
@@ -54,8 +53,7 @@ const getLeaveByIdService = async (id: string) => {
     if (!leave) {
       return {
         success: false,
-        message: "Leave request not found",
-        data: null
+        message: "Leave request not found"
       };
     }
 
@@ -67,8 +65,7 @@ const getLeaveByIdService = async (id: string) => {
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to retrieve leave request",
-      data: null
+      message: error.message || "Failed to retrieve leave request"
     };
   }
 };
@@ -86,8 +83,7 @@ const updateLeaveService = async (id: string, updateData: Partial<ILeave>) => {
     if (!updatedLeave) {
       return {
         success: false,
-        message: "Leave request not found",
-        data: null
+        message: "Leave request not found"
       };
     }
 
@@ -100,7 +96,6 @@ const updateLeaveService = async (id: string, updateData: Partial<ILeave>) => {
     return {
       success: false,
       message: error.message || "Failed to update leave request",
-      data: null
     };
   }
 };
@@ -113,7 +108,6 @@ const deleteLeaveService = async (id: string) => {
       return {
         success: false,
         message: "Leave request not found",
-        data: null
       };
     }
 
@@ -126,7 +120,6 @@ const deleteLeaveService = async (id: string) => {
     return {
       success: false,
       message: error.message || "Failed to delete leave request",
-      data: null
     };
   }
 };
@@ -139,7 +132,7 @@ const getLeavesWithFiltersService = async (filters: {
   page?: number;
   page_size?: number;
   sort_field?: string;
-  sort_order?: typeof LEAVE_CONST.ASC | typeof LEAVE_CONST.DESC;
+  sort_order?: typeof SORT_ORDER.ASC | typeof SORT_ORDER.DESC;
 }) => {
   try {
     // Validate dates when both are provided

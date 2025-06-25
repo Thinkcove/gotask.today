@@ -43,7 +43,7 @@ const routes: ServerRoute[] = [
   ...WorkPlannedReportRoutes.default,
   ...ProjectGoalRoute.default,
   ...SkillRoutes.default,
-  ...PermissionRoutes.default,,
+  ...PermissionRoutes.default,
   ...LeaveRoutes.default
 ];
 

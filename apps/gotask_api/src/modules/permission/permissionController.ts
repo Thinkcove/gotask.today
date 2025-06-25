@@ -80,8 +80,7 @@ class PermissionController extends BaseController {
       if (!existingPermission.success || !existingPermission.data) {
         return this.sendResponse(handler, {
           success: false,
-          message: "Permission request not found",
-          data: null
+          message: "Permission request not found"
         });
       }
 
@@ -106,8 +105,7 @@ class PermissionController extends BaseController {
       if (!existingPermission.success || !existingPermission.data) {
         return this.sendResponse(handler, {
           success: false,
-          message: "Permission request not found",
-          data: null
+          message: "Permission request not found"
         });
       }
 

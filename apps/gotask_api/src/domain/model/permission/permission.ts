@@ -14,7 +14,7 @@ export interface IPermission extends Document {
 
 const PermissionSchema = new Schema<IPermission>(
   {
-    id: { type: String, default: uuidv4, unique: true },
+    id: { type: String, default: uuidv4},
     user_id: { type: String, required: true },
     user_name: { type: String, required: true },
     date: { type: Date, required: true },

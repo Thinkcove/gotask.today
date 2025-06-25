@@ -1,4 +1,4 @@
-import { PAGE, PER_CONST } from "../../constants/permissionConstant";
+import { PAGE, SORT_ORDER } from "../../constants/commonConstants/commonConstants";
 import { SortOrder } from "../../constants/taskConstant";
 import {
   createNewPermission,
@@ -36,8 +36,7 @@ const createPermissionService = async (permissionData: Partial<IPermission>) => 
   } catch (error: any) {
     return {
       success: false,
-      message: error.message,
-      data: null
+      message: error.message
     };
   }
 };
@@ -65,8 +64,7 @@ const getPermissionByIdService = async (id: string) => {
     if (!permission) {
       return {
         success: false,
-        message: "Permission request not found",
-        data: null
+        message: "Permission request not found"
       };
     }
     return {
@@ -77,8 +75,7 @@ const getPermissionByIdService = async (id: string) => {
   } catch (error: any) {
     return {
       success: false,
-      message: error.message,
-      data: null
+      message: error.message
     };
   }
 };
@@ -99,8 +96,7 @@ const updatePermissionService = async (id: string, updateData: Partial<IPermissi
     if (!updatedPermission) {
       return {
         success: false,
-        message: "Permission request not found",
-        data: null
+        message: "Permission request not found"
       };
     }
     return {
@@ -111,8 +107,7 @@ const updatePermissionService = async (id: string, updateData: Partial<IPermissi
   } catch (error: any) {
     return {
       success: false,
-      message: error.message,
-      data: null
+      message: error.message
     };
   }
 };
@@ -123,8 +118,7 @@ const deletePermissionService = async (id: string) => {
     if (!deletedPermission) {
       return {
         success: false,
-        message: "Permission request not found",
-        data: null
+        message: "Permission request not found"
       };
     }
     return {
@@ -135,8 +129,7 @@ const deletePermissionService = async (id: string) => {
   } catch (error: any) {
     return {
       success: false,
-      message: error.message,
-      data: null
+      message: error.message
     };
   }
 };
@@ -149,7 +142,7 @@ const getPermissionsWithFiltersService = async (filters: {
   page?: number;
   page_size?: number;
   sort_field?: string;
-  sort_order?: typeof PER_CONST.ASC | typeof PER_CONST.DESC;
+  sort_order?: typeof SORT_ORDER.ASC | typeof SORT_ORDER.DESC;
 }) => {
   try {
     // Validate dates when both are provided

@@ -1,4 +1,4 @@
-export const PER_CONST= {
+export const SORT_ORDER= {
     ASC: "asc",
     DESC: "desc"
 }

@@ -3,7 +3,8 @@ import logger from "../../../common/logger";
 import { IPermission, Permission } from "../../model/permission/permission";
 import { IPermissionComment, PermissionComment } from "../../model/permission/permissionComment";
 import requestHelper from "../../../helpers/requestHelper";
-import { PER_CONST } from "../../../constants/permissionConstant";
+import { SORT_ORDER } from "../../../constants/commonConstants/commonConstants";
+
 
 export interface FilterQuery {
   user_id?: string;
@@ -13,7 +14,7 @@ export interface FilterQuery {
   page?: number;
   page_size?: number;
   sort_field?: string;
-  sort_order?: typeof PER_CONST.ASC| typeof PER_CONST.DESC;
+  sort_order?: typeof SORT_ORDER.ASC| typeof SORT_ORDER.DESC;
 }
 
 const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermission[]> => {
@@ -40,7 +41,7 @@ const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermis
 
   const sort: any = {};
   if (filters.sort_field) {
-    sort[filters.sort_field] = filters.sort_order === PER_CONST.DESC ? -1 : 1;
+    sort[filters.sort_field] = filters.sort_order === SORT_ORDER.DESC ? -1 : 1;
   } else {
     sort.created_on = -1; // Default sort
   }

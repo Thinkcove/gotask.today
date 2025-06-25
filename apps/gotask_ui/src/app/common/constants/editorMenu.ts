@@ -21,21 +21,4 @@ export const highlightColorSwatches = [
   { value: "#8085e9", label: "Light purple" }
 ];
 
-export const handleImageUpload = async (files: File[]): Promise<{ src: string; alt: string }[]> => {
-  return Promise.all(
-    files.map(
-      (file) =>
-        new Promise<{ src: string; alt: string }>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            resolve({
-              src: reader.result as string,
-              alt: file.name
-            });
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        })
-    )
-  );
-};
+

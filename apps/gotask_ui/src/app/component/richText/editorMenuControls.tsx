@@ -1,9 +1,6 @@
 // components/EditorMenuControls.tsx
-import {
-  handleImageUpload,
-  highlightColorSwatches,
-  textColorSwatches
-} from "@/app/common/constants/editorMenu";
+import { highlightColorSwatches, textColorSwatches } from "@/app/common/constants/editorMenu";
+import { handleImageUpload } from "@/app/common/utils/textEditor";
 import { useTheme } from "@mui/material";
 import {
   MenuControlsContainer,

@@ -11,12 +11,9 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { RichTextReadOnly } from "mui-tiptap";
-import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
-import Link from "@tiptap/extension-link";
 import ReusableEditor from "@/app/component/richText/textEditor";
 import { fetchUsers } from "../../user/services/userAction";
-import { User } from "../../user/interfaces/userInterface";
+import { getTipTapExtensions, mapUsersToMentions } from "@/app/common/utils/textEditor";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
@@ -71,28 +68,12 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
   const displayedComments = showAll ? comments : comments.slice(0, 3);
   const hasMoreComments = comments.length > 3;
 
-  const extensions = [
-    StarterKit,
-    Link,
-    Image.configure({
-      inline: false,
-      allowBase64: true
-    })
-  ];
-
-  const { data: fetchedUsers = [], isLoading } = useSWR("userList", fetchUsers);
+  const extensions = getTipTapExtensions();
+  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
 
   const userList = useMemo(() => {
-    const mapped = (fetchedUsers || []).map((user: User) => ({
-      id: user.id,
-      mentionLabel: `${user.first_name || ""} ${user.last_name || ""}`.trim() || user.name
-    }));
-
-    if (!isLoading && mapped.length > 0) {
-    }
-
-    return mapped;
-  }, [fetchedUsers, isLoading]);
+    return mapUsersToMentions(fetchedUsers || []);
+  }, [fetchedUsers]);
 
   return (
     <Box sx={{ mt: 2 }}>

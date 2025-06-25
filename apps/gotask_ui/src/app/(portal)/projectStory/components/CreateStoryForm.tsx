@@ -1,15 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Button, Typography, IconButton, Tooltip } from "@mui/material";
+import { Box, Button, Typography, IconButton } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import { createProjectStory } from "@/app/(portal)/projectStory/services/projectStoryService";
+import { createProjectStory } from "@/app/(portal)/projectStory/services/projectStoryActions";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ArrowBack } from "@mui/icons-material";
 import { useUser } from "@/app/userContext";
+import {
+  STORY_STATUS,
+  STORY_STATUS_OPTIONS,
+  STORY_STATUS_TRANSITIONS,
+  StoryStatus
+} from "@/app/common/constants/storyStatus";
 
 const CreateStoryForm = () => {
   const { projectId } = useParams();
@@ -19,7 +25,7 @@ const CreateStoryForm = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status] = useState("to-do"); 
+  const [status] = useState<StoryStatus>(STORY_STATUS.TO_DO);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
@@ -29,6 +35,16 @@ const CreateStoryForm = () => {
   const [snackSeverity, setSnackSeverity] = useState<"success" | "error">("success");
 
   const handleCloseSnackbar = () => setSnackOpen(false);
+
+  // Get valid transitions from current status
+  const allowedNextStatuses = STORY_STATUS_TRANSITIONS[status] || [];
+
+  // Dropdown options: current status (disabled) + allowed next statuses
+  const statusDropdownOptions = STORY_STATUS_OPTIONS.map((opt) => ({
+    id: opt.id,
+    name: opt.name.toUpperCase(),
+    disabled: opt.id !== status && !allowedNextStatuses.includes(opt.id)
+  }));
 
   const handleSubmit = async () => {
     let hasError = false;
@@ -114,11 +130,9 @@ const CreateStoryForm = () => {
           }}
         >
           <Box display="flex" alignItems="center" gap={1}>
-            <Tooltip title={t("Stories.backToStories")}>
-              <IconButton onClick={() => router.back()} color="primary">
-                <ArrowBack />
-              </IconButton>
-            </Tooltip>
+            <IconButton onClick={() => router.back()} color="primary">
+              <ArrowBack />
+            </IconButton>
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
               {t("Stories.createStory")}
             </Typography>
@@ -177,7 +191,7 @@ const CreateStoryForm = () => {
         }}
       >
         <FormField
-          label={t("Stories.title")}
+          label={t("Stories.storyTitle")}
           type="text"
           required
           placeholder={t("Stories.placeholders.title")}
@@ -203,11 +217,15 @@ const CreateStoryForm = () => {
           height={180}
         />
 
-        {/* Disabled Status Field */}
-        <FormField label={t("Stories.status")} type="text" value={status} disabled />
+        <FormField
+          label={t("Stories.status")}
+          type="select"
+          options={statusDropdownOptions}
+          value={status}
+          disabled
+        />
       </Box>
 
-      {/* Snackbar */}
       <CustomSnackbar
         open={snackOpen}
         message={snackMessage}

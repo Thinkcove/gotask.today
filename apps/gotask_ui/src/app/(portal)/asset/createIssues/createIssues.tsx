@@ -44,6 +44,7 @@ const CreateIssue: React.FC<CreateIssueProps> = ({ onClose, open }) => {
   const { data: users } = useSWR("fetch-user", fetcherUserList);
   const { getAll: assets } = useAllAssets();
   const { mutate: issuesMutate } = useAllIssues();
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
   const userOptions = useMemo(
     () => users?.map((user: User) => ({ id: user.id, name: user.name })) || [],
@@ -55,11 +56,28 @@ const CreateIssue: React.FC<CreateIssueProps> = ({ onClose, open }) => {
     [assets]
   );
 
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+
+    if (!formData.assetId) errors.assetId = `${transasset("assets")} ${transasset("isrequired")}`;
+    if (!formData.reportedBy)
+      errors.reportedBy = `${transasset("reportedby")} ${transasset("isrequired")}`;
+    if (!formData.issueType)
+      errors.issueType = `${transasset("issuestype")} ${transasset("isrequired")}`;
+    if (!formData.status) errors.status = `${transasset("status")} ${transasset("isrequired")}`;
+    if (!formData.assignedTo)
+      errors.assignedTo = `${transasset("assignedTo")} ${transasset("isrequired")}`;
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleChange = <K extends keyof IAssetIssues>(key: K, value: IAssetIssues[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
     setLoading(true);
     try {
       const res = await createAssetIssues(formData);
@@ -69,6 +87,16 @@ const CreateIssue: React.FC<CreateIssueProps> = ({ onClose, open }) => {
           open: true,
           message: transasset("issuessuccess"),
           severity: SNACKBAR_SEVERITY.SUCCESS
+        });
+        setFormData({
+          assetId: "",
+          reportedBy: "",
+          issueType: "",
+          description: "",
+          status: "",
+          assignedTo: "",
+          comment: "",
+          updatedBy: ""
         });
         onClose();
       }
@@ -100,6 +128,7 @@ const CreateIssue: React.FC<CreateIssueProps> = ({ onClose, open }) => {
           userOptions={userOptions}
           assetOptions={assetOptions}
           statusOptions={statusOptions}
+          errors={fieldErrors}
         />
       </CommonDialog>
 

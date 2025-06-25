@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import { Box, Button, Grid, Paper, Typography } from "@mui/material";
+import { Box, Button, Grid, IconButton, Paper, Typography } from "@mui/material";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { KeyedMutator } from "swr";
-import { IAssetAttributes, IAssetType } from "../../interface/asset";
+import { IAssetAttributes, IAssetTags, IAssetType } from "../../interface/asset";
 import { createAssetAttributes, useAllTypes } from "../../services/assetActions";
 import AssetInput from "../../createAsset/laptopInputs"; // Create similar to ProjectInput
 import ModuleHeader from "@/app/component/header/moduleHeader";
@@ -18,6 +18,7 @@ import MobileInputs from "../../createAsset/mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
 import HistoryIcon from "@mui/icons-material/History";
 import IssueHistoryDrawer from "../../createIssues/issuesDrawer";
+import { ArrowBack } from "@mui/icons-material";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -37,6 +38,12 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
+  const [previousUserName, setPreviousUserName] = useState<string | null>(() => {
+    return data?.tags?.userName || null;
+  });
+
+  const [isAssignedToUpdated, setIsAssignedToUpdated] = useState(false);
+
   const [formData, setFormData] = useState<IAssetAttributes>(() => ({
     id: data?.id,
     typeId: data?.typeId || "",
@@ -69,6 +76,8 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   const { getAll: allTypes } = useAllTypes();
   const { data: users } = useSWR("fetch-user", fetcherUserList);
 
+  const handleBack = () => router.back();
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.id) newErrors.id = transasset("id");
@@ -83,9 +92,18 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   };
 
   const handleChange = <K extends keyof IAssetAttributes>(field: K, value: IAssetAttributes[K]) => {
-    if (formData) {
-      setFormData({ ...formData, [field]: value });
+    if (field === "userId" && value !== formData.userId) {
+      const prevUser = userOptions.find((u: IAssetTags) => u.id === formData.userId);
+      if (prevUser) {
+        setPreviousUserName(prevUser.name);
+      }
+      if (value !== data.tags?.userId) {
+        setIsAssignedToUpdated(true);
+      } else {
+        setIsAssignedToUpdated(false);
+      }
     }
+    setFormData({ ...formData, [field]: value });
   };
 
   const userOptions = useMemo(() => {
@@ -100,7 +118,12 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
     try {
-      await createAssetAttributes(formData);
+      const payload = {
+        ...formData,
+        previouslyUsedBy: previousUserName || undefined,
+        ...(isAssignedToUpdated ? { isAssignedToUpdated: true } : {})
+      };
+      await createAssetAttributes(payload);
       await mutate();
       setSnackbar({
         open: true,
@@ -157,36 +180,42 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
                   gap: 0.5
                 }}
               >
-                {/* Title */}
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#741B92",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1
-                  }}
-                >
-                  {transasset("updateasset")}
-                </Typography>
-
-                {/* Show History link with icon */}
-                <Box
-                  onClick={() => setOpenHistoryDrawer(true)}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                    color: "#741B92",
-                    cursor: "pointer"
-                  }}
-                >
-                  <Typography variant="body2" sx={{ textDecoration: "underline" }}>
-                    {transasset("showhistory")}
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <IconButton color="primary" onClick={handleBack}>
+                    <ArrowBack />
+                  </IconButton>
+                  {/* Title */}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      color: "#741B92",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1
+                    }}
+                  >
+                    {transasset("updateasset")}
                   </Typography>
-                  <HistoryIcon fontSize="small" />
                 </Box>
+                {/* Show History link with icon */}
+                {Array.isArray(data.assetHistory) && data.assetHistory.length > 0 && (
+                  <Box
+                    onClick={() => setOpenHistoryDrawer(true)}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      color: "#741B92",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ textDecoration: "underline" }}>
+                      {transasset("showhistory")}
+                    </Typography>
+                    <HistoryIcon fontSize="small" />
+                  </Box>
+                )}
               </Box>
             </Grid>
 

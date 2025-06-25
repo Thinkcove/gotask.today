@@ -1,58 +1,101 @@
 "use client";
 
-import React from "react";
-import useSWR from "swr";
-import { Box, Typography, CircularProgress, Grid, IconButton, Fab, Tooltip } from "@mui/material";
-import { useParams, useRouter } from "next/navigation";
+import React, { useCallback, useRef, useState } from "react";
+import useSWRInfinite from "swr/infinite";
+import { Box, Typography, CircularProgress, Grid, IconButton, Fab } from "@mui/material";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowBack, Add as AddIcon } from "@mui/icons-material";
-import { getStoriesByProject } from "../services/projectStoryService";
+
+import { getStoriesByProject } from "../services/projectStoryActions";
 import { ProjectStory } from "../interfaces/projectStory";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
+import StoryFilters from "../components/StoryFilters";
 
-const fetcher = (projectId: string) => getStoriesByProject(projectId).then((res) => res?.data);
+interface StoryListProps {
+  onProjectNameFetch?: (name: string) => void;
+}
 
-const StoryList: React.FC = () => {
+const limit = 12;
+
+const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
   const { projectId } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  const {
-    data: stories = [],
-    isLoading,
-    error
-  } = useSWR(projectId ? `stories-${projectId}` : null, () => fetcher(projectId as string));
+  const initialStatus = searchParams.getAll("status");
+  const initialStartDate = searchParams.get("startDate") || "";
+  const initialSearch = searchParams.get("search") || "";
 
-  const projectName = stories[0]?.project?.name ?? "";
+  const [status, setStatus] = useState<string[]>(initialStatus);
+  const [startDate, setStartDate] = useState<string>(initialStartDate);
+  const [searchTerm, setSearchTerm] = useState<string>(initialSearch);
 
-  if (isLoading) {
-    return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <CircularProgress />
-      </Box>
-    );
+  const getKey = (pageIndex: number, previousPageData: any) => {
+    if (previousPageData && !previousPageData.data.length) return null;
+    return `stories-${projectId}-${status.join(",")}-${startDate}-${searchTerm}-page-${pageIndex + 1}`;
+  };
+
+  const fetcher = async (_key: string) => {
+    const page = Number(_key.split("page-").pop()) || 1;
+    return await getStoriesByProject(projectId as string, {
+      status,
+      startDate,
+      search: searchTerm,
+      page,
+      limit
+    });
+  };
+
+  const { data, size, setSize, isLoading, isValidating, error } = useSWRInfinite(getKey, fetcher);
+
+  const allStories: ProjectStory[] = data?.flatMap((page) => page.data) || [];
+  const totalCount = data?.[0]?.pagination?.totalCount || 0;
+  const hasMore = allStories.length < totalCount;
+
+  const projectName = allStories[0]?.project?.name ?? "";
+  if (projectName && onProjectNameFetch) {
+    onProjectNameFetch(projectName);
   }
 
-  if (error) {
-    return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <Typography variant="body1" color="error">
-          {t("Stories.fetchError")}
-        </Typography>
-      </Box>
-    );
-  }
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const lastStoryRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node || isLoading || isValidating || !hasMore) return;
+
+      if (observerRef.current) observerRef.current.disconnect();
+
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setSize((prev) => prev + 1);
+        }
+      });
+
+      observerRef.current.observe(node);
+    },
+    [isLoading, isValidating, hasMore]
+  );
+
+  const updateQueryParams = (newStatus: string[], newStartDate = "", newSearch = "") => {
+    const params = new URLSearchParams();
+    if (newStatus.length > 0) newStatus.forEach((s) => params.append("status", s));
+    if (newStartDate) params.set("startDate", newStartDate);
+    if (newSearch) params.set("search", newSearch);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
+      {/* Header */}
       <Box
         sx={{
           position: "absolute",
-          top: 16,
-          left: 16,
+          top: 26,
+          left: 20,
           display: "flex",
           alignItems: "center",
           gap: 1,
@@ -66,40 +109,86 @@ const StoryList: React.FC = () => {
         >
           <ArrowBack />
         </IconButton>
-        <Typography variant="h6" fontWeight={600}>
-          {t("Stories.titleWithProject", { name: projectName })}
-        </Typography>
+        {projectName && (
+          <Typography variant="h6" fontWeight={600}>
+            {t("Stories.titleWithProject", { name: projectName })}
+          </Typography>
+        )}
       </Box>
 
-      {/* Stories Grid  */}
-      <Box sx={{ px: 2, pt: 8 }}>
-        {stories.length === 0 ? (
+      {/* Filters */}
+      <StoryFilters
+        status={status}
+        startDate={startDate}
+        searchTerm={searchTerm}
+        onStatusChange={(val) => {
+          setStatus(val);
+          setSize(1);
+          updateQueryParams(val, startDate, searchTerm);
+        }}
+        onStartDateChange={(val) => {
+          setStartDate(val);
+          setSize(1);
+          updateQueryParams(status, val, searchTerm);
+        }}
+        onSearchChange={(val) => {
+          setSearchTerm(val);
+          setSize(1);
+          updateQueryParams(status, startDate, val);
+        }}
+        onClearFilters={() => {
+          setStatus([]);
+          setStartDate("");
+          setSearchTerm("");
+          setSize(1);
+          router.replace("?", { scroll: false });
+        }}
+      />
+
+      {/* Story List */}
+      <Box sx={{ px: 2, pt: 2 }}>
+        {isLoading && size === 1 ? (
+          <Box display="flex" justifyContent="center" mt={5}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Typography color="error" textAlign="center">
+            {t("Stories.fetchError")}
+          </Typography>
+        ) : allStories.length === 0 ? (
           <EmptyState imageSrc={NoSearchResultsImage} message={t("Stories.noStoriesFound")} />
         ) : (
           <Grid container spacing={2}>
-            {stories.map((story: ProjectStory) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={story.id}>
+            {allStories.map((story, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                lg={3}
+                key={story.id}
+                ref={index === allStories.length - 1 ? lastStoryRef : null}
+              >
                 <StoryCard story={story} />
               </Grid>
             ))}
           </Grid>
         )}
+        {isValidating && hasMore && (
+          <Box display="flex" justifyContent="center" mt={3}>
+            <CircularProgress />
+          </Box>
+        )}
       </Box>
 
-      <Tooltip title={t("Stories.createStory")}>
-        <Fab
-          color="primary"
-          onClick={() => router.push(`/project/viewProject/${projectId}/stories/create`)}
-          sx={{
-            position: "fixed",
-            bottom: 35,
-            right: 35,
-            zIndex: 1000
-          }}
-        >
-          <AddIcon />
-        </Fab>
-      </Tooltip>
+      {/* Add Story FAB */}
+      <Fab
+        color="primary"
+        onClick={() => router.push(`/project/viewProject/${projectId}/stories/create`)}
+        sx={{ position: "fixed", bottom: 35, right: 35, zIndex: 1000 }}
+      >
+        <AddIcon />
+      </Fab>
     </Box>
   );
 };

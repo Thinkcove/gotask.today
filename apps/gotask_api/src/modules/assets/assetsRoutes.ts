@@ -106,4 +106,19 @@ AssetRoutes.push({
   }
 });
 
+AssetRoutes.push({
+  path: "/getuserbyassetid/{id}",
+  method: API_METHODS.GET,
+  handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
+    assetController.getUserByAssetId(new RequestHelper(request), handler)
+  ),
+  config: {
+    notes: "Get Asset by ID",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
 export default AssetRoutes;

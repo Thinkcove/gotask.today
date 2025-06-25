@@ -157,6 +157,9 @@
     "goal": "Goal",
     "linkgoals": "Goals",
     "linkstories": "Stories",
+    "filterduedate": "Select Due Date",
+    "filterclear": "Clear",
+    "filterapply": "Apply",
 
     "Stories": {
       "noStoriesFound": "No stories found for this project.",
@@ -167,7 +170,6 @@
       "story": "Create Story",
       "createStory": "Create Story",
       "title": "Title",
-      "description": "Description",
       "cancel": "Cancel",
       "create": "Create",
       "creating": "Creating...",
@@ -187,7 +189,7 @@
       "noDescription": "No description provided.",
       "status": "Status",
       "na": "N/A",
-      "taskSectionTitle": "Tasks for this Story",
+      "taskSectionTitle": "Associated Tasks",
       "createTask": "+ Create Task",
       "noTasks": "No tasks linked to this story yet.",
       "confirmDelete": "Are you sure you want to delete this story?",
@@ -195,15 +197,32 @@
       "titleWithProject": "{name} Stories",
       "createdAt": "Created At",
       "noDescriptionShort": "No description available",
-      "statusOptions": {
-        "to-do": "To Do",
-        "in-progress": "In Progress",
-        "done": "Done"
+      "descriptionLabel": "Description",
+      "stories": "Stories",
+      "suffixtoday": "Today",
+      "storyTitle": "Story Title *",
+      "description": "Description *",
+
+      "filters": {
+        "status": "Status",
+        "all": "All",
+        "toDo": "To Do",
+        "inProgress": "In Progress",
+        "done": "Done",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "clearFilters": "Clear Filters",
+        "clearTooltip": "Clear all filters",
+        "createdDate": "Created Date",
+        "clear": "Clear",
+        "apply": "Apply",
+        "clearAll": "Clear All",
+        "search": "Search"
       },
 
       "placeholders": {
         "title": "Enter story title",
-        "description": "Enter story description (optional)",
+        "description": "Enter story description",
         "titleUpdate": "Update story title",
         "descriptionUpdate": "Update story description"
       },
@@ -257,6 +276,8 @@
     "searchplaceholder": "Search Roles"
   },
   "Task": {
+    "filterfrom": "From Date",
+    "filterto": "To Date",
     "filter": "Filter",
     "filterproject": "Project",
     "filteruser": "User",
@@ -526,11 +547,11 @@
     "issuessuccess": "Issue created successfully",
     "isencrypted": "Is Encrypted",
     "createtag": "Create tag",
-    "assignedTo": "Assigned To",
+    "assignedTo": "Assigned to",
     "assettype": "Asset Type",
-    "previouslyUsedBy": "Previously User By",
+    "previouslyUsedBy": "Previously used by",
     "actionType": "Action Type",
-    "createissue": "Crete issues",
+    "createissue": "Create issues",
     "reportedby": "Reported by",
     "issuestype": "Issues type",
     "description": "Description",
@@ -565,12 +586,14 @@
     "editstatus": "Update status",
     "showhistory": "Show History",
     "issueshistory": "Issues history",
-    "issuesType": "Issue Type:",
+    "issuestypes": "Issue Type:",
     "assetslog": "Log of who performed the updates in the assets",
     "isueslog": "Log of who performed the updates in the status",
     "issuesupdated": "Issues updated successfully",
     "required": "*",
-    "statuschanges": "Status changed to"
+    "statuschanges": "Status changed to",
+    "enc": "Encrypted",
+    "notenc": "Not Encrypted"
   },
 
   "Chatbot": {
@@ -638,7 +661,7 @@
     "from": "From",
     "notask": "No task title",
     "labelu": "user-id-label",
-    "idu":"user-ids",
+    "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids"
   },

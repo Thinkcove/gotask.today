@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Autocomplete, TextField, Checkbox, Chip } from "@mui/material";
+import { Autocomplete, TextField, Checkbox, Chip, Tooltip } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { getMultiSelectStyles } from "./multiSelect";
@@ -21,7 +21,6 @@ interface MultiSelectFilterProps<T extends Item> {
   sxInput?: object;
   sxChip?: object;
   listBoxProps?: Partial<React.HTMLAttributes<HTMLElement>>;
-  customWidth?: string | number | object;
 }
 
 const MultiSelectFilter = <T extends Item>({
@@ -33,8 +32,7 @@ const MultiSelectFilter = <T extends Item>({
   sxInputBase = {},
   sxInput = {},
   sxChip = {},
-  listBoxProps = {},
-  customWidth
+  listBoxProps = {}
 }: MultiSelectFilterProps<T>) => {
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -69,9 +67,9 @@ const MultiSelectFilter = <T extends Item>({
       getOptionLabel={(option) => option.name || option.id}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       ListboxProps={listBoxProps}
-      sx={getMultiSelectStyles(sxRoot, sxInputBase, sxInput, sxChip, customWidth)}
+      sx={getMultiSelectStyles(sxRoot, sxInputBase, sxInput, sxChip)}
       renderOption={(props, option, { selected }) => {
-        const isSelectAllOption = option.id === "__all__";
+        const isSelectAllOption = option.id === SELECT_ALL_ID;
         return (
           <li {...props}>
             <Checkbox
@@ -98,11 +96,24 @@ const MultiSelectFilter = <T extends Item>({
           }}
         />
       )}
-      renderTags={(tagValue, getTagProps) =>
-        tagValue.map((option, index) => (
-          <Chip label={option.name || option.id} {...getTagProps({ index })} key={option.id} />
-        ))
-      }
+      renderTags={(tagValue, getTagProps) => {
+        const visibleTags = tagValue.slice(0, 3);
+        const hiddenTags = tagValue.slice(3);
+
+        return [
+          ...visibleTags.map((option, index) => (
+            <Chip label={option.name || option.id} {...getTagProps({ index })} key={option.id} />
+          )),
+          hiddenTags.length > 0 && (
+            <Tooltip
+              key="more"
+              title={hiddenTags.map((option) => option.name || option.id).join(", ")}
+            >
+              <Chip label={`+${hiddenTags.length}`} />
+            </Tooltip>
+          )
+        ];
+      }}
     />
   );
 };

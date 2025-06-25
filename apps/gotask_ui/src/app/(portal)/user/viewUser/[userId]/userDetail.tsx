@@ -21,6 +21,8 @@ import { IAssetAttributes } from "@/app/(portal)/asset/interface/asset";
 import TaskToggle from "../../../../component/toggle/toggle";
 import CardComponent from "@/app/component/card/cardComponent";
 import { Tabs, Tab } from "@mui/material";
+import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
+import EllipsisText from "@/app/component/text/ellipsisText";
 
 interface UserDetailProps {
   user: User;
@@ -361,6 +363,134 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 )}
               </>
             )}
+              
+            <Grid container spacing={2} mt={3}>
+              {selectedTab === transasset("assetdetails") && (
+                <Grid item xs={12}>
+                  {user.assetDetails && user.assetDetails.length > 0 ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        overflowX: "auto",
+                        gap: 2,
+                        py: 1,
+                        pr: 1
+                      }}
+                    >
+                      {user.assetDetails.map((asset: IAssetAttributes, index: number) => (
+                        <Box
+                          key={asset.id || index}
+                          onClick={() => router.push(`/asset/view/${asset.id}`)}
+                          sx={{
+                            minWidth: 300,
+                            maxWidth: 360,
+                            flex: "0 0 auto",
+                            cursor: "pointer",
+                            transition: "transform 0.2s",
+                            "&:hover": {
+                              transform: "scale(1.02)"
+                            }
+                          }}
+                        >
+                          <CardComponent
+                            sx={{
+                              minWidth: 300,
+                              maxWidth: 360,
+                              flex: "0 0 auto",
+                              cursor: "pointer",
+                              transition: "transform 0.2s",
+                              "&:hover": {
+                                transform: "scale(1.02)",
+                                boxShadow: 4
+                              }
+                            }}
+                          >
+                            <Stack spacing={1}>
+                              {/* Device Name */}
+                              <Box>
+                                <Typography {...labelTextStyle}>
+                                  {asset.deviceName ?? ""}
+                                </Typography>
+                              </Box>
+
+                              {/* Model Name */}
+                              {asset.modelName && (
+                                <Box display="flex" justifyContent="space-between">
+                                  <Typography {...labelTextStyle}>
+                                    {transasset("modelname")}:
+                                  </Typography>
+                                  <EllipsisText text={asset.modelName} maxWidth={160} />
+                                </Box>
+                              )}
+
+                              {/* OS */}
+                              {asset.os && (
+                                <Box display="flex" justifyContent="space-between">
+                                  <Typography {...labelTextStyle}>{transasset("os")}:</Typography>
+                                  <EllipsisText text={asset.os} maxWidth={160} />
+                                </Box>
+                              )}
+
+                              {/* Processor */}
+                              {asset.processor && (
+                                <Box display="flex" justifyContent="space-between">
+                                  <Typography {...labelTextStyle}>
+                                    {transasset("processor")}:
+                                  </Typography>
+                                  <EllipsisText text={asset.processor} maxWidth={160} />
+                                </Box>
+                              )}
+
+                              {/* RAM */}
+                              {asset.ram && (
+                                <Box display="flex" justifyContent="space-between">
+                                  <Typography {...labelTextStyle}>{transasset("ram")}:</Typography>
+                                  <EllipsisText text={asset.ram} maxWidth={160} />
+                                </Box>
+                              )}
+
+                              {/* Storage */}
+                              {asset.storage && (
+                                <Box display="flex" justifyContent="space-between">
+                                  <Typography {...labelTextStyle}>
+                                    {transasset("storage")}:
+                                  </Typography>
+                                  <EllipsisText text={asset.storage} maxWidth={160} />
+                                </Box>
+                              )}
+
+                              {/* Serial Number */}
+                              {asset.serialNumber && (
+                                <Box display="flex" justifyContent="space-between">
+                                  <Typography {...labelTextStyle}>
+                                    {transasset("serialnumber")}:
+                                  </Typography>
+                                  <EllipsisText text={asset.serialNumber} maxWidth={160} />
+                                </Box>
+                              )}
+
+                              {/* Date of Purchase */}
+                              {asset.dateOfPurchase && (
+                                <Box display="flex" justifyContent="space-between">
+                                  <Typography {...labelTextStyle}>
+                                    {transasset("dateOfPurchase")}:
+                                  </Typography>
+                                  <FormattedDateTime date={asset.dateOfPurchase} />
+                                </Box>
+                              )}
+                            </Stack>
+                          </CardComponent>
+                        </Box>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography color="text.secondary" fontStyle="italic">
+                      No assets assigned yet.
+                    </Typography>
+                  )}
+                </Grid>
+              )}
+            </Grid>
           </Box>
         </Box>
 

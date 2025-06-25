@@ -17,9 +17,10 @@ export const generateAssetHistoryEntry = async (
 
   const historyEntries = await Promise.all(
     fieldsToCheck.map(async (field) => {
+      if (field === "userid") return;
       const oldVal = existingAsset[field];
       const newVal = updatedData[field];
-      // Ignore if unchanged
+
       const isDateField = oldVal instanceof Date || newVal instanceof Date;
       const isChanged = isDateField
         ? new Date(oldVal).getTime() !== new Date(newVal).getTime()
@@ -27,26 +28,25 @@ export const generateAssetHistoryEntry = async (
 
       if (!isChanged) return null;
 
-      // Custom logic for userId field
       if (field === "userId") {
-        const [oldUser, newUser] = await Promise.all([findUser(oldVal), findUser(newVal)]);
+        if (!updatedData?.isAssignedToUpdated) return null;
+        const newUser = await findUser(newVal);
+        const newName = newUser?.name ?? "N/A";
+        const oldName = updatedData.previouslyUsedBy;
 
-        const oldName = oldUser?.name;
-        const newName = newUser?.name;
-
-        if (oldName) {
-          return `User has been updated from "${oldName}" to "${newName}".`;
-        } else {
-          return `User has been updated to "${newName}".`;
-        }
+        return oldName
+          ? `User has been updated from "${oldName}" to "${newName}".`
+          : `User has been updated to "${newName}".`;
       }
 
-      // Custom logic for tag field – omit tag-related changes
-      if (field === "tag") {
+      if (field === "tag" || field === "previouslyUsedBy" || field === "isAssignedToUpdated")
         return null;
-      }
 
       const label = capitalizeFirstLetter(field.replace(insertSpaceBeforeCapital, " $1"));
+
+      if (oldVal === undefined || oldVal === null || oldVal === "") {
+        return `${label} has been updated to "${formatValue(newVal)}".`;
+      }
 
       return `${label} has been updated from "${formatValue(oldVal)}" to "${formatValue(newVal)}".`;
     })

@@ -1,0 +1,5 @@
+export const PAGE_OPTIONS = {
+  DEFAULT_ROWS_5: 5,
+  DEFAULT_ROWS_10: 10,
+  DEFAULT_ROWS_25: 25
+};

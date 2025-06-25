@@ -9,6 +9,8 @@ import {
   PaginatedStoryResponse
 } from "../interfaces/projectStory";
 
+type StoryResponse = PaginatedStoryResponse | { error: string };
+
 // Create a new Project Story
 export const createProjectStory = async (formData: CreateStoryPayload) => {
   return withAuth((token) => {
@@ -41,15 +43,14 @@ export const addCommentToProjectStory = async (storyId: string, payload: AddComm
   });
 };
 
-//  Get Stories with Filters & Pagination
+
 export const getStoriesByProject = async (
   projectId: string,
   queryParams: Omit<StoryQueryParams, "endDate"> = {}
-): Promise<PaginatedStoryResponse> => {
-  return withAuth((token) => {
+): Promise<StoryResponse> => {
+  return withAuth(async (token) => {
     const query = new URLSearchParams();
 
-    // Handle multi-status values correctly
     if (queryParams.status) {
       const statuses = Array.isArray(queryParams.status)
         ? queryParams.status
@@ -60,14 +61,28 @@ export const getStoriesByProject = async (
     if (queryParams.startDate) query.set("startDate", queryParams.startDate);
     if (queryParams.page) query.set("page", String(queryParams.page));
     if (queryParams.limit) query.set("limit", String(queryParams.limit));
-
-    // Added to support search filter
     if (queryParams.search) query.set("search", queryParams.search);
 
     const url = `${env.API_BASE_URL}/getStories/${projectId}?${query.toString()}`;
-    return getData(url, token);
+    const res = await getData(url, token);
+
+    if ("error" in res) {
+      return { error: res.error };
+    }
+
+    return {
+      data: res.data || [],
+      pagination: res.pagination || {
+        totalCount: res.data?.length || 0,
+        totalPages: 1,
+        currentPage: 1,
+        pageSize: res.data?.length || 0
+      },
+      meta: res.meta || {}
+    };
   });
 };
+
 
 //  Get Single Story by ID
 export const getProjectStoryById = async (storyId: string) => {

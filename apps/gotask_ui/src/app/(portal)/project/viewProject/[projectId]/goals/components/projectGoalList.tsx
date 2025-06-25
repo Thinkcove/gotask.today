@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -14,6 +14,7 @@ import SearchBar from "@/app/component/searchBar/searchBar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { ArrowBack, History } from "@mui/icons-material";
+import router from "next/router";
 import {
   createComment,
   createWeeklyGoal,
@@ -37,6 +38,7 @@ function ProjectGoalList() {
   const { projectId } = useParams();
 
   const { user } = useUser();
+  console.log("user", user);
   const projectID = projectId as string;
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -67,7 +69,7 @@ function ProjectGoalList() {
 
   const swrKey = [page, statusFilter, severityFilter, searchTerm];
 
-  const { isLoading, error } = useSWR(
+  const { data, isLoading, error } = useSWR(
     swrKey,
     () =>
       fetchWeeklyGoals({
@@ -80,7 +82,7 @@ function ProjectGoalList() {
       revalidateOnFocus: false,
       onSuccess: (res) => {
         if (res?.goals?.length < 10) {
-          setHasMore(false); 
+          setHasMore(false); // No more pages
         }
         setAllGoals((prev) => {
           const existingIds = new Set(prev.map((goal) => goal.id));
@@ -95,12 +97,13 @@ function ProjectGoalList() {
   } | null>(null);
 
   const fieldLabelMap: { [key: string]: string } = {
-    goalTitle: transGoal("goaltitle"),
-    description: transGoal("description"),
-    priority: transGoal("priority"),
-    status: transGoal("status"),
-    weekEnd: transGoal("startdate"),
-    weekStart: transGoal("enddate")
+    goalTitle: "Goal Title",
+    description: "Description",
+    priority: "Priority",
+    projectId: "Project ID",
+    status: "Status",
+    weekEnd: "Week End",
+    weekStart: "Week Start"
   };
   const { data: users } = useSWR("fetch-user", fetcherUserList);
 
@@ -109,7 +112,7 @@ function ProjectGoalList() {
       const updatedUser = users?.find((user: any) => user.id === item.user_id);
       const loginuser_name = updatedUser?.first_name || updatedUser?.name;
 
-      const formattedChanges = Object.entries(item.history_data)
+      const formattedChanges = Object.entries(item.update_data || {})
         .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
         .map(([key, value]) => {
           const label = fieldLabelMap[key] || key;
@@ -119,9 +122,27 @@ function ProjectGoalList() {
       return {
         loginuser_name: loginuser_name,
         formatted_history: formattedChanges.join(". "),
-        created_date: item.timestamp // show timestamp, not weekEnd
+        created_date: item.timestamp || "" // fallback if timestamp is missing
       };
     }) ?? [];
+
+  //   projectGoalHistory?.updateHistory?.map((item: any) => {
+  //     const updatedUser = users?.find((user: any) => user.id === item.user_id);
+  //     const loginuser_name = updatedUser?.first_name || updatedUser?.name || "System";
+
+  //     const formattedChanges = Object.entries(item.history_data)
+  //       .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
+  //       .map(([key, value]) => {
+  //         const label = fieldLabelMap[key] || key;
+  //         return `${label} updated to "${value}"`;
+  //       });
+
+  //     return {
+  //       loginuser_name: loginuser_name,
+  //       formatted_history: formattedChanges.join(". "),
+  //       created_date: item.timestamp // show timestamp, not weekEnd
+  //     };
+  //   }) ?? [];
 
   const handelOpen = () => {
     setGoalData({
@@ -155,9 +176,10 @@ function ProjectGoalList() {
 
     try {
       const fetchedGoal = await getWeeklyGoalById(goal.id); // ✅ goal.id is definitely a string here
+      console.log("Goal Data:", fetchedGoal);
 
       setProjectGoalHistory({
-        updateHistory: fetchedGoal.updateHistory || []
+        updateHistory: fetchedGoal.data.updateHistory || []
       });
 
       setOpenDialog(true);
@@ -216,7 +238,6 @@ function ProjectGoalList() {
         await mutate("project-goals");
       }
       setOpenDialog(false);
-      setprojectGoalView(null);
     } catch (err) {
       console.error("Error saving weekly goal:", err);
       setSnackbar({
@@ -231,9 +252,14 @@ function ProjectGoalList() {
     (GoalData & { comments: GoalComment[] }) | null
   >(null);
 
+  console.log("projectGoalHistory", projectGoalHistory);
+
   const handelProjectGoalView = async (goalId: string) => {
+    console.log("Goal Data goalId:", goalId);
+
     try {
       const goal = await getWeeklyGoalById(goalId);
+      console.log("Goal Data:", goal);
 
       const comments = await getCommentsByGoalId(goalId);
       const fullGoal = {
@@ -243,9 +269,9 @@ function ProjectGoalList() {
 
       setprojectGoalView(fullGoal);
 
-      setProjectGoalHistory({
-        updateHistory: goal.updateHistory || []
-      });
+      // setProjectGoalHistory({
+      //   updateHistory: goal.updateHistory || []
+      // });
     } catch (error) {
       console.error("Error fetching goal details:", error);
     }
@@ -332,20 +358,25 @@ function ProjectGoalList() {
 
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
+    router.push(`/project/viewProject/${projectID}/goals`);
   };
-
   const onSeverityChange = (selected: string[]) => {
     setSeverityFilter(selected);
   };
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    console.log("scrolling", scrollTop + clientHeight, scrollHeight);
     if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
       setPage((prev) => prev + 1);
     }
     if (scrollTop <= (scrollHeight - clientHeight) / 2) {
-      setPage((prev) => Math.max(prev - 1, 1));
+      console.log("User scrolled up past the middle");
+      setPage((prev) => Math.max(prev - 1, 1)); // or whatever logic you want
     }
+    // let tepvab= allGoals.push(data?.goals || []);
+
+    // setAllGoals((prev) => [...prev, ...(data.goals || [])]);
   };
 
   const filteredGoals = allGoals?.filter((goal) => {
@@ -372,6 +403,7 @@ function ProjectGoalList() {
       </Box>
     );
   }
+  console.log("openDialog", openDialog);
 
   return (
     <>

@@ -74,9 +74,9 @@ class ProjectGoalController extends BaseController {
       const id = requestHelper.getParam("id");
       const updateData = requestHelper.getPayload();
 
-      const userId = updateData.updated_by || requestHelper.getParam("user_id");
+      const userId = updateData.user_id || requestHelper.getParam("user_id");
       
-      delete updateData.updated_by;
+      delete updateData.user_id;
 
       const updatedGoal = await updateProjectGoalService(id, updateData, userId);
 

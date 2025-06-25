@@ -55,7 +55,7 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
         px: { xs: 2, sm: 2 },
         py: 2,
         height: "100%",
-        maxHeight: "calc(100vh - 100px)",
+        maxHeight: "calc(100vh - 150px)",
         overflowY: "auto"
       }}
     >

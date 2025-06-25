@@ -8,6 +8,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { useIssuesById } from "../../services/assetActions";
+import StatusIndicator from "@/app/component/status/statusIndicator";
+import { getIssuesStatusColor } from "@/app/common/constants/asset";
 
 const ViewIssue: React.FC<{ id: string }> = ({ id }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -38,12 +40,21 @@ const ViewIssue: React.FC<{ id: string }> = ({ id }) => {
       <ModuleHeader name={trans("issues")} />
       <Box
         sx={{
-          p: 3,
+          p: { xs: 1, sm: 3 },
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)",
-          minHeight: "100vh"
+          height: "calc(100vh - 64px)",
+          overflowY: "auto"
         }}
       >
-        <Paper sx={{ p: 4, borderRadius: 4, border: "1px solid #e0e0e0" }}>
+        <Paper
+          sx={{
+            p: { xs: 2, sm: 4 },
+            borderRadius: 4,
+            border: "1px solid #e0e0e0",
+            maxWidth: "100%",
+            boxSizing: "border-box"
+          }}
+        >
           {/* Header */}
           <Grid container alignItems="center" spacing={2} mb={3}>
             <Grid item>
@@ -52,7 +63,20 @@ const ViewIssue: React.FC<{ id: string }> = ({ id }) => {
               </IconButton>
             </Grid>
             <Grid item xs>
-              <Typography variant="h5">{issue.issueType}</Typography>
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    mb: 0.5,
+                    fontSize: { xs: "1.25rem", sm: "1.5rem" }
+                  }}
+                >
+                  {issue.issueType}
+                </Typography>
+                {issue.status && (
+                  <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />
+                )}
+              </Box>
             </Grid>
             <Grid item xs="auto">
               <IconButton
@@ -79,9 +103,6 @@ const ViewIssue: React.FC<{ id: string }> = ({ id }) => {
 
           {/* Fields */}
           <Grid container spacing={2} mt={1}>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("status")} value={issue.status || "-"} />
-            </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={trans("reportedby")} value={issue.reportedUser || "-"} />
             </Grid>

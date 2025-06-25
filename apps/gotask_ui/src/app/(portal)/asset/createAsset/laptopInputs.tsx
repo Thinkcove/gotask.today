@@ -176,9 +176,9 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
               </Grid>
               <Grid item xs={12} sm={4}>
                 <FormField
-                  label={transasset("commentService")}
+                  label={transasset("description")}
                   type="text"
-                  placeholder={transasset("commentService")}
+                  placeholder={transasset("description")}
                   value={formData.commentService}
                   onChange={(val) => onChange("commentService", String(val))}
                 />

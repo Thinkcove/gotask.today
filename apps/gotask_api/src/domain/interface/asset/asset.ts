@@ -24,7 +24,7 @@ const getAssetTypeById = async (id: string): Promise<IAsset | null> => {
 };
 
 const getAllAssets = async (): Promise<IAsset[]> => {
-  return await Asset.find();
+  return await Asset.find().sort({ createdAt: -1 });
 };
 
 export const updateAsset = async (id: string, payload: Partial<IAsset>): Promise<IAsset | null> => {

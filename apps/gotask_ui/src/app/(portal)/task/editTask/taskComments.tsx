@@ -11,7 +11,7 @@ import { SpeakerNotesOutlined } from "@mui/icons-material";
 import ReusableEditor from "@/app/component/richText/textEditor";
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
-import { User } from "../../user/interfaces/userInterface";
+import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 
 interface TaskCommentsProps {
   comments: ITaskComment[];
@@ -28,16 +28,8 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate })
   const { data: fetchedUsers = [], isLoading } = useSWR("userList", fetchUsers);
 
   const userList = useMemo(() => {
-    const mapped = (fetchedUsers || []).map((user: User) => ({
-      id: user.id,
-      mentionLabel: `${user.first_name || ""} ${user.last_name || ""}`.trim() || user.name
-    }));
-
-    if (!isLoading && mapped.length > 0) {
-    }
-
-    return mapped;
-  }, [fetchedUsers, isLoading]);
+    return mapUsersToMentions(fetchedUsers || []);
+  }, [fetchedUsers]);
 
   const handleSave = (html: string) => {
     const trimmed = html.trim();

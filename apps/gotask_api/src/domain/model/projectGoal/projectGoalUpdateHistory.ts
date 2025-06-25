@@ -7,16 +7,14 @@ export interface IProjectGoalUpdateHistory extends Document {
   id: string;
   goal_id: string;
   updated_by: string;
-  update_data: Record<string, any>;
-  timestamp: Date;
+  update_goal_historydata: Record<string, any>;
 }
 
 const ProjectGoalUpdateHistorySchema = new Schema<IProjectGoalUpdateHistory>({
   id: { type: String, default: uuidv4, unique: true },
   goal_id: { type: String, required: true, ref: "ProjectGoal" },
   updated_by: { type: String, required: true }, // user_id
-  update_data: { type: Schema.Types.Mixed, required: true },
-  timestamp: { type: Date, default: Date.now }
+  update_goal_historydata: { type: Schema.Types.Mixed, required: true }
 });
 
 export const ProjectGoalUpdateHistory = model<IProjectGoalUpdateHistory>(

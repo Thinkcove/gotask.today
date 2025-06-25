@@ -18,3 +18,7 @@ export const createIssuesHistory = async (payload: any): Promise<IIssuesHistory>
   const newHistory = new IssuesHistory(payload);
   return await newHistory.save();
 };
+
+export const getIssueHistoryByAssetId = async (issuesId: string) => {
+  return await IssuesHistory.find({ issuesId });
+};

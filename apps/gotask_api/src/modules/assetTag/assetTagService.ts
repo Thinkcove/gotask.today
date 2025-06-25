@@ -3,6 +3,7 @@ import UserMessages from "../../constants/apiMessages/userMessage";
 import { getAssetById } from "../../domain/interface/asset/asset";
 import {
   createIssuesHistory,
+  getIssueHistoryByAssetId,
   getIssuesHistoryById
 } from "../../domain/interface/asset/assetHistory";
 import {
@@ -140,17 +141,18 @@ class resourceService {
       const tagsData = await Promise.all(
         assetsIssues.map(async (tagDoc: IAssetTag) => {
           const tag = tagDoc.toObject();
-          const [asset, assignedTo, reportedBy] = await Promise.all([
+          const [asset, assignedTo, reportedBy, history] = await Promise.all([
             getAssetById(tag.assetId),
             findUser(tag.assignedTo),
-            findUser(tag.reportedBy)
+            findUser(tag.reportedBy),
+            getIssueHistoryByAssetId(tag.id)
           ]);
-
           return {
             ...tag,
             assetDetails: asset || null,
             assigned: assignedTo || null,
-            reportedDetails: reportedBy || null
+            reportedDetails: reportedBy || null,
+            issuesHistory: history || null
           };
         })
       );

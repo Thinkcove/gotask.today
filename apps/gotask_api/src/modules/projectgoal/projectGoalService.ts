@@ -1,7 +1,7 @@
 import { findUserById } from "../../domain/interface/user/userInterface";
 
 import ProjectGoalMessages from "../../constants/apiMessages/projectGoalMessages";
-import { IProjectGoal } from "../../domain/model/projectGoal/projectGoal";
+import { IProjectGoal, ProjectGoal } from "../../domain/model/projectGoal/projectGoal";
 import {
   findGoalsByUserId,
   findGoalsByProjectId,
@@ -9,13 +9,14 @@ import {
   getProjectGoalById,
   updateProjectGoal,
   deleteProjectGoal,
-  getAllProjectGoals,
   createProjectComment,
   deleteProjectComment,
   updateProjectComment,
   getCommentsByGoalId
 } from "../../domain/interface/projectGoal/projectGoal";
 import { IProjectComment } from "../../domain/model/projectGoal/projectGoalComment";
+import { ProjectGoalUpdateHistory } from "../../domain/model/projectGoal/projectGoalUpdateHistory";
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "../../constants/utils/common";
 
 // Create a new weekly goal
 const createProjectGoalService = async (
@@ -43,16 +44,63 @@ const createProjectGoalService = async (
 };
 
 // Get all weekly goals
-const getAllProjectGoalsService = async (): Promise<{
+const getAllProjectGoalsService = async (filters: {
+  page?: number;
+  pageSize?: number;
+  priority?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+  goalTitle?: string;
+}): Promise<{
   success: boolean;
-  data?: IProjectGoal[];
+  data?: {
+    goals: IProjectGoal[];
+    total: number;
+    page: number;
+    totalPages: number;
+  };
   message?: string;
 }> => {
   try {
-    const goals = await getAllProjectGoals();
+    const {
+      page = DEFAULT_PAGE,
+      pageSize = DEFAULT_PAGE_SIZE,
+      priority,
+      status,
+      startDate,
+      endDate,
+      goalTitle
+    } = filters;
+
+    const query: any = {};
+
+    if (priority) query.priority = priority;
+    if (status) query.status = status;
+
+    if (startDate && endDate) {
+      query.weekStart = { $gte: new Date(startDate) };
+      query.weekEnd = { $lte: new Date(endDate) };
+    }
+
+    if (goalTitle) {
+      query.goalTitle = { $regex: goalTitle, $options: "i" };
+    }
+
+    const total = await ProjectGoal.countDocuments(query);
+    const goals = await ProjectGoal.find(query)
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .sort({ createdAt: -1 });
+
     return {
       success: true,
-      data: goals
+      data: {
+        goals,
+        total,
+        page,
+        totalPages: Math.ceil(total / pageSize)
+      }
     };
   } catch (error: any) {
     return {
@@ -138,18 +186,43 @@ const getProjectGoalsByIdService = async (
   }
 };
 
-// Update a weekly goal
 const updateProjectGoalService = async (
   id: string,
-  updateData: Partial<IProjectGoal>
+  updateData: Partial<IProjectGoal>,
+  userId: string
 ): Promise<{ success: boolean; data?: IProjectGoal | null; message?: string }> => {
   try {
+    const existingGoal = await ProjectGoal.findOne({ id });
+
+    if (!existingGoal) {
+      return {
+        success: false,
+        message: ProjectGoalMessages.UPDATE.NOT_FOUND
+      };
+    }
+
+    const changedFields: Record<string, any> = {};
+    for (const key of Object.keys(updateData)) {
+      if (updateData[key as keyof IProjectGoal] !== existingGoal[key as keyof IProjectGoal]) {
+        changedFields[key] = updateData[key as keyof IProjectGoal];
+      }
+    }
+
     const updatedGoal = await updateProjectGoal(id, updateData);
+
     if (!updatedGoal) {
       return {
         success: false,
         message: ProjectGoalMessages.UPDATE.NOT_FOUND
       };
+    }
+
+    if (Object.keys(changedFields).length > 0) {
+      await ProjectGoalUpdateHistory.create({
+        goal_id: id,
+        user_id: userId,
+        history_data: changedFields
+      });
     }
 
     return {

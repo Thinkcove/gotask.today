@@ -14,7 +14,6 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
-import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
@@ -23,6 +22,7 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import ProjectGoalList from "./projectGoal/projectGoalList";
+import EditProject from "./edit";
 
 interface ProjectDetailProps {
   project: Project;
@@ -203,9 +203,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 cursor: "pointer",
                 "&:hover": { textDecoration: "underline" }
               }}
-              onClick={() => router.push(
-                `/project/viewProject/${projectID}/stories?name=${encodeURIComponent(project.name)}`
-              )}
+              onClick={() =>
+                router.push(
+                  `/project/view/${projectID}/stories?name=${encodeURIComponent(project.name)}`
+                )
+              }
             >
               {transproject("linkstories")}
             </Typography>

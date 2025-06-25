@@ -110,7 +110,7 @@ function ProjectGoalList() {
   const formattedHistory =
     projectGoalHistory?.updateHistory?.map((item: any) => {
       console.log("item", item);
-      
+
       const updatedUser = users?.find((user: any) => user.id === item.user_id);
       const loginuser_name = updatedUser?.first_name || updatedUser?.name;
 
@@ -124,7 +124,7 @@ function ProjectGoalList() {
       return {
         loginuser_name: loginuser_name,
         formatted_history: formattedChanges.join(". "),
-        created_date: item.timestamp || "" 
+        created_date: item.timestamp || ""
       };
     }) ?? [];
 
@@ -247,7 +247,7 @@ function ProjectGoalList() {
 
       const comments = await getCommentsByGoalId(goalId);
       const fullGoal = {
-        ...goal.goal.data,
+        ...goal.data,
         comments: comments || []
       };
 

@@ -49,18 +49,23 @@ class ProjectGoalController extends BaseController {
       const id = requestHelper.getParam("id");
       if (!id) throw new Error("Goal ID is required");
 
-      const goal = await getProjectGoalByIdService(id);
-      if (!goal) throw new Error("Goal not found");
+      const goalResponse = await getProjectGoalByIdService(id);
+      if (!goalResponse || !goalResponse.data) throw new Error("Goal not found");
 
-      // ✅ Get update history
       const updateHistory = await ProjectGoalUpdateHistory.find({ goal_id: id })
-        .sort({ timestamp: -1 }) // latest first
+        .sort({ timestamp: -1 }) 
         .lean()
         .exec();
 
-      return this.sendResponse(handler, {
-        goal,
+      const goalDoc = goalResponse.data as any;
+      const goalWithHistory = {
+        ...goalDoc._doc,
         updateHistory
+      };
+
+      return this.sendResponse(handler, {
+        success: true,
+        data: goalWithHistory
       });
     } catch (error) {
       console.error(`[ProjectGoal GetById] Error:`, error);

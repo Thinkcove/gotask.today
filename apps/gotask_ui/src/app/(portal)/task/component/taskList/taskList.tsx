@@ -407,7 +407,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
               <TaskCard
                 view={view}
                 group={group}
-                onTaskClick={(id) => router.push(`/task/viewTask/${id}`)}
+                onTaskClick={(id) => router.push(`/task/view/${id}`)}
                 onViewMore={handleViewMore}
               />
             </Grid>

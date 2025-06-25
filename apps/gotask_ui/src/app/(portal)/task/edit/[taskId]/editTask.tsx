@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowBack, History } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
-import TimeProgressBar from "@/app/(portal)/task/editTask/timeProgressBar";
+
 import TimeSpentPopup from "../timeSpentPopup";
 import HistoryDrawer from "../taskHistory";
 import ModuleHeader from "@/app/component/header/moduleHeader";
@@ -21,6 +21,7 @@ import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import { IFormField, ITask, Project, User } from "../../interface/taskInterface";
 import { KeyedMutator } from "swr";
 import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields";
+import TimeProgressBar from "../timeProgressBar";
 
 interface EditTaskProps {
   data: ITask;

@@ -21,6 +21,8 @@ interface TaskCommentsProps {
 
 const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+  const transcmt = useTranslations(LOCALIZATION.TRANSITION.COMMENTS);
+
   const [editorKey, setEditorKey] = useState(0);
 
   const { data: fetchedUsers = [], isLoading } = useSWR("userList", fetchUsers);
@@ -48,7 +50,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate })
   return (
     <Box>
       <Box sx={{ display: "flex", gap: 1, color: "#741B92", alignItems: "center" }}>
-        <Typography fontWeight="bold">{transtask("comment")}</Typography>
+        <Typography fontWeight="bold">{transcmt("comment")}</Typography>
         <SpeakerNotesOutlined />
       </Box>
 
@@ -58,12 +60,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate })
             {transtask("loadinguser")}
           </Typography>
         ) : (
-          <ReusableEditor
-            key={editorKey}
-            onSave={handleSave}
-            placeholder={transtask("placeholdercontent")}
-            userList={userList}
-          />
+          <ReusableEditor key={editorKey} onSave={handleSave} userList={userList} />
         )}
       </Box>
 

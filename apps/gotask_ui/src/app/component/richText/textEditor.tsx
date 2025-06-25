@@ -26,7 +26,7 @@ interface ReusableEditorProps {
 
 export default function ReusableEditor({
   onSave,
-  placeholder = "Write something here...",
+  placeholder = "Write your content here...",
   readOnly = false,
   showSaveButton = true,
   content,

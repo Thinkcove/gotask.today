@@ -750,5 +750,12 @@
     "deletegoal": "Goal Delete successfully!",
     "deletegoalfiled": "Failed Goal Delete data",
     "savegoal": "Goal Created successfully!"
+  },
+  "Comments": {
+    "comment": "Comments",
+    "addcomment": "Add Comment",
+    "placeholder": "Write your content here...",
+    "submit": "Submit",
+    "cancel": "Cancel"
   }
 }

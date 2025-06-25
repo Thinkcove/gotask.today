@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Box, Avatar, Typography, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -6,15 +6,17 @@ import { ITask, ITaskComment } from "../interface/taskInterface";
 import { getColorForUser } from "@/app/common/constants/avatar";
 import { useUser } from "@/app/userContext";
 import { updateComment, deleteComment } from "../service/taskAction";
-import { KeyedMutator } from "swr";
+import useSWR, { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
-import RichEditor from "@/app/component/richText/textEditor";
 import { RichTextReadOnly } from "mui-tiptap";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
+import ReusableEditor from "@/app/component/richText/textEditor";
+import { fetchUsers } from "../../user/services/userAction";
+import { User } from "../../user/interfaces/userInterface";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
@@ -77,6 +79,21 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
       allowBase64: true
     })
   ];
+
+  const { data: fetchedUsers = [], isLoading } = useSWR("userList", fetchUsers);
+
+  const userList = useMemo(() => {
+    const mapped = (fetchedUsers || []).map((user: User) => ({
+      id: user.id,
+      mentionLabel: `${user.first_name || ""} ${user.last_name || ""}`.trim() || user.name
+    }));
+
+    if (!isLoading && mapped.length > 0) {
+    }
+
+    return mapped;
+  }, [fetchedUsers, isLoading]);
+
   return (
     <Box sx={{ mt: 2 }}>
       <Box
@@ -127,7 +144,11 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
 
                 {isEditing ? (
                   <>
-                    <RichEditor content={comment.comment} onSave={handleSaveEdit} />
+                    <ReusableEditor
+                      content={comment.comment}
+                      onSave={handleSaveEdit}
+                      userList={userList}
+                    />
                     <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
                       <Button
                         variant="outlined"

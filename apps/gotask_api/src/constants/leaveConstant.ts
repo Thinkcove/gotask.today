@@ -8,7 +8,7 @@ export enum LEAVE_TYPE {
   PERSONAL_LEAVE = "Personal"
 }
 
-export enum PAGE{
-    TEN="10",
-    ONE="1"
+export enum PAGE {
+  TEN = "10",
+  ONE = "1"
 }

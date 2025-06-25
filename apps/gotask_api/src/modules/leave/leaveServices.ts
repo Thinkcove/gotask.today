@@ -193,7 +193,7 @@ const getLeavesWithFiltersService = async (filters: {
       data: {
         leaves,
         total_count,
-        total_pages: Math.ceil(total_count/page_size),
+        total_pages: Math.ceil(total_count / page_size),
         current_page: page
       }
     };

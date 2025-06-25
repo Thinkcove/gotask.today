@@ -16,6 +16,7 @@ import {
 } from "../../domain/interface/projectGoal/projectGoal";
 import { IProjectComment } from "../../domain/model/projectGoal/projectGoalComment";
 import { ProjectGoalUpdateHistory } from "../../domain/model/projectGoal/projectGoalUpdateHistory";
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "../../constants/utils/common";
 
 // Create a new weekly goal
 const createProjectGoalService = async (
@@ -62,7 +63,15 @@ const getAllProjectGoalsService = async (filters: {
   message?: string;
 }> => {
   try {
-    const { page = 1, pageSize = 10, priority, status, startDate, endDate, goalTitle } = filters;
+    const {
+      page = DEFAULT_PAGE,
+      pageSize = DEFAULT_PAGE_SIZE,
+      priority,
+      status,
+      startDate,
+      endDate,
+      goalTitle
+    } = filters;
 
     const query: any = {};
 

@@ -109,6 +109,8 @@ function ProjectGoalList() {
 
   const formattedHistory =
     projectGoalHistory?.updateHistory?.map((item: any) => {
+      console.log("item", item);
+      
       const updatedUser = users?.find((user: any) => user.id === item.user_id);
       const loginuser_name = updatedUser?.first_name || updatedUser?.name;
 
@@ -122,27 +124,9 @@ function ProjectGoalList() {
       return {
         loginuser_name: loginuser_name,
         formatted_history: formattedChanges.join(". "),
-        created_date: item.timestamp || "" // fallback if timestamp is missing
+        created_date: item.timestamp || "" 
       };
     }) ?? [];
-
-  //   projectGoalHistory?.updateHistory?.map((item: any) => {
-  //     const updatedUser = users?.find((user: any) => user.id === item.user_id);
-  //     const loginuser_name = updatedUser?.first_name || updatedUser?.name || "System";
-
-  //     const formattedChanges = Object.entries(item.history_data)
-  //       .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
-  //       .map(([key, value]) => {
-  //         const label = fieldLabelMap[key] || key;
-  //         return `${label} updated to "${value}"`;
-  //       });
-
-  //     return {
-  //       loginuser_name: loginuser_name,
-  //       formatted_history: formattedChanges.join(". "),
-  //       created_date: item.timestamp // show timestamp, not weekEnd
-  //     };
-  //   }) ?? [];
 
   const handelOpen = () => {
     setGoalData({

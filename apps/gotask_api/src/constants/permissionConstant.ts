@@ -3,7 +3,7 @@ export const PER_CONST= {
     DESC: "desc"
 }
 
-export enum page_size {
-    TEN= "10",
-    ONE= "1"
+export enum PAGE {
+  TEN = "10",
+  ONE = "1"
 }

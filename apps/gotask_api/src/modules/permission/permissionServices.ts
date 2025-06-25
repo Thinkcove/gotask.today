@@ -1,4 +1,4 @@
-import { PER_CONST } from "../../constants/permissionConstant";
+import { PAGE, PER_CONST } from "../../constants/permissionConstant";
 import { SortOrder } from "../../constants/taskConstant";
 import {
   createNewPermission,
@@ -160,8 +160,8 @@ const getPermissionsWithFiltersService = async (filters: {
     }
 
     // Set default pagination values
-    const page = filters.page || 1;
-    const page_size = filters.page_size || 10;
+    const page = filters.page || parseInt(PAGE.ONE);
+    const page_size = filters.page_size || parseInt(PAGE.TEN);
 
     // Fetch filtered permissions
     const permissions = await findPermissionsWithFilters(filters);

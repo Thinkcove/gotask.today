@@ -255,6 +255,63 @@ class UserController extends BaseController {
       return this.replyError(error);
     }
   }
+
+  // Increment History
+
+  async getUserIncrements(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const result = await userService.getIncrementHistory(userId);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async addUserIncrement(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const payload = requestHelper.getPayload(); // raw body
+
+      if (!payload || !payload.date || payload.ctc == null) {
+        throw new Error("Increment object with 'date' and 'ctc' is required.");
+      }
+
+      const result = await userService.addIncrement(userId, payload);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async updateUserIncrement(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const index = parseInt(requestHelper.getParam("index"));
+      const updateData = requestHelper.getPayload();
+
+      if (!updateData || updateData.ctc == null || !updateData.date) {
+        throw new Error("Updated increment object must include date and ctc.");
+      }
+
+      const result = await userService.updateIncrement(userId, index, updateData);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async deleteUserIncrement(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const index = parseInt(requestHelper.getParam("index"));
+
+      const result = await userService.deleteIncrement(userId, index);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
 export default UserController;

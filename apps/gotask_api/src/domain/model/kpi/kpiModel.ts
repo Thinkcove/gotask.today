@@ -39,7 +39,7 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
     },
     status: {
       type: String,
-      enum:Object.values(STATUS)
+      enum: Object.values(STATUS)
     },
     change_history: [
       {

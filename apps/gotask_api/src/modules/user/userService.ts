@@ -14,7 +14,7 @@ import { Role } from "../../domain/model/role/role";
 import { getRoleByIdService } from "../role/roleService";
 import { findRoleByIds } from "../../domain/interface/role/roleInterface";
 import { Organization } from "../../domain/model/organization/organization";
-import { getAssetByUserId } from "../../domain/interface/assetTag/assetTag";
+import { getAssetByUserId, getIssuesByUserId } from "../../domain/interface/assetTag/assetTag";
 import { getById } from "../../domain/interface/asset/asset";
 import { IAsset } from "../../domain/model/asset/asset";
 import { ISkill } from "../../domain/model/user/skills";
@@ -171,6 +171,12 @@ class userService {
       const userAsset = await getAssetByUserId(id);
       let assetData: IAsset[] = [];
 
+      const allIssuesNested = await Promise.all(
+        userAsset.map((tag) => getIssuesByUserId(tag.userId, tag.assetId))
+      );
+      const allIssues = allIssuesNested.flat();
+      const issueCount = allIssues.length;
+
       if (userAsset && Array.isArray(userAsset)) {
         const assetPromises = userAsset.map((ua) => getById(ua.assetId));
         const assetResults = await Promise.all(assetPromises);
@@ -185,7 +191,7 @@ class userService {
       userObj.orgDetails = orgDetails;
       // userObj.assetDetails = assetData ? assetData.toObject?.() : null;
       userObj.assetDetails = assetData.map((asset) => asset?.toObject?.() || asset);
-
+      userObj.issuesCount = issueCount;
       return {
         success: true,
         data: userObj

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography, Grid, IconButton, CircularProgress, Paper } from "@mui/material";
+import { Box, Typography, Grid, IconButton, CircularProgress, Paper, Stack } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -9,7 +9,8 @@ import ModuleHeader from "@/app/component/header/moduleHeader";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import { useAssetById } from "../../services/assetActions";
-import { ASSET_TYPE } from "@/app/common/constants/asset";
+import { ASSET_TYPE, getIssuesStatusColor } from "@/app/common/constants/asset";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 
 const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -211,6 +212,50 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
               </>
             )}
           </Grid>
+          {asset?.issues && asset.issues.length > 0 && (
+            <>
+              <Typography variant="h6" mt={4} mb={2}>
+                {trans("issues")}
+              </Typography>
+
+              <Box sx={{ pr: 1 }}>
+                <Grid container spacing={2}>
+                  {asset.issues.map((issue) => (
+                    <Grid item xs={12} sm={6} md={4} key={issue.id}>
+                      <Box
+                        onClick={() => router.push(`/asset/viewIssues/${issue.id}`)}
+                        sx={{
+                          p: 3,
+                          borderRadius: 3,
+                          display: "flex",
+                          flexDirection: "column",
+                          bgcolor: "#ffffff",
+                          border: "1px solid #e0e0e0",
+                          height: "100%",
+                          justifyContent: "space-between",
+                          cursor: "pointer",
+                          transition: "0.3s ease",
+                          "&:hover": {
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)"
+                          }
+                        }}
+                      >
+                        <Typography variant="h6" fontWeight={600}>
+                          {issue.issueType}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" mt={0.5} mb={1}>
+                          {issue.description} || {trans("nodescription")}
+                        </Typography>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />
+                        </Stack>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            </>
+          )}
         </Paper>
       </Box>
     </>

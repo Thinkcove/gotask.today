@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, IconButton, Stack, Chip, Grid } from "@mui/material";
+import { Box, Typography, IconButton, Stack, Chip, Grid, Badge } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { User } from "../../interfaces/userInterface";
@@ -291,89 +291,116 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               {user.assetDetails && user.assetDetails.length > 0 ? (
                 <Box sx={{ display: "flex", overflowX: "auto", gap: 2, py: 1, pr: 1 }}>
                   {user.assetDetails.map((asset: IAssetAttributes, index: number) => (
-                    <Box
-                      key={asset.id || index}
-                      onClick={() => router.push(`/asset/view/${asset.id}`)}
-                      sx={{
-                        minWidth: 300,
-                        maxWidth: 360,
-                        flex: "0 0 auto",
-                        cursor: "pointer",
-                        transition: "transform 0.2s",
-                        "&:hover": {
-                          transform: "scale(1.02)"
-                        }
-                      }}
-                    >
-                      <CardComponent
+                    <>
+                      <Box
+                        key={asset.id || index}
                         sx={{
                           minWidth: 300,
                           maxWidth: 360,
-                          cursor: "pointer",
-                          transition: "transform 0.2s",
-                          "&:hover": {
-                            transform: "scale(1.02)",
-                            boxShadow: 4
-                          }
+                          flex: "0 0 auto",
+                          cursor: "pointer"
                         }}
+                        onClick={() => router.push(`/asset/view/${asset.id}`)}
                       >
-                        <Stack spacing={1}>
-                          <Box>
-                            <Typography {...labelTextStyle}>{asset.deviceName ?? ""}</Typography>
-                          </Box>
-                          {asset.modelName && (
-                            <Box display="flex" justifyContent="space-between">
-                              <Typography {...labelTextStyle}>
-                                {transasset("modelname")}:
-                              </Typography>
-                              <EllipsisText text={asset.modelName} maxWidth={160} />
+                        <CardComponent
+                          sx={{
+                            minWidth: 300,
+                            maxWidth: 360
+                          }}
+                        >
+                          <Stack spacing={1}>
+                            <Box>
+                              <Typography {...labelTextStyle}>{asset.deviceName ?? ""}</Typography>
                             </Box>
-                          )}
-                          {asset.os && (
-                            <Box display="flex" justifyContent="space-between">
-                              <Typography {...labelTextStyle}>{transasset("os")}:</Typography>
-                              <EllipsisText text={asset.os} maxWidth={160} />
-                            </Box>
-                          )}
-                          {asset.processor && (
-                            <Box display="flex" justifyContent="space-between">
-                              <Typography {...labelTextStyle}>
-                                {transasset("processor")}:
-                              </Typography>
-                              <EllipsisText text={asset.processor} maxWidth={160} />
-                            </Box>
-                          )}
-                          {asset.ram && (
-                            <Box display="flex" justifyContent="space-between">
-                              <Typography {...labelTextStyle}>{transasset("ram")}:</Typography>
-                              <EllipsisText text={asset.ram} maxWidth={160} />
-                            </Box>
-                          )}
-                          {asset.storage && (
-                            <Box display="flex" justifyContent="space-between">
-                              <Typography {...labelTextStyle}>{transasset("storage")}:</Typography>
-                              <EllipsisText text={asset.storage} maxWidth={160} />
-                            </Box>
-                          )}
-                          {asset.serialNumber && (
-                            <Box display="flex" justifyContent="space-between">
-                              <Typography {...labelTextStyle}>
-                                {transasset("serialnumber")}:
-                              </Typography>
-                              <EllipsisText text={asset.serialNumber} maxWidth={160} />
-                            </Box>
-                          )}
-                          {asset.dateOfPurchase && (
-                            <Box display="flex" justifyContent="space-between">
-                              <Typography {...labelTextStyle}>
-                                {transasset("dateOfPurchase")}:
-                              </Typography>
-                              <FormattedDateTime date={asset.dateOfPurchase} />
-                            </Box>
-                          )}
-                        </Stack>
-                      </CardComponent>
-                    </Box>
+                            {asset.modelName && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>
+                                  {transasset("modelname")}:
+                                </Typography>
+                                <EllipsisText text={asset.modelName} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.os && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>{transasset("os")}:</Typography>
+                                <EllipsisText text={asset.os} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.processor && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>
+                                  {transasset("processor")}:
+                                </Typography>
+                                <EllipsisText text={asset.processor} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.ram && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>{transasset("ram")}:</Typography>
+                                <EllipsisText text={asset.ram} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.storage && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>
+                                  {transasset("storage")}:
+                                </Typography>
+                                <EllipsisText text={asset.storage} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.serialNumber && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>
+                                  {transasset("serialnumber")}:
+                                </Typography>
+                                <EllipsisText text={asset.serialNumber} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.dateOfPurchase && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>
+                                  {transasset("dateOfPurchase")}:
+                                </Typography>
+                                <FormattedDateTime date={asset.dateOfPurchase} />
+                              </Box>
+                            )}
+
+                            {Number(user.issuesCount) > 0 && (
+                              <Box display="flex" justifyContent="flex-end">
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    color: "#741B92",
+                                    mt: 1,
+                                    fontWeight: 500,
+                                    cursor: "pointer",
+                                    "&:hover": { textDecoration: "underline" }
+                                  }}
+                                >
+                                  <Typography sx={{ textTransform: "capitalize", mr: 2 }}>
+                                    {transasset("reportedissues")}
+                                  </Typography>
+                                  <Badge
+                                    badgeContent={user.issuesCount}
+                                    color="error"
+                                    sx={{
+                                      "& .MuiBadge-badge": {
+                                        fontSize: "0.75rem",
+                                        height: 20,
+                                        minWidth: 20,
+                                        borderRadius: "50%",
+                                        fontWeight: 600
+                                      }
+                                    }}
+                                  ></Badge>
+                                </Box>
+                              </Box>
+                            )}
+                          </Stack>
+                        </CardComponent>
+                      </Box>
+                    </>
                   ))}
                 </Box>
               ) : (

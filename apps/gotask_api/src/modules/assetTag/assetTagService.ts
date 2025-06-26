@@ -12,6 +12,7 @@ import {
   getAllIssues,
   getAllTags,
   getAssetIssueById,
+  getIssuesByUserId,
   getTagById,
   updateAssetIssue,
   updateTag

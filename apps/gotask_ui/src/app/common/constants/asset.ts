@@ -28,3 +28,7 @@ export const ASSET_TYPE = {
   LAPTOP: "Laptop",
   MOBILE: "Mobile"
 };
+
+export const MODE = {
+  ASSET: "asset"
+};

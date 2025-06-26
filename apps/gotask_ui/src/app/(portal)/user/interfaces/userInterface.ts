@@ -2,7 +2,7 @@ import { IAssetAttributes } from "../../asset/interface/asset";
 
 export interface ISkill {
   name: string;
-  skill_id: string;
+  skill_id?: string;
   proficiency: number; // 1 to 4
   experience?: number; // required if proficiency 3 or 4
 }

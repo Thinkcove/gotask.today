@@ -18,6 +18,8 @@ import { getAssetByUserId } from "../../domain/interface/assetTag/assetTag";
 import { getById } from "../../domain/interface/asset/asset";
 import { IAsset } from "../../domain/model/asset/asset";
 import { ISkill } from "../../domain/model/user/skills";
+import { ICertificate } from "../../domain/model/user/certificate";
+import { IIncrementHistory } from "../../domain/model/user/increment";
 
 class userService {
   // CREATE USER
@@ -498,6 +500,199 @@ class userService {
       return { success: false, message: error.message || "Failed to delete skill" };
     }
   }
+
+  // ADD Certificates
+  async addCertificates(
+    id: string,
+    certificates: ICertificate[]
+  ): Promise<{ success: boolean; data?: ICertificate[]; message?: string }> {
+    try {
+      const user = await User.findOne({ id });
+
+      if (!user) {
+        return { success: false, message: "User not found" };
+      }
+
+      if (!user.certificates) {
+        user.certificates = [];
+      }
+
+      user.certificates.push(...certificates);
+      await user.save();
+
+      return {
+        success: true,
+        data: user.certificates,
+        message: "Certificates added successfully"
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to add certificates" };
+    }
+  }
+
+  // UPDATE Certificate
+  async updateCertificate(
+    userId: string,
+    certificateIndex: number,
+    updatedCertificate: Partial<ICertificate>
+  ): Promise<{ success: boolean; data?: ICertificate; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+
+      if (!user || !Array.isArray(user.certificates)) {
+        return { success: false, message: "User or certificate not found" };
+      }
+
+      if (certificateIndex < 0 || certificateIndex >= user.certificates.length) {
+        return { success: false, message: "Invalid certificate index" };
+      }
+
+      const cert = user.certificates[certificateIndex];
+      if (updatedCertificate.name !== undefined) cert.name = updatedCertificate.name;
+      if (updatedCertificate.obtained_date !== undefined)
+        cert.obtained_date = updatedCertificate.obtained_date;
+      if (updatedCertificate.notes !== undefined) cert.notes = updatedCertificate.notes;
+
+      await user.save();
+
+      return { success: true, data: cert, message: "Certificate updated successfully" };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to update certificate" };
+    }
+  }
+
+  // DELETE Certificate
+  async deleteCertificate(
+    userId: string,
+    certificateIndex: number
+  ): Promise<{ success: boolean; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+
+      if (!user || !Array.isArray(user.certificates)) {
+        return { success: false, message: "User or certificate not found" };
+      }
+
+      if (certificateIndex < 0 || certificateIndex >= user.certificates.length) {
+        return { success: false, message: "Invalid certificate index" };
+      }
+
+      user.certificates.splice(certificateIndex, 1);
+      await user.save();
+
+      return { success: true, message: "Certificate deleted successfully" };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to delete certificate" };
+    }
+  }
+
+  // GET Certificates
+  async getCertificates(
+    userId: string
+  ): Promise<{ success: boolean; data?: ICertificate[]; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+
+      if (!user) {
+        return { success: false, message: "User not found" };
+      }
+
+      return {
+        success: true,
+        data: user.certificates || []
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to get certificates" };
+    }
+  }
+
+  // GET Increment History
+  async getIncrementHistory(
+    userId: string
+  ): Promise<{ success: boolean; data?: IIncrementHistory[]; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user) return { success: false, message: "User not found" };
+
+      return { success: true, data: user.increment_history || [] };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to get increment history" };
+    }
+  }
+
+  // ADD Increment
+  async addIncrement(
+    userId: string,
+    increment: IIncrementHistory
+  ): Promise<{ success: boolean; data?: IIncrementHistory[]; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user) return { success: false, message: "User not found" };
+
+      if (!user.increment_history) user.increment_history = [];
+      user.increment_history.push(increment);
+
+      await user.save();
+      return {
+        success: true,
+        data: user.increment_history,
+        message: "Increment added successfully"
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to add increment" };
+    }
+  }
+
+  // UPDATE Increment
+  async updateIncrement(
+    userId: string,
+    index: number,
+    updatedIncrement: Partial<IIncrementHistory>
+  ): Promise<{ success: boolean; data?: IIncrementHistory; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user || !Array.isArray(user.increment_history)) {
+        return { success: false, message: "User or increment history not found" };
+      }
+
+      if (index < 0 || index >= user.increment_history.length) {
+        return { success: false, message: "Invalid increment index" };
+      }
+
+      const inc = user.increment_history[index];
+      if (updatedIncrement.date) inc.date = updatedIncrement.date;
+      if (updatedIncrement.ctc !== undefined) inc.ctc = updatedIncrement.ctc;
+
+      await user.save();
+      return { success: true, data: inc, message: "Increment updated successfully" };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to update increment" };
+    }
+  }
+
+  // DELETE Increment
+  async deleteIncrement(
+    userId: string,
+    index: number
+  ): Promise<{ success: boolean; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user || !Array.isArray(user.increment_history)) {
+        return { success: false, message: "User or increment history not found" };
+      }
+
+      if (index < 0 || index >= user.increment_history.length) {
+        return { success: false, message: "Invalid increment index" };
+      }
+
+      user.increment_history.splice(index, 1);
+      await user.save();
+      return { success: true, message: "Increment deleted successfully" };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to delete increment" };
+    }
+  }
+  
 }
 
 export default new userService();

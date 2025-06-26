@@ -173,4 +173,128 @@ UserRoutes.push({
   }
 });
 
+// Certificate Routes
+
+// Get all certificates of a user
+UserRoutes.push({
+  path: `/certificates/{id}`,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.getUserCertificates(new RequestHelper(request), handler),
+  config: {
+    notes: "Get all certificates of a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Add certificate(s) to a user
+UserRoutes.push({
+  path: `/certificates/{id}`,
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.addUserCertificates(new RequestHelper(request), handler),
+  config: {
+    notes: "Add certificate(s) to a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Update a specific certificate of a user
+UserRoutes.push({
+  path: `/certificates/{id}/{certificate_id}`,
+  method: API_METHODS.PUT,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.updateUserCertificate(new RequestHelper(request), handler),
+  config: {
+    notes: "Update a specific certificate of a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Delete a specific certificate from a user
+UserRoutes.push({
+  path: `/certificates/{id}/{certificate_id}`,
+  method: API_METHODS.DELETE,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.deleteUserCertificate(new RequestHelper(request), handler),
+  config: {
+    notes: "Delete a specific certificate from a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Increment History Routes
+
+// Get all increment records
+UserRoutes.push({
+  path: `/increments/{id}`,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.getUserIncrements(new RequestHelper(request), handler),
+  config: {
+    notes: "Get all increment history of a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Add increment record
+UserRoutes.push({
+  path: `/increments/{id}`,
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.addUserIncrement(new RequestHelper(request), handler),
+  config: {
+    notes: "Add a new increment record to a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Update specific increment record by index
+UserRoutes.push({
+  path: `/increments/{id}/{index}`,
+  method: API_METHODS.PUT,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.updateUserIncrement(new RequestHelper(request), handler),
+  config: {
+    notes: "Update a specific increment record of a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Delete specific increment record by index
+UserRoutes.push({
+  path: `/increments/{id}/{index}`,
+  method: API_METHODS.DELETE,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.deleteUserIncrement(new RequestHelper(request), handler),
+  config: {
+    notes: "Delete a specific increment record of a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
 export default UserRoutes;

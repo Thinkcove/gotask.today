@@ -4,15 +4,13 @@ export interface ICertificate {
   name: string;
   obtained_date: Date;
   notes?: string;
-  link?: string;
 }
 
 export const CertificateSchema = new Schema<ICertificate>(
   {
     name: { type: String, required: true },
     obtained_date: { type: Date, required: true },
-    notes: { type: String },
-    link: { type: String }
+    notes: { type: String }
   },
   { _id: false }
 );

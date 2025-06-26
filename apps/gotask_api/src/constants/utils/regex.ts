@@ -6,3 +6,5 @@ export const buildStartsWithRegex = (text: string) => {
   const escaped = text.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
   return new RegExp(`^${escaped}`, "i");
 };
+
+export const dateRegex = /^\d{4}[-/]\d{2}[-/]\d{2}/;

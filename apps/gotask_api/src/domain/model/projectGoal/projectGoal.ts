@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import { TASK_SEVERITY } from "../../../constants/taskConstant";
 import { PROJECT_GOAL_SEVERITY, PROJECTGOAL_STATUS } from "../../../constants/projectGoalConstants";
 
-export type ProjectGoalSeverity = (typeof PROJECT_GOAL_SEVERITY)[keyof typeof PROJECT_GOAL_SEVERITY];
+export type ProjectGoalSeverity =
+  (typeof PROJECT_GOAL_SEVERITY)[keyof typeof PROJECT_GOAL_SEVERITY];
 export type ProjectGoalStatus = (typeof PROJECTGOAL_STATUS)[keyof typeof PROJECTGOAL_STATUS];
 
 // Interface for TypeScript

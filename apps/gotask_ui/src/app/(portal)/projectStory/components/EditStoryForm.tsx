@@ -16,6 +16,8 @@ import {
   STORY_STATUS_TRANSITIONS,
   StoryStatus
 } from "@/app/common/constants/storyStatus";
+import { History } from "@mui/icons-material";
+import HistoryDrawer from "../../task/editTask/taskHistory";
 
 const EditStoryForm: React.FC = () => {
   const { storyId, projectId } = useParams();
@@ -28,6 +30,7 @@ const EditStoryForm: React.FC = () => {
   const [titleError, setTitleError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -36,14 +39,13 @@ const EditStoryForm: React.FC = () => {
   const handleCloseSnackbar = () => setSnackOpen(false);
 
   const { data: story, isLoading } = useSWR(
-    storyId ? [`projectStory`, storyId] : null,
+    storyId ? ["projectStory", storyId] : null,
     async () => {
       const resp = await getProjectStoryById(storyId as string);
       return resp?.data;
     }
   );
 
-  // Initialize state from story once
   if (story && !hasInitialized) {
     setTitle(story.title ?? "");
     setDescription(story.description ?? "");
@@ -61,7 +63,6 @@ const EditStoryForm: React.FC = () => {
       return;
     }
 
-    // Validate status transition
     const originalStatus = story?.status as StoryStatus;
     const allowedNextStatuses = STORY_STATUS_TRANSITIONS[originalStatus] || [];
     const isValidTransition = status === originalStatus || allowedNextStatuses.includes(status!);
@@ -112,21 +113,12 @@ const EditStoryForm: React.FC = () => {
     );
   }
 
-  // Filter valid status options (only current + allowed transitions)
   const currentStatus = story.status as StoryStatus;
   const allowedStatuses = [currentStatus, ...(STORY_STATUS_TRANSITIONS[currentStatus] || [])];
   const statusOptions = STORY_STATUS_OPTIONS.filter((opt) => allowedStatuses.includes(opt.id));
 
   return (
-    <Box
-      sx={{
-        maxWidth: "1400px",
-        margin: "0 auto",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column"
-      }}
-    >
+    <Box sx={{ maxWidth: "1400px", margin: "0 auto", flexDirection: "column" }}>
       {/* Header */}
       <Box
         sx={{
@@ -194,6 +186,24 @@ const EditStoryForm: React.FC = () => {
         </Box>
       </Box>
 
+      {/* Show History Trigger */}
+      {story?.history && story.history.length > 0 && (
+        <Box
+          sx={{
+            textDecoration: "underline",
+            display: "flex",
+            gap: 1,
+            color: "#741B92",
+            px: 2,
+            cursor: "pointer"
+          }}
+          onClick={() => setOpenDrawer(true)}
+        >
+          <Typography>{t("Stories.showhistory")}</Typography>
+          <History />
+        </Box>
+      )}
+
       {/* Form */}
       <Box
         sx={{
@@ -242,6 +252,13 @@ const EditStoryForm: React.FC = () => {
         message={snackMessage}
         severity={snackSeverity}
         onClose={handleCloseSnackbar}
+      />
+
+      {/* Drawer for history */}
+      <HistoryDrawer
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        history={story.history || []}
       />
     </Box>
   );

@@ -28,6 +28,8 @@ export interface UpdateStoryPayload {
   title?: string;
   description?: string;
   status?: string;
+  loginuser_id?: string; 
+  loginuser_name?: string;
 }
 
 export interface AddCommentPayload {

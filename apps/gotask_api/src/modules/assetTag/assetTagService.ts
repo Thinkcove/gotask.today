@@ -1,6 +1,6 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
-import { getAssetById, getById } from "../../domain/interface/asset/asset";
+import { getAssetById } from "../../domain/interface/asset/asset";
 import {
   createIssuesHistory,
   getIssueHistoryByAssetId,

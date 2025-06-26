@@ -202,6 +202,8 @@
       "suffixtoday": "Today",
       "storyTitle": "Story Title *",
       "description": "Description *",
+      "showhistory": "Show History",
+
 
       "filters": {
         "status": "Status",

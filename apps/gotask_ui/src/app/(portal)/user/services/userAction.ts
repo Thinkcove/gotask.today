@@ -2,6 +2,7 @@ import env from "@/app/common/env";
 import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import { IUserField } from "../interfaces/userInterface";
 import { withAuth } from "@/app/common/utils/authToken";
+import { ISkill } from "../interfaces/userInterface";
 
 export const createUser = async (
   formData: IUserField
@@ -122,6 +123,62 @@ export const fetchUsers = async () => {
         })
       ) || []
     );
+  });
+};
+
+export const getAllSkills = async () => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/getAllSkills`;
+    const response = await getData(url, token);
+    return response?.data || [];
+  });
+};
+
+// SWR fetcher for skills
+export const fetchSkills = async (url: string): Promise<string[]> => {
+  return withAuth(async (token) => {
+    const response = await getData(url, token);
+
+    if (!Array.isArray(response.data)) {
+      console.error("Invalid response from /getAllSkills:", response.data);
+      return [];
+    }
+
+    return response.data.map((s: { name: string }) => s.name);
+  });
+};
+
+export const createSkill = async (name: string) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/createSkills`;
+    const payload = { name };
+    const response = await postData(url, payload, token);
+    return response;
+  });
+};
+
+export const addUserSkills = async (userId: string, skills: ISkill[]) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/skills/${userId}`;
+    return postData(url, { skills }, token);
+  });
+};
+
+export const updateUserSkill = async (
+  userId: string,
+  skillId: string,
+  updatedSkill: Partial<ISkill>
+) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/skills/${userId}/${skillId}`;
+    return putData(url, updatedSkill, token);
+  });
+};
+
+export const deleteUserSkill = async (userId: string, skillId: string) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/skills/${userId}/${skillId}`;
+    return deleteData(url, token);
   });
 };
 

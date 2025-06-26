@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Box, Avatar, Typography, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { ITask, ITaskComment } from "../interface/taskInterface";
 import { getColorForUser } from "@/app/common/constants/avatar";
 import { useUser } from "@/app/userContext";
-import FormField from "@/app/component/input/formField";
 import { updateComment, deleteComment } from "../service/taskAction";
-import { KeyedMutator } from "swr";
+import useSWR, { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
+import { RichTextReadOnly } from "mui-tiptap";
+import ReusableEditor from "@/app/component/richText/textEditor";
+import { fetchUsers } from "../../user/services/userAction";
+import { getTipTapExtensions, mapUsersToMentions } from "@/app/common/utils/textEditor";
 
 interface CommentHistoryProps {
   comments: ITaskComment[];
@@ -22,25 +25,23 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
   const [showAll, setShowAll] = useState(false);
   const { user } = useUser();
   const [editingComment, setEditingComment] = useState<ITaskComment | null>(null);
-  const [editValue, setEditValue] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<ITaskComment | null>(null);
 
   const handleStartEdit = (comment: ITaskComment) => {
     setEditingComment(comment);
-    setEditValue(comment.comment);
   };
 
-  const handleSaveEdit = async () => {
-    if (editingComment && editingComment.id && editValue.trim()) {
+  const handleSaveEdit = async (html: string) => {
+    const trimmedHtml = html.trim();
+    if (editingComment && editingComment.id && trimmedHtml) {
       const updatedComment: ITaskComment = {
         ...editingComment,
-        comment: editValue.trim()
+        comment: trimmedHtml
       };
 
       await updateComment(updatedComment);
       setEditingComment(null);
-      setEditValue("");
       await mutate();
     }
   };
@@ -67,6 +68,13 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
   const displayedComments = showAll ? comments : comments.slice(0, 3);
   const hasMoreComments = comments.length > 3;
 
+  const extensions = getTipTapExtensions();
+  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
+
+  const userList = useMemo(() => {
+    return mapUsersToMentions(fetchedUsers || []);
+  }, [fetchedUsers]);
+
   return (
     <Box sx={{ mt: 2 }}>
       <Box
@@ -77,21 +85,14 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
           pr: { xs: 0, sm: 1 },
           width: "100%",
           boxSizing: "border-box",
-          "&::-webkit-scrollbar": {
-            width: "6px"
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "#f1f1f1",
-            borderRadius: "3px"
-          },
+          "&::-webkit-scrollbar": { width: "6px" },
+          "&::-webkit-scrollbar-track": { background: "#f1f1f1", borderRadius: "3px" },
           "&::-webkit-scrollbar-thumb": {
             background: "#741B92",
             borderRadius: "3px",
             opacity: 0.7
           },
-          "&::-webkit-scrollbar-thumb:hover": {
-            background: "#5a1472"
-          }
+          "&::-webkit-scrollbar-thumb:hover": { background: "#5a1472" }
         }}
       >
         {displayedComments.map((comment) => {
@@ -124,22 +125,12 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
 
                 {isEditing ? (
                   <>
-                    <FormField
-                      label=""
-                      type="text"
-                      value={editValue}
-                      multiline
-                      height={100}
-                      onChange={(val) => setEditValue(val as string)}
+                    <ReusableEditor
+                      content={comment.comment}
+                      onSave={handleSaveEdit}
+                      userList={userList}
                     />
                     <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                      <Button
-                        variant="contained"
-                        sx={{ backgroundColor: "#741B92", textTransform: "none" }}
-                        onClick={handleSaveEdit}
-                      >
-                        {transtask("savecomment")}
-                      </Button>
                       <Button
                         variant="outlined"
                         sx={{
@@ -149,19 +140,14 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                           textTransform: "none",
                           "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
                         }}
-                        onClick={() => {
-                          setEditingComment(null);
-                          setEditValue("");
-                        }}
+                        onClick={() => setEditingComment(null)}
                       >
                         {transtask("cancelcomment")}
                       </Button>
                     </Box>
                   </>
                 ) : (
-                  <Typography sx={{ mt: 1, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                    {comment.comment}
-                  </Typography>
+                  <RichTextReadOnly content={comment.comment} extensions={extensions} />
                 )}
 
                 {isOwner && !isEditing && (
@@ -173,7 +159,6 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                     >
                       {transtask("commentedit")}
                     </Typography>
-
                     <Typography
                       variant="body2"
                       sx={{
@@ -199,18 +184,11 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
         </Button>
       )}
       {showAll && hasMoreComments && (
-        <Button
-          onClick={() => setShowAll(false)}
-          size="small"
-          sx={{
-            textTransform: "none"
-          }}
-        >
+        <Button onClick={() => setShowAll(false)} size="small" sx={{ textTransform: "none" }}>
           {transtask("showless", { default: "Show less" })}
         </Button>
       )}
 
-      {/* Delete Confirmation Dialog using CommonDialog */}
       <CommonDialog
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}

@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { Box, Button, IconButton, Typography, Tabs, Tab } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { IUserField, User, ISkill } from "../../interfaces/userInterface";
 import UserInput from "../../components/userInputs";
 import SkillInput from "../../components/skillInput";
-import { updateUser } from "../../services/userAction";
+import { addUserSkills, updateUser } from "../../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { SyntheticEvent } from "react";
+import Toggle from "@/app/component/toggle/toggle";
 
 interface EditUserProps {
   data: IUserField;
@@ -23,7 +23,9 @@ interface EditUserProps {
 const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
   const router = useRouter();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-  const [tabIndex, setTabIndex] = useState(0);
+  const [activeSection, setActiveSection] = useState<
+    "General" | "Skills" | "Certificates" | "Increment"
+  >("General");
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -49,13 +51,12 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
+    // Basic info validation
     if (!formData.first_name) newErrors.first_name = transuser("firstname");
     if (!formData.last_name) newErrors.last_name = transuser("lastname");
     if (!formData.name) newErrors.name = transuser("username");
     if (!formData.roleId) newErrors.roleId = transuser("userrole");
-
-    if (formData.status === undefined || formData.status === null)
-      newErrors.status = transuser("userstatus");
+    if (!formData.mobile_no) newErrors.mobile_no = transuser("mobileno");
 
     if (!formData.user_id) {
       newErrors.user_id = transuser("useremail");
@@ -63,31 +64,49 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
       newErrors.user_id = transuser("validmail");
     }
 
-    formData.skills?.forEach((skill, idx) => {
-      const requiresExp = skill.proficiency >= 3;
-      if (requiresExp && (!skill.experience || skill.experience <= 0)) {
-        newErrors[`skill_${idx}`] =
-          `Experience required for "${skill.name}" when proficiency is 3 or 4 in work exposure or training`;
-      } else if (skill.experience !== undefined && skill.experience <= 0) {
-        newErrors[`skill_${idx}`] = `Experience must be a positive number for "${skill.name}"`;
+    if (formData.skills && formData.skills.length > 0) {
+      const names = formData.skills.map((s) => s.name.toLowerCase());
+      const hasDuplicates = names.some((name, idx) => names.indexOf(name) !== idx);
+      if (hasDuplicates) {
+        newErrors["skills"] = transuser("duplicateskills");
       }
-    });
 
-    if (formData.skills?.length === 0) {
-      newErrors.skills = transuser("userskill");
+      formData.skills.forEach((skill, idx) => {
+        if (!skill.proficiency || skill.proficiency === 0) {
+          newErrors[`skill_${idx}`] = transuser("proficiencyrequired", {
+            skill: skill.name
+          });
+        } else if (skill.proficiency >= 3 && (!skill.experience || skill.experience <= 0)) {
+          newErrors[`skill_${idx}`] = transuser("experiencerequired", {
+            skill: skill.name
+          });
+        } else if (skill.experience !== undefined && skill.experience <= 0) {
+          newErrors[`skill_${idx}`] = transuser("experiencepositive", {
+            skill: skill.name
+          });
+        }
+      });
     }
 
-    const names = formData.skills?.map((s) => s.name.toLowerCase());
-    const hasDuplicates = names?.some((name, idx) => names.indexOf(name) !== idx);
-    if (hasDuplicates) newErrors["skills"] = "Duplicate skills are not allowed.";
-
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    // Show snackbar if there are any errors
+    if (Object.keys(newErrors).length > 0) {
+      const errorMessages = Object.values(newErrors).join("\n");
+      setSnackbar({
+        open: true,
+        message: errorMessages,
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+      return false;
+    }
+
+    return true;
   };
 
   const handleChange = <K extends keyof IUserField>(field: K, value: IUserField[K]) => {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
-  };  
+  };
 
   const handleSkillsChange = (updatedSkills: ISkill[]) => {
     setFormData((prevData) => ({ ...prevData, skills: updatedSkills }));
@@ -95,8 +114,15 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
+
     try {
-      await updateUser(userID, formData);
+      await updateUser(userID, formData); // Save general user data
+
+      // Only save skills if there are any
+      if (formData.skills && formData.skills.length > 0) {
+        await addUserSkills(userID, formData.skills);
+      }
+
       await mutate();
       setSnackbar({
         open: true,
@@ -113,10 +139,17 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
     }
   };
 
-  const handleTabChange = (_event: SyntheticEvent, newValue: number) => {
-    setTabIndex(newValue);
+  const handleSectionChange = (value: string) => {
+    if (
+      value === "General" ||
+      value === "Skills" ||
+      value === "Certificates" ||
+      value === "Increment"
+    ) {
+      setActiveSection(value);
+    }
   };
-  
+
   return (
     <Box sx={{ maxWidth: "1450px", mx: "auto", py: 2 }}>
       {/* Header */}
@@ -144,13 +177,15 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
       </Box>
 
       {/* Tabs */}
-      <Tabs value={tabIndex} onChange={handleTabChange} centered>
-        <Tab label={transuser("general")} />
-        <Tab label={transuser("skills")} />
-      </Tabs>
+
+      <Toggle
+        options={["General", "Skills"]}
+        selected={activeSection}
+        onChange={handleSectionChange}
+      />
 
       {/* Tab Content */}
-      {tabIndex === 0 && (
+      {activeSection === "General" && (
         <UserInput
           formData={formData}
           handleChange={handleChange}
@@ -159,25 +194,13 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
         />
       )}
 
-      {tabIndex === 1 && (
+      {activeSection === "Skills" && (
         <Box>
           <SkillInput
             userId={userID}
             skills={formData.skills || []}
             onChange={handleSkillsChange}
           />
-          {errors.skills && (
-            <Typography color="error" mt={1}>
-              {errors.skills}
-            </Typography>
-          )}
-          {Object.keys(errors)
-            .filter((k) => k.startsWith("skill_"))
-            .map((key) => (
-              <Typography key={key} color="error" mt={1}>
-                {errors[key]}
-              </Typography>
-            ))}
         </Box>
       )}
 

@@ -1,17 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Typography, TextField, IconButton, Grid, Divider, Stack } from "@mui/material";
+import { Box, Typography, TextField, Grid, Stack, Paper } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import StarIcon from "@mui/icons-material/Star";
-import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 import { ISkill } from "../interfaces/userInterface";
 import useSWR from "swr";
-import { withAuth } from "@/app/common/utils/authToken";
-import { getData } from "@/app/common/utils/apiData";
 import env from "@/app/common/env";
-import { createSkill, updateUserSkill, deleteUserSkill } from "../services/userAction";
-import AddIcon from "@mui/icons-material/Add";
+import { createSkill, updateUserSkill, deleteUserSkill, fetchSkills } from "../services/userAction";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import { useTranslations } from "next-intl";
 
@@ -21,23 +18,11 @@ interface SkillInputProps {
   onChange: (skills: ISkill[]) => void;
 }
 
-// SWR fetcher for skills
-const fetchSkills = async (url: string): Promise<string[]> => {
-  return await withAuth(async (token) => {
-    const response = await getData(url, token);
-
-    if (!Array.isArray(response.data)) {
-      console.error("Invalid response from /getAllSkills:", response.data);
-      return [];
-    }
-
-    return response.data.map((s: { name: string }) => s.name);
-  });
-};
-
 const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => {
   const [inputValue, setInputValue] = useState("");
   const skillUrl = `${env.API_BASE_URL}/getAllSkills`;
+  const transuser = useTranslations("User");
+
   const {
     data: options = [],
     isLoading,
@@ -54,7 +39,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
       await mutate();
 
       const newSkill: ISkill = {
-        skill_id: "",
         name,
         proficiency: 0
       };
@@ -85,152 +69,193 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     onChange([...skills]);
     if (removed.skill_id) await deleteUserSkill(userId, removed.skill_id);
   };
-  const transuser = useTranslations("User"); 
 
   return (
-    <Box>
-      <Typography variant="h6">Skills</Typography>
+    <Box sx={{ pt: 1 }}>
+      {/* Add Skill */}
+      <Grid item xs={12} md={3} pt={2}>
+        <Autocomplete
+          freeSolo
+          options={options}
+          loading={isLoading}
+          inputValue={inputValue}
+          onInputChange={(_, val) => setInputValue(val)}
+          onChange={(_, val) => {
+            if (!val) return;
+            const isAdd = typeof val === "string" && val.startsWith("__add__");
+            const name = isAdd ? val.replace("__add__", "") : val;
+            onAdd(name);
+            setInputValue("");
+          }}
+          filterOptions={(options) => {
+            const filtered = options
+              .filter((opt) => opt.toLowerCase().includes(inputValue.toLowerCase()))
+              .sort((a, b) => a.localeCompare(b));
 
-      <Autocomplete
-        freeSolo
-        filterOptions={(options) => {
-          const filtered = options
-            .filter((opt) => opt.toLowerCase().includes(inputValue.toLowerCase()))
-            .sort((a, b) => a.localeCompare(b)); // sort alphabetically
-
-          const addOption =
-            inputValue && !options.some((opt) => opt.toLowerCase() === inputValue.toLowerCase())
-              ? [`__add__${inputValue}`]
-              : [];
-
-          return [...addOption, ...filtered];
-        }}
-        options={options}
-        inputValue={inputValue}
-        onInputChange={(_, val) => setInputValue(val)}
-        onChange={(_, val) => {
-          if (!val) return;
-          const isAddOption = typeof val === "string" && val.startsWith("__add__");
-          const skillName = isAddOption ? val.replace("__add__", "") : val;
-          onAdd(skillName);
-          setInputValue("");
-        }}
-        loading={isLoading}
-        getOptionLabel={(option) => {
-          if (typeof option === "string" && option.startsWith("__add__")) {
-            return option.replace("__add__", "");
+            const isNew =
+              inputValue && !options.some((opt) => opt.toLowerCase() === inputValue.toLowerCase());
+            return isNew ? [`__add__${inputValue}`, ...filtered] : filtered;
+          }}
+          getOptionLabel={(option) =>
+            typeof option === "string" && option.startsWith("__add__")
+              ? option.replace("__add__", "")
+              : option
           }
-          return option;
-        }}
-        renderInput={(params) => <TextField {...params} label="Add Skill" fullWidth />}
-        renderOption={(props, option) => {
-          const isAddOption = typeof option === "string" && option.startsWith("__add__");
-          const skillName = isAddOption ? option.replace("__add__", "") : option;
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={transuser("addskill")}
+              fullWidth
+              InputProps={{
+                ...params.InputProps,
+                sx: {
+                  alignItems: "center",
+                  height: 50
+                }
+              }}
+            />
+          )}
+          renderOption={(props, option) => {
+            const isAdd = typeof option === "string" && option.startsWith("__add__");
+            const skillName = isAdd ? option.replace("__add__", "") : option;
 
-          return (
-            <li {...props}>
-              {isAddOption ? (
+            return (
+              <li {...props}>
                 <Box display="flex" alignItems="center">
-                  <AddIcon fontSize="small" sx={{ mr: 1 }} />
+                  {isAdd && <AddIcon fontSize="small" sx={{ mr: 1 }} />}
                   <Typography variant="body2">
-                    {transuser("add")} "{skillName}"
+                    {isAdd ? `${transuser("add")} "${skillName}"` : skillName}
                   </Typography>
                 </Box>
-              ) : (
-                <Typography variant="body2">{skillName}</Typography>
-              )}
-            </li>
-          );
-        }}
-      />
+              </li>
+            );
+          }}
+        />
+      </Grid>
 
-      <Box
-        mt={2}
-        sx={{
-          maxHeight: "450px",
-          overflowY: "auto",
-          pr: 1,
-          pb: 2,
-          scrollbarWidth: "thin",
-          "&::-webkit-scrollbar": { width: "6px" },
-          "&::-webkit-scrollbar-thumb": { backgroundColor: "#999", borderRadius: "4px" }
-        }}
-      >
-        {skills.map((s, idx) => {
-          const requiresExperience = s.proficiency >= 3;
-
-          return (
-            <Box key={idx} sx={{ p: 2, mb: 2, border: "1px solid #ccc", borderRadius: 2 }}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={11}>
-                  <Typography variant="subtitle1">{s.name}</Typography>
-                </Grid>
-                <Grid item xs={1}>
-                  <IconButton color="error" onClick={() => removeSkill(idx)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
-
-              <Divider sx={{ my: 1 }} />
-
-              <Grid container spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                <Grid item xs={12}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Proficiency
-                  </Typography>
-                  <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-                    {Object.entries(PROFICIENCY_DESCRIPTIONS).map(([value, label]) => {
-                      const level = Number(value);
-                      return (
-                        <Box
-                          key={level}
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 0.5,
-                            cursor: "pointer",
-                            px: 1,
-                            py: 0.5,
-                            borderRadius: 1
-                          }}
-                          onClick={() => {
-                            const updatedSkill = {
-                              ...s,
-                              proficiency: level,
-                              experience: s.experience
-                            };
-                            updateSkill(idx, updatedSkill);
-                          }}
-                        >
-                          <StarIcon color={s.proficiency >= level ? "primary" : "disabled"} />
-                          <Typography variant="caption" sx={{ whiteSpace: "nowrap" }}>
-                            {label}
-                          </Typography>
-                        </Box>
-                      );
-                    })}
-                  </Stack>
-                </Grid>
-              </Grid>
-
-              {requiresExperience && (
-                <TextField
-                  type="number"
-                  label="Experience (months)"
-                  value={s.experience || ""}
-                  onChange={(e) => {
-                    const value = Math.max(1, parseInt(e.target.value || "0", 10) || 0);
-                    updateSkill(idx, { ...s, experience: value });
+      {/* Skill List */}
+      <Grid item xs={12} md={8} pt={2}>
+        <Box
+          sx={{
+            maxHeight: 450,
+            overflowY: "auto",
+            pr: 1,
+            pb: 2,
+            scrollbarWidth: "thin",
+            "&::-webkit-scrollbar": { width: "6px" },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#aaa",
+              borderRadius: "4px"
+            }
+          }}
+        >
+          {skills.length === 0 ? (
+            <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
+              {transuser("noskills")}
+            </Paper>
+          ) : (
+            skills.map((s, idx) => {
+              return (
+                <Box
+                  key={idx}
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    borderRadius: 2,
+                    border: "1px solid #e0e0e0",
+                    backgroundColor: "#f5f5f5"
                   }}
-                  inputProps={{ min: 1 }}
-                  sx={{ width: "25%", mt: 2 }}
-                />
-              )}
-            </Box>
-          );
-        })}
-      </Box>
+                >
+                  <Grid container spacing={1} alignItems="center">
+                    <Grid item xs={11}>
+                      <Typography variant="subtitle1" fontWeight="medium">
+                        {s.name}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "red", cursor: "pointer" }}
+                        onClick={() => removeSkill(idx)}
+                      >
+                        {transuser("remove")}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  <Box sx={{ pt: 1 }}>
+                    <Stack
+                      direction="row"
+                      flexWrap="wrap"
+                      alignItems="center"
+                      display="flex"
+                      justifyContent="space-between"
+                    >
+                      {Object.entries(PROFICIENCY_DESCRIPTIONS).map(([value, label]) => {
+                        const level = Number(value);
+                        return (
+                          <Box
+                            key={level}
+                            onClick={() => {
+                              updateSkill(idx, {
+                                ...s,
+                                proficiency: level,
+                                experience: s.experience
+                              });
+                            }}
+                            sx={{
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                              px: 1,
+                              py: 0.5,
+                              borderRadius: 1,
+                              "&:hover": {
+                                backgroundColor: "action.hover"
+                              }
+                            }}
+                          >
+                            <StarIcon
+                              color={s.proficiency >= level ? "primary" : "disabled"}
+                              fontSize="small"
+                            />
+                            <Typography variant="caption">{label}</Typography>
+                          </Box>
+                        );
+                      })}
+
+                      <TextField
+                        type="number"
+                        label={transuser("experience")}
+                        value={s.experience || ""}
+                        onChange={(e) => {
+                          const val = Math.max(1, parseInt(e.target.value || "0", 10) || 0);
+                          updateSkill(idx, { ...s, experience: val });
+                        }}
+                        inputProps={{ min: 1 }}
+                        disabled={s.proficiency < 3}
+                        size="small"
+                        sx={{
+                          width: 100,
+                          mx: 1,
+                          "& .MuiInputBase-root": {
+                            height: 36,
+                            fontSize: 12
+                          },
+                          "& .MuiInputLabel-root": {
+                            fontSize: 12
+                          }
+                        }}
+                      />
+                    </Stack>
+                  </Box>
+                </Box>
+              );
+            })
+          )}
+        </Box>
+      </Grid>
     </Box>
   );
 };

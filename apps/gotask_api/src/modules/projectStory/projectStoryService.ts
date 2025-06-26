@@ -176,12 +176,12 @@ export const updateStoryService = async (
     // Save updated story
     await existingStory.save();
 
-    return existingStory;
+    // Ensure all nested fields (like loginuser_name) are included
+    return existingStory.toObject(); // Important fix
   } catch (error: any) {
     throw new Error(error.message || storyMessages.UPDATE.FAILED);
   }
 };
-
 
 // DELETE a story
 export const deleteStoryService = async (storyId: string): Promise<boolean> => {

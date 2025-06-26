@@ -112,7 +112,7 @@ class ProjectStoryController extends BaseController {
       const { storyId } = requestHelper.getAllParams();
       const { title, description, status } = requestHelper.getPayload();
 
-      const user = requestHelper.getUser(); 
+      const user = requestHelper.getUser();
       const loginuser_id = user?.id;
       const loginuser_name = user?.name;
 

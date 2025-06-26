@@ -765,7 +765,8 @@
     "savegoal": "Goal Created successfully!",
     "showhistory": "Show History",
     "log": "Log of who performed the updates in the goal",
-    "projectgoalhistory": "Goal History"
+    "projectgoalhistory": "Goal History",
+    "projectname": "Project Name"
   },
   "Comments": {
     "comment": "Comments",

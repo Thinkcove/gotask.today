@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -67,7 +67,7 @@ function ProjectGoalList() {
 
   const swrKey = [page, statusFilter, severityFilter, searchTerm];
 
-  const {  isLoading, error } = useSWR(
+  const { isLoading, error } = useSWR(
     swrKey,
     () =>
       fetchWeeklyGoals({
@@ -95,13 +95,13 @@ function ProjectGoalList() {
   } | null>(null);
 
   const fieldLabelMap: { [key: string]: string } = {
-    goalTitle: "Goal Title",
-    description: "Description",
-    priority: "Priority",
-    projectId: "Project ID",
-    status: "Status",
-    weekEnd: "Week End",
-    weekStart: "Week Start"
+    goalTitle: transGoal("goaltitle"),
+    description: transGoal("description"),
+    priority: transGoal("priority"),
+    projectId: transGoal("projectname"),
+    status: transGoal("titlerequired"),
+    weekEnd: transGoal("weekEnd"),
+    weekStart: transGoal("weekStart")
   };
   const { data: users } = useSWR("fetch-user", fetcherUserList);
 

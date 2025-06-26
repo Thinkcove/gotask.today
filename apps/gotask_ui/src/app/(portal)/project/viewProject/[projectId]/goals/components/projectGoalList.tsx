@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import useSWR, { mutate } from "swr";
 import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -14,7 +14,6 @@ import SearchBar from "@/app/component/searchBar/searchBar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { ArrowBack, History } from "@mui/icons-material";
-import router from "next/router";
 import {
   createComment,
   createWeeklyGoal,
@@ -68,7 +67,7 @@ function ProjectGoalList() {
 
   const swrKey = [page, statusFilter, severityFilter, searchTerm];
 
-  const { data, isLoading, error } = useSWR(
+  const {  isLoading, error } = useSWR(
     swrKey,
     () =>
       fetchWeeklyGoals({

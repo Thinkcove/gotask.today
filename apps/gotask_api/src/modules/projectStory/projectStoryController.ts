@@ -112,6 +112,10 @@ class ProjectStoryController extends BaseController {
       const { storyId } = requestHelper.getAllParams();
       const { title, description, status } = requestHelper.getPayload();
 
+      const user = requestHelper.getUser(); 
+      const loginuser_id = user?.id;
+      const loginuser_name = user?.name;
+
       if (!title && !description && !status) {
         return this.replyError(new Error(storyMessages.UPDATE.NO_FIELDS));
       }
@@ -119,7 +123,9 @@ class ProjectStoryController extends BaseController {
       const updatedStory = await updateStoryService(storyId, {
         title,
         description,
-        status
+        status,
+        loginuser_id,
+        loginuser_name
       });
 
       if (!updatedStory) {

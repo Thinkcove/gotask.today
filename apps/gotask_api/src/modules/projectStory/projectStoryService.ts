@@ -4,6 +4,10 @@ import { storyMessages } from "../../constants/apiMessages/projectStoryMessages"
 import { buildStartsWithRegex } from "../../constants/utils/regex";
 import { getStartAndEndOfDay } from "../../constants/utils/date";
 import { Project } from "../../domain/model/project/project";
+import { generateProjectStoryHistoryEntry } from "../../constants/utils/storyHistoryGenerator";
+import { ProjectStoryHistory } from "../../domain/model/projectStory/projectStoryHistory";
+import { v4 as uuidv4 } from "uuid";
+import { ProjectStoryStatus } from "../../constants/projectStoryConstants";
 
 // CREATE a new story
 export const createStoryService = async (data: {
@@ -124,27 +128,60 @@ export const updateStoryService = async (
     title?: string;
     description?: string;
     status?: string;
+    loginuser_id?: string;
+    loginuser_name?: string;
   }
 ): Promise<IProjectStory | null> => {
   try {
-    if (!data.title && !data.description) {
+    const existingStory = await ProjectStory.findOne({ id: storyId });
+    if (!existingStory) throw new Error(storyMessages.FETCH.NOT_FOUND);
+
+    const { loginuser_id, loginuser_name, ...updateFields } = data;
+
+    const updateData: Partial<IProjectStory> = {};
+    if (updateFields.title) updateData.title = updateFields.title;
+    if (updateFields.description) updateData.description = updateFields.description;
+    if (updateFields.status) {
+      updateData.status = updateFields.status as ProjectStoryStatus;
+    }
+
+    // Nothing to update?
+    if (!Object.keys(updateData).length) {
       throw new Error(storyMessages.UPDATE.NO_FIELDS);
     }
 
-    const updateData: any = {};
-    if (data.title) updateData.title = data.title;
-    if (data.description) updateData.description = data.description;
-    if (data.status) updateData.status = data.status;
+    const historyEntry = generateProjectStoryHistoryEntry(existingStory, updateData);
 
-    return await ProjectStory.findOneAndUpdate(
-      { id: storyId },
-      { $set: updateData },
-      { new: true }
-    );
+    // Apply changes to story
+    Object.assign(existingStory, updateData);
+
+    // Log change in history if applicable
+    if (historyEntry && loginuser_id) {
+      const historyItem = new ProjectStoryHistory({
+        id: uuidv4(),
+        project_story_id: existingStory.id,
+        loginuser_id,
+        loginuser_name,
+        formatted_history: historyEntry,
+        created_date: new Date()
+      });
+
+      await historyItem.save();
+
+      // Embed history into the story
+      existingStory.history = existingStory.history || [];
+      existingStory.history.unshift(historyItem);
+    }
+
+    // Save updated story
+    await existingStory.save();
+
+    return existingStory;
   } catch (error: any) {
     throw new Error(error.message || storyMessages.UPDATE.FAILED);
   }
 };
+
 
 // DELETE a story
 export const deleteStoryService = async (storyId: string): Promise<boolean> => {

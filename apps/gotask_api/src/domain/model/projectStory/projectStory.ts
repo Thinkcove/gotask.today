@@ -1,7 +1,7 @@
-import { Document } from "mongoose";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { ProjectStoryStatus, PROJECT_STORY_STATUS } from "../../../constants/projectStoryConstants";
+import { IProjectStoryHistory, ProjectStoryHistorySchema } from "./projectStoryHistory";
 
 // Embedded Comment Schema Interface
 interface IProjectStoryComment {
@@ -17,9 +17,10 @@ export interface IProjectStory extends Document {
   description: string;
   status: ProjectStoryStatus;
   comments: IProjectStoryComment[];
+  history?: IProjectStoryHistory[]; // embedded story history
 }
 
-// Embedded Schema for Comments with timestamps
+// Embedded Schema for Comments
 const ProjectStoryCommentSchema = new Schema<IProjectStoryComment>(
   {
     user_id: { type: String, required: true },
@@ -27,18 +28,14 @@ const ProjectStoryCommentSchema = new Schema<IProjectStoryComment>(
   },
   {
     _id: false,
-    timestamps: true // Adds createdAt & updatedAt
+    timestamps: true
   }
 );
 
-// Main Schema for Project Story
+// Project Story Schema with embedded history like Task
 const ProjectStorySchema = new Schema<IProjectStory>(
   {
-    id: {
-      type: String,
-      default: uuidv4,
-      unique: true
-    },
+    id: { type: String, default: uuidv4, unique: true },
     project_id: {
       type: String,
       required: true,
@@ -60,10 +57,16 @@ const ProjectStorySchema = new Schema<IProjectStory>(
       enum: Object.values(PROJECT_STORY_STATUS),
       default: PROJECT_STORY_STATUS.TO_DO
     },
-    comments: [ProjectStoryCommentSchema]
+    comments: {
+      type: [ProjectStoryCommentSchema],
+      default: []
+    },
+    history: {
+      type: [ProjectStoryHistorySchema],
+      default: []
+    }
   },
-  { timestamps: true } // Adds createdAt & updatedAt for the story
+  { timestamps: true }
 );
 
-// Exporting the Model
 export const ProjectStory = mongoose.model<IProjectStory>("ProjectStory", ProjectStorySchema);

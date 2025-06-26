@@ -174,3 +174,14 @@ export const deleteComment = async (commentId: string | number) => {
     return await deleteData(url, token);
   });
 };
+
+
+///demo testing api for leave management
+// Get All Leaves
+export const fetchAllLeaves = async () => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/getallleave`;
+    const { data } = await getData(url, token);
+    return data || [];
+  });
+};

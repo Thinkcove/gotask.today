@@ -9,7 +9,8 @@ import {
   Paper,
   Box,
   Typography,
-  Link
+  Link,
+  Chip
 } from "@mui/material";
 import { WorkPlannedEntry } from "../interface/workPlanned";
 import StatusIndicator from "@/app/component/status/statusIndicator";
@@ -20,12 +21,30 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { ESTIMATION_FORMAT } from "@/app/common/constants/regex";
 import { formatTimeValue } from "@/app/common/utils/taskTime";
+import useSWR from "swr";
+import { fetchAllLeaves } from "../../project/services/projectAction";
 
 interface WorkPlannedGridProps {
   data: WorkPlannedEntry[];
   fromDate: string;
   toDate: string;
   selectedProjects: string[];
+  leaveData?: LeaveEntry[];
+}
+
+interface LeaveEntry {
+  _id: string;
+  user_id: string;
+  user_name: string;
+  from_date: string;
+  to_date: string;
+  leave_type: string;
+  id: string;
+  created_on: string;
+  updated_on: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 // Group tasks by user
@@ -34,11 +53,22 @@ interface GroupedTasks {
     userName: string;
     tasks: WorkPlannedEntry[];
     totalEstimation: number;
+    leaves: LeaveEntry[];
   };
 }
 
-const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDate, toDate }) => {
+const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
+  data,
+  fromDate,
+  toDate,
+  leaveData
+}) => {
   const transworkplanned = useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
+
+  // Use passed leave data
+  const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
+  const leaves: LeaveEntry[] = leaveData && leaveData.length > 0 ? leaveData : leaveResponse || [];
+  console.log("Final leaves used in table", data);
 
   const formatEstimation = (estimation: string | number | null | undefined) => {
     if (!estimation || estimation === null || estimation === undefined || estimation === "") {
@@ -58,6 +88,26 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
     return isNaN(numericValue) ? 0 : numericValue;
   };
 
+  // Helper function to check if dates overlap
+  const datesOverlap = (start1: string, end1: string, start2: string, end2: string): boolean => {
+    const s1 = new Date(start1);
+    const e1 = new Date(end1);
+    const s2 = new Date(start2);
+    const e2 = new Date(end2);
+
+    return s1 <= e2 && s2 <= e1;
+  };
+
+  // Helper function to get leaves for a user within the date range
+  const getUserLeavesInRange = (userId: string): LeaveEntry[] => {
+    console.log("id-", userId);
+
+    return leaves.filter(
+      (leave) =>
+        leave.user_id === userId && datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
+    );
+  };
+
   // Group data by user
   const groupedData: GroupedTasks = data.reduce((acc, entry) => {
     const userKey = entry.user_id || "unknown";
@@ -67,7 +117,8 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
       acc[userKey] = {
         userName,
         tasks: [],
-        totalEstimation: 0
+        totalEstimation: 0,
+        leaves: getUserLeavesInRange(userKey)
       };
     }
 
@@ -77,25 +128,61 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
     return acc;
   }, {} as GroupedTasks);
 
-  if (!data || data.length === 0) {
-    return (
-      <Box sx={{ p: 4, textAlign: "center" }}>
-        <Typography variant="h6" color="textSecondary">
-          {transworkplanned("nodata")}
-        </Typography>
-        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-          {transworkplanned("date")}
-          <FormattedDateTime date={fromDate} /> {transworkplanned("to")}{" "}
-          <FormattedDateTime date={toDate} />
-        </Typography>
-      </Box>
-    );
-  }
+  leaves.forEach((leave) => {
+    if (datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)) {
+      const userKey = leave.user_id;
+      if (!groupedData[userKey]) {
+        groupedData[userKey] = {
+          userName: leave.user_name,
+          tasks: [],
+          totalEstimation: 0,
+          leaves: getUserLeavesInRange(userKey)
+        };
+      }
+    }
+  });
 
+  const getLeaveTypeColor = (leaveType: string): string => {
+    switch (leaveType.toLowerCase()) {
+      case "sick leave":
+      case "sick":
+        return "#ff9800";
+      case "personal leave":
+      case "personal":
+        return "#2196f3"; 
+      case "vacation":
+        return "#4caf50"; 
+      case "emergency":
+        return "#f44336"; 
+      default:
+        return "#9c27b0"; 
+    }
+  };
+
+  if (!data || data.length === 0) {
+    const leavesInRange = leaves.filter((leave) =>
+      datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
+    );
+
+    if (leavesInRange.length === 0) {
+      return (
+        <Box sx={{ p: 4, textAlign: "center" }}>
+          <Typography variant="h6" color="textSecondary">
+            {transworkplanned("nodata")}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            {transworkplanned("date")}
+            <FormattedDateTime date={fromDate} /> {transworkplanned("to")}{" "}
+            <FormattedDateTime date={toDate} />
+          </Typography>
+        </Box>
+      );
+    }
+  }
   return (
     <Box>
       <TableContainer component={Paper} sx={{ maxHeight: 640 }}>
-        <Table stickyHeader size="small" sx={{ minWidth: 650 }}>
+        <Table stickyHeader size="small" sx={{ minWidth: 750 }}>
           <TableHead>
             <TableRow>
               <TableCell
@@ -129,6 +216,21 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
                 }}
               >
                 {transworkplanned("testimation")}
+              </TableCell>
+              <TableCell
+                rowSpan={2}
+                sx={{
+                  padding: "12px",
+                  textAlign: "center",
+                  backgroundColor: "#f5f5f5",
+                  minWidth: 150,
+                  position: "sticky",
+                  verticalAlign: "middle",
+                  top: 0,
+                  zIndex: 2
+                }}
+              >
+                Leave Information
               </TableCell>
               <TableCell
                 rowSpan={2}
@@ -197,143 +299,203 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
           <TableBody>
             {Object.entries(groupedData).map(([userKey, userGroup]) => {
               const { userName, tasks, totalEstimation } = userGroup;
+              const totalRows = Math.max(tasks.length, 1); 
+              console.log("User Key:", userKey);
+              const userLeaves = leaves.filter(
+                (leave) =>
+                  leave.user_id === userKey &&
+                  datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
+              );
 
-              return tasks.map((task, taskIndex) => (
-                <TableRow key={`${userKey}-${taskIndex}`}>
-                  {/* User Name - Only show for first task of each user */}
-                  {taskIndex === 0 && (
+              return Array.from({ length: totalRows }, (_, index) => {
+                const task = tasks[index];
+                const isFirstRow = index === 0;
+
+                return (
+                  <TableRow key={`${userKey}-${index}`}>
+                    {/* User Name - Only show for first row of each user */}
+                    {isFirstRow && (
+                      <TableCell
+                        rowSpan={totalRows}
+                        sx={{
+                          padding: "12px",
+                          textAlign: "center",
+                          border: "1px solid #eee",
+                          fontWeight: "500",
+                          verticalAlign: "middle"
+                        }}
+                      >
+                        {userName}
+                      </TableCell>
+                    )}
+
+                    {/* Total Estimation - Only show for first row of each user */}
+                    {isFirstRow && (
+                      <TableCell
+                        rowSpan={totalRows}
+                        sx={{
+                          padding: "12px",
+                          textAlign: "center",
+                          border: "1px solid #eee",
+                          background: "linear-gradient(#D6C4E4 100%)",
+                          fontWeight: "bold",
+                          color: "#000000",
+                          verticalAlign: "middle"
+                        }}
+                      >
+                        {totalEstimation > 0 ? `${totalEstimation}h` : "-"}
+                      </TableCell>
+                    )}
+
+                    {/* Leave Information - Only show for first row of each user */}
+                    {isFirstRow && (
+                      <TableCell
+                        rowSpan={totalRows}
+                        sx={{
+                          padding: "12px",
+                          textAlign: "center",
+                          border: "1px solid #eee",
+                          verticalAlign: "middle"
+                        }}
+                      >
+                        {userLeaves.length > 0 ? (
+                          <Box display="flex" flexDirection="column" gap={1}>
+                            {userLeaves.map((leave, leaveIndex) => (
+                              <Box key={leave.id || leaveIndex}>
+                                <StatusIndicator
+                                  status={leave.leave_type}
+                                  getColor={getLeaveTypeColor}
+                                />
+
+                                <Typography
+                                  variant="caption"
+                                  display="block"
+                                  sx={{ fontSize: "0.7rem" }}
+                                >
+                                  <FormattedDateTime
+                                    date={leave.from_date}
+                                    format={DateFormats.DATE_ONLY}
+                                  />
+                                  {" to "}
+                                  <FormattedDateTime
+                                    date={leave.to_date}
+                                    format={DateFormats.DATE_ONLY}
+                                  />
+                                </Typography>
+                              </Box>
+                            ))}
+                          </Box>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                    )}
+
+                    {/* Task - Show task if exists, otherwise show empty cell */}
                     <TableCell
-                      rowSpan={tasks.length}
+                      sx={{
+                        padding: "12px",
+                        textAlign: "left",
+                        border: "1px solid #eee",
+                        maxWidth: 250
+                      }}
+                    >
+                      {task ? (
+                        <Box display="flex" flexDirection="column" gap={0.5}>
+                          {task.task_id ? (
+                            <Link
+                              href={`/task/viewTask/${task.task_id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              underline="none"
+                              sx={{
+                                color: "black",
+                                cursor: "pointer",
+                                fontWeight: 500,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                textTransform: "capitalize",
+                                whiteSpace: "nowrap",
+                                "&:hover": {
+                                  textDecoration: "underline"
+                                }
+                              }}
+                              title={task.task_title || transworkplanned("notask")}
+                            >
+                              {task.task_title || transworkplanned("notask")}
+                            </Link>
+                          ) : (
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 500,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                textTransform: "capitalize",
+                                whiteSpace: "nowrap"
+                              }}
+                              title={task.task_title || transworkplanned("notask")}
+                            >
+                              {task.task_title || transworkplanned("notask")}
+                            </Typography>
+                          )}
+                          <StatusIndicator status={task.status} getColor={getStatusColor} />
+                        </Box>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+
+                    {/* Start Date */}
+                    <TableCell
                       sx={{
                         padding: "12px",
                         textAlign: "center",
                         border: "1px solid #eee",
-                        fontWeight: "500",
-                        verticalAlign: "middle"
+                        fontFamily: "monospace",
+                        fontSize: "0.875rem"
                       }}
                     >
-                      {userName}
+                      {task && task.start_date ? (
+                        <FormattedDateTime date={task.start_date} format={DateFormats.DATE_ONLY} />
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
-                  )}
 
-                  {/* Total Estimation - Only show for first task of each user */}
-                  {taskIndex === 0 && (
+                    {/* End Date */}
                     <TableCell
-                      rowSpan={tasks.length}
+                      sx={{
+                        padding: "12px",
+                        textAlign: "center",
+                        border: "1px solid #eee",
+                        fontFamily: "monospace",
+                        fontSize: "0.875rem"
+                      }}
+                    >
+                      {task && task.end_date ? (
+                        <FormattedDateTime date={task.end_date} format={DateFormats.DATE_ONLY} />
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+
+                    {/* Task Estimation */}
+                    <TableCell
                       sx={{
                         padding: "12px",
                         textAlign: "center",
                         border: "1px solid #eee",
                         background: "linear-gradient(#D6C4E4 100%)",
                         fontWeight: "bold",
-                        color: "#000000",
-                        verticalAlign: "middle"
+                        color: "#000000"
                       }}
                     >
-                      {totalEstimation > 0 ? `${totalEstimation}h` : "-"}
+                      {task ? formatEstimation(task.user_estimated) : "-"}
                     </TableCell>
-                  )}
-
-                  {/* Task */}
-                  <TableCell
-                    sx={{
-                      padding: "12px",
-                      textAlign: "left",
-                      border: "1px solid #eee",
-                      maxWidth: 250
-                    }}
-                  >
-                    <Box display="flex" flexDirection="column" gap={0.5}>
-                       {task.task_id ? (
-                        <Link
-                          href={`/task/viewTask/${task.task_id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          underline="none"
-                          sx={{
-                            color: "black",
-                            cursor: "pointer",
-                            fontWeight: 500,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            textTransform: "capitalize",
-                            whiteSpace: "nowrap",
-                            "&:hover": {
-                              textDecoration: "underline"
-                            }
-                          }}
-                          title={task.task_title || transworkplanned("notask")}
-                        >
-                          {task.task_title || transworkplanned("notask")}
-                        </Link>
-                      ) : (
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 500,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            textTransform: "capitalize",
-                            whiteSpace: "nowrap"
-                          }}
-                          title={task.task_title ||transworkplanned("notask")}
-                        >
-                          {task.task_title || transworkplanned("notask")}
-                        </Typography>
-                      )}
-                      <StatusIndicator status={task.status} getColor={getStatusColor} />
-                    </Box>
-                  </TableCell>
-
-                  {/* Start Date */}
-                  <TableCell
-                    sx={{
-                      padding: "12px",
-                      textAlign: "center",
-                      border: "1px solid #eee",
-                      fontFamily: "monospace",
-                      fontSize: "0.875rem"
-                    }}
-                  >
-                    {task.start_date ? (
-                      <FormattedDateTime date={task.start_date} format={DateFormats.DATE_ONLY} />
-                    ) : (
-                      "-"
-                    )}
-                  </TableCell>
-
-                  {/* End Date */}
-                  <TableCell
-                    sx={{
-                      padding: "12px",
-                      textAlign: "center",
-                      border: "1px solid #eee",
-                      fontFamily: "monospace",
-                      fontSize: "0.875rem"
-                    }}
-                  >
-                    {task.end_date ? (
-                      <FormattedDateTime date={task.end_date} format={DateFormats.DATE_ONLY} />
-                    ) : (
-                      "-"
-                    )}
-                  </TableCell>
-
-                  {/* Task Estimation */}
-                  <TableCell
-                    sx={{
-                      padding: "12px",
-                      textAlign: "center",
-                      border: "1px solid #eee",
-                      background: "linear-gradient(#D6C4E4 100%)",
-                      fontWeight: "bold",
-                      color: "#000000"
-                    }}
-                  >
-                    {formatEstimation(task.user_estimated)}
-                  </TableCell>
-                </TableRow>
-              ));
+                  </TableRow>
+                );
+              });
             })}
           </TableBody>
         </Table>
@@ -341,5 +503,4 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
     </Box>
   );
 };
-
 export default WorkPlannedCalendarGrid;

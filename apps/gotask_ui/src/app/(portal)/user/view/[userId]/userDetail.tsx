@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, IconButton, Divider, Stack, Chip, Grid } from "@mui/material";
+import { Box, Typography, IconButton, Stack, Chip, Grid } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { User } from "../../interfaces/userInterface";
@@ -102,7 +102,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Box>
             <Box sx={{ flexGrow: 1 }} />
             {canAccess(APPLICATIONS.USER, ACTIONS.UPDATE) && (
-              <IconButton color="primary" onClick={() => router.push(`/user/${userId}`)}>
+              <IconButton color="primary" onClick={() => router.push(`/user/edit/${userId}`)}>
                 <Edit />
               </IconButton>
             )}

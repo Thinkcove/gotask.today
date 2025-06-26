@@ -3,10 +3,10 @@ import { Box, Button, IconButton, Typography } from "@mui/material";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { IUserField, User, ISkill } from "../interfaces/userInterface";
-import UserInput from "../components/userInputs";
-import SkillInput from "../components/skillInput";
-import { addUserSkills, updateUser } from "../services/userAction";
+import { IUserField, User, ISkill } from "../../interfaces/userInterface";
+import UserInput from "../../components/userInputs";
+import SkillInput from "../../components/skillInput";
+import { addUserSkills, updateUser } from "../../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
@@ -130,7 +130,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       setTimeout(() => router.back(), 2000);
-    } catch (error) {
+    } catch {
       setSnackbar({
         open: true,
         message: transuser("updateerror"),

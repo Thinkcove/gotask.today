@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import StoryList from "@/app/(portal)/projectStory/components/StoryList";
@@ -8,6 +8,10 @@ import { useTranslations } from "next-intl";
 
 const StoriesPage = () => {
   const t = useTranslations("Projects.Stories");
+  const [projectName, setProjectName] = useState("");
+
+  const suffixToday = t("suffixtoday");
+  const cleanedName = projectName.replace(new RegExp(`${suffixToday}$`, "i"), "").trim();
 
   return (
     <Box
@@ -20,12 +24,12 @@ const StoriesPage = () => {
         overflow: "hidden"
       }}
     >
-      {/* Header Section */}
-      <ModuleHeader name={t("projectStories")} />
+      {/* Header */}
+      <ModuleHeader name={cleanedName ? `${cleanedName} ${t("stories")}` : t("projectStories")} />
 
-      {/* Content Section */}
+      {/* Story List */}
       <Box sx={{ flex: 1, overflowY: "auto" }}>
-        <StoryList />
+        <StoryList onProjectNameLoad={setProjectName} />
       </Box>
     </Box>
   );

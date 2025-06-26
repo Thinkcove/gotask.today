@@ -11,6 +11,7 @@ interface DateDropdownProps {
   dateTo: string;
   onDateChange: (from: string, to: string) => void;
   transtask: (key: string) => string;
+  singleDateMode?: boolean;
 }
 
 const StyledTrigger = styled(Button)(({ theme }) => ({
@@ -58,7 +59,8 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
   dateFrom,
   dateTo,
   onDateChange,
-  transtask
+  transtask,
+  singleDateMode = false
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [tempFrom, setTempFrom] = useState(dateFrom);
@@ -72,7 +74,11 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
 
   const handleApply = () => {
     setAnchorEl(null);
-    onDateChange(tempFrom, tempTo);
+    if (singleDateMode) {
+      onDateChange(tempFrom, tempFrom);
+    } else {
+      onDateChange(tempFrom, tempTo);
+    }
   };
 
   const handleClear = () => {
@@ -83,9 +89,11 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
   };
 
   const formattedLabel =
-    dateFrom && dateTo
-      ? `${formatDate(dateFrom)} – ${formatDate(dateTo)}`
-      : transtask("filterduedate");
+    singleDateMode && dateFrom
+      ? formatDate(dateFrom)
+      : dateFrom && dateTo
+        ? `${formatDate(dateFrom)} – ${formatDate(dateTo)}`
+        : transtask("filterduedate");
 
   return (
     <>
@@ -99,7 +107,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
           sx={{
             flexGrow: 1,
             textAlign: "left",
-            color: dateFrom && dateTo ? "text.primary" : "text.secondary"
+            color: dateFrom ? "text.primary" : "text.secondary"
           }}
         >
           {formattedLabel}
@@ -114,22 +122,32 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
         PaperProps={{ sx: { p: 2, borderRadius: 2, minWidth: 360 } }}
       >
         <Stack spacing={2}>
-          <Stack direction="row" spacing={2}>
+          {singleDateMode ? (
             <StyledTextField
-              label="From"
+              label={transtask("filtercreateddate")}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={tempFrom}
               onChange={(e) => setTempFrom(e.target.value)}
             />
-            <StyledTextField
-              label="To"
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              value={tempTo}
-              onChange={(e) => setTempTo(e.target.value)}
-            />
-          </Stack>
+          ) : (
+            <Stack direction="row" spacing={2}>
+              <StyledTextField
+                label={transtask("filterfrom")}
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={tempFrom}
+                onChange={(e) => setTempFrom(e.target.value)}
+              />
+              <StyledTextField
+                label={transtask("filterto")}
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={tempTo}
+                onChange={(e) => setTempTo(e.target.value)}
+              />
+            </Stack>
+          )}
 
           <Stack direction="row" justifyContent="space-between">
             <Button

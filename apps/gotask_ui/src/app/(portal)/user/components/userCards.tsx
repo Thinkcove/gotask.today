@@ -151,7 +151,7 @@ const UserCards: React.FC<UserCardProps> = ({ users, getUserStatusColor }) => {
                         }
                       }}
                       onClick={() => {
-                        router.push(`/user/viewUser/${user.id}`);
+                        router.push(`/user/view/${user.id}`);
                       }}
                     >
                       <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>

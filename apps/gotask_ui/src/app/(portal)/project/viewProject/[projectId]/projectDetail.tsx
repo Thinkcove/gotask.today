@@ -54,7 +54,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const projectID = projectId as string;
 
   const handleBack = () => {
-    setTimeout(() => router.back(), 2000);
+    setTimeout(() => router.push("/project"), 2000);
   };
 
   const handleAddUser = async () => {

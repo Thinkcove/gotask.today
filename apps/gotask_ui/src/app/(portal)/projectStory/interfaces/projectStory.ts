@@ -5,6 +5,7 @@ export interface Comment {
 }
 
 export interface ProjectStory {
+  [x: string]: any;
   status: string;
   id: string;
   title: string;
@@ -32,4 +33,27 @@ export interface UpdateStoryPayload {
 export interface AddCommentPayload {
   user_id: string;
   comment: string;
+}
+
+export interface StoryQueryParams {
+  status?: string[];
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+// Paginated Response
+export interface PaginatedStoryResponse {
+  data: ProjectStory[];
+  pagination: {
+    totalCount: number;
+    totalPages: number;
+    currentPage: number;
+    pageSize: number;
+  };
+  meta?: {
+    projectName?: string;
+  };
 }

@@ -4,10 +4,14 @@ import { withAuth } from "@/app/common/utils/authToken";
 import {
   CreateStoryPayload,
   UpdateStoryPayload,
-  AddCommentPayload
+  AddCommentPayload,
+  StoryQueryParams,
+  PaginatedStoryResponse
 } from "../interfaces/projectStory";
 
-//create story
+type StoryResponse = PaginatedStoryResponse | { error: string };
+
+// Create a new Project Story
 export const createProjectStory = async (formData: CreateStoryPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/createStory/${formData.projectId}`;
@@ -15,7 +19,7 @@ export const createProjectStory = async (formData: CreateStoryPayload) => {
   });
 };
 
-// 🔹 Update a Project Story
+//  Update a Project Story
 export const updateProjectStory = async (storyId: string, updatedFields: UpdateStoryPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/update/${storyId}`;
@@ -23,7 +27,7 @@ export const updateProjectStory = async (storyId: string, updatedFields: UpdateS
   });
 };
 
-// 🔹 Delete a Project Story
+//  Delete a Project Story
 export const deleteProjectStory = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/delete/${storyId}`;
@@ -31,7 +35,7 @@ export const deleteProjectStory = async (storyId: string) => {
   });
 };
 
-// 🔹 Add Comment to Story
+//  Add Comment to a Story
 export const addCommentToProjectStory = async (storyId: string, payload: AddCommentPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/comment/${storyId}`;
@@ -39,15 +43,48 @@ export const addCommentToProjectStory = async (storyId: string, payload: AddComm
   });
 };
 
-// 🔹 Get All Stories by Project ID
-export const getStoriesByProject = async (projectId: string) => {
-  return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/getStories/${projectId}`;
-    return getData(url, token);
+
+export const getStoriesByProject = async (
+  projectId: string,
+  queryParams: Omit<StoryQueryParams, "endDate"> = {}
+): Promise<StoryResponse> => {
+  return withAuth(async (token) => {
+    const query = new URLSearchParams();
+
+    if (queryParams.status) {
+      const statuses = Array.isArray(queryParams.status)
+        ? queryParams.status
+        : [queryParams.status];
+      statuses.forEach((s) => query.append("status", s));
+    }
+
+    if (queryParams.startDate) query.set("startDate", queryParams.startDate);
+    if (queryParams.page) query.set("page", String(queryParams.page));
+    if (queryParams.limit) query.set("limit", String(queryParams.limit));
+    if (queryParams.search) query.set("search", queryParams.search);
+
+    const url = `${env.API_BASE_URL}/getStories/${projectId}?${query.toString()}`;
+    const res = await getData(url, token);
+
+    if ("error" in res) {
+      return { error: res.error };
+    }
+
+    return {
+      data: res.data || [],
+      pagination: res.pagination || {
+        totalCount: res.data?.length || 0,
+        totalPages: 1,
+        currentPage: 1,
+        pageSize: res.data?.length || 0
+      },
+      meta: res.meta || {}
+    };
   });
 };
 
-// 🔹 Get One Story by ID
+
+//  Get Single Story by ID
 export const getProjectStoryById = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/${storyId}`;
@@ -55,7 +92,7 @@ export const getProjectStoryById = async (storyId: string) => {
   });
 };
 
-// 🔹 Get Tasks under a Story
+//  Get Tasks by Story ID
 export const getTasksByStory = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/${storyId}/tasks`;

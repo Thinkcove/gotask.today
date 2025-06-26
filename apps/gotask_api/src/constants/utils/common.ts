@@ -20,3 +20,7 @@ export const formatDate = (date: Date) => {
   const year = d.getFullYear();
   return `${day}/${month}/${year}`;
 };
+
+// src/constants/paginationConstants.ts
+export const DEFAULT_PAGE = 1;
+export const DEFAULT_PAGE_SIZE = 10;

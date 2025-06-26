@@ -1,6 +1,9 @@
 import { ProjectStory, IProjectStory } from "../../domain/model/projectStory/projectStory";
 import { Task } from "../../domain/model/task/task";
 import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
+import { buildStartsWithRegex } from "../../constants/utils/regex";
+import { getStartAndEndOfDay } from "../../constants/utils/date";
+import { Project } from "../../domain/model/project/project";
 
 // CREATE a new story
 export const createStoryService = async (data: {
@@ -27,13 +30,44 @@ export const createStoryService = async (data: {
 };
 
 // GET all stories for a specific project by UUID
-export const getStoriesByProjectService = async (projectId: string): Promise<IProjectStory[]> => {
+export const getStoriesByProjectService = async ({
+  projectId,
+  status,
+  startDate,
+  search
+}: {
+  projectId: string;
+  status?: string | string[];
+  startDate?: string;
+  search?: string;
+}): Promise<{ stories: IProjectStory[]; projectName: string | null }> => {
   try {
     if (!projectId) {
       throw new Error(storyMessages.FETCH.PROJECT_ID_REQUIRED);
     }
 
-    return await ProjectStory.find({ project_id: projectId }).sort({ createdAt: -1 });
+    const query: any = { project_id: projectId };
+
+    if (search) {
+      query.title = { $regex: buildStartsWithRegex(search) };
+    }
+
+    if (status) {
+      query.status = Array.isArray(status) ? { $in: status } : status;
+    }
+
+    if (startDate) {
+      const { start, end } = getStartAndEndOfDay(startDate);
+      query.createdAt = { $gte: start, $lte: end };
+    }
+
+    const stories = await ProjectStory.find(query).sort({ createdAt: -1 });
+
+    // Get project name from Project model using the UUID
+    const project = await Project.findOne({ id: projectId }).select("name");
+    const projectName = project?.name || null;
+
+    return { stories, projectName };
   } catch (error: any) {
     throw new Error(error.message || storyMessages.FETCH.FAILED);
   }

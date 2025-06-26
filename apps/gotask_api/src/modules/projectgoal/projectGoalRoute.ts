@@ -26,12 +26,12 @@ ProjectGoalRoutes.push({
 
 // Route: Get All ProjectGoals
 ProjectGoalRoutes.push({
-  path: "/project/goals",
-  method: API_METHODS.GET,
+  path: "/projectgoals",
+  method: API_METHODS.POST,
   handler: (request: Request, handler: ResponseToolkit) =>
     projectGoalController.getAllProjectGoals(new RequestHelper(request), handler),
   config: {
-    notes: "Get All ProjectGoals",
+    notes: "Get All ProjectGoals with pagination and filters",
     tags,
     auth: { strategy: authStrategy.SIMPLE }
   }
@@ -39,7 +39,7 @@ ProjectGoalRoutes.push({
 
 // Route: Get ProjectGoal by ID
 ProjectGoalRoutes.push({
-  path: "/project/goals/{id}",
+  path: "/projectgoals/{id}",
   method: API_METHODS.GET,
   handler: (request: Request, handler: ResponseToolkit) =>
     projectGoalController.getProjectGoalById(new RequestHelper(request), handler),
@@ -52,7 +52,7 @@ ProjectGoalRoutes.push({
 
 // Route: Update ProjectGoal
 ProjectGoalRoutes.push({
-  path: "/project/goals/{id}",
+  path: "/projectgoals/{id}",
   method: API_METHODS.PUT,
   handler: (request: Request, handler: ResponseToolkit) =>
     projectGoalController.updateProjectGoal(new RequestHelper(request), handler),

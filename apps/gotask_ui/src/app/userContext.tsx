@@ -20,6 +20,13 @@ interface Role {
   accessDetails: AccessDetail[];
 }
 
+interface ISkill {
+  skill_id?: string;
+  name: string;
+  proficiency: number;
+  experience?: number;
+}
+
 interface User {
   id: string;
   first_name: string;
@@ -33,6 +40,7 @@ interface User {
   status: boolean;
   token: string;
   role: Role;
+  skills?: ISkill[];
 }
 
 interface UserContextType {

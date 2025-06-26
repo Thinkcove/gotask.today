@@ -99,7 +99,7 @@ function ProjectGoalList() {
     description: transGoal("description"),
     priority: transGoal("priority"),
     projectId: transGoal("projectname"),
-    status: transGoal("titlerequired"),
+    status: transGoal("status"),
     weekEnd: transGoal("weekEnd"),
     weekStart: transGoal("weekStart")
   };
@@ -173,14 +173,17 @@ function ProjectGoalList() {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
+
     if (!goalData.goalTitle) newErrors.goalTitle = transGoal("titlerequired");
     if (!goalData.weekStart) newErrors.weekStart = transGoal("startweekrequired");
     if (!goalData.weekEnd) newErrors.weekEnd = transGoal("endweekrequired");
+    if (!goalData.priority) newErrors.weekEnd = transGoal("priorityreuired");
+    if (!goalData.status) newErrors.weekEnd = transGoal("statusrequired");
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
   const handleCancel = () => {
-    // Optional: Reset form state or errors here
     setOpenDialog(false);
     setprojectGoalView(null);
   };

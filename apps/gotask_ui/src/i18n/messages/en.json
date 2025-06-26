@@ -753,6 +753,9 @@
     "titlerequired": "Goal title is required",
     "startweekrequired": "Start Week is required",
     "endweekrequired": "Week end date is required",
+
+    "statusrequired": "Status is required",
+    "priorityreuired": "Priority is required",
     "saving": "Saving...",
     "comment": "Comments",
     "saveerror": "Something went wrong while saving",

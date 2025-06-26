@@ -7,6 +7,7 @@ export interface IIssuesHistory extends Document {
   userId: string;
   formatted_history: string;
   created_date: Date;
+  previousStatus?: string;
 }
 
 const IssuesHistorySchema: Schema<IIssuesHistory> = new Schema({
@@ -14,7 +15,8 @@ const IssuesHistorySchema: Schema<IIssuesHistory> = new Schema({
   issuesId: { type: String, required: true },
   userId: { type: String, required: true },
   formatted_history: { type: String, required: true },
-  created_date: { type: Date, default: Date.now }
+  created_date: { type: Date, default: Date.now },
+  previousStatus: { type: String }
 });
 
 export const IssuesHistory: Model<IIssuesHistory> = mongoose.model<IIssuesHistory>(

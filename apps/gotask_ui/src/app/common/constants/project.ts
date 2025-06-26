@@ -39,16 +39,16 @@ export const statusOptions = ["not-started", "in-progress", "completed", "blocke
 export const priorityOptions = ["high", "medium", "low"];
 
 export const PROJECT_GOAL = {
-  TO_DO: "to-do",
-  IN_PROGRESS: "in-progress",
-  NEED_INFO: "need-info",
-  HOLD: "hold",
-  COMPLETED: "completed",
-  BLOCKED: "blocked",
-  NOT_STARTED: "not-started"
+  TO_DO: "To-do",
+  IN_PROGRESS: "In-progress",
+  NEED_INFO: "Need-info",
+  HOLD: "Hold",
+  COMPLETED: "Completed",
+  BLOCKED: "Blocked",
+  NOT_STARTED: "Not-started"
 };
 export const PROGECT_GOAL_SEVERITY = {
-  LOW: "low",
-  MEDIUM: "medium",
-  HIGH: "high"
+  LOW: "Low",
+  MEDIUM: "Medium",
+  HIGH: "High"
 };

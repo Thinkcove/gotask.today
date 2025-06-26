@@ -102,7 +102,7 @@ const IssueHistoryDrawer: React.FC<IssueHistoryDrawerProps> = ({
                   "&:hover": { boxShadow: 3 }
                 }}
               >
-                <CardContent sx={{ pb: "10px !important" }}>
+                <CardContent sx={{ pb: "10px" }}>
                   <Stack direction="row" alignItems="center" spacing={2} mb={1}>
                     <Avatar
                       sx={{

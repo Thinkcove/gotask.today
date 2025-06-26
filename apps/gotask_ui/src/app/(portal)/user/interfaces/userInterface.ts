@@ -1,5 +1,12 @@
 import { IAssetAttributes } from "../../asset/interface/asset";
 
+export interface ISkill {
+  name: string;
+  skill_id?: string;
+  proficiency: number; // 1 to 4
+  experience?: number; // required if proficiency 3 or 4
+}
+
 export interface IUserField {
   name: string;
   status: boolean;
@@ -11,6 +18,7 @@ export interface IUserField {
   emp_id?: string;
   first_name: string;
   last_name: string;
+  skills?: ISkill[];
 }
 
 export interface User {
@@ -33,6 +41,7 @@ export interface User {
   first_name: string;
   last_name: string;
   assetDetails?: IAssetAttributes[];
+  skills?: ISkill[];
 }
 
 export interface RoleData {

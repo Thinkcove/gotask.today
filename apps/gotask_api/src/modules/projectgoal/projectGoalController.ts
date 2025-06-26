@@ -16,6 +16,7 @@ import {
   updateProjectCommentService,
   updateProjectGoalService
 } from "../projectgoal/projectGoalService";
+import { ProjectGoalUpdateHistory } from "../../domain/model/projectGoal/projectGoalUpdateHistory";
 
 class ProjectGoalController extends BaseController {
   // Create a new Project goal
@@ -32,10 +33,11 @@ class ProjectGoalController extends BaseController {
   }
 
   // Get all Project goals
-  async getAllProjectGoals(_requestHelper: RequestHelper, handler: any) {
+  async getAllProjectGoals(requestHelper: RequestHelper, handler: any) {
     try {
-      const goals = await getAllProjectGoalsService();
-      return this.sendResponse(handler, goals);
+      const filters = requestHelper.getPayload();
+      const result = await getAllProjectGoalsService(filters);
+      return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error);
     }
@@ -47,24 +49,47 @@ class ProjectGoalController extends BaseController {
       const id = requestHelper.getParam("id");
       if (!id) throw new Error("Goal ID is required");
 
-      const goal = await getProjectGoalByIdService(id);
-      return this.sendResponse(handler, goal);
+      const goalResponse = await getProjectGoalByIdService(id);
+      if (!goalResponse || !goalResponse.data) throw new Error("Goal not found");
+
+      const updateHistory = await ProjectGoalUpdateHistory.find({ goal_id: id })
+        .sort({ timestamp: -1 })
+        .lean()
+        .exec();
+
+      const goalDoc = goalResponse.data as any;
+
+      const goalWithHistory = {
+        ...goalDoc._doc,
+        updateHistory
+      };
+
+      return this.sendResponse(handler, {
+        success: true,
+        data: goalWithHistory
+      });
     } catch (error) {
+      console.error(`[ProjectGoal GetById] Error:`, error);
       return this.replyError(error);
     }
   }
-
   // Update a goal by ID
   async updateProjectGoal(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
       const updateData = requestHelper.getPayload();
 
-      const updatedGoal = await updateProjectGoalService(id, updateData);
+      const userId = updateData.user_id || requestHelper.getParam("user_id");
+
+      delete updateData.user_id;
+
+      const updatedGoal = await updateProjectGoalService(id, updateData, userId);
+
       if (!updatedGoal) throw new Error("Goal not found");
 
       return this.sendResponse(handler, updatedGoal);
     } catch (error) {
+      console.error(`[ProjectGoal Update] Error updating goal:`, error);
       return this.replyError(error);
     }
   }

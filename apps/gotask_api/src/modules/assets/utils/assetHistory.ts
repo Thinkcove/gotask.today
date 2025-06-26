@@ -1,14 +1,17 @@
 import { findUser } from "../../../domain/interface/user/userInterface";
 import { IAsset } from "../../../domain/model/asset/asset";
 import { formatDate } from "../../../constants/utils/common";
-import { capitalizeFirstLetter, insertSpaceBeforeCapital } from "../../../constants/utils/regex";
+import {
+  capitalizeFirstLetter,
+  dateRegex,
+  insertSpaceBeforeCapital
+} from "../../../constants/utils/regex";
 
 export const generateAssetHistoryEntry = async (
   existingAsset: IAsset,
   updatedData: Partial<IAsset>
 ): Promise<string[]> => {
   const fieldsToCheck = Object.keys(updatedData);
-
   const formatValue = (val: any) => {
     if (val instanceof Date) return formatDate(val);
     if (typeof val === "boolean") return val ? "Yes" : "No";
@@ -18,9 +21,14 @@ export const generateAssetHistoryEntry = async (
   const historyEntries = await Promise.all(
     fieldsToCheck.map(async (field) => {
       if (field === "userid") return;
-      const oldVal = existingAsset[field];
-      const newVal = updatedData[field];
-
+      let oldVal = existingAsset[field];
+      let newVal = updatedData[field];
+      if (typeof oldVal === "string" && dateRegex.test(oldVal)) {
+        oldVal = new Date(oldVal);
+      }
+      if (typeof newVal === "string" && dateRegex.test(newVal)) {
+        newVal = new Date(newVal);
+      }
       const isDateField = oldVal instanceof Date || newVal instanceof Date;
       const isChanged = isDateField
         ? new Date(oldVal).getTime() !== new Date(newVal).getTime()

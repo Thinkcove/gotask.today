@@ -8,6 +8,7 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { IIssuesHistories } from "../interface/asset";
 import { TRAILING_DOTS_REGEX } from "@/app/common/constants/regex";
+import { MODE } from "@/app/common/constants/asset";
 
 interface IssueHistoryDrawerProps {
   open: boolean;
@@ -23,7 +24,6 @@ const IssueHistoryDrawer: React.FC<IssueHistoryDrawerProps> = ({
   mode
 }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
-
   return (
     <Drawer
       anchor="right"
@@ -84,67 +84,74 @@ const IssueHistoryDrawer: React.FC<IssueHistoryDrawerProps> = ({
 
         {/* History Body */}
         <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
-          {history.map((item) => (
-            <Card
-              key={item.id}
-              sx={{
-                mb: 2,
-                boxShadow: 2,
-                borderRadius: 2,
-                transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                "&:hover": { boxShadow: 3 }
-              }}
-            >
-              <CardContent sx={{ pb: "10px !important" }}>
-                <Stack direction="row" alignItems="center" spacing={2} mb={1}>
-                  <Avatar
-                    sx={{
-                      bgcolor: getColorForUser(
-                        mode === "asset" ? (item.created_by ?? "U") : (item.userData?.name ?? "U")
-                      ),
-                      height: 32,
-                      width: 32
-                    }}
-                  >
-                    {(mode === "asset"
-                      ? (item.created_by ?? "U")
-                      : (item.userData?.name ?? "U")
-                    ).charAt(0)}
-                  </Avatar>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    {mode === "asset" ? item.created_by : item.userData?.name}
-                  </Typography>
-                </Stack>
+          {history
+            .filter((item) => {
+              if (mode === MODE.ASSET) return true;
+              const formatted = item.formatted_history?.trim().toLowerCase();
+              const previous = item.previousStatus?.trim().toLowerCase();
+              return formatted && previous && formatted !== previous;
+            })
+            .map((item) => (
+              <Card
+                key={item.id}
+                sx={{
+                  mb: 2,
+                  boxShadow: 2,
+                  borderRadius: 2,
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  "&:hover": { boxShadow: 3 }
+                }}
+              >
+                <CardContent sx={{ pb: "10px" }}>
+                  <Stack direction="row" alignItems="center" spacing={2} mb={1}>
+                    <Avatar
+                      sx={{
+                        bgcolor: getColorForUser(
+                          mode === "asset" ? (item.created_by ?? "U") : (item.userData?.name ?? "U")
+                        ),
+                        height: 32,
+                        width: 32
+                      }}
+                    >
+                      {(mode === "asset"
+                        ? (item.created_by ?? "U")
+                        : (item.userData?.name ?? "U")
+                      ).charAt(0)}
+                    </Avatar>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {mode === "asset" ? item.created_by : item.userData?.name}
+                    </Typography>
+                  </Stack>
 
-                {/* History Description */}
-                {mode === "asset"
-                  ? item.formatted_history
-                      .split(" | ")
-                      .filter((entry) => !entry.toLowerCase().includes("tag"))
-                      .map((entry, index) => (
-                        <Box key={index} sx={{ mb: 1.5 }}>
-                          <Typography variant="body2" sx={{ ml: 2 }}>
-                            {entry.trim().replace(TRAILING_DOTS_REGEX, "")}
-                          </Typography>
-                        </Box>
-                      ))
-                  : !item.formatted_history.toLowerCase().includes("tag") && (
-                      <Typography variant="body2" sx={{ ml: 2, mb: 1.5 }}>
-                        {transasset("statuschanges")}{" "}
-                        {item.formatted_history.trim().replace(TRAILING_DOTS_REGEX, "")}
-                      </Typography>
-                    )}
-                <Box sx={{ textAlign: "right", width: "100%", mt: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
-                    <FormattedDateTime
-                      date={item.created_date}
-                      format={DateFormats.FULL_DATE_TIME_12H}
-                    />
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
+                  {/* History Description */}
+                  {mode === "asset"
+                    ? item.formatted_history
+                        .split(" | ")
+                        .filter((entry) => !entry.toLowerCase().includes("tag"))
+                        .map((entry, index) => (
+                          <Box key={index} sx={{ mb: 1.5 }}>
+                            <Typography variant="body2" sx={{ ml: 2 }}>
+                              {entry.trim().replace(TRAILING_DOTS_REGEX, "")}
+                            </Typography>
+                          </Box>
+                        ))
+                    : !item.formatted_history.toLowerCase().includes("tag") && (
+                        <Typography variant="body2" sx={{ ml: 2, mb: 1.5 }}>
+                          {transasset("statusupdated")} {item?.previousStatus || "-"}{" "}
+                          {transasset("to")} {item.formatted_history}
+                        </Typography>
+                      )}
+                  <Box sx={{ textAlign: "right", width: "100%", mt: 1 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      <FormattedDateTime
+                        date={item.created_date}
+                        format={DateFormats.FULL_DATE_TIME_12H}
+                      />
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
         </Box>
       </Box>
     </Drawer>

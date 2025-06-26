@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { KPI_FREQUENCY, MEASUREMENT_CRITERIA, STATUS } from "../../../constants/kpiConstants";
+import { KPI_FREQUENCY,  STATUS } from "../../../constants/kpiConstants";
 
 export interface IKpiAssignment extends Document {
   assignment_id: string;
@@ -45,7 +45,6 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
     },
     measurement_criteria: {
       type: String,
-      enum: Object.values(MEASUREMENT_CRITERIA),
       required: true
     },
     frequency: {

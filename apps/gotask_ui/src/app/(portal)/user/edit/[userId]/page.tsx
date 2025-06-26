@@ -8,8 +8,7 @@ import { getData } from "@/app/common/utils/apiData";
 import { IUserField, User } from "../../interfaces/userInterface";
 import EditUser from "./editUser";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { CircularProgress } from "@mui/material";
-import { Box, Typography } from "@mui/material";
+import { CircularProgress, Box, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
@@ -41,7 +40,8 @@ const EditUserPage = () => {
     emp_id: user.emp_id,
     organization: user.organization,
     roleId: user.roleId._id,
-    user_id: user.user_id
+    user_id: user.user_id,
+    skills: user.skills || []
   });
 
   return (

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Box, Grid, Paper } from "@mui/material";
-import TaskToggle from "../../../component/toggle/toggle";
+import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -186,11 +186,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
         </Box>
 
         <Box sx={{ flexShrink: 0 }}>
-          <TaskToggle
-            options={toggleOptions}
-            selected={labels[view]}
-            onChange={handleToggleChange}
-          />
+          <Toggle options={toggleOptions} selected={labels[view]} onChange={handleToggleChange} />
         </Box>
       </Box>
 

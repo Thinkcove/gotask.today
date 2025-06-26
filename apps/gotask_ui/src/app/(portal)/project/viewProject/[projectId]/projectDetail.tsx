@@ -203,9 +203,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 cursor: "pointer",
                 "&:hover": { textDecoration: "underline" }
               }}
-              onClick={() => router.push(
-                `/project/viewProject/${projectID}/stories?name=${encodeURIComponent(project.name)}`
-              )}
+              onClick={() => router.push(`/project/viewProject/${projectID}/stories`)}
             >
               {transproject("linkstories")}
             </Typography>

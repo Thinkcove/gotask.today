@@ -20,5 +20,3 @@ export const highlightColorSwatches = [
   { value: "#90c6ff", label: "Light blue" },
   { value: "#8085e9", label: "Light purple" }
 ];
-
-

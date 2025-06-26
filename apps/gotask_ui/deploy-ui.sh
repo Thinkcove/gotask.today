@@ -1,100 +1,44 @@
+#!/bin/bash
+
 # To run this script, you need to have the correct environment variables set.
 # You can set them in the .env.dev file for dev or in the .env.uat file for uat or .env.prod for prod.
 # ensure you have the tc-test-key1.pem file in the same directory as this script.
-
 # Then run the script with the appropriate argument:
 # For uat: bash deploy-ui.sh uat
-# For prod: bash deploy-ui.sh prod
+# For prod: bash deploy-ui.sh prod  
 # For dev: bash deploy-ui.sh dev
 
-keyfile="tc-test-key1.pem"
-user="ec2-user"
-ipaddr="13.127.153.17"
+set -Eeuo pipefail
 
-if [ "$1" = "prod" ]; then
-  env=".env.prod"
-  pm2Name="prod-gotask-web"
-  appFolder="/home/ec2-user/gotask/prod/app/"
+source ./deployment_helper/utils.sh
+source ./deployment_helper/setup.sh
+source ./deployment_helper/functions.sh
 
-elif [ "$1" = "uat" ]; then
-  env=".env.uat"
-  pm2Name="test-gotask-web"
-  appFolder="/home/ec2-user/gotask/test/app/"
-
-elif [ "$1" = "dev" ]; then
-  env=".env.dev"
-  pm2Name="dev-gotask-today"
-  appFolder="/home/ec2-user/gotask/dev/app/"
-
-else
-  echo "Environment not found"
-  echo "Valid environment: prod, uat, dev"
-  echo "Usage: bash deploy-ui.sh <environment>"
-  exit 1
-fi
-
-# Function to handle interruption
-handle_interrupt() {
-    echo ""
-    echo "Are you sure you want to cancel? (y/n): "
-    read -n 1 -r response
-    echo ""
-    
-    if [[ $response =~ ^[Yy]$ ]]; then
-        
-        # Check if .env.copy exists and restore it
-        if [ -f ".env.copy" ]; then
-            cp .env.copy .env
-            rm -rf .env.copy
-        fi
-        
-        echo "Script cancelled."
-        exit 130
-    else
-        echo "Continuing..."
-        # Reset the trap to handle future interrupts
-        trap handle_interrupt SIGINT
-    fi
-}
-
-# Set up the trap for SIGINT (Ctrl+C)
+trap 'catch_error ${LINENO} $?' ERR
 trap handle_interrupt SIGINT
 
-#Remove Old Build
-rm -rf .next
-cp -r .env .env.copy
-cp -r $env .env
- 
-# Create new build
-npm run lint
-npm run format
-npm run build
-cp -r public .next/standalone/
-cp -r .next/static .next/standalone/.next/
-rm -rf .next/static
-cp .env.copy .env
-rm -rf .env.copy
+# ---------- Main Entrypoint ----------
+main() {
+    if [ $# -lt 1 ]; then
+        echo "Usage: $0 [prod|uat|dev]"
+        exit 1
+    fi
 
-echo "Removing the Previous build"
-# Remove the previous build in the server
-ssh -i "$keyfile" $user@$ipaddr "rm -r $appFolder"
- 
-echo "Previous build Removed"
+    env="$1"
+    setup_environment "$env"
 
-ssh -i "$keyfile" $user@$ipaddr "mkdir $appFolder"
+    current_step="update_code"; update_code
+    current_step="setup_env_file"; setup_env_file
+    current_step="run_linters"; run_linters
+    current_step="run_next_build"; run_next_build
+    current_step="organize_standalone_folder"; organize_standalone_folder
+    current_step="restore_env_file"; restore_env_file
+    current_step="deploy"; deploy "$env"
 
-# Copy the standalone folder to the app folder in the server
-echo "Transfering the new build"
-scp -r -i "$keyfile" .next/standalone/* $user@$ipaddr:$appFolder/
-# ssh -i "$keyfile" $user@$ipaddr "mkdir $appFolder/.next"
+    log_success "Deployment completed successfully."
+}
 
-# Copy the .next files
-scp -r -i "$keyfile" .next/standalone/.next/* $user@$ipaddr:$appFolder/.next/
-echo "New build transfered successfully"
+main "$@"
 
-# pm2 restart the service
-echo "pm2 restarting $pm2Name"
-ssh -i "$keyfile" $user@$ipaddr "pm2 restart $pm2Name"
-
-# Login to the server (if necessary)
+# Login to the server
 # ssh -i "tc-test-key1.pem" ec2-user@13.127.153.17

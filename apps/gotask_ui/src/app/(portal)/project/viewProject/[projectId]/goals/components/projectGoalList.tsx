@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
@@ -123,6 +123,7 @@ function ProjectGoalList() {
         created_date: item.timestamp || ""
       };
     }) ?? [];
+  console.log("projectGoalHistory", projectGoalHistory?.updateHistory);
 
   const handelOpen = () => {
     setGoalData({
@@ -135,6 +136,7 @@ function ProjectGoalList() {
       weekEnd: ""
     });
     setOpenDialog(true);
+    setprojectGoalView(null);
   };
 
   const handleEditGoal = async (goal: GoalData) => {
@@ -240,7 +242,7 @@ function ProjectGoalList() {
         ...goal.data,
         comments: comments || []
       };
-
+      setView(true);
       setprojectGoalView(fullGoal);
     } catch (error) {
       console.error("Error fetching goal details:", error);
@@ -320,7 +322,12 @@ function ProjectGoalList() {
       console.error("Error Project Goal Delete:", error);
     }
   };
+  const router = useRouter();
 
+  const handleGoBack = () => {
+    setTimeout(() => router.back(), 200);
+    setView(false);
+  };
   const handleBack = () => {
     setOpenDialog(false);
     setprojectGoalView(null);
@@ -368,7 +375,7 @@ function ProjectGoalList() {
       </Box>
     );
   }
-
+  const [view, setView] = useState(false);
   return (
     <>
       <Box sx={{ pt: 2 }}>
@@ -384,7 +391,7 @@ function ProjectGoalList() {
             >
               {/* Left section: Back arrow + Search */}
               <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-                <IconButton color="primary" onClick={handleBack}>
+                <IconButton color="primary" onClick={handleGoBack}>
                   <ArrowBack />
                 </IconButton>
                 <Box maxWidth={400}>
@@ -398,46 +405,48 @@ function ProjectGoalList() {
               </Box>
 
               {/* Right section: Filters aligned to flex-end */}
-              <Box
-                display="flex"
-                alignItems="center"
-                gap={2}
-                justifyContent="flex-end"
-                flexWrap="wrap"
-                mt={{ xs: 2, md: 0 }}
-                sx={{ flexGrow: 1 }} // Optional: allows it to push to the right properly
-              >
-                <FilterDropdown
-                  label="Priority"
-                  options={Object.values(PROJECT_GOAL)}
-                  selected={statusFilter}
-                  onChange={onStatusChange}
-                />
-                <FilterDropdown
-                  label="Severity"
-                  options={Object.values(PROGECT_GOAL_SEVERITY)}
-                  selected={severityFilter}
-                  onChange={onSeverityChange}
-                />
-              </Box>
+            </Box>
+            <Box
+              display="flex"
+              alignItems="center"
+              gap={2}
+              pb={1}
+              pl={2}
+              justifyContent=""
+              flexWrap="wrap"
+              mt={{ xs: 2, md: 0 }}
+              sx={{ flexGrow: 1 }} // Optional: allows it to push to the right properly
+            >
+              <FilterDropdown
+                label="Priority"
+                options={Object.values(PROJECT_GOAL)}
+                selected={statusFilter}
+                onChange={onStatusChange}
+              />
+              <FilterDropdown
+                label="Severity"
+                options={Object.values(PROGECT_GOAL_SEVERITY)}
+                selected={severityFilter}
+                onChange={onSeverityChange}
+              />
             </Box>
           </>
         )}
 
-        {projectGoalView ? (
+        {view ? (
           <ProjectGoalView
             goalData={projectGoalView}
             handleSaveComment={handleSaveComment}
             handleEditComment={handleEditComment}
             handleDeleteComment={handleDeleteComment}
-            handleBack={handleBack}
+            handleBack={handleGoBack}
             user={user}
           />
         ) : (
           <>
             {!openDialog && (
               <ActionButton
-                label={goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
+                label={transGoal("creategoal")}
                 icon={<AddIcon sx={{ color: "white" }} />}
                 onClick={handelOpen}
               />
@@ -516,7 +525,7 @@ function ProjectGoalList() {
                     </Button>
                   </Box>
                 </Box>
-                {goalData.id && (
+                {(projectGoalHistory?.updateHistory ?? []).length > 0 && goalData.id && (
                   <Box
                     onClick={() => {
                       setHistory(true);

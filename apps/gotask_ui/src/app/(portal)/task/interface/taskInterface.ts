@@ -123,3 +123,11 @@ export interface TimeEntry {
   start_time: string;
   end_time: string;
 }
+
+export interface IComment {
+  id: string;
+  user_id: string;
+  user_name: string;
+  comment: string;
+  updatedAt?: string;
+}

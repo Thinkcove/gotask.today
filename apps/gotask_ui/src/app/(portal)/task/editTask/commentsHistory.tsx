@@ -2,78 +2,65 @@ import React, { useMemo, useState } from "react";
 import { Box, Avatar, Typography, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { ITask, ITaskComment } from "../interface/taskInterface";
 import { getColorForUser } from "@/app/common/constants/avatar";
-import { useUser } from "@/app/userContext";
-import { updateComment, deleteComment } from "../service/taskAction";
-import useSWR, { KeyedMutator } from "swr";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { RichTextReadOnly } from "mui-tiptap";
 import ReusableEditor from "@/app/component/richText/textEditor";
+import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
 import { getTipTapExtensions, mapUsersToMentions } from "@/app/common/utils/textEditor";
+import { IComment } from "../interface/taskInterface";
 
 interface CommentHistoryProps {
-  comments: ITaskComment[];
-  mutate: KeyedMutator<ITask>;
+  comments: IComment[];
+  onUpdate: (updatedComment: any) => Promise<void>;
+  onDelete: (commentId: string) => Promise<void>;
+  userId?: string;
 }
 
-const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => {
+const CommentHistory: React.FC<CommentHistoryProps> = ({
+  comments,
+  onUpdate,
+  onDelete,
+  userId
+}) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const [showAll, setShowAll] = useState(false);
-  const { user } = useUser();
-  const [editingComment, setEditingComment] = useState<ITaskComment | null>(null);
+  const [editingComment, setEditingComment] = useState<IComment | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [commentToDelete, setCommentToDelete] = useState<ITaskComment | null>(null);
+  const [commentToDelete, setCommentToDelete] = useState<IComment | null>(null);
 
-  const handleStartEdit = (comment: ITaskComment) => {
-    setEditingComment(comment);
-  };
+  const displayedComments = showAll ? comments : comments.slice(0, 3);
+  const hasMoreComments = comments.length > 3;
+
+  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
+  const userList = useMemo(() => mapUsersToMentions(fetchedUsers), [fetchedUsers]);
+  const extensions = getTipTapExtensions();
+
+  const handleStartEdit = (comment: IComment) => setEditingComment(comment);
 
   const handleSaveEdit = async (html: string) => {
-    const trimmedHtml = html.trim();
-    if (editingComment && editingComment.id && trimmedHtml) {
-      const updatedComment: ITaskComment = {
-        ...editingComment,
-        comment: trimmedHtml
-      };
-
-      await updateComment(updatedComment);
+    if (editingComment && editingComment.id && html.trim()) {
+      const updated = { ...editingComment, comment: html.trim() };
+      await onUpdate(updated);
       setEditingComment(null);
-      await mutate();
     }
   };
 
-  const handleDeleteClick = (comment: ITaskComment) => {
+  const handleDeleteClick = (comment: IComment) => {
     setCommentToDelete(comment);
     setDeleteDialogOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
-    if (commentToDelete && commentToDelete.id) {
-      await deleteComment(commentToDelete.id);
+    if (commentToDelete?.id) {
+      await onDelete(commentToDelete.id);
       setDeleteDialogOpen(false);
       setCommentToDelete(null);
-      await mutate();
     }
   };
-
-  const handleDeleteCancel = () => {
-    setDeleteDialogOpen(false);
-    setCommentToDelete(null);
-  };
-
-  const displayedComments = showAll ? comments : comments.slice(0, 3);
-  const hasMoreComments = comments.length > 3;
-
-  const extensions = getTipTapExtensions();
-  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
-
-  const userList = useMemo(() => {
-    return mapUsersToMentions(fetchedUsers || []);
-  }, [fetchedUsers]);
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -83,20 +70,17 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
           overflowY: "auto",
           overflowX: "hidden",
           pr: { xs: 0, sm: 1 },
-          width: "100%",
-          boxSizing: "border-box",
           "&::-webkit-scrollbar": { width: "6px" },
           "&::-webkit-scrollbar-track": { background: "#f1f1f1", borderRadius: "3px" },
           "&::-webkit-scrollbar-thumb": {
             background: "#741B92",
-            borderRadius: "3px",
-            opacity: 0.7
+            borderRadius: "3px"
           },
           "&::-webkit-scrollbar-thumb:hover": { background: "#5a1472" }
         }}
       >
         {displayedComments.map((comment) => {
-          const isOwner = user?.id === comment.user_id;
+          const isOwner = userId === comment.user_id;
           const isEditing = editingComment?.id === comment.id;
 
           return (
@@ -161,11 +145,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
                     </Typography>
                     <Typography
                       variant="body2"
-                      sx={{
-                        cursor: "pointer",
-                        color: "#741B92",
-                        "&:hover": { color: "#b71c1c" }
-                      }}
+                      sx={{ cursor: "pointer", color: "#741B92", "&:hover": { color: "#b71c1c" } }}
                       onClick={() => handleDeleteClick(comment)}
                     >
                       {transtask("deletecomment")}
@@ -191,7 +171,7 @@ const CommentHistory: React.FC<CommentHistoryProps> = ({ comments, mutate }) => 
 
       <CommonDialog
         open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
+        onClose={() => setDeleteDialogOpen(false)}
         onSubmit={handleDeleteConfirm}
         title={transtask("deletetitle")}
         submitLabel={transtask("deletecomment")}

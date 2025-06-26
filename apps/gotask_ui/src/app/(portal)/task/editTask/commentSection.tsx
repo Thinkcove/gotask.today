@@ -2,27 +2,34 @@
 
 import React, { useState, useMemo } from "react";
 import { Box, Typography } from "@mui/material";
-import { ITask, ITaskComment } from "../interface/taskInterface";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
-import CommentHistory from "./commentsHistory";
-import { KeyedMutator } from "swr";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
-import ReusableEditor from "@/app/component/richText/textEditor";
+import { useTranslations } from "next-intl";
+import { useUser } from "@/app/userContext";
 import useSWR from "swr";
+
+import ReusableEditor from "@/app/component/richText/textEditor";
+import CommentHistory from "./commentsHistory";
 import { fetchUsers } from "../../user/services/userAction";
 import { mapUsersToMentions } from "@/app/common/utils/textEditor";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { IComment } from "../interface/taskInterface";
 
-interface TaskCommentsProps {
-  comments: ITaskComment[];
-  onSave: (comment: string) => void;
-  mutate: KeyedMutator<ITask>;
+interface CommentSectionProps {
+  comments: IComment[];
+  onSave: (html: string) => void;
+  onUpdate: (comment: IComment) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
 }
 
-const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate }) => {
-  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+const CommentSection: React.FC<CommentSectionProps> = ({
+  comments,
+  onSave,
+  onUpdate,
+  onDelete
+}) => {
   const transcmt = useTranslations(LOCALIZATION.TRANSITION.COMMENTS);
-
+  const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+  const { user } = useUser();
   const [editorKey, setEditorKey] = useState(0);
 
   const { data: fetchedUsers = [], isLoading } = useSWR("userList", fetchUsers);
@@ -56,9 +63,16 @@ const TaskComments: React.FC<TaskCommentsProps> = ({ comments, onSave, mutate })
         )}
       </Box>
 
-      {comments.length > 0 && <CommentHistory comments={comments} mutate={mutate} />}
+      {comments?.length > 0 && (
+        <CommentHistory
+          comments={comments}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+          userId={user?.id}
+        />
+      )}
     </Box>
   );
 };
 
-export default TaskComments;
+export default CommentSection;

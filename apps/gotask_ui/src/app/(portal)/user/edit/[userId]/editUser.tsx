@@ -204,20 +204,6 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
         </Box>
       )}
 
-      {activeSection === "Certificates" && (
-        <Box>
-          {/* TODO: Implement Certificate Section */}
-          <Typography>{transuser("certificate_section_placeholder")}</Typography>
-        </Box>
-      )}
-
-      {activeSection === "Increment" && (
-        <Box>
-          {/* TODO: Implement Increment Section */}
-          <Typography>{transuser("increment_section_placeholder")}</Typography>
-        </Box>
-      )}
-
       {/* Snackbar */}
       <CustomSnackbar
         open={snackbar.open}

@@ -3,11 +3,11 @@
 import React, { useCallback, useRef, useState } from "react";
 import useSWRInfinite from "swr/infinite";
 import { Box, Typography, CircularProgress, Grid, IconButton, Fab } from "@mui/material";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ArrowBack, Add as AddIcon } from "@mui/icons-material";
 
 import { getStoriesByProject } from "../services/projectStoryActions";
-import { ProjectStory } from "../interfaces/projectStory";
+import { ProjectStory, PaginatedStoryResponse } from "../interfaces/projectStory";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 import { useTranslations } from "next-intl";
@@ -15,52 +15,63 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
 import StoryFilters from "../components/StoryFilters";
 
-interface StoryListProps {
-  onProjectNameFetch?: (name: string) => void;
-}
-
 const limit = 12;
 
-const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
+interface StoryListProps {
+  onProjectNameLoad?: (name: string) => void;
+}
+
+const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
   const { projectId } = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  const initialStatus = searchParams.getAll("status");
-  const initialStartDate = searchParams.get("startDate") || "";
-  const initialSearch = searchParams.get("search") || "";
+  const [status, setStatus] = useState<string[]>([]);
+  const [startDate, setStartDate] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const [status, setStatus] = useState<string[]>(initialStatus);
-  const [startDate, setStartDate] = useState<string>(initialStartDate);
-  const [searchTerm, setSearchTerm] = useState<string>(initialSearch);
+  const hasSentProjectNameRef = useRef(false); // Track whether projectName has been sent to parent
 
   const getKey = (pageIndex: number, previousPageData: any) => {
-    if (previousPageData && !previousPageData.data.length) return null;
+    if (previousPageData && "data" in previousPageData && !previousPageData.data.length)
+      return null;
     return `stories-${projectId}-${status.join(",")}-${startDate}-${searchTerm}-page-${pageIndex + 1}`;
   };
 
   const fetcher = async (_key: string) => {
     const page = Number(_key.split("page-").pop()) || 1;
-    return await getStoriesByProject(projectId as string, {
+    const result = await getStoriesByProject(projectId as string, {
       status,
       startDate,
       search: searchTerm,
       page,
       limit
     });
+
+    // Send projectName to parent once (not inside render)
+    if (
+      !hasSentProjectNameRef.current &&
+      "meta" in result &&
+      typeof result.meta?.projectName === "string"
+    ) {
+      onProjectNameLoad?.(result.meta.projectName);
+      hasSentProjectNameRef.current = true;
+    }
+
+    return result;
   };
 
   const { data, size, setSize, isLoading, isValidating, error } = useSWRInfinite(getKey, fetcher);
 
-  const allStories: ProjectStory[] = data?.flatMap((page) => page.data) || [];
-  const totalCount = data?.[0]?.pagination?.totalCount || 0;
-  const hasMore = allStories.length < totalCount;
+  const allStories: ProjectStory[] = data
+    ? data
+        .filter((page): page is PaginatedStoryResponse => "data" in page)
+        .flatMap((page) => page.data)
+    : [];
 
-  const projectName = allStories[0]?.project?.name ?? "";
-  if (projectName && onProjectNameFetch) {
-    onProjectNameFetch(projectName);
-  }
+  const firstPage = data?.[0];
+  const totalCount = firstPage && "pagination" in firstPage ? firstPage.pagination.totalCount : 0;
+  const hasMore = allStories.length < totalCount;
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastStoryRef = useCallback(
@@ -80,17 +91,9 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
     [isLoading, isValidating, hasMore]
   );
 
-  const updateQueryParams = (newStatus: string[], newStartDate = "", newSearch = "") => {
-    const params = new URLSearchParams();
-    if (newStatus.length > 0) newStatus.forEach((s) => params.append("status", s));
-    if (newStartDate) params.set("startDate", newStartDate);
-    if (newSearch) params.set("search", newSearch);
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
-
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
-      {/* Header */}
+      {/* Back Button */}
       <Box
         sx={{
           position: "absolute",
@@ -109,11 +112,6 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
         >
           <ArrowBack />
         </IconButton>
-        {projectName && (
-          <Typography variant="h6" fontWeight={600}>
-            {t("Stories.titleWithProject", { name: projectName })}
-          </Typography>
-        )}
       </Box>
 
       {/* Filters */}
@@ -124,24 +122,20 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameFetch }) => {
         onStatusChange={(val) => {
           setStatus(val);
           setSize(1);
-          updateQueryParams(val, startDate, searchTerm);
         }}
         onStartDateChange={(val) => {
           setStartDate(val);
           setSize(1);
-          updateQueryParams(status, val, searchTerm);
         }}
         onSearchChange={(val) => {
           setSearchTerm(val);
           setSize(1);
-          updateQueryParams(status, startDate, val);
         }}
         onClearFilters={() => {
           setStatus([]);
           setStartDate("");
           setSearchTerm("");
           setSize(1);
-          router.replace("?", { scroll: false });
         }}
       />
 

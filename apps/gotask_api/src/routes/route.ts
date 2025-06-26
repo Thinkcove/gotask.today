@@ -19,6 +19,7 @@ import * as KpiTemplateRoutes from "../modules/kpiTemplate/templateRoutes";
 import * as WorkPlannedReportRoutes from "../modules/planned/plannedRoute";
 import * as ProjectGoalRoute from "../modules/projectgoal/projectGoalRoute";
 import * as SkillRoutes from "../modules/masters/skills/skillsRoutes";
+import * as LeaveRoutes from "../modules/leave/leaveRoutes";
 
 const routes: ServerRoute[] = [
   ...ProjectRoutes.default,
@@ -40,7 +41,8 @@ const routes: ServerRoute[] = [
   ...KpiemployeeRoutes.default,
   ...WorkPlannedReportRoutes.default,
   ...ProjectGoalRoute.default,
-  ...SkillRoutes.default
+  ...SkillRoutes.default,
+  ...LeaveRoutes.default
 ];
 
 export default routes;

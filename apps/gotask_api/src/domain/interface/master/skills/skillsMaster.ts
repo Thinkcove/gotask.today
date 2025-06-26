@@ -22,7 +22,6 @@ const SkillMasterSchema = new Schema<ISkillMaster>(
     timestamps: true
   }
 );
-
 SkillMasterSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
@@ -30,5 +29,4 @@ SkillMasterSchema.set("toJSON", {
     delete ret._id;
   }
 });
-
 export const SkillMaster = model<ISkillMaster>("SkillMaster", SkillMasterSchema);

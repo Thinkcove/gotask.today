@@ -18,7 +18,8 @@ import { useTranslations } from "next-intl";
 import {
   getProjectStoryById,
   deleteProjectStory,
-  getTasksByStory
+  getTasksByStory,
+  addCommentToProjectStory
 } from "@/app/(portal)/projectStory/services/projectStoryActions";
 
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -30,13 +31,20 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
+import StoryComments from "../../projectStory/components/StoryComments";
+import { useUser } from "@/app/userContext";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const { user } = useUser();
 
-  const { data: story, isLoading } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
+  const {
+    data: story,
+    isLoading,
+    mutate
+  } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
     getProjectStoryById(storyId as string).then((res) => res?.data)
   );
 
@@ -69,6 +77,16 @@ const ProjectStoryDetail = () => {
 
   const handleTaskClick = (taskId: string) => {
     router.push(`/task/viewTask/${taskId}`);
+  };
+
+  const submitStoryComment = async (commentText: string) => {
+    if (!commentText.trim()) return;
+
+    await addCommentToProjectStory(storyId as string, {
+      comment: commentText
+    });
+
+    await mutate(); // Refresh story with new comment
   };
 
   if (isLoading) {
@@ -162,9 +180,22 @@ const ProjectStoryDetail = () => {
           label={t("Stories.createdAt")}
           value={<FormattedDateTime date={story.createdAt} />}
         />
+
+        {/* Comments Section */}
         <Divider sx={{ my: 3 }} />
+        <Box mt={3}>
+          <Typography variant="h6" fontWeight={600} mb={2}>
+            {t("Stories.commentSectionTitle") || "Comments"}
+          </Typography>
+          <StoryComments
+            comments={story?.comments || []}
+            onSave={submitStoryComment}
+            mutate={mutate}
+          />
+        </Box>
 
         {/* Tasks Section */}
+        <Divider sx={{ my: 3 }} />
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h6" fontWeight={600}>

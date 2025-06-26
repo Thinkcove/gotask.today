@@ -6,7 +6,9 @@ import {
   UpdateStoryPayload,
   AddCommentPayload,
   StoryQueryParams,
-  PaginatedStoryResponse
+  PaginatedStoryResponse,
+  ProjectStory,
+  Comment
 } from "../interfaces/projectStory";
 
 // Create a new Project Story
@@ -17,7 +19,7 @@ export const createProjectStory = async (formData: CreateStoryPayload) => {
   });
 };
 
-//  Update a Project Story
+// Update a Project Story
 export const updateProjectStory = async (storyId: string, updatedFields: UpdateStoryPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/update/${storyId}`;
@@ -41,7 +43,34 @@ export const addCommentToProjectStory = async (storyId: string, payload: AddComm
   });
 };
 
-//  Get Stories with Filters & Pagination
+// Get All Comments by Story ID
+export const getCommentsByStoryId = async (storyId: string): Promise<Comment[]> => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/story/${storyId}/comments`;
+    return getData(url, token);
+  });
+};
+
+// Update a Comment by Comment ID
+export const updateCommentOnProjectStory = async (
+  commentId: string,
+  payload: AddCommentPayload
+) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/story/comment/${commentId}`;
+    return putData(url, payload as unknown as Record<string, unknown>, token);
+  });
+};
+
+// Delete a Comment by Comment ID
+export const deleteCommentFromProjectStory = async (commentId: string) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/story/comment/${commentId}`;
+    return deleteData(url, token);
+  });
+};
+
+// Get Stories by Project ID with Filters
 export const getStoriesByProject = async (
   projectId: string,
   queryParams: Omit<StoryQueryParams, "endDate"> = {}
@@ -49,7 +78,6 @@ export const getStoriesByProject = async (
   return withAuth((token) => {
     const query = new URLSearchParams();
 
-    // Handle multi-status values correctly
     if (queryParams.status) {
       const statuses = Array.isArray(queryParams.status)
         ? queryParams.status
@@ -60,8 +88,6 @@ export const getStoriesByProject = async (
     if (queryParams.startDate) query.set("startDate", queryParams.startDate);
     if (queryParams.page) query.set("page", String(queryParams.page));
     if (queryParams.limit) query.set("limit", String(queryParams.limit));
-
-    // Added to support search filter
     if (queryParams.search) query.set("search", queryParams.search);
 
     const url = `${env.API_BASE_URL}/getStories/${projectId}?${query.toString()}`;
@@ -69,15 +95,15 @@ export const getStoriesByProject = async (
   });
 };
 
-//  Get Single Story by ID
-export const getProjectStoryById = async (storyId: string) => {
+// Get Single Story by Story ID
+export const getProjectStoryById = async (storyId: string): Promise<ProjectStory> => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/${storyId}`;
     return getData(url, token);
   });
 };
 
-//  Get Tasks by Story ID
+// Get Tasks by Story ID
 export const getTasksByStory = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/${storyId}/tasks`;

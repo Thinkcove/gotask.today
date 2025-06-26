@@ -18,15 +18,16 @@ import {
   deleteCommentFromProjectStory
 } from "../services/projectStoryActions";
 
-import StoryCommentHistory from "../../projectStory/components/StoryCommentHistory";
+import StoryCommentHistory from "./StoryCommentHistory";
 
 interface StoryCommentsProps {
+  storyId: string;
   comments: Comment[];
   onSave: (comment: string) => void;
-  mutate: KeyedMutator<ProjectStory>;
+  mutate: KeyedMutator<ProjectStory>; 
 }
 
-const StoryComments: React.FC<StoryCommentsProps> = ({ comments, onSave, mutate }) => {
+const StoryComments: React.FC<StoryCommentsProps> = ({ storyId, comments, onSave, mutate }) => {
   const transCmt = useTranslations("Comments");
   const transStory = useTranslations("Projects.Stories");
 
@@ -35,15 +36,13 @@ const StoryComments: React.FC<StoryCommentsProps> = ({ comments, onSave, mutate 
 
   const { data: fetchedUsers = [], isLoading } = useSWR("userList", fetchUsers);
 
-  const userList = useMemo(() => {
-    return mapUsersToMentions(fetchedUsers || []);
-  }, [fetchedUsers]);
+  const userList = useMemo(() => mapUsersToMentions(fetchedUsers || []), [fetchedUsers]);
 
   const handleSave = (html: string) => {
     const trimmed = html.trim();
     if (trimmed) {
       onSave(trimmed);
-      setEditorKey((prev) => prev + 1); // reset editor
+      setEditorKey((prev) => prev + 1); 
     }
   };
 

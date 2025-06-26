@@ -11,10 +11,11 @@ import { getTipTapExtensions, mapUsersToMentions } from "@/app/common/utils/text
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
 import { Comment, ProjectStory } from "../interfaces/projectStory";
+import { KeyedMutator } from "swr";
 
 interface Props {
   comments: Comment[];
-  mutate: any; // KeyedMutator<ProjectStory>
+  mutate: KeyedMutator<ProjectStory>;
   updateComment: (comment: Comment) => Promise<void>;
   deleteComment: (commentId: string) => Promise<void>;
   currentUserId?: string;
@@ -36,9 +37,7 @@ const StoryCommentHistory: React.FC<Props> = ({
 
   const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
 
-  const userList = useMemo(() => {
-    return mapUsersToMentions(fetchedUsers || []);
-  }, [fetchedUsers]);
+  const userList = useMemo(() => mapUsersToMentions(fetchedUsers || []), [fetchedUsers]);
 
   const extensions = getTipTapExtensions();
   const displayedComments = showAll ? comments : comments.slice(0, 3);

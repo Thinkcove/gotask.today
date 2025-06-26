@@ -1,7 +1,7 @@
 // Interface for a single comment
 export interface Comment {
   updatedAt: string;
-  id: string; // UUID from backend (not Mongo _id)
+  id: string; // UUID from backend
   user_id: string; // UUID or email of user
   user_name: string; // Full name or email
   comment: string;
@@ -10,6 +10,7 @@ export interface Comment {
 
 // Interface for a project story
 export interface ProjectStory {
+  data: any;
   id: string;
   title: string;
   description?: string;

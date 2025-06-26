@@ -74,15 +74,29 @@ export const getStoriesByProjectService = async ({
 };
 
 // GET a story by its UUID
-export const getStoryByIdService = async (storyId: string): Promise<IProjectStory | null> => {
+export const getStoryByIdService = async (
+  storyId: string
+): Promise<(Omit<IProjectStory, keyof Document> & { comments: IProjectStoryComment[] }) | null> => {
   try {
     if (!storyId) {
-      throw new Error(storyMessages.FETCH.NOT_FOUND);
+      throw new Error("Story ID is required");
     }
 
-    return await ProjectStory.findOne({ id: storyId });
+    // Use .lean() to get a plain object
+    const story = await ProjectStory.findOne({ id: storyId }).lean();
+
+    if (!story) return null;
+
+    const comments = await ProjectStoryComment.find({ story_id: storyId })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return {
+      ...story,
+      comments
+    };
   } catch (error: any) {
-    throw new Error(error.message || storyMessages.FETCH.FAILED);
+    throw new Error(error.message || "Failed to fetch story by ID");
   }
 };
 

@@ -62,12 +62,9 @@ const ProjectStoryDetail = () => {
       setIsDeleting(true);
       const response = await deleteProjectStory(storyId as string);
       const message = response?.message || t("Stories.success.deleted");
-
       setSnackbar({ open: true, message, severity: "success" });
-
       setTimeout(() => router.push(`/project/viewProject/${projectId}/stories`), 500);
     } catch (error) {
-      console.error("Failed to delete story:", error);
       setSnackbar({ open: true, message: t("Stories.errors.deleteFailed"), severity: "error" });
     } finally {
       setIsDeleting(false);
@@ -81,12 +78,8 @@ const ProjectStoryDetail = () => {
 
   const submitStoryComment = async (commentText: string) => {
     if (!commentText.trim()) return;
-
-    await addCommentToProjectStory(storyId as string, {
-      comment: commentText
-    });
-
-    await mutate(); // Refresh story with new comment
+    await addCommentToProjectStory(storyId as string, { comment: commentText });
+    await mutate(); 
   };
 
   if (isLoading) {
@@ -129,7 +122,6 @@ const ProjectStoryDetail = () => {
               <ArrowBack />
             </IconButton>
           </Tooltip>
-
           <Box>
             <Typography variant="h5" fontWeight={600} textTransform="capitalize">
               {story.title}
@@ -140,8 +132,6 @@ const ProjectStoryDetail = () => {
             />
           </Box>
         </Box>
-
-        {/* Right Section: Edit/Delete buttons */}
         <Box display="flex" gap={1}>
           <Tooltip title={t("Stories.editStory")}>
             <IconButton
@@ -175,26 +165,21 @@ const ProjectStoryDetail = () => {
             {story.description || t("Stories.noDescription")}
           </Typography>
         </Box>
-
         <LabelValueText
           label={t("Stories.createdAt")}
           value={<FormattedDateTime date={story.createdAt} />}
         />
 
-        {/* Comments Section */}
+        {/* Comments */}
         <Divider sx={{ my: 3 }} />
-        <Box mt={3}>
-          <Typography variant="h6" fontWeight={600} mb={2}>
-            {t("Stories.commentSectionTitle") || "Comments"}
-          </Typography>
-          <StoryComments
-            comments={story?.comments || []}
-            onSave={submitStoryComment}
-            mutate={mutate}
-          />
-        </Box>
+        <StoryComments
+          storyId={storyId as string}
+          comments={story.comments || []}
+          onSave={submitStoryComment}
+          mutate={mutate}
+        />
 
-        {/* Tasks Section */}
+        {/* Tasks */}
         <Divider sx={{ my: 3 }} />
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -209,7 +194,6 @@ const ProjectStoryDetail = () => {
               {t("Stories.createTask")}
             </Button>
           </Box>
-
           {isTasksLoading ? (
             <CircularProgress size={24} />
           ) : tasks?.length > 0 ? (
@@ -243,7 +227,7 @@ const ProjectStoryDetail = () => {
         </Box>
       </Box>
 
-      {/* Delete Dialog */}
+      {/* Dialogs */}
       <CommonDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
@@ -256,7 +240,6 @@ const ProjectStoryDetail = () => {
         </Typography>
       </CommonDialog>
 
-      {/* Snackbar */}
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

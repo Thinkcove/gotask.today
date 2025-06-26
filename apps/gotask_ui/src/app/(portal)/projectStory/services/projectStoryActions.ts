@@ -27,7 +27,7 @@ export const updateProjectStory = async (storyId: string, updatedFields: UpdateS
   });
 };
 
-//  Delete a Project Story
+// Delete a Project Story
 export const deleteProjectStory = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/delete/${storyId}`;
@@ -35,19 +35,11 @@ export const deleteProjectStory = async (storyId: string) => {
   });
 };
 
-//  Add Comment to a Story
+// Add Comment to a Story
 export const addCommentToProjectStory = async (storyId: string, payload: AddCommentPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/comment/${storyId}`;
     return postData(url, payload as unknown as Record<string, unknown>, token);
-  });
-};
-
-// Get All Comments by Story ID
-export const getCommentsByStoryId = async (storyId: string): Promise<Comment[]> => {
-  return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/story/${storyId}/comments`;
-    return getData(url, token);
   });
 };
 
@@ -95,7 +87,7 @@ export const getStoriesByProject = async (
   });
 };
 
-// Get Single Story by Story ID
+// Get Single Story by Story ID (returns comments included)
 export const getProjectStoryById = async (storyId: string): Promise<ProjectStory> => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/${storyId}`;
@@ -110,3 +102,4 @@ export const getTasksByStory = async (storyId: string) => {
     return getData(url, token);
   });
 };
+

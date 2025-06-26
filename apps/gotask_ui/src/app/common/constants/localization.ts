@@ -16,6 +16,7 @@ export const LOCALIZATION = {
     ASSETS: "Assets",
     KPI: "KPI",
     WORKPLANNED: "WorkPlanned",
-    PROJECTGOAL: "ProjectGoal"
+    PROJECTGOAL: "ProjectGoal",
+    COMMENTS: "Comments"
   }
 };

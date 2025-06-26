@@ -7,3 +7,10 @@ export const PROJECTGOAL_STATUS = {
   BLOCKED: "blocked",
   NOT_STARTED: "not started "
 };
+
+export const PROJECT_GOAL_SEVERITY = {
+  LOW: "low",
+  MEDIUM: "medium",
+  HIGH: "high",
+  CRITICAL: "critical"
+};

@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { KPI_FREQUENCY, MEASUREMENT_CRITERIA, STATUS } from "../../../constants/kpiConstants";
+import { KPI_FREQUENCY, STATUS } from "../../../constants/kpiConstants";
 
 export interface IKpiTemplate extends Document {
   template_id: string;
@@ -39,7 +39,7 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
     },
     status: {
       type: String,
-      enum:Object.values(STATUS)
+      enum: Object.values(STATUS)
     },
     change_history: [
       {

@@ -53,4 +53,7 @@ export interface PaginatedStoryResponse {
     currentPage: number;
     pageSize: number;
   };
+  meta?: {
+    projectName?: string;
+  };
 }

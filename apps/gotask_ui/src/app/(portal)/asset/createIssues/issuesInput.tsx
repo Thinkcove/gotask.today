@@ -17,6 +17,7 @@ interface IssueInputProps {
   assetOptions: { id: string; name: string }[];
   statusOptions: { id: string; name: string }[];
   errors?: { [key: string]: string };
+  disabledFields?: (keyof IAssetIssues)[];
 }
 
 const IssueInput: React.FC<IssueInputProps> = ({
@@ -25,7 +26,8 @@ const IssueInput: React.FC<IssueInputProps> = ({
   userOptions,
   assetOptions,
   statusOptions,
-  errors
+  errors,
+  disabledFields
 }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const { user } = useUser();
@@ -35,18 +37,20 @@ const IssueInput: React.FC<IssueInputProps> = ({
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6} md={6}>
           <FormField
             type="select"
             label={`${transasset("assets")} ${transasset("required")}`}
             options={assetOptions}
             placeholder={transasset("assets")}
             value={formData.assetId}
-            onChange={(v) => onChange("assetId", String(v))}
+            onChange={(val) => onChange("assetId", String(val))}
             error={errors?.assetId}
+            disabled={disabledFields?.includes("assetId")}
           />
         </Grid>
-        <Grid item xs={12}>
+
+        <Grid item xs={12} sm={6} md={6}>
           <FormField
             type="select"
             label={`${transasset("reportedby")} ${transasset("required")}`}
@@ -54,10 +58,12 @@ const IssueInput: React.FC<IssueInputProps> = ({
             options={userOptions}
             value={formData.reportedBy}
             error={errors?.reportedBy}
-            onChange={(v) => onChange("reportedBy", String(v))}
+            onChange={(val) => onChange("reportedBy", String(val))}
+            disabled={disabledFields?.includes("reportedBy")}
           />
         </Grid>
-        <Grid item xs={12}>
+
+        <Grid item xs={12} sm={6} md={6}>
           <FormField
             type="select"
             label={`${transasset("issuestype")} ${transasset("required")}`}
@@ -65,19 +71,23 @@ const IssueInput: React.FC<IssueInputProps> = ({
             options={commonIssueTypes}
             value={formData.issueType}
             error={errors?.issueType}
-            onChange={(v) => onChange("issueType", String(v))}
+            onChange={(val) => onChange("issueType", String(val))}
+            disabled={disabledFields?.includes("issueType")}
           />
         </Grid>
-        <Grid item xs={12}>
+
+        <Grid item xs={12} sm={6} md={6}>
           <FormField
             type="text"
             label={transasset("description")}
             placeholder={transasset("description")}
             value={formData.description}
-            onChange={(v) => onChange("description", String(v))}
+            onChange={(val) => onChange("description", String(val))}
+            disabled={disabledFields?.includes("description")}
           />
         </Grid>
-        <Grid item xs={12}>
+
+        <Grid item xs={12} sm={6} md={6}>
           <FormField
             type="select"
             label={`${transasset("status")} ${transasset("required")}`}
@@ -85,10 +95,12 @@ const IssueInput: React.FC<IssueInputProps> = ({
             options={statusOptions}
             value={formData.status}
             error={errors?.status}
-            onChange={(v) => onChange("status", String(v))}
+            onChange={(val) => onChange("status", String(val))}
+            disabled={disabledFields?.includes("status")}
           />
         </Grid>
-        <Grid item xs={12}>
+
+        <Grid item xs={12} sm={6} md={6}>
           <FormField
             type="select"
             label={`${transasset("assignedTo")} ${transasset("required")}`}
@@ -96,7 +108,8 @@ const IssueInput: React.FC<IssueInputProps> = ({
             options={userOptions}
             value={formData.assignedTo}
             error={errors?.assignedTo}
-            onChange={(v) => onChange("assignedTo", String(v))}
+            onChange={(val) => onChange("assignedTo", String(val))}
+            disabled={disabledFields?.includes("assignedTo")}
           />
         </Grid>
       </Grid>

@@ -351,8 +351,8 @@
     "commentedit": "Edit",
     "showless": "Show Less",
     "comments": "Comments",
-    "taskhistory": "Task History",
-    "log": "Log of who performed the updates in the task",
+    "taskhistory": "History",
+    "log": "Log of who performed the updates",
     "spent": "Spent:",
     "estimated": "Estimated:",
     "timetrackingclick": "Click the bar to update time tracking",
@@ -606,7 +606,10 @@
     "editissue": "Update issues",
     "viewdetails": "View Details",
     "noupdates": "No updates",
-    "modeasset": "asset"
+    "modeasset": "asset",
+    "viewissues": "View Issues",
+    "reportedissues": "Reported Issues",
+    "nodescription": "No description provided"
   },
 
   "Chatbot": {

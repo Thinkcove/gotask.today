@@ -365,28 +365,21 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                               </Box>
                             )}
 
-                            {Number(user.issuesCount) > 0 && (
-                              <Box display="flex" justifyContent="flex-end" mt={1}>
-                                <Box
-                                  sx={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    cursor: "pointer",
-                                    px: 1,
-                                    pb: 0.3,
-                                    color: "#e42003",
-                                    fontWeight: 600,
-                                    "&:hover": {
-                                      textDecoration: "underline"
-                                    }
-                                  }}
-                                >
-                                  <Typography sx={{ color: "inherit", fontWeight: "inherit" }}>
-                                    {transasset("reportedissues")} {user.issuesCount}
-                                  </Typography>
-                                </Box>
+                            <Box display="flex" justifyContent="flex-end" mt={1}>
+                              <Box
+                                sx={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  cursor: "pointer",
+                                  px: 1,
+                                  pb: 0.3
+                                }}
+                              >
+                                <Typography sx={{ color: "#e42003", fontWeight: 200 }}>
+                                  {transasset("reportedissues")} ({user.issuesCount})
+                                </Typography>
                               </Box>
-                            )}
+                            </Box>
                           </Stack>
                         </CardComponent>
                       </Box>

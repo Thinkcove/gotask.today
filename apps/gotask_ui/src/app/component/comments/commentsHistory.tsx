@@ -9,9 +9,9 @@ import DateFormats from "@/app/component/dateTime/dateFormat";
 import { RichTextReadOnly } from "mui-tiptap";
 import ReusableEditor from "@/app/component/richText/textEditor";
 import useSWR from "swr";
-import { fetchUsers } from "../../user/services/userAction";
 import { getTipTapExtensions, mapUsersToMentions } from "@/app/common/utils/textEditor";
-import { IComment } from "../interface/taskInterface";
+import { IComment } from "@/app/(portal)/task/interface/taskInterface";
+import { fetchUsers } from "@/app/(portal)/user/services/userAction";
 
 interface CommentHistoryProps {
   comments: IComment[];

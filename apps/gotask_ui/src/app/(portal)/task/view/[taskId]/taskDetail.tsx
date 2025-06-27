@@ -13,7 +13,7 @@ import { formatTimeValue } from "@/app/common/utils/taskTime";
 import { createComment, deleteComment, updateComment } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import CommentSection from "../../edit/commentSection";
+import CommentSection from "../../../../component/comments/commentSection";
 
 interface TaskDetailViewProps {
   task: any;

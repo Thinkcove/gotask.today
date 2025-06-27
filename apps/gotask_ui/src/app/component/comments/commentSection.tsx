@@ -9,10 +9,10 @@ import useSWR from "swr";
 
 import ReusableEditor from "@/app/component/richText/textEditor";
 import CommentHistory from "./commentsHistory";
-import { fetchUsers } from "../../user/services/userAction";
+import { fetchUsers } from "../../(portal)/user/services/userAction";
 import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { IComment } from "../interface/taskInterface";
+import { IComment } from "../../(portal)/task/interface/taskInterface";
 
 interface CommentSectionProps {
   comments: IComment[];

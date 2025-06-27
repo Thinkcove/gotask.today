@@ -110,7 +110,7 @@ const RoleCards: React.FC<RolesCardProps> = ({ roles }) => {
                         }
                       }}
                       onClick={() => {
-                        router.push(`/role/viewRoles/${role.id}`);
+                        router.push(`/role/view/${role.id}`);
                       }}
                     >
                       <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>

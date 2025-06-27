@@ -366,34 +366,24 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                             )}
 
                             {Number(user.issuesCount) > 0 && (
-                              <Box display="flex" justifyContent="flex-end">
+                              <Box display="flex" justifyContent="flex-end" mt={1}>
                                 <Box
                                   sx={{
-                                    display: "flex",
+                                    display: "inline-flex",
                                     alignItems: "center",
-                                    color: "#741B92",
-                                    mt: 1,
-                                    fontWeight: 500,
                                     cursor: "pointer",
-                                    "&:hover": { textDecoration: "underline" }
+                                    px: 1,
+                                    pb: 0.3,
+                                    color: "#e42003",
+                                    fontWeight: 600,
+                                    "&:hover": {
+                                      textDecoration: "underline"
+                                    }
                                   }}
                                 >
-                                  <Typography sx={{ textTransform: "capitalize", mr: 2 }}>
-                                    {transasset("reportedissues")}
+                                  <Typography sx={{ color: "inherit", fontWeight: "inherit" }}>
+                                    {transasset("reportedissues")} {user.issuesCount}
                                   </Typography>
-                                  <Badge
-                                    badgeContent={user.issuesCount}
-                                    color="error"
-                                    sx={{
-                                      "& .MuiBadge-badge": {
-                                        fontSize: "0.75rem",
-                                        height: 20,
-                                        minWidth: 20,
-                                        borderRadius: "50%",
-                                        fontWeight: 600
-                                      }
-                                    }}
-                                  ></Badge>
                                 </Box>
                               </Box>
                             )}

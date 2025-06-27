@@ -244,7 +244,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                           {issue.issueType}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" mt={0.5} mb={1}>
-                          {issue.description} || {trans("nodescription")}
+                          {issue.description || trans("nodescription")}
                         </Typography>
                         <Stack direction="row" alignItems="center" spacing={1}>
                           <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />

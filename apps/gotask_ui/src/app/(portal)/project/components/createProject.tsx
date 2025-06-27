@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useRef, useState } from "react";
 import { IProjectField, Project, PROJECT_STATUS } from "../interfaces/projectInterface";
 import { createProject } from "../services/projectAction";
 import ProjectInput from "./projectInputs";
@@ -9,6 +10,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { RichTextEditorRef } from "mui-tiptap";
 
 interface CreateProjectProps {
   open: boolean;
@@ -23,22 +25,24 @@ const initialFormState: IProjectField = {
   organization_id: ""
 };
 
-const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
+const CreateProject: React.FC<CreateProjectProps> = ({ open, onClose, mutate }) => {
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const rteRef = useRef<RichTextEditorRef>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-
   const [formData, setFormData] = useState<IProjectField>(initialFormState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   // Validate required fields
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.name) newErrors.name = transproject("Projecttitle");
     if (!formData.description) newErrors.description = transproject("description");
     if (!formData.status) newErrors.status = transproject("status");
+    if (!formData.organization_id) newErrors.organization_id = transproject("organization");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -49,21 +53,24 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
   };
 
   const handleSubmit = async () => {
+    const html = rteRef.current?.editor?.getHTML?.() || formData.description;
+    handleChange("description", html);
+
     if (!validateForm()) return;
+
     try {
-      await createProject(formData);
+      await createProject({ ...formData, description: html });
       await mutate();
       setSnackbar({
         open: true,
-        message: transproject("errormessage"),
+        message: transproject("successmessage"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      onClose();
       handleClose();
     } catch {
       setSnackbar({
         open: true,
-        message: transproject("successmessage"),
+        message: transproject("errormessage"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
@@ -88,6 +95,7 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
           handleChange={handleChange}
           errors={errors}
           readOnlyFields={["status"]}
+          rteRef={rteRef}
         />
       </CommonDialog>
       <CustomSnackbar

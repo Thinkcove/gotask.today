@@ -128,6 +128,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     return acc;
   }, {} as GroupedTasks);
 
+  // Add users who only have leaves but no tasks
   leaves.forEach((leave) => {
     if (datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)) {
       const userKey = leave.user_id;
@@ -142,24 +143,26 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     }
   });
 
+  // Helper function to get leave type color
   const getLeaveTypeColor = (leaveType: string): string => {
     switch (leaveType.toLowerCase()) {
       case "sick leave":
       case "sick":
-        return "#ff9800";
+        return "#ff9800"; // Orange
       case "personal leave":
       case "personal":
-        return "#2196f3"; 
+        return "#2196f3"; // Blue
       case "vacation":
-        return "#4caf50"; 
+        return "#4caf50"; // Green
       case "emergency":
-        return "#f44336"; 
+        return "#f44336"; // Red
       default:
-        return "#9c27b0"; 
+        return "#9c27b0"; // Purple
     }
   };
 
   if (!data || data.length === 0) {
+    // Check if there are any leaves to show
     const leavesInRange = leaves.filter((leave) =>
       datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
     );
@@ -299,13 +302,9 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
           <TableBody>
             {Object.entries(groupedData).map(([userKey, userGroup]) => {
               const { userName, tasks, totalEstimation } = userGroup;
-              const totalRows = Math.max(tasks.length, 1); 
+              const totalRows = Math.max(tasks.length, 1); // At least 1 row even if no tasks
               console.log("User Key:", userKey);
-              const userLeaves = leaves.filter(
-                (leave) =>
-                  leave.user_id === userKey &&
-                  datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
-              );
+              const userLeaves = leaves.filter((leave) => leave.user_id === userKey);
 
               return Array.from({ length: totalRows }, (_, index) => {
                 const task = tasks[index];
@@ -359,31 +358,63 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                         }}
                       >
                         {userLeaves.length > 0 ? (
-                          <Box display="flex" flexDirection="column" gap={1}>
-                            {userLeaves.map((leave, leaveIndex) => (
-                              <Box key={leave.id || leaveIndex}>
-                                <StatusIndicator
-                                  status={leave.leave_type}
-                                  getColor={getLeaveTypeColor}
-                                />
+                          <Box display="flex" flexDirection="column" gap={2}>
+                            {userLeaves.map((leave, leaveIndex) => {
+                              const leaveFrom = new Date(leave.from_date);
+                              const leaveTo = new Date(leave.to_date);
+                              const days =
+                                Math.ceil(
+                                  (leaveTo.getTime() - leaveFrom.getTime()) / (1000 * 60 * 60 * 24)
+                                ) + 1;
 
-                                <Typography
-                                  variant="caption"
-                                  display="block"
-                                  sx={{ fontSize: "0.7rem" }}
+                              return (
+                                <Box
+                                  key={leave.id || leaveIndex}
+                                  sx={{
+                                    border: `2px solid ${getLeaveTypeColor(leave.leave_type)}`,
+                                    borderRadius: 2,
+                                    p: 1,
+                                    backgroundColor: "#fff8f0"
+                                  }}
                                 >
-                                  <FormattedDateTime
-                                    date={leave.from_date}
-                                    format={DateFormats.DATE_ONLY}
+                                  <Typography
+                                    sx={{
+                                      fontWeight: "bold",
+                                      color: getLeaveTypeColor(leave.leave_type),
+                                      fontSize: "0.9rem",
+                                      mb: 0.5
+                                    }}
+                                  >
+                                    {leave.leave_type}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontSize: "0.75rem", display: "block", mb: 1 }}
+                                  >
+                                    <FormattedDateTime
+                                      date={leave.from_date}
+                                      format={DateFormats.DATE_ONLY}
+                                    />{" "}
+                                    to{" "}
+                                    <FormattedDateTime
+                                      date={leave.to_date}
+                                      format={DateFormats.DATE_ONLY}
+                                    />
+                                  </Typography>
+                                  <Chip
+                                    label={`${days} day${days > 1 ? "s" : ""}`}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: "#1976d2",
+                                      color: "#fff",
+                                      fontSize: "0.7rem",
+                                      height: 20,
+                                      borderRadius: "10px"
+                                    }}
                                   />
-                                  {" to "}
-                                  <FormattedDateTime
-                                    date={leave.to_date}
-                                    format={DateFormats.DATE_ONLY}
-                                  />
-                                </Typography>
-                              </Box>
-                            ))}
+                                </Box>
+                              );
+                            })}
                           </Box>
                         ) : (
                           "-"

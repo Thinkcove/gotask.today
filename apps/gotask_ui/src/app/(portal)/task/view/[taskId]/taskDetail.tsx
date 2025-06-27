@@ -122,10 +122,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             {/* Edit Button - Separate Grid */}
             {canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) && (
               <Grid item xs="auto">
-                <IconButton
-                  color="primary"
-                  onClick={() => router.push(`/task/editTask/${task.id}`)}
-                >
+                <IconButton color="primary" onClick={() => router.push(`/task/edit/${task.id}`)}>
                   <Edit />
                 </IconButton>
               </Grid>

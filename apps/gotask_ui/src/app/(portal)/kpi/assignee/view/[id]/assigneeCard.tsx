@@ -103,4 +103,3 @@ const AssigneeCard: React.FC<AssigneeCardProps> = ({ user, assignedTemplates }) 
 };
 
 export default AssigneeCard;
-s;

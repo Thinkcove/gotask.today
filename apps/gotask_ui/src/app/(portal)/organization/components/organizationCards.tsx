@@ -84,7 +84,7 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
                         }
                       }}
                       onClick={() => {
-                        router.push(`/organization/viewOrganization/${organization.id}`);
+                        router.push(`/organization/view/${organization.id}`);
                       }}
                     >
                       <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>

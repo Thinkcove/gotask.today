@@ -13,7 +13,7 @@ import { formatTimeValue } from "@/app/common/utils/taskTime";
 import { createComment, deleteComment, updateComment } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import CommentSection from "../../editTask/commentSection";
+import CommentSection from "../../edit/commentSection";
 
 interface TaskDetailViewProps {
   task: any;
@@ -91,10 +91,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
 
             {canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) && (
               <Grid item xs="auto">
-                <IconButton
-                  color="primary"
-                  onClick={() => router.push(`/task/editTask/${task.id}`)}
-                >
+                <IconButton color="primary" onClick={() => router.push(`/task/edit/${task.id}`)}>
                   <Edit />
                 </IconButton>
               </Grid>

@@ -606,7 +606,10 @@
     "editissue": "Update issues",
     "viewdetails": "View Details",
     "noupdates": "No updates",
-    "modeasset": "asset"
+    "modeasset": "asset",
+    "viewissues": "View Issues",
+    "reportedissues": "Reported Issues",
+    "nodescription": "No description provided"
   },
 
   "Chatbot": {

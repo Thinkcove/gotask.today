@@ -244,9 +244,9 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
                     }}
                   >
                     <Box display="flex" flexDirection="column" gap={0.5}>
-                       {task.task_id ? (
+                      {task.task_id ? (
                         <Link
-                          href={`/task/viewTask/${task.task_id}`}
+                          href={`/task/view/${task.task_id}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           underline="none"
@@ -276,7 +276,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({ data, fromDat
                             textTransform: "capitalize",
                             whiteSpace: "nowrap"
                           }}
-                          title={task.task_title ||transworkplanned("notask")}
+                          title={task.task_title || transworkplanned("notask")}
                         >
                           {task.task_title || transworkplanned("notask")}
                         </Typography>

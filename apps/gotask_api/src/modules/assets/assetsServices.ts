@@ -14,6 +14,7 @@ import { createAssetHistory, getAssetHistoryById } from "../../domain/interface/
 import {
   createResource,
   createTag,
+  getIssuesByUserId,
   getTagsByAssetId,
   getTagsByTypeId,
   updateTag
@@ -190,6 +191,11 @@ class assetService {
       const assetHistory = await getAssetHistoryById(data.id);
 
       const tags = await getTagsByAssetId(data.id);
+
+      let getIssuesByUser = null;
+      if (tags?.userId && tags?.assetId) {
+        getIssuesByUser = await getIssuesByUserId(tags?.userId, tags?.assetId);
+      }
       let userData = null;
       if (tags) {
         userData = await findUser(tags.userId);
@@ -200,7 +206,8 @@ class assetService {
           tags,
           assetHistory,
           type: assetType?.name,
-          assignedTo: userData?.name
+          assignedTo: userData?.name,
+          issues: getIssuesByUser
         },
         success: true
       };

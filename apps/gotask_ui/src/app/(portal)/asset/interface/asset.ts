@@ -83,6 +83,7 @@ export interface IAssetAttributes {
   assetHistory?: IAssetHistory[];
   type?: string;
   assignedTo?: string;
+  issues?: IAssetIssues[];
 }
 
 export interface IAssetTags {

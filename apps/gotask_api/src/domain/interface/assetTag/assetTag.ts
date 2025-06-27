@@ -66,6 +66,10 @@ const getAssetByUserId = async (userId: string): Promise<IAssetTag[]> => {
   return await AssetTag.find({ userId });
 };
 
+const getIssuesByUserId = async (reportedBy: string, assetId: string): Promise<IAssetIssue[]> => {
+  return await AssetIssue.find({ reportedBy, assetId });
+};
+
 export {
   createResource,
   createAssetIssues,
@@ -77,5 +81,6 @@ export {
   getTagById,
   updateTag,
   getAssetByUserId,
-  createTag
+  createTag,
+  getIssuesByUserId
 };

@@ -12,10 +12,10 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { formatTimeValue } from "@/app/common/utils/taskTime";
 import { KeyedMutator } from "swr";
-import TaskComments from "../../editTask/taskComments";
 import { createComment } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import TaskComments from "../../edit/taskComments";
 interface TaskDetailViewProps {
   task: ITask;
   loading?: boolean;
@@ -122,10 +122,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             {/* Edit Button - Separate Grid */}
             {canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) && (
               <Grid item xs="auto">
-                <IconButton
-                  color="primary"
-                  onClick={() => router.push(`/task/editTask/${task.id}`)}
-                >
+                <IconButton color="primary" onClick={() => router.push(`/task/edit/${task.id}`)}>
                   <Edit />
                 </IconButton>
               </Grid>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, RefObject } from "react";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { IProjectField, PROJECT_WORKFLOW } from "../interfaces/projectInterface";
 import { useAllOrganizations } from "../../organization/services/organizationAction";
@@ -54,17 +54,6 @@ const ProjectInput: React.FC<IProjectInputProps> = ({
           placeholder={transproject("placeholdername")}
         />
       </Grid>
-      <Grid item xs={12}>
-        <ReusableEditor
-          ref={rteRef}
-          content={formData.description || ""}
-          onSave={handleDescriptionSave}
-          placeholder={transproject("placeholderdescription")}
-          readOnly={isReadOnly("description")}
-          showSaveButton={false}
-          userList={[]}
-        />
-      </Grid>
       <Grid item xs={12} sm={6}>
         <FormField
           label={transproject("labelstatus")}
@@ -88,6 +77,20 @@ const ProjectInput: React.FC<IProjectInputProps> = ({
           required
           disabled={isReadOnly("organization_id")}
           placeholder={transproject("placeholderorganization")}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+          {transproject("labeldescription")}
+        </Typography>
+        <ReusableEditor
+          ref={rteRef}
+          content={formData.description || ""}
+          onSave={handleDescriptionSave}
+          placeholder={transproject("placeholderdescription")}
+          readOnly={isReadOnly("description")}
+          showSaveButton={false}
+          userList={[]}
         />
       </Grid>
     </Grid>

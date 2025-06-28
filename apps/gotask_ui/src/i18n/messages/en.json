@@ -726,7 +726,8 @@
      "targetvalue":"Target value is required",
      "measurementerror":"Measurement Crirteria is required",
      "viewDetails":"View Details",
-     "searchemployees":"Search Employees"
+     "searchemployees":"Search Employees",
+     "entertemplate":"Enter Template Name"
   },
   "WorkPlanned": {
     "nodata": "No work planned data found for the selected date range",

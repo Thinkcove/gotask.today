@@ -36,9 +36,9 @@ const KpiItem: React.FC<TemplateCardsProps> = ({ templates, onView }) => {
       {templates.map((template) => {
         const status = template.status ? template.status.toLowerCase() : "inactive";
         return (
-          <Grid item xs={12} sm={6} md={4} key={template.id || Math.random()}>
+          <Grid item xs={12} sm={6} md={4} lg={3} key={template.id || Math.random()}>
             <Card
-              elevation={3}
+              elevation={4}
               sx={{
                 cursor: "pointer",
                 backgroundColor: mildStatusColor(status),

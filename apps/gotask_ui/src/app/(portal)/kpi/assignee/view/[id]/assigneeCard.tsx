@@ -1,16 +1,18 @@
 "use client";
 
 import React from "react";
-import { Box, Card, Typography, Avatar, Chip } from "@mui/material";
+import { Box, Typography, Chip, Stack, Divider } from "@mui/material";
+import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
+import { ArrowForward } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useRouter } from "next/navigation";
+import CardComponent from "@/app/component/card/cardComponent";
 
 interface AssigneeCardProps {
   user: {
     id: string;
     name: string;
-    email: string;
     avatarUrl?: string;
     role?: { name: string };
   };
@@ -21,84 +23,90 @@ const AssigneeCard: React.FC<AssigneeCardProps> = ({ user, assignedTemplates }) 
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
 
+  const templateList = assignedTemplates.flatMap((a) => a.template || []);
+  const visibleTemplates = templateList.slice(0, 1);
+  const remainingCount = templateList.length - visibleTemplates.length;
+
   return (
-    <Card
-      sx={{
-        width: "100%",
-        minHeight: 180,
-        cursor: "pointer",
-        position: "relative",
-        p: 2,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-        "&:hover": {
-          transform: "scale(1.02)",
-          boxShadow: "0px 3px 10px rgba(0,0,0,0.1)"
-        }
-      }}
-      onClick={() => router.push(`/kpi/assignee/view/${user.id}`)}
-    >
-      <Box display="flex" alignItems="center" gap={2}>
-        <Avatar src={user.avatarUrl || ""} alt={user.name} />
-        <Box>
-          <Typography variant="subtitle1">{user.name}</Typography>
-          <Typography variant="body2" color="textSecondary">
-            {user.email}
-          </Typography>
-          {user.role?.name && (
-            <Typography variant="body2" color="textSecondary">
-              {transkpi("role")}: {user.role.name}
+    <CardComponent>
+      <Stack spacing={2} sx={{ height: "100%" }}>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
+          <Box>
+            <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
+              {user.name}
             </Typography>
-          )}
-        </Box>
-      </Box>
+            {user.role?.name && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ textTransform: "capitalize" }}
+              >
+                {user.role.name}
+              </Typography>
+            )}
+          </Box>
+        </Stack>
 
-      <Box mt={2}>
-        <Typography variant="body2" color="textSecondary" mb={1}>
-          {transkpi("assignedTemplates")}:
-        </Typography>
-        <Box display="flex" flexWrap="wrap" gap={1}>
-          {assignedTemplates && assignedTemplates.length > 0 ? (
-            (() => {
-              const allTemplates = assignedTemplates.flatMap(
-                (assignment) => assignment.template || []
-              );
-              const visibleTemplates = allTemplates.slice(0, 3);
-              const remainingCount = allTemplates.length - visibleTemplates.length;
+        <Divider />
 
-              return (
-                <>
-                  {visibleTemplates.map((tpl: any, i: number) => (
-                    <Chip
-                      key={`template-chip-${tpl.template_id || i}`}
-                      label={tpl.title}
-                      size="small"
-                    />
-                  ))}
-                  {remainingCount > 0 && (
-                    <Chip label={`+${remainingCount} more`} size="small" color="default" />
-                  )}
-                </>
-              );
-            })()
+        {/* Assigned Templates */}
+        <Box>
+          <Typography variant="body2" color="text.secondary" mb={1}>
+            {transkpi("assignedTemplates")}:
+          </Typography>
+          {templateList.length > 0 ? (
+            <Box display="flex" flexWrap="wrap" gap={1}>
+              {visibleTemplates.map((tpl: any, i: number) => (
+                <Chip
+                  key={`tpl-chip-${i}`}
+                  label={tpl.title}
+                  size="small"
+                  sx={{
+                    color: "#741B92",
+                    backgroundColor: "rgba(116, 27, 146, 0.1)"
+                  }}
+                />
+              ))}
+              {remainingCount > 0 && (
+                <Chip
+                  label={`+${remainingCount} more`}
+                  size="small"
+                  sx={{
+                    color: "#741B92",
+                    backgroundColor: "rgba(116, 27, 146, 0.1)"
+                  }}
+                />
+              )}
+            </Box>
           ) : (
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body2" color="text.secondary">
               {transkpi("noTemplatesAssigned")}
             </Typography>
           )}
         </Box>
-      </Box>
 
-      <Typography
-        variant="body2"
-        color="primary"
-        sx={{ mt: 2, textAlign: "right", textDecoration: "underline" }}
-      >
-        {transkpi("viewDetails")}
-      </Typography>
-    </Card>
+        {/* View Details */}
+        <Box display="flex" justifyContent="flex-end">
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              color: "#741B92",
+              fontWeight: 500,
+              cursor: "pointer",
+              "&:hover": { textDecoration: "underline" }
+            }}
+            onClick={() => router.push(`/kpi/assignee/view/${user.id}`)}
+          >
+            <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
+              {transkpi("viewDetails")}
+            </Typography>
+            <ArrowForward fontSize="small" />
+          </Box>
+        </Box>
+      </Stack>
+    </CardComponent>
   );
 };
 

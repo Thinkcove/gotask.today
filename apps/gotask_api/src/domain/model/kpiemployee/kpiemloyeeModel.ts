@@ -40,8 +40,7 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
       required: true
     },
     kpi_Description: {
-      type: String,
-      required: true
+      type: String
     },
     measurement_criteria: {
       type: String,

@@ -87,7 +87,7 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
   return (
     <Box sx={{ position: "relative", height: "100vh", overflowY: "auto", p: 3 }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Box maxWidth={400}>
+        <Box mb={3} maxWidth={400}>
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
@@ -97,7 +97,6 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
         </Box>
         <TemplateToggle view={view} onViewChange={handleViewChange} />
       </Box>
-
       <TemplateCards
         templates={templates}
         onDelete={handleDelete}

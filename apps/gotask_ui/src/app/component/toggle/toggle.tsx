@@ -5,54 +5,39 @@ interface ToggleProps {
   options: string[];
   selected: string;
   onChange: (value: string) => void;
-  
 }
 
-const TaskToggle: React.FC<ToggleProps> = ({ options, selected, onChange }) => {
-  const selectedIndex = options.indexOf(selected);
-
+const Toggle: React.FC<ToggleProps> = ({ options, selected, onChange }) => {
   return (
     <Box
       sx={{
         display: "flex",
-        gap: 4,
-        position: "relative",
-        borderBottom: "2px solid #eee",
         width: "fit-content",
-        marginBottom: "4px"
+        gap: 4
       }}
     >
-      {options.map((option) => (
-        <Box
-          key={option}
-          onClick={() => onChange(option)}
-          sx={{
-            cursor: "pointer",
-            fontSize: "0.875rem",
-            fontWeight: selected === option ? 600 : 400,
-            color: selected === option ? "#741B92" : "#555",
-            paddingBottom: "4px",
-            transition: "color 0.2s"
-          }}
-        >
-          {option}
-        </Box>
-      ))}
-
-      {/* Animated underline */}
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 0,
-          left: `${(100 / options.length) * selectedIndex}%`,
-          width: `${100 / options.length}%`,
-          height: "2px",
-          backgroundColor: "#741B92",
-          transition: "left 0.3s ease"
-        }}
-      />
+      {options.map((option) => {
+        const isSelected = selected === option;
+        return (
+          <Box
+            key={option}
+            onClick={() => onChange(option)}
+            sx={{
+              cursor: "pointer",
+              fontSize: "0.875rem",
+              fontWeight: isSelected ? 600 : 400,
+              color: isSelected ? "#741B92" : "#555",
+              paddingBottom: "4px",
+              borderBottom: isSelected ? "2px solid #741B92" : "2px solid transparent",
+              transition: "color 0.2s, border-bottom 0.3s"
+            }}
+          >
+            {option}
+          </Box>
+        );
+      })}
     </Box>
   );
 };
 
-export default TaskToggle;
+export default Toggle;

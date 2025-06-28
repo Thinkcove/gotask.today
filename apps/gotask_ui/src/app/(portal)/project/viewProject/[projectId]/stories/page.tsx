@@ -5,16 +5,12 @@ import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import StoryList from "@/app/(portal)/projectStory/components/StoryList";
 import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
 
 const StoriesPage = () => {
   const t = useTranslations("Projects.Stories");
-  const searchParams = useSearchParams();
+  const [projectName, setProjectName] = useState("");
 
-  const initialProjectName = searchParams.get("name") || "";
-  const [projectName, setProjectName] = useState(initialProjectName);
-
-  const suffixToday = t("suffixtoday"); 
+  const suffixToday = t("suffixtoday");
   const cleanedName = projectName.replace(new RegExp(`${suffixToday}$`, "i"), "").trim();
 
   return (
@@ -31,9 +27,9 @@ const StoriesPage = () => {
       {/* Header */}
       <ModuleHeader name={cleanedName ? `${cleanedName} ${t("stories")}` : t("projectStories")} />
 
-      {/* Content */}
+      {/* Story List */}
       <Box sx={{ flex: 1, overflowY: "auto" }}>
-        <StoryList onProjectNameFetch={(name) => setProjectName(name)} />
+        <StoryList onProjectNameLoad={setProjectName} />
       </Box>
     </Box>
   );

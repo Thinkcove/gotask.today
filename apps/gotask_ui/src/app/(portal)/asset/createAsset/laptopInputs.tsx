@@ -113,7 +113,12 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                   type="date"
                   placeholder={transasset("dateOfPurchase")}
                   value={formData.dateOfPurchase}
-                  onChange={(val) => onChange("dateOfPurchase", new Date(val as string))}
+                  onChange={(val) =>
+                    onChange(
+                      "dateOfPurchase",
+                      val instanceof Date ? val.toISOString().split("T")[0] : String(val)
+                    )
+                  }
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -131,7 +136,12 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                   type="date"
                   placeholder={transasset("warrantyDate")}
                   value={formData.warrantyDate}
-                  onChange={(val) => onChange("warrantyDate", new Date(val as string))}
+                  onChange={(val) =>
+                    onChange(
+                      "warrantyDate",
+                      val instanceof Date ? val.toISOString().split("T")[0] : String(val)
+                    )
+                  }
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -171,7 +181,12 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                   type="date"
                   placeholder={transasset("lastServicedDate")}
                   value={formData.lastServicedDate}
-                  onChange={(val) => onChange("lastServicedDate", new Date(val as string))}
+                  onChange={(val) =>
+                    onChange(
+                      "lastServicedDate",
+                      val instanceof Date ? val.toISOString().split("T")[0] : String(val)
+                    )
+                  }
                 />
               </Grid>
               <Grid item xs={12} sm={4}>

@@ -10,3 +10,5 @@ export const ASSET_TAGS = {
   RETURNED: "Returned",
   SERVICES: "Serviced"
 };
+
+export const SYSTEM_TYPES = ["Office System", "Personal System"];

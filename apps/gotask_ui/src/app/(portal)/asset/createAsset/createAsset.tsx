@@ -15,6 +15,7 @@ import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
 import MobileInputs from "./mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
+import { systemTypeOptions } from "../assetConstants";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -25,6 +26,7 @@ export const CreateAsset: React.FC = () => {
     typeId: "",
     userId: "",
     deviceName: "",
+    systemType: "",
     serialNumber: "",
     modelName: "",
     os: "",
@@ -87,14 +89,20 @@ export const CreateAsset: React.FC = () => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.typeId) newErrors.typeId = transasset("typeid");
-    if (!formData.deviceName) newErrors.deviceName = transasset("devicename");
-    if (!formData.ram) newErrors.ram = transasset("ram");
-    if (!formData.modelName) newErrors.modelName = transasset("modelname");
-    if (!formData.os) newErrors.os = transasset("os");
-    if (!formData.processor) newErrors.processor = transasset("processor");
+    if (!formData.deviceName)
+      newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
+    if (!formData.systemType)
+      newErrors.systemType = `${transasset("systemtype")} ${transasset("isrequired")}`;
+    if (!formData.ram) newErrors.ram = `${transasset("ram")} ${transasset("isrequired")}`;
+    if (!formData.modelName)
+      newErrors.modelName = `${transasset("modelname")} ${transasset("isrequired")}`;
+    if (!formData.os) newErrors.os = `${transasset("os")} ${transasset("isrequired")}`;
+    if (!formData.processor)
+      newErrors.processor = `${transasset("processor")} ${transasset("isrequired")}`;
 
     if (selectedAssetType?.name === ASSET_TYPE.MOBILE) {
-      if (!formData.imeiNumber) newErrors.imeiNumber = transasset("imeiNumber");
+      if (!formData.imeiNumber)
+        newErrors.imeiNumber = `${transasset("imeiNumber")} ${transasset("isrequired")}`;
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -219,13 +227,19 @@ export const CreateAsset: React.FC = () => {
                 onChange={handleInputChange}
                 startIndex={1}
                 selectedAssetType={selectedAssetType}
+                systemTypeOptions={systemTypeOptions}
                 errors={errors}
               />
             </Grid>
           )}
           {selectedAssetType?.name === ASSET_TYPE.MOBILE && (
             <Grid item xs={12}>
-              <MobileInputs formData={formData} onChange={handleInputChange} errors={errors} />
+              <MobileInputs
+                formData={formData}
+                onChange={handleInputChange}
+                errors={errors}
+                systemTypeOptions={systemTypeOptions}
+              />
             </Grid>
           )}
         </Grid>

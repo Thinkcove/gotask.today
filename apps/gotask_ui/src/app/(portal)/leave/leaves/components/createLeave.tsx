@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
   FormControl,
   InputLabel,
   Select,
@@ -25,21 +24,19 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  trans: (key: string) => string;
 }
 
-const CreateLeave: React.FC<Props> = ({ open, onClose, onSuccess, trans }) => {
+const CreateLeave: React.FC<Props> = ({ open, onClose, onSuccess }) => {
   const [formData, setFormData] = useState<Partial<ILeave>>({
-    leave_type: '',
+    leave_type: undefined,
     from_date: '',
-    to_date: '',
-    reason: ''
+    to_date: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
 
   const handleSubmit = async () => {
-    if (!formData.leave_type || !formData.from_date || !formData.to_date || !formData.reason) {
+    if (!formData.leave_type || !formData.from_date || !formData.to_date) {
       setError('All fields are required');
       return;
     }
@@ -69,36 +66,31 @@ const CreateLeave: React.FC<Props> = ({ open, onClose, onSuccess, trans }) => {
 
   const handleClose = () => {
     setFormData({
-      leave_type: '',
+      leave_type: undefined,
       from_date: '',
-      to_date: '',
-      reason: ''
+      to_date: ''
     });
     setError('');
     onClose();
   };
 
-  const formatLeaveType = (type: string) => {
-    return type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-  };
-
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{trans("createLeaveRequest")}</DialogTitle>
+      <DialogTitle>Create Leave Request</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
           {error && <Alert severity="error">{error}</Alert>}
           
           <FormControl fullWidth>
-            <InputLabel>{trans("leaveType")}</InputLabel>
+            <InputLabel>Leave Type</InputLabel>
             <Select
-              value={formData.leave_type}
-              onChange={(e) => setFormData(prev => ({ ...prev, leave_type: e.target.value }))}
-              label={trans("leaveType")}
+              value={formData.leave_type || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, leave_type: e.target.value as "sick" | "personal" }))}
+              label="Leave Type"
             >
               {LEAVE_TYPES.map((type) => (
                 <MenuItem key={type} value={type}>
-                  {formatLeaveType(type)}
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
                 </MenuItem>
               ))}
             </Select>
@@ -106,7 +98,7 @@ const CreateLeave: React.FC<Props> = ({ open, onClose, onSuccess, trans }) => {
 
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
-              label={trans("fromDate")}
+              label="From Date"
               value={formData.from_date ? new Date(formData.from_date) : null}
               onChange={(date) => setFormData(prev => ({ 
                 ...prev, 
@@ -116,7 +108,7 @@ const CreateLeave: React.FC<Props> = ({ open, onClose, onSuccess, trans }) => {
             />
             
             <DatePicker
-              label={trans("toDate")}
+              label="To Date"
               value={formData.to_date ? new Date(formData.to_date) : null}
               onChange={(date) => setFormData(prev => ({ 
                 ...prev, 
@@ -126,20 +118,11 @@ const CreateLeave: React.FC<Props> = ({ open, onClose, onSuccess, trans }) => {
               minDate={formData.from_date ? new Date(formData.from_date) : undefined}
             />
           </LocalizationProvider>
-
-          <TextField
-            label={trans("reason")}
-            multiline
-            rows={4}
-            value={formData.reason}
-            onChange={(e) => setFormData(prev => ({ ...prev, reason: e.target.value }))}
-            fullWidth
-          />
         </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} disabled={loading}>
-          {trans("cancel")}
+          Cancel
         </Button>
         <Button 
           onClick={handleSubmit} 
@@ -147,7 +130,7 @@ const CreateLeave: React.FC<Props> = ({ open, onClose, onSuccess, trans }) => {
           disabled={loading}
           startIcon={loading ? <CircularProgress size={20} /> : null}
         >
-          {loading ? trans("creating") : trans("create")}
+          {loading ? "Creating..." : "Create"}
         </Button>
       </DialogActions>
     </Dialog>

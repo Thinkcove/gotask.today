@@ -1,31 +1,36 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Box, Grid, Paper } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { useTranslations } from "next-intl";
-import { LOCALIZATION } from "@/app/common/constants/localization";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
-import { getLeaveColumns, calculateDuration, LEAVE_TYPES, LEAVE_STATUSES } from "../constants/leaveConstants";
+import { getLeaveColumns, calculateDuration } from "../constants/leaveConstants";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import LeaveFilters from "./leaveFilters";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoDataImage from "@assets/placeholderImages/notask.svg";
 import CreateLeave from "./createLeave";
-import { useAllLeaves } from "../services/leaveServices";
+import { useLeavesWithFilters } from "../services/leaveServices";
 import { ILeave, ILeaveDisplayRow } from "../interface/leave";
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridPaginationModel } from '@mui/x-data-grid';
 
 export const LeaveList: React.FC = () => {
-  const transleave = useTranslations("leave");
   const [leaveTypeFilter, setLeaveTypeFilter] = useState<string[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [userFilter, setUserFilter] = useState<string[]>([]);
   const [createLeaveOpen, setCreateLeaveOpen] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
   const router = useRouter();
 
-  const { getAll: allLeaves, mutate } = useAllLeaves();
+  const filters = {
+    leave_type: leaveTypeFilter[0] as "sick" | "personal" | undefined,
+    user_id: userFilter[0] || undefined,
+    from_date: searchText || undefined,
+    to_date: searchText || undefined,
+    page: 1,
+    page_size: 10
+  };
+
+  const { getAll: leaves, totalCount, totalPages, currentPage, mutate } = useLeavesWithFilters(filters);
 
   const handleEdit = (row: ILeaveDisplayRow) => {
     router.push(`/leave/edit/${row.id}`);
@@ -39,62 +44,20 @@ export const LeaveList: React.FC = () => {
     console.log("Delete leave:", row.id);
   };
 
-  const leaveColumns = getLeaveColumns(transleave, handleEdit, handleView, handleDelete);
+  const leaveColumns = getLeaveColumns(
+    (key: string) => key,
+    handleEdit,
+    handleView,
+    handleDelete
+  );
 
   const handleActionClick = () => {
     setCreateLeaveOpen(true);
   };
 
-  const allUsers: string[] = useMemo(() =>
-    Array.from(
-      new Set(
-        allLeaves
-          .map((leave: ILeave) => leave.user_id)
-          .filter((user: string): user is string => !!user)
-      )
-    ),
-    [allLeaves]
-  );
+  const allUsers: string[] = Array.from(new Set(leaves.map((leave: ILeave) => leave.user_id).filter((user: string): user is string => !!user)));
 
-  const filterLeaves = (
-    leaves: ILeave[],
-    searchText: string,
-    leaveTypeFilter: string[],
-    statusFilter: string[],
-    userFilter: string[]
-  ) => {
-    const lowerSearch = searchText.toLowerCase();
-    return leaves.filter((leave) => {
-      const matchBasic =
-        searchText.trim() === "" ||
-        [
-          leave.leave_type,
-          leave.reason,
-          leave.status,
-          leave.user_id
-        ]
-          .filter(Boolean)
-          .some((field) => field!.toString().toLowerCase().includes(lowerSearch));
-
-      const matchLeaveType =
-        leaveTypeFilter.length === 0 ||
-        leaveTypeFilter.includes(leave.leave_type);
-
-      const matchStatus =
-        statusFilter.length === 0 ||
-        statusFilter.includes(leave.status || 'pending');
-
-      const matchUser =
-        userFilter.length === 0 ||
-        userFilter.includes(leave.user_id);
-
-      return matchBasic && matchLeaveType && matchStatus && matchUser;
-    });
-  };
-
-  const filteredLeaves = filterLeaves(allLeaves, searchText, leaveTypeFilter, statusFilter, userFilter);
-
-  const mappedLeaves: ILeaveDisplayRow[] = filteredLeaves.map((leave) => ({
+  const mappedLeaves: ILeaveDisplayRow[] = leaves.map((leave: ILeave) => ({
     id: leave.id || '',
     leaveType: leave.leave_type,
     fromDate: leave.from_date ? new Date(leave.from_date).toLocaleDateString() : '-',
@@ -102,16 +65,18 @@ export const LeaveList: React.FC = () => {
     duration: leave.from_date && leave.to_date 
       ? calculateDuration(leave.from_date.toString(), leave.to_date.toString()) 
       : '-',
-    status: leave.status || 'pending',
-    reason: leave.reason || '-',
-    appliedDate: leave.applied_date ? new Date(leave.applied_date).toLocaleDateString() : 
-                  (leave.created_at ? new Date(leave.created_at).toLocaleDateString() : '-'),
-    approvedBy: leave.approved_by || undefined
+    appliedDate: leave.created_at ? new Date(leave.created_at).toLocaleDateString() : '-'
   }));
+
+  const handlePaginationModelChange = (model: GridPaginationModel) => {
+    filters.page = model.page + 1;
+    filters.page_size = model.pageSize;
+    mutate();
+  };
 
   return (
     <>
-      <ModuleHeader name={"leave"} />
+      <ModuleHeader name="Leave" />
       <Box
         sx={{
           display: "flex",
@@ -133,7 +98,7 @@ export const LeaveList: React.FC = () => {
           <SearchBar
             value={searchText}
             onChange={setSearchText}
-            placeholder={transleave("searchLeave")}
+            placeholder="Search by Date"
           />
         </Box>
       </Box>
@@ -141,21 +106,16 @@ export const LeaveList: React.FC = () => {
       <Box marginTop={"15px"}>
         <LeaveFilters
           leaveTypeFilter={leaveTypeFilter}
-          statusFilter={statusFilter}
           userFilter={userFilter}
-          allLeaveTypes={LEAVE_TYPES}
-          allStatuses={LEAVE_STATUSES}
+          allLeaveTypes={['sick', 'personal']}
           allUsers={allUsers}
           onLeaveTypeChange={setLeaveTypeFilter}
-          onStatusChange={setStatusFilter}
           onUserChange={setUserFilter}
           onClearFilters={() => {
             setLeaveTypeFilter([]);
-            setStatusFilter([]);
             setUserFilter([]);
             setSearchText("");
           }}
-          trans={transleave}
         />
       </Box>
 
@@ -172,11 +132,7 @@ export const LeaveList: React.FC = () => {
             {mappedLeaves.length === 0 ? (
               <EmptyState
                 imageSrc={NoDataImage}
-                message={
-                  searchText || leaveTypeFilter.length || statusFilter.length || userFilter.length
-                    ? transleave("nodata")
-                    : transleave("noleave")
-                }
+                message="No leaves available"
               />
             ) : (
               <Paper
@@ -190,7 +146,17 @@ export const LeaveList: React.FC = () => {
               >
                 <Box sx={{ width: "100%", flex: 1 }}>
                   <Box sx={{ minWidth: 1000 }}>
-                    <DataGrid rows={mappedLeaves} columns={leaveColumns} autoHeight getRowId={(row) => row.id} />
+                    <DataGrid 
+                      rows={mappedLeaves} 
+                      columns={leaveColumns} 
+                      autoHeight 
+                      getRowId={(row) => row.id} 
+                      paginationMode="server"
+                      rowCount={totalCount}
+                      pageSizeOptions={[5, 10, 20]}
+                      paginationModel={{ page: currentPage - 1, pageSize: filters.page_size }}
+                      onPaginationModelChange={handlePaginationModelChange}
+                    />
                   </Box>
                 </Box>
               </Paper>
@@ -208,7 +174,7 @@ export const LeaveList: React.FC = () => {
         }}
       >
         <ActionButton
-          label={transleave("createLeave")}
+          label="Create Leave"
           icon={<AddIcon sx={{ color: "white" }} />}
           onClick={handleActionClick}
         />
@@ -220,7 +186,6 @@ export const LeaveList: React.FC = () => {
         onSuccess={() => {
           mutate();
         }}
-        trans={transleave}
       />
     </>
   );

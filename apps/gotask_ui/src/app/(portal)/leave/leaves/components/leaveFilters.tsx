@@ -1,49 +1,29 @@
-// components/leaveFilters.tsx
 import React from "react";
 import { Box, Link } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 
 interface Props {
   leaveTypeFilter: string[];
-  statusFilter: string[];
   userFilter: string[];
   allLeaveTypes: string[];
-  allStatuses: string[];
   allUsers: string[];
   onLeaveTypeChange: (val: string[]) => void;
-  onStatusChange: (val: string[]) => void;
   onUserChange: (val: string[]) => void;
   onClearFilters: () => void;
-  trans: (key: string) => string;
-  hideUserFilter?: boolean;
 }
 
 const LeaveFilters: React.FC<Props> = ({
   leaveTypeFilter,
-  statusFilter,
   userFilter,
   allLeaveTypes,
-  allStatuses,
   allUsers,
   onLeaveTypeChange,
-  onStatusChange,
   onUserChange,
-  onClearFilters,
-  trans,
-  hideUserFilter = false
+  onClearFilters
 }) => {
   const appliedFilterCount =
     (leaveTypeFilter.length > 0 ? 1 : 0) +
-    (statusFilter.length > 0 ? 1 : 0) +
-    (hideUserFilter ? 0 : userFilter.length > 0 ? 1 : 0);
-
-  const formatLeaveType = (type: string) => {
-    return type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-  };
-
-  const formatStatus = (status: string) => {
-    return status.charAt(0).toUpperCase() + status.slice(1);
-  };
+    (userFilter.length > 0 ? 1 : 0);
 
   return (
     <Box>
@@ -60,35 +40,21 @@ const LeaveFilters: React.FC<Props> = ({
         }}
       >
         <FilterDropdown
-          label={trans("leaveType")}
-          options={allLeaveTypes.map(formatLeaveType)}
-          selected={leaveTypeFilter.map(formatLeaveType)}
+          label="Leave Type"
+          options={allLeaveTypes.map(type => type.charAt(0).toUpperCase() + type.slice(1))}
+          selected={leaveTypeFilter.map(type => type.charAt(0).toUpperCase() + type.slice(1))}
           onChange={(formatted) => {
-            const original = formatted.map(f => 
-              allLeaveTypes.find(type => formatLeaveType(type) === f) || f.toLowerCase().replace(' ', '_')
-            );
+            const original = formatted.map(f => f.toLowerCase());
             onLeaveTypeChange(original);
           }}
         />
         
         <FilterDropdown
-          label={trans("status")}
-          options={allStatuses.map(formatStatus)}
-          selected={statusFilter.map(formatStatus)}
-          onChange={(formatted) => {
-            const original = formatted.map(f => f.toLowerCase());
-            onStatusChange(original);
-          }}
+          label="User"
+          options={allUsers}
+          selected={userFilter}
+          onChange={onUserChange}
         />
-
-        {!hideUserFilter && (
-          <FilterDropdown
-            label={trans("user")}
-            options={allUsers}
-            selected={userFilter}
-            onChange={onUserChange}
-          />
-        )}
       </Box>
       
       {appliedFilterCount > 0 && (

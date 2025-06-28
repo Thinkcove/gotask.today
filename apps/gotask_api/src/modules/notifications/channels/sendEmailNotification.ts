@@ -22,13 +22,13 @@ export const sendEmailNotification = async (payload: NotificationPayload) => {
       return;
     }
 
-    // ✨ Styled HTML content
+    //  Styled HTML content
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
         <p>Hi,</p>
         <p>${message}</p>
         <br/>
-        <p style="font-size: 12px; color: #777;">This is an automated notification from the HRMS system.</p>
+        <p style="font-size: 12px; color: #777;">This is an automated notification from the GoTaskToday system.</p>
       </div>
     `;
 
@@ -49,8 +49,8 @@ export const sendEmailNotification = async (payload: NotificationPayload) => {
       }
     );
 
-    console.log("✅ Zoho Email Sent:", response.data);
+    console.log(" Zoho Email Sent:", response.data);
   } catch (error: any) {
-    console.error("❌ Zoho Email Error:", error?.response?.data || error.message);
+    console.error(" Zoho Email Error:", error?.response?.data || error.message);
   }
 };

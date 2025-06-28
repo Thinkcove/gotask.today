@@ -1,13 +1,11 @@
-// src/modules/notifications/channels/sendSMSNotification.ts
-
 import axios from "axios";
 import { NotificationPayload } from "../types/notification.interface";
 
 // Replace with actual DB logic to get user's phone number
-const getUserPhoneNumber = async (userId: string): Promise<string> => {
-  // TODO: Lookup user's phone number from the User collection/model using userId
-  return "+91XXXXXXXXXX"; // Placeholder
-};
+// const getUserPhoneNumber = async (userId: string): Promise<string> => {
+//   // TODO: Lookup user's phone number from the User collection/model using userId
+//   return "+91XXXXXXXXXX"; // Placeholder
+// };
 
 export const sendSMSNotification = async ({ userId, message }: NotificationPayload) => {
   try {

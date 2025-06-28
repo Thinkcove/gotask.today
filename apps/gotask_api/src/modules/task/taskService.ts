@@ -18,8 +18,10 @@ import {
 import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
+import { sendNotification } from "../notifications/notificationHandler";
+import { NotificationChannel, NotificationType } from "../notifications/notification.enum";
+import { formatNotificationMessage } from "../notifications/notification.utils";
 
-// Create a new task
 const createTask = async (
   taskData: Partial<ITask>
 ): Promise<{ success: boolean; data?: ITask; message?: string }> => {
@@ -31,8 +33,23 @@ const createTask = async (
       };
     }
 
-    // story_id is optional — no need to validate here
     const newTask = await createNewTask(taskData);
+
+    // ✅ Send Notification to Assignee
+    if (newTask.user_id) {
+      const { title, message } = formatNotificationMessage(NotificationType.TASK_ASSIGNED, {
+        taskTitle: newTask.title
+      });
+
+      await sendNotification({
+        userId: newTask.user_id,
+        title,
+        message,
+        referenceId: newTask.id, // use your UUID-based task ID
+        type: NotificationType.TASK_ASSIGNED,
+        channels: [NotificationChannel.EMAIL, NotificationChannel.IN_APP]
+      });
+    }
 
     return {
       success: true,
@@ -45,6 +62,7 @@ const createTask = async (
     };
   }
 };
+
 
 // Get all tasks
 const getAllTasks = async (): Promise<{

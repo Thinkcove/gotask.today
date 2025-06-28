@@ -11,20 +11,18 @@ import { sendInAppNotification } from "./channels/sendInAppNotification";
  * Centralized notification dispatcher
  */
 export const sendNotification = async (payload: NotificationPayload) => {
-  const { channels, ...rest } = payload;
-
   const tasks: Promise<any>[] = [];
 
-  if (channels.includes(NotificationChannel.EMAIL) && NotificationChannelConfig.email) {
-    tasks.push(sendEmailNotification(rest));
+  if (payload.channels.includes(NotificationChannel.EMAIL) && NotificationChannelConfig.email) {
+    tasks.push(sendEmailNotification(payload));
   }
 
-  if (channels.includes(NotificationChannel.IN_APP) && NotificationChannelConfig.inApp) {
-    tasks.push(sendInAppNotification(rest));
+  if (payload.channels.includes(NotificationChannel.IN_APP) && NotificationChannelConfig.inApp) {
+    tasks.push(sendInAppNotification(payload));
   }
 
-  if (channels.includes(NotificationChannel.SMS) && NotificationChannelConfig.sms) {
-    tasks.push(sendSMSNotification(rest));
+  if (payload.channels.includes(NotificationChannel.SMS) && NotificationChannelConfig.sms) {
+    tasks.push(sendSMSNotification(payload));
   }
 
   // Asynchronous and fault-tolerant execution

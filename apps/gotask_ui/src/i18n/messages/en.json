@@ -613,7 +613,12 @@
     "warranty": "Warranty date",
     "systemtype": "System type",
     "expiringon": "Expiring on",
-    "expired": "Expired"
+    "expired": "Expired",
+    "filterfrom": "From Date",
+    "filterto": "To Date",
+    "filter": "Filter",
+    "filterclear": "Clear",
+    "filterapply": "Apply"
   },
 
   "Chatbot": {

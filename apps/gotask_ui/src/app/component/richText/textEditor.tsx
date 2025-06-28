@@ -1,6 +1,5 @@
-import { Lock, LockOpen, TextFields } from "@mui/icons-material";
-import { Box, Button, Stack } from "@mui/material";
-import { useRef, useState, useCallback } from "react";
+"use client";
+
 import {
   RichTextEditor,
   LinkBubbleMenu,
@@ -8,13 +7,16 @@ import {
   MenuButton,
   type RichTextEditorRef
 } from "mui-tiptap";
+import { Box, Button, Stack } from "@mui/material";
+import { Lock, LockOpen, TextFields } from "@mui/icons-material";
+import { useRef, useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import type { EditorOptions } from "@tiptap/core";
 import useExtensions from "./useExtensions";
 import EditorMenuControls from "./editorMenuControls";
 import type { MentionSuggestion } from "./mentionSuggestionOptions";
-import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import "./richTextStyle.css";
 interface ReusableEditorProps {
   onSave?: (html: string) => void;
   placeholder?: string;
@@ -24,26 +26,30 @@ interface ReusableEditorProps {
   userList?: MentionSuggestion[];
 }
 
-export default function ReusableEditor({
-  onSave,
-  placeholder = "Write your content here...",
-  readOnly = false,
-  showSaveButton = true,
-  content,
-  userList = []
-}: ReusableEditorProps) {
-  const extensions = useExtensions({ placeholder, userList });
-  const rteRef = useRef<RichTextEditorRef>(null);
+const ReusableEditor = forwardRef<RichTextEditorRef, ReusableEditorProps>(function ReusableEditor(
+  {
+    onSave,
+    placeholder = "Write your content here...",
+    readOnly = false,
+    showSaveButton = true,
+    content,
+    userList = []
+  },
+  ref
+) {
+  const editorRef = useRef<RichTextEditorRef>(null);
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
+  const extensions = useExtensions({ placeholder, userList });
 
   const [isEditable, setIsEditable] = useState(!readOnly);
   const [showMenuBar, setShowMenuBar] = useState(true);
 
+  useImperativeHandle(ref, () => editorRef.current as RichTextEditorRef);
+
   const handleSave = () => {
-    const html = rteRef.current?.editor?.getHTML() ?? "";
-    if (onSave && html.trim()) {
+    const html = editorRef.current?.editor?.getHTML() ?? "";
+    if (onSave) {
       onSave(html.trim());
-      rteRef.current?.editor?.commands.clearContent();
     }
   };
 
@@ -51,7 +57,7 @@ export default function ReusableEditor({
     const reader = new FileReader();
     reader.onload = () => {
       const base64 = reader.result as string;
-      rteRef.current?.editor?.chain().focus().setImage({ src: base64, alt: file.name }).run();
+      editorRef.current?.editor?.chain().focus().setImage({ src: base64, alt: file.name }).run();
     };
     reader.readAsDataURL(file);
   };
@@ -93,7 +99,7 @@ export default function ReusableEditor({
     <Box>
       <RichTextEditor
         key={content}
-        ref={rteRef}
+        ref={editorRef}
         content={content}
         extensions={extensions}
         editable={isEditable}
@@ -102,6 +108,7 @@ export default function ReusableEditor({
         RichTextFieldProps={{
           variant: "outlined",
           MenuBarProps: { hide: !showMenuBar },
+          className: "custom-editor-field",
           footer: (
             <Stack direction="row" spacing={2} sx={{ borderTop: "1px solid", py: 1, px: 1.5 }}>
               <MenuButton
@@ -138,4 +145,6 @@ export default function ReusableEditor({
       </RichTextEditor>
     </Box>
   );
-}
+});
+
+export default ReusableEditor;

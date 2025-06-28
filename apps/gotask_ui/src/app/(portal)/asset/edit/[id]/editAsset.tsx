@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Box, Button, Grid, IconButton, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, IconButton, Paper, Typography } from "@mui/material";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -146,6 +146,35 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   const selectedAssetType = useMemo(() => {
     return allTypes.find((type: IAssetAttributes) => type.id === formData.typeId) || null;
   }, [formData.typeId, allTypes]);
+
+  if (!formData || !users || allTypes.length === 0) {
+    return (
+      <>
+        <ModuleHeader name={transasset("assets")} />
+        <Box
+          sx={{
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+              textAlign: "center"
+            }}
+          >
+            <CircularProgress size={50} thickness={4} />
+          </Box>
+        </Box>
+      </>
+    );
+  }
 
   return (
     <>

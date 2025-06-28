@@ -177,8 +177,8 @@ function ProjectGoalList() {
     if (!goalData.goalTitle) newErrors.goalTitle = transGoal("titlerequired");
     if (!goalData.weekStart) newErrors.weekStart = transGoal("startweekrequired");
     if (!goalData.weekEnd) newErrors.weekEnd = transGoal("endweekrequired");
-    if (!goalData.priority) newErrors.weekEnd = transGoal("priorityreuired");
-    if (!goalData.status) newErrors.weekEnd = transGoal("statusrequired");
+    if (!goalData.priority) newErrors.priority = transGoal("priorityreuired");
+    if (!goalData.status) newErrors.status = transGoal("statusrequired");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

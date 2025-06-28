@@ -1,5 +1,4 @@
 import { PAGE, SORT_ORDER } from "../../constants/commonConstants/commonConstants";
-import { SortOrder } from "../../constants/taskConstant";
 import {
   createNewPermission,
   findAllPermissions,
@@ -14,15 +13,11 @@ import {
 import { IPermission, Permission } from "../../domain/model/permission/permission";
 import { IPermissionComment } from "../../domain/model/permission/permissionComment";
 
-
 const createPermissionService = async (permissionData: Partial<IPermission>) => {
   try {
     // Validate time format if end_time is provided
     if (permissionData.end_time && permissionData.start_time) {
-      const startTime = new Date(`1970-01-01T${permissionData.start_time}:00`);
-      const endTime = new Date(`1970-01-01T${permissionData.end_time}:00`);
-      
-      if (startTime >= endTime) {
+      if (permissionData.start_time >= permissionData.end_time) {
         throw new Error("Start time must be before end time");
       }
     }
@@ -84,10 +79,7 @@ const updatePermissionService = async (id: string, updateData: Partial<IPermissi
   try {
     // Validate time format if both times are provided
     if (updateData.end_time && updateData.start_time) {
-      const startTime = new Date(`1970-01-01T${updateData.start_time}:00`);
-      const endTime = new Date(`1970-01-01T${updateData.end_time}:00`);
-      
-      if (startTime >= endTime) {
+      if (updateData.start_time >= updateData.end_time) {
         throw new Error("Start time must be before end time");
       }
     }

@@ -1,22 +1,31 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { createPermissionComment, createPermissionService, deletePermissionComment, deletePermissionService, getAllPermissionsService, getPermissionByIdService, getPermissionsWithFiltersService, updatePermissionComment, updatePermissionService } from "./permissionServices";
+import {
+  createPermissionComment,
+  createPermissionService,
+  deletePermissionComment,
+  deletePermissionService,
+  getAllPermissionsService,
+  getPermissionByIdService,
+  getPermissionsWithFiltersService,
+  updatePermissionComment,
+  updatePermissionService
+} from "./permissionServices";
 import { IPermissionComment } from "../../domain/model/permission/permissionComment";
-
 
 class PermissionController extends BaseController {
   async createPermission(requestHelper: RequestHelper, handler: any) {
     try {
       const permissionData = requestHelper.getPayload();
       const user = requestHelper.getUser();
-      
+
       if (!user || !user.id) {
         throw new Error("user ID not found");
       }
 
       const permissionDataWithUserId = {
         ...permissionData,
-        user_id: user.id,
+        user_id: user.id
       };
 
       const result = await createPermissionService(permissionDataWithUserId);
@@ -54,7 +63,7 @@ class PermissionController extends BaseController {
     try {
       const id = requestHelper.getParam("id");
       const user = requestHelper.getUser();
-      
+
       if (!user || !user.id) {
         throw new Error("user ID not found");
       }
@@ -71,7 +80,7 @@ class PermissionController extends BaseController {
       const id = requestHelper.getParam("id");
       const updateData = requestHelper.getPayload();
       const user = requestHelper.getUser();
-      
+
       if (!user || !user.id) {
         throw new Error("user ID not found");
       }
@@ -96,7 +105,7 @@ class PermissionController extends BaseController {
     try {
       const id = requestHelper.getParam("id");
       const user = requestHelper.getUser();
-      
+
       if (!user || !user.id) {
         throw new Error("user ID not found");
       }
@@ -110,7 +119,7 @@ class PermissionController extends BaseController {
       }
 
       const result = await deletePermissionService(id);
-       return this.sendResponse(handler, result);
+      return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error, handler);
     }
@@ -123,7 +132,7 @@ class PermissionController extends BaseController {
         throw new Error("User ID not found");
       }
       const commentDataWithUser = {
-       permission_id: commentData.permission_id,
+        permission_id: commentData.permission_id,
         user_id: user.id,
         comment: commentData.comment
       };

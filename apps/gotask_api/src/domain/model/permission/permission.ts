@@ -9,18 +9,18 @@ export interface IPermission extends Document {
   date: Date;
   start_time: string;
   end_time?: string;
-  comments: string[]; 
+  comments: string[];
 }
 
 const PermissionSchema = new Schema<IPermission>(
   {
-    id: { type: String, default: uuidv4},
+    id: { type: String, default: uuidv4 },
     user_id: { type: String, required: true },
     user_name: { type: String, required: true },
     date: { type: Date, required: true },
     start_time: { type: String, required: true },
     end_time: { type: String, required: false },
-    comments: { type: [String], default: [] }, 
+    comments: { type: [String], default: [] }
   },
   { timestamps: true }
 );

@@ -11,7 +11,7 @@ export interface IPermissionComment extends Document {
 
 export const PermissionCommentSchema = new Schema(
   {
-    id: { type: String, default: uuidv4},
+    id: { type: String, default: uuidv4 },
     permission_id: { type: String, required: true },
     user_id: { type: String, required: true },
     comment: { type: String, required: true }

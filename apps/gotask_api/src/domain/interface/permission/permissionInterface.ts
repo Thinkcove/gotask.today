@@ -1,10 +1,8 @@
-import { IUser, User } from "../../model/user/user";
+import { User } from "../../model/user/user";
 import logger from "../../../common/logger";
 import { IPermission, Permission } from "../../model/permission/permission";
 import { IPermissionComment, PermissionComment } from "../../model/permission/permissionComment";
-import requestHelper from "../../../helpers/requestHelper";
 import { SORT_ORDER } from "../../../constants/commonConstants/commonConstants";
-
 
 export interface FilterQuery {
   user_id?: string;
@@ -14,20 +12,20 @@ export interface FilterQuery {
   page?: number;
   page_size?: number;
   sort_field?: string;
-  sort_order?: typeof SORT_ORDER.ASC| typeof SORT_ORDER.DESC;
+  sort_order?: typeof SORT_ORDER.ASC | typeof SORT_ORDER.DESC;
 }
 
 const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermission[]> => {
   const query: any = {};
-  
+
   if (filters.user_id) {
     query.user_id = filters.user_id;
   }
-  
+
   if (filters.date) {
     query.date = new Date(filters.date);
   }
-  
+
   if (filters.from_date || filters.to_date) {
     const dateQuery: any = {};
     if (filters.from_date) {
@@ -60,7 +58,7 @@ const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermis
 const createNewPermission = async (permissionData: Partial<IPermission>): Promise<IPermission> => {
   const user = await User.findOne({ id: permissionData.user_id });
   if (!user) {
-    throw new Error("Invalid user_id");
+    throw new Error("User Not Found");
   }
 
   const newPermission = new Permission({
@@ -79,14 +77,17 @@ const findPermissionById = async (id: string): Promise<IPermission | null> => {
   return await Permission.findOne({ id });
 };
 
-const updateAPermission = async (id: string, updateData: Partial<IPermission>): Promise<IPermission | null> => {
+const updateAPermission = async (
+  id: string,
+  updateData: Partial<IPermission>
+): Promise<IPermission | null> => {
   try {
     const existingPermission = await Permission.findOne({ id });
     if (!existingPermission) return null;
 
     if (updateData.user_id && updateData.user_id !== existingPermission.user_id) {
       const user = await User.findOne({ id: updateData.user_id });
-      if (!user) throw new Error("Invalid user_id");
+      if (!user) throw new Error("User Not Found");
       updateData.user_name = user.name;
     }
 
@@ -167,9 +168,13 @@ const updateCommentInPermission = async (
       // Replace the old comment text with the new one
       permission.comments[commentIndex] = newCommentText.comment;
       await permission.save();
-      logger.info(`Updated comment in Permission document ${permission.id} at index ${commentIndex}`);
+      logger.info(
+        `Updated comment in Permission document ${permission.id} at index ${commentIndex}`
+      );
     } else {
-      logger.warn(`Comment "${existingComment.comment}" not found in Permission document ${permission.id} or no new comment text provided`);
+      logger.warn(
+        `Comment "${existingComment.comment}" not found in Permission document ${permission.id} or no new comment text provided`
+      );
     }
 
     return updatedComment;

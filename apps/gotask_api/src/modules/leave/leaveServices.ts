@@ -24,7 +24,7 @@ const createLeaveService = async (leaveData: Partial<ILeave>) => {
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to create leave request",
+      message: error.message || "Failed to create leave request"
     };
   }
 };
@@ -95,7 +95,7 @@ const updateLeaveService = async (id: string, updateData: Partial<ILeave>) => {
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to update leave request",
+      message: error.message || "Failed to update leave request"
     };
   }
 };
@@ -107,7 +107,7 @@ const deleteLeaveService = async (id: string) => {
     if (!deletedLeave) {
       return {
         success: false,
-        message: "Leave request not found",
+        message: "Leave request not found"
       };
     }
 
@@ -119,7 +119,7 @@ const deleteLeaveService = async (id: string) => {
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || "Failed to delete leave request",
+      message: error.message || "Failed to delete leave request"
     };
   }
 };

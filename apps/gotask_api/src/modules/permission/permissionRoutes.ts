@@ -41,7 +41,7 @@ PermissionRoutes.push({
 
 // Get permissions with filters
 PermissionRoutes.push({
-  path: "/getpermissions",
+  path: "/permissionfilters",
   method: API_METHODS.POST,
   handler: (request: Request, handler: ResponseToolkit) =>
     permissionController.getPermissionsWithFilters(new RequestHelper(request), handler),

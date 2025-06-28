@@ -1,7 +1,7 @@
-export const SORT_ORDER= {
-    ASC: "asc",
-    DESC: "desc"
-}
+export const SORT_ORDER = {
+  ASC: "asc",
+  DESC: "desc"
+};
 
 export enum PAGE {
   TEN = "10",

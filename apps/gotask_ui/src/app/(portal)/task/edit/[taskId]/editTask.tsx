@@ -241,7 +241,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             handleInputChange={handleInputChange}
             errors={{}}
             readOnlyFields={readOnlyFields}
-            isUserEstimatedLocked={false}
+            isUserEstimatedLocked={!!data.user_estimated}
             isStartDateLocked={!!data.start_date}
             rteRef={rteRef}
           />

@@ -11,6 +11,8 @@ import env from "@/app/common/env";
 import { createSkill, updateUserSkill, deleteUserSkill, fetchSkills } from "../services/userAction";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import { useTranslations } from "next-intl";
+import { Delete } from "@mui/icons-material";
+import IconButton from "@mui/material/IconButton";
 
 interface SkillInputProps {
   userId: string;
@@ -119,14 +121,20 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
             const isAdd = typeof option === "string" && option.startsWith("__add__");
             const skillName = isAdd ? option.replace("__add__", "") : option;
 
+            const { key, ...rest } = props;
+
             return (
-              <li {...props}>
-                <Box display="flex" alignItems="center">
-                  {isAdd && <AddIcon fontSize="small" sx={{ mr: 1 }} />}
-                  <Typography variant="body2">
-                    {isAdd ? `${transuser("add")} "${skillName}"` : skillName}
-                  </Typography>
-                </Box>
+              <li key={key} {...rest}>
+                {isAdd ? (
+                  <Box display="flex" alignItems="center">
+                    {isAdd && <AddIcon fontSize="small" sx={{ mr: 1 }} />}
+                    <Typography variant="body2">
+                      {isAdd ? `${transuser("add")} "${skillName}"` : skillName}
+                    </Typography>
+                  </Box>
+                ) : (
+                  skillName
+                )}
               </li>
             );
           }}
@@ -163,23 +171,20 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                     mb: 2,
                     borderRadius: 2,
                     border: "1px solid #e0e0e0",
-                    backgroundColor: "#f5f5f5"
+                    backgroundColor: "#fff",
+                    width: "100%"
                   }}
                 >
-                  <Grid container spacing={1} alignItems="center">
+                  <Grid container spacing={1} alignItems="center" display="flex">
                     <Grid item xs={11}>
                       <Typography variant="subtitle1" fontWeight="medium">
                         {s.name}
                       </Typography>
                     </Grid>
-                    <Grid item xs={1}>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: "red", cursor: "pointer" }}
-                        onClick={() => removeSkill(idx)}
-                      >
-                        {transuser("remove")}
-                      </Typography>
+                    <Grid item xs={1} justifyContent="flex-end">
+                      <IconButton size="small" onClick={() => removeSkill(idx)}>
+                        <Delete fontSize="small" />
+                      </IconButton>
                     </Grid>
                   </Grid>
 

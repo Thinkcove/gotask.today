@@ -14,6 +14,7 @@ import {
 import "react-datepicker/dist/react-datepicker.css";
 import { Edit, Visibility, VisibilityOff, Send as SendIcon } from "@mui/icons-material";
 import { SxProps, Theme } from "@mui/material/styles";
+import { Month } from "date-fns";
 
 export interface SelectOption {
   name: string;
@@ -22,12 +23,12 @@ export interface SelectOption {
 
 interface FormFieldProps {
   label: string;
-  type: "text" | "select" | "date" | "multiselect" | "number";
+  type: "text" | "select" | "date" | "multiselect" | "number" ;
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];
   value?: string | number | Date | string[];
-  onChange?: (value: string | number | Date | string[]) => void;
+  onChange?: (value: string | number | Date | string[] | Month ) => void;
   onSend?: () => void;
   error?: string;
   disabled?: boolean;

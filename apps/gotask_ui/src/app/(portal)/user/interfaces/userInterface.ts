@@ -7,6 +7,17 @@ export interface ISkill {
   experience?: number; // required if proficiency 3 or 4
 }
 
+export interface ICertificate {
+  name: string;
+  obtained_date: Date | string; // Accepts ISO string or Date object for flexibility
+  notes?: string;
+}
+
+export interface IIncrementHistory {
+  date: string;
+  ctc: number;
+}
+
 export interface IUserField {
   name: string;
   status: boolean;
@@ -19,6 +30,8 @@ export interface IUserField {
   first_name: string;
   last_name: string;
   skills?: ISkill[];
+  certificates?: ICertificate[];
+  increment_history?: IIncrementHistory[];
 }
 
 export interface User {
@@ -42,6 +55,8 @@ export interface User {
   last_name: string;
   assetDetails?: IAssetAttributes[];
   skills?: ISkill[];
+  certificates?: ICertificate[];
+  increment_history?: IIncrementHistory[];
 }
 
 export interface RoleData {

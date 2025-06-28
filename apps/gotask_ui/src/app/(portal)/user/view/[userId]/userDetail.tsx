@@ -22,6 +22,16 @@ import Toggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  LabelList
+} from "recharts";
+import DateFormats from "@/app/component/dateTime/dateFormat";
 
 interface UserDetailProps {
   user: User;
@@ -119,6 +129,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               options={[
                 transuser("general"),
                 transuser("userskill"),
+                transuser("Certificate_sec.certificate"),
+                transuser("Increment.increment_History"),
                 transuser("projectdetails"),
                 transasset("assetdetails")
               ]}
@@ -378,10 +390,123 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 </Box>
               ) : (
                 <Typography color="text.secondary" fontStyle="italic">
-                  {transasset("noassets")}
+                  {transasset("noasset")}
                 </Typography>
               )}
             </Grid>
+          )}
+
+          {selectedTab === transuser("Certificate_sec.certificate") && (
+            <Box>
+              {user.certificates && user.certificates.length > 0 ? (
+                <Grid container spacing={2}>
+                  {user.certificates.map((cert, idx) => (
+                    <Grid item xs={12} sm={6} md={4} key={idx}>
+                      <Box sx={{ border: "1px solid #ccc", borderRadius: 2, p: 2 }}>
+                        <Typography fontWeight={600}>{cert.name}</Typography>
+
+                        <Typography fontSize={12} color="text.secondary">
+                          {transuser("Certificate_sec.obtaineddate")}:{" "}
+                          {cert.obtained_date ? (
+                            <FormattedDateTime
+                              date={cert.obtained_date}
+                              format={DateFormats.MONTH_YEAR}
+                            />
+                          ) : (
+                            "N/A"
+                          )}
+                        </Typography>
+                        {cert.notes && (
+                          <Typography variant="body2" color="text.secondary" mt={0.5}>
+                            {cert.notes}
+                          </Typography>
+                        )}
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : (
+                <Typography color="text.secondary" fontStyle="italic">
+                  {transuser("nocertificates")}
+                </Typography>
+              )}
+            </Box>
+          )}
+
+          {selectedTab === transuser("Increment.increment_History") && (
+            <Box>
+              {user.increment_history && user.increment_history.length > 0 ? (
+                <>
+                  {/* Compact CTC Growth Chart - No Hover, Mobile Friendly */}
+                  <Box sx={{ width: "100%", maxWidth: 500, height: 180, mb: 4 }}>
+                    <Typography variant="subtitle1" fontWeight={500} mb={1}>
+                      {transuser("Increment.ctc_growth")}
+                    </Typography>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={user.increment_history
+                          .slice()
+                          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                          .map((inc) => ({
+                            date: new Date(inc.date).toLocaleDateString("en-IN", {
+                              month: "short",
+                              year: "numeric"
+                            }),
+                            ctc: inc.ctc
+                          }))}
+                        margin={{ top: 10, right: 20, bottom: 5, left: -10 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="date" fontSize={10} />
+                        <YAxis fontSize={10} tickFormatter={(value) => `₹${value}`} />
+                        <Line
+                          type="monotone"
+                          dataKey="ctc"
+                          stroke="#1976d2"
+                          strokeWidth={2}
+                          dot={{ r: 3 }}
+                        >
+                          <LabelList
+                            dataKey="ctc"
+                            position="top"
+                            formatter={(value: number) => `₹${value}`}
+                            fontSize={10}
+                          />
+                        </Line>
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </Box>
+
+                  {/* Increment History Cards */}
+                  <Grid container spacing={2}>
+                    {user.increment_history.map((inc, idx) => (
+                      <Grid item xs={12} sm={6} md={4} key={idx}>
+                        <Box sx={{ border: "1px solid #ccc", borderRadius: 2, p: 2 }}>
+                          <Typography fontWeight={600}>
+                            {transuser("Increment.increment")} {idx + 1}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {transuser("Increment.date")}:{" "}
+                            {new Date(inc.date).toLocaleDateString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric"
+                            })}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {transuser("Increment.ctc")}: ₹{inc.ctc}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </>
+              ) : (
+                <Typography color="text.secondary" fontStyle="italic">
+                  {transuser("Increment.noincrements")}
+                </Typography>
+              )}
+            </Box>
           )}
         </Box>
 

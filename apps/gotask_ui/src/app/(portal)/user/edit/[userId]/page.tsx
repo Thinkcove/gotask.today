@@ -41,7 +41,9 @@ const EditUserPage = () => {
     organization: user.organization,
     roleId: user.roleId._id,
     user_id: user.user_id,
-    skills: user.skills || []
+    skills: user.skills || [],
+    certificates: user.certificates || [],
+    increment_history: user.increment_history || []
   });
 
   return (

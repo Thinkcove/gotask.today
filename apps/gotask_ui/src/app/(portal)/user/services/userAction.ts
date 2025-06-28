@@ -3,6 +3,8 @@ import { deleteData, getData, postData, putData } from "@/app/common/utils/apiDa
 import { IUserField } from "../interfaces/userInterface";
 import { withAuth } from "@/app/common/utils/authToken";
 import { ISkill } from "../interfaces/userInterface";
+import { ICertificate } from "../interfaces/userInterface";
+import { IIncrementHistory } from "../interfaces/userInterface";
 
 export const createUser = async (
   formData: IUserField
@@ -107,6 +109,7 @@ export const fetchUsers = async () => {
           projects: string[];
           organizations: string[];
           role: string;
+
         }) => ({
           id: user.id,
           first_name: user.first_name,
@@ -179,6 +182,103 @@ export const deleteUserSkill = async (userId: string, skillId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/skills/${userId}/${skillId}`;
     return deleteData(url, token);
+  });
+};
+
+
+// Get all certificates of a user
+export const getUserCertificates = async (userId: string): Promise<ICertificate[]> => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/certificates/${userId}`;
+    const response = await getData(url, token);
+    return response?.data || [];
+  });
+};
+
+// Add certificate(s) to a user
+export const addUserCertificates = async (
+  userId: string,
+  certificates: ICertificate[]
+): Promise<{ success: boolean; message?: string }> => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/certificates/${userId}`;
+    return await postData(url, { certificates }, token);
+  });
+};
+
+export const updateUserCertificate = async (
+  userId: string,
+  certificateIndex: number,
+  updatedCertificate: ICertificate
+): Promise<{ success: boolean; message?: string }> => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateIndex}`;
+    return await putData(url, updatedCertificate as unknown as Record<string, unknown>, token);
+  });
+};
+
+// Delete a specific certificate from a user
+export const deleteUserCertificate = async (
+  userId: string,
+  certificateIndex: number
+): Promise<{ success: boolean; message?: string }> => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateIndex}`;
+    return await deleteData(url, token);
+  });
+};
+
+
+// Get increments
+export const getUserIncrements = async (userId: string) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/increments/${userId}`;
+    return fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((res) => res.json());
+  });
+};
+
+// Add increment
+export const addUserIncrement = async (userId: string, increment: IIncrementHistory) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/increments/${userId}`;
+    return fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(increment)
+    }).then((res) => res.json());
+  });
+};
+
+// Update increment
+export const updateUserIncrement = async (
+  userId: string,
+  index: number,
+  updated: IIncrementHistory
+) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/increments/${userId}/${index}`;
+    return fetch(url, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(updated)
+    }).then((res) => res.json());
+  });
+};
+
+// Delete increment
+export const deleteUserIncrement = async (userId: string, index: number) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/increments/${userId}/${index}`;
+    return fetch(url, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((res) => res.json());
   });
 };
 

@@ -490,8 +490,32 @@
     "experiencepositive": "Experience must be a positive number for \"{skill}\".",
     "noskills": "No skills added yet.",
     "noprojects": "No projects assigned yet.",
-    "noassets": "No assets assigned yet."
+    "noassets": "No assets assigned yet.",
+
+  "Certificate_sec":{
+    "certificate": "Certificate",
+    "certificates": "Certificates",
+    "certificatename": " Certificate Name",
+    "obtaineddate": "Obtained Date",
+    "notes": " Notes",
+    "addcertificate": "Add Certificate",
+    "editcertificate": "Edit Certificate",
+    "subtitle": "Add details of Certifications you have achieved/completed"
   },
+    "Increment": {
+      "increment_History": "Increment History",
+      "increment": " Increment",
+      "save": "Save",
+      "cancel": "Cancel",
+      "date": "Date",
+      "ctc": "CTC",
+      "add_new": "Add New Increment",
+      "add": "Add",
+      "noincrements": "No increments found",
+      "ctc_growth": "CTC Growth Over Time"
+    }
+  },
+ 
   "Appbar": {
     "logout": "Logout"
   },

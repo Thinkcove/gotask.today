@@ -73,7 +73,7 @@ const ProjectStoryDetail = () => {
   };
 
   const handleTaskClick = (taskId: string) => {
-    router.push(`/task/viewTask/${taskId}`);
+    router.push(`/task/view/${taskId}`);
   };
 
   const submitStoryComment = async (commentText: string) => {

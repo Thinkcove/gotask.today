@@ -2,6 +2,7 @@ import { Box, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Column } from "@/app/component/table/table";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 
 export interface IAssetDisplayRow {
   id?: string;
@@ -35,7 +36,12 @@ export const getAssetColumns = (
   {
     id: "warrantyDate",
     label: transasset("warrantyDate"),
-    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
+    render: (value: string | boolean | undefined) =>
+      typeof value === "string" && !isNaN(Date.parse(value)) ? (
+        <FormattedDateTime date={value} />
+      ) : (
+        "-"
+      )
   },
   {
     id: "modelName",
@@ -47,7 +53,12 @@ export const getAssetColumns = (
     id: "purchaseDate",
     align: "center" as const,
     label: transasset("purchaseDate"),
-    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
+    render: (value: string | boolean | undefined) =>
+      typeof value === "string" && !isNaN(Date.parse(value)) ? (
+        <FormattedDateTime date={value} />
+      ) : (
+        "-"
+      )
   },
   {
     id: "users",

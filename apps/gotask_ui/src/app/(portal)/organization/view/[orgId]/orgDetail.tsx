@@ -6,7 +6,6 @@ import { ArrowBack, ChevronRight, Edit } from "@mui/icons-material";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import { useState } from "react";
 import { getStatusColor } from "@/app/common/constants/task";
-import EditOrganization from "./editOrganization";
 import { KeyedMutator } from "swr";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
@@ -15,6 +14,7 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import EditOrganization from "./edit";
 
 interface OrgDetailProps {
   org: Organization;

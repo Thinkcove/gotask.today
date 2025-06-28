@@ -42,6 +42,7 @@ export interface User {
   last_name: string;
   assetDetails?: IAssetAttributes[];
   skills?: ISkill[];
+  issuesCount: string;
 }
 
 export interface RoleData {

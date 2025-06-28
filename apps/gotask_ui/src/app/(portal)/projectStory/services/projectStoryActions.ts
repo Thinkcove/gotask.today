@@ -45,26 +45,6 @@ export const addCommentToProjectStory = async (storyId: string, payload: AddComm
   });
 };
 
-// Update a Comment by Comment ID
-export const updateCommentOnProjectStory = async (
-  commentId: string,
-  payload: AddCommentPayload
-) => {
-  return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/story/comment/${commentId}`;
-    return putData(url, payload as unknown as Record<string, unknown>, token);
-  });
-};
-
-// Delete a Comment by Comment ID
-export const deleteCommentFromProjectStory = async (commentId: string) => {
-  return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/story/comment/${commentId}`;
-    return deleteData(url, token);
-  });
-};
-
-// Get Stories by Project ID with Filters
 export const getStoriesByProject = async (
   projectId: string,
   queryParams: Omit<StoryQueryParams, "endDate"> = {}
@@ -104,8 +84,8 @@ export const getStoriesByProject = async (
   });
 };
 
-// Get Single Story by Story ID (returns comments included)
-export const getProjectStoryById = async (storyId: string): Promise<ProjectStory> => {
+//  Get Single Story by ID
+export const getProjectStoryById = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/${storyId}`;
     return getData(url, token);

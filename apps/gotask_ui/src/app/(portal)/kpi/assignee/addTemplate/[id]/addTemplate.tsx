@@ -10,7 +10,7 @@ import { KPI_FREQUENCY, STATUS_OPTIONS } from "@/app/common/constants/kpi";
 import { createKpiAssignment } from "../../../service/templateAction";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import { useUser } from "@/app/userContext";
+import { User, useUser } from "@/app/userContext";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 
@@ -18,7 +18,7 @@ interface AddTemplateProps {
   templates: any[];
   userId: string;
   mutate: () => void;
-  user: any;
+  user: User;
 }
 
 const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, user }) => {
@@ -29,7 +29,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
 
   const userName = loginUser?.name || "";
   const formattedUserName = userName.charAt(0).toUpperCase() + userName.slice(1).toLowerCase();
-  const defaultAssignedBy = users.find((u: any) => u.name === formattedUserName)?.name || "";
+  const defaultAssignedBy = users.find((u: User) => u.name === formattedUserName)?.name || "";
 
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [openForm, setOpenForm] = useState(false);
@@ -41,14 +41,14 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
     weightage: 1,
     target_Value: 0,
     comments: "",
-    status: "Active",
+    status: "",
     assigned_by: defaultAssignedBy,
     reviewer_id: "",
     saveAs_Template: false
   });
 
   if (!form.assigned_by && users.length > 0) {
-    const foundUser = users.find((u: any) => u.name === formattedUserName);
+    const foundUser = users.find((u: User) => u.name === formattedUserName);
     if (foundUser && form.assigned_by !== foundUser.name) {
       setForm((prev) => ({ ...prev, assigned_by: foundUser.name }));
     }
@@ -70,7 +70,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         weightage: 1,
         target_Value: 0,
         comments: "",
-        status: "Active",
+        status: "",
         assigned_by: defaultAssignedBy,
         reviewer_id: "",
         saveAs_Template: false
@@ -106,8 +106,8 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    const assignedByUser = users.find((u: any) => u.name === form.assigned_by);
-    const reviewerUser = users.find((u: any) => u.name === form.reviewer_id);
+    const assignedByUser = users.find((u: User) => u.name === form.assigned_by);
+    const reviewerUser = users.find((u: User) => u.name === form.reviewer_id);
 
     const payload = {
       user_id: userId,
@@ -150,9 +150,6 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
           <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
           <Box>
             <Typography variant="h6">{user.name}</Typography>
-            <Typography variant="body2" color="textSecondary">
-              {user.email}
-            </Typography>
             {user.role?.name && (
               <Typography variant="body2" color="textSecondary">
                 {user.role.name}
@@ -263,7 +260,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
                 label={`${transkpi("assignedBy")} ${transkpi("required")}`}
                 type="select"
                 required
-                options={users.map((u: any) => ({ id: u.name, name: u.name }))}
+                options={users.map((u: User) => ({ id: u.name, name: u.name }))}
                 value={form.assigned_by}
                 onChange={(val) => setForm({ ...form, assigned_by: String(val) })}
                 error={errors.assigned_by}
@@ -275,7 +272,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
                 <FormField
                   label={transkpi("reviewerId")}
                   type="select"
-                  options={users.map((u: any) => ({ id: u.name, name: u.name }))}
+                  options={users.map((u: User) => ({ id: u.name, name: u.name }))}
                   value={form.reviewer_id}
                   onChange={(val) => setForm({ ...form, reviewer_id: String(val) })}
                 />

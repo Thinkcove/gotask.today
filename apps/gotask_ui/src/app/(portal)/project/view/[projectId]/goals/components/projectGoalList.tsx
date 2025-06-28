@@ -229,9 +229,10 @@ function ProjectGoalList() {
         message: transGoal("saveError"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
-      await mutate("project-goals");
 
     }
+    await mutate("project-goals");
+
   };
 
   const [projectGoalView, setprojectGoalView] = useState<

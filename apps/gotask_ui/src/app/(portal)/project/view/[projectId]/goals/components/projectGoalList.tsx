@@ -210,7 +210,7 @@ function ProjectGoalList() {
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
         setprojectGoalView(null);
-        await mutate("project-goals");
+        // await mutate("project-goals");
       } else {
         await createWeeklyGoal(payload as any);
         setSnackbar({
@@ -219,7 +219,7 @@ function ProjectGoalList() {
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
         setprojectGoalView(null);
-        await mutate("project-goals");
+        // await mutate("project-goals");
       }
       setOpenDialog(false);
     } catch (err) {
@@ -229,6 +229,8 @@ function ProjectGoalList() {
         message: transGoal("saveError"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
+      await mutate("project-goals");
+
     }
   };
 

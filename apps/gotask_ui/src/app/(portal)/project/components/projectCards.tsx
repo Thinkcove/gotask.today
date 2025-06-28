@@ -115,7 +115,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                         }
                       }}
                       onClick={() => {
-                        router.push(`/project/viewProject/${project.id}`);
+                        router.push(`/project/view/${project.id}`);
                       }}
                     >
                       <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>

@@ -18,7 +18,8 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   handleSaveComment,
   handleEditComment,
   handleDeleteComment,
-  user
+  user,
+  handleBack
 }) => {
   const router = useRouter();
   const comments: GoalComment[] = goalData?.comments || [];
@@ -57,7 +58,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
         <Box sx={{ maxHeight: "calc(100vh - 160px)", overflowY: "auto" }}>
           <Grid container alignItems="center" mb={3}>
             <Grid item xs="auto">
-              <IconButton color="primary" onClick={() => router.back()}>
+              <IconButton color="primary" onClick={handleBack}>
                 <ArrowBack />
               </IconButton>
             </Grid>

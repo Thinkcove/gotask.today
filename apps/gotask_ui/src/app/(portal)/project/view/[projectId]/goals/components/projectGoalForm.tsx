@@ -66,6 +66,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, errors, set
           placeholder={transGoal("statusPlaceholder")}
           options={statusOptions}
           value={goalData.status}
+          error={errors.status}
           onChange={(val) => setGoalData({ ...goalData, status: val as string })}
         />
       </Grid>
@@ -76,6 +77,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({ goalData, errors, set
           placeholder={transGoal("priorityPlaceholder")}
           options={priorityOptions}
           value={goalData.priority}
+          error={errors.priority}
           onChange={(val) => setGoalData({ ...goalData, priority: val as string })}
         />
       </Grid>

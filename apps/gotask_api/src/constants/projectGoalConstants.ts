@@ -5,7 +5,7 @@ export const PROJECTGOAL_STATUS = {
   HOLD: "hold",
   COMPLETED: "completed",
   BLOCKED: "blocked",
-  NOT_STARTED: "not started "
+  NOT_STARTED: "not-started "
 };
 
 export const PROJECT_GOAL_SEVERITY = {

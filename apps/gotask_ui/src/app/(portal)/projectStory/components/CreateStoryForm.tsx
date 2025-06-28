@@ -88,7 +88,7 @@ const CreateStoryForm = () => {
       setSnackOpen(true);
 
       setTimeout(() => {
-        router.push(`/project/viewProject/${projectId}/stories`);
+        router.push(`/project/view/${projectId}/stories`);
       }, 800);
     } catch (error) {
       console.error("Failed to create story:", error);

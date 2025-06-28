@@ -106,7 +106,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
         }}
       >
         <IconButton
-          onClick={() => router.push(`/project/viewProject/${projectId}`)}
+          onClick={() => router.push(`/project/view/${projectId}`)}
           color="primary"
           size="small"
         >
@@ -178,7 +178,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
       {/* Add Story FAB */}
       <Fab
         color="primary"
-        onClick={() => router.push(`/project/viewProject/${projectId}/stories/create`)}
+        onClick={() => router.push(`/project/view/${projectId}/stories/create`)}
         sx={{ position: "fixed", bottom: 35, right: 35, zIndex: 1000 }}
       >
         <AddIcon />

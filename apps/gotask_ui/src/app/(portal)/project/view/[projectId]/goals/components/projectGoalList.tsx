@@ -6,7 +6,7 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { formatStatus, priorityOptions } from "@/app/common/constants/project";
+import { formatStatus, priorityOptions, statusOptions } from "@/app/common/constants/project";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useUser } from "@/app/userContext";
@@ -452,7 +452,7 @@ function ProjectGoalList() {
             >
               <FilterDropdown
                 label={transGoal("filterstatus")}
-                options={Object.values(priorityOptions)}
+                options={Object.values(statusOptions)}
                 selected={statusFilter}
                 onChange={onStatusChange}
               />
@@ -606,7 +606,7 @@ function ProjectGoalList() {
           text={transGoal("log")}
           heading={transGoal("projectgoalhistory")}
         />
-        {!openDialog && !view &&(
+        {!openDialog && !view && (
           <ActionButton
             label={transGoal("creategoal")}
             icon={<AddIcon sx={{ color: "white" }} />}

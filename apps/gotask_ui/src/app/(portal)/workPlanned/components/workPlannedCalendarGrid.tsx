@@ -351,14 +351,18 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                       <TableCell
                         rowSpan={totalRows}
                         sx={{
-                          padding: "12px",
+                          padding: "10px",
                           textAlign: "center",
                           border: "1px solid #eee",
-                          verticalAlign: "middle"
+                          verticalAlign: "middle",
+                          backgroundColor:
+                            userLeaves.length === 1
+                              ? getLeaveTypeColor(userLeaves[0].leave_type) + "20"
+                              : "transparent"
                         }}
                       >
                         {userLeaves.length > 0 ? (
-                          <Box display="flex" flexDirection="column" gap={2}>
+                          <Box display="flex" flexDirection="column" gap={1}>
                             {userLeaves.map((leave, leaveIndex) => {
                               const leaveFrom = new Date(leave.from_date);
                               const leaveTo = new Date(leave.to_date);
@@ -371,17 +375,15 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                                 <Box
                                   key={leave.id || leaveIndex}
                                   sx={{
-                                    border: `2px solid ${getLeaveTypeColor(leave.leave_type)}`,
-                                    borderRadius: 2,
-                                    p: 1,
-                                    backgroundColor: "#fff8f0"
+                                    p: 1
                                   }}
                                 >
                                   <Typography
                                     sx={{
-                                      fontWeight: "bold",
+                                      fontWeight: 600,
+                                      fontSize: "0.7rem",
+                                      textTransform: "uppercase",
                                       color: getLeaveTypeColor(leave.leave_type),
-                                      fontSize: "0.9rem",
                                       mb: 0.5
                                     }}
                                   >
@@ -389,7 +391,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ fontSize: "0.75rem", display: "block", mb: 1 }}
+                                    sx={{ fontSize: "0.7rem", display: "block", mb: 0.5 }}
                                   >
                                     <FormattedDateTime
                                       date={leave.from_date}
@@ -407,7 +409,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                                     sx={{
                                       backgroundColor: "#1976d2",
                                       color: "#fff",
-                                      fontSize: "0.7rem",
+                                      fontSize: "0.65rem",
                                       height: 20,
                                       borderRadius: "10px"
                                     }}

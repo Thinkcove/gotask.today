@@ -358,10 +358,10 @@ console.log("data", data);
                         >
                           {leaveForDate ? (
                             <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
-                              <StatusIndicator
+                              {/* <StatusIndicator
                                 status={leaveForDate.leave_type}
                                 getColor={getLeaveTypeColor}
-                              />
+                              /> */}
                               <Typography
                                 variant="caption"
                                 sx={{ 

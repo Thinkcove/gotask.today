@@ -3,6 +3,9 @@ export const TASK_STATUS = {
   IN_PROGRESS: "in-progress",
   NEED_INFO: "need-info",
   HOLD: "hold",
+  IN_REVIEW: "in-review",
+  UNDER_REVIEW: "under-review",
+  REVIEWED: "reviewed",
   COMPLETED: "completed"
 };
 

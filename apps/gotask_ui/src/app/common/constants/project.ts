@@ -35,5 +35,24 @@ export const getStatusColor = (status: string): string => {
       return "000000";
   }
 };
+
+export const PROJECT_STATUS = {
+  TO_DO: "to-do",
+  IN_PROGRESS: "in-progress",
+  HOLD: "hold",
+  COMPLETED: "completed"
+};
+
+export const PROJECT_WORKFLOW = {
+  [PROJECT_STATUS.TO_DO]: [
+    PROJECT_STATUS.IN_PROGRESS,
+    PROJECT_STATUS.HOLD,
+    PROJECT_STATUS.COMPLETED
+  ],
+  [PROJECT_STATUS.IN_PROGRESS]: [PROJECT_STATUS.HOLD, PROJECT_STATUS.COMPLETED],
+  [PROJECT_STATUS.HOLD]: [PROJECT_STATUS.IN_PROGRESS, PROJECT_STATUS.COMPLETED],
+  [PROJECT_STATUS.COMPLETED]: [PROJECT_STATUS.IN_PROGRESS, PROJECT_STATUS.HOLD]
+};
+
 export const statusOptions = ["not-started", "in-progress", "completed", "blocked"];
 export const priorityOptions = ["high", "medium", "low"];

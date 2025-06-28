@@ -2,10 +2,11 @@
 import React from "react";
 import { Grid } from "@mui/material";
 import FormField from "@/app/component/input/formField";
-import { IProjectField, PROJECT_WORKFLOW } from "../interfaces/projectInterface";
+import { IProjectField } from "../interfaces/projectInterface";
 import { useAllOrganizations } from "../../organization/services/organizationAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { PROJECT_WORKFLOW } from "@/app/common/constants/project";
 
 interface IProjectInputProps {
   formData: IProjectField;

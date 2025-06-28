@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { ArrowBack, History } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
-
 import TimeSpentPopup from "../timeSpentPopup";
 import HistoryDrawer from "../taskHistory";
 import ModuleHeader from "@/app/component/header/moduleHeader";
@@ -233,7 +232,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             handleInputChange={handleInputChange}
             errors={{}}
             readOnlyFields={readOnlyFields}
-            isUserEstimatedLocked={!!data.user_estimated}
+            isUserEstimatedLocked={false}
             isStartDateLocked={!!data.start_date}
           />
         </Box>

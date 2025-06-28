@@ -1,4 +1,4 @@
-import { IProjectField, Project, PROJECT_STATUS } from "../../interfaces/projectInterface";
+import { IProjectField, Project } from "../../interfaces/projectInterface";
 import { useState } from "react";
 import { Box } from "@mui/material";
 import CommonDialog from "@/app/component/dialog/commonDialog";
@@ -9,6 +9,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { PROJECT_STATUS } from "@/app/common/constants/project";
 
 interface EditProjectProps {
   data: IProjectField;
@@ -98,7 +99,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
           formData={formData}
           handleChange={handleChange}
           errors={errors}
-          readOnlyFields={["name"]}
+          readOnlyFields={[]}
         />
       </CommonDialog>
       <CustomSnackbar

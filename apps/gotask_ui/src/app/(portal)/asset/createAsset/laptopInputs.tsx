@@ -168,7 +168,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                   error={errors?.systemtype}
                   required
                   options={systemTypeOptions}
-                  onChange={(val) => onChange("systemType", String(val))} // already a string
+                  onChange={(val) => onChange("systemType", String(val))}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>

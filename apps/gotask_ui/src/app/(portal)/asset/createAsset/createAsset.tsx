@@ -15,6 +15,7 @@ import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
 import MobileInputs from "./mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
+import { systemTypeOptions } from "../assetConstants";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -134,8 +135,6 @@ export const CreateAsset: React.FC = () => {
       console.error("Failed to create asset", err);
     }
   };
-
-  const systemTypeOptions = ["Office System", "Personal System"];
 
   return (
     <Paper elevation={2} sx={{ padding: 2 }}>

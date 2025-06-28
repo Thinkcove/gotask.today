@@ -1,5 +1,6 @@
 import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { SYSTEM_TYPES } from "../../../constants/assetConstant";
 
 export interface IAsset extends Document {
   // Common fields
@@ -52,7 +53,7 @@ const AssetSchema = new Schema<IAsset>(
     deviceName: { type: String },
     systemType: {
       type: String,
-      enum: ["Office System", "Personal System"],
+      enum: SYSTEM_TYPES,
       default: "Office System",
       required: true
     },

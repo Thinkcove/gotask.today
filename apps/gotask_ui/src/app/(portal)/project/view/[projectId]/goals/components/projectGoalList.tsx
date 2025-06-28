@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useSWR, { mutate } from "swr";
 import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
@@ -6,7 +6,7 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { formatStatus, PROGECT_GOAL_SEVERITY, PROJECT_GOAL } from "@/app/common/constants/project";
+import { formatStatus, priorityOptions } from "@/app/common/constants/project";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useUser } from "@/app/userContext";
@@ -65,31 +65,42 @@ function ProjectGoalList() {
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [severityFilter, setSeverityFilter] = useState<string[]>([]);
 
-  const swrKey = [page, statusFilter, severityFilter, searchTerm];
+  // Create a unique SWR key that includes projectID
+  const swrKey = `weekly-goals-${projectID}-${page}-${statusFilter.join(",")}-${severityFilter.join(",")}-${searchTerm}`;
 
   const { isLoading, error } = useSWR(
     swrKey,
     () =>
       fetchWeeklyGoals({
+        projectId: projectID,
         page,
         pageSize: 10,
         status: statusFilter.length ? statusFilter[0] : undefined,
-        priority: severityFilter.length ? severityFilter[0] : undefined
+        priority: severityFilter.length ? severityFilter[0] : undefined,
+        goalTitle: searchTerm || undefined // Use goalTitle instead of search
       }),
     {
       revalidateOnFocus: false,
       onSuccess: (res) => {
         if (res?.goals?.length < 10) {
-          setHasMore(false); // No more pages
+          setHasMore(false);
         }
-        setAllGoals((prev) => {
-          const existingIds = new Set(prev.map((goal) => goal.id));
-          const newGoals = (res?.goals || []).filter((goal: any) => !existingIds.has(goal.id));
-          return [...prev, ...newGoals];
-        });
+
+        // Reset goals when it's the first page or filters changed
+        if (page === 1) {
+          setAllGoals(res?.goals || []);
+        } else {
+          // Append new goals for pagination
+          setAllGoals((prev) => {
+            const existingIds = new Set(prev.map((goal) => goal.id));
+            const newGoals = (res?.goals || []).filter((goal: any) => !existingIds.has(goal.id));
+            return [...prev, ...newGoals];
+          });
+        }
       }
     }
   );
+
   const [projectGoalHistory, setProjectGoalHistory] = useState<{
     updateHistory?: any[];
   } | null>(null);
@@ -123,7 +134,6 @@ function ProjectGoalList() {
         created_date: item.timestamp || ""
       };
     }) ?? [];
-  console.log("projectGoalHistory", projectGoalHistory?.updateHistory);
 
   const handelOpen = () => {
     setGoalData({
@@ -183,13 +193,16 @@ function ProjectGoalList() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleCancel = () => {
     setOpenDialog(false);
     setprojectGoalView(null);
   };
 
+  // Improved handleSubmit function
   const handleSubmit = async () => {
     if (!validateForm()) return;
+
     try {
       const payload = {
         projectId: projectID,
@@ -201,27 +214,36 @@ function ProjectGoalList() {
         priority: goalData.priority,
         user_id: user?.id
       };
+
       if (goalData.id) {
+        // Update existing goal
         await updateWeeklyGoal(goalData.id, payload as any);
-        await handelProjectGoalView(goalData.id);
         setSnackbar({
           open: true,
           message: transGoal("goalupdate"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
-        setprojectGoalView(null);
-        // await mutate("project-goals");
       } else {
+        // Create new goal
         await createWeeklyGoal(payload as any);
         setSnackbar({
           open: true,
           message: transGoal("savegoal"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
-        setprojectGoalView(null);
-        // await mutate("project-goals");
       }
+
+      // Close dialog and reset states
       setOpenDialog(false);
+      setprojectGoalView(null);
+
+      // Reset pagination and refresh data
+      setPage(1);
+      setHasMore(true);
+      setAllGoals([]);
+
+      // Mutate SWR cache to refresh data
+      await mutate(swrKey);
     } catch (err) {
       console.error("Error saving weekly goal:", err);
       setSnackbar({
@@ -229,10 +251,7 @@ function ProjectGoalList() {
         message: transGoal("saveError"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
-
     }
-    await mutate("project-goals");
-
   };
 
   const [projectGoalView, setprojectGoalView] = useState<
@@ -242,7 +261,6 @@ function ProjectGoalList() {
   const handelProjectGoalView = async (goalId: string) => {
     try {
       const goal = await getWeeklyGoalById(goalId);
-
       const comments = await getCommentsByGoalId(goalId);
       const fullGoal = {
         ...goal.data,
@@ -274,7 +292,6 @@ function ProjectGoalList() {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
     } catch (error) {
-      await mutate("project-goals");
       setSnackbar({
         open: true,
         message: transGoal("goalfiled"),
@@ -328,12 +345,23 @@ function ProjectGoalList() {
       console.error("Error Project Goal Delete:", error);
     }
   };
+
   const router = useRouter();
+
+  const handleGoBackFromView = () => {
+    setView(false);
+    setprojectGoalView(null);
+    // Refresh the list when coming back from view
+    setPage(1);
+    setHasMore(true);
+    setAllGoals([]);
+    mutate(swrKey);
+  };
 
   const handleGoBack = () => {
     setTimeout(() => router.back(), 200);
-    setView(false);
   };
+
   const handleBack = () => {
     setOpenDialog(false);
     setprojectGoalView(null);
@@ -342,6 +370,7 @@ function ProjectGoalList() {
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
   };
+
   const onSeverityChange = (selected: string[]) => {
     setSeverityFilter(selected);
   };
@@ -352,21 +381,21 @@ function ProjectGoalList() {
     if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
       setPage((prev) => prev + 1);
     }
-    if (scrollTop <= (scrollHeight - clientHeight) / 2) {
-      setPage((prev) => Math.max(prev - 1, 1));
-    }
   };
 
+  // Filter goals based on search and filters (client-side filtering as backup)
   const filteredGoals = allGoals?.filter((goal) => {
     const matchesSearchTerm =
-      goal.goalTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      goal.description.toLowerCase().includes(searchTerm.toLowerCase());
+      goal.goalTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      goal.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter.length ? statusFilter.includes(goal.status) : true;
     const matchesSeverity = severityFilter.length ? severityFilter.includes(goal.priority) : true;
     return matchesSearchTerm && matchesStatus && matchesSeverity;
   });
 
-  if (!filteredGoals) {
+  const [view, setView] = useState(false);
+
+  if (isLoading && allGoals.length === 0) {
     return (
       <Box
         sx={{
@@ -381,7 +410,7 @@ function ProjectGoalList() {
       </Box>
     );
   }
-  const [view, setView] = useState(false);
+
   return (
     <>
       <Box sx={{ pt: 2 }}>
@@ -409,8 +438,6 @@ function ProjectGoalList() {
                   />
                 </Box>
               </Box>
-
-              {/* Right section: Filters aligned to flex-end */}
             </Box>
             <Box
               display="flex"
@@ -421,17 +448,17 @@ function ProjectGoalList() {
               justifyContent=""
               flexWrap="wrap"
               mt={{ xs: 2, md: 0 }}
-              sx={{ flexGrow: 1 }} // Optional: allows it to push to the right properly
+              sx={{ flexGrow: 1 }}
             >
               <FilterDropdown
-                label="Priority"
-                options={Object.values(PROJECT_GOAL)}
+                label={transGoal("filterstatus")}
+                options={Object.values(priorityOptions)}
                 selected={statusFilter}
                 onChange={onStatusChange}
               />
               <FilterDropdown
-                label="Severity"
-                options={Object.values(PROGECT_GOAL_SEVERITY)}
+                label={transGoal("filterpriority")}
+                options={Object.values(priorityOptions)}
                 selected={severityFilter}
                 onChange={onSeverityChange}
               />
@@ -445,7 +472,7 @@ function ProjectGoalList() {
             handleSaveComment={handleSaveComment}
             handleEditComment={handleEditComment}
             handleDeleteComment={handleDeleteComment}
-            handleBack={handleGoBack}
+            handleBack={handleGoBackFromView}
             user={user}
           />
         ) : (
@@ -476,7 +503,6 @@ function ProjectGoalList() {
                       display: "flex",
                       justifyContent: "flex-start",
                       alignItems: "center"
-                      // gap: 2
                     }}
                   >
                     <IconButton color="primary" onClick={() => setOpenDialog(false)}>

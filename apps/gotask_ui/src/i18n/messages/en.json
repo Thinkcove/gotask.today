@@ -765,6 +765,8 @@
 
     "statusrequired": "Status is required",
     "priorityreuired": "Priority is required",
+    "filterpriority": "Priority",
+    "filterstatus": "Status",
     "saving": "Saving...",
     "comment": "Comments",
     "saveerror": "Something went wrong while saving",

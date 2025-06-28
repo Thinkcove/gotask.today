@@ -106,6 +106,7 @@ export const fetchWeeklyGoals = async ({
   startDate?: string;
   endDate?: string;
   goalTitle?: string;
+  projectId?:string;
 }) => {
   return withAuth(async (token) => {
     // Construct the payload with only the provided parameters

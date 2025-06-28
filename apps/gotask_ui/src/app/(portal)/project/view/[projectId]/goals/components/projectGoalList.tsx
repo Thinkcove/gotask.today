@@ -606,7 +606,7 @@ function ProjectGoalList() {
           text={transGoal("log")}
           heading={transGoal("projectgoalhistory")}
         />
-        {!openDialog && (
+        {!openDialog && !view &&(
           <ActionButton
             label={transGoal("creategoal")}
             icon={<AddIcon sx={{ color: "white" }} />}

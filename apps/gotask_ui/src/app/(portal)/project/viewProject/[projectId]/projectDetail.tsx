@@ -18,11 +18,12 @@ import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import ProjectGoalList from "./projectGoal/projectGoalList";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 interface ProjectDetailProps {
   project: Project;
@@ -33,8 +34,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
-  const [projectGoalOpean, setProjectGoalOpean] = useState(false);
-
+  const [projectGoalOpen, setProjectGoalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const router = useRouter();
@@ -102,13 +102,14 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
       });
     }
   };
-  if (projectGoalOpean) {
+
+  if (projectGoalOpen) {
     return (
       <>
         <ModuleHeader name={transproject("detailview")} />
         <ProjectGoalList
           onClose={() => {
-            setProjectGoalOpean(false);
+            setProjectGoalOpen(false);
           }}
         />
       </>
@@ -173,10 +174,15 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Project Description & Dates */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
-              <LabelValueText
-                label={transproject("detaildescription")}
-                value={project.description}
-              />
+              <Box mb={3}>
+                <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                  {transproject("detaildescription")}
+                </Typography>
+                <RichTextReadOnly
+                  content={project.description || ""}
+                  extensions={getTipTapExtensions()}
+                />
+              </Box>
             </Grid>
           </Grid>
           <Box display="flex" alignItems="center" mb={1} gap={2}>
@@ -188,13 +194,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 cursor: "pointer",
                 "&:hover": { textDecoration: "underline" }
               }}
-              onClick={() => setProjectGoalOpean(true)}
+              onClick={() => setProjectGoalOpen(true)}
             >
               {transproject("linkgoals")}
             </Typography>
-
             <Divider orientation="vertical" flexItem sx={{ height: 20, bgcolor: "#999" }} />
-
             <Typography
               variant="body1"
               sx={{
@@ -323,7 +327,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             onChange={(ids) => setSelectedUserIds(ids as string[])}
           />
         </CommonDialog>
-
         <EditProject
           open={editOpen}
           onClose={() => setEditOpen(false)}
@@ -331,7 +334,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           mutate={mutate}
           projectID={projectID}
         />
-
         <CommonDialog
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
@@ -347,7 +349,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             {transproject("removeusernote2")}
           </Typography>
         </CommonDialog>
-
         <CustomSnackbar
           open={snackbar.open}
           message={snackbar.message}

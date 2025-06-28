@@ -30,6 +30,9 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const router = useRouter();
   const { getAll: allAssets } = useAllAssets();
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [warrantyDateFrom, setWarrantyDateFrom] = useState<string>("");
+  const [warrantyDateTo, setWarrantyDateTo] = useState<string>("");
+  const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>([]);
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -99,11 +102,23 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     return users.sort((a, b) => a.localeCompare(b));
   }, [allAssets]);
 
+  const allSystemTypes: string[] = useMemo(() => {
+    return Array.from(
+      new Set(
+        allAssets
+          .map((a: IAssetAttributes) => a.systemType)
+          .filter((type: string): type is string => !!type)
+      )
+    );
+  }, [allAssets]);
+
   const filterAssets = (
     assets: IAssetAttributes[],
     searchText: string,
     assignedToFilter: string[],
-    modelNameFilter: string[]
+    modelNameFilter: string[],
+    warrantyFrom?: string,
+    warrantyTo?: string
   ) => {
     const lowerSearch = searchText.toLowerCase();
 
@@ -137,11 +152,26 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
         modelNameFilter.length === 0 ||
         modelNameFilter.some((val) => val.toLowerCase() === (asset.modelName || "").toLowerCase());
 
-      return matchBasic && matchAssigned && matchModel;
+      const warrantyDate = asset.warrantyDate ? new Date(asset.warrantyDate) : null;
+      const matchWarranty =
+        (!warrantyFrom || (warrantyDate && warrantyDate >= new Date(warrantyFrom))) &&
+        (!warrantyTo || (warrantyDate && warrantyDate <= new Date(warrantyTo)));
+
+      const matchSystemType =
+        systemTypeFilter.length === 0 || systemTypeFilter.includes(asset.systemType || "");
+
+      return matchBasic && matchAssigned && matchModel && matchWarranty && matchSystemType;
     });
   };
 
-  const filteredAssets = filterAssets(allAssets, searchText, assignedToFilter, modelNameFilter);
+  const filteredAssets = filterAssets(
+    allAssets,
+    searchText,
+    assignedToFilter,
+    modelNameFilter,
+    warrantyDateFrom,
+    warrantyDateTo
+  );
   const mappedAssets = filteredAssets.map((asset) => ({
     id: asset.id,
     assetType: asset.assetType?.name || "-",
@@ -205,6 +235,15 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               setSearchText("");
             }}
             trans={transasset}
+            dateFrom={warrantyDateFrom}
+            dateTo={warrantyDateTo}
+            onDateChange={(from, to) => {
+              setWarrantyDateFrom(from);
+              setWarrantyDateTo(to);
+            }}
+            systemTypeFilter={systemTypeFilter}
+            allSystemTypes={allSystemTypes}
+            onSystemTypeChange={setSystemTypeFilter}
           />
         ) : (
           <AssetFilters

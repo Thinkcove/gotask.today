@@ -19,6 +19,7 @@ import { ASSET_TYPE } from "@/app/common/constants/asset";
 import HistoryIcon from "@mui/icons-material/History";
 import IssueHistoryDrawer from "../../createIssues/issuesDrawer";
 import { ArrowBack } from "@mui/icons-material";
+import { systemTypeOptions } from "../../assetConstants";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -48,6 +49,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     id: data?.id,
     typeId: data?.typeId || "",
     deviceName: data?.deviceName || "",
+    systemType: data?.systemType || "",
     serialNumber: data?.serialNumber || "",
     ram: data?.ram || "",
     modelName: data?.modelName || "",
@@ -83,6 +85,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     if (!formData.id) newErrors.id = transasset("id");
     if (!formData.typeId) newErrors.typeId = transasset("typeid");
     if (!formData.deviceName) newErrors.deviceName = transasset("devicename");
+    if (!formData.systemType) newErrors.systemType = transasset("systemtype");
     if (!formData.ram) newErrors.ram = transasset("ram");
     if (!formData.modelName) newErrors.modelName = transasset("modelname");
     if (!formData.os) newErrors.os = transasset("os");
@@ -333,11 +336,17 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
               onChange={handleChange}
               errors={errors}
               selectedAssetType={selectedAssetType}
+              systemTypeOptions={systemTypeOptions}
             />
           )}
           {selectedAssetType?.name === ASSET_TYPE.MOBILE && (
             <Grid item xs={12}>
-              <MobileInputs formData={formData} onChange={handleChange} errors={errors} />
+              <MobileInputs
+                formData={formData}
+                onChange={handleChange}
+                errors={errors}
+                systemTypeOptions={systemTypeOptions}
+              />
             </Grid>
           )}
         </Box>

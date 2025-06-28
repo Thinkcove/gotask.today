@@ -45,6 +45,7 @@ export interface IAssetAttributes {
   tags?: ITagData;
   typeId: string;
   deviceName?: string;
+  systemType?: string;
   serialNumber?: string;
   ram?: string;
   modelName?: string;

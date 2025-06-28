@@ -10,13 +10,32 @@ interface MobileInputsProps {
   formData: IAssetAttributes;
   onChange: <K extends keyof IAssetAttributes>(field: K, value: IAssetAttributes[K]) => void;
   errors?: { [key: string]: string };
+  systemTypeOptions: string[];
 }
 
-const MobileInputs: React.FC<MobileInputsProps> = ({ formData, onChange, errors }) => {
+const MobileInputs: React.FC<MobileInputsProps> = ({
+  formData,
+  onChange,
+  errors,
+  systemTypeOptions
+}) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
 
   return (
     <Grid container spacing={2}>
+      <Grid item xs={12} sm={4}>
+        <FormField
+          label={`${transasset("systemtype")} ${transasset("required")}`}
+          type="select"
+          placeholder={transasset("systemtype")}
+          value={formData.systemType}
+          error={errors?.systemtype}
+          required
+          options={systemTypeOptions}
+          onChange={(val) => onChange("systemType", String(val))}
+        />
+      </Grid>
+
       <Grid item xs={12} sm={4}>
         <FormField
           label={`${transasset("imeiNumber")} ${transasset("required")}`}

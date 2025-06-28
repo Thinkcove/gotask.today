@@ -13,13 +13,15 @@ interface LaptopInputsProps {
   startIndex?: number;
   errors?: { [key: string]: string };
   selectedAssetType?: IAssetType;
+  systemTypeOptions: string[];
 }
 
 const LaptopInputs: React.FC<LaptopInputsProps> = ({
   formData,
   errors,
   onChange,
-  selectedAssetType
+  selectedAssetType,
+  systemTypeOptions
 }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   return (
@@ -157,6 +159,18 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
           )}
           {selectedAssetType?.name === ASSET_TYPE.LAPTOP && (
             <>
+              <Grid item xs={12} sm={4}>
+                <FormField
+                  label={`${transasset("systemtype")} ${transasset("required")}`}
+                  type="select"
+                  placeholder={transasset("systemtype")}
+                  value={formData.systemType}
+                  error={errors?.systemtype}
+                  required
+                  options={systemTypeOptions}
+                  onChange={(val) => onChange("systemType", String(val))} // already a string
+                />
+              </Grid>
               <Grid item xs={12} sm={4}>
                 <FormField
                   label={transasset("antivirus")}

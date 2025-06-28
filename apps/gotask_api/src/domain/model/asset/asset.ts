@@ -6,6 +6,7 @@ export interface IAsset extends Document {
   id: string;
   typeId: string;
   deviceName?: string;
+  systemType?: string;
   serialNumber?: string;
   ram?: string;
   modelName?: string;
@@ -49,6 +50,12 @@ const AssetSchema = new Schema<IAsset>(
     id: { type: String, default: uuidv4 },
     typeId: { type: String, ref: "AssetType", required: true },
     deviceName: { type: String },
+    systemType: {
+      type: String,
+      enum: ["Office System", "Personal System"],
+      default: "Office System",
+      required: true
+    },
     serialNumber: { type: String },
     modelName: { type: String },
     os: { type: String },

@@ -109,7 +109,6 @@ export const fetchUsers = async () => {
           projects: string[];
           organizations: string[];
           role: string;
-
         }) => ({
           id: user.id,
           first_name: user.first_name,
@@ -185,7 +184,6 @@ export const deleteUserSkill = async (userId: string, skillId: string) => {
   });
 };
 
-
 // Get all certificates of a user
 export const getUserCertificates = async (userId: string): Promise<ICertificate[]> => {
   return withAuth(async (token) => {
@@ -227,7 +225,6 @@ export const deleteUserCertificate = async (
     return await deleteData(url, token);
   });
 };
-
 
 // Get increments
 export const getUserIncrements = async (userId: string) => {

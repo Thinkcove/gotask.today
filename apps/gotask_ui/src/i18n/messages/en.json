@@ -500,22 +500,29 @@
     "notes": " Notes",
     "addcertificate": "Add Certificate",
     "editcertificate": "Edit Certificate",
-    "subtitle": "Add details of Certifications you have achieved/completed"
+    "subtitle": "Add details of Certifications you have achieved/completed",
+    "c_name": "Please enter your certification name",
+    "d_format": "DD/MM/YYYY",
+    "notes_placeholder": "Add any optional notes"
   },
     "Increment": {
       "increment_History": "Increment History",
       "increment": " Increment",
       "save": "Save",
       "cancel": "Cancel",
+      "delete": "Delete",
       "date": "Date",
       "ctc": "CTC",
       "add_new": "Add New Increment",
       "add": "Add",
       "noincrements": "No increments found",
-      "ctc_growth": "CTC Growth Over Time"
+      "ctc_growth": "CTC Growth Over Time",
+      "confirm_Delete":"Confirm Delete",
+      "delete_Increment": "Are you sure you want to delete this?"
+      
     }
   },
- 
+
   "Appbar": {
     "logout": "Logout"
   },

@@ -28,9 +28,10 @@ interface CertificateInputProps {
   onChange: (updated: ICertificate[]) => void;
 }
 
-const CertificateInput: React.FC<CertificateInputProps> = ({ userId, certificates, onChange }) => {
+const CertificateInput: React.FC<CertificateInputProps> = ({  certificates, onChange }) => {
   const trans = useTranslations("User");
   const transuser = useTranslations("User.Certificate_sec");
+  const transInc = useTranslations("User.Increment");
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
@@ -69,10 +70,12 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId, certificate
   };
 
   const handleRemove = (index: number) => {
-    const updated = [...certificates];
-    updated.splice(index, 1);
-    onChange(updated);
+    setDeleteIndex(index);
+    setConfirmOpen(true);
   };
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   return (
     <Box
@@ -103,7 +106,9 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId, certificate
       </Box>
 
       {/* Certificate List */}
-      <Box
+      <Grid
+        container
+        spacing={2}
         sx={{
           maxHeight: 400,
           overflowY: "auto",
@@ -114,72 +119,75 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId, certificate
         }}
       >
         {certificates.map((cert, index) => (
-          <Paper
-            key={index}
-            elevation={0}
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              borderRadius: 2,
-              border: "1px solid #e0e0e0",
-              backgroundColor: "#fff",
-              p: 2,
-              mb: 2,
-              width: "30%"
-            }}
-          >
-            {/* Left: Certificate info */}
-            <Box display="flex" alignItems="center" gap={2}>
-              <Box
-                sx={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: 1,
-                  backgroundColor: "#f0f0f0",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 24,
-                  color: "#888"
-                }}
-              >
-                🎓
-              </Box>
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Paper
+              elevation={0}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                borderRadius: 2,
+                border: "1px solid #e0e0e0",
+                backgroundColor: "#fff",
+                p: 2,
+                height: "100%"
+              }}
+            >
+              {/* Left: Certificate info */}
+              <Box display="flex" alignItems="flex-start" gap={2}>
+                <Box
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    borderRadius: 1,
+                    backgroundColor: "#f0f0f0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 24,
+                    color: "#888"
+                  }}
+                >
+                  🎓
+                </Box>
 
-              <Box>
-                <Typography fontSize={14} fontWeight={600}>
-                  {cert.name}
-                </Typography>
-                <Typography fontSize={12} color="text.secondary">
-                  {transuser("obtaineddate")}:{" "}
-                  {cert.obtained_date ? (
-                    <FormattedDateTime date={cert.obtained_date} format="MMMM YYYY" />
-                  ) : (
-                    "N/A"
-                  )}
-                </Typography>
-
-                {cert.notes && (
-                  <Typography fontSize={12} color="text.secondary" mt={0.5}>
-                    {cert.notes}
+                <Box>
+                  <Typography fontSize={14} fontWeight={600}>
+                    {cert.name}
                   </Typography>
-                )}
-              </Box>
-            </Box>
+                  <Typography fontSize={12} color="text.secondary">
+                    {transuser("obtaineddate")}:{" "}
+                    {cert.obtained_date ? (
+                      <FormattedDateTime
+                        date={cert.obtained_date}
+                        format={DateFormats.MONTH_YEAR}
+                      />
+                    ) : (
+                      "N/A"
+                    )}
+                  </Typography>
 
-            {/* Right: Actions */}
-            <Box>
-              <IconButton onClick={() => handleEdit(index)}>
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton onClick={() => handleRemove(index)}>
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          </Paper>
+                  {cert.notes && (
+                    <Typography fontSize={12} color="text.secondary" mt={0.5}>
+                      {cert.notes}
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+
+              {/* Right: Actions */}
+              <Box>
+                <IconButton onClick={() => handleEdit(index)}>
+                  <EditIcon fontSize="small" />
+                </IconButton>
+                <IconButton onClick={() => handleRemove(index)}>
+                  <DeleteIcon fontSize="small" color="error" />
+                </IconButton>
+              </Box>
+            </Paper>
+          </Grid>
         ))}
-      </Box>
+      </Grid>
 
       {/* Dialog for Add/Edit */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
@@ -206,7 +214,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId, certificate
                 <span style={{ color: "red" }}>*</span>
               </Typography>
               <TextField
-                placeholder="Please enter your certification name"
+                placeholder={transuser("c_name")}
                 value={newCert.name}
                 onChange={(e) => setNewCert({ ...newCert, name: e.target.value })}
                 fullWidth
@@ -219,11 +227,11 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId, certificate
               </Typography>
               <TextField
                 type="date"
-                placeholder="DD/MM/YYYY"
+                placeholder={transuser("d_format")}
                 InputLabelProps={{ shrink: true }}
                 value={
                   newCert.obtained_date
-                    ? new Date(newCert.obtained_date).toISOString().split("T")[0] // Ensures format YYYY-MM-DD
+                    ? new Date(newCert.obtained_date).toISOString().split("T")[0]
                     : ""
                 }
                 onChange={(e) => setNewCert({ ...newCert, obtained_date: e.target.value })}
@@ -236,7 +244,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId, certificate
                 {transuser("notes")}
               </Typography>
               <TextField
-                placeholder="Add any optional notes"
+                placeholder={transuser("notes_placeholder")}
                 value={newCert.notes}
                 onChange={(e) => setNewCert({ ...newCert, notes: e.target.value })}
                 fullWidth
@@ -253,6 +261,29 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId, certificate
           </Button>
           <Button variant="contained" onClick={handleSave} sx={{ textTransform: "none", px: 3 }}>
             {trans("save")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
+        <DialogTitle>{transInc("confirm_Delete")}</DialogTitle>
+        <DialogContent>
+          <Typography>{transInc("delete_Increment")}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmOpen(false)}>{transInc("cancel")}</Button>
+          <Button
+            onClick={() => {
+              if (deleteIndex !== null) {
+                const updated = certificates.filter((_, i) => i !== deleteIndex);
+                onChange(updated);
+              }
+              setConfirmOpen(false);
+              setDeleteIndex(null);
+            }}
+            variant="contained"
+          >
+            {transInc("delete")}
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,7 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Typography, TextField, Grid, Stack, Paper } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Grid,
+  Stack,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  DialogActions
+} from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import StarIcon from "@mui/icons-material/Star";
 import AddIcon from "@mui/icons-material/Add";
@@ -24,6 +36,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   const [inputValue, setInputValue] = useState("");
   const skillUrl = `${env.API_BASE_URL}/getAllSkills`;
   const transuser = useTranslations("User");
+  const transInc = useTranslations("User.Increment");
 
   const {
     data: options = [],
@@ -66,11 +79,18 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     }
   };
 
+  const confirmDeleteSkill = (index: number) => {
+    setDeleteIndex(index);
+    setConfirmOpen(true);
+  };
+
   const removeSkill = async (index: number) => {
     const [removed] = skills.splice(index, 1);
     onChange([...skills]);
     if (removed.skill_id) await deleteUserSkill(userId, removed.skill_id);
   };
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   return (
     <Box sx={{ pt: 1 }}>
@@ -175,15 +195,15 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                     width: "100%"
                   }}
                 >
-                  <Grid container spacing={1} alignItems="center" display="flex">
+                  <Grid container spacing={1} alignItems="center">
                     <Grid item xs={11}>
                       <Typography variant="subtitle1" fontWeight="medium">
                         {s.name}
                       </Typography>
                     </Grid>
-                    <Grid item xs={1} justifyContent="flex-end">
-                      <IconButton size="small" onClick={() => removeSkill(idx)}>
-                        <Delete fontSize="small" />
+                    <Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                      <IconButton size="small" onClick={() => confirmDeleteSkill(idx)}>
+                        <Delete fontSize="small" color="error" />
                       </IconButton>
                     </Grid>
                   </Grid>
@@ -261,6 +281,28 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
           )}
         </Box>
       </Grid>
+
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
+        <DialogTitle>{transInc("confirm_Delete")}</DialogTitle>
+        <DialogContent>
+          <Typography>{transInc("delete_Increment")}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmOpen(false)}>{transInc("cancel")}</Button>
+          <Button
+            onClick={async () => {
+              if (deleteIndex !== null) {
+                await removeSkill(deleteIndex);
+              }
+              setConfirmOpen(false);
+              setDeleteIndex(null);
+            }}
+            variant="contained"
+          >
+            {transInc("delete")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

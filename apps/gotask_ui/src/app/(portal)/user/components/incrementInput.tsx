@@ -8,7 +8,6 @@ import {
   TextField,
   Button,
   Stack,
-  Divider,
   Paper,
   Grid,
   Dialog,
@@ -61,7 +60,6 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
     setDeleteIndex(index);
     setConfirmOpen(true);
   };
-  
 
   const startEdit = (index: number) => {
     setEditIndex(index);
@@ -74,7 +72,7 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
   };
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  
+
   return (
     <Box mt={3}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} px={2}>
@@ -91,109 +89,6 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
         </Button>
       </Box>
 
-      {/* <Box
-        sx={{
-          maxHeight: "calc(100vh - 300px)",
-          overflowY: "auto",
-          px: 2,
-          scrollbarWidth: "thin",
-          "&::-webkit-scrollbar": { width: "6px" },
-          "&::-webkit-scrollbar-thumb": { backgroundColor: "#ccc" }
-        }}
-      >
-        {sortedIncrements.map((inc, idx) => {
-          const isEditing = editIndex === idx;
-          const previous = sortedIncrements[idx + 1];
-          const isLatest = idx === 0;
-          const percentChange = previous
-            ? (((inc.ctc - previous.ctc) / previous.ctc) * 100).toFixed(2)
-            : null;
-
-          return (
-            <Paper
-              key={idx}
-              elevation={0}
-              sx={{
-                mb: 2,
-                p: 3,
-                borderRadius: "16px",
-                border: "1px solid #e0e0e0",
-                backgroundColor: "#fff",
-                width: "30%"
-              }}
-            >
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                <Typography fontWeight={600} fontSize={14}>
-                  {transuser("increment")} {sortedIncrements.length - idx}
-                </Typography>
-                <Box>
-                  {isEditing ? (
-                    <IconButton onClick={cancelEdit}>
-                      <CancelIcon fontSize="small" />
-                    </IconButton>
-                  ) : (
-                    <IconButton onClick={() => startEdit(idx)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  )}
-                  <IconButton onClick={() => handleDelete(idx)}>
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              </Box>
-
-              {isEditing ? (
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      label={transuser("date")}
-                      type="date"
-                      InputLabelProps={{ shrink: true }}
-                      value={newIncrement.date}
-                      onChange={(e) => setNewIncrement({ ...newIncrement, date: e.target.value })}
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      label={transuser("ctc")}
-                      type="number"
-                      value={newIncrement.ctc}
-                      onChange={(e) => setNewIncrement({ ...newIncrement, ctc: +e.target.value })}
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={12} display="flex" alignItems="center" gap={2}>
-                    <Button variant="contained" onClick={() => handleUpdate(idx)} size="small">
-                      {transuser("save")}
-                    </Button>
-                    <Button onClick={cancelEdit} size="small">
-                      {transuser("cancel")}
-                    </Button>
-                  </Grid>
-                </Grid>
-              ) : (
-                <Stack spacing={1}>
-                  <Typography fontSize={13}>
-                    <strong>{transuser("date")}:</strong>{" "}
-                    {new Date(inc.date).toLocaleDateString("en-IN", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric"
-                    })}
-                  </Typography>
-                  <Typography fontSize={13}>
-                    <strong>{transuser("ctc")}:</strong> ₹{inc.ctc.toLocaleString("en-IN")}
-                    {percentChange && (
-                      <span style={{ color: "green", marginLeft: 8 }}>↑ {percentChange}%</span>
-                    )}
-                  </Typography>
-                </Stack>
-              )}
-            </Paper>
-          );
-        })}
-      </Box> */}
       <Box
         sx={{
           maxHeight: "calc(100vh - 300px)",
@@ -239,7 +134,7 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
                         </IconButton>
                       )}
                       <IconButton onClick={() => handleDelete(idx)}>
-                        <DeleteIcon fontSize="small" />
+                        <DeleteIcon fontSize="small" color="error" />
                       </IconButton>
                     </Box>
                   </Box>
@@ -307,7 +202,6 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
                 {transuser("date")}
               </Typography>
               <TextField
-                placeholder="Enter date"
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 value={newIncrement.date}
@@ -323,7 +217,6 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
               <TextField
                 label={transuser("ctc")}
                 type="number"
-                placeholder="Enter CTC"
                 value={newIncrement.ctc}
                 onChange={(e) => {
                   const value = +e.target.value;
@@ -344,12 +237,12 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
       </Dialog>
 
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogTitle>{transuser("confirm_Delete")}</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete this increment?</Typography>
+          <Typography>{transuser("delete_Increment")}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
+          <Button onClick={() => setConfirmOpen(false)}>{transuser("cancel")}</Button>
           <Button
             onClick={() => {
               if (deleteIndex !== null) {
@@ -360,9 +253,8 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
               setDeleteIndex(null);
             }}
             variant="contained"
-            color="error"
           >
-            Delete
+            {transuser("delete")}
           </Button>
         </DialogActions>
       </Dialog>

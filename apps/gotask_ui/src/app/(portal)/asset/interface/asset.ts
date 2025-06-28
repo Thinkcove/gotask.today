@@ -85,6 +85,7 @@ export interface IAssetAttributes {
   type?: string;
   assignedTo?: string;
   issues?: IAssetIssues[];
+  previouslyUsedBy?: string;
 }
 
 export interface IAssetTags {

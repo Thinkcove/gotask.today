@@ -16,6 +16,7 @@ export interface IAssetDisplayRow {
   users: string;
   encrypted?: boolean;
   warrantyDate?: string;
+  previouslyUsedBy?: string;
 }
 
 export const getAssetColumns = (
@@ -104,6 +105,12 @@ export const getAssetColumns = (
       ) : (
         "-"
       )
+  },
+  {
+    id: "previouslyUsedBy",
+    align: "center" as const,
+    label: transasset("previouslyused"),
+    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
   {
     id: "users",

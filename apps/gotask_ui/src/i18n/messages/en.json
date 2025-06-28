@@ -618,7 +618,8 @@
     "filterto": "To Date",
     "filter": "Filter",
     "filterclear": "Clear",
-    "filterapply": "Apply"
+    "filterapply": "Apply",
+    "previouslyused": "Previously Used"
   },
 
   "Chatbot": {

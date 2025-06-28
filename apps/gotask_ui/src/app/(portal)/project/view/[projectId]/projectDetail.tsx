@@ -174,7 +174,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 cursor: "pointer",
                 "&:hover": { textDecoration: "underline" }
               }}
-              onClick={() => router.push(`/project/viewProject/${projectID}/goals`)}
+              onClick={() => router.push(`/project/view/${projectID}/goals`)}
             >
               {transproject("linkgoals")}
             </Typography>
@@ -189,7 +189,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 cursor: "pointer",
                 "&:hover": { textDecoration: "underline" }
               }}
-              onClick={() => router.push(`/project/viewProject/${projectID}/stories`)}
+              onClick={() => router.push(`/project/view/${projectID}/stories`)}
             >
               {transproject("linkstories")}
             </Typography>

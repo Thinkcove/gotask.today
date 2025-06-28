@@ -477,13 +477,6 @@ function ProjectGoalList() {
           />
         ) : (
           <>
-            {!openDialog && (
-              <ActionButton
-                label={transGoal("creategoal")}
-                icon={<AddIcon sx={{ color: "white" }} />}
-                onClick={handelOpen}
-              />
-            )}
             {openDialog && (
               <>
                 <Box
@@ -613,6 +606,13 @@ function ProjectGoalList() {
           text={transGoal("log")}
           heading={transGoal("projectgoalhistory")}
         />
+        {!openDialog && (
+          <ActionButton
+            label={transGoal("creategoal")}
+            icon={<AddIcon sx={{ color: "white" }} />}
+            onClick={handelOpen}
+          />
+        )}
       </Box>
     </>
   );

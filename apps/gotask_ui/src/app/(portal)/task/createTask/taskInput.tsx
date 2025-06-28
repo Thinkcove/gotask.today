@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, RefObject } from "react";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import FormField from "../../../component/input/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
 import {
@@ -13,9 +13,11 @@ import {
 import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { MentionSuggestion } from "@/app/component/richText/mentionSuggestionOptions";
 import ReusableEditor from "@/app/component/richText/textEditor";
 import { RichTextEditorRef } from "mui-tiptap";
+import { mapUsersToMentions } from "@/app/common/utils/textEditor";
+import useSWR from "swr";
+import { fetchUsers } from "../../user/services/userAction";
 
 interface TaskInputProps {
   formData: IFormField;
@@ -167,13 +169,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
     return options;
   };
 
-  const userListForMentions: MentionSuggestion[] = useMemo(() => {
-    const allUsers = getAllUsers || [];
-    return allUsers.map((user: User) => ({
-      id: user.id,
-      mentionLabel: user.name
-    }));
-  }, [getAllUsers]);
+  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
+
+  const userList = useMemo(() => {
+    return mapUsersToMentions(fetchedUsers || []);
+  }, [fetchedUsers]);
 
   const handleDescriptionSave = (html: string) => {
     handleInputChange("description", html);
@@ -327,14 +327,17 @@ const TaskInput: React.FC<TaskInputProps> = ({
         </Grid>
 
         <Grid item xs={12}>
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {transtask("labeldescription")}
+          </Typography>
           <ReusableEditor
             ref={rteRef}
             content={formData.description || ""}
             onSave={handleDescriptionSave}
             placeholder={transtask("placeholderdescription")}
             readOnly={isReadOnly("description")}
-            showSaveButton={false} 
-            userList={userListForMentions}
+            showSaveButton={false}
+            userList={userList}
           />
         </Grid>
       </Grid>

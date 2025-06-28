@@ -244,7 +244,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             readOnlyFields={readOnlyFields}
             isUserEstimatedLocked={!!data.user_estimated}
             isStartDateLocked={!!data.start_date}
-            rteRef={rteRef} // ✅ Make sure TaskInput passes this ref to RichTextEditor
+            rteRef={rteRef}
           />
         </Box>
 

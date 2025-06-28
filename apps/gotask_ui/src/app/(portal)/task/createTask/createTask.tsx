@@ -67,13 +67,13 @@ const CreateTask: React.FC = () => {
   // Submit handler
   const handleSubmit = async () => {
     const html = rteRef.current?.editor?.getHTML?.() || "";
-    handleInputChange("description", html); // ensure description is up to date
+    handleInputChange("description", html);
     if (!validateForm()) return;
 
     try {
       await createTask({
         ...formData,
-        description: html // submit the latest HTML content
+        description: html
       });
       setSnackbar({
         open: true,

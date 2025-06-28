@@ -1,5 +1,7 @@
-import React, { useState, useMemo } from "react";
-import { Grid } from "@mui/material";
+"use client";
+
+import React, { useState, useMemo, RefObject } from "react";
+import { Grid, Typography } from "@mui/material";
 import FormField from "../../../component/input/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
 import {
@@ -11,6 +13,11 @@ import {
 import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import ReusableEditor from "@/app/component/richText/textEditor";
+import { RichTextEditorRef } from "mui-tiptap";
+import { mapUsersToMentions } from "@/app/common/utils/textEditor";
+import useSWR from "swr";
+import { fetchUsers } from "../../user/services/userAction";
 
 interface TaskInputProps {
   formData: IFormField;
@@ -19,6 +26,8 @@ interface TaskInputProps {
   readOnlyFields?: string[];
   isUserEstimatedLocked?: boolean;
   isStartDateLocked?: boolean;
+  onDescriptionSave?: () => void;
+  rteRef?: RefObject<RichTextEditorRef | null>;
 }
 
 const TaskInput: React.FC<TaskInputProps> = ({
@@ -27,32 +36,28 @@ const TaskInput: React.FC<TaskInputProps> = ({
   errors,
   readOnlyFields = [],
   isUserEstimatedLocked,
-  isStartDateLocked
+  isStartDateLocked,
+  onDescriptionSave,
+  rteRef
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
-  const { getAllUsers } = useAllUsers(); // getAllUsers is User[]
-  const { getAllProjects } = useAllProjects(); // getAllProjects is Project[]
+  const { getAllUsers } = useAllUsers();
+  const { getAllProjects } = useAllProjects();
 
-  // State to hold filtered data
   const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
 
-  // Helper function to determine if a field should be read-only
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
-  // Memoized function to get current user object
   const getCurrentUser = useMemo(() => {
     if (!formData.user_id) return null;
 
-    // First check in filtered users
     let user = filteredUsers.find((u: User) => u.id === formData.user_id);
 
-    // If not found, check in all users
     if (!user && getAllUsers) {
       user = getAllUsers.find((u: User) => u.id === formData.user_id);
     }
 
-    // If still not found but we have user_name in formData, create a user object
     if (!user && formData.user_name) {
       user = {
         id: formData.user_id,
@@ -63,19 +68,15 @@ const TaskInput: React.FC<TaskInputProps> = ({
     return user;
   }, [formData.user_id, formData.user_name, filteredUsers, getAllUsers]);
 
-  // Memoized function to get current project object
   const getCurrentProject = useMemo(() => {
     if (!formData.project_id) return null;
 
-    // First check in filtered projects
     let project = filteredProjects.find((p: Project) => p.id === formData.project_id);
 
-    // If not found, check in all projects
     if (!project && getAllProjects) {
       project = getAllProjects.find((p: Project) => p.id === formData.project_id);
     }
 
-    // If still not found but we have project_name in formData, create a project object
     if (!project && formData.project_name) {
       project = {
         id: formData.project_id,
@@ -86,7 +87,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
     return project;
   }, [formData.project_id, formData.project_name, filteredProjects, getAllProjects]);
 
-  // Handle Assignee change and fetch projects
   const handleAssigneeChange = async (userId: string) => {
     handleInputChange("user_id", userId);
 
@@ -101,7 +101,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
       setFilteredProjects(projects);
       handleInputChange("projects", projects);
 
-      // Reset project_id only if it's not valid for the selected user
       if (formData.project_id && !projects.some((p: Project) => p.id === formData.project_id)) {
         handleInputChange("project_id", "");
       }
@@ -112,7 +111,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
     }
   };
 
-  // Handle Project change and fetch users
   const handleProjectChange = async (projectId: string) => {
     handleInputChange("project_id", projectId);
 
@@ -127,7 +125,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
       setFilteredUsers(users);
       handleInputChange("users", users);
 
-      // Reset user_id only if it's not valid for the selected project
       if (formData.user_id && !users.some((u: User) => u.id === formData.user_id)) {
         handleInputChange("user_id", "");
       }
@@ -138,7 +135,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
     }
   };
 
-  // Get user options with current user included if not already present
   const getUserOptions = () => {
     let options: User[] = [];
 
@@ -148,7 +144,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
       options = [...(getAllUsers || [])];
     }
 
-    // Ensure current user is included in options
     const currentUser = getCurrentUser;
     if (currentUser && !options.find((u: User) => u.id === currentUser.id)) {
       options.unshift(currentUser);
@@ -157,7 +152,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
     return options;
   };
 
-  // Get project options with current project included if not already present
   const getProjectOptions = () => {
     let options: Project[] = [];
 
@@ -167,7 +161,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
       options = [...filteredProjects];
     }
 
-    // Ensure current project is included in options
     const currentProject = getCurrentProject;
     if (currentProject && !options.find((p: Project) => p.id === currentProject.id)) {
       options.unshift(currentProject);
@@ -176,12 +169,24 @@ const TaskInput: React.FC<TaskInputProps> = ({
     return options;
   };
 
+  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
+
+  const userList = useMemo(() => {
+    return mapUsersToMentions(fetchedUsers || []);
+  }, [fetchedUsers]);
+
+  const handleDescriptionSave = (html: string) => {
+    handleInputChange("description", html);
+    if (onDescriptionSave) {
+      onDescriptionSave();
+    }
+  };
+
   const userOptions = getUserOptions();
   const projectOptions = getProjectOptions();
   const currentStatus = formData.status;
   const allowedStatuses = TASK_WORKFLOW[currentStatus] || [];
 
-  // Include current status in options
   const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
 
   return (
@@ -320,16 +325,19 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("due_date")}
           />
         </Grid>
+
         <Grid item xs={12}>
-          <FormField
-            label={transtask("labeldescription")}
-            type="text"
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {transtask("labeldescription")}
+          </Typography>
+          <ReusableEditor
+            ref={rteRef}
+            content={formData.description || ""}
+            onSave={handleDescriptionSave}
             placeholder={transtask("placeholderdescription")}
-            value={formData.description}
-            onChange={(value) => handleInputChange("description", String(value))}
-            disabled={isReadOnly("description")}
-            multiline
-            height={120}
+            readOnly={isReadOnly("description")}
+            showSaveButton={false}
+            userList={userList}
           />
         </Grid>
       </Grid>

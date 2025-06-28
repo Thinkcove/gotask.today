@@ -5,21 +5,21 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { getSeverityColor, getStatusColor } from "@/app/common/constants/task";
 import LabelValueText from "@/app/component/text/labelValueText";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { ITask, ITaskComment } from "../../interface/taskInterface";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { formatTimeValue } from "@/app/common/utils/taskTime";
-import { KeyedMutator } from "swr";
-import { createComment } from "../../service/taskAction";
+import { createComment, deleteComment, updateComment } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import TaskComments from "../../edit/taskComments";
+import CommentSection from "../../../../component/comments/commentSection";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 interface TaskDetailViewProps {
-  task: ITask;
+  task: any;
   loading?: boolean;
-  mutate: KeyedMutator<ITask>;
+  mutate: () => Promise<void>;
 }
 
 const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
@@ -27,22 +27,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
   const { user } = useUser();
   const router = useRouter();
   const { canAccess } = useUserPermission();
-  const submitComment = async (commentText: string) => {
-    if (!commentText.trim()) return;
-    const commentData: ITaskComment = {
-      task_id: task?.id,
-      user_id: user?.id || "",
-      user_name: user?.name || "",
-      comment: commentText
-    };
-    await createComment(commentData);
-    await mutate();
-  };
-  const handleBack = () => {
-    router.back();
-  };
-
-  // Loading state
+  const handleBack = () => router.back();
   if (loading || !task || Object.keys(task).length === 0) {
     return (
       <>
@@ -56,17 +41,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 2,
-              textAlign: "center"
-            }}
-          >
-            <CircularProgress size={50} thickness={4} />
-          </Box>
+          <CircularProgress size={50} thickness={4} />
         </Box>
       </>
     );
@@ -95,31 +70,26 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
         >
           {/* Header */}
           <Grid container spacing={2} alignItems="center" mb={3}>
-            {/* Back Button */}
             <Grid item xs="auto">
               <IconButton color="primary" onClick={handleBack}>
                 <ArrowBack />
               </IconButton>
             </Grid>
 
-            {/* Task Title & Status */}
             <Grid item xs>
-              <Box>
-                <Typography
-                  variant="h5"
-                  fontWeight={500}
-                  sx={{
-                    textTransform: "capitalize",
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" }
-                  }}
-                >
-                  {task?.title}
-                </Typography>
-                <StatusIndicator status={task.status} getColor={getStatusColor} />
-              </Box>
+              <Typography
+                variant="h5"
+                fontWeight={500}
+                sx={{
+                  textTransform: "capitalize",
+                  fontSize: { xs: "1.25rem", sm: "1.5rem" }
+                }}
+              >
+                {task?.title}
+              </Typography>
+              <StatusIndicator status={task.status} getColor={getStatusColor} />
             </Grid>
 
-            {/* Edit Button - Separate Grid */}
             {canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) && (
               <Grid item xs="auto">
                 <IconButton color="primary" onClick={() => router.push(`/task/edit/${task.id}`)}>
@@ -129,23 +99,18 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             )}
           </Grid>
 
-          {/* Task Description - Modified to display on separate lines */}
+          {/* Content */}
           <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
+            {/* Description */}
             <Box mb={3}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 {transtask("detaildesc")}
               </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: "text.primary",
-                  lineHeight: 1.6,
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word"
-                }}
-              >
-                {task.description || "-"}
-              </Typography>
+
+              <RichTextReadOnly
+                content={task.description || ""}
+                extensions={getTipTapExtensions()}
+              />
             </Box>
             {/* Meta Info */}
             <Grid container spacing={2} mb={3}>
@@ -220,7 +185,32 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               </Grid>
             </Grid>
             <Divider sx={{ mt: 2, mb: 2 }} />
-            <TaskComments comments={task?.comment || []} onSave={submitComment} mutate={mutate} />
+
+            <CommentSection
+              comments={task.comment}
+              onSave={async (html) => {
+                const commentData = {
+                  task_id: task?.id,
+                  user_id: user?.id || "",
+                  user_name: user?.name || "",
+                  comment: html
+                };
+                await createComment(commentData);
+                await mutate();
+              }}
+              onUpdate={async (comment) => {
+                const updatedComment = {
+                  ...comment,
+                  task_id: task.id
+                };
+                await updateComment(updatedComment);
+                await mutate();
+              }}
+              onDelete={async (id) => {
+                await deleteComment(id);
+                await mutate();
+              }}
+            />
           </Box>
         </Box>
       </Box>

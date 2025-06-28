@@ -37,16 +37,29 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
+  const [errorOpen, setErrorOpen] = useState(false);
+ 
   const handleAdd = () => {
     if (!newIncrement.date || !newIncrement.ctc || newIncrement.ctc <= 0) return;
-    const exists = increment_history.some((i) => i.date === newIncrement.date);
-    if (exists) return alert("Duplicate increment date");
+
+    const newDate = new Date(newIncrement.date).toISOString().split("T")[0];
+
+    const exists = increment_history.some((i) => {
+      const existingDate = new Date(i.date).toISOString().split("T")[0];
+      return existingDate === newDate;
+    });
+
+    if (exists) {
+      setErrorOpen(true);
+      return;
+    }
+
     const updated = [...increment_history, newIncrement];
     onChange(updated);
     setNewIncrement({ date: "", ctc: 0 });
     setOpen(false);
   };
-
+  
   const handleUpdate = (index: number) => {
     if (!newIncrement.date || !newIncrement.ctc || newIncrement.ctc <= 0) return;
     const updated = [...increment_history];
@@ -256,6 +269,16 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
           >
             {transuser("delete")}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={errorOpen} onClose={() => setErrorOpen(false)}>
+        <DialogTitle>{transuser("error_title")}</DialogTitle>
+        <DialogContent>
+          <Typography>{transuser("duplicate_increment_date")}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setErrorOpen(false)}>{transuser("cancel")}</Button>
         </DialogActions>
       </Dialog>
     </Box>

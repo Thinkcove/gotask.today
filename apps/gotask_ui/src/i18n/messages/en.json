@@ -518,8 +518,9 @@
       "noincrements": "No increments found",
       "ctc_growth": "CTC Growth Over Time",
       "confirm_Delete":"Confirm Delete",
-      "delete_Increment": "Are you sure you want to delete this?"
-      
+      "delete_Increment": "Are you sure you want to delete this?",
+      "error_title": "Error",
+      "duplicate_increment_date": "An increment for this date already exists."
     }
   },
 

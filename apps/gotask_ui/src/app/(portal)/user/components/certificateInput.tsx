@@ -58,9 +58,9 @@ const CertificateInput: React.FC<CertificateInputProps> = ({  certificates, onCh
 
     const updated = [...certificates];
     if (currentEditIndex !== null) {
-      updated[currentEditIndex] = newCert; // Update
+      updated[currentEditIndex] = newCert;
     } else {
-      updated.unshift(newCert); // Add
+      updated.unshift(newCert);
     }
 
     onChange(updated);

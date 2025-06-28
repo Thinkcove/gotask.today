@@ -14,7 +14,8 @@ import { createComment, deleteComment, updateComment } from "../../service/taskA
 import { useUser } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import CommentSection from "../../../../component/comments/commentSection";
-
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 interface TaskDetailViewProps {
   task: any;
   loading?: boolean;
@@ -105,17 +106,11 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
                 {transtask("detaildesc")}
               </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: "text.primary",
-                  lineHeight: 1.6,
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word"
-                }}
-              >
-                {task.description || "-"}
-              </Typography>
+
+              <RichTextReadOnly
+                content={task.description || ""}
+                extensions={getTipTapExtensions()}
+              />
             </Box>
             {/* Meta Info */}
             <Grid container spacing={2} mb={3}>

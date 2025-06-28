@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Box, Typography, Button, IconButton } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { ArrowBack, History } from "@mui/icons-material";
@@ -21,13 +21,15 @@ import { IFormField, ITask, Project, User } from "../../interface/taskInterface"
 import { KeyedMutator } from "swr";
 import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields";
 import TimeProgressBar from "../timeProgressBar";
-
+import { RichTextEditorRef } from "mui-tiptap";
 interface EditTaskProps {
   data: ITask;
   mutate: KeyedMutator<ITask>;
 }
 
 const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
+  const rteRef = useRef<RichTextEditorRef>(null);
+
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const { user } = useUser();
@@ -78,6 +80,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   const handleSubmit = async () => {
     try {
+      const html = rteRef.current?.editor?.getHTML?.() || "";
+
       const isUserEstimatedChanged = formData.user_estimated !== data.user_estimated;
       const isUserEstimateProvided =
         formData.user_estimated !== null &&
@@ -87,6 +91,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       const updatedFields: Record<string, string | number> = {};
       const formattedDueDate = data?.due_date?.split("T")[0] || "";
       const formattedStartDate = data?.start_date?.split("T")[0] || "";
+
       const fieldCheck = (field: keyof IFormField, current: string) => {
         return (
           !isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, field) &&
@@ -102,10 +107,15 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       if (fieldCheck("due_date", formattedDueDate)) updatedFields.due_date = formData.due_date;
       if (fieldCheck("start_date", formattedStartDate))
         updatedFields.start_date = formData.start_date;
-      if (fieldCheck("description", data.description))
-        updatedFields.description = formData.description;
 
-      // Only update user_estimated if it's changed and provided
+      // Directly compare and set description (fixed)
+      if (
+        !isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, "description") &&
+        html !== data.description
+      ) {
+        updatedFields.description = html;
+      }
+
       if (isUserEstimatedChanged && isUserEstimateProvided) {
         updatedFields.user_estimated = formData.user_estimated;
       }
@@ -143,7 +153,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   const handleBack = () => router.back();
 
-  // Dynamically build readOnlyFields using centralized TASK_FORM_FIELDS
   const readOnlyFields = TASK_FORM_FIELDS.filter((field) =>
     isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, field)
   );
@@ -234,6 +243,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             readOnlyFields={readOnlyFields}
             isUserEstimatedLocked={false}
             isStartDateLocked={!!data.start_date}
+            rteRef={rteRef}
           />
         </Box>
 

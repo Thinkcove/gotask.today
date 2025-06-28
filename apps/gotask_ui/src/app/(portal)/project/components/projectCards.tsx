@@ -56,16 +56,16 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
             <Grid item xs={12} sm={6} md={3} key={project.id}>
               <CardComponent>
                 <Box
-                  sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1
+                  }}
                 >
                   <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
                     {filteredProject.name}
                   </Typography>
-                </Box>
-
-                {/* Description */}
-                <Box sx={{ mb: 2, pt: 1 }}>
-                  <EllipsisText text={filteredProject.description!} maxWidth={350} />
                 </Box>
 
                 <Box display="flex" alignItems="center" sx={{ mb: 2 }}>

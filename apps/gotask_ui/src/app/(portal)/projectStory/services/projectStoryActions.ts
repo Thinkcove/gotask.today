@@ -6,9 +6,7 @@ import {
   UpdateStoryPayload,
   AddCommentPayload,
   StoryQueryParams,
-  PaginatedStoryResponse,
-  ProjectStory,
-  Comment
+  PaginatedStoryResponse
 } from "../interfaces/projectStory";
 
 type StoryResponse = PaginatedStoryResponse | { error: string };
@@ -42,6 +40,25 @@ export const addCommentToProjectStory = async (storyId: string, payload: AddComm
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/comment/${storyId}`;
     return postData(url, payload as unknown as Record<string, unknown>, token);
+  });
+};
+
+// Update a Comment by Comment IDAdd commentMore actions
+export const updateCommentOnProjectStory = async (
+  commentId: string,
+  payload: AddCommentPayload
+) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/story/comment/${commentId}`;
+    return putData(url, payload as unknown as Record<string, unknown>, token);
+  });
+};
+
+// Delete a Comment by Comment ID
+export const deleteCommentFromProjectStory = async (commentId: string) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/story/comment/${commentId}`;
+    return deleteData(url, token);
   });
 };
 
@@ -99,4 +116,3 @@ export const getTasksByStory = async (storyId: string) => {
     return getData(url, token);
   });
 };
-

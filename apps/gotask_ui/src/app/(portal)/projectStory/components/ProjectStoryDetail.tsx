@@ -19,7 +19,9 @@ import {
   getProjectStoryById,
   deleteProjectStory,
   getTasksByStory,
-  addCommentToProjectStory
+  addCommentToProjectStory,
+  updateCommentOnProjectStory,
+  deleteCommentFromProjectStory
 } from "@/app/(portal)/projectStory/services/projectStoryActions";
 
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -31,14 +33,13 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
-import StoryComments from "../../projectStory/components/StoryComments";
-import { useUser } from "@/app/userContext";
+import CommentSection from "@/app/component/comments/commentSection"; 
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-  const { user } = useUser();
+  
 
   const {
     data: story,
@@ -64,7 +65,7 @@ const ProjectStoryDetail = () => {
       const message = response?.message || t("Stories.success.deleted");
       setSnackbar({ open: true, message, severity: "success" });
       setTimeout(() => router.push(`/project/viewProject/${projectId}/stories`), 500);
-    } catch (error) {
+    } catch  {
       setSnackbar({ open: true, message: t("Stories.errors.deleteFailed"), severity: "error" });
     } finally {
       setIsDeleting(false);
@@ -74,12 +75,6 @@ const ProjectStoryDetail = () => {
 
   const handleTaskClick = (taskId: string) => {
     router.push(`/task/view/${taskId}`);
-  };
-
-  const submitStoryComment = async (commentText: string) => {
-    if (!commentText.trim()) return;
-    await addCommentToProjectStory(storyId as string, { comment: commentText });
-    await mutate(); 
   };
 
   if (isLoading) {
@@ -170,13 +165,22 @@ const ProjectStoryDetail = () => {
           value={<FormattedDateTime date={story.createdAt} />}
         />
 
-        {/* Comments */}
+        {/* ✅ Reusable Comments */}
         <Divider sx={{ my: 3 }} />
-        <StoryComments
-          storyId={storyId as string}
+        <CommentSection
           comments={story.comments || []}
-          onSave={submitStoryComment}
-          mutate={mutate}
+          onSave={async (html) => {
+            await addCommentToProjectStory(storyId as string, { comment: html });
+            await mutate();
+          }}
+          onUpdate={async (comment) => {
+            await updateCommentOnProjectStory(comment.id, { comment: comment.comment });
+            await mutate();
+          }}
+          onDelete={async (id) => {
+            await deleteCommentFromProjectStory(id);
+            await mutate();
+          }}
         />
 
         {/* Tasks */}

@@ -35,17 +35,20 @@ const createTask = async (
 
     const newTask = await createNewTask(taskData);
 
-    // ✅ Send Notification to Assignee
+    // Send Notification to Assignee
     if (newTask.user_id) {
       const { title, message } = formatNotificationMessage(NotificationType.TASK_ASSIGNED, {
-        taskTitle: newTask.title
+        taskTitle: newTask.title || "",
+        assigneeName: newTask.user_name || "",
+        projectName: newTask.project_name || "",
+        dueDate: newTask.due_date ? new Date(newTask.due_date).toLocaleDateString() : ""
       });
 
       await sendNotification({
         userId: newTask.user_id,
         title,
         message,
-        referenceId: newTask.id, // use your UUID-based task ID
+        referenceId: newTask.id,
         type: NotificationType.TASK_ASSIGNED,
         channels: [NotificationChannel.EMAIL, NotificationChannel.IN_APP]
       });
@@ -62,6 +65,7 @@ const createTask = async (
     };
   }
 };
+
 
 
 // Get all tasks

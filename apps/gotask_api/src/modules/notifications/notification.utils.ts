@@ -8,7 +8,7 @@ export const formatNotificationMessage = (
     case NotificationType.TASK_ASSIGNED:
       return {
         title: "Task Assigned",
-        message: `You have been assigned the task "${context.taskTitle}".`
+        message: `You have been assigned the task "${context.taskTitle}" in the project "${context.projectName}".\nAssigned by: ${context.createdBy}.\nDue Date: ${context.dueDate || "N/A"}.`
       };
 
     case NotificationType.WORKLOG_REMINDER:
@@ -20,7 +20,7 @@ export const formatNotificationMessage = (
     case NotificationType.COMMENT_ADDED:
       return {
         title: "New Comment",
-        message: `A new comment was added to "${context.taskTitle}".`
+        message: `A new comment was added to the task "${context.taskTitle}".`
       };
 
     case NotificationType.LEAVE_APPROVED:

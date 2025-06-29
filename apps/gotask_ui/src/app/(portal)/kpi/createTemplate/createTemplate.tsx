@@ -12,7 +12,7 @@ interface CreateTemplateProps {
   mutate?: () => void;
 }
 
-const CreateTemplate: React.FC<CreateTemplateProps> = ({ mutate }) => {
+const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
 
@@ -59,11 +59,17 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ mutate }) => {
     };
 
     try {
-      await createTemplate(newTemplate);
-      if (mutate) {
-        await mutate();
+      const response = await createTemplate(newTemplate);
+
+      if (response && "id" in response) {
+        if (sessionStorage.getItem("createTemplateReturnToAssignee")) {
+          sessionStorage.setItem("newTemplateId", response.id);
+        }
+
+        router.back();
+      } else {
+        setErrors({ general: transkpi("createFailed") });
       }
-      router.push("/kpi");
     } catch (err: any) {
       console.error("Error creating template:", err);
       setErrors({ general: err.message || transkpi("createFailed") });
@@ -71,7 +77,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ mutate }) => {
   };
 
   const handleCancel = () => {
-    router.push("/kpi");
+    router.back();
   };
 
   return (

@@ -7,7 +7,7 @@ export const KPI_FREQUENCY = {
   ANNUALLY: "Annually"
 };
 
-export const STATUS_OPTIONS = ["Active", "Inactive", "Locked"];
+export const STATUS_OPTIONS = ["Active", "Inactive"];
 
 export const mildStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -15,8 +15,6 @@ export const mildStatusColor = (status: string) => {
       return "#e8f5e9";
     case "inactive":
       return "#fbe9e7";
-    case "locked":
-      return "#eeeeee";
     default:
       return "rgba(211, 211, 211, 0.3)";
   }

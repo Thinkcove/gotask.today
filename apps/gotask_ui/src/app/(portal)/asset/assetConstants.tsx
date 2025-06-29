@@ -17,6 +17,7 @@ export interface IAssetDisplayRow {
   encrypted?: boolean;
   warrantyDate?: string;
   previouslyUsedBy?: string;
+  issues?: string;
 }
 
 export const getAssetColumns = (
@@ -118,6 +119,13 @@ export const getAssetColumns = (
     label: transasset("assignedTo"),
     render: (value: string | string[] | boolean | undefined) =>
       Array.isArray(value) ? value.join(", ") : typeof value === "string" ? value : "-"
+  },
+  {
+    id: "issues",
+    align: "center" as const,
+    label: transasset("issuesCount"),
+    render: (value: unknown) =>
+      typeof value === "number" || typeof value === "string" ? `${value}` : "-"
   },
   {
     id: "actions",

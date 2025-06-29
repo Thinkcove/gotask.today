@@ -619,7 +619,8 @@
     "filter": "Filter",
     "filterclear": "Clear",
     "filterapply": "Apply",
-    "previouslyused": "Previously Used"
+    "previouslyused": "Previously Used",
+    "issuesCount": "Issues count"
   },
 
   "Chatbot": {

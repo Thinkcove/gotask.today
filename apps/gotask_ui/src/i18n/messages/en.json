@@ -523,7 +523,8 @@
       "errortitle": "Error",
       "duplicateincrementdate": "An increment for this date already exists.",
       "editincrement": "Edit Increment",
-      "addincdesc": "Enter the date and updated CTC for this increment."
+      "addincdesc": "Enter the date and updated CTC for this increment.",
+      "salaryrevisionlog": "Salary Revision Log"
     }
   },
 

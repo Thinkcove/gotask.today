@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Typography, IconButton, TextField, Button, Stack, Paper, Grid } from "@mui/material";
+import { Box, Typography, IconButton, TextField, Button, Stack, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
@@ -75,7 +75,10 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
 
   return (
     <Box mt={3}>
-      <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2} px={2}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} px={2}>
+        <Typography fontWeight={600} fontSize={16}>
+          {transuser("salaryrevisionlog")}
+        </Typography>
         <Button
           startIcon={<AddIcon />}
           variant="contained"
@@ -93,83 +96,78 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
       <Box
         sx={{
           maxHeight: "calc(100vh - 300px)",
-          overflowY: "auto",
+          overflowX: "auto",
           px: 2,
           pb: 2,
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 2,
           scrollbarWidth: "thin",
-          "&::-webkit-scrollbar": { width: "6px" },
+          "&::-webkit-scrollbar": { height: "6px" },
           "&::-webkit-scrollbar-thumb": { backgroundColor: "#ccc" }
         }}
       >
-        {sortedIncrements.length === 0 ? (
-          <Paper
-            elevation={1}
-            sx={{ p: 3, mt: 2, mb: 2, textAlign: "center", color: "text.secondary" }}
-          >
-            {transuser("noincrements")}
-          </Paper>
-        ) : (
-          <Grid container spacing={2}>
-            {sortedIncrements.map((inc, idx) => {
-              const previous = sortedIncrements[idx + 1];
-              const percentChange = previous
-                ? (((inc.ctc - previous.ctc) / previous.ctc) * 100).toFixed(2)
-                : null;
+        <Grid container spacing={2} px={2} mt={1}>
+          {sortedIncrements.map((inc, idx) => {
+            const previous = sortedIncrements[idx + 1];
+            const percentChange = previous
+              ? (((inc.ctc - previous.ctc) / previous.ctc) * 100).toFixed(2)
+              : null;
 
-              return (
-                <Grid item xs={12} sm={6} md={4} key={idx}>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      p: 2,
-                      mb: 2,
-                      borderRadius: "12px",
-                      border: "1px solid #e0e0e0",
-                      backgroundColor: "#fff"
-                    }}
-                  >
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                      <Typography fontWeight={600} fontSize={14}>
-                        {transuser("increment")} {sortedIncrements.length - idx}
-                      </Typography>
-                      <Box>
-                        <IconButton onClick={() => startEdit(idx)}>
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          onClick={() => {
-                            setDeleteIndex(idx);
-                            setConfirmOpen(true);
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" color="error" />
-                        </IconButton>
-                      </Box>
+            const dateObj = new Date(inc.date);
+            const monthYear = dateObj.toLocaleDateString("en-IN", {
+              month: "short",
+              year: "numeric"
+            });
+            const fullDate = dateObj.toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric"
+            });
+
+            return (
+              <Grid item xs={12} sm={6} md={3} key={idx}>
+                <Box
+                  sx={{
+                    borderLeft: idx % 4 !== 0 ? "1px solid #e0e0e0" : "none",
+                    pl: idx % 4 !== 0 ? 2 : 0
+                  }}
+                >
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography fontSize={12} color="text.secondary">
+                      {monthYear}
+                    </Typography>
+                    <Box>
+                      <IconButton onClick={() => startEdit(idx)} size="small">
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          setDeleteIndex(idx);
+                          setConfirmOpen(true);
+                        }}
+                        size="small"
+                      >
+                        <DeleteIcon fontSize="small" color="error" />
+                      </IconButton>
                     </Box>
-                    <Stack spacing={1}>
-                      <Typography fontSize={13}>
-                        <strong>{transuser("date")}:</strong>{" "}
-                        {new Date(inc.date).toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric"
-                        })}
-                      </Typography>
-                      <Typography fontSize={13}>
-                        <strong>{transuser("ctc")}:</strong> ₹{inc.ctc.toLocaleString("en-IN")} L
-                        {percentChange && (
-                          <span style={{ color: "green", marginLeft: 8 }}>↑ {percentChange}%</span>
-                        )}
-                      </Typography>
-                    </Stack>
-                  </Paper>
-                </Grid>
-              );
-            })}
-          </Grid>
-        )}
+                  </Box>
+
+                  <Typography fontSize={13}>{fullDate}</Typography>
+                  <Typography fontSize={13}>
+                    ₹{inc.ctc.toLocaleString("en-IN")} L{" "}
+                    {percentChange && (
+                      <span style={{ color: "green", marginLeft: 4 }}>↑ {percentChange}%</span>
+                    )}
+                  </Typography>
+                </Box>
+              </Grid>
+            );
+          })}
+        </Grid>
       </Box>
 
+      {/* Dialogs stay same */}
       <CommonDialog
         open={open}
         onClose={() => setOpen(false)}
@@ -181,9 +179,7 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
         <Typography variant="body2" color="text.secondary" mt={0.5}>
           {transuser("addincdesc")}
         </Typography>
-
         <Stack spacing={2}>
-          {/* Date Label */}
           <Box>
             <Typography fontSize={13} mb={0.5} mt={1}>
               {transuser("date")}
@@ -197,8 +193,6 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
               fullWidth
             />
           </Box>
-
-          {/* CTC Label */}
           <Box>
             <Typography fontSize={13} mb={0.5}>
               {transuser("ctc")}
@@ -215,7 +209,6 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
         </Stack>
       </CommonDialog>
 
-      {/* Delete Confirmation Dialog */}
       <CommonDialog
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
@@ -227,7 +220,6 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
         <Typography>{transuser("deleteincrement")}</Typography>
       </CommonDialog>
 
-      {/* Error Dialog */}
       <CommonDialog
         open={errorOpen}
         onClose={() => setErrorOpen(false)}

@@ -146,7 +146,6 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
   };
 
   return (
-    // <Box sx={{ maxWidth: "1450px", mx: "auto", py: 2 }}>
     <Box
       sx={{
         maxWidth: "1450px",

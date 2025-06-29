@@ -1,101 +1,89 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  IconButton,
-  TextField,
-  Button,
-  Stack,
-  Paper,
-  Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
-} from "@mui/material";
+import { Box, Typography, IconButton, TextField, Button, Stack, Paper, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import CancelIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import { IIncrementHistory } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
-interface Props {
+interface IncrementHistoryProps {
   increment_history: IIncrementHistory[];
   onChange: (updated: IIncrementHistory[]) => void;
 }
 
-const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
+const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, onChange }) => {
+  const transuser = useTranslations("User.Increment");
+
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [newIncrement, setNewIncrement] = useState<IIncrementHistory>({ date: "", ctc: 0 });
   const [open, setOpen] = useState(false);
-  const transuser = useTranslations("User.Increment");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   const sortedIncrements = [...increment_history].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  const [errorOpen, setErrorOpen] = useState(false);
- 
-  const handleAdd = () => {
-    if (!newIncrement.date || !newIncrement.ctc || newIncrement.ctc <= 0) return;
+  const resetForm = () => setNewIncrement({ date: "", ctc: 0 });
+
+  const handleAddOrUpdate = () => {
+    if (!newIncrement.date || newIncrement.ctc <= 0) return;
 
     const newDate = new Date(newIncrement.date).toISOString().split("T")[0];
-
-    const exists = increment_history.some((i) => {
+    const isDuplicate = increment_history.some((i, idx) => {
       const existingDate = new Date(i.date).toISOString().split("T")[0];
-      return existingDate === newDate;
+      return existingDate === newDate && idx !== editIndex;
     });
 
-    if (exists) {
+    if (isDuplicate) {
       setErrorOpen(true);
       return;
     }
 
-    const updated = [...increment_history, newIncrement];
+    const updated = [...increment_history];
+
+    if (editIndex !== null) {
+      updated[editIndex] = newIncrement;
+    } else {
+      updated.push(newIncrement);
+    }
+
     onChange(updated);
-    setNewIncrement({ date: "", ctc: 0 });
+    resetForm();
+    setEditIndex(null);
     setOpen(false);
   };
-  
-  const handleUpdate = (index: number) => {
-    if (!newIncrement.date || !newIncrement.ctc || newIncrement.ctc <= 0) return;
-    const updated = [...increment_history];
-    updated[index] = newIncrement;
-    onChange(updated);
-    setEditIndex(null);
-    setNewIncrement({ date: "", ctc: 0 });
-  };
 
-  const handleDelete = (index: number) => {
-    setDeleteIndex(index);
-    setConfirmOpen(true);
+  const handleDelete = () => {
+    if (deleteIndex !== null) {
+      const updated = increment_history.filter((_, i) => i !== deleteIndex);
+      onChange(updated);
+      setDeleteIndex(null);
+      setConfirmOpen(false);
+    }
   };
 
   const startEdit = (index: number) => {
     setEditIndex(index);
     setNewIncrement(increment_history[index]);
+    setOpen(true);
   };
-
-  const cancelEdit = () => {
-    setEditIndex(null);
-    setNewIncrement({ date: "", ctc: 0 });
-  };
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
     <Box mt={3}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} px={2}>
-        <Typography variant="h6" fontWeight={600} fontSize={16}>
-          {transuser("increment_History")}
-        </Typography>
+      <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2} px={2}>
         <Button
           startIcon={<AddIcon />}
           variant="contained"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setEditIndex(null);
+            resetForm();
+            setOpen(true);
+          }}
           sx={{ textTransform: "none", fontSize: 13 }}
         >
           {transuser("add")}
@@ -114,7 +102,6 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
       >
         <Grid container spacing={2}>
           {sortedIncrements.map((inc, idx) => {
-            const isEditing = editIndex === idx;
             const previous = sortedIncrements[idx + 1];
             const percentChange = previous
               ? (((inc.ctc - previous.ctc) / previous.ctc) * 100).toFixed(2)
@@ -128,8 +115,7 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
                     p: 2,
                     borderRadius: "12px",
                     border: "1px solid #e0e0e0",
-                    backgroundColor: "#fff",
-                    height: "100%"
+                    backgroundColor: "#fff"
                   }}
                 >
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
@@ -137,67 +123,35 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
                       {transuser("increment")} {sortedIncrements.length - idx}
                     </Typography>
                     <Box>
-                      {isEditing ? (
-                        <IconButton onClick={cancelEdit}>
-                          <CancelIcon fontSize="small" />
-                        </IconButton>
-                      ) : (
-                        <IconButton onClick={() => startEdit(idx)}>
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                      <IconButton onClick={() => handleDelete(idx)}>
+                      <IconButton onClick={() => startEdit(idx)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          setDeleteIndex(idx);
+                          setConfirmOpen(true);
+                        }}
+                      >
                         <DeleteIcon fontSize="small" color="error" />
                       </IconButton>
                     </Box>
                   </Box>
-
-                  {isEditing ? (
-                    <Stack spacing={2}>
-                      <TextField
-                        label={transuser("date")}
-                        type="date"
-                        InputLabelProps={{ shrink: true }}
-                        value={newIncrement.date}
-                        onChange={(e) => setNewIncrement({ ...newIncrement, date: e.target.value })}
-                        fullWidth
-                        size="small"
-                      />
-                      <TextField
-                        label={transuser("ctc")}
-                        type="number"
-                        value={newIncrement.ctc}
-                        onChange={(e) => setNewIncrement({ ...newIncrement, ctc: +e.target.value })}
-                        fullWidth
-                        size="small"
-                      />
-                      <Stack direction="row" spacing={1}>
-                        <Button variant="contained" onClick={() => handleUpdate(idx)} size="small">
-                          {transuser("save")}
-                        </Button>
-                        <Button onClick={cancelEdit} size="small">
-                          {transuser("cancel")}
-                        </Button>
-                      </Stack>
-                    </Stack>
-                  ) : (
-                    <Stack spacing={1}>
-                      <Typography fontSize={13}>
-                        <strong>{transuser("date")}:</strong>{" "}
-                        {new Date(inc.date).toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric"
-                        })}
-                      </Typography>
-                      <Typography fontSize={13}>
-                        <strong>{transuser("ctc")}:</strong> ₹{inc.ctc.toLocaleString("en-IN")}
-                        {percentChange && (
-                          <span style={{ color: "green", marginLeft: 8 }}>↑ {percentChange}%</span>
-                        )}
-                      </Typography>
-                    </Stack>
-                  )}
+                  <Stack spacing={1}>
+                    <Typography fontSize={13}>
+                      <strong>{transuser("date")}:</strong>{" "}
+                      {new Date(inc.date).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                      })}
+                    </Typography>
+                    <Typography fontSize={13}>
+                      <strong>{transuser("ctc")}:</strong> ₹{inc.ctc.toLocaleString("en-IN")}
+                      {percentChange && (
+                        <span style={{ color: "green", marginLeft: 8 }}>↑ {percentChange}%</span>
+                      )}
+                    </Typography>
+                  </Stack>
                 </Paper>
               </Grid>
             );
@@ -205,82 +159,73 @@ const IncrementInput: React.FC<Props> = ({ increment_history, onChange }) => {
         </Grid>
       </Box>
 
-      {/* Add Increment Modal */}
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>{transuser("add_new")}</DialogTitle>
-        <DialogContent dividers>
-          <Stack spacing={2}>
-            <Box>
-              <Typography fontSize={13} mb={0.5}>
-                {transuser("date")}
-              </Typography>
-              <TextField
-                type="date"
-                InputLabelProps={{ shrink: true }}
-                value={newIncrement.date}
-                onChange={(e) => setNewIncrement({ ...newIncrement, date: e.target.value })}
-                fullWidth
-                sx={{ "& input": { fontSize: 13 } }}
-              />
-            </Box>
-            <Box>
-              <Typography fontSize={13} mb={0.5}>
-                {transuser("ctc")}
-              </Typography>
-              <TextField
-                label={transuser("ctc")}
-                type="number"
-                value={newIncrement.ctc}
-                onChange={(e) => {
-                  const value = +e.target.value;
-                  setNewIncrement({ ...newIncrement, ctc: value < 0 ? 0 : value });
-                }}
-                inputProps={{ min: 0 }}
-                fullWidth
-              />
-            </Box>
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>{transuser("cancel")}</Button>
-          <Button variant="contained" onClick={handleAdd}>
-            {transuser("save")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <CommonDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        onSubmit={handleAddOrUpdate}
+        title={editIndex !== null ? transuser("editincrement") : transuser("addnew")}
+        submitLabel={transuser("save")}
+        cancelLabel={transuser("cancel")}
+      >
+        <Typography variant="body2" color="text.secondary" mt={0.5}>
+          {transuser("addincdesc")}
+        </Typography>
 
-      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-        <DialogTitle>{transuser("confirm_Delete")}</DialogTitle>
-        <DialogContent>
-          <Typography>{transuser("delete_Increment")}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)}>{transuser("cancel")}</Button>
-          <Button
-            onClick={() => {
-              if (deleteIndex !== null) {
-                const updated = increment_history.filter((_, i) => i !== deleteIndex);
-                onChange(updated);
+        <Stack spacing={2}>
+          {/* Date Label */}
+          <Box>
+            <Typography fontSize={13} mb={0.5} mt={1}>
+              {transuser("date")}
+            </Typography>
+            <TextField
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={newIncrement.date}
+              onChange={(e) => setNewIncrement({ ...newIncrement, date: e.target.value })}
+              placeholder={transuser("date")}
+              fullWidth
+            />
+          </Box>
+
+          {/* CTC Label */}
+          <Box>
+            <Typography fontSize={13} mb={0.5}>
+              {transuser("ctc")}
+            </Typography>
+            <TextField
+              type="number"
+              value={newIncrement.ctc}
+              onChange={(e) =>
+                setNewIncrement({ ...newIncrement, ctc: Math.max(0, +e.target.value) })
               }
-              setConfirmOpen(false);
-              setDeleteIndex(null);
-            }}
-            variant="contained"
-          >
-            {transuser("delete")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+              fullWidth
+            />
+          </Box>
+        </Stack>
+      </CommonDialog>
 
-      <Dialog open={errorOpen} onClose={() => setErrorOpen(false)}>
-        <DialogTitle>{transuser("error_title")}</DialogTitle>
-        <DialogContent>
-          <Typography>{transuser("duplicate_increment_date")}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setErrorOpen(false)}>{transuser("cancel")}</Button>
-        </DialogActions>
-      </Dialog>
+      {/* Delete Confirmation Dialog */}
+      <CommonDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onSubmit={handleDelete}
+        title={transuser("confirmdelete")}
+        submitLabel={transuser("delete")}
+        cancelLabel={transuser("cancel")}
+      >
+        <Typography>{transuser("deleteincrement")}</Typography>
+      </CommonDialog>
+
+      {/* Error Dialog */}
+      <CommonDialog
+        open={errorOpen}
+        onClose={() => setErrorOpen(false)}
+        onSubmit={() => setErrorOpen(false)}
+        title={transuser("errortitle")}
+        cancelLabel=""
+      >
+        <Typography>{transuser("duplicateincrementdate")}</Typography>
+      </CommonDialog>
     </Box>
   );
 };

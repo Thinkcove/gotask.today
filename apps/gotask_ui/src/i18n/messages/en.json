@@ -492,35 +492,37 @@
     "noprojects": "No projects assigned yet.",
     "noassets": "No assets assigned yet.",
 
-  "Certificate_sec":{
-    "certificate": "Certificate",
-    "certificates": "Certificates",
-    "certificatename": " Certificate Name",
-    "obtaineddate": "Obtained Date",
-    "notes": " Notes",
-    "addcertificate": "Add Certificate",
-    "editcertificate": "Edit Certificate",
-    "subtitle": "Add details of Certifications you have achieved/completed",
-    "c_name": "Please enter your certification name",
-    "d_format": "DD/MM/YYYY",
-    "notes_placeholder": "Add any optional notes"
-  },
+    "Certificate": {
+      "certificate": "Certificate",
+      "certificates": "Certificates",
+      "certificatename": " Certificate Name",
+      "obtaineddate": "Obtained Date",
+      "obtained": " Obtained : ",
+      "notes": " Notes",
+      "addcertificate": "Add Certificate",
+      "editcertificate": "Edit Certificate",
+      "subtitle": "Add details of Certifications you have achieved/completed",
+      "cname": "Please enter your certification name",
+      "notes_placeholder": "Add any optional notes"
+    },
     "Increment": {
-      "increment_History": "Increment History",
+      "incrementhistory": "Increment History",
       "increment": " Increment",
       "save": "Save",
       "cancel": "Cancel",
       "delete": "Delete",
       "date": "Date",
       "ctc": "CTC",
-      "add_new": "Add New Increment",
+      "addnew": "Add New Increment",
       "add": "Add",
       "noincrements": "No increments found",
-      "ctc_growth": "CTC Growth Over Time",
-      "confirm_Delete":"Confirm Delete",
-      "delete_Increment": "Are you sure you want to delete this?",
-      "error_title": "Error",
-      "duplicate_increment_date": "An increment for this date already exists."
+      "ctcgrowth": "CTC Growth Over Time",
+      "confirmdelete": "Confirm Delete",
+      "deleteincrement": "Are you sure you want to delete this?",
+      "errortitle": "Error",
+      "duplicateincrementdate": "An increment for this date already exists.",
+      "editincrement": "Edit Increment",
+      "addincdesc": "Enter the date and updated CTC for this increment."
     }
   },
 

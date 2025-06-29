@@ -1,19 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Grid,
-  Stack,
-  Paper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Button,
-  DialogActions
-} from "@mui/material";
+import { Box, Typography, TextField, Grid, Stack, Paper } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import StarIcon from "@mui/icons-material/Star";
 import AddIcon from "@mui/icons-material/Add";
@@ -25,6 +13,7 @@ import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import { useTranslations } from "next-intl";
 import { Delete } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
 interface SkillInputProps {
   userId: string;
@@ -282,27 +271,22 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         </Box>
       </Grid>
 
-      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-        <DialogTitle>{transInc("confirm_Delete")}</DialogTitle>
-        <DialogContent>
-          <Typography>{transInc("delete_Increment")}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)}>{transInc("cancel")}</Button>
-          <Button
-            onClick={async () => {
-              if (deleteIndex !== null) {
-                await removeSkill(deleteIndex);
-              }
-              setConfirmOpen(false);
-              setDeleteIndex(null);
-            }}
-            variant="contained"
-          >
-            {transInc("delete")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <CommonDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onSubmit={async () => {
+          if (deleteIndex !== null) {
+            await removeSkill(deleteIndex);
+          }
+          setConfirmOpen(false);
+          setDeleteIndex(null);
+        }}
+        title={transInc("confirmdelete")}
+        submitLabel={transInc("delete")}
+        cancelLabel={transInc("cancel")}
+      >
+        <Typography>{transInc("deleteincrement")}</Typography>
+      </CommonDialog>
     </Box>
   );
 };

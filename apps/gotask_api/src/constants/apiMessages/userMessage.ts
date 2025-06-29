@@ -24,7 +24,6 @@ const UserMessages = {
     NOT_FOUND: "User not found for deletion",
     SUCCESS: "User deleted successfully"
   },
-
   LOGIN: {
     MISSING_FIELDS: "Missing required fields: user_id and password",
     INVALID_CREDENTIALS: "Invalid credentials",
@@ -39,13 +38,47 @@ const UserMessages = {
   QUERY: {
     FAILED: "Failed to find the user",
     MISSING_FIELDS: "Missing required fields",
-    NOT_FOUND: "Query was unsopported",
-    SUCCESS: "User found Successfully"
+    NOT_FOUND: "Query was unsupported",
+    SUCCESS: "User found successfully"
   },
-
   PROJECT: {
     ID_REQUIRED: "Project ID is required and cannot be empty",
     FETCH_FAILED: "Failed to fetch users by project ID"
+  },
+
+  // New messages below
+
+  SKILL: {
+    ADD_SUCCESS: "Skills added successfully",
+    UPDATE_SUCCESS: "Skill updated successfully",
+    DELETE_SUCCESS: "Skill deleted successfully",
+    NO_SKILLS: "User has no skills",
+    NOT_FOUND: "Skill not found",
+    USER_NOT_FOUND: "User not found",
+    UPDATE_FAILED: "Failed to update skill",
+    DELETE_FAILED: "Failed to delete skill"
+  },
+
+  CERTIFICATE: {
+    ADD_SUCCESS: "Certificates added successfully",
+    UPDATE_SUCCESS: "Certificate updated successfully",
+    DELETE_SUCCESS: "Certificate deleted successfully",
+    UPDATE_FAILED: "Failed to update certificate",
+    DELETE_FAILED: "Failed to delete certificate",
+    GET_FAILED: "Failed to get certificates",
+    NOT_FOUND: "User or certificate not found"
+  },
+
+  INCREMENT: {
+    ADD_SUCCESS: "Increment added successfully",
+    UPDATE_SUCCESS: "Increment updated successfully",
+    DELETE_SUCCESS: "Increment deleted successfully",
+    GET_FAILED: "Failed to get increment history",
+    UPDATE_FAILED: "Failed to update increment",
+    DELETE_FAILED: "Failed to delete increment",
+    NOT_FOUND: "User or increment history not found",
+    INVALID_INDEX: "Invalid increment index",
+    ADD_FAILED: "Failed to add increment"
   }
 };
 

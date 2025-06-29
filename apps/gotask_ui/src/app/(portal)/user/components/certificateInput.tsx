@@ -1,19 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  IconButton,
-  Button,
-  Paper,
-  Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
-} from "@mui/material";
+import { Box, Typography, TextField, IconButton, Button, Paper, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -21,6 +9,7 @@ import { ICertificate } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
 interface CertificateInputProps {
   userId: string;
@@ -28,54 +17,55 @@ interface CertificateInputProps {
   onChange: (updated: ICertificate[]) => void;
 }
 
-const CertificateInput: React.FC<CertificateInputProps> = ({  certificates, onChange }) => {
+const CertificateInput: React.FC<CertificateInputProps> = ({ certificates, onChange }) => {
   const trans = useTranslations("User");
-  const transuser = useTranslations("User.Certificate_sec");
+  const transuser = useTranslations("User.Certificate");
   const transInc = useTranslations("User.Increment");
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
-  const [newCert, setNewCert] = useState<ICertificate>({
-    name: "",
-    obtained_date: "",
-    notes: ""
-  });
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
-  const handleAdd = () => {
+  const emptyCert: ICertificate = { name: "", obtained_date: "", notes: "" };
+  const [tempCert, setTempCert] = useState<ICertificate>(emptyCert);
+
+  const openAddDialog = () => {
+    setTempCert(emptyCert);
     setCurrentEditIndex(null);
-    setNewCert({ name: "", obtained_date: "", notes: "" });
     setDialogOpen(true);
   };
 
-  const handleEdit = (index: number) => {
+  const openEditDialog = (index: number) => {
+    setTempCert({ ...certificates[index] });
     setCurrentEditIndex(index);
-    setNewCert({ ...certificates[index] });
     setDialogOpen(true);
   };
 
   const handleSave = () => {
-    if (!newCert.name || !newCert.obtained_date) return;
+    if (!tempCert.name || !tempCert.obtained_date) return;
 
     const updated = [...certificates];
     if (currentEditIndex !== null) {
-      updated[currentEditIndex] = newCert;
+      updated[currentEditIndex] = tempCert;
     } else {
-      updated.unshift(newCert);
+      updated.unshift(tempCert);
     }
 
     onChange(updated);
     setDialogOpen(false);
+    setTempCert(emptyCert);
     setCurrentEditIndex(null);
-    setNewCert({ name: "", obtained_date: "", notes: "" });
   };
 
-  const handleRemove = (index: number) => {
-    setDeleteIndex(index);
-    setConfirmOpen(true);
+  const confirmDelete = () => {
+    if (deleteIndex !== null) {
+      const updated = certificates.filter((_, i) => i !== deleteIndex);
+      onChange(updated);
+    }
+    setDeleteIndex(null);
+    setConfirmOpen(false);
   };
-
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   return (
     <Box
@@ -84,57 +74,39 @@ const CertificateInput: React.FC<CertificateInputProps> = ({  certificates, onCh
         overflowY: "auto",
         px: 2,
         py: 2,
-        pb: 2,
         scrollbarWidth: "thin",
         "&::-webkit-scrollbar": { width: "6px" },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#aaa",
-          borderRadius: "4px"
-        }
+        "&::-webkit-scrollbar-thumb": { backgroundColor: "#aaa", borderRadius: 4 }
       }}
     >
-      {/* Top Header */}
-      <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
+      {/* Add Button */}
+      <Box display="flex" justifyContent="flex-end" mb={2}>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={handleAdd}
+          onClick={openAddDialog}
           sx={{ textTransform: "none" }}
         >
           {transuser("addcertificate")}
         </Button>
       </Box>
 
-      {/* Certificate List */}
-      <Grid
-        container
-        spacing={2}
-        sx={{
-          maxHeight: 400,
-          overflowY: "auto",
-          pr: 1,
-          scrollbarWidth: "thin",
-          "&::-webkit-scrollbar": { width: "6px" },
-          "&::-webkit-scrollbar-thumb": { backgroundColor: "#ccc" }
-        }}
-      >
+      {/* List of Certificates */}
+      <Grid container spacing={2}>
         {certificates.map((cert, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Paper
-              elevation={0}
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "flex-start",
-                borderRadius: 2,
-                border: "1px solid #e0e0e0",
-                backgroundColor: "#fff",
                 p: 2,
-                height: "100%"
+                borderRadius: 2,
+                border: "1px solid #e0e0e0"
               }}
             >
-              {/* Left: Certificate info */}
-              <Box display="flex" alignItems="flex-start" gap={2}>
+              {/* Left - Info */}
+              <Box display="flex" gap={2}>
                 <Box
                   sx={{
                     width: 50,
@@ -144,19 +116,17 @@ const CertificateInput: React.FC<CertificateInputProps> = ({  certificates, onCh
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 24,
-                    color: "#888"
+                    fontSize: 24
                   }}
                 >
                   🎓
                 </Box>
-
                 <Box>
                   <Typography fontSize={14} fontWeight={600}>
                     {cert.name}
                   </Typography>
                   <Typography fontSize={12} color="text.secondary">
-                    {transuser("obtaineddate")}:{" "}
+                    {transuser("obtained")}
                     {cert.obtained_date ? (
                       <FormattedDateTime
                         date={cert.obtained_date}
@@ -166,7 +136,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({  certificates, onCh
                       "N/A"
                     )}
                   </Typography>
-
                   {cert.notes && (
                     <Typography fontSize={12} color="text.secondary" mt={0.5}>
                       {cert.notes}
@@ -175,12 +144,17 @@ const CertificateInput: React.FC<CertificateInputProps> = ({  certificates, onCh
                 </Box>
               </Box>
 
-              {/* Right: Actions */}
+              {/* Right - Actions */}
               <Box>
-                <IconButton onClick={() => handleEdit(index)}>
+                <IconButton onClick={() => openEditDialog(index)}>
                   <EditIcon fontSize="small" />
                 </IconButton>
-                <IconButton onClick={() => handleRemove(index)}>
+                <IconButton
+                  onClick={() => {
+                    setDeleteIndex(index);
+                    setConfirmOpen(true);
+                  }}
+                >
                   <DeleteIcon fontSize="small" color="error" />
                 </IconButton>
               </Box>
@@ -189,104 +163,82 @@ const CertificateInput: React.FC<CertificateInputProps> = ({  certificates, onCh
         ))}
       </Grid>
 
-      {/* Dialog for Add/Edit */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {currentEditIndex !== null ? transuser("editcertificate") : transuser("addcertificate")}
-        </DialogTitle>
-        <DialogContent
-          dividers
-          sx={{
-            maxHeight: 400,
-            overflowY: "auto",
-            "&::-webkit-scrollbar": { width: "6px" },
-            "&::-webkit-scrollbar-thumb": { backgroundColor: "#ccc", borderRadius: 2 }
-          }}
-        >
-          <Typography color="text.secondary" fontSize={14} mb={2}>
-            {transuser("subtitle")}
-          </Typography>
+      {/* Add/Edit Dialog */}
+      <CommonDialog
+        open={dialogOpen}
+        onClose={() => {
+          setDialogOpen(false);
+          setTempCert(emptyCert);
+          setCurrentEditIndex(null);
+        }}
+        onSubmit={handleSave}
+        title={
+          currentEditIndex !== null ? transuser("editcertificate") : transuser("addcertificate")
+        }
+        submitLabel={trans("save")}
+        cancelLabel={trans("cancel")}
+      >
+        <Typography color="text.secondary" fontSize={14} mb={2}>
+          {transuser("subtitle")}
+        </Typography>
 
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Typography fontWeight={600} fontSize={14} mb={0.5}>
-                {transuser("certificatename")}
-                <span style={{ color: "red" }}>*</span>
-              </Typography>
-              <TextField
-                placeholder={transuser("c_name")}
-                value={newCert.name}
-                onChange={(e) => setNewCert({ ...newCert, name: e.target.value })}
-                fullWidth
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Typography fontWeight={600} fontSize={14} mb={0.5}>
-                {transuser("obtaineddate")}
-              </Typography>
-              <TextField
-                type="date"
-                placeholder={transuser("d_format")}
-                InputLabelProps={{ shrink: true }}
-                value={
-                  newCert.obtained_date
-                    ? new Date(newCert.obtained_date).toISOString().split("T")[0]
-                    : ""
-                }
-                onChange={(e) => setNewCert({ ...newCert, obtained_date: e.target.value })}
-                fullWidth
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Typography fontWeight={600} fontSize={14} mb={0.5}>
-                {transuser("notes")}
-              </Typography>
-              <TextField
-                placeholder={transuser("notes_placeholder")}
-                value={newCert.notes}
-                onChange={(e) => setNewCert({ ...newCert, notes: e.target.value })}
-                fullWidth
-                multiline
-                minRows={3}
-              />
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Typography fontWeight={600} fontSize={14} mb={0.5}>
+              {transuser("certificatename")} <span style={{ color: "red" }}>*</span>
+            </Typography>
+            <TextField
+              placeholder={transuser("cname")}
+              value={tempCert.name}
+              onChange={(e) => setTempCert({ ...tempCert, name: e.target.value })}
+              fullWidth
+            />
           </Grid>
-        </DialogContent>
 
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setDialogOpen(false)} sx={{ textTransform: "none" }}>
-            {trans("cancel")}
-          </Button>
-          <Button variant="contained" onClick={handleSave} sx={{ textTransform: "none", px: 3 }}>
-            {trans("save")}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-        <DialogTitle>{transInc("confirm_Delete")}</DialogTitle>
-        <DialogContent>
-          <Typography>{transInc("delete_Increment")}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)}>{transInc("cancel")}</Button>
-          <Button
-            onClick={() => {
-              if (deleteIndex !== null) {
-                const updated = certificates.filter((_, i) => i !== deleteIndex);
-                onChange(updated);
+          <Grid item xs={12}>
+            <Typography fontWeight={600} fontSize={14} mb={0.5}>
+              {transuser("obtaineddate")}
+            </Typography>
+            <TextField
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={
+                tempCert.obtained_date
+                  ? new Date(tempCert.obtained_date).toISOString().split("T")[0]
+                  : ""
               }
-              setConfirmOpen(false);
-              setDeleteIndex(null);
-            }}
-            variant="contained"
-          >
-            {transInc("delete")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+              onChange={(e) => setTempCert({ ...tempCert, obtained_date: e.target.value })}
+              fullWidth
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography fontWeight={600} fontSize={14} mb={0.5}>
+              {transuser("notes")}
+            </Typography>
+            <TextField
+              placeholder={transuser("notes_placeholder")}
+              value={tempCert.notes}
+              onChange={(e) => setTempCert({ ...tempCert, notes: e.target.value })}
+              fullWidth
+              multiline
+              minRows={3}
+            />
+          </Grid>
+        </Grid>
+      </CommonDialog>
+
+      {/* Confirm Delete Dialog */}
+      <CommonDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onSubmit={confirmDelete}
+        title={transInc("confirmdelete")}
+        submitLabel={transInc("delete")}
+        cancelLabel={transInc("cancel")}
+      >
+        <Typography>{transInc("deleteincrement")}</Typography>
+      </CommonDialog>
     </Box>
   );
 };

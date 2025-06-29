@@ -129,8 +129,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               options={[
                 transuser("general"),
                 transuser("userskill"),
-                transuser("Certificate_sec.certificate"),
-                transuser("Increment.increment_History"),
+                transuser("Certificate.certificate"),
+                transuser("Increment.incrementhistory"),
                 transuser("projectdetails"),
                 transasset("assetdetails")
               ]}
@@ -396,7 +396,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Grid>
           )}
 
-          {selectedTab === transuser("Certificate_sec.certificate") && (
+          {selectedTab === transuser("Certificate.certificate") && (
             <Box>
               {user.certificates && user.certificates.length > 0 ? (
                 <Grid container spacing={2}>
@@ -406,7 +406,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                         <Typography fontWeight={600}>{cert.name}</Typography>
 
                         <Typography fontSize={12} color="text.secondary">
-                          {transuser("Certificate_sec.obtaineddate")}:{" "}
+                          {transuser("Certificate.obtaineddate")}:{" "}
                           {cert.obtained_date ? (
                             <FormattedDateTime
                               date={cert.obtained_date}
@@ -433,14 +433,14 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Box>
           )}
 
-          {selectedTab === transuser("Increment.increment_History") && (
+          {selectedTab === transuser("Increment.incrementhistory") && (
             <Box>
               {user.increment_history && user.increment_history.length > 0 ? (
                 <>
                   {/* Compact CTC Growth Chart - No Hover, Mobile Friendly */}
                   <Box sx={{ width: "100%", maxWidth: 500, height: 180, mb: 4 }}>
                     <Typography variant="subtitle1" fontWeight={500} mb={1}>
-                      {transuser("Increment.ctc_growth")}
+                      {transuser("Increment.ctcgrowth")}
                     </Typography>
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart

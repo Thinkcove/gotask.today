@@ -185,7 +185,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
         .filter(Boolean)
         .join(", ") || "-",
     encrypted: asset.isEncrypted,
-    previouslyUsedBy: asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-"
+    previouslyUsedBy: asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-",
+    issues: asset.issuesCount
   }));
 
   return (

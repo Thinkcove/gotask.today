@@ -135,6 +135,14 @@ class assetService {
             getTagsByTypeId(tag.id)
           ]);
 
+          const issuesList = (
+            await Promise.all(
+              tagData
+                .filter((tag) => tag.userId && tag.assetId)
+                .map((tag) => getIssuesByUserId(tag.userId, tag.assetId))
+            )
+          ).flat();
+
           const tagDataWithUsers = await Promise.all(
             (tagData || []).map(async (item: any) => {
               const tagItem = item.toObject ? item.toObject() : item;
@@ -154,7 +162,8 @@ class assetService {
           return {
             ...tag,
             assetType: asset || null,
-            tagData: tagDataWithUsers || null
+            tagData: tagDataWithUsers || null,
+            issuesCount: issuesList.length || 0
           };
         })
       );

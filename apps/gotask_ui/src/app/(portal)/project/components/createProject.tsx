@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { IProjectField, Project, PROJECT_STATUS } from "../interfaces/projectInterface";
+import { IProjectField, Project } from "../interfaces/projectInterface";
 import { createProject } from "../services/projectAction";
 import ProjectInput from "./projectInputs";
 import { KeyedMutator } from "swr";
@@ -9,6 +9,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import { PROJECT_STATUS } from "@/app/common/constants/project";
 
 interface CreateProjectProps {
   open: boolean;

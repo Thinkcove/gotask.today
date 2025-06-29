@@ -387,8 +387,6 @@ class userService {
     }
   }
 
-  
-
   // Example from your service class
   async addSkills(
     id: string,
@@ -402,13 +400,13 @@ class userService {
           message: UserMessages.FETCH.NOT_FOUND
         };
       }
-  
+
       const existingSkills = user.skills || [];
       const skillMap = new Map<string, ISkill>();
       for (const skill of existingSkills) {
         skillMap.set(skill.name.toLowerCase(), skill);
       }
-  
+
       for (const newSkill of newSkills) {
         const existingSkill = skillMap.get(newSkill.name.toLowerCase());
         if (!existingSkill) {
@@ -420,16 +418,16 @@ class userService {
           }
         }
       }
-  
+
       user.skills = existingSkills;
       await user.save();
-  
+
       return { success: true, data: existingSkills, message: UserMessages.SKILL.ADD_SUCCESS };
     } catch (error: any) {
       return { success: false, message: error.message || UserMessages.SKILL.UPDATE_FAILED };
     }
   }
-  
+
   async updateSkill(
     userId: string,
     skillId: string,
@@ -437,53 +435,53 @@ class userService {
   ): Promise<{ success: boolean; data?: ISkill; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
-  
+
       if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
       if (!user.skills) return { success: false, message: UserMessages.SKILL.NO_SKILLS };
-  
+
       const skillIndex = user.skills.findIndex((skill) => skill.skill_id === skillId);
       if (skillIndex === -1) {
         return { success: false, message: UserMessages.SKILL.NOT_FOUND };
       }
-  
+
       const skill = user.skills[skillIndex];
       if (updatedSkill.name !== undefined) skill.name = updatedSkill.name;
       if (updatedSkill.proficiency !== undefined) skill.proficiency = updatedSkill.proficiency;
       if (updatedSkill.experience !== undefined) skill.experience = updatedSkill.experience;
-  
+
       await user.save();
       return { success: true, data: skill, message: UserMessages.SKILL.UPDATE_SUCCESS };
     } catch (error: any) {
       return { success: false, message: error.message || UserMessages.SKILL.UPDATE_FAILED };
     }
   }
-  
+
   async deleteSkill(
     userId: string,
     skillId: string
   ): Promise<{ success: boolean; data?: any; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
-  
+
       if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
       if (!Array.isArray(user.skills)) {
         return { success: false, message: UserMessages.SKILL.NO_SKILLS };
       }
-  
+
       const initialLength = user.skills.length;
       user.skills = user.skills.filter((skill) => skill.skill_id !== skillId);
-  
+
       if (user.skills.length === initialLength) {
         return { success: false, message: UserMessages.SKILL.NOT_FOUND };
       }
-  
+
       await user.save();
       return { success: true, message: UserMessages.SKILL.DELETE_SUCCESS };
     } catch (error: any) {
       return { success: false, message: error.message || UserMessages.SKILL.DELETE_FAILED };
     }
   }
-  
+
   async addCertificates(
     id: string,
     certificates: ICertificate[]
@@ -491,13 +489,13 @@ class userService {
     try {
       const user = await User.findOne({ id });
       if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
-  
+
       if (!user.certificates) {
         user.certificates = [];
       }
       user.certificates.push(...certificates);
       await user.save();
-  
+
       return {
         success: true,
         data: user.certificates,
@@ -507,7 +505,7 @@ class userService {
       return { success: false, message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED };
     }
   }
-  
+
   async updateCertificate(
     userId: string,
     certificateIndex: number,
@@ -518,24 +516,24 @@ class userService {
       if (!user || !Array.isArray(user.certificates)) {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
-  
+
       if (certificateIndex < 0 || certificateIndex >= user.certificates.length) {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
-  
+
       const cert = user.certificates[certificateIndex];
       if (updatedCertificate.name !== undefined) cert.name = updatedCertificate.name;
       if (updatedCertificate.obtained_date !== undefined)
         cert.obtained_date = updatedCertificate.obtained_date;
       if (updatedCertificate.notes !== undefined) cert.notes = updatedCertificate.notes;
-  
+
       await user.save();
       return { success: true, data: cert, message: UserMessages.CERTIFICATE.UPDATE_SUCCESS };
     } catch (error: any) {
       return { success: false, message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED };
     }
   }
-  
+
   async deleteCertificate(
     userId: string,
     certificateIndex: number
@@ -545,46 +543,46 @@ class userService {
       if (!user || !Array.isArray(user.certificates)) {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
-  
+
       if (certificateIndex < 0 || certificateIndex >= user.certificates.length) {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
-  
+
       user.certificates.splice(certificateIndex, 1);
       await user.save();
-  
+
       return { success: true, message: UserMessages.CERTIFICATE.DELETE_SUCCESS };
     } catch (error: any) {
       return { success: false, message: error.message || UserMessages.CERTIFICATE.DELETE_FAILED };
     }
   }
-  
+
   async getCertificates(
     userId: string
   ): Promise<{ success: boolean; data?: ICertificate[]; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
       if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
-  
+
       return { success: true, data: user.certificates || [] };
     } catch (error: any) {
       return { success: false, message: error.message || UserMessages.CERTIFICATE.GET_FAILED };
     }
   }
-  
+
   async getIncrementHistory(
     userId: string
   ): Promise<{ success: boolean; data?: IIncrementHistory[]; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
       if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
-  
+
       return { success: true, data: user.increment_history || [] };
     } catch (error: any) {
       return { success: false, message: error.message || UserMessages.INCREMENT.GET_FAILED };
     }
   }
-  
+
   async addIncrement(
     userId: string,
     increment: IIncrementHistory
@@ -592,11 +590,11 @@ class userService {
     try {
       const user = await User.findOne({ id: userId });
       if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
-  
+
       if (!user.increment_history) user.increment_history = [];
       user.increment_history.push(increment);
       await user.save();
-  
+
       return {
         success: true,
         data: user.increment_history,
@@ -606,7 +604,7 @@ class userService {
       return { success: false, message: error.message || UserMessages.INCREMENT.ADD_FAILED };
     }
   }
-  
+
   async updateIncrement(
     userId: string,
     index: number,
@@ -617,22 +615,22 @@ class userService {
       if (!user || !Array.isArray(user.increment_history)) {
         return { success: false, message: UserMessages.INCREMENT.NOT_FOUND };
       }
-  
+
       if (index < 0 || index >= user.increment_history.length) {
         return { success: false, message: UserMessages.INCREMENT.INVALID_INDEX };
       }
-  
+
       const inc = user.increment_history[index];
       if (updatedIncrement.date) inc.date = updatedIncrement.date;
       if (updatedIncrement.ctc !== undefined) inc.ctc = updatedIncrement.ctc;
-  
+
       await user.save();
       return { success: true, data: inc, message: UserMessages.INCREMENT.UPDATE_SUCCESS };
     } catch (error: any) {
       return { success: false, message: error.message || UserMessages.INCREMENT.UPDATE_FAILED };
     }
   }
-  
+
   async deleteIncrement(
     userId: string,
     index: number
@@ -642,11 +640,11 @@ class userService {
       if (!user || !Array.isArray(user.increment_history)) {
         return { success: false, message: UserMessages.INCREMENT.NOT_FOUND };
       }
-  
+
       if (index < 0 || index >= user.increment_history.length) {
         return { success: false, message: UserMessages.INCREMENT.INVALID_INDEX };
       }
-  
+
       user.increment_history.splice(index, 1);
       await user.save();
       return { success: true, message: UserMessages.INCREMENT.DELETE_SUCCESS };
@@ -654,7 +652,6 @@ class userService {
       return { success: false, message: error.message || UserMessages.INCREMENT.DELETE_FAILED };
     }
   }
-  
 }
 
 export default new userService();

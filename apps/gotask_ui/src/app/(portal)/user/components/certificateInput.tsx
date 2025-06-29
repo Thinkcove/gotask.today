@@ -92,76 +92,83 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ certificates, onCha
       </Box>
 
       {/* List of Certificates */}
-      <Grid container spacing={2}>
-        {certificates.map((cert, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Paper
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                p: 2,
-                borderRadius: 2,
-                border: "1px solid #e0e0e0"
-              }}
-            >
-              {/* Left - Info */}
-              <Box display="flex" gap={2}>
-                <Box
-                  sx={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 1,
-                    backgroundColor: "#f0f0f0",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 24
-                  }}
-                >
-                  🎓
-                </Box>
-                <Box>
-                  <Typography fontSize={14} fontWeight={600}>
-                    {cert.name}
-                  </Typography>
-                  <Typography fontSize={12} color="text.secondary">
-                    {transuser("obtained")}
-                    {cert.obtained_date ? (
-                      <FormattedDateTime
-                        date={cert.obtained_date}
-                        format={DateFormats.MONTH_YEAR}
-                      />
-                    ) : (
-                      "N/A"
-                    )}
-                  </Typography>
-                  {cert.notes && (
-                    <Typography fontSize={12} color="text.secondary" mt={0.5}>
-                      {cert.notes}
-                    </Typography>
-                  )}
-                </Box>
-              </Box>
 
-              {/* Right - Actions */}
-              <Box>
-                <IconButton onClick={() => openEditDialog(index)}>
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                  onClick={() => {
-                    setDeleteIndex(index);
-                    setConfirmOpen(true);
-                  }}
-                >
-                  <DeleteIcon fontSize="small" color="error" />
-                </IconButton>
-              </Box>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
+      {certificates.length === 0 ? (
+        <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
+          {transuser("nocertifications")}
+        </Paper>
+      ) : (
+        <Grid container spacing={2}>
+          {certificates.map((cert, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Paper
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  p: 2,
+                  borderRadius: 2,
+                  border: "1px solid #e0e0e0"
+                }}
+              >
+                {/* Left - Info */}
+                <Box display="flex" gap={2}>
+                  <Box
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 1,
+                      backgroundColor: "#f0f0f0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 24
+                    }}
+                  >
+                    🎓
+                  </Box>
+                  <Box>
+                    <Typography fontSize={14} fontWeight={600}>
+                      {cert.name}
+                    </Typography>
+                    <Typography fontSize={12} color="text.secondary">
+                      {transuser("obtained")}:{" "}
+                      {cert.obtained_date ? (
+                        <FormattedDateTime
+                          date={cert.obtained_date}
+                          format={DateFormats.MONTH_YEAR}
+                        />
+                      ) : (
+                        "N/A"
+                      )}
+                    </Typography>
+                    {cert.notes && (
+                      <Typography fontSize={12} color="text.secondary" mt={0.5}>
+                        {cert.notes}
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+
+                {/* Right - Actions */}
+                <Box>
+                  <IconButton onClick={() => openEditDialog(index)}>
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => {
+                      setDeleteIndex(index);
+                      setConfirmOpen(true);
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" color="error" />
+                  </IconButton>
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      )}
 
       {/* Add/Edit Dialog */}
       <CommonDialog
@@ -217,7 +224,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ certificates, onCha
               {transuser("notes")}
             </Typography>
             <TextField
-              placeholder={transuser("notes_placeholder")}
+              placeholder={transuser("notesplaceholder")}
               value={tempCert.notes}
               onChange={(e) => setTempCert({ ...tempCert, notes: e.target.value })}
               fullWidth

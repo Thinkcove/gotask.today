@@ -503,7 +503,8 @@
       "editcertificate": "Edit Certificate",
       "subtitle": "Add details of Certifications you have achieved/completed",
       "cname": "Please enter your certification name",
-      "notes_placeholder": "Add any optional notes"
+      "notesplaceholder": "Add any optional notes",
+      "nocertifications": "No certifications added yet."
     },
     "Increment": {
       "incrementhistory": "Increment History",
@@ -513,9 +514,9 @@
       "delete": "Delete",
       "date": "Date",
       "ctc": "CTC",
-      "addnew": "Add New Increment",
+      "addnew": "Add Increment",
       "add": "Add",
-      "noincrements": "No increments found",
+      "noincrements": "No increments added yet.",
       "ctcgrowth": "CTC Growth Over Time",
       "confirmdelete": "Confirm Delete",
       "deleteincrement": "Are you sure you want to delete this?",

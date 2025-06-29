@@ -40,6 +40,7 @@ interface UserDetailProps {
 
 const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const { canAccess } = useUserPermission();
+  const transcertificate = useTranslations("User.Certificate");
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [selectedTab, setSelectedTab] = useState<string>(transuser("general"));
@@ -427,7 +428,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 </Grid>
               ) : (
                 <Typography color="text.secondary" fontStyle="italic">
-                  {transuser("nocertificates")}
+                  {transcertificate("nocertifications")}
                 </Typography>
               )}
             </Box>
@@ -494,7 +495,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                             })}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {transuser("Increment.ctc")}: ₹{inc.ctc}
+                            {transuser("Increment.ctc")}: ₹{inc.ctc} L
                           </Typography>
                         </Box>
                       </Grid>

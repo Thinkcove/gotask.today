@@ -156,6 +156,8 @@ export const statusOptions = [
   { id: "Resolved", name: "Resolved" }
 ];
 
+export const OFFICE_SYSTEM = "Office System";
+
 export const commonIssueTypes = [
   { id: "Processor Issue", name: "Processor Issue" },
   { id: "OS Issue", name: "OS Issue" },

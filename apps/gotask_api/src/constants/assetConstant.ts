@@ -12,3 +12,6 @@ export const ASSET_TAGS = {
 };
 
 export const SYSTEM_TYPES = ["Office System", "Personal System"];
+export const DESC = "desc";
+export const ASC = "asc";
+export const CREATE_AT = "createdAt";

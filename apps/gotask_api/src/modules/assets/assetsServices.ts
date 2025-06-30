@@ -1,5 +1,6 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { ASC, CREATE_AT, DESC } from "../../constants/assetConstant";
 import {
   createAsset,
   getAssetById,
@@ -124,7 +125,7 @@ class assetService {
     }
   };
 
-  sortData = (data: any[], sortVar: string, sortOrder: string = "asc") => {
+  sortData = (data: any[], sortVar: string, sortOrder: string = ASC) => {
     return [...data].sort((a, b) => {
       const getSortValue = (item: any) => {
         if (typeof item[sortVar] === "object" && item[sortVar]?.name) {
@@ -161,7 +162,7 @@ class assetService {
     });
   };
 
-  getAllAssets = async (sortType: string = "desc", sortVar: string = "createdAt"): Promise<any> => {
+  getAllAssets = async (sortType: string = DESC, sortVar: string = CREATE_AT): Promise<any> => {
     try {
       const assets = await getAllAssets();
       const tagsData = await Promise.all(

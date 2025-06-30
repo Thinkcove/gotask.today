@@ -16,6 +16,7 @@ import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+import { SortOrder } from "@/app/common/constants/task";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";
@@ -33,7 +34,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [warrantyDateTo, setWarrantyDateTo] = useState<string>("");
   const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>([]);
   const [sortKey, setSortKey] = useState("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(SortOrder.DESC);
   const { getAll: allAssets } = useAllAssets(sortKey, sortOrder);
 
   const handleEdit = (row: IAssetDisplayRow) => {
@@ -175,27 +176,25 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     warrantyDateTo
   );
 
-  const mappedAssets = useMemo(() => {
-    return filteredAssets.map((asset) => ({
-      id: asset.id,
-      assetType: asset.assetType?.name || "-",
-      deviceName: asset.deviceName || "-",
-      modelName: asset.modelName || "-",
-      warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
+  const mappedAssets = filteredAssets.map((asset) => ({
+    id: asset.id,
+    assetType: asset.assetType?.name || "-",
+    deviceName: asset.deviceName || "-",
+    modelName: asset.modelName || "-",
+    warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
       purchaseDate: asset.dateOfPurchase
         ? new Date(asset.dateOfPurchase).toLocaleDateString()
         : "-",
-      user:
-        asset.tagData
-          ?.map((t) => t.user?.name)
-          .filter(Boolean)
-          .join(", ") || "-",
-      encrypted: asset.isEncrypted,
+    user:
+      asset.tagData
+        ?.map((t) => t.user?.name)
+        .filter(Boolean)
+        .join(", ") || "-",
+    encrypted: asset.isEncrypted,
       previouslyUsedBy:
         asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-",
-      issuesCount: asset.issuesCount
-    }));
-  }, [filteredAssets]);
+    issuesCount: asset.issuesCount
+  }));
 
   return (
     <>

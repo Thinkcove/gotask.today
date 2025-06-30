@@ -69,7 +69,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const dateRange = getDateRange(fromDate, toDate);
-  console.log("data", data);
 
   // Use passed leave data or fetch from API
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);

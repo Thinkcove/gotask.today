@@ -68,7 +68,6 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
   // Use passed leave data
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const leaves: LeaveEntry[] = leaveData && leaveData.length > 0 ? leaveData : leaveResponse || [];
-  console.log("Final leaves used in table", data);
 
   const formatEstimation = (estimation: string | number | null | undefined) => {
     if (!estimation || estimation === null || estimation === undefined || estimation === "") {
@@ -100,8 +99,6 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
 
   // Helper function to get leaves for a user within the date range
   const getUserLeavesInRange = (userId: string): LeaveEntry[] => {
-    console.log("id-", userId);
-
     return leaves.filter(
       (leave) =>
         leave.user_id === userId && datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
@@ -302,8 +299,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
           <TableBody>
             {Object.entries(groupedData).map(([userKey, userGroup]) => {
               const { userName, tasks, totalEstimation } = userGroup;
-              const totalRows = Math.max(tasks.length, 1); // At least 1 row even if no tasks
-              console.log("User Key:", userKey);
+              const totalRows = Math.max(tasks.length, 1);
               const userLeaves = leaves.filter((leave) => leave.user_id === userKey);
 
               return Array.from({ length: totalRows }, (_, index) => {

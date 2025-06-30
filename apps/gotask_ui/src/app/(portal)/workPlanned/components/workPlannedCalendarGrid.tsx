@@ -216,7 +216,8 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
-                Leave Information
+                {transworkplanned("leaveinfo")}
+           
               </TableCell>
               <TableCell
                 rowSpan={2}

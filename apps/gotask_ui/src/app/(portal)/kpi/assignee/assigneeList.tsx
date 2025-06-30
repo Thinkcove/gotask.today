@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import useSWR from "swr";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import { fetcherUserList } from "../../user/services/userAction";
@@ -10,8 +10,8 @@ import AssigneeCard from "./view/[id]/assigneeCard";
 import { fetchTemplatesByUserId } from "../service/templateAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import TemplateToggle from "../component/templateToggle";
 import { User } from "@/app/userContext";
+import Toggle from "@/app/component/toggle/toggle";
 
 interface assigneeListProps {
   initialView?: "template" | "assignee";
@@ -20,6 +20,9 @@ interface assigneeListProps {
 const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [view, setView] = useState<"template" | "assignee">(initialView);
+  const router = useRouter();
+  const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
+
   const { data: users = [] } = useSWR("fetch-users", fetcherUserList);
 
   const { data: usersWithTemplates = [], isLoading } = useSWR(
@@ -35,10 +38,20 @@ const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" })
     }
   );
 
-  const router = useRouter();
-  const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
+  const labels = {
+    template: transkpi("template"),
+    assignee: transkpi("assignee")
+  };
 
-  const handleViewChange = (nextView: "template" | "assignee") => {
+  const toggleOptions = [labels.template, labels.assignee];
+
+  const labelToKey = {
+    [labels.template]: "template",
+    [labels.assignee]: "assignee"
+  } as const;
+
+  const handleViewChange = (selectedLabel: string) => {
+    const nextView = labelToKey[selectedLabel];
     if (nextView !== view) {
       setView(nextView);
       router.push(nextView === "template" ? "/kpi" : "/kpi/assignee");
@@ -62,13 +75,13 @@ const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" })
             placeholder={transkpi("searchemployees")}
           />
         </Box>
-        <TemplateToggle view={view} onViewChange={handleViewChange} />
+        <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
       </Box>
 
       <Grid container spacing={3}>
         {isLoading ? (
           <Box width="100%" textAlign="center" mt={4}>
-            Loading...
+            <Typography variant="body1">Loading...</Typography>
           </Box>
         ) : (
           filteredUsers.map((user: any) => (

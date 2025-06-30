@@ -58,7 +58,6 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
 
   const handleTemplateSelect = (templateId: string) => {
     if (templateId === "create") {
-      sessionStorage.setItem("createTemplateReturnToAssignee", "true");
       router.push("/kpi/createTemplate");
       return;
     }

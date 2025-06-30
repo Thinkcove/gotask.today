@@ -87,8 +87,7 @@ class LeaveController extends BaseController {
       if (!existingLeave.success || !existingLeave.data) {
         return this.sendResponse(handler, {
           success: false,
-          message: "Leave request not found",
-          data: null
+          message: "Leave request not found"
         });
       }
 
@@ -114,8 +113,7 @@ class LeaveController extends BaseController {
       if (!existingLeave.success || !existingLeave.data) {
         return this.sendResponse(handler, {
           success: false,
-          message: "Leave request not found",
-          data: null
+          message: "Leave request not found"
         });
       }
 

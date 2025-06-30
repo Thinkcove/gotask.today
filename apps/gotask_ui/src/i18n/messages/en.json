@@ -609,7 +609,17 @@
     "modeasset": "asset",
     "viewissues": "View Issues",
     "reportedissues": "Reported Issues",
-    "nodescription": "No description provided"
+    "nodescription": "No description provided",
+    "warranty": "Warranty date",
+    "systemtype": "System type",
+    "expiringon": "Expiring on",
+    "expired": "Expired",
+    "filterfrom": "From Date",
+    "filterto": "To Date",
+    "filter": "Filter",
+    "filterclear": "Clear",
+    "filterapply": "Apply",
+    "previouslyused": "Previously Used"
   },
 
   "Chatbot": {

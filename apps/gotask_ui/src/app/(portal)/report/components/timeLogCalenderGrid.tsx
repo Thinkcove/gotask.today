@@ -28,6 +28,7 @@ import { getStatusColor } from "@/app/common/constants/task";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveTypeColor } from "@/app/common/constants/leave";
+import DateFormats from "@/app/component/dateTime/dateFormat";
 
 // Add LeaveEntry interface
 
@@ -314,7 +315,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                       </TableCell>
                     )}
                     {dateRange.map((date) => {
-                      const key = format(date, "yyyy-MM-dd");
+                      const key = format(date, DateFormats.ISO_DATE);
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
 
                       return (

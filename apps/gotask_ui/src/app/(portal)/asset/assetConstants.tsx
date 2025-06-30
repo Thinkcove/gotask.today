@@ -173,3 +173,7 @@ export const commonIssueTypes = [
 export const issueStatuses = ["Open", "InProgress", "Resolved"];
 
 export const systemTypeOptions = ["Office System", "Personal System"];
+
+export const CREATED_AT = "createdAt";
+
+export const DESC = "desc";

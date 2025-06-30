@@ -19,7 +19,7 @@ import { PAGE_OPTIONS } from "./tableConstants";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#D8C7DD",
-    fontSize: "18px",
+    fontSize: "17px",
     color: "#000000",
     borderBottom: "2px solid #B8A7BD",
     position: "sticky",

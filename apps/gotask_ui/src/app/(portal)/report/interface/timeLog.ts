@@ -30,3 +30,22 @@ export interface TaskLog {
   taskId: string;
   status: string;
 }
+
+export interface LeaveEntry {
+  _id: string;
+  user_id: string;
+  user_name: string;
+  from_date: string;
+  to_date: string;
+  leave_type: string;
+  id: string;
+  created_on: string;
+  updated_on: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface EnhancedTimeLogGridProps extends TimeLogGridProps {
+  leaveData?: LeaveEntry[];
+}

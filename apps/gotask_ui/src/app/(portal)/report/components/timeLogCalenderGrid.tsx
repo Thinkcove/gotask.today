@@ -12,7 +12,7 @@ import {
   Typography
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
-import { GroupedLogs, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
+import { EnhancedTimeLogGridProps, GroupedLogs, LeaveEntry, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { extractHours } from "@/app/common/utils/taskTime";
@@ -23,25 +23,7 @@ import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveTypeColor } from "@/app/common/constants/leave";
 
 // Add LeaveEntry interface
-interface LeaveEntry {
-  _id: string;
-  user_id: string;
-  user_name: string;
-  from_date: string;
-  to_date: string;
-  leave_type: string;
-  id: string;
-  created_on: string;
-  updated_on: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
 
-// Enhanced props interface to include leave data
-interface EnhancedTimeLogGridProps extends TimeLogGridProps {
-  leaveData?: LeaveEntry[];
-}
 
 const headerCellStyle = {
   position: "sticky" as const,

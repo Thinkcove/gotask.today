@@ -12,7 +12,12 @@ import {
   Link,
   Chip
 } from "@mui/material";
-import { WorkPlannedEntry } from "../interface/workPlanned";
+import {
+  GroupedTasks,
+  LeaveEntry,
+  WorkPlannedEntry,
+  WorkPlannedGridProps
+} from "../interface/workPlanned";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
@@ -24,39 +29,6 @@ import { formatTimeValue } from "@/app/common/utils/taskTime";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveTypeColor } from "@/app/common/constants/leave";
-
-interface WorkPlannedGridProps {
-  data: WorkPlannedEntry[];
-  fromDate: string;
-  toDate: string;
-  selectedProjects: string[];
-  leaveData?: LeaveEntry[];
-}
-
-interface LeaveEntry {
-  _id: string;
-  user_id: string;
-  user_name: string;
-  from_date: string;
-  to_date: string;
-  leave_type: string;
-  id: string;
-  created_on: string;
-  updated_on: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-// Group tasks by user
-interface GroupedTasks {
-  [userKey: string]: {
-    userName: string;
-    tasks: WorkPlannedEntry[];
-    totalEstimation: number;
-    leaves: LeaveEntry[];
-  };
-}
 
 const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
   data,
@@ -217,7 +189,6 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                 }}
               >
                 {transworkplanned("leaveinfo")}
-           
               </TableCell>
               <TableCell
                 rowSpan={2}

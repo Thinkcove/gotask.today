@@ -64,17 +64,29 @@ const CreateTask: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Submit handler
+  // Remove unwanted fields before sending
+  const getCleanedPayload = (data: IFormField) => {
+    const cleaned = { ...data };
+    delete cleaned.users;
+    delete cleaned.projects;
+    delete cleaned.user_name;
+    delete cleaned.project_name;
+    return cleaned;
+  };
+
   const handleSubmit = async () => {
     const html = rteRef.current?.editor?.getHTML?.() || "";
-    handleInputChange("description", html);
+    const updatedFormData = {
+      ...formData,
+      description: html
+    };
+
     if (!validateForm()) return;
 
     try {
-      await createTask({
-        ...formData,
-        description: html
-      });
+      const payload = getCleanedPayload(updatedFormData);
+      await createTask(payload);
+
       setSnackbar({
         open: true,
         message: transtask("successmessage"),

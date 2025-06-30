@@ -147,11 +147,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               }}
             >
               <Box>
-                <Typography
-                  variant="h4"
-                  fontWeight={700}
-                  sx={{ textTransform: "capitalize", whiteSpace: "nowrap" }}
-                >
+                <Typography variant="h5" fontWeight={700} sx={{ textTransform: "capitalize" }}>
                   {project.name}
                 </Typography>
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
@@ -212,7 +208,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           <Divider sx={{ mb: 3 }} />
 
           {/* Assignee Section Header & Add Button */}
-          <Box display="flex" justifyContent="space-between" alignItems="center" mr={4} mb={2}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h5" fontWeight={600}>
               {transproject("detailassignee")}
             </Typography>

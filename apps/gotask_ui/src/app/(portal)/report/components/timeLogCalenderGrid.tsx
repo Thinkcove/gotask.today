@@ -18,8 +18,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { extractHours } from "@/app/common/utils/taskTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
-import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import DateFormats from "@/app/component/dateTime/dateFormat";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveTypeColor } from "@/app/common/constants/leave";
@@ -93,12 +91,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
   };
 
   // Helper function to get leaves for a user within the date range
-  const getUserLeavesInRange = (userId: string): LeaveEntry[] => {
-    return leaves.filter(
-      (leave) =>
-        leave.user_id === userId && datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
-    );
-  };
 
   // Helper function to get leave details for a specific user and date
   const getLeaveForUserAndDate = (userId: string, date: string): LeaveEntry | null => {
@@ -351,10 +343,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                               alignItems="center"
                               gap={0.5}
                             >
-                              {/* <StatusIndicator
-                                status={leaveForDate.leave_type}
-                                getColor={getLeaveTypeColor}
-                              /> */}
+                          
                               <Typography
                                 variant="caption"
                                 sx={{

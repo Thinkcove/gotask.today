@@ -355,7 +355,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                                       date={leave.from_date}
                                       format={DateFormats.DATE_ONLY}
                                     />{" "}
-                                    {transworkplanned("to")}
+                                    {transworkplanned("to")}{" "}
                                     <FormattedDateTime
                                       date={leave.to_date}
                                       format={DateFormats.DATE_ONLY}

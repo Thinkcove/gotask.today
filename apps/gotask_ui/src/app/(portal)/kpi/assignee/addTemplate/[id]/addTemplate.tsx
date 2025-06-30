@@ -13,12 +13,14 @@ import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import { User, useUser } from "@/app/userContext";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
+import { Template } from "../../../service/templateInterface";
 
 interface AddTemplateProps {
-  templates: any[];
+  templates: Template[];
   userId: string;
   mutate: () => void;
   user: User;
+  newlyCreatedTemplateId?: string;
 }
 
 const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, user }) => {
@@ -62,7 +64,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
     }
 
     setSelectedTemplateId(templateId);
-    const template = templates.find((tpl) => tpl.id === templateId);
+    const template = templates.find((template) => template.id === templateId);
     if (template) {
       setForm({
         measurement_criteria: template.measurement_criteria || "",
@@ -70,7 +72,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         weightage: 1,
         target_Value: 0,
         comments: "",
-        status: "",
+        status: template.status || "",
         assigned_by: defaultAssignedBy,
         reviewer_id: "",
         saveAs_Template: false
@@ -78,18 +80,6 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
       setOpenForm(true);
     }
   };
-
-  if (typeof window !== "undefined") {
-    const newTemplateId = sessionStorage.getItem("newTemplateId");
-    if (newTemplateId && !selectedTemplateId && templates.length > 0) {
-      const newlyCreated = templates.find((t) => t.id === newTemplateId);
-      if (newlyCreated) {
-        handleTemplateSelect(newTemplateId);
-        sessionStorage.removeItem("newTemplateId");
-        sessionStorage.removeItem("createTemplateReturnToAssignee");
-      }
-    }
-  }
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -197,11 +187,11 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <FormField
-            label={transkpi("assignTemplate")}
+            label={transkpi("assigntemplate")}
             type="select"
             placeholder={transkpi("entertemplate")}
             options={[
-              { id: "create", name: `+ ${transkpi("createNewTemplate")}` },
+              { id: "create", name: `+ ${transkpi("createnewtemplate")}` },
               ...templates.map((template) => ({ id: template.id, name: template.title }))
             ]}
             value={selectedTemplateId}
@@ -213,10 +203,10 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
           <>
             <Grid item xs={12} md={4}>
               <FormField
-                label={`${transkpi("measurementCriteria")} ${transkpi("required")}`}
+                label={`${transkpi("measurementcriteria")} ${transkpi("required")}`}
                 type="text"
                 required
-                placeholder={transkpi("enterMeasurementCriteria")}
+                placeholder={transkpi("entermeasurementcriteria")}
                 value={form.measurement_criteria}
                 onChange={(val) => setForm({ ...form, measurement_criteria: String(val) })}
                 error={errors.measurement_criteria}
@@ -238,7 +228,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
                 label={transkpi("weightage")}
                 type="number"
                 required
-                placeholder={transkpi("enterWeightage")}
+                placeholder={transkpi("enterweightage")}
                 value={form.weightage}
                 onChange={(val) => setForm({ ...form, weightage: +val })}
                 error={errors.weightage}
@@ -246,10 +236,10 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
             </Grid>
             <Grid item xs={12} md={4}>
               <FormField
-                label={transkpi("targetValue")}
+                label={transkpi("targetvalue")}
                 type="number"
                 required
-                placeholder={transkpi("enterTargetValue")}
+                placeholder={transkpi("entertargetvalue")}
                 value={form.target_Value}
                 onChange={(val) => setForm({ ...form, target_Value: +val })}
                 error={errors.target_Value}
@@ -257,7 +247,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
             </Grid>
             <Grid item xs={12} md={4}>
               <FormField
-                label={`${transkpi("assignedBy")} ${transkpi("required")}`}
+                label={`${transkpi("assignedby")} ${transkpi("required")}`}
                 type="select"
                 required
                 options={users.map((u: User) => ({ id: u.name, name: u.name }))}
@@ -270,7 +260,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
             {userId === form.assigned_by && (
               <Grid item xs={12} md={4}>
                 <FormField
-                  label={transkpi("reviewerId")}
+                  label={transkpi("reviewerid")}
                   type="select"
                   options={users.map((u: User) => ({ id: u.name, name: u.name }))}
                   value={form.reviewer_id}
@@ -293,7 +283,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
               <FormField
                 label={transkpi("comments")}
                 type="text"
-                placeholder={transkpi("enterComments")}
+                placeholder={transkpi("entercomments")}
                 multiline
                 value={form.comments}
                 onChange={(val) => setForm({ ...form, comments: String(val) })}

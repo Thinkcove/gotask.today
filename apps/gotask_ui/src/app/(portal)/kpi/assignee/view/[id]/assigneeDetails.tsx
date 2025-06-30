@@ -11,6 +11,7 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
+import { Template } from "../../../service/templateInterface";
 
 interface AssigneeDetailProps {
   user: {
@@ -20,7 +21,10 @@ interface AssigneeDetailProps {
     avatarUrl?: string;
     role?: { name: string };
   };
-  assignedTemplates: any[];
+  assignedTemplates: {
+    assignment_id: string;
+    template: Template[];
+  }[];
   mutate: () => void;
 }
 
@@ -62,9 +66,10 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
             )}
           </Box>
         </Box>
+
         {canAccess(APPLICATIONS.KPI, ACTIONS.CREATE) && (
           <ActionButton
-            label={transkpi("assignTemplate")}
+            label={transkpi("assigntemplate")}
             icon={<AddIcon sx={{ color: "white" }} />}
             onClick={() => router.push(`/kpi/assignee/addTemplate/${user.id}`)}
           />
@@ -73,21 +78,22 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
 
       <Box mb={3}>
         <Typography variant="body2" color="textSecondary" mb={1}>
-          {transkpi("assignedTemplates")}:
+          {transkpi("assignedtemplates")}:
         </Typography>
+
         <Box display="flex" flexWrap="wrap" gap={1}>
           {assignedTemplates && assignedTemplates.length > 0 ? (
-            assignedTemplates.flatMap((assignment: any) =>
-              (assignment.template || []).map((tpl: any, i: number) => (
+            assignedTemplates.flatMap((assignment) =>
+              assignment.template.map((template: Template, i: number) => (
                 <Chip
-                  key={`${assignment.assignment_id}-${tpl.template_id || i}`}
-                  label={tpl.title}
+                  key={`${assignment.assignment_id}-${template.id || i}`}
+                  label={template.title}
                   size="small"
                 />
               ))
             )
           ) : (
-            <Typography variant="body2">{transkpi("noTemplatesAssigned")}</Typography>
+            <Typography variant="body2">{transkpi("notemplatesassigned")}</Typography>
           )}
         </Box>
       </Box>

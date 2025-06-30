@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Box, Grid } from "@mui/material";
 import useSWR from "swr";
 import SearchBar from "@/app/component/searchBar/searchBar";
@@ -11,6 +11,7 @@ import { fetchTemplatesByUserId } from "../service/templateAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import TemplateToggle from "../component/templateToggle";
+import { User } from "@/app/userContext";
 
 interface assigneeListProps {
   initialView?: "template" | "assignee";
@@ -18,40 +19,37 @@ interface assigneeListProps {
 
 const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [usersWithTemplates, setUsersWithTemplates] = useState<any[]>([]);
-  const { data: users = [] } = useSWR("fetch-users", fetcherUserList);
-  const router = useRouter();
-  const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const [view, setView] = useState<"template" | "assignee">(initialView);
+  const { data: users = [] } = useSWR("fetch-users", fetcherUserList);
 
-  useEffect(() => {
-    const loadAssignments = async () => {
+  const { data: usersWithTemplates = [], isLoading } = useSWR(
+    users.length ? "assigned-templates" : null,
+    async () => {
       const result = await Promise.all(
-        users.map(async (user: any) => {
+        users.map(async (user: User) => {
           const assignedTemplates = await fetchTemplatesByUserId(user.id);
           return { ...user, assignedTemplates };
         })
       );
-      setUsersWithTemplates(result);
-    };
+      return result;
+    }
+  );
 
-    if (users.length) loadAssignments();
-  }, [users]);
+  const router = useRouter();
+  const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
 
   const handleViewChange = (nextView: "template" | "assignee") => {
     if (nextView !== view) {
       setView(nextView);
-      if (nextView === "template") {
-        router.push("/kpi");
-      } else {
-        router.push("/kpi/assignee");
-      }
+      router.push(nextView === "template" ? "/kpi" : "/kpi/assignee");
     }
   };
 
-  const filteredUsers = usersWithTemplates.filter((user: any) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = useMemo(() => {
+    return usersWithTemplates.filter((user: User) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [usersWithTemplates, searchTerm]);
 
   return (
     <Box sx={{ p: 3, height: "calc(100vh - 100px)", overflowY: "auto" }}>
@@ -68,11 +66,17 @@ const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" })
       </Box>
 
       <Grid container spacing={3}>
-        {filteredUsers.map((user: any) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} xl={3} key={user.id}>
-            <AssigneeCard user={user} assignedTemplates={user.assignedTemplates || []} />
-          </Grid>
-        ))}
+        {isLoading ? (
+          <Box width="100%" textAlign="center" mt={4}>
+            Loading...
+          </Box>
+        ) : (
+          filteredUsers.map((user: any) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} xl={3} key={user.id}>
+              <AssigneeCard user={user} assignedTemplates={user.assignedTemplates || []} />
+            </Grid>
+          ))
+        )}
       </Grid>
     </Box>
   );

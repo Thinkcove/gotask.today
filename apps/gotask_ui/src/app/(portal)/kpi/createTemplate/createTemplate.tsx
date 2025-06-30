@@ -59,17 +59,8 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     };
 
     try {
-      const response = await createTemplate(newTemplate);
-
-      if (response && "id" in response) {
-        if (sessionStorage.getItem("createTemplateReturnToAssignee")) {
-          sessionStorage.setItem("newTemplateId", response.id);
-        }
-
-        router.back();
-      } else {
-        setErrors({ general: transkpi("createFailed") });
-      }
+      await createTemplate(newTemplate);
+      router.back();
     } catch (err: any) {
       console.error("Error creating template:", err);
       setErrors({ general: err.message || transkpi("createFailed") });

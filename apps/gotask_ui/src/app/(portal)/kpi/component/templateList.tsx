@@ -15,7 +15,7 @@ import { deleteTemplate, fetcher, updateTemplate } from "../service/templateActi
 import { Template } from "../service/templateInterface";
 import Chat from "../../chatbot/components/chat";
 import TemplateCards from "../view/[id]/kpiItem";
-import TemplateToggle from "./templateToggle";
+import Toggle from "@/app/component/toggle/toggle";
 
 interface TemplateListProps {
   initialView?: "template" | "assignee";
@@ -26,8 +26,20 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-
   const [view, setView] = useState<"template" | "assignee">(initialView);
+
+  const labels = {
+    template: transkpi("template"),
+    assignee: transkpi("assignee")
+  };
+
+  const toggleOptions = [labels.template, labels.assignee];
+
+  const labelToKey = {
+    [labels.template]: "template",
+    [labels.assignee]: "assignee"
+  } as const;
+
   const {
     data: templates,
     error,
@@ -55,14 +67,11 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
     }
   };
 
-  const handleViewChange = (nextView: "template" | "assignee") => {
+  const handleViewChange = (selectedLabel: string) => {
+    const nextView = labelToKey[selectedLabel];
     if (nextView !== view) {
       setView(nextView);
-      if (nextView === "template") {
-        router.push("/kpi");
-      } else {
-        router.push("/kpi/assignee");
-      }
+      router.push(nextView === "template" ? "/kpi" : "/kpi/assignee");
     }
   };
 
@@ -95,8 +104,9 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
             placeholder={transkpi("searchplaceholder")}
           />
         </Box>
-        <TemplateToggle view={view} onViewChange={handleViewChange} />
+        <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
       </Box>
+
       <TemplateCards
         templates={templates}
         onDelete={handleDelete}

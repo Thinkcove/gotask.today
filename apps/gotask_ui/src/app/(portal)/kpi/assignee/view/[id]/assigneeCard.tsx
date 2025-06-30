@@ -8,15 +8,14 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import CardComponent from "@/app/component/card/cardComponent";
+import { User } from "@/app/userContext";
+import { Template } from "../../../service/templateInterface";
 
 interface AssigneeCardProps {
-  user: {
-    id: string;
-    name: string;
-    avatarUrl?: string;
-    role?: { name: string };
-  };
-  assignedTemplates: any[];
+  user: User;
+  assignedTemplates: {
+    template: Template[];
+  }[];
 }
 
 const AssigneeCard: React.FC<AssigneeCardProps> = ({ user, assignedTemplates }) => {
@@ -53,14 +52,14 @@ const AssigneeCard: React.FC<AssigneeCardProps> = ({ user, assignedTemplates }) 
         {/* Assigned Templates */}
         <Box>
           <Typography variant="body2" color="text.secondary" mb={1}>
-            {transkpi("assignedTemplates")}:
+            {transkpi("assignedtemplates")}:
           </Typography>
           {templateList.length > 0 ? (
             <Box display="flex" flexWrap="wrap" gap={1}>
-              {visibleTemplates.map((tpl: any, i: number) => (
+              {visibleTemplates.map((template: Template, i: number) => (
                 <Chip
-                  key={`tpl-chip-${i}`}
-                  label={tpl.title}
+                  key={`tpl-chip-${template.id}-${i}`}
+                  label={template.title}
                   size="small"
                   sx={{
                     color: "#741B92",
@@ -81,7 +80,7 @@ const AssigneeCard: React.FC<AssigneeCardProps> = ({ user, assignedTemplates }) 
             </Box>
           ) : (
             <Typography variant="body2" color="text.secondary">
-              {transkpi("noTemplatesAssigned")}
+              {transkpi("notemplatesassigned")}
             </Typography>
           )}
         </Box>
@@ -100,7 +99,7 @@ const AssigneeCard: React.FC<AssigneeCardProps> = ({ user, assignedTemplates }) 
             onClick={() => router.push(`/kpi/assignee/view/${user.id}`)}
           >
             <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-              {transkpi("viewDetails")}
+              {transkpi("viewdetails")}
             </Typography>
             <ArrowForward fontSize="small" />
           </Box>

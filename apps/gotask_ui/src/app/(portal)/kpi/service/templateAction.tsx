@@ -41,8 +41,8 @@ export const fetchTemplates = async () => {
           weightage?: string;
           frequency?: string;
           status: string;
-          createdAt?: any;
-          updatedAt?: any;
+          createdAt?: string;
+          updatedAt?: string;
         }) => ({
           id: template.template_id,
           title: template.title || template.name,

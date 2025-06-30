@@ -394,7 +394,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                         <Box display="flex" flexDirection="column" gap={0.5}>
                           {task.task_id ? (
                             <Link
-                              href={`/task/viewTask/${task.task_id}`}
+                              href={`/task/view/${task.task_id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               underline="none"

@@ -401,7 +401,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                         <Box display="flex" flexDirection="column" gap={0.5}>
                           {taskEntry.taskId ? (
                             <Link
-                              href={`/task/viewTask/${taskEntry.taskId}`}
+                              href={`/task/view/${taskEntry.taskId}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               underline="none"

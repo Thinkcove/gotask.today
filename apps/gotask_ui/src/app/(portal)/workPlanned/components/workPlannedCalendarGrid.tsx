@@ -42,6 +42,8 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const leaves: LeaveEntry[] = leaveData && leaveData.length > 0 ? leaveData : leaveResponse || [];
 
+  const MS_IN_A_DAY = 1000 * 60 * 60 * 24;
+
   const formatEstimation = (estimation: string | number | null | undefined) => {
     if (!estimation || estimation === null || estimation === undefined || estimation === "") {
       return "-";
@@ -317,9 +319,8 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                               const leaveFrom = new Date(leave.from_date);
                               const leaveTo = new Date(leave.to_date);
                               const days =
-                                Math.ceil(
-                                  (leaveTo.getTime() - leaveFrom.getTime()) / (1000 * 60 * 60 * 24)
-                                ) + 1;
+                                Math.ceil((leaveTo.getTime() - leaveFrom.getTime()) / MS_IN_A_DAY) +
+                                1;
 
                               return (
                                 <Box

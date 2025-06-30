@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Typography, IconButton, TextField, Button, Stack, Grid } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import { Box, Typography, TextField, Button, Stack, Grid } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { IIncrementHistory } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
@@ -17,12 +15,12 @@ interface IncrementHistoryProps {
 const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, onChange }) => {
   const transuser = useTranslations("User.Increment");
 
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [newIncrement, setNewIncrement] = useState<IIncrementHistory>({ date: "", ctc: 0 });
+  const [newIncrement, setNewIncrement] = useState<IIncrementHistory>({
+    date: "",
+    ctc: 0
+  });
   const [open, setOpen] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   const sortedIncrements = [...increment_history].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -30,13 +28,13 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
 
   const resetForm = () => setNewIncrement({ date: "", ctc: 0 });
 
-  const handleAddOrUpdate = () => {
+  const handleAdd = () => {
     if (!newIncrement.date || newIncrement.ctc <= 0) return;
 
     const newDate = new Date(newIncrement.date).toISOString().split("T")[0];
-    const isDuplicate = increment_history.some((i, idx) => {
+    const isDuplicate = increment_history.some((i) => {
       const existingDate = new Date(i.date).toISOString().split("T")[0];
-      return existingDate === newDate && idx !== editIndex;
+      return existingDate === newDate;
     });
 
     if (isDuplicate) {
@@ -44,37 +42,15 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
       return;
     }
 
-    const updated = [...increment_history];
-
-    if (editIndex !== null) {
-      updated[editIndex] = newIncrement;
-    } else {
-      updated.push(newIncrement);
-    }
-
+    const updated = [...increment_history, newIncrement];
     onChange(updated);
     resetForm();
-    setEditIndex(null);
     setOpen(false);
-  };
-
-  const handleDelete = () => {
-    if (deleteIndex !== null) {
-      const updated = increment_history.filter((_, i) => i !== deleteIndex);
-      onChange(updated);
-      setDeleteIndex(null);
-      setConfirmOpen(false);
-    }
-  };
-
-  const startEdit = (index: number) => {
-    setEditIndex(index);
-    setNewIncrement(increment_history[index]);
-    setOpen(true);
   };
 
   return (
     <Box mt={3}>
+      {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} px={2}>
         <Typography fontWeight={600} fontSize={16}>
           {transuser("salaryrevisionlog")}
@@ -83,7 +59,6 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
           startIcon={<AddIcon />}
           variant="contained"
           onClick={() => {
-            setEditIndex(null);
             resetForm();
             setOpen(true);
           }}
@@ -93,6 +68,7 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
         </Button>
       </Box>
 
+      {/* Display increments */}
       <Box
         sx={{
           maxHeight: "calc(100vh - 300px)",
@@ -133,26 +109,9 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
                     pl: idx % 4 !== 0 ? 2 : 0
                   }}
                 >
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography fontSize={12} color="text.secondary">
-                      {monthYear}
-                    </Typography>
-                    <Box>
-                      <IconButton onClick={() => startEdit(idx)} size="small">
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => {
-                          setDeleteIndex(idx);
-                          setConfirmOpen(true);
-                        }}
-                        size="small"
-                      >
-                        <DeleteIcon fontSize="small" color="error" />
-                      </IconButton>
-                    </Box>
-                  </Box>
-
+                  <Typography fontSize={12} color="text.secondary">
+                    {monthYear}
+                  </Typography>
                   <Typography fontSize={13}>{fullDate}</Typography>
                   <Typography fontSize={13}>
                     ₹{inc.ctc.toLocaleString("en-IN")} L{" "}
@@ -167,12 +126,12 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
         </Grid>
       </Box>
 
-      {/* Dialogs stay same */}
+      {/* Add Dialog */}
       <CommonDialog
         open={open}
         onClose={() => setOpen(false)}
-        onSubmit={handleAddOrUpdate}
-        title={editIndex !== null ? transuser("editincrement") : transuser("addnew")}
+        onSubmit={handleAdd}
+        title={transuser("addnew")}
         submitLabel={transuser("save")}
         cancelLabel={transuser("cancel")}
       >
@@ -189,7 +148,6 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
               InputLabelProps={{ shrink: true }}
               value={newIncrement.date}
               onChange={(e) => setNewIncrement({ ...newIncrement, date: e.target.value })}
-              placeholder={transuser("date")}
               fullWidth
             />
           </Box>
@@ -201,7 +159,10 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
               type="number"
               value={newIncrement.ctc}
               onChange={(e) =>
-                setNewIncrement({ ...newIncrement, ctc: Math.max(0, +e.target.value) })
+                setNewIncrement({
+                  ...newIncrement,
+                  ctc: Math.max(0, +e.target.value)
+                })
               }
               fullWidth
             />
@@ -209,17 +170,7 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({ increment_history, on
         </Stack>
       </CommonDialog>
 
-      <CommonDialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        onSubmit={handleDelete}
-        title={transuser("confirmdelete")}
-        submitLabel={transuser("delete")}
-        cancelLabel={transuser("cancel")}
-      >
-        <Typography>{transuser("deleteincrement")}</Typography>
-      </CommonDialog>
-
+      {/* Duplicate Entry Error Dialog */}
       <CommonDialog
         open={errorOpen}
         onClose={() => setErrorOpen(false)}

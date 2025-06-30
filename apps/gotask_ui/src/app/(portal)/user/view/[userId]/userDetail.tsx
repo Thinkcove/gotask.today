@@ -22,15 +22,6 @@ import Toggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  LabelList
-} from "recharts";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 
 interface UserDetailProps {
@@ -433,80 +424,78 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               )}
             </Box>
           )}
-
           {selectedTab === transuser("Increment.incrementhistory") && (
-            <Box>
-              {user.increment_history && user.increment_history.length > 0 ? (
-                <>
-                  {/* Compact CTC Growth Chart - No Hover, Mobile Friendly */}
-                  <Box sx={{ width: "100%", maxWidth: 500, height: 180, mb: 4 }}>
-                    <Typography variant="subtitle1" fontWeight={500} mb={1}>
-                      {transuser("Increment.ctcgrowth")}
-                    </Typography>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={user.increment_history
-                          .slice()
-                          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                          .map((inc) => ({
-                            date: new Date(inc.date).toLocaleDateString("en-IN", {
-                              month: "short",
-                              year: "numeric"
-                            }),
-                            ctc: inc.ctc
-                          }))}
-                        margin={{ top: 10, right: 20, bottom: 5, left: -10 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="date" fontSize={10} />
-                        <YAxis fontSize={10} tickFormatter={(value) => `₹${value}`} />
-                        <Line
-                          type="monotone"
-                          dataKey="ctc"
-                          stroke="#1976d2"
-                          strokeWidth={2}
-                          dot={{ r: 3 }}
-                        >
-                          <LabelList
-                            dataKey="ctc"
-                            position="top"
-                            formatter={(value: number) => `₹${value}`}
-                            fontSize={10}
-                          />
-                        </Line>
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </Box>
+            <Box mt={3}>
+              <Typography fontWeight={600} fontSize={16} mb={2} px={2}>
+                {transuser("Increment.salaryrevisionlog")}
+              </Typography>
 
-                  {/* Increment History Cards */}
-                  <Grid container spacing={2}>
-                    {user.increment_history.map((inc, idx) => (
-                      <Grid item xs={12} sm={6} md={4} key={idx}>
-                        <Box sx={{ border: "1px solid #ccc", borderRadius: 2, p: 2 }}>
-                          <Typography fontWeight={600}>
-                            {transuser("Increment.increment")} {idx + 1}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {transuser("Increment.date")}:{" "}
-                            {new Date(inc.date).toLocaleDateString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric"
-                            })}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {transuser("Increment.ctc")}: ₹{inc.ctc} L
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    ))}
+              <Box
+                sx={{
+                  maxHeight: "calc(100vh - 300px)",
+                  overflowX: "auto",
+                  px: 2,
+                  pb: 2,
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 2,
+                  scrollbarWidth: "thin",
+                  "&::-webkit-scrollbar": { height: "6px" },
+                  "&::-webkit-scrollbar-thumb": { backgroundColor: "#ccc" }
+                }}
+              >
+                {user.increment_history && user.increment_history.length > 0 ? (
+                  <Grid container spacing={2} px={2}>
+                    {[...user.increment_history]
+                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                      .map((inc, idx, arr) => {
+                        const previous = arr[idx + 1];
+                        const percentChange = previous
+                          ? (((inc.ctc - previous.ctc) / previous.ctc) * 100).toFixed(2)
+                          : null;
+
+                        const dateObj = new Date(inc.date);
+                        const monthYear = dateObj.toLocaleDateString("en-IN", {
+                          month: "short",
+                          year: "numeric"
+                        });
+                        const fullDate = dateObj.toLocaleDateString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric"
+                        });
+
+                        return (
+                          <Grid item xs={12} sm={6} md={3} key={idx}>
+                            <Box
+                              sx={{
+                                borderLeft: idx % 4 !== 0 ? "1px solid #e0e0e0" : "none",
+                                pl: idx % 4 !== 0 ? 2 : 0
+                              }}
+                            >
+                              <Typography fontSize={12} color="text.secondary">
+                                {monthYear}
+                              </Typography>
+                              <Typography fontSize={13}>{fullDate}</Typography>
+                              <Typography fontSize={13}>
+                                ₹{inc.ctc.toLocaleString("en-IN")} L{" "}
+                                {percentChange && (
+                                  <span style={{ color: "green", marginLeft: 4 }}>
+                                    ↑ {percentChange}%
+                                  </span>
+                                )}
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        );
+                      })}
                   </Grid>
-                </>
-              ) : (
-                <Typography color="text.secondary" fontStyle="italic">
-                  {transuser("Increment.noincrements")}
-                </Typography>
-              )}
+                ) : (
+                  <Typography color="text.secondary" fontStyle="italic" px={2}>
+                    {transuser("Increment.noincrements")}
+                  </Typography>
+                )}
+              </Box>
             </Box>
           )}
         </Box>

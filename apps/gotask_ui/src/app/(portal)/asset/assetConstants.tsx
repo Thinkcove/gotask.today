@@ -10,14 +10,14 @@ import Tooltip from "@mui/material/Tooltip";
 export interface IAssetDisplayRow {
   id?: string;
   assetType: string;
-  assetName: string;
+  deviceName: string;
   modelName: string;
   purchaseDate: string;
-  users: string;
+  user: string;
   encrypted?: boolean;
   warrantyDate?: string;
   previouslyUsedBy?: string;
-  issues?: string;
+  issuesCount?: string;
 }
 
 export const getAssetColumns = (
@@ -34,7 +34,7 @@ export const getAssetColumns = (
     )
   },
   {
-    id: "assetName",
+    id: "deviceName",
     label: transasset("type"),
     render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
@@ -114,14 +114,14 @@ export const getAssetColumns = (
     render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
   {
-    id: "users",
+    id: "user",
     align: "center" as const,
     label: transasset("assignedTo"),
     render: (value: string | string[] | boolean | undefined) =>
       Array.isArray(value) ? value.join(", ") : typeof value === "string" ? value : "-"
   },
   {
-    id: "issues",
+    id: "issuesCount",
     align: "center" as const,
     label: transasset("issuesCount"),
     render: (value: unknown) =>

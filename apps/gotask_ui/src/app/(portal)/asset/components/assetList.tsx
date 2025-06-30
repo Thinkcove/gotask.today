@@ -28,11 +28,13 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [modelNameFilter, setModelNameFilter] = useState<string[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const router = useRouter();
-  const { getAll: allAssets } = useAllAssets();
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [warrantyDateFrom, setWarrantyDateFrom] = useState<string>("");
   const [warrantyDateTo, setWarrantyDateTo] = useState<string>("");
   const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>([]);
+  const [sortKey, setSortKey] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const { getAll: allAssets } = useAllAssets(sortKey, sortOrder);
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -172,22 +174,28 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     warrantyDateFrom,
     warrantyDateTo
   );
-  const mappedAssets = filteredAssets.map((asset) => ({
-    id: asset.id,
-    assetType: asset.assetType?.name || "-",
-    assetName: asset.deviceName || "-",
-    modelName: asset.modelName || "-",
-    warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
-    purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-",
-    users:
-      asset.tagData
-        ?.map((t) => t.user?.name)
-        .filter(Boolean)
-        .join(", ") || "-",
-    encrypted: asset.isEncrypted,
-    previouslyUsedBy: asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-",
-    issues: asset.issuesCount
-  }));
+
+  const mappedAssets = useMemo(() => {
+    return filteredAssets.map((asset) => ({
+      id: asset.id,
+      assetType: asset.assetType?.name || "-",
+      deviceName: asset.deviceName || "-",
+      modelName: asset.modelName || "-",
+      warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
+      purchaseDate: asset.dateOfPurchase
+        ? new Date(asset.dateOfPurchase).toLocaleDateString()
+        : "-",
+      user:
+        asset.tagData
+          ?.map((t) => t.user?.name)
+          .filter(Boolean)
+          .join(", ") || "-",
+      encrypted: asset.isEncrypted,
+      previouslyUsedBy:
+        asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-",
+      issuesCount: asset.issuesCount
+    }));
+  }, [filteredAssets]);
 
   return (
     <>
@@ -299,7 +307,14 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                 >
                   <Box sx={{ width: "100%", flex: 1 }}>
                     <Box sx={{ minWidth: 800 }}>
-                      <Table<IAssetDisplayRow> columns={assetColumns} rows={mappedAssets} />
+                      <Table<IAssetDisplayRow>
+                        columns={assetColumns}
+                        rows={mappedAssets}
+                        onSortChange={(key, order) => {
+                          setSortKey(key);
+                          setSortOrder(order);
+                        }}
+                      />
                     </Box>
                   </Box>
                 </Paper>

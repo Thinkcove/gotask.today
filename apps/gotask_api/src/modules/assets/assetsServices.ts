@@ -124,9 +124,46 @@ class assetService {
     }
   };
 
+  sortData = (data: any[], sortVar: string, sortOrder: string = "asc") => {
+    return [...data].sort((a, b) => {
+      const getSortValue = (item: any) => {
+        if (typeof item[sortVar] === "object" && item[sortVar]?.name) {
+          return item[sortVar].name;
+        }
+
+        if (item[sortVar] !== undefined) {
+          return item[sortVar];
+        }
+
+        const match = item.tagData?.find((tag: any) => {
+          if (typeof tag[sortVar] === "object" && tag[sortVar]?.name) {
+            return true;
+          }
+          return tag[sortVar] !== undefined;
+        });
+
+        if (match) {
+          const value = match[sortVar];
+          return typeof value === "object" && value?.name ? value.name : value;
+        }
+
+        return "";
+      };
+
+      const aVal = getSortValue(a);
+      const bVal = getSortValue(b);
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return sortOrder === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+
+      return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
+    });
+  };
+
   getAllAssets = async (sortType: string = "desc", sortVar: string = "createdAt"): Promise<any> => {
     try {
-      const assets = await getAllAssets(sortType, sortVar);
+      const assets = await getAllAssets();
       const tagsData = await Promise.all(
         assets.map(async (tagDoc: IAsset) => {
           const tag = tagDoc.toObject();
@@ -167,22 +204,10 @@ class assetService {
           };
         })
       );
-      if (sortVar === "assetType") {
-        tagsData.sort((a, b) => {
-          const aValue = a.assetType?.name || "";
-          const bValue = b.assetType?.name || "";
-
-          if (sortType === "asc") {
-            return aValue.localeCompare(bValue);
-          } else {
-            return bValue.localeCompare(aValue);
-          }
-        });
-      }
-
+      const sortedData = this.sortData(tagsData, sortVar, sortType);
       return {
         success: true,
-        data: tagsData
+        data: sortedData
       };
     } catch (error: any) {
       return {

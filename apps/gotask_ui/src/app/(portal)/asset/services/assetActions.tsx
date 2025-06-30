@@ -5,16 +5,22 @@ import env from "@/app/common/env";
 import { IAssetAttributes, IAssetIssues, IAssetTags } from "../interface/asset";
 
 //fetch all assets
-export const fetchAllAssets = () =>
-  withAuth((token) => getData(`${env.API_BASE_URL}/assets/getAll`, token));
+export const fetchAllAssets = (sortVar = "createdAt", sortType = "desc") =>
+  withAuth((token) =>
+    postData(`${env.API_BASE_URL}/assets/getAll`, { sort_var: sortVar, sort_type: sortType }, token)
+  );
 
-export const useAllAssets = () => {
-  const { data, mutate } = useSWR([`fetchallassets`], fetchAllAssets, {
-    revalidateOnFocus: false
-  });
+export const useAllAssets = (sortVar = "createdAt", sortType = "desc") => {
+  const { data, mutate, isLoading } = useSWR(
+    [`fetchallassets`, sortVar, sortType],
+    () => fetchAllAssets(sortVar, sortType),
+    { revalidateOnFocus: false, keepPreviousData: true }
+  );
+
   return {
     getAll: data?.data || [],
-    mutate
+    mutate,
+    isLoading
   };
 };
 

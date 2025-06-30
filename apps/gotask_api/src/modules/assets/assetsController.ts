@@ -45,7 +45,10 @@ class AssetController extends BaseController {
 
   async getAllAssets(requestHelper: RequestHelper, handler: any) {
     try {
-      const users = await assetServices.getAllAssets();
+      const payload = requestHelper.getPayload();
+      const sortType = (payload?.sort_type as string) || "desc";
+      const sortVar = (payload?.sort_var as string) || "createdAt";
+      const users = await assetServices.getAllAssets(sortType, sortVar);
       return this.sendResponse(handler, users);
     } catch (error) {
       return this.replyError(error);

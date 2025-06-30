@@ -23,7 +23,30 @@ const getAssetTypeById = async (id: string): Promise<IAsset | null> => {
   return await AssetType.findOne({ id });
 };
 
-const getAllAssets = async (): Promise<IAsset[]> => {
+const getAllAssets = async (
+  sortType: string = "desc",
+  sortVar: string = "createdAt"
+): Promise<IAsset[]> => {
+  const sortOrder = sortType === "asc" ? 1 : -1;
+
+  const directSortableFields = [
+    "createdAt",
+    "updatedAt",
+    "deviceName",
+    "serialNumber",
+    "modelName",
+    "os",
+    "ram",
+    "processor",
+    "active"
+  ];
+
+  if (directSortableFields.includes(sortVar)) {
+    const sortObj: any = {};
+    sortObj[sortVar] = sortOrder;
+    return await Asset.find().sort(sortObj);
+  }
+
   return await Asset.find().sort({ createdAt: -1 });
 };
 

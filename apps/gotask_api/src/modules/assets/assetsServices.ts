@@ -124,9 +124,9 @@ class assetService {
     }
   };
 
-  getAllAssets = async (): Promise<any> => {
+  getAllAssets = async (sortType: string = "desc", sortVar: string = "createdAt"): Promise<any> => {
     try {
-      const assets = await getAllAssets();
+      const assets = await getAllAssets(sortType, sortVar);
       const tagsData = await Promise.all(
         assets.map(async (tagDoc: IAsset) => {
           const tag = tagDoc.toObject();
@@ -167,6 +167,19 @@ class assetService {
           };
         })
       );
+      if (sortVar === "assetType") {
+        tagsData.sort((a, b) => {
+          const aValue = a.assetType?.name || "";
+          const bValue = b.assetType?.name || "";
+
+          if (sortType === "asc") {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        });
+      }
+
       return {
         success: true,
         data: tagsData

@@ -12,7 +12,14 @@ import {
   Typography
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
-import { EnhancedTimeLogGridProps, GroupedLogs, LeaveEntry, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
+import {
+  EnhancedTimeLogGridProps,
+  GroupedLogs,
+  LeaveEntry,
+  TaskLog,
+  TimeLogEntry,
+  TimeLogGridProps
+} from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { extractHours } from "@/app/common/utils/taskTime";
@@ -23,7 +30,6 @@ import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveTypeColor } from "@/app/common/constants/leave";
 
 // Add LeaveEntry interface
-
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -56,12 +62,18 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
   const leaves: LeaveEntry[] = leaveData && leaveData.length > 0 ? leaveData : leaveResponse || [];
 
   // Helper function to check if dates overlap
-  const datesOverlap = (start1: string, end1: string, start2: string, end2: string): boolean => {
-    const s1 = new Date(start1);
-    const e1 = new Date(end1);
-    const s2 = new Date(start2);
-    const e2 = new Date(end2);
-    return s1 <= e2 && s2 <= e1;
+  const datesOverlap = (
+    firstLeaveStart: string,
+    firstLeaveEnd: string,
+    secondLeaveStart: string,
+    secondLeaveEnd: string
+  ): boolean => {
+    const firstLeaveStartDate = new Date(firstLeaveStart);
+    const firstLeaveEndDate = new Date(firstLeaveEnd);
+    const secondLeaveStartDate = new Date(secondLeaveStart);
+    const secondLeaveEndDate = new Date(secondLeaveEnd);
+
+    return firstLeaveStartDate <= secondLeaveEndDate && secondLeaveStartDate <= firstLeaveEndDate;
   };
 
   // Helper function to check if a specific date falls within a leave period
@@ -84,7 +96,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
   };
 
   // Get leave type color
-
 
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
@@ -325,7 +336,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                               alignItems="center"
                               gap={0.5}
                             >
-                          
                               <Typography
                                 variant="caption"
                                 sx={{

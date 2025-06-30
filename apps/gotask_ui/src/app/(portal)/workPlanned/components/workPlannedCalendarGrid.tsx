@@ -365,11 +365,11 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                                     label={`${days} day${days > 1 ? "s" : ""}`}
                                     size="small"
                                     sx={{
-                                      backgroundColor: "#1976d2",
+                                      backgroundColor: "#B1AAAA",
                                       color: "#fff",
                                       fontSize: "0.65rem",
                                       height: 20,
-                                      borderRadius: "10px"
+                                      borderRadius: "5px"
                                     }}
                                   />
                                 </Box>

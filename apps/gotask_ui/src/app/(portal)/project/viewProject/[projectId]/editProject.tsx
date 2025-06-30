@@ -98,7 +98,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
           formData={formData}
           handleChange={handleChange}
           errors={errors}
-          readOnlyFields={["name"]}
+          readOnlyFields={[]}
         />
       </CommonDialog>
       <CustomSnackbar

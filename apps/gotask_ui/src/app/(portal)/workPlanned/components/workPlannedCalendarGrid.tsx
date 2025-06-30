@@ -354,11 +354,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                           padding: "10px",
                           textAlign: "center",
                           border: "1px solid #eee",
-                          verticalAlign: "middle",
-                          backgroundColor:
-                            userLeaves.length === 1
-                              ? getLeaveTypeColor(userLeaves[0].leave_type) + "20"
-                              : "transparent"
+                          verticalAlign: "middle"
                         }}
                       >
                         {userLeaves.length > 0 ? (
@@ -375,7 +371,10 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                                 <Box
                                   key={leave.id || leaveIndex}
                                   sx={{
-                                    p: 1
+                                    p: 1,
+                                    backgroundColor: getLeaveTypeColor(leave.leave_type) + "20",
+                                    borderRadius: "8px",
+                                    border: `1px solid ${getLeaveTypeColor(leave.leave_type)}40`
                                   }}
                                 >
                                   <Typography

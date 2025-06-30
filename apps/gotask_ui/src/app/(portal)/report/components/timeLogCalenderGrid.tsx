@@ -69,7 +69,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const dateRange = getDateRange(fromDate, toDate);
-console.log("data", data);
+  console.log("data", data);
 
   // Use passed leave data or fetch from API
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
@@ -102,10 +102,11 @@ console.log("data", data);
 
   // Helper function to get leave details for a specific user and date
   const getLeaveForUserAndDate = (userId: string, date: string): LeaveEntry | null => {
-    return leaves.find(
-      (leave) =>
-        leave.user_id === userId && isDateInLeave(date, leave.from_date, leave.to_date)
-    ) || null;
+    return (
+      leaves.find(
+        (leave) => leave.user_id === userId && isDateInLeave(date, leave.from_date, leave.to_date)
+      ) || null
+    );
   };
 
   // Get leave type color
@@ -222,7 +223,7 @@ console.log("data", data);
               >
                 {transreport("totalworklog")}
               </TableCell>
-            
+
               {selectedProjects.length > 0 && (
                 <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
                   {transreport("showproject")}
@@ -289,7 +290,7 @@ console.log("data", data);
               // Get user ID by matching user name with leave data
               const userId = leaves.find((l) => l.user_name === user)?.user_id || "";
 
-              const userLeaves = getUserLeavesInRange(userId);
+              // const userLeaves = getUserLeavesInRange(userId);
               let userRowRendered = false;
 
               if (projectEntries.length === 0) {
@@ -319,7 +320,7 @@ console.log("data", data);
                       {totalTimePerUser[user] || 0}h
                     </TableCell>
                     {/* Leave Information */}
-               
+
                     {selectedProjects.length > 0 && (
                       <TableCell
                         sx={{
@@ -345,7 +346,7 @@ console.log("data", data);
                     {dateRange.map((date) => {
                       const key = format(date, "yyyy-MM-dd");
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
-                      
+
                       return (
                         <TableCell
                           key={key}
@@ -353,18 +354,25 @@ console.log("data", data);
                             padding: "10px",
                             textAlign: "center" as const,
                             border: "1px solid #eee",
-                            backgroundColor: leaveForDate ? getLeaveTypeColor(leaveForDate.leave_type) + "20" : "transparent"
+                            backgroundColor: leaveForDate
+                              ? getLeaveTypeColor(leaveForDate.leave_type) + "20"
+                              : "transparent"
                           }}
                         >
                           {leaveForDate ? (
-                            <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
+                            <Box
+                              display="flex"
+                              flexDirection="column"
+                              alignItems="center"
+                              gap={0.5}
+                            >
                               {/* <StatusIndicator
                                 status={leaveForDate.leave_type}
                                 getColor={getLeaveTypeColor}
                               /> */}
                               <Typography
                                 variant="caption"
-                                sx={{ 
+                                sx={{
                                   fontSize: "0.6rem",
                                   fontWeight: 500,
                                   color: getLeaveTypeColor(leaveForDate.leave_type)
@@ -373,7 +381,9 @@ console.log("data", data);
                                 {leaveForDate.leave_type.toUpperCase()}
                               </Typography>
                             </Box>
-                          ) : ""}
+                          ) : (
+                            ""
+                          )}
                         </TableCell>
                       );
                     })}
@@ -409,46 +419,6 @@ console.log("data", data);
                           }}
                         >
                           {totalTimePerUser[user]}h
-                        </TableCell>
-                        {/* Leave Information - Only show for first row of each user */}
-                        <TableCell
-                          rowSpan={totalRowsForUser}
-                          sx={{
-                            padding: "12px",
-                            textAlign: "center",
-                            border: "1px solid #eee",
-                            verticalAlign: "middle"
-                          }}
-                        >
-                          {userLeaves.length > 0 ? (
-                            <Box display="flex" flexDirection="column" gap={1}>
-                              {userLeaves.map((leave, leaveIndex) => (
-                                <Box key={leave.id || leaveIndex}>
-                                  <StatusIndicator
-                                    status={leave.leave_type}
-                                    getColor={getLeaveTypeColor}
-                                  />
-                                  <Typography
-                                    variant="caption"
-                                    display="block"
-                                    sx={{ fontSize: "0.7rem" }}
-                                  >
-                                    <FormattedDateTime
-                                      date={leave.from_date}
-                                      format={DateFormats.DATE_ONLY}
-                                    />
-                                    {" to "}
-                                    <FormattedDateTime
-                                      date={leave.to_date}
-                                      format={DateFormats.DATE_ONLY}
-                                    />
-                                  </Typography>
-                                </Box>
-                              ))}
-                            </Box>
-                          ) : (
-                            "-"
-                          )}
                         </TableCell>
                       </>
                     )}
@@ -503,7 +473,7 @@ console.log("data", data);
                       const key = format(date, "yyyy-MM-dd");
                       const value = taskEntry.dailyLogs[key];
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
-                      
+
                       return (
                         <TableCell
                           key={key}
@@ -511,18 +481,21 @@ console.log("data", data);
                             padding: "10px",
                             textAlign: "center" as const,
                             border: "1px solid #eee",
-                            backgroundColor: leaveForDate ? getLeaveTypeColor(leaveForDate.leave_type) + "20" : "transparent"
+                            backgroundColor: leaveForDate
+                              ? getLeaveTypeColor(leaveForDate.leave_type) + "20"
+                              : "transparent"
                           }}
                         >
                           {leaveForDate ? (
-                            <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
-                              <StatusIndicator
-                                status={leaveForDate.leave_type}
-                                getColor={getLeaveTypeColor}
-                              />
+                            <Box
+                              display="flex"
+                              flexDirection="column"
+                              alignItems="center"
+                              gap={0.5}
+                            >
                               <Typography
                                 variant="caption"
-                                sx={{ 
+                                sx={{
                                   fontSize: "0.6rem",
                                   fontWeight: 500,
                                   color: getLeaveTypeColor(leaveForDate.leave_type)
@@ -533,7 +506,7 @@ console.log("data", data);
                               {value && (
                                 <Typography
                                   variant="caption"
-                                  sx={{ 
+                                  sx={{
                                     fontSize: "0.7rem",
                                     fontWeight: 600,
                                     color: "#333"
@@ -543,8 +516,10 @@ console.log("data", data);
                                 </Typography>
                               )}
                             </Box>
+                          ) : value ? (
+                            `${value}h`
                           ) : (
-                            value ? `${value}h` : ""
+                            ""
                           )}
                         </TableCell>
                       );

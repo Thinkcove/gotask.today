@@ -1,3 +1,6 @@
+import { RichTextEditorRef } from "mui-tiptap";
+import { RefObject } from "react";
+
 export interface User {
   id: string;
   name: string;
@@ -85,4 +88,5 @@ export interface ProjectGoalFormProps {
   setGoalData: React.Dispatch<React.SetStateAction<GoalData>>;
   errors: { [key: string]: string };
   onSubmit?: (payload: GoalDataPayload) => void;
+  rteRef?: RefObject<RichTextEditorRef | null>;
 }

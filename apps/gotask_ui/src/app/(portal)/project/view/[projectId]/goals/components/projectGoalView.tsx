@@ -10,6 +10,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { GoalComment, ProjectGoalViewProps } from "../interface/projectGoal";
 import GoalComments from "./goalComments";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   goalData,
@@ -77,17 +79,10 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
             <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
               {transGoal("description")}
             </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: "text.primary",
-                lineHeight: 1.6,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word"
-              }}
-            >
-              {goalData.description || "-"}
-            </Typography>
+            <RichTextReadOnly
+              content={goalData.description || "-"}
+              extensions={getTipTapExtensions()}
+            />
           </Box>
 
           {/* Meta Info */}

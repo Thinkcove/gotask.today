@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
@@ -31,6 +31,7 @@ import ProjectGoals from "./projectGoals";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import HistoryDrawer from "./history";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
+import { RichTextEditorRef } from "mui-tiptap";
 
 function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -200,25 +201,26 @@ function ProjectGoalList() {
     setOpenDialog(false);
     setprojectGoalView(null);
   };
+  const rteRef = useRef<RichTextEditorRef>(null);
 
-  // Improved handleSubmit function
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
     try {
+      const editorContent = rteRef.current?.editor?.getHTML() || goalData.description;
+
       const payload = {
         projectId: projectID,
         goalTitle: goalData.goalTitle,
         weekStart: goalData.weekStart,
         weekEnd: goalData.weekEnd,
         status: goalData.status,
-        description: goalData.description,
+        description: editorContent,
         priority: goalData.priority,
         user_id: user?.id
       };
 
       if (goalData.id) {
-        // Update existing goal
         await updateWeeklyGoal(goalData.id, payload as any);
         setSnackbar({
           open: true,
@@ -226,7 +228,6 @@ function ProjectGoalList() {
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
       } else {
-        // Create new goal
         await createWeeklyGoal(payload as any);
         setSnackbar({
           open: true,
@@ -235,16 +236,13 @@ function ProjectGoalList() {
         });
       }
 
-      // Close dialog and reset states
       setOpenDialog(false);
       setprojectGoalView(null);
 
-      // Reset pagination and refresh data
       setPage(1);
       setHasMore(true);
       setAllGoals([]);
 
-      // Mutate SWR cache to refresh data
       await mutate(swrKey);
     } catch (err) {
       console.error("Error saving weekly goal:", err);
@@ -363,7 +361,6 @@ function ProjectGoalList() {
   const handleGoBack = () => {
     setTimeout(() => router.back(), 200);
   };
-
 
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
@@ -571,7 +568,12 @@ function ProjectGoalList() {
             )}
             {openDialog ? (
               <Box sx={{ p: 2 }}>
-                <ProjectGoalForm goalData={goalData} setGoalData={setGoalData} errors={errors} />
+                <ProjectGoalForm
+                  rteRef={rteRef}
+                  goalData={goalData}
+                  setGoalData={setGoalData}
+                  errors={errors}
+                />
               </Box>
             ) : filteredGoals?.length === 0 ? (
               <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />

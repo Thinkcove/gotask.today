@@ -138,7 +138,7 @@
     "detailupdateon": "Updated On",
     "detailstatus": "Status",
     "detailassignee": "Assignees",
-    "detailaddassignee": " Add Assignee",
+    "detailaddassignee": " Add",
     "detailnouser": "No users assigned yet.",
     "addassignetitle": "Add Assignee",
     "addusertitle": "Add User",
@@ -609,7 +609,17 @@
     "modeasset": "asset",
     "viewissues": "View Issues",
     "reportedissues": "Reported Issues",
-    "nodescription": "No description provided"
+    "nodescription": "No description provided",
+    "warranty": "Warranty date",
+    "systemtype": "System type",
+    "expiringon": "Expiring on",
+    "expired": "Expired",
+    "filterfrom": "From Date",
+    "filterto": "To Date",
+    "filter": "Filter",
+    "filterclear": "Clear",
+    "filterapply": "Apply",
+    "previouslyused": "Previously Used"
   },
 
   "Chatbot": {
@@ -711,6 +721,7 @@
     "to": "to",
     "user": "User",
     "testimation": "Total Estimation",
+    "leaveinfo": "Leave Information",
     "task": "Task",
     "startdate": "Start Date",
     "enddate": "End Date",
@@ -722,6 +733,7 @@
     "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids"
+    
   },
   "ProjectGoal": {
     "goal": "Project Goal",

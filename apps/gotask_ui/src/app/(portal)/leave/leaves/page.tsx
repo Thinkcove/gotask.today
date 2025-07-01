@@ -1,12 +1,12 @@
 // page.tsx
 "use client";
 import React from "react";
-import { LeaveList } from "./components/leaveList";
+import LeavePage from "./components/leave";
 
 const Page = () => {
   return (
     <div>
-      <LeaveList />
+      <LeavePage />
     </div>
   );
 };

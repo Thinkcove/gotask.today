@@ -1,35 +1,58 @@
-export interface ILeave {
-  id?: string;
-  user_id: string;
-  leave_type: 'sick' | 'personal';
-  from_date: Date | string;
-  to_date: Date | string;
-  created_at?: Date | string;
-  updated_at?: Date | string;
+export interface User {
+  id: string;
+  name: string;
 }
 
-export interface ILeaveDisplayRow {
+// Leave interface
+export interface LeaveEntry {
   id: string;
-  leaveType: string;
+  user_id: string;
+  user_name: string;
+  from_date: string;
+  to_date: string;
+  leave_type: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LeaveGridProps {
+  data: LeaveEntry[];
   fromDate: string;
   toDate: string;
-  duration: string;
-  appliedDate: string;
 }
 
-export interface IUser {
-  id: string;
-  name: string; 
-  email?: string;
+// API Response interface with enhanced structure
+export interface LeaveApiResponse {
+  success: boolean;
+  message: string;
+  data: LeaveEntry[] | LeaveEntry | LeaveResponseData | null;
+  count?: number;
+  total_pages?: number;
+  current_page?: number;
+  error?: string;
 }
 
-export interface ILeaveFilters {
+// For the filtered response structure
+export interface LeaveResponseData {
+  leaves: LeaveEntry[];
+  total_count: number;
+  total_pages: number;
+  current_page: number;
+}
+
+export interface LeavePayload {
+  from_date: string;
+  to_date: string;
+  leave_type: string;
+  user_name?: string;
+}
+export interface LeaveFilters {
   user_id?: string;
-  leave_type?: 'sick' | 'personal';
+  leave_type?: string;
   from_date?: string;
   to_date?: string;
   page?: number;
   page_size?: number;
   sort_field?: string;
-  sort_order?: 'asc' | 'desc';
+  sort_order?: string;
 }

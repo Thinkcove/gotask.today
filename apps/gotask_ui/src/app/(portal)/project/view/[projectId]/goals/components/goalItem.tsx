@@ -44,18 +44,16 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
 
           <SeverityIndicator severity={goal.priority} getColor={getSeverityColor} />
 
-          <Tooltip title="Edit Goal">
-            <IconButton
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(goal);
-              }}
-              sx={{ ml: "auto" }}
-              color="primary"
-            >
-              <Edit />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(goal);
+            }}
+            sx={{ ml: "auto" }}
+            color="primary"
+          >
+            <Edit />
+          </IconButton>
         </Stack>
       </Box>
     </Box>

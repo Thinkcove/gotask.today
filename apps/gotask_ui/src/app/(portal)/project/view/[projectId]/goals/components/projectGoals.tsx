@@ -13,7 +13,7 @@ const ProjectGoals: React.FC<ProjectGoalsProps> = ({
   const filteredGoals = projectGoals?.filter((goal) => goal.projectId === projectId);
 
   return (
-    <Box sx={{ width: "100%",pt:4 }}>
+    <Box sx={{ width: "100%", pt: 4 }}>
       <Box
         sx={{ overflowY: "auto", maxHeight: "calc(100vh - 250px)", px: 2 }}
         onScroll={handleScroll}

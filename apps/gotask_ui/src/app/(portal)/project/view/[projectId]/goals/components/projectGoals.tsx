@@ -3,7 +3,8 @@ import { Grid, Box } from "@mui/material";
 import { ProjectGoalsProps } from "../interface/projectGoal";
 import GoalItem from "./goalItem";
 
-const ProjectGoals: React.FC<ProjectGoalsProps> = ({
+const 
+ProjectGoals: React.FC<ProjectGoalsProps> = ({
   projectGoals,
   projectGoalView,
   projectId,
@@ -11,6 +12,7 @@ const ProjectGoals: React.FC<ProjectGoalsProps> = ({
   handleScroll
 }) => {
   const filteredGoals = projectGoals?.filter((goal) => goal.projectId === projectId);
+console.log("Filtered Goals:", filteredGoals);
 
   return (
     <Box sx={{ width: "100%",pt:4 }}>

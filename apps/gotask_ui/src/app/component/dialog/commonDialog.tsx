@@ -19,7 +19,6 @@ interface CommonDialogProps extends DialogProps {
   submitLabel?: string;
   cancelLabel?: string;
   submitColor?: string; // New prop for dynamic color
-  hideCloseIcon?: boolean;
 }
 
 const CommonDialog: React.FC<CommonDialogProps> = ({
@@ -31,7 +30,6 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
   submitLabel = "Submit",
   cancelLabel = "Cancel",
   submitColor,
-  hideCloseIcon = false,
   ...dialogProps
 }) => {
   return (

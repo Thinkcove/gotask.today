@@ -18,7 +18,7 @@ const DateFormats = {
 
   // Custom format examples
   SHORT_DATE: "DD/MM/YY", // e.g., 06/06/25
-  COMPACT_DATE_TIME: "DDMMYYYY_HHmmss", // e.g., 06062025_153045
+  COMPACT_DATE_TIME: "DDMMYYYY_HHmmss" // e.g., 06062025_153045
 };
 
 export default DateFormats;

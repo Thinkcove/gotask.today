@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Typography, TextField, IconButton, Button, Stack } from "@mui/material";
+import { Box, Typography, TextField,  Button, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-
 import {
   ResponsiveContainer,
   LineChart,
@@ -13,12 +12,11 @@ import {
   CartesianGrid,
   LabelList
 } from "recharts";
-
 import CustomTable, { Column } from "@/app/component/table/table";
 import { IIncrementHistory } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
 import CommonDialog from "@/app/component/dialog/commonDialog";
-import { addUserIncrement, updateUserIncrement, deleteUserIncrement } from "../services/userAction";
+import { addUserIncrement, updateUserIncrement } from "../services/userAction";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 
@@ -80,13 +78,6 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({
     setDialogOpen(false);
   };
 
-  const handleDelete = async (index: number) => {
-    await deleteUserIncrement(userId, index);
-    const updated = [...increment_history];
-    updated.splice(index, 1);
-    onChange(updated);
-  };
-
   const sorted = [...increment_history].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
@@ -112,7 +103,7 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({
 
   // Table columns
   const columns: Column<IIncrementHistory & { percent?: string }>[] = [
-    {
+       {
       id: "date",
       label: transuser("date"),
       align: "center",
@@ -223,6 +214,7 @@ const IncrementInput: React.FC<IncrementHistoryProps> = ({
         <Box px={2}>
           <CustomTable columns={columns} rows={rows} />
         </Box>
+        
       </Box>
       {/* Add/Edit Dialog */}
       <CommonDialog

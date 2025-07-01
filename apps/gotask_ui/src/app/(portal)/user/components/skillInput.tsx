@@ -66,7 +66,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     const trimmed = tempSkill.name.trim();
     if (!trimmed || !tempSkill.proficiency) return;
 
-    let updated = [...localSkills];
+    const updated = [...localSkills];
     const skillData: ISkill = {
       name: trimmed,
       proficiency: tempSkill.proficiency,
@@ -218,7 +218,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         cancelLabel={trans("cancel")}
       >
         <Typography color="text.secondary" fontSize={14} mb={2}>
-          {trans("skills")}
+          {trans("skilldescription")}
         </Typography>
 
         <Grid container spacing={3}>
@@ -237,7 +237,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 setTempSkill({ ...tempSkill, name: newInput });
               }}
               renderInput={(params) => (
-                <TextField {...params} placeholder={trans("addskill")} fullWidth />
+                <TextField {...params} placeholder={trans("selectskill")} fullWidth />
               )}
             />
           </Grid>

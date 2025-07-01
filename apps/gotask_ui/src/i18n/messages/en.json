@@ -482,7 +482,8 @@
     "userskill": "Skills",
     "general": "General",
     "add": "Add",
-    "addskill": "Select Skill",
+    "selectskill": "Select Skill",
+    "addskill": "Add Skill",
     "remove": "Remove",
     "duplicateskills": "Duplicate skills are not allowed.",
     "proficiencyrequired": "Please select a proficiency level for \"{skill}\".",
@@ -493,6 +494,7 @@
     "noassets": "No assets assigned yet.",
     "months": "Months",
     "editskill": "Edit Skill",
+    "skilldescription": "Add details of Skills you possess along with proficiency and experience",
 
     "Certificate": {
       "certificate": "Certificate",

@@ -22,7 +22,6 @@ import Toggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
-import DateFormats from "@/app/component/dateTime/dateFormat";
 import SkillInput from "../../components/skillInput";
 import CertificateInput from "../../components/certificateInput";
 import IncrementInput from "../../components/incrementInput";
@@ -34,14 +33,12 @@ interface UserDetailProps {
 
 const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const { canAccess } = useUserPermission();
-  const transcertificate = useTranslations("User.Certificate");
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [selectedTab, setSelectedTab] = useState<string>(transuser("general"));
   const router = useRouter();
   const { userId } = useParams();
   const userID = userId as string;
-  const [localSkills, setLocalSkills] = useState(user.skills ?? []);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,

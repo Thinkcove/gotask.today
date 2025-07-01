@@ -18,7 +18,6 @@ import {
   LeaveEntry,
   TaskLog,
   TimeLogEntry,
-  TimeLogGridProps
 } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -28,7 +27,6 @@ import { getStatusColor } from "@/app/common/constants/task";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveTypeColor } from "@/app/common/constants/leave";
-import DateFormats from "@/app/component/dateTime/dateFormat";
 
 const headerCellStyle = {
   position: "sticky" as const,

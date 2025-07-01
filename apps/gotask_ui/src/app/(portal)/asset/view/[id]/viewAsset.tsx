@@ -41,12 +41,13 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
       <ModuleHeader name={trans("assets")} />
       <Box
         sx={{
-          p: 3,
+          height: "calc(100vh - 64px)",
+          overflow: "auto",
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)",
-          minHeight: "100vh"
+          p: 3
         }}
       >
-        <Paper sx={{ p: 4, borderRadius: 4, border: "1px solid #e0e0e0" }}>
+        <Paper sx={{ p: 4, pb: 8, borderRadius: 4, border: "1px solid #e0e0e0" }}>
           {/* Header */}
           <Grid container alignItems="center" spacing={2} mb={3}>
             <Grid item>

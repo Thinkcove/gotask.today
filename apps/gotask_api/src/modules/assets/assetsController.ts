@@ -2,6 +2,7 @@ import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
 import AssetMessages from "../../constants/apiMessages/userMessage";
 import assetServices from "./assetsServices";
+import { CREATE_AT, DESC } from "../../constants/assetConstant";
 
 class AssetController extends BaseController {
   async createAsset(requestHelper: RequestHelper, handler: any) {
@@ -45,7 +46,10 @@ class AssetController extends BaseController {
 
   async getAllAssets(requestHelper: RequestHelper, handler: any) {
     try {
-      const users = await assetServices.getAllAssets();
+      const payload = requestHelper.getPayload();
+      const sortType = (payload?.sort_type as string) || DESC;
+      const sortVar = (payload?.sort_var as string) || CREATE_AT;
+      const users = await assetServices.getAllAssets(sortType, sortVar);
       return this.sendResponse(handler, users);
     } catch (error) {
       return this.replyError(error);

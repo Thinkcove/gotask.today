@@ -721,6 +721,7 @@
     "to": "to",
     "user": "User",
     "testimation": "Total Estimation",
+    "leaveinfo": "Leave Information",
     "task": "Task",
     "startdate": "Start Date",
     "enddate": "End Date",
@@ -732,6 +733,7 @@
     "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids"
+    
   },
   "ProjectGoal": {
     "goal": "Project Goal",

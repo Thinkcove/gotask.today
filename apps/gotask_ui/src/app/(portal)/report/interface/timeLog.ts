@@ -33,7 +33,6 @@ export interface TaskLog {
 }
 
 export interface LeaveEntry {
-  _id: string;
   user_id: string;
   user_name: string;
   from_date: string;
@@ -44,7 +43,6 @@ export interface LeaveEntry {
   updated_on: string;
   createdAt: string;
   updatedAt: string;
-  __v: number;
 }
 
 export interface EnhancedTimeLogGridProps extends TimeLogGridProps {

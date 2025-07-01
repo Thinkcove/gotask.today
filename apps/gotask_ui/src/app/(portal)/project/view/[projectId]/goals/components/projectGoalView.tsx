@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
@@ -18,9 +17,9 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   handleSaveComment,
   handleEditComment,
   handleDeleteComment,
-  user
+  user,
+  handleBack
 }) => {
-  const router = useRouter();
   const comments: GoalComment[] = goalData?.comments || [];
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
@@ -57,7 +56,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
         <Box sx={{ maxHeight: "calc(100vh - 160px)", overflowY: "auto" }}>
           <Grid container alignItems="center" mb={3}>
             <Grid item xs="auto">
-              <IconButton color="primary" onClick={() => router.back()}>
+              <IconButton color="primary" onClick={handleBack}>
                 <ArrowBack />
               </IconButton>
             </Grid>
@@ -99,13 +98,13 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label="Created"
-                value={<FormattedDateTime date={goalData.createdAt} />}
+                value={goalData.createdAt && <FormattedDateTime date={goalData.createdAt} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label="Updated"
-                value={<FormattedDateTime date={goalData.updatedAt} />}
+                value={goalData.updatedAt && <FormattedDateTime date={goalData.updatedAt} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>

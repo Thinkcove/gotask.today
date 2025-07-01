@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Link } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
+import { ALLOCATION } from "../assetConstants";
 
 interface Props {
   modelNameFilter: string[];
@@ -24,6 +25,8 @@ interface Props {
   systemTypeFilter?: string[];
   allSystemTypes?: string[];
   onSystemTypeChange?: (val: string[]) => void;
+  assetAllocationFilter?: string[];
+  onAssetAllocationChange?: (val: string[]) => void;
 }
 
 const AssetFilters: React.FC<Props> = ({
@@ -45,14 +48,17 @@ const AssetFilters: React.FC<Props> = ({
   onDateChange,
   systemTypeFilter,
   allSystemTypes,
-  onSystemTypeChange
+  onSystemTypeChange,
+  assetAllocationFilter,
+  onAssetAllocationChange
 }) => {
   const appliedFilterCount =
     (hideModelNameFilter ? 0 : modelNameFilter.length > 0 ? 1 : 0) +
     (hideAssignedToFilter ? 0 : assignedToFilter.length > 0 ? 1 : 0) +
     (systemTypeFilter && systemTypeFilter.length > 0 ? 1 : 0) +
     (dateFrom ? 1 : 0) +
-    (dateTo ? 1 : 0);
+    (dateTo ? 1 : 0) +
+    (assetAllocationFilter && assetAllocationFilter.length > 0 ? 1 : 0);
 
   return (
     <Box>
@@ -108,6 +114,15 @@ const AssetFilters: React.FC<Props> = ({
             options={allStatuses}
             selected={statusFilter || []}
             onChange={onStatusChange}
+          />
+        )}
+
+        {onAssetAllocationChange && (
+          <FilterDropdown
+            label={trans("assetallocation")}
+            options={ALLOCATION}
+            selected={assetAllocationFilter || []}
+            onChange={onAssetAllocationChange}
           />
         )}
       </Box>

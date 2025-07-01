@@ -69,6 +69,7 @@ export interface IAssetAttributes {
   tagData?: ITagData[];
   userId?: string;
   issuesCount?: string;
+  userAssetCount?: string;
 
   //mobile
   imeiNumber?: string;

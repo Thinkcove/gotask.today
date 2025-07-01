@@ -6,6 +6,7 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import { isBefore, isAfter, addDays } from "date-fns";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import Tooltip from "@mui/material/Tooltip";
+import LayersIcon from "@mui/icons-material/Layers";
 
 export interface IAssetDisplayRow {
   id?: string;
@@ -18,6 +19,7 @@ export interface IAssetDisplayRow {
   warrantyDate?: string;
   previouslyUsedBy?: string;
   issuesCount?: string;
+  userAssetCount?: string;
 }
 
 export const getAssetColumns = (
@@ -108,24 +110,39 @@ export const getAssetColumns = (
       )
   },
   {
-    id: "previouslyUsedBy",
-    align: "center" as const,
-    label: transasset("previouslyused"),
-    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
-  },
-  {
     id: "user",
     align: "center" as const,
     label: transasset("assignedTo"),
-    render: (value: string | string[] | boolean | undefined) =>
-      Array.isArray(value) ? value.join(", ") : typeof value === "string" ? value : "-"
-  },
-  {
-    id: "issuesCount",
-    align: "center" as const,
-    label: transasset("issuesCount"),
-    render: (value: unknown) =>
-      typeof value === "number" || typeof value === "string" ? `${value}` : "-"
+    render: (_value: unknown, row: IAssetDisplayRow) => {
+      const userDisplay = Array.isArray(row.user)
+        ? row.user.join(", ")
+        : typeof row.user === "string"
+          ? row.user
+          : "-";
+
+      const userAssetCount = Number(row.userAssetCount);
+      const isOverloaded = !isNaN(userAssetCount) && userAssetCount > 1;
+
+      return (
+        <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
+          <Typography whiteSpace="nowrap">{userDisplay}</Typography>
+          <Box sx={{ visibility: isOverloaded ? "visible" : "hidden" }}>
+            <Tooltip
+              placement="top"
+              title={
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {transasset("overutilized")} {row.userAssetCount}
+                </Typography>
+              }
+            >
+              <IconButton size="small" sx={{ p: 0.5, color: "#741B92" }}>
+                <LayersIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
+      );
+    }
   },
   {
     id: "actions",
@@ -177,3 +194,5 @@ export const systemTypeOptions = ["Office System", "Personal System"];
 export const CREATED_AT = "createdAt";
 
 export const DESC = "desc";
+
+export const ALLOCATION = ["Overutilized", "Not utilized"];

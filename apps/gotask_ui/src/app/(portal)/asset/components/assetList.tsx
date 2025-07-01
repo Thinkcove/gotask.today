@@ -36,6 +36,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [sortKey, setSortKey] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(SortOrder.DESC);
   const { getAll: allAssets } = useAllAssets(sortKey, sortOrder);
+  const [assetAllocationFilter, setAssetAllocationFilter] = useState<string[]>([]);
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -163,7 +164,26 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       const matchSystemType =
         systemTypeFilter.length === 0 || systemTypeFilter.includes(asset.systemType || "");
 
-      return matchBasic && matchAssigned && matchModel && matchWarranty && matchSystemType;
+      const matchAssetAllocation =
+        assetAllocationFilter.length === 0 ||
+        assetAllocationFilter.some((option) => {
+          if (option === "Overutilized") {
+            return Number(asset.userAssetCount) > 1;
+          }
+          if (option === "Not utilized") {
+            return !asset.tagData?.some((tag) => !!tag.user?.name);
+          }
+          return true;
+        });
+
+      return (
+        matchBasic &&
+        matchAssigned &&
+        matchModel &&
+        matchWarranty &&
+        matchSystemType &&
+        matchAssetAllocation
+      );
     });
   };
 
@@ -182,18 +202,16 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     deviceName: asset.deviceName || "-",
     modelName: asset.modelName || "-",
     warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
-      purchaseDate: asset.dateOfPurchase
-        ? new Date(asset.dateOfPurchase).toLocaleDateString()
-        : "-",
+    purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-",
     user:
       asset.tagData
         ?.map((t) => t.user?.name)
         .filter(Boolean)
         .join(", ") || "-",
     encrypted: asset.isEncrypted,
-      previouslyUsedBy:
-        asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-",
-    issuesCount: asset.issuesCount
+    previouslyUsedBy: asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-",
+    issuesCount: asset.issuesCount,
+    userAssetCount: asset.userAssetCount
   }));
 
   return (
@@ -242,6 +260,10 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               setModelNameFilter([]);
               setAssignedToFilter([]);
               setSearchText("");
+              setWarrantyDateFrom("");
+              setWarrantyDateTo("");
+              setSystemTypeFilter([]);
+              setAssetAllocationFilter([]);
             }}
             trans={transasset}
             dateFrom={warrantyDateFrom}
@@ -253,6 +275,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             systemTypeFilter={systemTypeFilter}
             allSystemTypes={allSystemTypes}
             onSystemTypeChange={setSystemTypeFilter}
+            assetAllocationFilter={assetAllocationFilter}
+            onAssetAllocationChange={setAssetAllocationFilter}
           />
         ) : (
           <AssetFilters

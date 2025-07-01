@@ -15,6 +15,7 @@ import { createAssetHistory, getAssetHistoryById } from "../../domain/interface/
 import {
   createResource,
   createTag,
+  getAssetByUserId,
   getIssuesByUserId,
   getTagsByAssetId,
   getTagsByTypeId,
@@ -168,10 +169,15 @@ class assetService {
       const tagsData = await Promise.all(
         assets.map(async (tagDoc: IAsset) => {
           const tag = tagDoc.toObject();
+
           const [asset, tagData] = await Promise.all([
             getAssetTypeById(tag.typeId),
             getTagsByTypeId(tag.id)
           ]);
+
+          const assetByUsers = (
+            await Promise.all(tagData.map((tag) => getAssetByUserId(tag.userId)))
+          ).flat();
 
           const issuesList = (
             await Promise.all(
@@ -201,7 +207,9 @@ class assetService {
             ...tag,
             assetType: asset || null,
             tagData: tagDataWithUsers || null,
-            issuesCount: issuesList.length || 0
+            issuesCount: issuesList.length || 0,
+            userAssetCount: assetByUsers.length || 0,
+            userAsset: assetByUsers || null
           };
         })
       );

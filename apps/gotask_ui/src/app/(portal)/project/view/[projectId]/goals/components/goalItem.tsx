@@ -50,6 +50,7 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
                 e.stopPropagation();
                 onEdit(goal);
               }}
+              sx={{ ml: "auto" }}
               color="primary"
             >
               <Edit />

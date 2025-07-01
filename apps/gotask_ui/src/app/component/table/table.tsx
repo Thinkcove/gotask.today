@@ -150,7 +150,7 @@ const CustomTable = <T extends object>({
       setOrderBy(CREATED_AT);
 
       if (onSortChange) {
-        onSortChange("createdAt", DESC);
+        onSortChange(CREATED_AT, DESC);
       }
       return;
     }
@@ -231,7 +231,7 @@ const CustomTable = <T extends object>({
                   {column.sortable !== false ? (
                     <StyledTableSortLabel
                       active={orderBy === column.id}
-                      direction={orderBy === column.id ? order : "desc"}
+                      direction={orderBy === column.id ? order : DESC}
                       onClick={() => handleRequestSort(column.id)}
                     >
                       {column.label}

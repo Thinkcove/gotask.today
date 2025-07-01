@@ -1,26 +1,22 @@
-"use client";
-import React from "react";
-import useSWR from "swr";
-import { useParams } from "next/navigation";
-import env from "@/app/common/env";
-import { withAuth } from "@/app/common/utils/authToken";
-import { getData } from "@/app/common/utils/apiData";
-import TaskDetail from "./taskDetail";
+// app/task/view/[taskId]/page.tsx
 
-const fetchTask = async (url: string) => {
-  return await withAuth(async (token: string) => {
-    return await getData(url, token);
-  });
-};
+import { generateDynamicMetadata } from "@/app/common/utils/metadataUtil";
+import ViewAction from "./viewAction";
 
-const ViewAction: React.FC = () => {
-  const { taskId } = useParams();
-  const url = `${env.API_BASE_URL}/getTaskById/${taskId}`;
-  const { data, mutate } = useSWR(taskId ? url : null, fetchTask, {
-    revalidateOnFocus: false
-  });
-  const selectedTask = data?.data || [];
-  return selectedTask && <TaskDetail task={selectedTask} mutate={mutate} />;
-};
+export async function generateMetadata(props: { params: { taskId?: string } }) {
+  const taskId = props.params?.taskId;
 
-export default ViewAction;
+  // Optional fallback for safety
+  if (!taskId) {
+    return {
+      title: "Go Task Today",
+      description: "Task not found"
+    };
+  }
+
+  return await generateDynamicMetadata("task", taskId);
+}
+
+export default function Page() {
+  return <ViewAction />;
+}

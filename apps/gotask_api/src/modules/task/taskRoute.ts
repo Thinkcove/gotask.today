@@ -6,6 +6,7 @@ import TaskController from "./taskController";
 import { ACTIONS, APPLICATIONS } from "../../constants/accessCheck/authorization";
 import { permission } from "../../middleware/permission";
 import authStrategy from "../../constants/auth/authStrategy";
+import { getTaskById } from "./taskService";
 
 const taskController = new TaskController();
 const appName = APPLICATIONS.TASK;
@@ -182,6 +183,32 @@ TaskRoutes.push({
   config: {
     notes: "Add time spent on a task",
     tags
+  }
+});
+
+TaskRoutes.push({
+  path: "/public/task-meta/{id}",
+  method: "GET",
+  handler: async (request: Request, h: ResponseToolkit) => {
+    const taskId = request.params.id;
+    try {
+      const task = await getTaskById(taskId);
+
+      if (!task.success || !task.data) {
+        return h.response({ message: "Task not found" }).code(404);
+      }
+
+      const { title, description } = task.data;
+      return { title, description };
+    } catch {
+      return h.response({ message: "Server Error" }).code(500);
+    }
+    
+  },
+  config: {
+    auth: false,
+    tags: ["api", "Public", "Task"],
+    notes: "Public metadata endpoint for task"
   }
 });
 

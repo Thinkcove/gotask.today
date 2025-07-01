@@ -62,26 +62,68 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     return isNaN(numericValue) ? 0 : numericValue;
   };
 
-  // Helper function to check if dates overlap
-  const datesOverlap = (start1: string, end1: string, start2: string, end2: string): boolean => {
-    const s1 = new Date(start1);
-    const e1 = new Date(end1);
-    const s2 = new Date(start2);
-    const e2 = new Date(end2);
+  // Fixed date normalization function
+  const normalizeDate = (dateString: string): Date => {
+    const date = new Date(dateString);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  };
 
-    return s1 <= e2 && s2 <= e1;
+  // Improved date overlap function with proper date normalization
+  const datesOverlap = (
+    firstLeaveStart: string,
+    firstLeaveEnd: string,
+    secondLeaveStart: string,
+    secondLeaveEnd: string
+  ): boolean => {
+    try {
+      const firstLeaveStartDate = new Date(firstLeaveStart);
+      const firstLeaveEndDate = new Date(firstLeaveEnd);
+      const secondLeaveStartDate = new Date(secondLeaveStart);
+      const secondLeaveEndDate = new Date(secondLeaveEnd);
+
+      // Check if all dates are valid
+      if (
+        isNaN(firstLeaveStartDate.getTime()) ||
+        isNaN(firstLeaveEndDate.getTime()) ||
+        isNaN(secondLeaveStartDate.getTime()) ||
+        isNaN(secondLeaveEndDate.getTime())
+      ) {
+        return false;
+      }
+
+      return firstLeaveStartDate <= secondLeaveEndDate && secondLeaveStartDate <= firstLeaveEndDate;
+    } catch (error) {
+      console.error("Error in date overlap check:", error);
+      return false;
+    }
+  };
+
+  // Helper function to check if a task falls within the date range
+  const isTaskInDateRange = (task: WorkPlannedEntry): boolean => {
+    if (!task.start_date || !task.end_date) {
+      // If task has no dates, include it (you might want to change this logic)
+      return true;
+    }
+
+    return datesOverlap(task.start_date, task.end_date, fromDate, toDate);
   };
 
   // Helper function to get leaves for a user within the date range
   const getUserLeavesInRange = (userId: string): LeaveEntry[] => {
     return leaves.filter(
       (leave) =>
-        leave.user_id === userId && datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
+        leave.user_id === userId &&
+        leave.from_date &&
+        leave.to_date &&
+        datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
     );
   };
 
-  // Group data by user
-  const groupedData: GroupedTasks = data.reduce((acc, entry) => {
+  // Filter data by date range BEFORE grouping
+  const filteredData = data.filter(isTaskInDateRange);
+
+  // Group filtered data by user
+  const groupedData: GroupedTasks = filteredData.reduce((acc, entry) => {
     const userKey = entry.user_id || "unknown";
     const userName = entry.user_name || "Unknown User";
 
@@ -100,9 +142,13 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     return acc;
   }, {} as GroupedTasks);
 
-  // Add users who only have leaves but no tasks
+  // Add users who only have leaves but no tasks (within date range)
   leaves.forEach((leave) => {
-    if (datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)) {
+    if (
+      leave.from_date &&
+      leave.to_date &&
+      datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
+    ) {
       const userKey = leave.user_id;
       if (!groupedData[userKey]) {
         groupedData[userKey] = {
@@ -115,28 +161,29 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     }
   });
 
-  // Helper function to get leave type color
-
-  if (!data || data.length === 0) {
-    // Check if there are any leaves to show
-    const leavesInRange = leaves.filter((leave) =>
+  // Check if there's any data to display
+  const hasFilteredTasks = filteredData.length > 0;
+  const leavesInRange = leaves.filter(
+    (leave) =>
+      leave.from_date &&
+      leave.to_date &&
       datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
-    );
+  );
+  const hasLeavesInRange = leavesInRange.length > 0;
 
-    if (leavesInRange.length === 0) {
-      return (
-        <Box sx={{ p: 4, textAlign: "center" }}>
-          <Typography variant="h6" color="textSecondary">
-            {transworkplanned("nodata")}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-            {transworkplanned("date")}
-            <FormattedDateTime date={fromDate} /> {transworkplanned("to")}{" "}
-            <FormattedDateTime date={toDate} />
-          </Typography>
-        </Box>
-      );
-    }
+  if (!hasFilteredTasks && !hasLeavesInRange) {
+    return (
+      <Box sx={{ p: 4, textAlign: "center" }}>
+        <Typography variant="h6" color="textSecondary">
+          {transworkplanned("nodata")}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+          {transworkplanned("date")}
+          <FormattedDateTime date={fromDate} /> {transworkplanned("to")}{" "}
+          <FormattedDateTime date={toDate} />
+        </Typography>
+      </Box>
+    );
   }
 
   return (
@@ -260,7 +307,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
             {Object.entries(groupedData).map(([userKey, userGroup]) => {
               const { userName, tasks, totalEstimation } = userGroup;
               const totalRows = Math.max(tasks.length, 1);
-              const userLeaves = leaves.filter((leave) => leave.user_id === userKey);
+              const userLeaves = getUserLeavesInRange(userKey);
 
               return Array.from({ length: totalRows }, (_, index) => {
                 const task = tasks[index];
@@ -316,8 +363,8 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                         {userLeaves.length > 0 ? (
                           <Box display="flex" flexDirection="column" gap={1}>
                             {userLeaves.map((leave, leaveIndex) => {
-                              const leaveFrom = new Date(leave.from_date);
-                              const leaveTo = new Date(leave.to_date);
+                              const leaveFrom = normalizeDate(leave.from_date);
+                              const leaveTo = normalizeDate(leave.to_date);
                               const days =
                                 Math.ceil((leaveTo.getTime() - leaveFrom.getTime()) / MS_IN_A_DAY) +
                                 1;
@@ -494,4 +541,5 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     </Box>
   );
 };
+
 export default WorkPlannedCalendarGrid;

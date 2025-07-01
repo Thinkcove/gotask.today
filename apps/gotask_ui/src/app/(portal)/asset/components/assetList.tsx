@@ -142,7 +142,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           asset.os,
           asset.processor,
           asset.seller,
-          asset.antivirus,
           asset.recoveryKey,
           asset.assetType?.name
         ]

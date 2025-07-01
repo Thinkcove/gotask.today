@@ -60,7 +60,7 @@ export interface IAssetAttributes {
   active?: boolean;
   createdBy?: string;
   updatedBy?: string;
-  antivirus?: string;
+  antivirus?: boolean;
   recoveryKey?: string;
   isEncrypted?: boolean;
   lastServicedDate?: string | Date;

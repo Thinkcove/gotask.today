@@ -37,8 +37,7 @@ function ProjectGoalList() {
   const { projectId } = useParams();
 
   const { user } = useUser();
-  console.log("user in project goal list:", user);
-  
+
   const projectID = projectId as string;
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -259,7 +258,6 @@ function ProjectGoalList() {
   const [projectGoalView, setprojectGoalView] = useState<
     (GoalData & { comments: GoalComment[] }) | null
   >(null);
-console.log("projectGoalView:", projectGoalView);
 
   const handelProjectGoalView = async (goalId: string) => {
     try {

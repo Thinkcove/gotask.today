@@ -11,7 +11,7 @@ export interface GoalComment {
 }
 
 export interface ProjectGoalViewProps {
-  goalData: any;
+  goalData: (GoalData & { comments: GoalComment[] }) | null;
   user: User | null;
   loading?: boolean;
   handleSaveComment: (commentData: {
@@ -56,13 +56,16 @@ export interface ProjectGoalsProps {
 export interface GoalData {
   goalTitle: string;
   description: string;
-  weekStart: string;
-  weekEnd: string;
+  weekStart: string | Date;
+  weekEnd: string | Date;
   status: string;
   priority: string;
   projectId?: string;
   user_id?: string;
   id?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  comments?: GoalComment[];
 }
 
 export interface GoalDataPayload {

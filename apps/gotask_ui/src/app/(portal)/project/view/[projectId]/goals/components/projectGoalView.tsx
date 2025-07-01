@@ -23,7 +23,6 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
 }) => {
   const comments: GoalComment[] = goalData?.comments || [];
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
-console.log("user in project goal view:", user);
 
   if (loading || !goalData) {
     return (
@@ -100,13 +99,13 @@ console.log("user in project goal view:", user);
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label="Created"
-                value={<FormattedDateTime date={goalData.createdAt} />}
+                value={goalData.createdAt && <FormattedDateTime date={goalData.createdAt} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label="Updated"
-                value={<FormattedDateTime date={goalData.updatedAt} />}
+                value={goalData.updatedAt && <FormattedDateTime date={goalData.updatedAt} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>

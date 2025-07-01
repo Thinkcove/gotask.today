@@ -10,7 +10,13 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { IAssetAttributes } from "../interface/asset";
-import { getAssetColumns, IAssetDisplayRow, issueStatuses } from "../assetConstants";
+import {
+  getAssetColumns,
+  IAssetDisplayRow,
+  issueStatuses,
+  NOT_UTILIZED,
+  OVERUTILIZED
+} from "../assetConstants";
 import AssetIssueCards from "../createIssues/issuesCard";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
@@ -167,10 +173,10 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       const matchAssetAllocation =
         assetAllocationFilter.length === 0 ||
         assetAllocationFilter.some((option) => {
-          if (option === "Overutilized") {
+          if (option === OVERUTILIZED) {
             return Number(asset.userAssetCount) > 1;
           }
-          if (option === "Not utilized") {
+          if (option === NOT_UTILIZED) {
             return !asset.tagData?.some((tag) => !!tag.user?.name);
           }
           return true;

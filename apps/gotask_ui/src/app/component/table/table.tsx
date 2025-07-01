@@ -16,6 +16,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { PAGE_OPTIONS } from "./tableConstants";
+import { ASC, DESC } from "@/app/(portal)/asset/assetConstants";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -144,7 +145,7 @@ const CustomTable = <T extends object>({
 
   const handleRequestSort = (property: keyof T | string) => {
     const isAsc = orderBy === property && order === "asc";
-    const newOrder = isAsc ? "desc" : "asc";
+    const newOrder = isAsc ? DESC : ASC;
     setOrder(newOrder);
     setOrderBy(property);
 
@@ -179,7 +180,7 @@ const CustomTable = <T extends object>({
     };
 
     const comparator =
-      order === "desc"
+      order === DESC
         ? (a: T, b: T) => descendingComparator(a, b, orderBy)
         : (a: T, b: T) => -descendingComparator(a, b, orderBy);
 

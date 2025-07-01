@@ -195,8 +195,14 @@ export const CREATED_AT = "createdAt";
 
 export const DESC = "desc";
 
+export const ASC = "asc";
+
 export const ALLOCATION = ["Overutilized", "Not utilized"];
 
 export const VISIBLE = "visible";
 
 export const HIDDEN = "hidden";
+
+export const OVERUTILIZED = "Overutilized";
+
+export const NOT_UTILIZED = "Not utilized";

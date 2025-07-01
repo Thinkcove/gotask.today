@@ -6,7 +6,9 @@ export enum NotificationChannel {
 
 export enum NotificationType {
   TASK_ASSIGNED = "taskAssigned",
-  WORKLOG_REMINDER = "worklogReminder",
+  TASK_UPDATED = "taskUpdated", 
   COMMENT_ADDED = "commentAdded",
+  COMMENT_UPDATED = "commentUpdated", 
+  WORKLOG_REMINDER = "worklogReminder",
   LEAVE_APPROVED = "leaveApproved"
 }

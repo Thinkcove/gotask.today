@@ -21,14 +21,17 @@ import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 class TaskController extends BaseController {
   // Create Task
   async createTask(requestHelper: RequestHelper, handler: any) {
-    try {
-      const taskData = requestHelper.getPayload();
-      const newTask = await createTask(taskData);
-      return this.sendResponse(handler, newTask);
-    } catch (error) {
-      return this.replyError(error, handler);
-    }
+  try {
+    const taskData = requestHelper.getPayload();
+    const loginUser = requestHelper.getUser();
+
+    const newTask = await createTask(taskData, loginUser); 
+    return this.sendResponse(handler, newTask);
+  } catch (error) {
+    return this.replyError(error, handler);
   }
+}
+
 
   //delete task
   async deleteTask(requestHelper: RequestHelper, handler: any) {

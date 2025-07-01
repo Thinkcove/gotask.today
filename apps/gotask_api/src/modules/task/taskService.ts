@@ -20,10 +20,11 @@ import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 import { sendNotification } from "../notifications/notificationHandler";
 import { NotificationChannel, NotificationType } from "../notifications/notification.enum";
-import { formatNotificationMessage } from "../notifications/notification.utils";
+import { formatNotificationMessage } from "../notifications/formatNotificationMessage";
 
 const createTask = async (
-  taskData: Partial<ITask>
+  taskData: Partial<ITask>,
+  loginUser: any
 ): Promise<{ success: boolean; data?: ITask; message?: string }> => {
   try {
     if (!taskData || !taskData.title || !taskData.project_id) {
@@ -41,7 +42,9 @@ const createTask = async (
         taskTitle: newTask.title || "",
         assigneeName: newTask.user_name || "",
         projectName: newTask.project_name || "",
-        dueDate: newTask.due_date ? new Date(newTask.due_date).toLocaleDateString() : ""
+        dueDate: newTask.due_date ? new Date(newTask.due_date).toLocaleDateString() : "",
+        taskLink: `<frontend_url>/tasks/${newTask.id}`,
+        createdBy: loginUser?.name 
       });
 
       await sendNotification({
@@ -65,6 +68,8 @@ const createTask = async (
     };
   }
 };
+
+
 
 
 
@@ -441,6 +446,23 @@ const updateTask = async (
         message: TaskMessages.UPDATE.NOT_FOUND
       };
     }
+
+    if (updatedTask.user_id) {
+      const { title, message } = formatNotificationMessage(NotificationType.TASK_UPDATED, {
+        taskTitle: updatedTask.title || "",
+        projectName: updatedTask.project_name || "",
+      });
+
+      await sendNotification({
+        userId: updatedTask.user_id,
+        title,
+        message,
+        referenceId: updatedTask.id,
+        type: NotificationType.TASK_UPDATED,
+        channels: [NotificationChannel.EMAIL]
+      });
+    }
+
     return {
       success: true,
       data: updatedTask
@@ -453,12 +475,31 @@ const updateTask = async (
   }
 };
 
+
 // Create a new comment for a task
 const createComment = async (
   commentData: ITaskComment
 ): Promise<{ success: boolean; data?: ITaskComment; message?: string }> => {
   try {
     const newComment = await createCommentInTask(commentData);
+
+    const task = await findTaskById(commentData.task_id);
+    if (task?.user_id) {
+      const { title, message } = formatNotificationMessage(NotificationType.COMMENT_ADDED, {
+        taskTitle: task.title || "",
+        commenter: commentData.user_name
+      });
+
+      await sendNotification({
+        userId: task.user_id,
+        title,
+        message,
+        referenceId: task.id,
+        type: NotificationType.COMMENT_ADDED,
+        channels: [NotificationChannel.EMAIL]
+      });
+    }
+
     return {
       success: true,
       data: newComment
@@ -484,6 +525,24 @@ const updateComment = async (
         message: TaskMessages.COMMENT.NOT_FOUND
       };
     }
+
+    const task = await findTaskById(updatedComment.task_id);
+    if (task?.user_id) {
+      const { title, message } = formatNotificationMessage(NotificationType.COMMENT_UPDATED, {
+        taskTitle: task.title || "",
+        commenter: updatedComment.user_name
+      });
+
+      await sendNotification({
+        userId: task.user_id,
+        title,
+        message,
+        referenceId: task.id,
+        type: NotificationType.COMMENT_UPDATED,
+        channels: [NotificationChannel.EMAIL]
+      });
+    }
+
     return {
       success: true,
       data: updatedComment

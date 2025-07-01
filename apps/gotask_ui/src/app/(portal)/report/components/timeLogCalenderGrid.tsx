@@ -17,7 +17,7 @@ import {
   GroupedLogs,
   LeaveEntry,
   TaskLog,
-  TimeLogEntry,
+  TimeLogEntry
 } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -26,7 +26,8 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
-import { getLeaveTypeColor } from "@/app/common/constants/leave";
+import { getLeaveTypeColor, LeaveBackgroundColor } from "@/app/common/constants/leave";
+import DateFormats from "@/app/component/dateTime/dateFormat";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -55,7 +56,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
   const dateRange = getDateRange(fromDate, toDate);
 
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
-
   // Handle leave data properly
   let leaves: LeaveEntry[] = [];
   if (leaveData && leaveData.length > 0) {
@@ -111,7 +111,9 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
     const task = entry.task_title || transreport("notask");
 
     // Use consistent date format
-    const date = isValid(parseISO(entry.date)) ? format(parseISO(entry.date), "yyyy-MM-dd") : null;
+    const date = isValid(parseISO(entry.date))
+      ? format(parseISO(entry.date), DateFormats.ISO_DATE)
+      : null;
     if (!date) return acc;
 
     const timeLogged = extractHours(entry.total_time_logged || []);
@@ -319,7 +321,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                       </TableCell>
                     )}
                     {dateRange.map((date) => {
-                      const key = format(date, "yyyy-MM-dd");
+                      const key = format(date, DateFormats.ISO_DATE);
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
 
                       return (
@@ -330,7 +332,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                             textAlign: "center" as const,
                             border: "1px solid #eee",
                             backgroundColor: leaveForDate
-                              ? getLeaveTypeColor(leaveForDate.leave_type) + "20"
+                              ? getLeaveTypeColor(leaveForDate.leave_type) +
+                                LeaveBackgroundColor.num
                               : "transparent"
                           }}
                         >
@@ -442,7 +445,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
 
                     {dateRange.map((date) => {
                       // FIXED: Consistent date formatting
-                      const key = format(date, "yyyy-MM-dd");
+                      const key = format(date, DateFormats.ISO_DATE);
                       const value = taskEntry.dailyLogs[key];
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
 
@@ -454,7 +457,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                             textAlign: "center" as const,
                             border: "1px solid #eee",
                             backgroundColor: leaveForDate
-                              ? getLeaveTypeColor(leaveForDate.leave_type) + "20"
+                              ? getLeaveTypeColor(leaveForDate.leave_type) +
+                                LeaveBackgroundColor.num
                               : "transparent"
                           }}
                         >

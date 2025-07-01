@@ -8,3 +8,8 @@ export const getLeaveTypeColor = (leaveType: string): string => {
       return "#9c27b0";
   }
 };
+
+export const LeaveBackgroundColor = {
+  num:"20"// Light orange with transparency
+
+};

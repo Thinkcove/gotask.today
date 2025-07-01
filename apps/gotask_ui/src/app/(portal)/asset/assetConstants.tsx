@@ -94,13 +94,11 @@ export const getAssetColumns = (
   },
   {
     id: "modelName",
-    align: "center" as const,
     label: transasset("model"),
     render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
   {
     id: "purchaseDate",
-    align: "center" as const,
     label: transasset("purchaseDate"),
     render: (value: string | boolean | undefined) =>
       typeof value === "string" && !isNaN(Date.parse(value)) ? (
@@ -111,7 +109,6 @@ export const getAssetColumns = (
   },
   {
     id: "user",
-    align: "center" as const,
     label: transasset("assignedTo"),
     render: (_value: unknown, row: IAssetDisplayRow) => {
       const userDisplay = Array.isArray(row.user)
@@ -124,7 +121,7 @@ export const getAssetColumns = (
       const isOverloaded = !isNaN(userAssetCount) && userAssetCount > 1;
 
       return (
-        <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
+        <Box display="flex" alignItems="center" gap={1}>
           <Typography whiteSpace="nowrap">{userDisplay}</Typography>
           <Box sx={{ visibility: isOverloaded ? VISIBLE : HIDDEN }}>
             <Tooltip

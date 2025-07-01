@@ -58,6 +58,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
 
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
 
+  // Handle leave data properly
   let leaves: LeaveEntry[] = [];
   if (leaveData && leaveData.length > 0) {
     leaves = leaveData;
@@ -87,12 +88,10 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
     return checkDate >= fromDate && checkDate <= toDate;
   };
 
-  // FIXED: Helper function to get leave details for a specific user and date
   const getLeaveForUserAndDate = (userId: string, date: string): LeaveEntry | null => {
     const leave = leaves.find((leave) => {
       const userMatches = leave.user_id === userId;
       const dateInRange = isDateInLeave(date, leave.from_date, leave.to_date);
-
       return userMatches && dateInRange;
     });
 
@@ -107,14 +106,14 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
     return fromTimeLogs || "";
   };
 
+  // FIXED: Ensure consistent date formatting throughout
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
     const project = entry.project_name || transreport("noproject");
     const task = entry.task_title || transreport("notask");
 
-    const date = isValid(parseISO(entry.date))
-      ? format(parseISO(entry.date), DateFormats.ISO_DATE)
-      : null;
+    // Use consistent date format
+    const date = isValid(parseISO(entry.date)) ? format(parseISO(entry.date), "yyyy-MM-dd") : null;
     if (!date) return acc;
 
     const timeLogged = extractHours(entry.total_time_logged || []);
@@ -269,7 +268,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                 1
               );
 
-              // FIXED: Use the improved getUserId function
               const userId = getUserId(user);
               let userRowRendered = false;
 
@@ -323,7 +321,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                       </TableCell>
                     )}
                     {dateRange.map((date) => {
-                      // FIXED: Use consistent date formatting
                       const key = format(date, "yyyy-MM-dd");
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
 
@@ -446,7 +443,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                     )}
 
                     {dateRange.map((date) => {
-                      // FIXED: Use consistent date formatting
+                      // FIXED: Consistent date formatting
                       const key = format(date, "yyyy-MM-dd");
                       const value = taskEntry.dailyLogs[key];
                       const leaveForDate = getLeaveForUserAndDate(userId, key);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
@@ -177,6 +177,7 @@ function ProjectGoalList() {
     } catch (error) {
       console.error("Error fetching goal for edit:", error);
     }
+    setErrors({}); // Reset errors when opening the dialog
   };
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -363,10 +364,6 @@ function ProjectGoalList() {
     setTimeout(() => router.back(), 200);
   };
 
-  const handleBack = () => {
-    setOpenDialog(false);
-    setprojectGoalView(null);
-  };
 
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
@@ -426,7 +423,7 @@ function ProjectGoalList() {
               gap={2}
             >
               {/* Left section: Back arrow + Search */}
-              <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+              <Box display="flex" pl={1} alignItems="center" gap={2} flexWrap="wrap">
                 <IconButton color="primary" onClick={handleGoBack}>
                   <ArrowBack />
                 </IconButton>

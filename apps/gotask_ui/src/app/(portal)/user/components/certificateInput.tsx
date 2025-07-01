@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, TextField, IconButton, Button, Paper, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
@@ -10,17 +10,24 @@ import { useTranslations } from "next-intl";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import {
+  getUserCertificates,
+  addUserCertificates,
+  updateUserCertificate,
+  deleteUserCertificate
+} from "../services/userAction";
 
 interface CertificateInputProps {
   userId: string;
-  certificates: ICertificate[];
-  onChange: (updated: ICertificate[]) => void;
 }
 
-const CertificateInput: React.FC<CertificateInputProps> = ({ certificates, onChange }) => {
+const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
   const trans = useTranslations("User");
   const transuser = useTranslations("User.Certificate");
   const transInc = useTranslations("User.Increment");
+
+  const [certificates, setCertificates] = useState<ICertificate[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -29,6 +36,16 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ certificates, onCha
 
   const emptyCert: ICertificate = { name: "", obtained_date: "", notes: "" };
   const [tempCert, setTempCert] = useState<ICertificate>(emptyCert);
+
+  // Load certificates on mount
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      const data = await getUserCertificates(userId);
+      setCertificates(data);
+      setLoading(false);
+    };
+    fetchCertificates();
+  }, [userId]);
 
   const openAddDialog = () => {
     setTempCert(emptyCert);
@@ -42,26 +59,36 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ certificates, onCha
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!tempCert.name || !tempCert.obtained_date) return;
 
-    const updated = [...certificates];
     if (currentEditIndex !== null) {
-      updated[currentEditIndex] = tempCert;
+      const result = await updateUserCertificate(userId, currentEditIndex, tempCert);
+      if (result?.success) {
+        const updated = [...certificates];
+        updated[currentEditIndex] = tempCert;
+        setCertificates(updated);
+      }
     } else {
-      updated.unshift(tempCert);
+      const result = await addUserCertificates(userId, [tempCert]);
+      if (result?.success) {
+        const updated = [tempCert, ...certificates];
+        setCertificates(updated);
+      }
     }
 
-    onChange(updated);
     setDialogOpen(false);
     setTempCert(emptyCert);
     setCurrentEditIndex(null);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteIndex !== null) {
-      const updated = certificates.filter((_, i) => i !== deleteIndex);
-      onChange(updated);
+      const result = await deleteUserCertificate(userId, deleteIndex);
+      if (result?.success) {
+        const updated = certificates.filter((_, i) => i !== deleteIndex);
+        setCertificates(updated);
+      }
     }
     setDeleteIndex(null);
     setConfirmOpen(false);
@@ -92,8 +119,9 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ certificates, onCha
       </Box>
 
       {/* List of Certificates */}
-
-      {certificates.length === 0 ? (
+      {loading ? (
+        <Typography>{trans("loading")}</Typography>
+      ) : certificates.length === 0 ? (
         <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
           {transuser("nocertifications")}
         </Paper>
@@ -111,7 +139,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ certificates, onCha
                   border: "1px solid #e0e0e0"
                 }}
               >
-                {/* Left - Info */}
                 <Box display="flex" gap={2}>
                   <Box
                     sx={{
@@ -150,7 +177,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ certificates, onCha
                   </Box>
                 </Box>
 
-                {/* Right - Actions */}
                 <Box>
                   <IconButton onClick={() => openEditDialog(index)}>
                     <EditIcon fontSize="small" />

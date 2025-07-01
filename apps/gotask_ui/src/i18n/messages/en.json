@@ -492,13 +492,14 @@
     "noprojects": "No projects assigned yet.",
     "noassets": "No assets assigned yet.",
     "months": "Months",
+    "editskill": "Edit Skill",
 
     "Certificate": {
       "certificate": "Certificate",
       "certificates": "Certificates",
       "certificatename": " Certificate Name",
       "obtaineddate": "Obtained Date",
-      "obtained": " Obtained : ",
+      "obtained": " Obtained  ",
       "notes": " Notes",
       "addcertificate": "Add Certificate",
       "editcertificate": "Edit Certificate",
@@ -517,6 +518,7 @@
       "ctc": "CTC",
       "addnew": "Add Increment",
       "add": "Add",
+      "change":"Salary Growth ( % )",
       "noincrements": "No increments added yet.",
       "ctcgrowth": "CTC Growth Over Time",
       "confirmdelete": "Confirm Delete",

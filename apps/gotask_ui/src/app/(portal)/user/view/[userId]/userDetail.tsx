@@ -24,6 +24,8 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import SkillInput from "../../components/skillInput";
+import CertificateInput from "../../components/certificateInput";
+import IncrementInput from "../../components/incrementInput";
 
 interface UserDetailProps {
   user: User;
@@ -39,6 +41,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const router = useRouter();
   const { userId } = useParams();
   const userID = userId as string;
+  const [localSkills, setLocalSkills] = useState(user.skills ?? []);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -213,13 +216,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {/* Skills */}
           {selectedTab === transuser("userskill") && (
-            <Box>
-              <SkillInput
-                userId={userID}
-                skills={user.skills ?? []} 
-                onChange={(updatedSkills) => mutate({ ...user, skills: updatedSkills }, false)}
-              />
-            </Box>
+            <SkillInput
+              userId={userID}
+              skills={user.skills ?? []}
+              onChange={(updatedSkills) => {
+                mutate({ ...user, skills: updatedSkills }, false);
+              }}
+            />
           )}
 
           {/* Projects */}
@@ -363,112 +366,19 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {selectedTab === transuser("Certificate.certificate") && (
             <Box>
-              {user.certificates && user.certificates.length > 0 ? (
-                <Grid container spacing={2}>
-                  {user.certificates.map((cert, idx) => (
-                    <Grid item xs={12} sm={6} md={4} key={idx}>
-                      <Box sx={{ border: "1px solid #ccc", borderRadius: 2, p: 2 }}>
-                        <Typography fontWeight={600}>{cert.name}</Typography>
-
-                        <Typography fontSize={12} color="text.secondary">
-                          {transuser("Certificate.obtaineddate")}:{" "}
-                          {cert.obtained_date ? (
-                            <FormattedDateTime
-                              date={cert.obtained_date}
-                              format={DateFormats.MONTH_YEAR}
-                            />
-                          ) : (
-                            "N/A"
-                          )}
-                        </Typography>
-                        {cert.notes && (
-                          <Typography variant="body2" color="text.secondary" mt={0.5}>
-                            {cert.notes}
-                          </Typography>
-                        )}
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
-              ) : (
-                <Typography color="text.secondary" fontStyle="italic">
-                  {transcertificate("nocertifications")}
-                </Typography>
-              )}
+              <CertificateInput userId={userID} />
             </Box>
           )}
+
           {selectedTab === transuser("Increment.incrementhistory") && (
-            <Box mt={3}>
-              <Typography fontWeight={600} fontSize={16} mb={2} px={2}>
-                {transuser("Increment.salaryrevisionlog")}
-              </Typography>
-
-              <Box
-                sx={{
-                  maxHeight: "calc(100vh - 300px)",
-                  overflowX: "auto",
-                  px: 2,
-                  pb: 2,
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 2,
-                  scrollbarWidth: "thin",
-                  "&::-webkit-scrollbar": { height: "6px" },
-                  "&::-webkit-scrollbar-thumb": { backgroundColor: "#ccc" }
+            <Box>
+              <IncrementInput
+                userId={userID}
+                increment_history={user.increment_history ?? []}
+                onChange={(updated) => {
+                  mutate({ ...user, increment_history: updated }, false);
                 }}
-              >
-                {user.increment_history && user.increment_history.length > 0 ? (
-                  <Grid container spacing={2} px={2}>
-                    {[...user.increment_history]
-                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                      .map((inc, idx, arr) => {
-                        const previous = arr[idx + 1];
-                        const percentChange = previous
-                          ? (((inc.ctc - previous.ctc) / previous.ctc) * 100).toFixed(2)
-                          : null;
-
-                        const dateObj = new Date(inc.date);
-                        const monthYear = dateObj.toLocaleDateString("en-IN", {
-                          month: "short",
-                          year: "numeric"
-                        });
-                        const fullDate = dateObj.toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric"
-                        });
-
-                        return (
-                          <Grid item xs={12} sm={6} md={3} key={idx}>
-                            <Box
-                              sx={{
-                                borderLeft: idx % 4 !== 0 ? "1px solid #e0e0e0" : "none",
-                                pl: idx % 4 !== 0 ? 2 : 0
-                              }}
-                            >
-                              <Typography fontSize={12} color="text.secondary">
-                                {monthYear}
-                              </Typography>
-                              <Typography fontSize={13}>{fullDate}</Typography>
-                              <Typography fontSize={13}>
-                                ₹{inc.ctc.toLocaleString("en-IN")} L{" "}
-                                {percentChange && (
-                                  <span style={{ color: "green", marginLeft: 4 }}>
-                                    ↑ {percentChange}%
-                                  </span>
-                                )}
-                              </Typography>
-                            </Box>
-                          </Grid>
-                        );
-                      })}
-                  </Grid>
-                ) : (
-                  <Typography color="text.secondary" fontStyle="italic" px={2}>
-                    {transuser("Increment.noincrements")}
-                  </Typography>
-                )}
-              </Box>
+              />
             </Box>
           )}
         </Box>

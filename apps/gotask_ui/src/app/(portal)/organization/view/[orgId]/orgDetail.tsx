@@ -179,7 +179,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
                       }}
                       onClick={() => {
                         if (hasProjectView) {
-                          router.push(`/project/viewProject/${project.id}`);
+                          router.push(`/project/view/${project.id}`);
                         }
                       }}
                     >

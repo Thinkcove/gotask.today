@@ -1,8 +1,11 @@
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Column } from "@/app/component/table/table";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import { isBefore, isAfter, addDays } from "date-fns";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import Tooltip from "@mui/material/Tooltip";
 
 export interface IAssetDisplayRow {
   id?: string;
@@ -13,6 +16,7 @@ export interface IAssetDisplayRow {
   users: string;
   encrypted?: boolean;
   warrantyDate?: string;
+  previouslyUsedBy?: string;
 }
 
 export const getAssetColumns = (
@@ -36,12 +40,54 @@ export const getAssetColumns = (
   {
     id: "warrantyDate",
     label: transasset("warrantyDate"),
-    render: (value: string | boolean | undefined) =>
-      typeof value === "string" && !isNaN(Date.parse(value)) ? (
-        <FormattedDateTime date={value} />
-      ) : (
-        "-"
-      )
+    render: (value: string | boolean | undefined) => {
+      if (typeof value === "string" && !isNaN(Date.parse(value))) {
+        const warrantyDate = new Date(value);
+        const today = new Date();
+
+        const isExpired = isBefore(warrantyDate, today);
+        const within10Days =
+          isAfter(warrantyDate, today) && isBefore(warrantyDate, addDays(today, 10));
+
+        const showWarning = isExpired || within10Days;
+        const label = isExpired
+          ? transasset("expired")
+          : within10Days
+            ? transasset("expiringon")
+            : "";
+
+        return (
+          <Box display="flex" alignItems="center" gap={1}>
+            <Typography whiteSpace="nowrap">
+              <FormattedDateTime date={value} />
+            </Typography>
+
+            {showWarning && (
+              <Tooltip
+                placement="top"
+                title={
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    {label}&nbsp;
+                    <FormattedDateTime date={value} />
+                  </Typography>
+                }
+              >
+                <WarningAmberIcon
+                  fontSize="small"
+                  sx={{
+                    cursor: "default",
+                    color: isExpired ? "#D32F2F" : "#ED6C02",
+                    verticalAlign: "middle"
+                  }}
+                />
+              </Tooltip>
+            )}
+          </Box>
+        );
+      }
+
+      return "-";
+    }
   },
   {
     id: "modelName",
@@ -59,6 +105,12 @@ export const getAssetColumns = (
       ) : (
         "-"
       )
+  },
+  {
+    id: "previouslyUsedBy",
+    align: "center" as const,
+    label: transasset("previouslyused"),
+    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
   {
     id: "users",
@@ -109,3 +161,5 @@ export const commonIssueTypes = [
 ];
 
 export const issueStatuses = ["Open", "InProgress", "Resolved"];
+
+export const systemTypeOptions = ["Office System", "Personal System"];

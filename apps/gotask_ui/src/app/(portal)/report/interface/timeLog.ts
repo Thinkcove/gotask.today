@@ -7,6 +7,7 @@ export interface TimeLogEntry {
   task_id: string;
   date: string;
   total_time_logged: string[];
+  user_id?: string;
 }
 
 export interface TimeLogGridProps {
@@ -29,4 +30,21 @@ export interface TaskLog {
   dailyLogs: Record<string, number>;
   taskId: string;
   status: string;
+}
+
+export interface LeaveEntry {
+  user_id: string;
+  user_name: string;
+  from_date: string;
+  to_date: string;
+  leave_type: string;
+  id: string;
+  created_on: string;
+  updated_on: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EnhancedTimeLogGridProps extends TimeLogGridProps {
+  leaveData?: LeaveEntry[];
 }

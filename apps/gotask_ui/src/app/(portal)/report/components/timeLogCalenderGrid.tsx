@@ -12,12 +12,22 @@ import {
   Typography
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
-import { GroupedLogs, TaskLog, TimeLogEntry, TimeLogGridProps } from "../interface/timeLog";
+import {
+  EnhancedTimeLogGridProps,
+  GroupedLogs,
+  LeaveEntry,
+  TaskLog,
+  TimeLogEntry
+} from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { extractHours } from "@/app/common/utils/taskTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
+import useSWR from "swr";
+import { fetchAllLeaves } from "../../project/services/projectAction";
+import { getLeaveTypeColor, LeaveBackgroundColor } from "@/app/common/constants/leave";
+import DateFormats from "@/app/component/dateTime/dateFormat";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -34,22 +44,76 @@ const headerCellStyle = {
 const getDateRange = (from: string, to: string) =>
   eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
 
-const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
+const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
   data,
   fromDate,
   toDate,
   showTasks,
-  selectedProjects = []
+  selectedProjects = [],
+  leaveData
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const dateRange = getDateRange(fromDate, toDate);
 
+  const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
+  // Handle leave data properly
+  let leaves: LeaveEntry[] = [];
+  if (leaveData && leaveData.length > 0) {
+    leaves = leaveData;
+  } else if (leaveResponse) {
+    leaves = leaveResponse.data || leaveResponse;
+  }
+
+  const datesOverlap = (
+    firstLeaveStart: string,
+    firstLeaveEnd: string,
+    secondLeaveStart: string,
+    secondLeaveEnd: string
+  ): boolean => {
+    const firstStart = firstLeaveStart.split("T")[0];
+    const firstEnd = firstLeaveEnd.split("T")[0];
+    const secondStart = secondLeaveStart.split("T")[0];
+    const secondEnd = secondLeaveEnd.split("T")[0];
+
+    return firstStart <= secondEnd && secondStart <= firstEnd;
+  };
+
+  const isDateInLeave = (date: string, leaveFromDate: string, leaveToDate: string): boolean => {
+    const checkDate = date.split("T")[0];
+    const fromDate = leaveFromDate.split("T")[0];
+    const toDate = leaveToDate.split("T")[0];
+
+    return checkDate >= fromDate && checkDate <= toDate;
+  };
+
+  const getLeaveForUserAndDate = (userId: string, date: string): LeaveEntry | null => {
+    const leave = leaves.find((leave) => {
+      const userMatches = leave.user_id === userId;
+      const dateInRange = isDateInLeave(date, leave.from_date, leave.to_date);
+      return userMatches && dateInRange;
+    });
+
+    return leave || null;
+  };
+
+  const getUserId = (userName: string): string => {
+    const fromLeaves = leaves.find((l) => l.user_name === userName)?.user_id;
+    if (fromLeaves) return fromLeaves;
+
+    const fromTimeLogs = data.find((d) => d.user_name === userName)?.user_id;
+    return fromTimeLogs || "";
+  };
+
+  // FIXED: Ensure consistent date formatting throughout
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
     const project = entry.project_name || transreport("noproject");
     const task = entry.task_title || transreport("notask");
 
-    const date = isValid(parseISO(entry.date)) ? format(parseISO(entry.date), "yyyy-MM-dd") : null;
+    // Use consistent date format
+    const date = isValid(parseISO(entry.date))
+      ? format(parseISO(entry.date), DateFormats.ISO_DATE)
+      : null;
     if (!date) return acc;
 
     const timeLogged = extractHours(entry.total_time_logged || []);
@@ -87,6 +151,16 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
     });
   });
 
+  // Add users who have leaves but no time logs
+  leaves.forEach((leave) => {
+    if (datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)) {
+      const userName = leave.user_name;
+      if (!groupedByUser[userName]) {
+        groupedByUser[userName] = {};
+      }
+    }
+  });
+
   const totalTimePerUser: Record<string, number> = {};
   Object.entries(groupedByUser).forEach(([user, projects]) => {
     totalTimePerUser[user] = 0;
@@ -114,7 +188,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
       )}
 
       <TableContainer component={Paper} sx={{ maxHeight: 640 }}>
-        <Table stickyHeader size="small" sx={{ minWidth: 1000 }}>
+        <Table stickyHeader size="small" sx={{ minWidth: 1200 }}>
           <TableHead>
             <TableRow>
               <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
@@ -130,6 +204,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
               >
                 {transreport("totalworklog")}
               </TableCell>
+
               {selectedProjects.length > 0 && (
                 <TableCell rowSpan={2} sx={{ ...headerCellStyle, top: 0 }}>
                   {transreport("showproject")}
@@ -188,7 +263,107 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
           <TableBody>
             {Object.entries(groupedByUser).map(([user, projects]) => {
               const projectEntries = Object.entries(projects);
+              const totalRowsForUser = Math.max(
+                projectEntries.reduce((acc, [, t]) => acc + t.length, 0),
+                1
+              );
+
+              const userId = getUserId(user);
               let userRowRendered = false;
+
+              if (projectEntries.length === 0) {
+                // User has no tasks but has leaves
+                return (
+                  <TableRow key={`${user}-no-tasks`}>
+                    <TableCell
+                      sx={{
+                        verticalAlign: "center",
+                        padding: "10px",
+                        textAlign: "left" as const,
+                        border: "1px solid #eee"
+                      }}
+                    >
+                      {user}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        verticalAlign: "center",
+                        padding: "10px",
+                        textAlign: "center" as const,
+                        border: "1px solid #eee",
+                        fontWeight: 600,
+                        background: "linear-gradient( #D6C4E4 100%)"
+                      }}
+                    >
+                      {totalTimePerUser[user] || 0}h
+                    </TableCell>
+
+                    {selectedProjects.length > 0 && (
+                      <TableCell
+                        sx={{
+                          padding: "10px",
+                          textAlign: "center" as const,
+                          border: "1px solid #eee"
+                        }}
+                      >
+                        -
+                      </TableCell>
+                    )}
+                    {showTasks && (
+                      <TableCell
+                        sx={{
+                          padding: "10px",
+                          textAlign: "center" as const,
+                          border: "1px solid #eee"
+                        }}
+                      >
+                        -
+                      </TableCell>
+                    )}
+                    {dateRange.map((date) => {
+                      const key = format(date, DateFormats.ISO_DATE);
+                      const leaveForDate = getLeaveForUserAndDate(userId, key);
+
+                      return (
+                        <TableCell
+                          key={key}
+                          sx={{
+                            padding: "10px",
+                            textAlign: "center" as const,
+                            border: "1px solid #eee",
+                            backgroundColor: leaveForDate
+                              ? getLeaveTypeColor(leaveForDate.leave_type) +
+                                LeaveBackgroundColor.num
+                              : "transparent"
+                          }}
+                        >
+                          {leaveForDate ? (
+                            <Box
+                              display="flex"
+                              flexDirection="column"
+                              alignItems="center"
+                              gap={0.5}
+                            >
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontSize: "0.6rem",
+                                  fontWeight: 500,
+                                  color: getLeaveTypeColor(leaveForDate.leave_type)
+                                }}
+                              >
+                                {leaveForDate.leave_type.toUpperCase()}
+                              </Typography>
+                            </Box>
+                          ) : (
+                            ""
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              }
 
               return projectEntries.flatMap(([project, tasks]) =>
                 tasks.map((taskEntry, taskIdx) => (
@@ -196,7 +371,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
                     {!userRowRendered && (
                       <>
                         <TableCell
-                          rowSpan={projectEntries.reduce((acc, [, t]) => acc + t.length, 0)}
+                          rowSpan={totalRowsForUser}
                           sx={{
                             verticalAlign: "center",
                             padding: "10px",
@@ -207,7 +382,7 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
                           {user}
                         </TableCell>
                         <TableCell
-                          rowSpan={projectEntries.reduce((acc, [, t]) => acc + t.length, 0)}
+                          rowSpan={totalRowsForUser}
                           sx={{
                             verticalAlign: "center",
                             padding: "10px",
@@ -269,18 +444,59 @@ const TimeLogCalendarGrid: React.FC<TimeLogGridProps> = ({
                     )}
 
                     {dateRange.map((date) => {
-                      const key = format(date, "yyyy-MM-dd");
+                      // FIXED: Consistent date formatting
+                      const key = format(date, DateFormats.ISO_DATE);
                       const value = taskEntry.dailyLogs[key];
+                      const leaveForDate = getLeaveForUserAndDate(userId, key);
+
                       return (
                         <TableCell
                           key={key}
                           sx={{
                             padding: "10px",
                             textAlign: "center" as const,
-                            border: "1px solid #eee"
+                            border: "1px solid #eee",
+                            backgroundColor: leaveForDate
+                              ? getLeaveTypeColor(leaveForDate.leave_type) +
+                                LeaveBackgroundColor.num
+                              : "transparent"
                           }}
                         >
-                          {value ? `${value}h` : ""}
+                          {leaveForDate ? (
+                            <Box
+                              display="flex"
+                              flexDirection="column"
+                              alignItems="center"
+                              gap={0.5}
+                            >
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontSize: "0.6rem",
+                                  fontWeight: 500,
+                                  color: getLeaveTypeColor(leaveForDate.leave_type)
+                                }}
+                              >
+                                {leaveForDate.leave_type.toUpperCase()}
+                              </Typography>
+                              {value && (
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    fontSize: "0.7rem",
+                                    fontWeight: 600,
+                                    color: "#333"
+                                  }}
+                                >
+                                  {value}h
+                                </Typography>
+                              )}
+                            </Box>
+                          ) : value ? (
+                            `${value}h`
+                          ) : (
+                            ""
+                          )}
                         </TableCell>
                       );
                     })}

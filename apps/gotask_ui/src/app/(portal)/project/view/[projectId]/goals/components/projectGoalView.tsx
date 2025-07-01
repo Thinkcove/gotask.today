@@ -21,9 +21,9 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   user,
   handleBack
 }) => {
-  const router = useRouter();
   const comments: GoalComment[] = goalData?.comments || [];
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
+console.log("user in project goal view:", user);
 
   if (loading || !goalData) {
     return (

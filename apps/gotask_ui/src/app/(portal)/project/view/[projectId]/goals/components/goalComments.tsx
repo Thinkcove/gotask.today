@@ -85,7 +85,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({
       await onSave({
         goal_id: goalId,
         comment: newComment.trim(),
-        user_id: user.id
+        user_id: user?.id
       });
       setNewComment("");
       setIsFocused(false);
@@ -167,8 +167,8 @@ const GoalComments: React.FC<GoalCommentProps> = ({
       >
         {displayedComments.map((comment, index) => {
           const isEditing = editingComment?.id === comment.id;
-          const isOwner = comment.user_id === user.id;
-          const username = user.name;
+          const isOwner = comment.user_id === user?.id;
+          const username = user?.name;
 
           return (
             <Box key={comment.id || index} sx={{ display: "flex", gap: 2, pt: 2 }}>

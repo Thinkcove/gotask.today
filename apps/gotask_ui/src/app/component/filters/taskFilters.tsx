@@ -111,7 +111,7 @@ const TaskFilters: React.FC<Props> = ({
           onMouseEnter={handleMouseEvents}
           onMouseMove={handleMouseEvents}
           sx={{
-            px: 3,
+            pr: 3,
             pt: 2,
             pb: 2,
             display: "flex",
@@ -225,7 +225,7 @@ const TaskFilters: React.FC<Props> = ({
 
       {/* Clear All Link - Always visible below filter bar */}
       {appliedFilterCount > 0 && (
-        <Box sx={{ pl: 3, pb: 2 }}>
+        <Box sx={{ pr: 3, display: "flex", justifyContent: "flex-end" }}>
           <Link
             component="button"
             onClick={onClearFilters}
@@ -234,7 +234,8 @@ const TaskFilters: React.FC<Props> = ({
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              maxWidth: 350
+              maxWidth: 350,
+              fontWeight: 600
             }}
           >
             {`Clear All (${appliedFilterCount})`}

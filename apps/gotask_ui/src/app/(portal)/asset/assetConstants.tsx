@@ -123,7 +123,7 @@ export const getAssetColumns = (
       return (
         <Box display="flex" alignItems="center" gap={1}>
           <Typography whiteSpace="nowrap">{userDisplay}</Typography>
-          <Box sx={{ visibility: isOverloaded ? VISIBLE : HIDDEN }}>
+          <Box sx={{ visibility: isOverloaded ? "visible" : "hidden" }}>
             <Tooltip
               placement="top"
               title={
@@ -195,10 +195,6 @@ export const DESC = "desc";
 export const ASC = "asc";
 
 export const ALLOCATION = ["Overutilized", "Not utilized"];
-
-export const VISIBLE = "visible";
-
-export const HIDDEN = "hidden";
 
 export const OVERUTILIZED = "Overutilized";
 

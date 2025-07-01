@@ -7,6 +7,7 @@ export interface TimeLogEntry {
   task_id: string;
   date: string;
   total_time_logged: string[];
+  user_id?: string;
 }
 
 export interface TimeLogGridProps {

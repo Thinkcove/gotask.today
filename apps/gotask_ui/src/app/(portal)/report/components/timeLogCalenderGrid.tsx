@@ -30,8 +30,6 @@ import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveTypeColor } from "@/app/common/constants/leave";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 
-// Add LeaveEntry interface
-
 const headerCellStyle = {
   position: "sticky" as const,
   top: 0,
@@ -58,52 +56,65 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const dateRange = getDateRange(fromDate, toDate);
 
-  // Use passed leave data or fetch from API
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
-  const leaves: LeaveEntry[] = leaveData && leaveData.length > 0 ? leaveData : leaveResponse || [];
 
-  // Helper function to check if dates overlap
+  let leaves: LeaveEntry[] = [];
+  if (leaveData && leaveData.length > 0) {
+    leaves = leaveData;
+  } else if (leaveResponse) {
+    leaves = leaveResponse.data || leaveResponse;
+  }
+
   const datesOverlap = (
     firstLeaveStart: string,
     firstLeaveEnd: string,
     secondLeaveStart: string,
     secondLeaveEnd: string
   ): boolean => {
-    const firstLeaveStartDate = new Date(firstLeaveStart);
-    const firstLeaveEndDate = new Date(firstLeaveEnd);
-    const secondLeaveStartDate = new Date(secondLeaveStart);
-    const secondLeaveEndDate = new Date(secondLeaveEnd);
+    const firstStart = firstLeaveStart.split("T")[0];
+    const firstEnd = firstLeaveEnd.split("T")[0];
+    const secondStart = secondLeaveStart.split("T")[0];
+    const secondEnd = secondLeaveEnd.split("T")[0];
 
-    return firstLeaveStartDate <= secondLeaveEndDate && secondLeaveStartDate <= firstLeaveEndDate;
+    return firstStart <= secondEnd && secondStart <= firstEnd;
   };
 
-  // Helper function to check if a specific date falls within a leave period
   const isDateInLeave = (date: string, leaveFromDate: string, leaveToDate: string): boolean => {
-    const checkDate = new Date(date);
-    const fromDate = new Date(leaveFromDate);
-    const toDate = new Date(leaveToDate);
+    const checkDate = date.split("T")[0];
+    const fromDate = leaveFromDate.split("T")[0];
+    const toDate = leaveToDate.split("T")[0];
+
     return checkDate >= fromDate && checkDate <= toDate;
   };
 
-  // Helper function to get leaves for a user within the date range
-
-  // Helper function to get leave details for a specific user and date
+  // FIXED: Helper function to get leave details for a specific user and date
   const getLeaveForUserAndDate = (userId: string, date: string): LeaveEntry | null => {
-    return (
-      leaves.find(
-        (leave) => leave.user_id === userId && isDateInLeave(date, leave.from_date, leave.to_date)
-      ) || null
-    );
+    const leave = leaves.find((leave) => {
+      const userMatches = leave.user_id === userId;
+      const dateInRange = isDateInLeave(date, leave.from_date, leave.to_date);
+
+      return userMatches && dateInRange;
+    });
+
+    return leave || null;
   };
 
-  // Get leave type color
+  const getUserId = (userName: string): string => {
+    const fromLeaves = leaves.find((l) => l.user_name === userName)?.user_id;
+    if (fromLeaves) return fromLeaves;
+
+    const fromTimeLogs = data.find((d) => d.user_name === userName)?.user_id;
+    return fromTimeLogs || "";
+  };
 
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
     const project = entry.project_name || transreport("noproject");
     const task = entry.task_title || transreport("notask");
 
-    const date = isValid(parseISO(entry.date)) ? format(parseISO(entry.date), "yyyy-MM-dd") : null;
+    const date = isValid(parseISO(entry.date))
+      ? format(parseISO(entry.date), DateFormats.ISO_DATE)
+      : null;
     if (!date) return acc;
 
     const timeLogged = extractHours(entry.total_time_logged || []);
@@ -258,10 +269,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                 1
               );
 
-              // Get user ID by matching user name with leave data
-              const userId = leaves.find((l) => l.user_name === user)?.user_id || "";
-
-              // const userLeaves = getUserLeavesInRange(userId);
+              // FIXED: Use the improved getUserId function
+              const userId = getUserId(user);
               let userRowRendered = false;
 
               if (projectEntries.length === 0) {
@@ -290,7 +299,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                     >
                       {totalTimePerUser[user] || 0}h
                     </TableCell>
-                    {/* Leave Information */}
 
                     {selectedProjects.length > 0 && (
                       <TableCell
@@ -315,7 +323,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                       </TableCell>
                     )}
                     {dateRange.map((date) => {
-                      const key = format(date, DateFormats.ISO_DATE);
+                      // FIXED: Use consistent date formatting
+                      const key = format(date, "yyyy-MM-dd");
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
 
                       return (
@@ -437,6 +446,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                     )}
 
                     {dateRange.map((date) => {
+                      // FIXED: Use consistent date formatting
                       const key = format(date, "yyyy-MM-dd");
                       const value = taskEntry.dailyLogs[key];
                       const leaveForDate = getLeaveForUserAndDate(userId, key);

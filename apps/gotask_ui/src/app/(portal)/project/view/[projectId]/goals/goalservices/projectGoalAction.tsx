@@ -10,6 +10,7 @@ export const createWeeklyGoal = async (goalData: {
   status: string;
   description: string;
   priority: string;
+  user_id: string | number
 }) => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/project/goals`;
@@ -97,7 +98,8 @@ export const fetchWeeklyGoals = async ({
   status,
   startDate,
   endDate,
-  goalTitle
+  goalTitle,
+  projectId
 }: {
   page?: number;
   pageSize?: number;
@@ -106,20 +108,19 @@ export const fetchWeeklyGoals = async ({
   startDate?: string;
   endDate?: string;
   goalTitle?: string;
-  projectId?:string;
+  projectId?: string;
 }) => {
   return withAuth(async (token) => {
-    // Construct the payload with only the provided parameters
-    const payload: { [key: string]: any } = {
+    const payload = {
       page,
-      pageSize
+      pageSize,
+      ...(priority && { priority }),
+      ...(status && { status }),
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
+      ...(goalTitle && { goalTitle }),
+      ...(projectId && { projectId })
     };
-
-    if (priority) payload.priority = priority;
-    if (status) payload.status = status;
-    if (startDate) payload.startDate = startDate;
-    if (endDate) payload.endDate = endDate;
-    if (goalTitle) payload.goalTitle = goalTitle;
 
     const url = `${env.API_BASE_URL}/projectgoals`;
     const { data } = await postData(url, payload, token);

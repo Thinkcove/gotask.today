@@ -5,7 +5,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { GoalData } from "../interface/projectGoal";
 
-export const useGoalForm = (projectId: string, initialData?: any) => {
+export const useGoalForm = (projectId: string, initialData?: GoalData) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const rteRef = useRef<RichTextEditorRef>(null);
 

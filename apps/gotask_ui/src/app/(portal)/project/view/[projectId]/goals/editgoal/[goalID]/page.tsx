@@ -14,6 +14,7 @@ import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import GoalFormHeader from "../../components/goalFormHeader";
+import { UpdateHistoryItem, User } from "../../interface/projectGoal";
 
 const fetchGoalData = async (goalId: string) => {
   if (!goalId) throw new Error("Goal ID is required");
@@ -64,21 +65,21 @@ const EditGoalPage = () => {
     return fetchedGoalData?.updateHistory ? { updateHistory: fetchedGoalData.updateHistory } : null;
   }, [fetchedGoalData?.updateHistory]);
 
-  const fieldLabelMap: { [key: string]: string } = {
-    goalTitle: transGoal("goaltitle"),
-    description: transGoal("description"),
-    priority: transGoal("priority"),
-    projectId: transGoal("projectname"),
-    status: transGoal("status"),
-    weekEnd: transGoal("weekEnd"),
-    weekStart: transGoal("weekStart")
-  };
-
   const formattedHistory = useMemo(() => {
+    const fieldLabelMap: { [key: string]: string } = {
+      goalTitle: transGoal("goaltitle"),
+      description: transGoal("description"),
+      priority: transGoal("priority"),
+      projectId: transGoal("projectname"),
+      status: transGoal("status"),
+      weekEnd: transGoal("weekEnd"),
+      weekStart: transGoal("weekStart")
+    };
+
     return (
-      projectGoalHistory?.updateHistory?.map((item: any) => {
-        const updatedUser = users?.find((user: any) => user.id === item.user_id);
-        const loginuser_name = updatedUser?.first_name || updatedUser?.name;
+      projectGoalHistory?.updateHistory?.map((item: UpdateHistoryItem) => {
+        const updatedUser = users?.find((user: User) => user.id === item.user_id);
+        const loginuser_name = updatedUser?.first_name || updatedUser?.name || "Unknown";
 
         const formattedChanges = Object.entries(item.history_data || {})
           .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
@@ -88,13 +89,13 @@ const EditGoalPage = () => {
           });
 
         return {
-          loginuser_name: loginuser_name,
+          loginuser_name,
           formatted_history: formattedChanges.join(". "),
           created_date: item.timestamp || ""
         };
       }) ?? []
     );
-  }, [projectGoalHistory?.updateHistory, users, fieldLabelMap]);
+  }, [projectGoalHistory?.updateHistory, users, transGoal]);
 
   const handleCancel = () => {
     router.back();
@@ -110,17 +111,21 @@ const EditGoalPage = () => {
       const payload = {
         projectId: projectID,
         goalTitle: goalData.goalTitle,
-        weekStart: goalData.weekStart,
-        weekEnd: goalData.weekEnd,
+        weekStart:
+          typeof goalData.weekStart === "string"
+            ? goalData.weekStart
+            : goalData.weekStart.toISOString(),
+        weekEnd:
+          typeof goalData.weekEnd === "string" ? goalData.weekEnd : goalData.weekEnd.toISOString(),
         status: goalData.status,
         description: editorContent,
         priority: goalData.priority,
-        user_id: user?.id
+        updated_by: user?.id ?? ""
       };
 
       console.log("Submitting payload:", payload);
 
-      await updateWeeklyGoal(goalID, payload as any);
+      await updateWeeklyGoal(goalID, payload);
 
       showSnackbar(transGoal("goalupdate"), SNACKBAR_SEVERITY.SUCCESS);
 

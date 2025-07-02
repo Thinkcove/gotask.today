@@ -56,6 +56,7 @@ export interface ProjectGoalsProps {
   handleScroll: (e: React.UIEvent<HTMLElement>) => void;
 }
 export interface GoalData {
+  id: string;
   goalTitle: string;
   description: string;
   weekStart: string | Date;
@@ -64,7 +65,6 @@ export interface GoalData {
   priority: string;
   projectId?: string;
   user_id?: string;
-  id?: string;
   createdAt?: string | Date;
   updatedAt?: string | Date;
   comments?: GoalComment[];
@@ -98,4 +98,17 @@ export interface GoalFormHeaderProps {
   isSubmitting?: boolean;
   hasHistory?: boolean;
   showModuleHeader?: boolean;
+}
+export interface HistoryData {
+  [key: string]: string;
+}
+
+export interface UpdateHistoryItem {
+  user_id: string;
+  timestamp: string;
+  history_data: HistoryData;
+}
+
+export interface ProjectGoalHistory {
+  updateHistory: UpdateHistoryItem[];
 }

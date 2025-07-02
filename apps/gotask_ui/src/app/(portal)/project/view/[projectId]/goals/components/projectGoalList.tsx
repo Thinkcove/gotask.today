@@ -70,7 +70,7 @@ function ProjectGoalList() {
           // Append new goals for pagination
           setAllGoals((prev) => {
             const existingIds = new Set(prev.map((goal) => goal.id));
-            const newGoals = (res?.goals || []).filter((goal: any) => !existingIds.has(goal.id));
+            const newGoals = (res?.goals || []).filter((goal:GoalData) => !existingIds.has(goal.id));
             return [...prev, ...newGoals];
           });
         }
@@ -211,14 +211,12 @@ function ProjectGoalList() {
               options={Object.values(statusOptions)}
               selected={statusFilter}
               onChange={onStatusChange}
-              // sx={{ flex: { xs: "1", sm: "0 1 auto" } }}
             />
             <FilterDropdown
               label={transGoal("filterpriority")}
               options={Object.values(priorityOptions)}
               selected={severityFilter}
               onChange={onSeverityChange}
-              // sx={{ flex: { xs: "1", sm: "0 1 auto" } }}
             />
           </Box>
         </Box>

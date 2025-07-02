@@ -42,19 +42,22 @@ const CreateGoal = () => {
     setIsSubmitting(true);
     try {
       const editorContent = rteRef.current?.editor?.getHTML() || goalData.description;
-
       const payload = {
         projectId: projectID,
         goalTitle: goalData.goalTitle,
-        weekStart: goalData.weekStart,
-        weekEnd: goalData.weekEnd,
+        weekStart:
+          typeof goalData.weekStart === "string"
+            ? goalData.weekStart
+            : goalData.weekStart.toISOString(),
+        weekEnd:
+          typeof goalData.weekEnd === "string" ? goalData.weekEnd : goalData.weekEnd.toISOString(),
         status: goalData.status,
         description: editorContent,
         priority: goalData.priority,
-        user_id: user?.id
+        user_id: user?.id ?? "" 
       };
 
-      await createWeeklyGoal(payload as any);
+      await createWeeklyGoal(payload);
 
       showSnackbar(transGoal("savegoal"), SNACKBAR_SEVERITY.SUCCESS);
 

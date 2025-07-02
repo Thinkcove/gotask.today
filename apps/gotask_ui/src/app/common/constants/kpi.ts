@@ -6,13 +6,11 @@ export const MEASUREMENT_CRITERIA_OPTIONS = [
   { label: "4", value: 4 }
 ];
 
-
-
 export const KPI_FREQUENCY = {
   MONTHLY: "Monthly",
   QUARTERLY: "Quarterly",
   ANNUALLY: "Annually",
-  WEEKLY:"Weekly"
+  WEEKLY: "Weekly"
 };
 
 export const STATUS_OPTIONS = ["Active", "Inactive"];

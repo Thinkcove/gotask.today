@@ -17,7 +17,7 @@ const ViewAction: React.FC = () => {
   const { projectId } = useParams();
   const url = `${env.API_BASE_URL}/getProjectById/${projectId}`;
   const { data, mutate: UpdateData } = useSWR(projectId ? url : null, fetchProject, {
-    revalidateOnFocus: false
+    revalidateOnFocus: true
   });
   const selectedProject = data?.data || null;
   return selectedProject && <ProjectDetail project={selectedProject} mutate={UpdateData} />;

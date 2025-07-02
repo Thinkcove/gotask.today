@@ -18,10 +18,11 @@ import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 interface ProjectDetailProps {
   project: Project;
@@ -133,7 +134,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               }}
             >
               <Box>
-                <Typography variant="h5" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+                <Typography
+                  variant="h4"
+                  fontWeight={700}
+                  sx={{ textTransform: "capitalize", whiteSpace: "nowrap" }}
+                >
                   {project.name}
                 </Typography>
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
@@ -155,10 +160,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Project Description & Dates */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
-              <LabelValueText
-                label={transproject("detaildescription")}
-                value={project.description}
-              />
+              <RichTextReadOnly content={project.description} extensions={getTipTapExtensions()} />
             </Grid>
           </Grid>
           <Box display="flex" alignItems="center" mb={1} gap={2}>
@@ -194,7 +196,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           <Divider sx={{ mb: 3 }} />
 
           {/* Assignee Section Header & Add Button */}
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mr={4} mb={2}>
             <Typography variant="h5" fontWeight={600}>
               {transproject("detailassignee")}
             </Typography>

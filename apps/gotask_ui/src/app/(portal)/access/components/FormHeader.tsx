@@ -29,7 +29,6 @@ const FormHeader: React.FC<GoalFormHeaderProps> = ({
           width: "100%",
           flexWrap: "wrap",
           gap: 2,
-          p: 2
         }}
       >
         {/* Left Section: Arrow + Title */}

@@ -186,7 +186,7 @@ const EditGoalPage = () => {
         projectname={currentProject?.name}
       />
 
-      <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
+      <Box sx={{ flex: 1, overflowY: "auto" }}>
         <ProjectGoalForm
           rteRef={rteRef}
           goalData={goalData}

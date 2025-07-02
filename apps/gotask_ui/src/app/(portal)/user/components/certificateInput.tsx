@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import useSWR from "swr";
 import { Box, Typography, TextField, IconButton, Button, Paper, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
@@ -19,6 +20,8 @@ import {
 
 interface CertificateInputProps {
   userId: string;
+  certificates?: ICertificate[];
+  onChange?: () => void;
 }
 
 const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
@@ -26,86 +29,74 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
   const transuser = useTranslations("User.Certificate");
   const transInc = useTranslations("User.Increment");
 
-  const [certificates, setCertificates] = useState<ICertificate[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: certificates = [],
+    isLoading,
+    mutate
+  } = useSWR(`/user/${userId}/certificates`, () => getUserCertificates(userId));
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const emptyCert: ICertificate = { name: "", obtained_date: "", notes: "" };
   const [tempCert, setTempCert] = useState<ICertificate>(emptyCert);
 
-  // Load certificates on mount
-  useEffect(() => {
-    const fetchCertificates = async () => {
-      const data = await getUserCertificates(userId);
-      setCertificates(data);
-      setLoading(false);
-    };
-    fetchCertificates();
-  }, [userId]);
-
   const openAddDialog = () => {
     setTempCert(emptyCert);
-    setCurrentEditIndex(null);
+    setEditingId(null);
     setDialogOpen(true);
   };
 
-  const openEditDialog = (index: number) => {
-    setTempCert({ ...certificates[index] });
-    setCurrentEditIndex(index);
+  const openEditDialog = (cert: ICertificate) => {
+    setTempCert({ ...cert });
+    setEditingId(cert._id ?? null);
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
     if (!tempCert.name || !tempCert.obtained_date) return;
 
-    if (currentEditIndex !== null) {
-      const result = await updateUserCertificate(userId, currentEditIndex, tempCert);
-      if (result?.success) {
-        const updated = [...certificates];
-        updated[currentEditIndex] = tempCert;
-        setCertificates(updated);
+    if (editingId) {
+      const cert = certificates.find((c) => c._id === editingId);
+
+      if (cert) {
+        await updateUserCertificate(userId, cert._id!, tempCert);
       }
     } else {
-      const result = await addUserCertificates(userId, [tempCert]);
-      if (result?.success) {
-        const updated = [tempCert, ...certificates];
-        setCertificates(updated);
-      }
+      await addUserCertificates(userId, [tempCert]);
     }
 
     setDialogOpen(false);
     setTempCert(emptyCert);
-    setCurrentEditIndex(null);
+    setEditingId(null);
+    await mutate();
   };
 
+  // const confirmDelete = async () => {
+  //   if (deletingId) {
+  //     const cert = certificates.find((c) => c._id === deletingId);
+  //     if (cert) {
+  //       await deleteUserCertificate(userId, cert._id!);
+
+  //       await mutate();
+  //     }
+  //   }
+  //   setDeletingId(null);
+  //   setConfirmOpen(false);
+  // };
   const confirmDelete = async () => {
-    if (deleteIndex !== null) {
-      const result = await deleteUserCertificate(userId, deleteIndex);
-      if (result?.success) {
-        const updated = certificates.filter((_, i) => i !== deleteIndex);
-        setCertificates(updated);
-      }
+    if (deletingId) {
+      await deleteUserCertificate(userId, deletingId); 
+      await mutate(); 
     }
-    setDeleteIndex(null);
-    setConfirmOpen(false);
+    setDeletingId(null); // reset state
+    setConfirmOpen(false); // close dialog
   };
-
+  
   return (
-    <Box
-      sx={{
-        maxHeight: 600,
-        overflowY: "auto",
-        px: 2,
-        py: 2,
-        scrollbarWidth: "thin",
-        "&::-webkit-scrollbar": { width: "6px" },
-        "&::-webkit-scrollbar-thumb": { backgroundColor: "#aaa", borderRadius: 4 }
-      }}
-    >
+    <Box mt={3}>
       {/* Add Button */}
       <Box display="flex" justifyContent="flex-end" mb={2}>
         <Button
@@ -118,83 +109,116 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
         </Button>
       </Box>
 
-      {/* List of Certificates */}
-      {loading ? (
-        <Typography>{trans("loading")}</Typography>
-      ) : certificates.length === 0 ? (
-        <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
-          {transuser("nocertifications")}
-        </Paper>
-      ) : (
-        <Grid container spacing={2}>
-          {certificates.map((cert, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Paper
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  p: 2,
-                  borderRadius: 2,
-                  border: "1px solid #e0e0e0"
-                }}
-              >
-                <Box display="flex" gap={2}>
-                  <Box
-                    sx={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: 1,
-                      backgroundColor: "#f0f0f0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 24
-                    }}
-                  >
-                    🎓
-                  </Box>
-                  <Box>
-                    <Typography fontSize={14} fontWeight={600}>
-                      {cert.name}
-                    </Typography>
-                    <Typography fontSize={12} color="text.secondary">
-                      {transuser("obtained")}:{" "}
-                      {cert.obtained_date ? (
-                        <FormattedDateTime
-                          date={cert.obtained_date}
-                          format={DateFormats.MONTH_YEAR}
-                        />
-                      ) : (
-                        "N/A"
-                      )}
-                    </Typography>
-                    {cert.notes && (
-                      <Typography fontSize={12} color="text.secondary" mt={0.5}>
-                        {cert.notes}
+      {/* List */}
+      <Box
+        sx={{
+          maxHeight: 400,
+          overflow: "auto",
+          border: "1px solid #ddd",
+          borderRadius: 2,
+          px: 2,
+          py: 2,
+          scrollBehavior: "smooth",
+          "&::-webkit-scrollbar": {
+            width: "6px",
+            height: "6px"
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#f1f1f1"
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#bbb",
+            borderRadius: 8
+          }
+        }}
+      >
+        {isLoading ? (
+          <Typography>{trans("loading")}</Typography>
+        ) : certificates.length === 0 ? (
+          <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
+            {transuser("nocertifications")}
+          </Paper>
+        ) : (
+          <Grid container spacing={2}>
+            {certificates.map((cert) => (
+              <Grid item xs={12} sm={6} md={4} key={cert._id}>
+                <Paper
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    p: 2,
+                    borderRadius: 2,
+                    border: "1px solid #e0e0e0"
+                  }}
+                >
+                  <Box display="flex" gap={2}>
+                    <Box
+                      sx={{
+                        width: 50,
+                        height: 50,
+                        borderRadius: 1,
+                        backgroundColor: "#f0f0f0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 24
+                      }}
+                    >
+                      🎓
+                    </Box>
+                    <Box>
+                      <Typography fontSize={14} fontWeight={600}>
+                        {cert.name}
                       </Typography>
-                    )}
+                      <Typography fontSize={12} color="text.secondary">
+                        {transuser("obtained")}:{" "}
+                        {cert.obtained_date ? (
+                          <FormattedDateTime
+                            date={cert.obtained_date}
+                            format={DateFormats.MONTH_YEAR}
+                          />
+                        ) : (
+                          "N/A"
+                        )}
+                      </Typography>
+                      {cert.notes && (
+                        <Typography fontSize={12} color="text.secondary" mt={0.5}>
+                          {cert.notes}
+                        </Typography>
+                      )}
+                    </Box>
                   </Box>
-                </Box>
 
-                <Box>
-                  <IconButton onClick={() => openEditDialog(index)}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => {
-                      setDeleteIndex(index);
-                      setConfirmOpen(true);
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" color="error" />
-                  </IconButton>
-                </Box>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      )}
+                  <Box>
+                    <IconButton onClick={() => openEditDialog(cert)}>
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    {/* <IconButton
+                      onClick={() => {
+                        setDeletingId(cert._id ?? "");
+                        setConfirmOpen(true);
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" color="error" />
+                    </IconButton> */}
+                    <IconButton
+                      onClick={() => {
+                        if (cert._id) {
+                          setDeletingId(cert._id);
+                          setConfirmOpen(true); 
+                        }
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" color="error" />
+                    </IconButton>
+                  </Box>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
 
       {/* Add/Edit Dialog */}
       <CommonDialog
@@ -202,12 +226,10 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
         onClose={() => {
           setDialogOpen(false);
           setTempCert(emptyCert);
-          setCurrentEditIndex(null);
+          setEditingId(null);
         }}
         onSubmit={handleSave}
-        title={
-          currentEditIndex !== null ? transuser("editcertificate") : transuser("addcertificate")
-        }
+        title={editingId ? transuser("editcertificate") : transuser("addcertificate")}
         submitLabel={trans("save")}
         cancelLabel={trans("cancel")}
       >
@@ -227,7 +249,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
               fullWidth
             />
           </Grid>
-
           <Grid item xs={12}>
             <Typography fontWeight={600} fontSize={14} mb={0.5}>
               {transuser("obtaineddate")}
@@ -244,7 +265,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
               fullWidth
             />
           </Grid>
-
           <Grid item xs={12}>
             <Typography fontWeight={600} fontSize={14} mb={0.5}>
               {transuser("notes")}

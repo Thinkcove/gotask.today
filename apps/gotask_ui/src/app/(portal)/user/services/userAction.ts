@@ -204,24 +204,46 @@ export const addUserCertificates = async (
   });
 };
 
+// export const updateUserCertificate = async (
+//   userId: string,
+//   certificateIndex: number,
+//   updatedCertificate: ICertificate
+// ): Promise<{ success: boolean; message?: string }> => {
+//   return withAuth(async (token) => {
+//     const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateIndex}`;
+//     return await putData(url, updatedCertificate as unknown as Record<string, unknown>, token);
+//   });
+// };
+
+// Delete a specific certificate from a user
+// export const deleteUserCertificate = async (
+//   userId: string,
+//   certificateIndex: number
+// ): Promise<{ success: boolean; message?: string }> => {
+//   return withAuth(async (token) => {
+//     const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateIndex}`;
+//     return await deleteData(url, token);
+//   });
+// };
+// ✅ Update a specific certificate
 export const updateUserCertificate = async (
   userId: string,
-  certificateIndex: number,
+  certificateId: string,
   updatedCertificate: ICertificate
 ): Promise<{ success: boolean; message?: string }> => {
   return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateIndex}`;
+    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateId}`;
     return await putData(url, updatedCertificate as unknown as Record<string, unknown>, token);
   });
 };
 
-// Delete a specific certificate from a user
+// ✅ Delete a specific certificate
 export const deleteUserCertificate = async (
   userId: string,
-  certificateIndex: number
+  certificateId: string // changed from number
 ): Promise<{ success: boolean; message?: string }> => {
   return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateIndex}`;
+    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateId}`;
     return await deleteData(url, token);
   });
 };

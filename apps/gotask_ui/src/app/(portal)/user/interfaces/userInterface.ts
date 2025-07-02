@@ -3,13 +3,14 @@ import { IAssetAttributes } from "../../asset/interface/asset";
 export interface ISkill {
   name: string;
   skill_id?: string;
-  proficiency: number; // 1 to 4
-  experience?: number; // required if proficiency 3 or 4
+  proficiency: number; 
+  experience?: number; 
 }
 
 export interface ICertificate {
+  _id?: string; 
   name: string;
-  obtained_date: Date | string; // Accepts ISO string or Date object for flexibility
+  obtained_date: Date | string; 
   notes?: string;
 }
 

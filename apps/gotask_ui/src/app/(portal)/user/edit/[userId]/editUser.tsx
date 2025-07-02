@@ -5,24 +5,14 @@ import { Box, Button, IconButton, Typography } from "@mui/material";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import {
-  IUserField,
-  User,
-  ISkill,
-  ICertificate,
-  IIncrementHistory
-} from "../../interfaces/userInterface";
+import { IUserField, User } from "../../interfaces/userInterface";
 import UserInput from "../../components/userInputs";
-import SkillInput from "../../components/skillInput";
-import CertificateInput from "../../components/certificateInput";
-import IncrementInput from "../../components/incrementInput";
-import { updateUser, addUserSkills } from "../../services/userAction";
+import { updateUser } from "../../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import Toggle from "@/app/component/toggle/toggle";
 
 interface EditUserProps {
   data: IUserField;
@@ -33,9 +23,6 @@ interface EditUserProps {
 const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
   const router = useRouter();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-  const [activeSection, setActiveSection] = useState<
-    "General" | "Skills" | "Certificates" | "Increment"
-  >("General");
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -53,10 +40,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
     user_id: data.user_id || "",
     mobile_no: data.mobile_no || "",
     joined_date: data.joined_date || new Date(),
-    emp_id: data.emp_id || "",
-    skills: data.skills || [],
-    certificates: data.certificates || [],
-    increment_history: data.increment_history || []
+    emp_id: data.emp_id || ""
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -78,22 +62,6 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
       newErrors.user_id = transuser("validmail");
     }
 
-    if (formData.skills?.length) {
-      const names = formData.skills.map((s) => s.name.toLowerCase());
-      const hasDuplicates = names.some((name, idx) => names.indexOf(name) !== idx);
-      if (hasDuplicates) newErrors["skills"] = transuser("duplicateskills");
-
-      formData.skills.forEach((skill, idx) => {
-        if (!skill.proficiency || skill.proficiency === 0) {
-          newErrors[`skill_${idx}`] = transuser("proficiencyrequired", { skill: skill.name });
-        } else if (skill.proficiency >= 3 && (!skill.experience || skill.experience <= 0)) {
-          newErrors[`skill_${idx}`] = transuser("experiencerequired", { skill: skill.name });
-        } else if (skill.experience !== undefined && skill.experience <= 0) {
-          newErrors[`skill_${idx}`] = transuser("experiencepositive", { skill: skill.name });
-        }
-      });
-    }
-
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       setSnackbar({
@@ -110,24 +78,11 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSkillsChange = (updated: ISkill[]) => {
-    setFormData((prev) => ({ ...prev, skills: updated }));
-  };
-
-  const handleCertificatesChange = (updated: ICertificate[]) => {
-    setFormData((prev) => ({ ...prev, certificates: updated }));
-  };
-
-  const handleIncrementChange = (updated: IIncrementHistory[]) => {
-    setFormData((prev) => ({ ...prev, increment_history: updated }));
-  };
-
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
     try {
       await updateUser(userID, formData);
-      if (formData.skills?.length) await addUserSkills(userID, formData.skills);
       await mutate();
 
       setSnackbar({
@@ -135,6 +90,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
         message: transuser("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+
       setTimeout(() => router.back(), 2000);
     } catch {
       setSnackbar({
@@ -181,47 +137,15 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
         </Box>
       </Box>
 
-      {/* Tabs */}
-      <Toggle
-        options={["General", "Skills", "Certificates", "Increment"]}
-        selected={activeSection}
-        onChange={(val: string) => {
-          if (["General", "Skills", "Certificates", "Increment"].includes(val)) {
-            setActiveSection(val as typeof activeSection);
-          }
-        }}
-      />
-
-      {/* Tab Content */}
-      {activeSection === "General" && (
-        <Box sx={{ overflowX: "auto", width: "100%" }}>
-          <UserInput
-            formData={formData}
-            handleChange={handleChange}
-            readOnlyFields={["name"]}
-            errors={errors}
-          />
-        </Box>
-      )}
-
-      {activeSection === "Skills" && (
-        <SkillInput userId={userID} skills={formData.skills || []} onChange={handleSkillsChange} />
-      )}
-
-      {activeSection === "Certificates" && (
-        <CertificateInput
-          userId={userID}
-          certificates={formData.certificates || []}
-          onChange={handleCertificatesChange}
+      {/* General Info Form */}
+      <Box sx={{ overflowX: "auto", width: "100%" }}>
+        <UserInput
+          formData={formData}
+          handleChange={handleChange}
+          readOnlyFields={["name"]}
+          errors={errors}
         />
-      )}
-
-      {activeSection === "Increment" && (
-        <IncrementInput
-          increment_history={formData.increment_history || []}
-          onChange={handleIncrementChange}
-        />
-      )}
+      </Box>
 
       {/* Snackbar */}
       <CustomSnackbar

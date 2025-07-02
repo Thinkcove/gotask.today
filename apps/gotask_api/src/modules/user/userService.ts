@@ -20,6 +20,7 @@ import { IAsset } from "../../domain/model/asset/asset";
 import { ISkill } from "../../domain/model/user/skills";
 import { ICertificate } from "../../domain/model/user/certificate";
 import { IIncrementHistory } from "../../domain/model/user/increment";
+import { Types } from "mongoose";
 
 class userService {
   // CREATE USER
@@ -506,9 +507,37 @@ class userService {
     }
   }
 
+  // async updateCertificate(
+  //   userId: string,
+  //   certificateIndex: number,
+  //   updatedCertificate: Partial<ICertificate>
+  // ): Promise<{ success: boolean; data?: ICertificate; message?: string }> {
+  //   try {
+  //     const user = await User.findOne({ id: userId });
+  //     if (!user || !Array.isArray(user.certificates)) {
+  //       return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+  //     }
+
+  //     if (certificateIndex < 0 || certificateIndex >= user.certificates.length) {
+  //       return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+  //     }
+
+  //     const cert = user.certificates[certificateIndex];
+  //     if (updatedCertificate.name !== undefined) cert.name = updatedCertificate.name;
+  //     if (updatedCertificate.obtained_date !== undefined)
+  //       cert.obtained_date = updatedCertificate.obtained_date;
+  //     if (updatedCertificate.notes !== undefined) cert.notes = updatedCertificate.notes;
+
+  //     await user.save();
+  //     return { success: true, data: cert, message: UserMessages.CERTIFICATE.UPDATE_SUCCESS };
+  //   } catch (error: any) {
+  //     return { success: false, message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED };
+  //   }
+  // }
+
   async updateCertificate(
     userId: string,
-    certificateIndex: number,
+    certificateId: string,
     updatedCertificate: Partial<ICertificate>
   ): Promise<{ success: boolean; data?: ICertificate; message?: string }> {
     try {
@@ -517,26 +546,52 @@ class userService {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
 
-      if (certificateIndex < 0 || certificateIndex >= user.certificates.length) {
+      // Safe find with typing
+      const cert = user.certificates.find((c) => c._id?.toString() === certificateId);
+
+      if (!cert) {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
 
-      const cert = user.certificates[certificateIndex];
+      // Update fields with safety
       if (updatedCertificate.name !== undefined) cert.name = updatedCertificate.name;
       if (updatedCertificate.obtained_date !== undefined)
         cert.obtained_date = updatedCertificate.obtained_date;
       if (updatedCertificate.notes !== undefined) cert.notes = updatedCertificate.notes;
 
       await user.save();
+
       return { success: true, data: cert, message: UserMessages.CERTIFICATE.UPDATE_SUCCESS };
     } catch (error: any) {
       return { success: false, message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED };
     }
   }
 
+  // async deleteCertificate(
+  //   userId: string,
+  //   certificateIndex: number
+  // ): Promise<{ success: boolean; message?: string }> {
+  //   try {
+  //     const user = await User.findOne({ id: userId });
+  //     if (!user || !Array.isArray(user.certificates)) {
+  //       return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+  //     }
+
+  //     if (certificateIndex < 0 || certificateIndex >= user.certificates.length) {
+  //       return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+  //     }
+
+  //     user.certificates.splice(certificateIndex, 1);
+  //     await user.save();
+
+  //     return { success: true, message: UserMessages.CERTIFICATE.DELETE_SUCCESS };
+  //   } catch (error: any) {
+  //     return { success: false, message: error.message || UserMessages.CERTIFICATE.DELETE_FAILED };
+  //   }
+  // }
   async deleteCertificate(
     userId: string,
-    certificateIndex: number
+    certificateId: string
   ): Promise<{ success: boolean; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
@@ -544,16 +599,27 @@ class userService {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
 
-      if (certificateIndex < 0 || certificateIndex >= user.certificates.length) {
+      const originalLength = user.certificates.length;
+
+      user.certificates = user.certificates.filter(
+        (cert) => cert._id?.toString() !== certificateId
+      );
+
+      if (user.certificates.length === originalLength) {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
 
-      user.certificates.splice(certificateIndex, 1);
       await user.save();
 
       return { success: true, message: UserMessages.CERTIFICATE.DELETE_SUCCESS };
-    } catch (error: any) {
-      return { success: false, message: error.message || UserMessages.CERTIFICATE.DELETE_FAILED };
+    } catch (error: unknown) {
+      let errorMessage = UserMessages.CERTIFICATE.DELETE_FAILED;
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      return { success: false, message: errorMessage };
     }
   }
 

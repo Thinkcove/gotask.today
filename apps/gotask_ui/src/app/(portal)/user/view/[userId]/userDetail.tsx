@@ -216,8 +216,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             <SkillInput
               userId={userID}
               skills={user.skills ?? []}
-              onChange={(updatedSkills) => {
-                mutate({ ...user, skills: updatedSkills }, false);
+              onChange={async () => {
+                await mutate();
               }}
             />
           )}
@@ -363,7 +363,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {selectedTab === transuser("Certificate.certificate") && (
             <Box>
-              <CertificateInput userId={userID} />
+              <CertificateInput
+                userId={userID}
+                certificates={user?.certificates || []}
+                onChange={async () => {
+                  await mutate();
+                }}
+              />
             </Box>
           )}
 

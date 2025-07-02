@@ -58,6 +58,7 @@ export interface User {
   skills?: ISkill[];
   certificates?: ICertificate[];
   increment_history?: IIncrementHistory[];
+  issuesCount: string;
 }
 
 export interface RoleData {

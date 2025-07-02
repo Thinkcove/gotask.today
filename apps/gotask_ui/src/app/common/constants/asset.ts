@@ -26,5 +26,11 @@ export const getIssuesStatusColor = (status: string) => {
 
 export const ASSET_TYPE = {
   LAPTOP: "Laptop",
-  MOBILE: "Mobile"
+  MOBILE: "Mobile",
+  DESKTOP: "Desktop",
+  ACCESS_CARDS: "Access Card"
+};
+
+export const MODE = {
+  ASSET: "asset"
 };

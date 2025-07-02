@@ -1,5 +1,6 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { ASC, CREATE_AT, DESC } from "../../constants/assetConstant";
 import {
   createAsset,
   getAssetById,
@@ -14,6 +15,8 @@ import { createAssetHistory, getAssetHistoryById } from "../../domain/interface/
 import {
   createResource,
   createTag,
+  getAssetByUserId,
+  getIssuesByUserId,
   getTagsByAssetId,
   getTagsByTypeId,
   updateTag
@@ -123,16 +126,66 @@ class assetService {
     }
   };
 
-  getAllAssets = async (): Promise<any> => {
+  sortData = (data: any[], sortVar: string, sortOrder: string = ASC) => {
+    return [...data].sort((a, b) => {
+      const getSortValue = (item: any) => {
+        if (typeof item[sortVar] === "object" && item[sortVar]?.name) {
+          return item[sortVar].name;
+        }
+
+        if (item[sortVar] !== undefined) {
+          return item[sortVar];
+        }
+
+        const match = item.tagData?.find((tag: any) => {
+          if (typeof tag[sortVar] === "object" && tag[sortVar]?.name) {
+            return true;
+          }
+          return tag[sortVar] !== undefined;
+        });
+
+        if (match) {
+          const value = match[sortVar];
+          return typeof value === "object" && value?.name ? value.name : value;
+        }
+
+        return "";
+      };
+
+      const aVal = getSortValue(a);
+      const bVal = getSortValue(b);
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return sortOrder === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+
+      return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
+    });
+  };
+
+  getAllAssets = async (sortType: string = DESC, sortVar: string = CREATE_AT): Promise<any> => {
     try {
       const assets = await getAllAssets();
       const tagsData = await Promise.all(
         assets.map(async (tagDoc: IAsset) => {
           const tag = tagDoc.toObject();
+
           const [asset, tagData] = await Promise.all([
             getAssetTypeById(tag.typeId),
             getTagsByTypeId(tag.id)
           ]);
+
+          const assetByUsers = (
+            await Promise.all(tagData.map((tag) => getAssetByUserId(tag.userId)))
+          ).flat();
+
+          const issuesList = (
+            await Promise.all(
+              tagData
+                .filter((tag) => tag.userId && tag.assetId)
+                .map((tag) => getIssuesByUserId(tag.userId, tag.assetId))
+            )
+          ).flat();
 
           const tagDataWithUsers = await Promise.all(
             (tagData || []).map(async (item: any) => {
@@ -153,13 +206,17 @@ class assetService {
           return {
             ...tag,
             assetType: asset || null,
-            tagData: tagDataWithUsers || null
+            tagData: tagDataWithUsers || null,
+            issuesCount: issuesList.length || 0,
+            userAssetCount: assetByUsers.length || 0,
+            userAsset: assetByUsers || null
           };
         })
       );
+      const sortedData = this.sortData(tagsData, sortVar, sortType);
       return {
         success: true,
-        data: tagsData
+        data: sortedData
       };
     } catch (error: any) {
       return {
@@ -190,6 +247,11 @@ class assetService {
       const assetHistory = await getAssetHistoryById(data.id);
 
       const tags = await getTagsByAssetId(data.id);
+
+      let getIssuesByUser = null;
+      if (tags?.userId && tags?.assetId) {
+        getIssuesByUser = await getIssuesByUserId(tags?.userId, tags?.assetId);
+      }
       let userData = null;
       if (tags) {
         userData = await findUser(tags.userId);
@@ -200,7 +262,8 @@ class assetService {
           tags,
           assetHistory,
           type: assetType?.name,
-          assignedTo: userData?.name
+          assignedTo: userData?.name,
+          issues: getIssuesByUser
         },
         success: true
       };

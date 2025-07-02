@@ -35,5 +35,12 @@ export const getStatusColor = (status: string): string => {
       return "000000";
   }
 };
-export const statusOptions = ["not-started", "in-progress", "completed", "blocked"];
+export const statusOptions = [
+  "not-started",
+  "in-progress",
+  "to-do",
+  "hold",
+  "completed",
+  "blocked"
+];
 export const priorityOptions = ["high", "medium", "low"];

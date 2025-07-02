@@ -45,6 +45,7 @@ export interface IAssetAttributes {
   tags?: ITagData;
   typeId: string;
   deviceName?: string;
+  systemType?: string;
   serialNumber?: string;
   ram?: string;
   modelName?: string;
@@ -52,21 +53,23 @@ export interface IAssetAttributes {
   storage?: string;
   processor?: string;
   seller?: string;
-  dateOfPurchase?: Date | "";
+  dateOfPurchase?: string | Date;
   erk?: string;
   warrantyPeriod?: string;
-  warrantyDate?: Date | "";
+  warrantyDate?: string | Date;
   active?: boolean;
   createdBy?: string;
   updatedBy?: string;
-  antivirus?: string;
+  antivirus?: boolean;
   recoveryKey?: string;
   isEncrypted?: boolean;
-  lastServicedDate?: Date | "";
+  lastServicedDate?: string | Date;
   commentService?: string;
   assetType?: IAssetType;
   tagData?: ITagData[];
   userId?: string;
+  issuesCount?: string;
+  userAssetCount?: string;
 
   //mobile
   imeiNumber?: string;
@@ -83,6 +86,8 @@ export interface IAssetAttributes {
   assetHistory?: IAssetHistory[];
   type?: string;
   assignedTo?: string;
+  issues?: IAssetIssues[];
+  previouslyUsedBy?: string;
 }
 
 export interface IAssetTags {
@@ -114,12 +119,16 @@ export interface IAssetIssues {
   description: string;
   status: string;
   assignedTo: string;
-  comment: string;
-  updatedBy: string;
+  comment?: string;
+  updatedBy?: string;
   assetDetails?: AssetDetails;
   assigned?: AssignedDetails;
   reportedDetails?: AssignedDetails;
   issuesHistory?: IIssuesHistory[];
+  previousStatus?: string;
+  reportedUser?: string;
+  assignedUser?: string;
+  asset?: string;
 }
 
 export interface IIssuesHistories {
@@ -129,4 +138,5 @@ export interface IIssuesHistories {
   created_date: Date | "";
   created_by: string;
   userData?: User;
+  previousStatus?: string;
 }

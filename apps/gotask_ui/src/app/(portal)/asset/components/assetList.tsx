@@ -10,13 +10,19 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { IAssetAttributes } from "../interface/asset";
-import { getAssetColumns, IAssetDisplayRow, issueStatuses } from "../assetConstants";
+import {
+  getAssetColumns,
+  IAssetDisplayRow,
+  issueStatuses,
+  NOT_UTILIZED,
+  OVERUTILIZED
+} from "../assetConstants";
 import AssetIssueCards from "../createIssues/issuesCard";
-import CreateIssue from "../createIssues/createIssues";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+import { SortOrder } from "@/app/common/constants/task";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";
@@ -27,12 +33,16 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [view, setView] = useState<"assets" | "issues">(initialView);
   const [assignedToFilter, setAssignedToFilter] = useState<string[]>([]);
   const [modelNameFilter, setModelNameFilter] = useState<string[]>([]);
-
-  const [createIssueOpen, setCreateIssueOpen] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
   const router = useRouter();
-  const { getAll: allAssets } = useAllAssets();
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [warrantyDateFrom, setWarrantyDateFrom] = useState<string>("");
+  const [warrantyDateTo, setWarrantyDateTo] = useState<string>("");
+  const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>([]);
+  const [sortKey, setSortKey] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(SortOrder.DESC);
+  const { getAll: allAssets } = useAllAssets(sortKey, sortOrder);
+  const [assetAllocationFilter, setAssetAllocationFilter] = useState<string[]>([]);
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -73,7 +83,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     if (initialView === transasset("selectedAsset")) {
       router.push("/asset/createAsset");
     } else if (initialView === transasset("selectedIssues")) {
-      setCreateIssueOpen(true);
+      router.push("/asset/createIssues");
     }
   };
 
@@ -89,24 +99,36 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     [allAssets]
   );
 
-  const assignedUserNames: string[] = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          allAssets.flatMap(
-            (a: IAssetAttributes) =>
-              a.tagData?.map((tag) => tag.user?.name).filter((n): n is string => !!n) ?? []
-          )
+  const assignedUserNames: string[] = useMemo(() => {
+    const users = Array.from(
+      new Set(
+        allAssets.flatMap(
+          (a: IAssetAttributes) =>
+            a.tagData?.map((tag) => tag.user?.name).filter((n): n is string => !!n) ?? []
         )
-      ),
-    [allAssets]
-  );
+      )
+    ) as string[];
+
+    return users.sort((a, b) => a.localeCompare(b));
+  }, [allAssets]);
+
+  const allSystemTypes: string[] = useMemo(() => {
+    return Array.from(
+      new Set(
+        allAssets
+          .map((a: IAssetAttributes) => a.systemType)
+          .filter((type: string): type is string => !!type)
+      )
+    );
+  }, [allAssets]);
 
   const filterAssets = (
     assets: IAssetAttributes[],
     searchText: string,
     assignedToFilter: string[],
-    modelNameFilter: string[]
+    modelNameFilter: string[],
+    warrantyFrom?: string,
+    warrantyTo?: string
   ) => {
     const lowerSearch = searchText.toLowerCase();
 
@@ -120,7 +142,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           asset.os,
           asset.processor,
           asset.seller,
-          asset.antivirus,
           asset.recoveryKey,
           asset.assetType?.name
         ]
@@ -140,24 +161,62 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
         modelNameFilter.length === 0 ||
         modelNameFilter.some((val) => val.toLowerCase() === (asset.modelName || "").toLowerCase());
 
-      return matchBasic && matchAssigned && matchModel;
+      const warrantyDate = asset.warrantyDate ? new Date(asset.warrantyDate) : null;
+      const matchWarranty =
+        (!warrantyFrom || (warrantyDate && warrantyDate >= new Date(warrantyFrom))) &&
+        (!warrantyTo || (warrantyDate && warrantyDate <= new Date(warrantyTo)));
+
+      const matchSystemType =
+        systemTypeFilter.length === 0 || systemTypeFilter.includes(asset.systemType || "");
+
+      const matchAssetAllocation =
+        assetAllocationFilter.length === 0 ||
+        assetAllocationFilter.some((option) => {
+          if (option === OVERUTILIZED) {
+            return Number(asset.userAssetCount) > 1;
+          }
+          if (option === NOT_UTILIZED) {
+            return !asset.tagData?.some((tag) => !!tag.user?.name);
+          }
+          return true;
+        });
+
+      return (
+        matchBasic &&
+        matchAssigned &&
+        matchModel &&
+        matchWarranty &&
+        matchSystemType &&
+        matchAssetAllocation
+      );
     });
   };
 
-  const filteredAssets = filterAssets(allAssets, searchText, assignedToFilter, modelNameFilter);
+  const filteredAssets = filterAssets(
+    allAssets,
+    searchText,
+    assignedToFilter,
+    modelNameFilter,
+    warrantyDateFrom,
+    warrantyDateTo
+  );
+
   const mappedAssets = filteredAssets.map((asset) => ({
     id: asset.id,
     assetType: asset.assetType?.name || "-",
-    assetName: asset.deviceName || "-",
+    deviceName: asset.deviceName || "-",
     modelName: asset.modelName || "-",
     warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
     purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-",
-    users:
+    user:
       asset.tagData
         ?.map((t) => t.user?.name)
         .filter(Boolean)
         .join(", ") || "-",
-    encrypted: asset.isEncrypted
+    encrypted: asset.isEncrypted,
+    previouslyUsedBy: asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-",
+    issuesCount: asset.issuesCount,
+    userAssetCount: asset.userAssetCount
   }));
 
   return (
@@ -206,8 +265,23 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               setModelNameFilter([]);
               setAssignedToFilter([]);
               setSearchText("");
+              setWarrantyDateFrom("");
+              setWarrantyDateTo("");
+              setSystemTypeFilter([]);
+              setAssetAllocationFilter([]);
             }}
             trans={transasset}
+            dateFrom={warrantyDateFrom}
+            dateTo={warrantyDateTo}
+            onDateChange={(from, to) => {
+              setWarrantyDateFrom(from);
+              setWarrantyDateTo(to);
+            }}
+            systemTypeFilter={systemTypeFilter}
+            allSystemTypes={allSystemTypes}
+            onSystemTypeChange={setSystemTypeFilter}
+            assetAllocationFilter={assetAllocationFilter}
+            onAssetAllocationChange={setAssetAllocationFilter}
           />
         ) : (
           <AssetFilters
@@ -261,7 +335,14 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                 >
                   <Box sx={{ width: "100%", flex: 1 }}>
                     <Box sx={{ minWidth: 800 }}>
-                      <Table<IAssetDisplayRow> columns={assetColumns} rows={mappedAssets} />
+                      <Table<IAssetDisplayRow>
+                        columns={assetColumns}
+                        rows={mappedAssets}
+                        onSortChange={(key, order) => {
+                          setSortKey(key);
+                          setSortOrder(order);
+                        }}
+                      />
                     </Box>
                   </Box>
                 </Paper>
@@ -296,7 +377,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           onClick={handleActionClick}
         />
       </Box>
-      <CreateIssue open={createIssueOpen} onClose={() => setCreateIssueOpen(false)} />
     </>
   );
 };

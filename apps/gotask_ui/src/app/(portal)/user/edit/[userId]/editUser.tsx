@@ -142,7 +142,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
         <UserInput
           formData={formData}
           handleChange={handleChange}
-          readOnlyFields={["name"]}
+          readOnlyFields={[]}
           errors={errors}
         />
       </Box>

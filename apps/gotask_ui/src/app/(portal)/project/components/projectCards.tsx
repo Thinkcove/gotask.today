@@ -8,6 +8,7 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { Project } from "../interfaces/projectInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
+import EllipsisText from "@/app/component/text/ellipsisText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";

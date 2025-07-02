@@ -9,8 +9,9 @@ export const useGoalForm = (projectId: string, initialData?: any) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const rteRef = useRef<RichTextEditorRef>(null);
 
-  const initialGoalData = useMemo(
-    () => ({
+  // Create initial state only when initialData changes
+  const initialGoalData = useMemo(() => {
+    return {
       goalTitle: initialData?.goalTitle || "",
       description: initialData?.description || "",
       weekStart: initialData?.weekStart || "",
@@ -20,9 +21,18 @@ export const useGoalForm = (projectId: string, initialData?: any) => {
       projectId: projectId,
       user_id: initialData?.user_id || "",
       id: initialData?.id
-    }),
-    [initialData, projectId]
-  );
+    };
+  }, [
+    initialData?.goalTitle,
+    initialData?.description,
+    initialData?.weekStart,
+    initialData?.weekEnd,
+    initialData?.status,
+    initialData?.priority,
+    initialData?.user_id,
+    initialData?.id,
+    projectId
+  ]);
 
   const [goalData, setGoalData] = useState<GoalData>(initialGoalData);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -32,38 +42,11 @@ export const useGoalForm = (projectId: string, initialData?: any) => {
     severity: SNACKBAR_SEVERITY.INFO
   });
 
-  const syncWithInitialData = () => {
-    if (initialData) {
-      setGoalData({
-        goalTitle: initialData.goalTitle || "",
-        description: initialData.description || "",
-        weekStart: initialData.weekStart || "",
-        weekEnd: initialData.weekEnd || "",
-        status: initialData.status || "",
-        priority: initialData.priority || "",
-        projectId: projectId,
-        user_id: initialData.user_id || "",
-        id: initialData.id
-      });
-    }
-  };
-
-  const needsSync = useMemo(() => {
-    if (!initialData) return false;
-    return (
-      goalData.goalTitle !== (initialData.goalTitle || "") ||
-      goalData.description !== (initialData.description || "") ||
-      goalData.weekStart !== (initialData.weekStart || "") ||
-      goalData.weekEnd !== (initialData.weekEnd || "") ||
-      goalData.status !== (initialData.status || "") ||
-      goalData.priority !== (initialData.priority || "") ||
-      goalData.user_id !== (initialData.user_id || "") ||
-      goalData.id !== initialData.id
-    );
-  }, [goalData, initialData]);
-
-  if (needsSync) {
-    syncWithInitialData();
+  // Update state when initialData changes by resetting with new initial data
+  const prevInitialDataRef = useRef(initialData);
+  if (initialData !== prevInitialDataRef.current && initialData) {
+    prevInitialDataRef.current = initialData;
+    setGoalData(initialGoalData);
   }
 
   const validateForm = () => {

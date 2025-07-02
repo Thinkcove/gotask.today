@@ -143,7 +143,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
             </Grid>
 
             {/* Laptop Fields */}
-            {asset?.type === ASSET_TYPE.LAPTOP && (
+            {(asset?.type === ASSET_TYPE.LAPTOP || asset?.type === ASSET_TYPE.DESKTOP) && (
               <>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText
@@ -321,6 +321,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
           <CommonDialog
             open={showErkModal}
             onClose={handleCloseErkModal}
+            hideCancelButton={true}
             title={trans("encryptedkey")}
           >
             <Box
@@ -336,6 +337,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
             open={showRecoveryModal}
             onClose={handleCloseRecoveryModal}
             title={trans("recoveryKey")}
+            hideCancelButton={true}
           >
             <Box
               sx={{

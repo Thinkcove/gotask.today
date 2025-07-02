@@ -16,7 +16,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { PAGE_OPTIONS } from "./tableConstants";
-import { ASC, DESC } from "@/app/(portal)/asset/assetConstants";
+import { ASC, CREATED_AT, DESC } from "@/app/(portal)/asset/assetConstants";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -144,8 +144,21 @@ const CustomTable = <T extends object>({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleRequestSort = (property: keyof T | string) => {
-    const isAsc = orderBy === property && order === "asc";
-    const newOrder = isAsc ? DESC : ASC;
+    let newOrder: Order = ASC;
+    if (orderBy === property && order === DESC) {
+      setOrder(DESC);
+      setOrderBy(CREATED_AT);
+
+      if (onSortChange) {
+        onSortChange(CREATED_AT, DESC);
+      }
+      return;
+    }
+
+    if (orderBy === property) {
+      newOrder = order === ASC ? DESC : ASC;
+    }
+
     setOrder(newOrder);
     setOrderBy(property);
 
@@ -218,7 +231,7 @@ const CustomTable = <T extends object>({
                   {column.sortable !== false ? (
                     <StyledTableSortLabel
                       active={orderBy === column.id}
-                      direction={orderBy === column.id ? order : "asc"}
+                      direction={orderBy === column.id ? order : DESC}
                       onClick={() => handleRequestSort(column.id)}
                     >
                       {column.label}

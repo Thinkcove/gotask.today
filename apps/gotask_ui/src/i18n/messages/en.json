@@ -622,7 +622,8 @@
     "previouslyused": "Previously Used",
     "issuesCount": "Issues count",
     "assetallocation": "Asset usage",
-    "overutilized": "Overutilized"
+    "overutilized": "Overutilized",
+    "enabled": "Enabled"
   },
 
   "Chatbot": {
@@ -736,7 +737,6 @@
     "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids"
-    
   },
   "ProjectGoal": {
     "goal": "Project Goal",

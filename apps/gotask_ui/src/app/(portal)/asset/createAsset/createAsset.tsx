@@ -38,7 +38,7 @@ export const CreateAsset: React.FC = () => {
     erk: "",
     warrantyPeriod: "",
     warrantyDate: "",
-    antivirus: "",
+    antivirus: false,
     recoveryKey: "",
     lastServicedDate: "",
     commentService: "",

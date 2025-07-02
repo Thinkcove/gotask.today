@@ -216,7 +216,7 @@ class assetService {
             tagData: tagDataWithUsers || null,
             issuesCount: issuesList.length || 0,
             userAssetCount: filteredCount || 0,
-            userAsset: filteredCount || null
+            userAsset: assetByUsers || null
           };
         })
       );

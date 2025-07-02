@@ -3,9 +3,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { useTranslations } from "next-intl";
 import ProjectGoalList from "./components/projectGoalList";
-import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import { useParams } from "next/navigation";
 

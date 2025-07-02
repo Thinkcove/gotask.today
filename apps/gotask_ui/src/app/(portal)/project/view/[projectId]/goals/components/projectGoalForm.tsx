@@ -1,5 +1,5 @@
 import React from "react";
-import FormField, { SelectOption } from "@/app/component/input/formField";
+import FormField from "@/app/component/input/formField";
 import Grid from "@mui/material/Grid/Grid";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";

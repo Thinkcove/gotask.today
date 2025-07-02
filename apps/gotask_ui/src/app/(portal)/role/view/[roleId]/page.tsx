@@ -1,26 +1,42 @@
-"use client";
-import React from "react";
-import useSWR from "swr";
-import { useParams } from "next/navigation";
-import env from "@/app/common/env";
-import RoleDetail from "./roleDetail";
-import { getData } from "@/app/common/utils/apiData";
-import { withAuth } from "@/app/common/utils/authToken";
+import type { Metadata } from "next";
+import ViewAction from "./client";
 
-const fetchRole = async (url: string) => {
-  return await withAuth(async (token: string) => {
-    return await getData(url, token);
-  });
+type Props = {
+  params: Promise<{ roleId: string }>;
 };
 
-const ViewAction: React.FC = () => {
-  const { roleId } = useParams();
-  const url = `${env.API_BASE_URL}/roles/${roleId}`;
-  const { data, mutate } = useSWR(roleId ? url : null, fetchRole, {
-    revalidateOnFocus: false
-  });
-  const selectedRole = data || null;
-  return selectedRole && <RoleDetail role={selectedRole} mutate={mutate} />;
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
+  const { roleId } = await params;
 
-export default ViewAction;
+  try {
+    const res = await fetch(`${baseUrl}/roles/${roleId}?metaOnly=true`, {
+      cache: "no-store"
+    });
+
+    if (!res.ok) {
+      return {
+        title: "Role Not Found | GoTaskToday",
+        description: "This role does not exist or may have been removed."
+      };
+    }
+
+    const json = await res.json();
+    const role = json.data;
+
+    return {
+      title: `${role.name} | Role Details | GoTaskToday`,
+      description: `View and manage access for the ${role.name} role.`
+    };
+  } catch (error) {
+    console.error("Metadata fetch error:", error);
+    return {
+      title: "Error | GoTaskToday",
+      description: "Unable to fetch role details."
+    };
+  }
+}
+
+export default function Page() {
+  return <ViewAction />;
+}

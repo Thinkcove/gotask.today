@@ -53,7 +53,7 @@ RoleRoutes.push({
 
 // Get Role by ID
 RoleRoutes.push({
-  path: API_PATHS.GET_ROLE_BY_ID, //  "/roles/{id}"
+  path: API_PATHS.GET_ROLE_BY_ID, // "/roles/{id}"
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.VIEW, (request: Request, h: ResponseToolkit) =>
     roleController.getRoleById(new RequestHelper(request), h)
@@ -67,10 +67,12 @@ RoleRoutes.push({
     notes: "Get role by ID",
     tags,
     auth: {
-      strategy: authStrategy.SIMPLE
+      strategy: authStrategy.SIMPLE,
+      mode: "try" 
     }
   }
 });
+
 
 // Update Role
 RoleRoutes.push({

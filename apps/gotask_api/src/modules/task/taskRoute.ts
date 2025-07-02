@@ -107,10 +107,12 @@ TaskRoutes.push({
     notes: "Get a task by ID",
     tags,
     auth: {
-      strategy: authStrategy.SIMPLE
+      strategy: authStrategy.SIMPLE,
+      mode: "try" 
     }
   }
 });
+
 
 // Route: Update Task
 TaskRoutes.push({

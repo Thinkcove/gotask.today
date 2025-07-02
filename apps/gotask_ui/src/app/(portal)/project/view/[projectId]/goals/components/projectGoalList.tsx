@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { Box, CircularProgress, IconButton } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -23,7 +23,6 @@ function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const { projectId } = useParams();
   const router = useRouter();
-  const { user } = useUser();
 
   const projectID = projectId as string;
 

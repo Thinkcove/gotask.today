@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Typography, IconButton, Tooltip, Divider, Stack } from "@mui/material";
-import { ArrowForward, Edit } from "@mui/icons-material";
+import { Box, Typography,  Divider, Stack } from "@mui/material";
+import { ArrowForward,  } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/project";
 import { GoalCardProps } from "../interface/projectGoal";

@@ -1,11 +1,13 @@
 import { Document, Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { SYSTEM_TYPES } from "../../../constants/assetConstant";
 
 export interface IAsset extends Document {
   // Common fields
   id: string;
   typeId: string;
   deviceName?: string;
+  systemType?: string;
   serialNumber?: string;
   ram?: string;
   modelName?: string;
@@ -34,7 +36,7 @@ export interface IAsset extends Document {
   insuranceExpiry?: Date;
 
   // Laptop-specific fields
-  antivirus?: string;
+  antivirus?: boolean;
   recoveryKey?: string;
   isEncrypted?: boolean;
   lastServicedDate?: Date;
@@ -49,6 +51,12 @@ const AssetSchema = new Schema<IAsset>(
     id: { type: String, default: uuidv4 },
     typeId: { type: String, ref: "AssetType", required: true },
     deviceName: { type: String },
+    systemType: {
+      type: String,
+      enum: SYSTEM_TYPES,
+      default: "Office System",
+      required: true
+    },
     serialNumber: { type: String },
     modelName: { type: String },
     os: { type: String },
@@ -75,7 +83,7 @@ const AssetSchema = new Schema<IAsset>(
     insuranceExpiry: { type: Date },
 
     // Laptop-specific fields
-    antivirus: { type: String },
+    antivirus: { type: Boolean, default: false },
     recoveryKey: { type: String },
     isEncrypted: { type: Boolean, default: false },
     lastServicedDate: { type: Date },

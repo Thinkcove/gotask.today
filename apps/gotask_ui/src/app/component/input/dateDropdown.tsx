@@ -12,6 +12,7 @@ interface DateDropdownProps {
   onDateChange: (from: string, to: string) => void;
   transtask: (key: string) => string;
   singleDateMode?: boolean;
+  placeholder?: string;
 }
 
 const StyledTrigger = styled(Button)(({ theme }) => ({
@@ -60,7 +61,8 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
   dateTo,
   onDateChange,
   transtask,
-  singleDateMode = false
+  singleDateMode = false,
+  placeholder
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [tempFrom, setTempFrom] = useState(dateFrom);
@@ -93,7 +95,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
       ? formatDate(dateFrom)
       : dateFrom && dateTo
         ? `${formatDate(dateFrom)} – ${formatDate(dateTo)}`
-        : transtask("filterduedate");
+        : placeholder || transtask("filterduedate");
 
   return (
     <>

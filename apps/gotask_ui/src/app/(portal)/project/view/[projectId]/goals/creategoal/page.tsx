@@ -2,14 +2,9 @@
 
 import React from "react";
 import { Box } from "@mui/material";
-import ModuleHeader from "@/app/component/header/moduleHeader";
-import { useTranslations } from "next-intl";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import ProjectGoalForm from "../components/projectGoalForm";
 import CreateGoal from "./components/CreateGoal";
 
-const StoriesPage = () => {
-  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
+const page = () => {
 
   return (
     <Box
@@ -30,4 +25,4 @@ const StoriesPage = () => {
   );
 };
 
-export default StoriesPage;
+export default page;

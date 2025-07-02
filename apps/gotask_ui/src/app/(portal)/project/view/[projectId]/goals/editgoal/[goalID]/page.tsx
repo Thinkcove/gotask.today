@@ -10,12 +10,10 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import { getWeeklyGoalById, updateWeeklyGoal } from "../../goalservices/projectGoalAction";
-import ModuleHeader from "@/app/component/header/moduleHeader";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import GoalFormHeader from "../../components/goalFormHeader";
-import { GoalData } from "../../interface/projectGoal";
 
 const fetchGoalData = async (goalId: string) => {
   if (!goalId) throw new Error("Goal ID is required");

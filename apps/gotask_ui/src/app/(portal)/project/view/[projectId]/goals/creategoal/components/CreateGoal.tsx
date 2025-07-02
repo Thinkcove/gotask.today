@@ -7,7 +7,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useUser } from "@/app/userContext";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import ModuleHeader from "@/app/component/header/moduleHeader";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import { createWeeklyGoal } from "../../goalservices/projectGoalAction";
 import { useGoalForm } from "../../goalHook/useGoalForm";

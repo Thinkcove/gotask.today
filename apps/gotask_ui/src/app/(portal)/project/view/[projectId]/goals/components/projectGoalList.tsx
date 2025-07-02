@@ -9,7 +9,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { formatStatus, priorityOptions, statusOptions } from "@/app/common/constants/project";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
-import { useUser } from "@/app/userContext";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";

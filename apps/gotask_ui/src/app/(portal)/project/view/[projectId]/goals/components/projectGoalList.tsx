@@ -146,7 +146,7 @@ function ProjectGoalList() {
   return (
     <Box sx={{ pt: 2 }}>
       {/* Header with search and filters */}
-      <Box display="flex" justifyContent="space-between" pb={2} pr={2} flexWrap="wrap" gap={2}>
+      <Box display="flex" justifyContent="space-between" pb={1} pr={2} flexWrap="wrap" gap={2}>
         {/* Left section: Back arrow + Search */}
         <Box
           display="flex"
@@ -160,7 +160,7 @@ function ProjectGoalList() {
             display="flex"
             gap={1}
             alignItems="center"
-            sx={{ width: { xs: "100%", sm: "auto" } ,pl:1}}
+            sx={{ width: { xs: "100%", sm: "auto" }, pl: 1 }}
           >
             <IconButton color="primary" onClick={handleGoBack}>
               <ArrowBack />

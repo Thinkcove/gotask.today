@@ -37,7 +37,7 @@ const GoalFilterBar: React.FC<GoalFilterBarProps> = ({
   searchPlaceholder
 }) => {
   return (
-    <Box display="flex" justifyContent="space-between" pb={2} pr={2} flexWrap="wrap" gap={2}>
+    <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={2}>
       <Box
         display="flex"
         gap={{ xs: 0.5, sm: 1 }}

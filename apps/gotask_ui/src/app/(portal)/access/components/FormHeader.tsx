@@ -4,9 +4,9 @@ import { ArrowBack, History } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { GoalFormHeaderProps } from "../interface/projectGoal";
+import { GoalFormHeaderProps } from "../../project/view/[projectId]/goals/interface/projectGoal";
 
-const GoalFormHeader: React.FC<GoalFormHeaderProps> = ({
+const FormHeader: React.FC<GoalFormHeaderProps> = ({
   isEdit,
   onCancel,
   onSubmit,
@@ -91,8 +91,8 @@ const GoalFormHeader: React.FC<GoalFormHeaderProps> = ({
           >
             {isSubmitting
               ? isEdit
-                ? transGoal("updating") || "Updating..."
-                : transGoal("creating") || "Creating..."
+                ? transGoal("update")
+                : transGoal("create")
               : isEdit
                 ? transGoal("update")
                 : transGoal("create")}
@@ -120,4 +120,4 @@ const GoalFormHeader: React.FC<GoalFormHeaderProps> = ({
     </>
   );
 };
-export default GoalFormHeader;
+export default FormHeader;

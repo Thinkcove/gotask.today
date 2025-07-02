@@ -10,7 +10,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import { createWeeklyGoal } from "../../goalservices/projectGoalAction";
 import { useGoalForm } from "../../goalHook/useGoalForm";
-import GoalFormHeader from "../../components/goalFormHeader";
+import FormHeader from "@/app/(portal)/access/components/FormHeader";
 
 const CreateGoal = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -54,7 +54,7 @@ const CreateGoal = () => {
         status: goalData.status,
         description: editorContent,
         priority: goalData.priority,
-        user_id: user?.id ?? "" 
+        user_id: user?.id ?? ""
       };
 
       await createWeeklyGoal(payload);
@@ -84,7 +84,7 @@ const CreateGoal = () => {
         overflow: "hidden"
       }}
     >
-      <GoalFormHeader
+      <FormHeader
         isEdit={false}
         onCancel={handleCancel}
         onSubmit={handleSubmit}

@@ -13,8 +13,8 @@ import { getWeeklyGoalById, updateWeeklyGoal } from "../../goalservices/projectG
 import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
-import GoalFormHeader from "../../components/goalFormHeader";
 import { UpdateHistoryItem, User } from "../../interface/projectGoal";
+import FormHeader from "../../../../../../access/components/FormHeader";
 
 const fetchGoalData = async (goalId: string) => {
   if (!goalId) throw new Error("Goal ID is required");
@@ -171,7 +171,7 @@ const EditGoalPage = () => {
         overflow: "hidden"
       }}
     >
-      <GoalFormHeader
+      <FormHeader
         isEdit={true}
         onCancel={handleCancel}
         onSubmit={handleSubmit}

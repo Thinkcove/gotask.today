@@ -88,29 +88,29 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
           {/* Meta Info */}
           <Grid container spacing={2} mb={3}>
             <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label="Priority" value={goalData.priority || "-"} />
+              <LabelValueText label={transGoal("priority")} value={goalData.priority || "-"} />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Created"
+                label={transGoal("create")}
                 value={goalData.createdAt && <FormattedDateTime date={goalData.createdAt} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Updated"
+                label={transGoal("update")}
                 value={goalData.updatedAt && <FormattedDateTime date={goalData.updatedAt} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Week Start"
+                label={transGoal("startdate")}
                 value={<FormattedDateTime date={goalData.weekStart} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Week End"
+                label={transGoal("enddate")}
                 value={<FormattedDateTime date={goalData.weekEnd} />}
               />
             </Grid>

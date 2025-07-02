@@ -15,7 +15,7 @@ import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
 import MobileInputs from "./mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
-import { systemTypeOptions } from "../assetConstants";
+import { OFFICE_SYSTEM, systemTypeOptions } from "../assetConstants";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -26,7 +26,7 @@ export const CreateAsset: React.FC = () => {
     typeId: "",
     userId: "",
     deviceName: "",
-    systemType: "",
+    systemType: OFFICE_SYSTEM,
     serialNumber: "",
     modelName: "",
     os: "",
@@ -38,7 +38,7 @@ export const CreateAsset: React.FC = () => {
     erk: "",
     warrantyPeriod: "",
     warrantyDate: "",
-    antivirus: "",
+    antivirus: false,
     recoveryKey: "",
     lastServicedDate: "",
     commentService: "",

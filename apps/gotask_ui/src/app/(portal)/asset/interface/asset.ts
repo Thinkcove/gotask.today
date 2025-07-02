@@ -60,7 +60,7 @@ export interface IAssetAttributes {
   active?: boolean;
   createdBy?: string;
   updatedBy?: string;
-  antivirus?: string;
+  antivirus?: boolean;
   recoveryKey?: string;
   isEncrypted?: boolean;
   lastServicedDate?: string | Date;
@@ -68,6 +68,8 @@ export interface IAssetAttributes {
   assetType?: IAssetType;
   tagData?: ITagData[];
   userId?: string;
+  issuesCount?: string;
+  userAssetCount?: string;
 
   //mobile
   imeiNumber?: string;

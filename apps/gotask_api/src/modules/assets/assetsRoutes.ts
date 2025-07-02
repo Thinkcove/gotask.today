@@ -78,7 +78,7 @@ AssetRoutes.push({
 
 AssetRoutes.push({
   path: "/assets/getAll",
-  method: API_METHODS.GET,
+  method: API_METHODS.POST,
   handler: permission(appName, ACTIONS.READ, (request: Request, handler: ResponseToolkit) =>
     assetController.getAllAssets(new RequestHelper(request), handler)
   ),

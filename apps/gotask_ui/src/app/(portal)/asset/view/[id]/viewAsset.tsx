@@ -41,12 +41,13 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
       <ModuleHeader name={trans("assets")} />
       <Box
         sx={{
-          p: 3,
+          height: "calc(100vh - 64px)",
+          overflow: "auto",
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)",
-          minHeight: "100vh"
+          p: 3
         }}
       >
-        <Paper sx={{ p: 4, borderRadius: 4, border: "1px solid #e0e0e0" }}>
+        <Paper sx={{ p: 4, pb: 8, borderRadius: 4, border: "1px solid #e0e0e0" }}>
           {/* Header */}
           <Grid container alignItems="center" spacing={2} mb={3}>
             <Grid item>
@@ -135,10 +136,10 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
             {asset?.type === ASSET_TYPE.LAPTOP && (
               <>
                 <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText label={trans("isencrypted")} value={asset.erk || "-"} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText label={trans("antivirus")} value={asset.antivirus || "-"} />
+                  <LabelValueText
+                    label={trans("antivirus")}
+                    value={asset.isEncrypted ? trans("enabled") : "-"}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText label={trans("recoveryKey")} value={asset.recoveryKey || "-"} />
@@ -161,6 +162,35 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                     value={asset.isEncrypted ? trans("enc") : trans("notenc")}
                   />
                 </Grid>
+                {asset?.erk && (
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                      {trans("encryptedkey")}
+                    </Typography>
+
+                    <Box
+                      sx={{
+                        p: 2,
+                        backgroundColor: "#f9f9f9",
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 2,
+                        fontFamily: "monospace",
+                        fontSize: "14px",
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word"
+                      }}
+                    >
+                      {(asset?.erk || "-")
+                        .split("Identifier:")
+                        .filter(Boolean)
+                        .map((entry, index) => (
+                          <Box key={index} mb={1}>
+                            {"Identifier:" + entry.trim()}
+                          </Box>
+                        ))}
+                    </Box>
+                  </Grid>
+                )}
               </>
             )}
 

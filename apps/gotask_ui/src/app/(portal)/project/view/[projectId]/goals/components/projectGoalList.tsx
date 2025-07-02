@@ -160,7 +160,7 @@ function ProjectGoalList() {
             display="flex"
             gap={1}
             alignItems="center"
-            sx={{ width: { xs: "100%", sm: "auto" } }}
+            sx={{ width: { xs: "100%", sm: "auto" } ,pl:1}}
           >
             <IconButton color="primary" onClick={handleGoBack}>
               <ArrowBack />

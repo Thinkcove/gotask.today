@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useSWR from "swr";
-import { Box, CircularProgress, IconButton } from "@mui/material";
+import { Box, Link, CircularProgress, IconButton } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -17,6 +17,7 @@ import { fetchWeeklyGoals } from "../goalservices/projectGoalAction";
 import { GoalData } from "../interface/projectGoal";
 import ProjectGoals from "./projectGoals";
 import FilterDropdown from "@/app/component/input/filterDropDown";
+import GoalFilterBar from "./goalFilterBar";
 
 function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -116,6 +117,12 @@ function ProjectGoalList() {
       setPage((prev) => prev + 1);
     }
   };
+  const onClearFilters = () => {
+    setStatusFilter([]);
+    setSeverityFilter([]);
+    setSearchTerm("");
+    setPage(1);
+  };
 
   // Filter goals based on search and filters (client-side filtering as backup)
   const filteredGoals = allGoals?.filter((goal) => {
@@ -145,82 +152,26 @@ function ProjectGoalList() {
 
   return (
     <Box sx={{ pt: 2 }}>
-      {/* Header with search and filters */}
-      <Box display="flex" justifyContent="space-between" pb={1} pr={2} flexWrap="wrap" gap={2}>
-        {/* Left section: Back arrow + Search */}
-        <Box
-          display="flex"
-          gap={{ xs: 0.5, sm: 1 }}
-          flexDirection={{ xs: "column", sm: "row" }}
-          alignItems={{ xs: "stretch", sm: "center" }}
-          sx={{ width: "100%" }}
-        >
-          {/* First row on mobile: Back button and search */}
-          <Box
-            display="flex"
-            gap={1}
-            alignItems="center"
-            sx={{ width: { xs: "100%", sm: "auto" }, pl: 1 }}
-          >
-            <IconButton color="primary" onClick={handleGoBack}>
-              <ArrowBack />
-            </IconButton>
-            <Box
-              sx={{
-                flexGrow: 1,
-                maxWidth: { xs: "none", sm: 400 },
-                minWidth: { xs: "auto", sm: 200 }
-              }}
-            >
-              <SearchBar
-                value={searchTerm}
-                onChange={(value) => {
-                  setSearchTerm(value);
-                  setPage(1);
-                }}
-                sx={{ width: "100%" }}
-                placeholder={transGoal("searchplaceholder")}
-              />
-            </Box>
-          </Box>
+      <GoalFilterBar
+        searchTerm={searchTerm}
+        onSearchChange={(value) => {
+          setSearchTerm(value);
+          setPage(1);
+        }}
+        onBack={handleGoBack}
+        statusFilter={statusFilter}
+        severityFilter={severityFilter}
+        onStatusChange={onStatusChange}
+        onSeverityChange={onSeverityChange}
+        onClearFilters={onClearFilters}
+        statusOptions={Object.values(statusOptions)}
+        priorityOptions={Object.values(priorityOptions)}
+        showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
+        clearText={transGoal("clearall")}
+        searchPlaceholder={transGoal("searchplaceholder")}
+      />
 
-          {/* Second row on mobile: Filters */}
-          <Box
-            display="flex"
-            alignItems="center"
-            gap={{ xs: 1, sm: 2 }}
-            px={{ xs: 8, sm: 2 }}
-            py={{ xs: 1, sm: 1 }}
-            justifyContent="flex-start"
-            flexWrap="wrap"
-            mt={{ xs: 1, sm: 0 }}
-            sx={{
-              width: "100%",
-              "& .MuiFormControl-root": {
-                minWidth: { xs: "auto", sm: "120px" },
-                maxWidth: { xs: "auto", sm: "none" }
-              }
-            }}
-          >
-            <FilterDropdown
-              label={transGoal("filterstatus")}
-              options={Object.values(statusOptions)}
-              selected={statusFilter}
-              onChange={onStatusChange}
-            />
-            <FilterDropdown
-              label={transGoal("filterpriority")}
-              options={Object.values(priorityOptions)}
-              selected={severityFilter}
-              onChange={onSeverityChange}
-            />
-          </Box>
-        </Box>
-      </Box>
-
-      {/* Filters */}
-
-      {/* Goals List or Empty State */}
+     
       {filteredGoals?.length === 0 ? (
         <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
       ) : (

@@ -87,15 +87,7 @@ const CreateGoal = () => {
     }
   };
   // In your parent component where you're calling ProjectGoalForm
-  const handleProjectChange = (value: string | number | string[] | Date): void => {
-    const selectedId = String(value); // Convert to string
-    console.log("Selected project ID:", selectedId);
 
-    const selectedProject = getAllProjects?.find((project:any) => project.id === selectedId);
-    console.log("Selected project:", selectedProject);
-
-    // Add your logic here - navigate, update state, etc.
-  };
 
 
   return (
@@ -126,7 +118,7 @@ const CreateGoal = () => {
           errors={errors}
           currentProjectOptions={currentProjectOptions} // Array of projects for dropdown
           currentProject={currentProject} // Current selected project
-          handleProjectChange={handleProjectChange}
+          
         />
       </Box>
 

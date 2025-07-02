@@ -167,6 +167,12 @@ const EditGoalPage = () => {
   if (goalError) {
     showSnackbar(transGoal("fetchError") || "Error fetching goal data", SNACKBAR_SEVERITY.ERROR);
   }
+  const handleProjectChange = (value: string | number | string[] | Date): void => {
+    const selectedId = String(value); 
+
+    const selectedProject = getAllProjects?.find((project: any) => project.id === selectedId);
+
+  };
 
   return (
     <Box
@@ -197,10 +203,7 @@ const EditGoalPage = () => {
           setGoalData={setGoalData}
           errors={errors}
           currentProjectOptions={[]}
-          currentProject={undefined}
-          handleProjectChange={function (value: string | number | string[] | Date): void {
-            throw new Error("Function not implemented.");
-          }}
+          currentProject={currentProject?.name}
         />
       </Box>
 

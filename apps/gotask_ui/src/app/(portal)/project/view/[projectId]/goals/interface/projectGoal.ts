@@ -95,7 +95,6 @@ export interface ProjectGoalFormProps {
   rteRef?: RefObject<RichTextEditorRef | null>;
   currentProjectOptions: SelectOption[];
   currentProject: Project | undefined;
-  handleProjectChange: (value: string | number | string[] | Date) => void;
 }
 
 export interface GoalFormHeaderProps {

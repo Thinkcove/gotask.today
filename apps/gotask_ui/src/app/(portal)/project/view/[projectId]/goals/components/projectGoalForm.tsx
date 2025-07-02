@@ -14,8 +14,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
   rteRef,
   setGoalData,
   currentProjectOptions,
-  currentProject,
-  handleProjectChange
+  currentProject
 }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   console.log("currentProject", currentProjectOptions);
@@ -101,7 +100,6 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
             type="select"
             options={currentProjectOptions}
             value={currentProject?.id || ""}
-            onChange={handleProjectChange}
             disabled={true}
           />
         </Grid>

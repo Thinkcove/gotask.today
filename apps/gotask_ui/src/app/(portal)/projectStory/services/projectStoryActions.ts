@@ -43,7 +43,6 @@ export const addCommentToProjectStory = async (storyId: string, payload: AddComm
   });
 };
 
-
 export const getStoriesByProject = async (
   projectId: string,
   queryParams: Omit<StoryQueryParams, "endDate"> = {}
@@ -82,7 +81,6 @@ export const getStoriesByProject = async (
     };
   });
 };
-
 
 //  Get Single Story by ID
 export const getProjectStoryById = async (storyId: string) => {

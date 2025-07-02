@@ -13,13 +13,15 @@ interface LaptopInputsProps {
   startIndex?: number;
   errors?: { [key: string]: string };
   selectedAssetType?: IAssetType;
+  systemTypeOptions: string[];
 }
 
 const LaptopInputs: React.FC<LaptopInputsProps> = ({
   formData,
   errors,
   onChange,
-  selectedAssetType
+  selectedAssetType,
+  systemTypeOptions
 }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   return (
@@ -159,13 +161,17 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
             <>
               <Grid item xs={12} sm={4}>
                 <FormField
-                  label={transasset("antivirus")}
-                  type="text"
-                  placeholder={transasset("antivirus")}
-                  value={formData.antivirus}
-                  onChange={(val) => onChange("antivirus", String(val))}
+                  label={`${transasset("systemtype")} ${transasset("required")}`}
+                  type="select"
+                  placeholder={transasset("systemtype")}
+                  value={formData.systemType}
+                  error={errors?.systemtype}
+                  required
+                  options={systemTypeOptions}
+                  onChange={(val) => onChange("systemType", String(val))}
                 />
               </Grid>
+
               <Grid item xs={12} sm={4}>
                 <FormField
                   label={transasset("recoveryKey")}
@@ -207,6 +213,17 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                     />
                   }
                   label={transasset("isencrypted")}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.antivirus}
+                      onChange={(e) => onChange("antivirus", e.target.checked)}
+                    />
+                  }
+                  label={transasset("antivirus")}
                 />
               </Grid>
             </>

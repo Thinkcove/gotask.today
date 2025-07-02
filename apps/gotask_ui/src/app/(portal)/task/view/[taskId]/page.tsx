@@ -1,12 +1,10 @@
-// app/task/view/[taskId]/page.tsx
-
 import { generateDynamicMetadata } from "@/app/common/utils/metadataUtil";
 import ViewAction from "./viewAction";
 
 export async function generateMetadata(props: { params: { taskId?: string } }) {
   const taskId = props.params?.taskId;
 
-  // Optional fallback for safety
+  //  fallback for safety
   if (!taskId) {
     return {
       title: "Go Task Today",

@@ -789,5 +789,26 @@
     "placeholder": "Write your content here...",
     "submit": "Submit",
     "cancel": "Cancel"
+  },
+  "meta": {
+    "task": {
+      "title": "Task Details",
+      "description": "Detailed view of a task"
+    },
+    "project": {
+      "title": "Project Overview",
+      "description": "Detailed view of a project"
+    },
+    "story": {
+      "title": "Story Details",
+      "description": "Details about the story"
+    },
+    "role": {
+      "title": "Role Information",
+      "description": "Information about the role"
+    },
+    "defaultTitle": "Go Task Today",
+    "defaultDescription": "Seamless Workflow Management",
+    "siteName": "Go Task Today"
   }
 }

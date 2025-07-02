@@ -1,14 +1,7 @@
 "use client";
-import React from "react";
-import {
-  Box,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  Typography
-} from "@mui/material";
+
+import React, { RefObject, useMemo } from "react";
+import { Box, Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import {
   KPI_FREQUENCY,
@@ -18,86 +11,112 @@ import {
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { Template } from "../service/templateInterface";
+import ReusableEditor from "@/app/component/richText/textEditor";
+import { RichTextEditorRef } from "mui-tiptap";
+import useSWR from "swr";
+import { fetchUsers } from "../../user/services/userAction";
+import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 
 interface TemplateInputProps {
   formData: Partial<Template>;
   handleChange: <K extends keyof Partial<Template>>(field: K, value: Partial<Template>[K]) => void;
   errors: { [key: string]: string };
+  handleInputChange?: (name: string, value: string) => void;
+  readOnlyFields?: string[];
+  onDescriptionSave?: () => void;
+  rteRef?: RefObject<RichTextEditorRef | null>;
 }
 
-const TemplateInput: React.FC<TemplateInputProps> = ({ formData, handleChange, errors }) => {
+const TemplateInput: React.FC<TemplateInputProps> = ({
+  formData,
+  handleChange,
+  errors,
+  handleInputChange,
+  onDescriptionSave,
+  readOnlyFields = [],
+  rteRef
+}) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
+  const isReadOnly = (field: string) => readOnlyFields.includes(field);
+  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
+
+  const userList = useMemo(() => {
+    return mapUsersToMentions(fetchedUsers || []);
+  }, [fetchedUsers]);
+
+  const handleDescriptionSave = (html: string) => {
+    handleInputChange?.("description", html);
+    if (onDescriptionSave) {
+      onDescriptionSave();
+    }
+  };
 
   return (
     <>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" },
-          gap: 2,
-          mb: 2
-        }}
-      >
-        <FormField
-          label={`${transkpi("name")} ${transkpi("required")}`}
-          type="text"
-          required
-          placeholder={transkpi("entername")}
-          value={formData.title}
-          onChange={(val) => handleChange("title", String(val))}
-          error={errors.title}
-        />
-        <FormField
-          label={`${transkpi("frequency")} ${transkpi("required")}`}
-          type="select"
-          options={Object.values(KPI_FREQUENCY)}
-          value={formData.frequency}
-          onChange={(val) => handleChange("frequency", String(val))}
-          error={errors.frequency}
-        />
-        <FormField
-          label={transkpi("status")}
-          type="select"
-          options={STATUS_OPTIONS}
-          value={formData.status}
-          onChange={(val) => handleChange("status", String(val))}
-          error={errors.status}
-        />
-      </Box>
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid item xs={12}>
+          <FormField
+            label={`${transkpi("title")} ${transkpi("required")}`}
+            type="text"
+            required
+            placeholder={transkpi("entername")}
+            value={formData.title}
+            onChange={(val) => handleChange("title", String(val))}
+            error={errors.title}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <FormField
+            label={`${transkpi("frequency")} ${transkpi("required")}`}
+            placeholder={transkpi("enterfrequency")}
+            type="select"
+            options={Object.values(KPI_FREQUENCY)}
+            value={formData.frequency}
+            onChange={(val) => handleChange("frequency", String(val))}
+            error={errors.frequency}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <FormField
+            label={`${transkpi("weightage")} ${transkpi("required")}`}
+            type="select"
+            placeholder={transkpi("enterweightage")}
+            options={MEASUREMENT_CRITERIA_OPTIONS.map((opt) => opt.label)}
+            required
+            value={formData.measurement_criteria}
+            onChange={(val) => handleChange("measurement_criteria", Number(val))}
+            error={errors.measurement_criteria}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <FormField
+            label={transkpi("status")}
+            placeholder={transkpi("enterstatus")}
+            type="select"
+            options={STATUS_OPTIONS}
+            value={formData.status}
+            onChange={(val) => handleChange("status", String(val))}
+            error={errors.status}
+          />
+        </Grid>
+      </Grid>
+
       <Box sx={{ mb: 2 }}>
-        <FormField
-          label={transkpi("description")}
-          type="text"
-          placeholder={transkpi("enterdescription")}
-          multiline
-          value={formData.description}
-          sx={{ width: "100%" }}
-          onChange={(val) => handleChange("description", String(val))}
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+          {transkpi("labeldescription")}
+        </Typography>
+        <ReusableEditor
+          content={formData.description || ""}
+          onSave={handleDescriptionSave}
+          placeholder={transkpi("placeholderdescription")}
+          readOnly={isReadOnly("description")}
+          showSaveButton={false}
+          userList={userList}
+          ref={rteRef}
         />
       </Box>
-      <FormControl component="fieldset" sx={{ mb: 3 }}>
-        <FormLabel component="legend">{`${transkpi("weightage")} ${transkpi("required")}`}</FormLabel>
-        <RadioGroup
-          row
-          value={formData.measurement_criteria}
-          onChange={(e) => handleChange("measurement_criteria", e.target.value)}
-          sx={{ flexWrap: "wrap", gap: 1 }}
-        >
-          {MEASUREMENT_CRITERIA_OPTIONS.map((value) => (
-            <FormControlLabel
-              key={value}
-              value={value}
-              control={<Radio />}
-              label={value.toString()}
-            />
-          ))}
-        </RadioGroup>
-        {errors.measurement_criteria && (
-          <Typography color="error.main" fontSize="0.875rem" sx={{ mt: 1 }}>
-            {errors.measurement_criteria}
-          </Typography>
-        )}
-      </FormControl>
     </>
   );
 };

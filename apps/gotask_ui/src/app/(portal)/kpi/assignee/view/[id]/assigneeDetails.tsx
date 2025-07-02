@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, Chip } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
@@ -12,6 +12,9 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
 import { Template } from "../../../service/templateInterface";
+import { mildStatusColor } from "@/app/common/constants/kpi";
+import { getUserStatusColor } from "@/app/common/constants/status";
+import StatusIndicator from "@/app/component/status/statusIndicator";
 
 interface AssigneeDetailProps {
   user: {
@@ -76,27 +79,56 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
         )}
       </Box>
 
-      <Box mb={3}>
-        <Typography variant="body2" color="textSecondary" mb={1}>
-          {transkpi("assignedtemplates")}:
-        </Typography>
+      {/* Assigned Templates as Cards */}
+      <Grid container spacing={2}>
+        {assignedTemplates.flatMap((assignment) =>
+          assignment.template.map((template: Template, i: number) => {
+            const status = template.status?.toLowerCase() || "inactive";
+            const assignmentId = assignment.assignment_id;
 
-        <Box display="flex" flexWrap="wrap" gap={1}>
-          {assignedTemplates && assignedTemplates.length > 0 ? (
-            assignedTemplates.flatMap((assignment) =>
-              assignment.template.map((template: Template, i: number) => (
-                <Chip
-                  key={`${assignment.assignment_id}-${template.id || i}`}
-                  label={template.title}
-                  size="small"
-                />
-              ))
-            )
-          ) : (
-            <Typography variant="body2">{transkpi("notemplatesassigned")}</Typography>
-          )}
-        </Box>
-      </Box>
+            return (
+              <Grid item xs={12} sm={6} md={4} key={`${assignmentId}-${template.id || i}`}>
+                <Box
+                  sx={{
+                    borderRadius: 4,
+                    p: 2,
+                    backgroundColor: mildStatusColor(status),
+                    border: `1px solid ${getUserStatusColor(status)}`,
+                    transition: "transform 0.3s ease",
+                    "&:hover": {
+                      transform: "scale(1.02)",
+                      cursor: "pointer"
+                    }
+                  }}
+                  onClick={() => router.push(`/kpi/assignee/assignedTemplate/${assignmentId}`)}
+                >
+                  <Typography variant="h6" fontWeight={600} mb={1}>
+                    {template.title}
+                  </Typography>
+
+                  <Typography variant="body2" mb={0.5}>
+                    <strong>{transkpi("measurementcriteria")}:</strong>{" "}
+                    {template.measurement_criteria}
+                  </Typography>
+
+                  <Typography variant="body2" mb={0.5}>
+                    <strong>{transkpi("frequency")}:</strong> {template.frequency || "N/A"}
+                  </Typography>
+
+                  <Box display="flex" alignItems="center" mt={1}>
+                    <StatusIndicator
+                      status={status}
+                      getColor={getUserStatusColor}
+                      dotSize={8}
+                      capitalize
+                    />
+                  </Box>
+                </Box>
+              </Grid>
+            );
+          })
+        )}
+      </Grid>
     </Box>
   );
 };

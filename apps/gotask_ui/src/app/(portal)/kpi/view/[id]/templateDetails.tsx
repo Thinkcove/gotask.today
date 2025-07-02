@@ -36,7 +36,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
   const handleDeleteConfirm = async () => {
     try {
       await deleteTemplate(template.id);
-      setSnackbarMessage(transkpi("deleteSuccess"));
+      setSnackbarMessage(transkpi("deletesuccess"));
       setSnackbarSeverity("success");
       setOpenDialog(false);
       setSnackbarOpen(true);

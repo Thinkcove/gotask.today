@@ -7,6 +7,7 @@ import TemplateDetail from "./templateDetails";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import ModuleHeader from "@/app/component/header/moduleHeader";
+import { Template } from "../../service/templateInterface";
 
 const Page = () => {
   const { id } = useParams();
@@ -21,7 +22,7 @@ const Page = () => {
   return data && !("error" in data) ? (
     <>
       <ModuleHeader name={transkpi("templatetitle")} />
-      <TemplateDetail template={data} mutate={mutate} />
+      <TemplateDetail template={data as Template} mutate={mutate} />
     </>
   ) : null;
 };

@@ -43,8 +43,7 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
       type: String
     },
     measurement_criteria: {
-      type: String,
-      required: true
+      type: String
     },
     frequency: {
       type: String,
@@ -83,7 +82,7 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
     },
     change_History: [
       {
-        changed_By: { type: String, required: true, ref: "User" },
+        changed_By: { type: String },
         changed_At: { type: Date, default: Date.now },
         changes: { type: Object, default: {} }
       }

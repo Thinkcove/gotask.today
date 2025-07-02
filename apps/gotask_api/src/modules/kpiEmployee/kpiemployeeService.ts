@@ -45,11 +45,10 @@ const createKpiAssignment = async (
     // Validate required fields
     if (
       !filteredData.user_id ||
-      !filteredData.measurement_criteria ||
       !filteredData.frequency ||
       !filteredData.weightage ||
       !filteredData.assigned_by ||
-      (!filteredData.template_id && (!filteredData.kpi_Title || !filteredData.kpi_Description))
+      (!filteredData.template_id && !filteredData.kpi_Title)
     ) {
       return {
         success: false,
@@ -86,8 +85,6 @@ const createKpiAssignment = async (
         };
       }
       filteredData.kpi_Title = template.title;
-      filteredData.kpi_Description = template.description;
-      filteredData.measurement_criteria = template.measurement_criteria;
       filteredData.frequency = filteredData.frequency || template.frequency;
     }
 
@@ -95,8 +92,7 @@ const createKpiAssignment = async (
     if (filteredData.saveAs_Template) {
       const templateData: Partial<IKpiTemplate> = {
         title: filteredData.kpi_Title,
-        description: filteredData.kpi_Description,
-        measurement_criteria: filteredData.measurement_criteria,
+        measurement_criteria: undefined,
         frequency: filteredData.frequency,
         status: filteredData.status
       };

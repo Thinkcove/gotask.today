@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -7,6 +7,7 @@ import { Template } from "../service/templateInterface";
 import { createTemplate } from "../service/templateAction";
 import { useRouter } from "next/navigation";
 import TemplateInput from "./templateInput";
+import { RichTextEditorRef } from "mui-tiptap";
 
 interface CreateTemplateProps {
   mutate?: () => void;
@@ -20,8 +21,8 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     title: "",
     description: "",
     frequency: "",
-    status: "",
-    measurement_criteria: ""
+    status: transkpi("active"),
+    measurement_criteria: 0
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -47,19 +48,19 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const rteRef = useRef<RichTextEditorRef | null>(null);
+
   const handleCreate = async () => {
+    const html = rteRef.current?.editor?.getHTML?.();
+    const updatedData = {
+      ...formData,
+      description: html
+    };
     if (!validateForm()) return;
 
-    const newTemplate: Partial<Template> = {
-      title: formData.title,
-      description: formData.description || undefined,
-      measurement_criteria: formData.measurement_criteria,
-      frequency: formData.frequency,
-      status: formData.status
-    };
-
     try {
-      await createTemplate(newTemplate);
+      const payload = updatedData;
+      await createTemplate(payload);
       router.back();
     } catch (err: any) {
       console.error("Error creating template:", err);
@@ -69,6 +70,10 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
 
   const handleCancel = () => {
     router.back();
+  };
+
+  const handleInputChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -152,7 +157,13 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
           width: "100%"
         }}
       >
-        <TemplateInput formData={formData} handleChange={handleChange} errors={errors} />
+        <TemplateInput
+          formData={formData}
+          handleChange={handleChange}
+          errors={errors}
+          handleInputChange={handleInputChange}
+          rteRef={rteRef}
+        />
 
         {errors.general && (
           <Typography color="error.main" fontSize="0.875rem" mb={2}>

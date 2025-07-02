@@ -3,14 +3,14 @@ import { IAssetAttributes } from "../../asset/interface/asset";
 export interface ISkill {
   name: string;
   skill_id?: string;
-  proficiency: number; 
-  experience?: number; 
+  proficiency: number;
+  experience?: number;
 }
 
 export interface ICertificate {
-  _id?: string; 
+  _id?: string;
   name: string;
-  obtained_date: Date | string; 
+  obtained_date: Date | string;
   notes?: string;
 }
 

@@ -11,14 +11,28 @@ import ProjectGoalForm from "../../components/projectGoalForm";
 import { createWeeklyGoal } from "../../goalservices/projectGoalAction";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import FormHeader from "@/app/(portal)/access/components/FormHeader";
+import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 
 const CreateGoal = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const { projectId } = useParams();
+  const projectID = projectId as string;
+
   const router = useRouter();
   const { user } = useUser();
 
-  const projectID = projectId as string;
+  const { getAllProjects } = useAllProjects();
+  console.log("getAllProjects", getAllProjects);
+
+  // Step 2: Find current project
+  const currentProject = getAllProjects?.find(
+    (project: { id: string }) => project.id === projectID
+  );
+
+  // Step 3: Create options array with only the current project
+  const currentProjectOptions = currentProject ? [currentProject] : [];
+
+  console.log("Current project:", currentProject);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -72,6 +86,17 @@ const CreateGoal = () => {
       setIsSubmitting(false);
     }
   };
+  // In your parent component where you're calling ProjectGoalForm
+  const handleProjectChange = (value: string | number | string[] | Date): void => {
+    const selectedId = String(value); // Convert to string
+    console.log("Selected project ID:", selectedId);
+
+    const selectedProject = getAllProjects?.find((project:any) => project.id === selectedId);
+    console.log("Selected project:", selectedProject);
+
+    // Add your logic here - navigate, update state, etc.
+  };
+
 
   return (
     <Box
@@ -90,6 +115,7 @@ const CreateGoal = () => {
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         showModuleHeader={true}
+        projectname={currentProject?.name}
       />
 
       <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
@@ -98,6 +124,9 @@ const CreateGoal = () => {
           goalData={goalData}
           setGoalData={setGoalData}
           errors={errors}
+          currentProjectOptions={currentProjectOptions} // Array of projects for dropdown
+          currentProject={currentProject} // Current selected project
+          handleProjectChange={handleProjectChange}
         />
       </Box>
 

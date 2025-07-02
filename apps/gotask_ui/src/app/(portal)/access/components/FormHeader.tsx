@@ -13,12 +13,13 @@ const FormHeader: React.FC<GoalFormHeaderProps> = ({
   onShowHistory,
   isSubmitting = false,
   hasHistory = false,
-  showModuleHeader = false
+  showModuleHeader = false,
+  projectname,
 }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   return (
     <>
-      {showModuleHeader && <ModuleHeader name={transGoal("goal")} />}
+      {showModuleHeader && <ModuleHeader name={projectname}/>}
 
       <Box
         sx={{

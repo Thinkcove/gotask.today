@@ -18,6 +18,7 @@ import {
 import { GoalComment, GoalData } from "../../interface/projectGoal";
 import ProjectGoalView from "../../components/projectGoalView";
 import ModuleHeader from "@/app/component/header/moduleHeader";
+import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 
 // Fetcher functions for SWR
 const fetchGoalWithComments = async (goalId: string) => {
@@ -53,7 +54,6 @@ const ProjectGoalViewPage = () => {
 
   const projectID = projectId as string;
   const goalID = goalId as string;
-
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -191,9 +191,17 @@ const ProjectGoalViewPage = () => {
 
     router.push(`/project/view/${projectID}/goals/editgoal/${goalID}`);
   };
+  const { getAllProjects } = useAllProjects();
+  console.log("getAllProjects", getAllProjects);
+
+  // Step 2: Find current project
+  const currentProject = getAllProjects?.find(
+    (project: { id: string }) => project.id === projectID
+  );
+
   return (
     <>
-      <ModuleHeader name={transGoal("goal")} />
+      <ModuleHeader name={currentProject.name} />
       <Box sx={{ pt: 2 }}>
         <ProjectGoalView
           goalData={projectGoalView || null}

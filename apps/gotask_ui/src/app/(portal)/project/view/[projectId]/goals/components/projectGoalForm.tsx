@@ -1,5 +1,5 @@
 import React from "react";
-import FormField from "@/app/component/input/formField";
+import FormField, { SelectOption } from "@/app/component/input/formField";
 import Grid from "@mui/material/Grid/Grid";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -12,9 +12,13 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
   goalData,
   errors,
   rteRef,
-  setGoalData
+  setGoalData,
+  currentProjectOptions,
+  currentProject,
+  handleProjectChange
 }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
+  console.log("currentProject", currentProjectOptions);
 
   return (
     <>
@@ -90,7 +94,19 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
             onChange={(val) => setGoalData({ ...goalData, priority: val as string })}
           />
         </Grid>
+        <Grid item xs={12} sm={4}>
+          {" "}
+          <FormField
+            label="Project"
+            type="select"
+            options={currentProjectOptions}
+            value={currentProject?.id || ""}
+            onChange={handleProjectChange}
+            disabled={true}
+          />
+        </Grid>
       </Grid>
+
       <Grid item xs={12} sm={4} pt={2}>
         <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
           {transGoal("description")}

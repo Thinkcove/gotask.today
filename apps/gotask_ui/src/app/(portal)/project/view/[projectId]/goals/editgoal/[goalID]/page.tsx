@@ -15,6 +15,7 @@ import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import { UpdateHistoryItem, User } from "../../interface/projectGoal";
 import FormHeader from "../../../../../../access/components/FormHeader";
+import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 
 const fetchGoalData = async (goalId: string) => {
   if (!goalId) throw new Error("Goal ID is required");
@@ -34,6 +35,13 @@ const EditGoalPage = () => {
 
   const projectID = projectId as string;
   const goalID = goalId as string;
+  const { getAllProjects } = useAllProjects();
+  console.log("getAllProjects", getAllProjects);
+
+  // Step 2: Find current project
+  const currentProject = getAllProjects?.find(
+    (project: { id: string }) => project.id === projectID
+  );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [history, setHistory] = useState(false);
@@ -179,6 +187,7 @@ const EditGoalPage = () => {
         isSubmitting={isSubmitting}
         hasHistory={(projectGoalHistory?.updateHistory ?? []).length > 0}
         showModuleHeader={true}
+        projectname={currentProject?.name}
       />
 
       <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
@@ -187,6 +196,11 @@ const EditGoalPage = () => {
           goalData={goalData}
           setGoalData={setGoalData}
           errors={errors}
+          currentProjectOptions={[]}
+          currentProject={undefined}
+          handleProjectChange={function (value: string | number | string[] | Date): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       </Box>
 

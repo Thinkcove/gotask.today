@@ -43,7 +43,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   }
 
   return (
-    <Box>
+    <Box sx={{p:2}}>
       <Box
         sx={{
           borderRadius: 4,
@@ -62,17 +62,8 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
               <IconButton color="primary" onClick={handleBack}>
                 <ArrowBack />
               </IconButton>
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(goalData);
-                }}
-                sx={{ ml: "auto" }}
-                color="primary"
-              >
-                <Edit />
-              </IconButton>
             </Grid>
+
             <Grid item xs>
               <Typography
                 variant="h5"
@@ -83,6 +74,16 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
               </Typography>
               <StatusIndicator status={goalData.status} getColor={getStatusColor} />
             </Grid>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(goalData);
+              }}
+              sx={{ ml: "auto" }}
+              color="primary"
+            >
+              <Edit />
+            </IconButton>
           </Grid>
 
           {/* Description */}

@@ -4,16 +4,9 @@ import { ArrowBack, History } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import ModuleHeader from "@/app/component/header/moduleHeader";
+import { GoalFormHeaderProps } from "../interface/projectGoal";
 
-interface GoalFormHeaderProps {
-  isEdit: boolean;
-  onCancel: () => void;
-  onSubmit: () => void;
-  onShowHistory?: () => void;
-  isSubmitting?: boolean;
-  hasHistory?: boolean;
-  showModuleHeader?: boolean;
-}
+
 
 const GoalFormHeader: React.FC<GoalFormHeaderProps> = ({
   isEdit,

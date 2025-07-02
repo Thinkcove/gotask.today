@@ -89,3 +89,13 @@ export interface ProjectGoalFormProps {
   onSubmit?: (payload: GoalDataPayload) => void;
   rteRef?: RefObject<RichTextEditorRef | null>;
 }
+
+export interface GoalFormHeaderProps {
+  isEdit: boolean;
+  onCancel: () => void;
+  onSubmit: () => void;
+  onShowHistory?: () => void;
+  isSubmitting?: boolean;
+  hasHistory?: boolean;
+  showModuleHeader?: boolean;
+}

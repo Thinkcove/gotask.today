@@ -129,7 +129,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
           py: 2,
           scrollBehavior: "smooth",
           "&::-webkit-scrollbar": {
-            width: "6px", // thinner width
+            width: "6px", 
             height: "6px"
           },
           "&::-webkit-scrollbar-track": {

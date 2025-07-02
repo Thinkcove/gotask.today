@@ -74,27 +74,15 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
     await mutate();
   };
 
-  // const confirmDelete = async () => {
-  //   if (deletingId) {
-  //     const cert = certificates.find((c) => c._id === deletingId);
-  //     if (cert) {
-  //       await deleteUserCertificate(userId, cert._id!);
-
-  //       await mutate();
-  //     }
-  //   }
-  //   setDeletingId(null);
-  //   setConfirmOpen(false);
-  // };
   const confirmDelete = async () => {
     if (deletingId) {
-      await deleteUserCertificate(userId, deletingId); 
-      await mutate(); 
+      await deleteUserCertificate(userId, deletingId);
+      await mutate();
     }
     setDeletingId(null); // reset state
     setConfirmOpen(false); // close dialog
   };
-  
+
   return (
     <Box mt={3}>
       {/* Add Button */}
@@ -194,19 +182,12 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
                     <IconButton onClick={() => openEditDialog(cert)}>
                       <EditIcon fontSize="small" />
                     </IconButton>
-                    {/* <IconButton
-                      onClick={() => {
-                        setDeletingId(cert._id ?? "");
-                        setConfirmOpen(true);
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" color="error" />
-                    </IconButton> */}
+
                     <IconButton
                       onClick={() => {
                         if (cert._id) {
                           setDeletingId(cert._id);
-                          setConfirmOpen(true); 
+                          setConfirmOpen(true);
                         }
                       }}
                     >

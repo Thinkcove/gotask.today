@@ -7,7 +7,6 @@ import { Template } from "../service/templateInterface";
 import { createTemplate } from "../service/templateAction";
 import { useRouter } from "next/navigation";
 import TemplateInput from "./templateInput";
-import { RichTextEditorRef } from "mui-tiptap";
 
 interface CreateTemplateProps {
   mutate?: () => void;
@@ -48,13 +47,9 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const rteRef = useRef<RichTextEditorRef | null>(null);
-
   const handleCreate = async () => {
-    const html = rteRef.current?.editor?.getHTML?.();
     const updatedData = {
-      ...formData,
-      description: html
+      ...formData
     };
     if (!validateForm()) return;
 
@@ -162,7 +157,6 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
           handleChange={handleChange}
           errors={errors}
           handleInputChange={handleInputChange}
-          rteRef={rteRef}
         />
 
         {errors.general && (

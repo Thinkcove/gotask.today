@@ -11,11 +11,8 @@ import {
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { Template } from "../service/templateInterface";
-import ReusableEditor from "@/app/component/richText/textEditor";
-import { RichTextEditorRef } from "mui-tiptap";
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
-import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 
 interface TemplateInputProps {
   formData: Partial<Template>;
@@ -23,33 +20,17 @@ interface TemplateInputProps {
   errors: { [key: string]: string };
   handleInputChange?: (name: string, value: string) => void;
   readOnlyFields?: string[];
-  onDescriptionSave?: () => void;
-  rteRef?: RefObject<RichTextEditorRef | null>;
 }
 
 const TemplateInput: React.FC<TemplateInputProps> = ({
   formData,
   handleChange,
   errors,
-  handleInputChange,
-  onDescriptionSave,
-  readOnlyFields = [],
-  rteRef
+  readOnlyFields = []
 }) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
   const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
-
-  const userList = useMemo(() => {
-    return mapUsersToMentions(fetchedUsers || []);
-  }, [fetchedUsers]);
-
-  const handleDescriptionSave = (html: string) => {
-    handleInputChange?.("description", html);
-    if (onDescriptionSave) {
-      onDescriptionSave();
-    }
-  };
 
   return (
     <>
@@ -65,6 +46,7 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
             error={errors.title}
           />
         </Grid>
+
         <Grid item xs={12} md={4}>
           <FormField
             label={`${transkpi("frequency")} ${transkpi("required")}`}
@@ -101,22 +83,20 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
             error={errors.status}
           />
         </Grid>
-      </Grid>
 
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-          {transkpi("labeldescription")}
-        </Typography>
-        <ReusableEditor
-          content={formData.description || ""}
-          onSave={handleDescriptionSave}
-          placeholder={transkpi("placeholderdescription")}
-          readOnly={isReadOnly("description")}
-          showSaveButton={false}
-          userList={userList}
-          ref={rteRef}
-        />
-      </Box>
+        <Grid item xs={12}>
+          <FormField
+            label={transkpi("labeldescription")}
+            type="text"
+            placeholder={transkpi("placeholderdescription")}
+            value={formData.description}
+            onChange={(val) => handleChange("description", String(val))}
+            error={errors.description}
+            disabled={isReadOnly("description")}
+            multiline
+          />
+        </Grid>
+      </Grid>
     </>
   );
 };

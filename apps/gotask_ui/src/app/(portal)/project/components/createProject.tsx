@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useRef, useState } from "react";
+import React, { useState, useRef } from "react";
 import { IProjectField, Project, PROJECT_STATUS } from "../interfaces/projectInterface";
 import { createProject } from "../services/projectAction";
 import ProjectInput from "./projectInputs";
@@ -11,6 +10,7 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { RichTextEditorRef } from "mui-tiptap";
+import { User } from "../../user/interfaces/userInterface";
 
 interface CreateProjectProps {
   open: boolean;
@@ -25,41 +25,43 @@ const initialFormState: IProjectField = {
   organization_id: ""
 };
 
-const CreateProject: React.FC<CreateProjectProps> = ({ open, onClose, mutate }) => {
-  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
   const rteRef = useRef<RichTextEditorRef>(null);
+  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+
+  const [formData, setFormData] = useState<IProjectField>(initialFormState);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-  const [formData, setFormData] = useState<IProjectField>(initialFormState);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  // Validate required fields
-  const validateForm = () => {
+  const handleChange = (name: string, value: string | Date | Project[] | User[]) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value instanceof Date ? value.toISOString().split("T")[0] : value
+    }));
+  };
+
+  const validateForm = (updatedForm: IProjectField) => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name = transproject("Projecttitle");
-    if (!formData.description) newErrors.description = transproject("description");
-    if (!formData.status) newErrors.status = transproject("status");
-    if (!formData.organization_id) newErrors.organization_id = transproject("organization");
+    if (!updatedForm.name) newErrors.name = transproject("Projecttitle");
+    if (!updatedForm.description) newErrors.description = transproject("description");
+    if (!updatedForm.status) newErrors.status = transproject("status");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (field: keyof IProjectField, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
   const handleSubmit = async () => {
-    const html = rteRef.current?.editor?.getHTML?.() || formData.description;
-    handleChange("description", html);
+    const html = rteRef.current?.editor?.getHTML?.() || "";
+    const updatedForm = { ...formData, description: html };
 
-    if (!validateForm()) return;
+    if (!validateForm(updatedForm)) return;
 
     try {
-      await createProject({ ...formData, description: html });
+      await createProject(updatedForm);
       await mutate();
       setSnackbar({
         open: true,

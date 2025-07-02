@@ -1,7 +1,6 @@
 "use client";
-
-import React, { useMemo, RefObject } from "react";
-import { Grid } from "@mui/material";
+import React, { RefObject, useMemo } from "react";
+import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { IProjectField, PROJECT_WORKFLOW } from "../interfaces/projectInterface";
 import { useAllOrganizations } from "../../organization/services/organizationAction";
@@ -9,6 +8,9 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import ReusableEditor from "@/app/component/richText/textEditor";
 import { RichTextEditorRef } from "mui-tiptap";
+import useSWR from "swr";
+import { fetchUsers } from "../../user/services/userAction";
+import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 
 interface IProjectInputProps {
   formData: IProjectField;
@@ -18,23 +20,24 @@ interface IProjectInputProps {
   rteRef?: RefObject<RichTextEditorRef | null>;
 }
 
-const ProjectInput: React.FC<IProjectInputProps> = ({
+const ProjectInput = ({
   formData,
   errors,
   readOnlyFields = [],
   handleChange,
   rteRef
-}) => {
+}: IProjectInputProps) => {
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-  const { getOrganizations } = useAllOrganizations();
-
-  const isReadOnly = (field: string) => readOnlyFields.includes(field);
-
   const currentStatus = formData.status;
   const allowedStatuses = PROJECT_WORKFLOW[currentStatus] || [];
   const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
+  const { getOrganizations } = useAllOrganizations();
+  const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
-  const organizationOptions = useMemo(() => getOrganizations || [], [getOrganizations]);
+  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
+  const userList = useMemo(() => {
+    return mapUsersToMentions(fetchedUsers || []);
+  }, [fetchedUsers]);
 
   const handleDescriptionSave = (html: string) => {
     handleChange("description", html);
@@ -55,6 +58,9 @@ const ProjectInput: React.FC<IProjectInputProps> = ({
         />
       </Grid>
       <Grid item xs={12}>
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+          {transproject("labeldescription")}
+        </Typography>
         <ReusableEditor
           ref={rteRef}
           content={formData.description || ""}
@@ -62,7 +68,7 @@ const ProjectInput: React.FC<IProjectInputProps> = ({
           placeholder={transproject("placeholderdescription")}
           readOnly={isReadOnly("description")}
           showSaveButton={false}
-          userList={[]}
+          userList={userList}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -84,7 +90,7 @@ const ProjectInput: React.FC<IProjectInputProps> = ({
           type="select"
           value={formData.organization_id}
           onChange={(value) => handleChange("organization_id", String(value))}
-          options={organizationOptions}
+          options={getOrganizations}
           required
           disabled={isReadOnly("organization_id")}
           placeholder={transproject("placeholderorganization")}

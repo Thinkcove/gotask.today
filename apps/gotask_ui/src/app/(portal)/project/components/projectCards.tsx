@@ -8,12 +8,13 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { Project } from "../interfaces/projectInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import EllipsisText from "@/app/component/text/ellipsisText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 interface ProjectCardProps {
   projects: Project[] | null;
@@ -65,7 +66,10 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
 
                 {/* Description */}
                 <Box sx={{ mb: 2, pt: 1 }}>
-                  <EllipsisText text={filteredProject.description!} maxWidth={350} />
+                  <RichTextReadOnly
+                    content={filteredProject.description!}
+                    extensions={getTipTapExtensions()}
+                  />
                 </Box>
 
                 <Box display="flex" alignItems="center" sx={{ mb: 2 }}>

@@ -39,7 +39,7 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onClick }) => {
         </Typography>
 
         {/* Info Row */}
-        <Stack direction="row" gap={1.5} flexWrap="wrap" alignItems="center" mb={1.5}>
+        <Stack direction="row" gap={1} flexWrap="wrap" alignItems="center" mb={1.5}>
           <StatusIndicator status={goal.status} getColor={getStatusColor} />
 
           {goal.status === "completed" && <input type="checkbox" disabled checked />}

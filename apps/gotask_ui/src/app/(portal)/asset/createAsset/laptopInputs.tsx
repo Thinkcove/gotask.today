@@ -29,7 +29,8 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
       <Box>
         <Grid container spacing={2}>
           {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
-            selectedAssetType?.name === ASSET_TYPE.MOBILE) && (
+            selectedAssetType?.name === ASSET_TYPE.MOBILE ||
+            selectedAssetType?.name === ASSET_TYPE.DESKTOP) && (
             <>
               <Grid item xs={12} sm={4}>
                 <FormField
@@ -157,7 +158,8 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
               </Grid>
             </>
           )}
-          {selectedAssetType?.name === ASSET_TYPE.LAPTOP && (
+          {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
+            selectedAssetType?.name === ASSET_TYPE.DESKTOP) && (
             <>
               <Grid item xs={12} sm={4}>
                 <FormField
@@ -171,15 +173,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                   onChange={(val) => onChange("systemType", String(val))}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
-                <FormField
-                  label={transasset("antivirus")}
-                  type="text"
-                  placeholder={transasset("antivirus")}
-                  value={formData.antivirus}
-                  onChange={(val) => onChange("antivirus", String(val))}
-                />
-              </Grid>
+
               <Grid item xs={12} sm={4}>
                 <FormField
                   label={transasset("recoveryKey")}
@@ -221,6 +215,17 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                     />
                   }
                   label={transasset("isencrypted")}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.antivirus}
+                      onChange={(e) => onChange("antivirus", e.target.checked)}
+                    />
+                  }
+                  label={transasset("antivirus")}
                 />
               </Grid>
             </>

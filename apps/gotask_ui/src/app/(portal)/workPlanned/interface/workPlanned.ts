@@ -45,3 +45,34 @@ export interface Filters {
   userIds: string[];
   projectIds: string[];
 }
+
+export interface WorkPlannedGridProps {
+  data: WorkPlannedEntry[];
+  fromDate: string;
+  toDate: string;
+  selectedProjects: string[];
+  leaveData?: LeaveEntry[];
+}
+
+export interface LeaveEntry {
+  user_id: string;
+  user_name: string;
+  from_date: string;
+  to_date: string;
+  leave_type: string;
+  id: string;
+  created_on: string;
+  updated_on: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Group tasks by user
+export interface GroupedTasks {
+  [userKey: string]: {
+    userName: string;
+    tasks: WorkPlannedEntry[];
+    totalEstimation: number;
+    leaves: LeaveEntry[];
+  };
+}

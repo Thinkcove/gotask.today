@@ -8,7 +8,6 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { Project } from "../interfaces/projectInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import EllipsisText from "@/app/component/text/ellipsisText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
@@ -63,11 +62,6 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                   </Typography>
                 </Box>
 
-                {/* Description */}
-                <Box sx={{ mb: 2, pt: 1 }}>
-                  <EllipsisText text={filteredProject.description!} maxWidth={350} />
-                </Box>
-
                 <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
                   <Group sx={{ fontSize: 20, color: "#741B92", mr: 1 }} />
                   <Box display="flex" alignItems="center">
@@ -115,7 +109,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                         }
                       }}
                       onClick={() => {
-                        router.push(`/project/viewProject/${project.id}`);
+                        router.push(`/project/view/${project.id}`);
                       }}
                     >
                       <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>

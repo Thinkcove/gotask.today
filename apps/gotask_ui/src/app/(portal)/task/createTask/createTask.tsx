@@ -94,7 +94,7 @@ const CreateTask: React.FC = () => {
       });
 
       if (storyId) {
-        router.push(`/project/viewProject/${formData.project_id}/stories/${storyId}`);
+        router.push(`/project/view/${formData.project_id}/stories/${storyId}`);
       } else {
         router.push("/task/projects?refresh=true");
       }

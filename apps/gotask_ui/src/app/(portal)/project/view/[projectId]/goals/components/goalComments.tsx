@@ -18,6 +18,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({
   goalId,
   user
 }) => {
+
   const [editValue, setEditValue] = useState("");
   const [editingComment, setEditingComment] = useState<GoalComment | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -84,7 +85,7 @@ const GoalComments: React.FC<GoalCommentProps> = ({
       await onSave({
         goal_id: goalId,
         comment: newComment.trim(),
-        user_id: user.id
+        user_id: user?.id
       });
       setNewComment("");
       setIsFocused(false);
@@ -118,9 +119,8 @@ const GoalComments: React.FC<GoalCommentProps> = ({
               variant="contained"
               sx={{ backgroundColor: "#741B92", textTransform: "none" }}
               onClick={handlePostComment}
-              disabled={isSubmitting || !newComment.trim()}
             >
-              {isSubmitting ? transGoal("saving") : transGoal("savecomment")}
+              {transGoal("savecomment")}
             </Button>
             <Button
               variant="outlined"
@@ -167,8 +167,8 @@ const GoalComments: React.FC<GoalCommentProps> = ({
       >
         {displayedComments.map((comment, index) => {
           const isEditing = editingComment?.id === comment.id;
-          const isOwner = comment.user_id === user.id;
-          const username = user.name;
+          const isOwner = comment.user_id === user?.id;
+          const username = user?.name;
 
           return (
             <Box key={comment.id || index} sx={{ display: "flex", gap: 2, pt: 2 }}>
@@ -219,7 +219,6 @@ const GoalComments: React.FC<GoalCommentProps> = ({
                           border: "2px solid #741B92",
                           px: 2,
                           textTransform: "none",
-                          "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
                         }}
                         onClick={() => {
                           setEditingComment(null);

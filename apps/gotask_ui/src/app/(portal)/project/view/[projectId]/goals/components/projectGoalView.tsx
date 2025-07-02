@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
@@ -11,6 +10,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { GoalComment, ProjectGoalViewProps } from "../interface/projectGoal";
 import GoalComments from "./goalComments";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   goalData,
@@ -18,9 +19,9 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   handleSaveComment,
   handleEditComment,
   handleDeleteComment,
-  user
+  user,
+  handleBack
 }) => {
-  const router = useRouter();
   const comments: GoalComment[] = goalData?.comments || [];
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
@@ -57,7 +58,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
         <Box sx={{ maxHeight: "calc(100vh - 160px)", overflowY: "auto" }}>
           <Grid container alignItems="center" mb={3}>
             <Grid item xs="auto">
-              <IconButton color="primary" onClick={() => router.back()}>
+              <IconButton color="primary" onClick={handleBack}>
                 <ArrowBack />
               </IconButton>
             </Grid>
@@ -78,17 +79,10 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
             <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
               {transGoal("description")}
             </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: "text.primary",
-                lineHeight: 1.6,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word"
-              }}
-            >
-              {goalData.description || "-"}
-            </Typography>
+            <RichTextReadOnly
+              content={goalData.description || "-"}
+              extensions={getTipTapExtensions()}
+            />
           </Box>
 
           {/* Meta Info */}
@@ -99,13 +93,13 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label="Created"
-                value={<FormattedDateTime date={goalData.createdAt} />}
+                value={goalData.createdAt && <FormattedDateTime date={goalData.createdAt} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label="Updated"
-                value={<FormattedDateTime date={goalData.updatedAt} />}
+                value={goalData.updatedAt && <FormattedDateTime date={goalData.updatedAt} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>

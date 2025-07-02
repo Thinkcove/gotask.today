@@ -56,6 +56,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     os: data?.os || "",
     storage: data?.storage || "",
     processor: data?.processor || "",
+    erk: data?.erk || "",
     seller: data?.seller || "",
     dateOfPurchase: data?.dateOfPurchase || undefined,
     warrantyPeriod: data?.warrantyPeriod || "",
@@ -63,7 +64,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     active: data?.active ?? true,
     created_by: data?.createdBy || "",
     updatedBy: data?.updatedBy || "",
-    antivirus: data?.antivirus || "",
+    antivirus: data?.antivirus ?? false,
     recoveryKey: data?.recoveryKey || "",
     isEncrypted: data?.isEncrypted ?? false,
     lastServicedDate: data?.lastServicedDate || undefined,
@@ -330,6 +331,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
             </Box>
           </Grid>
           {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
+            selectedAssetType?.name === ASSET_TYPE.DESKTOP ||
             selectedAssetType?.name === ASSET_TYPE.MOBILE) && (
             <AssetInput
               formData={formData}

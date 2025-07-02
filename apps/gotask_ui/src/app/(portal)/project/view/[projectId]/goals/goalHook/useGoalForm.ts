@@ -34,7 +34,7 @@ export const useGoalForm = (projectId: string, initialData?: GoalData) => {
     projectId
   ]);
 
-  const [goalData, setGoalData] = useState<GoalData>(initialGoalData);
+  const [goalData, setGoalData] = useState<GoalData>(initialGoalData as GoalData);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -46,7 +46,7 @@ export const useGoalForm = (projectId: string, initialData?: GoalData) => {
   const prevInitialDataRef = useRef(initialData);
   if (initialData !== prevInitialDataRef.current && initialData) {
     prevInitialDataRef.current = initialData;
-    setGoalData(initialGoalData);
+    setGoalData(initialGoalData as GoalData);
   }
 
   const validateForm = () => {
@@ -72,7 +72,7 @@ export const useGoalForm = (projectId: string, initialData?: GoalData) => {
       priority: "",
       projectId: projectId,
       user_id: "",
-      id: undefined
+      id: ''
     });
     setErrors({});
   };

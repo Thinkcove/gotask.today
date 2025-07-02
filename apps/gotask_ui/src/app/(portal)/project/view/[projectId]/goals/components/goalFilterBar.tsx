@@ -4,22 +4,8 @@ import { Box, IconButton, Link } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import SearchBar from "@/app/component/searchBar/searchBar";
+import { GoalFilterBarProps } from "../interface/projectGoal";
 
-interface GoalFilterBarProps {
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
-  onBack: () => void;
-  statusFilter: string[];
-  severityFilter: string[];
-  onStatusChange: (selected: string[]) => void;
-  onSeverityChange: (selected: string[]) => void;
-  onClearFilters: () => void;
-  statusOptions: string[];
-  priorityOptions: string[];
-  showClear: boolean;
-  clearText: string;
-  searchPlaceholder: string;
-}
 
 const GoalFilterBar: React.FC<GoalFilterBarProps> = ({
   searchTerm,

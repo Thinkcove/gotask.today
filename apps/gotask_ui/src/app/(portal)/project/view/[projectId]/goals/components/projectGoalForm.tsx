@@ -17,7 +17,6 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
   currentProject
 }) => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
-  console.log("currentProject", currentProjectOptions);
 
   return (
     <>

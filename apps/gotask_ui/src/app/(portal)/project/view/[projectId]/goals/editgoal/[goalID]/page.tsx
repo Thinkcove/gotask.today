@@ -36,9 +36,6 @@ const EditGoalPage = () => {
   const projectID = projectId as string;
   const goalID = goalId as string;
   const { getAllProjects } = useAllProjects();
-  console.log("getAllProjects", getAllProjects);
-
-  // Step 2: Find current project
   const currentProject = getAllProjects?.find(
     (project: { id: string }) => project.id === projectID
   );
@@ -131,7 +128,6 @@ const EditGoalPage = () => {
         updated_by: user?.id ?? ""
       };
 
-      console.log("Submitting payload:", payload);
 
       await updateWeeklyGoal(goalID, payload);
 

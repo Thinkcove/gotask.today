@@ -22,17 +22,12 @@ const CreateGoal = () => {
   const { user } = useUser();
 
   const { getAllProjects } = useAllProjects();
-  console.log("getAllProjects", getAllProjects);
-
-  // Step 2: Find current project
   const currentProject = getAllProjects?.find(
     (project: { id: string }) => project.id === projectID
   );
 
-  // Step 3: Create options array with only the current project
   const currentProjectOptions = currentProject ? [currentProject] : [];
 
-  console.log("Current project:", currentProject);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {

@@ -120,3 +120,19 @@ export interface UpdateHistoryItem {
 export interface ProjectGoalHistory {
   updateHistory: UpdateHistoryItem[];
 }
+
+export interface GoalFilterBarProps {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  onBack: () => void;
+  statusFilter: string[];
+  severityFilter: string[];
+  onStatusChange: (selected: string[]) => void;
+  onSeverityChange: (selected: string[]) => void;
+  onClearFilters: () => void;
+  statusOptions: string[];
+  priorityOptions: string[];
+  showClear: boolean;
+  clearText: string;
+  searchPlaceholder: string;
+}

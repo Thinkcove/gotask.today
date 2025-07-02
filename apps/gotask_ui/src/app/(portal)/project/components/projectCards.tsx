@@ -13,8 +13,6 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
-import { RichTextReadOnly } from "mui-tiptap";
-import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 interface ProjectCardProps {
   projects: Project[] | null;
@@ -62,14 +60,6 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                   <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
                     {filteredProject.name}
                   </Typography>
-                </Box>
-
-                {/* Description */}
-                <Box sx={{ mb: 2, pt: 1 }}>
-                  <RichTextReadOnly
-                    content={filteredProject.description!}
-                    extensions={getTipTapExtensions()}
-                  />
                 </Box>
 
                 <Box display="flex" alignItems="center" sx={{ mb: 2 }}>

@@ -27,7 +27,6 @@ const ProjectInput = ({
   handleChange,
   rteRef
 }: IProjectInputProps) => {
-  console.log("description", formData.description);
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const currentStatus = formData.status;
   const allowedStatuses = PROJECT_WORKFLOW[currentStatus] || [];

@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
   const messages = await getMessages();
-  const project = messages.Task.Project;
+  const issuesMeta = messages.Assets.Issues.meta;
 
   return {
-    title: project.meta.title,
-    description: project.meta.description
+    title: issuesMeta.title,
+    description: issuesMeta.description
   };
 }
 
-export default function ProjectLayout({ children }: { children: React.ReactNode }) {
+export default function IssuesLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }

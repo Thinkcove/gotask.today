@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
   const messages = await getMessages();
-  const asset = messages.Assets;
+  const assignees = messages.Task.Assignees;
 
   return {
-    title: asset.meta.title,
-    description: asset.meta.description
+    title: assignees.meta.title,
+    description: assignees.meta.description
   };
 }
 
-export default function AssetLayout({ children }: { children: React.ReactNode }) {
+export default function AssigneesLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }

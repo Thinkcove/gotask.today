@@ -422,9 +422,17 @@
     "loadinguser": "Loading user mentions...",
     "reuseplaceholder": "Write something here...",
     "saved": "Save",
-    "meta": {
-      "title": "Task Management | GoTaskToday",
-      "description": "Plan, assign, and track tasks across projects."
+    "Project": {
+      "meta": {
+        "title": "Task Projects",
+        "description": "Manage all your projects, timelines, and milestones efficiently."
+      }
+    },
+    "Assignees": {
+      "meta": {
+        "title": "Assignee Overview",
+        "description": "Review and manage users assigned to various project tasks."
+      }
     }
   },
   "User": {
@@ -659,6 +667,12 @@
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage company assets efficiently."
+    },
+    "Issues": {
+      "meta": {
+        "title": "Asset Issues",
+        "description": "Monitor and resolve issues related to assets effectively."
+      }
     }
   },
 

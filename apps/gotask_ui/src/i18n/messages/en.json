@@ -811,7 +811,11 @@
      "assignfailed":"Template assign failed",
      "errorLoadingAssignment":"Error in Loading...",
      "deletesuccessassignment":"Assignment deleted successfully",
-     "deletefailed":"Delete failed"
+     "deletefailed":"Delete failed",
+      "meta": {
+      "title": "KPI Templates | GoTaskToday",
+      "description": "Define, manage, and assign KPI templates to measure performance."
+    }
   },
   "WorkPlanned": {
     "nodata": "No work planned data found for the selected date range",

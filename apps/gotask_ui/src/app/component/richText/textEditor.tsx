@@ -1,6 +1,4 @@
-// Updated ReusableEditor.tsx
 "use client";
-
 import {
   RichTextEditor,
   LinkBubbleMenu,
@@ -17,7 +15,7 @@ import EditorMenuControls from "./editorMenuControls";
 import type { MentionSuggestion } from "./mentionSuggestionOptions";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-
+import "./richTextStyle.css";
 interface ReusableEditorProps {
   onSave?: (html: string) => void;
   placeholder?: string;
@@ -109,6 +107,7 @@ const ReusableEditor = forwardRef<RichTextEditorRef, ReusableEditorProps>(functi
         RichTextFieldProps={{
           variant: "outlined",
           MenuBarProps: { hide: !showMenuBar },
+          className: "custom-editor-field",
           footer: (
             <Stack direction="row" spacing={2} sx={{ borderTop: "1px solid", py: 1, px: 1.5 }}>
               <MenuButton

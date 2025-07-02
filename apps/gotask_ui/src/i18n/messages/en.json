@@ -160,6 +160,9 @@
     "filterduedate": "Select Due Date",
     "filterclear": "Clear",
     "filterapply": "Apply",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "createprojectnew": "Create New Project",
 
     "Stories": {
       "noStoriesFound": "No stories found for this project.",

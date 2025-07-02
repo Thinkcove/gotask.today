@@ -56,6 +56,7 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
 
   const handleSubmit = async () => {
     const html = rteRef.current?.editor?.getHTML?.() || "";
+    console.log("html", html);
     const updatedForm = { ...formData, description: html };
 
     if (!validateForm(updatedForm)) return;

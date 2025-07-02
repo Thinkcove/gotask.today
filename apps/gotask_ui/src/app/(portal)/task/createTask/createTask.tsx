@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
 import { createTask } from "../service/taskAction";
@@ -12,8 +12,10 @@ import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import moment from "moment-timezone";
+import { RichTextEditorRef } from "mui-tiptap";
 
 const CreateTask: React.FC = () => {
+  const rteRef = useRef<RichTextEditorRef>(null);
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -36,7 +38,7 @@ const CreateTask: React.FC = () => {
     due_date: "",
     start_date: "",
     user_estimated: "",
-    story_id: storyId || "" 
+    story_id: storyId || ""
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -64,11 +66,15 @@ const CreateTask: React.FC = () => {
 
   // Submit handler
   const handleSubmit = async () => {
+    const html = rteRef.current?.editor?.getHTML?.() || "";
+    handleInputChange("description", html);
     if (!validateForm()) return;
 
     try {
-      await createTask(formData);
-
+      await createTask({
+        ...formData,
+        description: html
+      });
       setSnackbar({
         open: true,
         message: transtask("successmessage"),
@@ -80,7 +86,6 @@ const CreateTask: React.FC = () => {
       } else {
         router.push("/task/projects?refresh=true");
       }
-      
     } catch (error) {
       console.error("Error while creating task:", error);
       setSnackbar({
@@ -173,6 +178,7 @@ const CreateTask: React.FC = () => {
           handleInputChange={handleInputChange}
           errors={errors}
           readOnlyFields={storyId ? ["status"] : ["status"]}
+          rteRef={rteRef}
         />
       </Box>
 

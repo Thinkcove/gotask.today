@@ -9,7 +9,7 @@ import { getSeverityColor } from "@/app/common/constants/task";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
-const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
+const GoalItem: React.FC<GoalCardProps> = ({ goal, onClick }) => {
   const color = getStatusColor(goal.status);
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
@@ -46,17 +46,6 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
           <Divider orientation="vertical" sx={{ height: 20 }} />
 
           <SeverityIndicator severity={goal.priority} getColor={getSeverityColor} />
-
-          {/* <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(goal);
-            }}
-            sx={{ ml: "auto" }}
-            color="primary"
-          >
-            <Edit />
-          </IconButton> */}
           <Box
             sx={{
               display: "flex",

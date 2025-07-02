@@ -54,9 +54,6 @@ const ProjectGoalViewPage = () => {
   const projectID = projectId as string;
   const goalID = goalId as string;
 
-  console.log("All params:", params);
-  console.log("Goal ID:", goalID);
-  console.log("Project ID:", projectID);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -185,7 +182,15 @@ const ProjectGoalViewPage = () => {
       </Box>
     );
   }
+  const handleEditGoal = (goal: GoalData) => {
+    const goalID = goal.id;
+    if (!goal.id) {
+      console.error("Goal ID is missing");
+      return;
+    }
 
+    router.push(`/project/view/${projectID}/goals/editgoal/${goalID}`);
+  };
   return (
     <>
       <ModuleHeader name={transGoal("goal")} />
@@ -197,6 +202,7 @@ const ProjectGoalViewPage = () => {
           handleDeleteComment={handleDeleteComment}
           handleBack={handleBack}
           user={user}
+          onEdit={handleEditGoal}
         />
 
         {/* Snackbar */}

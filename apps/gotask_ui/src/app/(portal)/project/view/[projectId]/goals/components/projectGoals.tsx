@@ -7,7 +7,6 @@ const ProjectGoals: React.FC<ProjectGoalsProps> = ({
   projectGoals,
   projectGoalView,
   projectId,
-  handleEditGoal,
   handleScroll
 }) => {
   const filteredGoals = projectGoals?.filter((goal) => goal.projectId === projectId);
@@ -23,7 +22,6 @@ const ProjectGoals: React.FC<ProjectGoalsProps> = ({
             <Grid item key={goal.id} xs={12} sm={6} md={4} lg={4} xl={3}>
               <GoalItem
                 goal={goal}
-                onEdit={handleEditGoal}
                 onClick={() => projectGoalView(goal.id)}
               />
             </Grid>

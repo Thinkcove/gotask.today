@@ -85,16 +85,6 @@ function ProjectGoalList() {
     router.push(`/project/view/${projectID}/goals/creategoal`);
   };
 
-  const handleEditGoal = (goal: GoalData) => {
-    const goalID = goal.id;
-    if (!goal.id) {
-      console.error("Goal ID is missing");
-      return;
-    }
-
-    router.push(`/project/view/${projectID}/goals/editgoal/${goalID}`);
-  };
-
   const handleGoBack = () => {
     setTimeout(() => router.back(), 200);
   };
@@ -157,6 +147,7 @@ function ProjectGoalList() {
     );
   }
 
+
   return (
     <Box sx={{ pt: 2 }}>
       {/* Header with search and filters */}
@@ -217,7 +208,6 @@ function ProjectGoalList() {
           isLoading={isLoading}
           error={!!error}
           formatStatus={formatStatus}
-          handleEditGoal={handleEditGoal}
           projectId={projectID}
           projectGoalView={handleProjectGoalView}
           handleScroll={handleScroll}

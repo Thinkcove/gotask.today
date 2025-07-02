@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Edit } from "@mui/icons-material";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
@@ -20,7 +20,8 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   handleEditComment,
   handleDeleteComment,
   user,
-  handleBack
+  handleBack,
+  onEdit
 }) => {
   const comments: GoalComment[] = goalData?.comments || [];
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -60,6 +61,16 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
             <Grid item xs="auto">
               <IconButton color="primary" onClick={handleBack}>
                 <ArrowBack />
+              </IconButton>
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(goalData);
+                }}
+                sx={{ ml: "auto" }}
+                color="primary"
+              >
+                <Edit />
               </IconButton>
             </Grid>
             <Grid item xs>

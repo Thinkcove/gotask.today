@@ -28,13 +28,13 @@ export interface ProjectGoalViewProps {
   ) => Promise<void>;
   handleDeleteComment: (commentId: string | number) => Promise<void>;
   handleBack?: () => void;
+  onEdit: (goal: GoalData) => void;
 }
 export interface CommentPayload {
   comment: string;
 }
 export interface GoalCardProps {
   goal: GoalData;
-  onEdit: (goal: GoalData) => void;
   onClick?: () => void;
 }
 export interface GoalCommentProps {
@@ -51,7 +51,6 @@ export interface ProjectGoalsProps {
   isLoading: boolean;
   error: boolean;
   formatStatus: (status: string) => string;
-  handleEditGoal: (goal: GoalData) => void;
   projectId: string;
   projectGoalView: (goalId: string) => void;
   handleScroll: (e: React.UIEvent<HTMLElement>) => void;

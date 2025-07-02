@@ -193,7 +193,7 @@ function ProjectGoalList() {
             display="flex"
             alignItems="center"
             gap={{ xs: 1, sm: 2 }}
-            px={{ xs: 5, sm: 2 }}
+            px={{ xs: 8, sm: 2 }}
             py={{ xs: 1, sm: 1 }}
             justifyContent="flex-start"
             flexWrap="wrap"

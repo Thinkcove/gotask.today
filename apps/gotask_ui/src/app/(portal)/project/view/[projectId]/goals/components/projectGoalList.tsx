@@ -70,7 +70,9 @@ function ProjectGoalList() {
           // Append new goals for pagination
           setAllGoals((prev) => {
             const existingIds = new Set(prev.map((goal) => goal.id));
-            const newGoals = (res?.goals || []).filter((goal:GoalData) => !existingIds.has(goal.id));
+            const newGoals = (res?.goals || []).filter(
+              (goal: GoalData) => !existingIds.has(goal.id)
+            );
             return [...prev, ...newGoals];
           });
         }
@@ -100,15 +102,11 @@ function ProjectGoalList() {
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
     setPage(1);
-    setHasMore(true);
-    setAllGoals([]);
   };
 
   const onSeverityChange = (selected: string[]) => {
     setSeverityFilter(selected);
     setPage(1);
-    setHasMore(true);
-    setAllGoals([]);
   };
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
@@ -179,8 +177,6 @@ function ProjectGoalList() {
                 onChange={(value) => {
                   setSearchTerm(value);
                   setPage(1);
-                  setHasMore(true);
-                  setAllGoals([]);
                 }}
                 sx={{ width: "100%" }}
                 placeholder={transGoal("searchplaceholder")}

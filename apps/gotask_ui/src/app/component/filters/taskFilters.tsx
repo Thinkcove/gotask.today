@@ -111,7 +111,7 @@ const TaskFilters: React.FC<Props> = ({
           onMouseEnter={handleMouseEvents}
           onMouseMove={handleMouseEvents}
           sx={{
-            pr: 3,
+            px: 3,
             pt: 2,
             pb: 2,
             display: "flex",

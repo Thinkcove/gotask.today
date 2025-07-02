@@ -43,6 +43,8 @@ const fetchGoalWithComments = async (goalId: string) => {
 
 const ProjectGoalViewPage = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
+  const { getAllProjects } = useAllProjects();
+
   const router = useRouter();
   const { user } = useUser();
 
@@ -191,8 +193,6 @@ const ProjectGoalViewPage = () => {
 
     router.push(`/project/view/${projectID}/goals/editgoal/${goalID}`);
   };
-  const { getAllProjects } = useAllProjects();
-  console.log("getAllProjects", getAllProjects);
 
   // Step 2: Find current project
   const currentProject = getAllProjects?.find(
@@ -201,7 +201,7 @@ const ProjectGoalViewPage = () => {
 
   return (
     <>
-      <ModuleHeader name={currentProject.name} />
+      <ModuleHeader name={currentProject?.name} />
       <Box sx={{ pt: 2 }}>
         <ProjectGoalView
           goalData={projectGoalView || null}

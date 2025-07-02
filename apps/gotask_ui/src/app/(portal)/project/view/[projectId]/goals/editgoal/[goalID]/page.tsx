@@ -128,7 +128,6 @@ const EditGoalPage = () => {
         updated_by: user?.id ?? ""
       };
 
-
       await updateWeeklyGoal(goalID, payload);
 
       showSnackbar(transGoal("goalupdate"), SNACKBAR_SEVERITY.SUCCESS);
@@ -163,12 +162,7 @@ const EditGoalPage = () => {
   if (goalError) {
     showSnackbar(transGoal("fetchError") || "Error fetching goal data", SNACKBAR_SEVERITY.ERROR);
   }
-  const handleProjectChange = (value: string | number | string[] | Date): void => {
-    const selectedId = String(value); 
-
-    const selectedProject = getAllProjects?.find((project: any) => project.id === selectedId);
-
-  };
+  const currentProjectOptions = currentProject ? [currentProject] : [];
 
   return (
     <Box
@@ -198,8 +192,8 @@ const EditGoalPage = () => {
           goalData={goalData}
           setGoalData={setGoalData}
           errors={errors}
-          currentProjectOptions={[]}
-          currentProject={currentProject?.name}
+          currentProjectOptions={currentProjectOptions} // Array of projects for dropdown
+          currentProject={currentProject} // Current selected project
         />
       </Box>
 

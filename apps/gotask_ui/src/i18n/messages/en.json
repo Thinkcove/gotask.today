@@ -389,7 +389,7 @@
     "duedate": "Cannot register time before the due date",
     "viewMore": "View more",
     "comment": "Comments",
-    "listViewOf": "List view of {name} {type}",
+    "listViewOf": "{name} Task List",
     "notaskfound": "No tasks found for {name} with the selected filters",
     "nodata": "No data found",
     "deletetitle": "Delete Comment",

@@ -36,7 +36,7 @@ export interface IAsset extends Document {
   insuranceExpiry?: Date;
 
   // Laptop-specific fields
-  antivirus?: string;
+  antivirus?: boolean;
   recoveryKey?: string;
   isEncrypted?: boolean;
   lastServicedDate?: Date;
@@ -83,7 +83,7 @@ const AssetSchema = new Schema<IAsset>(
     insuranceExpiry: { type: Date },
 
     // Laptop-specific fields
-    antivirus: { type: String },
+    antivirus: { type: Boolean, default: false },
     recoveryKey: { type: String },
     isEncrypted: { type: Boolean, default: false },
     lastServicedDate: { type: Date },

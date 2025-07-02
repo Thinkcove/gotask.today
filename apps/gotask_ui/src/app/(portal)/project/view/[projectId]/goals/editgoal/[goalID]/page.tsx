@@ -192,8 +192,8 @@ const EditGoalPage = () => {
           goalData={goalData}
           setGoalData={setGoalData}
           errors={errors}
-          currentProjectOptions={currentProjectOptions} // Array of projects for dropdown
-          currentProject={currentProject} // Current selected project
+          currentProjectOptions={currentProjectOptions} 
+          currentProject={currentProject} 
         />
       </Box>
 

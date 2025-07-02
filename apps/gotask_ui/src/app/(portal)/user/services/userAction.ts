@@ -204,28 +204,7 @@ export const addUserCertificates = async (
   });
 };
 
-// export const updateUserCertificate = async (
-//   userId: string,
-//   certificateIndex: number,
-//   updatedCertificate: ICertificate
-// ): Promise<{ success: boolean; message?: string }> => {
-//   return withAuth(async (token) => {
-//     const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateIndex}`;
-//     return await putData(url, updatedCertificate as unknown as Record<string, unknown>, token);
-//   });
-// };
-
-// Delete a specific certificate from a user
-// export const deleteUserCertificate = async (
-//   userId: string,
-//   certificateIndex: number
-// ): Promise<{ success: boolean; message?: string }> => {
-//   return withAuth(async (token) => {
-//     const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateIndex}`;
-//     return await deleteData(url, token);
-//   });
-// };
-// ✅ Update a specific certificate
+//  Update a specific certificate
 export const updateUserCertificate = async (
   userId: string,
   certificateId: string,
@@ -237,7 +216,7 @@ export const updateUserCertificate = async (
   });
 };
 
-// ✅ Delete a specific certificate
+//  Delete a specific certificate
 export const deleteUserCertificate = async (
   userId: string,
   certificateId: string // changed from number
@@ -249,10 +228,22 @@ export const deleteUserCertificate = async (
 };
 
 // Get increments
-export const getUserIncrements = async (userId: string) => {
-  return withAuth((token) => {
+// export const getUserIncrements = async (userId: string) => {
+//   return withAuth((token) => {
+//     const url = `${env.API_BASE_URL}/increments/${userId}`;
+//     return fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((res) => res.json());
+//   });
+// };
+export const getUserIncrements = async (userId: string): Promise<IIncrementHistory[]> => {
+  return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/increments/${userId}`;
-    return fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((res) => res.json());
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const json = await res.json();
+
+    if (Array.isArray(json)) return json; // e.g., backend returns a pure array
+    if (Array.isArray(json.data)) return json.data; // e.g., { data: [...] }
+
+    return []; // fallback to empty array
   });
 };
 

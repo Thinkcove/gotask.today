@@ -375,13 +375,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {selectedTab === transuser("Increment.incrementhistory") && (
             <Box>
-              <IncrementInput
-                userId={userID}
-                increment_history={user.increment_history ?? []}
-                onChange={(updated) => {
-                  mutate({ ...user, increment_history: updated }, false);
-                }}
-              />
+              <IncrementInput userId={userID} />
             </Box>
           )}
         </Box>

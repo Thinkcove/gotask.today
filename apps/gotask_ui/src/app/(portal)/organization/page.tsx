@@ -1,17 +1,12 @@
-import React from "react";
-import OrganizationList from "./components/organizationList";
-import ModuleHeader from "@/app/component/header/moduleHeader";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
+import { Metadata } from "next";
+import OrganizationClientPage from "../organization/organizationClientPage";
 
-const Page = () => {
-  const transorganization = useTranslations(LOCALIZATION.TRANSITION.ORGANIZATION);
-  return (
-    <>
-      <ModuleHeader name={transorganization("viewname")} />
-      <OrganizationList />
-    </>
-  );
+// Static metadata for SEO
+export const metadata: Metadata = {
+  title: "Organization | GoTaskToday",
+  description: "View and manage the organization’s departments and reporting hierarchy."
 };
 
-export default Page;
+export default function OrganizationPage() {
+  return <OrganizationClientPage />;
+}

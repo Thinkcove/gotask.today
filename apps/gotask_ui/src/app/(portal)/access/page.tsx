@@ -1,18 +1,12 @@
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
-import React from "react";
-import AccessContainer from "../../(portal)/access/components/AccessContainer";
-import ModuleHeader from "../../component/header/moduleHeader";
+import { Metadata } from "next";
+import AccessClientPage from "../access/accessClientPage";
 
-const Page = () => {
-  const transaccess = useTranslations(LOCALIZATION.TRANSITION.ACCESS);
-
-  return (
-    <>
-      <ModuleHeader name={transaccess("access")} />
-      <AccessContainer />
-    </>
-  );
+//  Static metadata
+export const metadata: Metadata = {
+  title: "Access Control | GoTaskToday",
+  description: "Manage permissions and access levels for users across modules."
 };
 
-export default Page;
+export default function AccessPage() {
+  return <AccessClientPage />;
+}

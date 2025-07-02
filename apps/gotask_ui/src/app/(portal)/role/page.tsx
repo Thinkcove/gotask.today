@@ -1,18 +1,13 @@
-"use client";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import ModuleHeader from "@/app/component/header/moduleHeader";
-import { useTranslations } from "next-intl";
-import React from "react";
-import RoleList from "./components/roleList";
 
-const Page = () => {
-  const transrole = useTranslations(LOCALIZATION.TRANSITION.ROLE);
-  return (
-    <>
-      <ModuleHeader name={transrole("role")} />
-      <RoleList />
-    </>
-  );
+import { Metadata } from "next";
+import RoleClientPage from "../role/roleClientPage";
+
+// Static Metadata
+export const metadata: Metadata = {
+  title: "Role Management | GoTaskToday",
+  description: "Create, update, and manage employee roles and access levels in the organization."
 };
 
-export default Page;
+export default function RolePage() {
+  return <RoleClientPage />;
+}

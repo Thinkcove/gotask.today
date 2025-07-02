@@ -1,17 +1,13 @@
-import React from "react";
-import ModuleHeader from "@/app/component/header/moduleHeader";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
-import TemplateList from "./component/templateList";
+import { Metadata } from "next";
+import KPIClientPage from "../kpi/kpiClientPage";
 
-const Page = () => {
-  const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
-  return (
-    <>
-      <ModuleHeader name={transkpi("viewname")} />
-      <TemplateList />
-    </>
-  );
+// Static Metadata for SEO
+export const metadata: Metadata = {
+  title: "KPI Templates | GoTaskToday",
+  description:
+    "Manage Key Performance Indicator (KPI) templates for employee evaluations and goals."
 };
 
-export default Page;
+export default function KPIPage() {
+  return <KPIClientPage />;
+}

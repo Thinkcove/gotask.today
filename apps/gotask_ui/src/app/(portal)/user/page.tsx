@@ -1,18 +1,12 @@
-"use client";
-import React from "react";
-import UserList from "./components/userList";
-import ModuleHeader from "@/app/component/header/moduleHeader";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
+import { Metadata } from "next";
+import UserClientPage from "../user/userClientPage";
 
-const Page = () => {
-  const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-  return (
-    <>
-      <ModuleHeader name={transuser("user")} />
-      <UserList />
-    </>
-  );
+// Static Metadata
+export const metadata: Metadata = {
+  title: "User Management | GoTaskToday",
+  description: "Add, update, and manage users within the organization."
 };
 
-export default Page;
+export default function UserPage() {
+  return <UserClientPage />;
+}

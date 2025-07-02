@@ -1,15 +1,12 @@
-"use client";
-import React from "react";
-import WorkPlannedReport from "./components/workPlannedReport";
-import ModuleHeader from "@/app/component/header/moduleHeader";
+import { Metadata } from "next";
+import WorkPlannedClientPage from "../workPlanned/workPlannedClientPage";
 
-const Page = () => {
-  return (
-    <>
-      <ModuleHeader name="Work Planned" />
-      <WorkPlannedReport />
-    </>
-  );
+// Static Metadata
+export const metadata: Metadata = {
+  title: "Work Planned Report | GoTaskToday",
+  description: "Track and review planned work reports for projects and teams."
 };
 
-export default Page;    
+export default function WorkPlannedPage() {
+  return <WorkPlannedClientPage />;
+}

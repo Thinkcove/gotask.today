@@ -1,19 +1,12 @@
-"use client";
-import { Box } from "@mui/material";
-import React from "react";
-import DashboardLayout from "./components/dashboardLayout";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
-import ModuleHeader from "@/app/component/header/moduleHeader";
+import { Metadata } from "next";
+import DashboardClientPage from "../dashboard/dashboardClientPage";
 
-const Page = () => {
-  const transdashboard = useTranslations(LOCALIZATION.TRANSITION.DASHBOARD);
-  return (
-    <Box>
-      <ModuleHeader name={transdashboard("dashboard")} />
-      <DashboardLayout />
-    </Box>
-  );
+// Static metadata for Dashboard
+export const metadata: Metadata = {
+  title: "Dashboard | GoTaskToday",
+  description: "View company-wide activity, project statuses, and quick insights all in one place."
 };
 
-export default Page;
+export default function DashboardPage() {
+  return <DashboardClientPage />;
+}

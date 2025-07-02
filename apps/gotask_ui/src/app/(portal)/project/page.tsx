@@ -1,17 +1,12 @@
-import React from "react";
-import ProjectList from "./components/projectList";
-import ModuleHeader from "@/app/component/header/moduleHeader";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useTranslations } from "next-intl";
+import { Metadata } from "next";
+import ProjectClientPage from "../project/projectClientPage";
 
-const Page = () => {
-  const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-  return (
-    <>
-      <ModuleHeader name={transproject("viewname")} />
-      <ProjectList />
-    </>
-  );
+//  Static metadata for SEO
+export const metadata: Metadata = {
+  title: "Project Dashboard | GoTaskToday",
+  description: "Manage company projects, track progress, and assign responsibilities."
 };
 
-export default Page;
+export default function ProjectPage() {
+  return <ProjectClientPage />;
+}

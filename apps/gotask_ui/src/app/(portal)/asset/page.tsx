@@ -1,13 +1,12 @@
-"use client";
-import React from "react";
-import { AssetList } from "./components/assetList";
+import { Metadata } from "next";
+import AssetsClientPage from "../asset/assetsClientPage";
 
-const Page = () => {
-  return (
-    <div>
-      <AssetList initialView="assets" />
-    </div>
-  );
+// Static Metadata for Assets Page
+export const metadata: Metadata = {
+  title: "Assets Management | GoTaskToday",
+  description: "View and manage all available organizational assets."
 };
 
-export default Page;
+export default function AssetsPage() {
+  return <AssetsClientPage />;
+}

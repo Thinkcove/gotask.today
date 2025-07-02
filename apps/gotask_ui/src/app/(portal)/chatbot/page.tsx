@@ -1,14 +1,12 @@
-"use client";
-import { Box } from "@mui/material";
-import React from "react";
-import Chatbot from "./components/chat";
+import { Metadata } from "next";
+import ChatbotClientPage from "../chatbot/chatbotClientPage";
 
-const Page = () => {
-  return (
-    <Box>
-      <Chatbot />
-    </Box>
-  );
+// Static Metadata for Chatbot
+export const metadata: Metadata = {
+  title: "AI Chatbot Assistant | GoTaskToday",
+  description: "Use the GoTask AI-powered chatbot for help, support, and automation."
 };
 
-export default Page;
+export default function ChatbotPage() {
+  return <ChatbotClientPage />;
+}

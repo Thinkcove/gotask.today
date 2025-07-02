@@ -295,15 +295,6 @@
       "description": "Create, update, and manage roles and access control settings."
     }
   },
-  "RoleDetailPage": {
-    "roleNotFoundTitle": "Role Not Found",
-    "roleNotFoundDescription": "This role does not exist or may have been removed.",
-    "title": "Role Details",
-    "descriptionPrefix": "View and manage access for the",
-    "descriptionSuffix": "role.",
-    "errorTitle": "Error",
-    "errorDescription": "Unable to fetch role details."
-  },
   "Task": {
     "filterfrom": "From Date",
     "filterto": "To Date",

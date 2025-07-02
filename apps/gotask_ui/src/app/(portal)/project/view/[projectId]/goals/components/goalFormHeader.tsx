@@ -6,8 +6,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { GoalFormHeaderProps } from "../interface/projectGoal";
 
-
-
 const GoalFormHeader: React.FC<GoalFormHeaderProps> = ({
   isEdit,
   onCancel,
@@ -31,7 +29,6 @@ const GoalFormHeader: React.FC<GoalFormHeaderProps> = ({
           flexWrap: "wrap",
           gap: 2,
           p: 2
-          // borderBottom: "1px solid #e0e0e0"
         }}
       >
         {/* Left Section: Arrow + Title */}

@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Typography,  Divider, Stack } from "@mui/material";
-import { ArrowForward,  } from "@mui/icons-material";
+import { Box, Typography, Divider, Stack } from "@mui/material";
+import { ArrowForward } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/project";
 import { GoalCardProps } from "../interface/projectGoal";
@@ -15,7 +15,6 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onClick }) => {
 
   return (
     <Box
-      // onClick={onClick}
       sx={{
         p: 2,
         borderRadius: 2,

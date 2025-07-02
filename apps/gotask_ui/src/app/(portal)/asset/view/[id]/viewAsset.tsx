@@ -13,7 +13,6 @@ import { ASSET_TYPE, getIssuesStatusColor } from "@/app/common/constants/asset";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-
 import CommonDialog from "@/app/component/dialog/commonDialog";
 
 const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {

@@ -125,8 +125,8 @@
     "Projecttitle": "Project Title is required",
     "description": "Description is required",
     "status": "Status is required",
-    "errormessage": "Project created successfully!",
-    "successmessage": "Error while creating project",
+    "errormessage": "Error while creating project",
+    "successmessage": "Project created successfully!",
     "createnew": "Create New Project",
     "errorloading": " Error loading projects:",
     "noprojects": " No projects available.",
@@ -839,7 +839,6 @@
     "titlerequired": "Goal title is required",
     "startweekrequired": "Start Week is required",
     "endweekrequired": "Week end date is required",
-
     "statusrequired": "Status is required",
     "priorityreuired": "Priority is required",
     "filterpriority": "Priority",

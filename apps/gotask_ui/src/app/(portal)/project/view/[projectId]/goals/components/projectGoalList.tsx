@@ -145,57 +145,86 @@ function ProjectGoalList() {
     );
   }
 
-
   return (
     <Box sx={{ pt: 2 }}>
       {/* Header with search and filters */}
       <Box display="flex" justifyContent="space-between" pb={2} pr={2} flexWrap="wrap" gap={2}>
         {/* Left section: Back arrow + Search */}
-        <Box display="flex" pl={1} alignItems="center" gap={2} flexWrap="wrap">
-          <IconButton color="primary" onClick={handleGoBack}>
-            <ArrowBack />
-          </IconButton>
-          <Box maxWidth={400}>
-            <SearchBar
-              value={searchTerm}
-              onChange={(value) => {
-                setSearchTerm(value);
-                setPage(1);
-                setHasMore(true);
-                setAllGoals([]);
+        <Box
+          display="flex"
+          gap={{ xs: 0.5, sm: 1 }}
+          flexDirection={{ xs: "column", sm: "row" }}
+          alignItems={{ xs: "stretch", sm: "center" }}
+          sx={{ width: "100%" }}
+        >
+          {/* First row on mobile: Back button and search */}
+          <Box
+            display="flex"
+            gap={1}
+            alignItems="center"
+            sx={{ width: { xs: "100%", sm: "auto" } }}
+          >
+            <IconButton color="primary" onClick={handleGoBack}>
+              <ArrowBack />
+            </IconButton>
+            <Box
+              sx={{
+                flexGrow: 1,
+                maxWidth: { xs: "none", sm: 400 },
+                minWidth: { xs: "auto", sm: 200 }
               }}
-              sx={{ width: "100%" }}
-              placeholder={transGoal("searchplaceholder")}
+            >
+              <SearchBar
+                value={searchTerm}
+                onChange={(value) => {
+                  setSearchTerm(value);
+                  setPage(1);
+                  setHasMore(true);
+                  setAllGoals([]);
+                }}
+                sx={{ width: "100%" }}
+                placeholder={transGoal("searchplaceholder")}
+              />
+            </Box>
+          </Box>
+
+          {/* Second row on mobile: Filters */}
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={{ xs: 1, sm: 2 }}
+            px={{ xs: 5, sm: 2 }}
+            py={{ xs: 1, sm: 1 }}
+            justifyContent="flex-start"
+            flexWrap="wrap"
+            mt={{ xs: 1, sm: 0 }}
+            sx={{
+              width: "100%",
+              "& .MuiFormControl-root": {
+                minWidth: { xs: "auto", sm: "120px" },
+                maxWidth: { xs: "auto", sm: "none" }
+              }
+            }}
+          >
+            <FilterDropdown
+              label={transGoal("filterstatus")}
+              options={Object.values(statusOptions)}
+              selected={statusFilter}
+              onChange={onStatusChange}
+              // sx={{ flex: { xs: "1", sm: "0 1 auto" } }}
+            />
+            <FilterDropdown
+              label={transGoal("filterpriority")}
+              options={Object.values(priorityOptions)}
+              selected={severityFilter}
+              onChange={onSeverityChange}
+              // sx={{ flex: { xs: "1", sm: "0 1 auto" } }}
             />
           </Box>
         </Box>
       </Box>
 
       {/* Filters */}
-      <Box
-        display="flex"
-        alignItems="center"
-        gap={2}
-        pb={1}
-        pl={2}
-        justifyContent=""
-        flexWrap="wrap"
-        mt={{ xs: 2, md: 0 }}
-        sx={{ flexGrow: 1 }}
-      >
-        <FilterDropdown
-          label={transGoal("filterstatus")}
-          options={Object.values(statusOptions)}
-          selected={statusFilter}
-          onChange={onStatusChange}
-        />
-        <FilterDropdown
-          label={transGoal("filterpriority")}
-          options={Object.values(priorityOptions)}
-          selected={severityFilter}
-          onChange={onSeverityChange}
-        />
-      </Box>
 
       {/* Goals List or Empty State */}
       {filteredGoals?.length === 0 ? (

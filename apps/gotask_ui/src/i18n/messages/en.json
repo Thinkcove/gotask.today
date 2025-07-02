@@ -118,7 +118,13 @@
     "searchplaceholder": "Search Organizations",
     "meta": {
       "title": "Organization | GoTaskToday",
-      "description": "Manage company structure, departments, and details."
+      "description": "Manage company structure, departments, and details.",
+      "descriptionPrefix": "Manage and view details for",
+      "descriptionSuffix": "organization.",
+      "notFoundTitle": "Organization Not Found",
+      "notFoundDescription": "This organization does not exist or may have been removed.",
+      "errorTitle": "Error",
+      "errorDescription": "Unable to fetch organization details."
     }
   },
   "Projects": {

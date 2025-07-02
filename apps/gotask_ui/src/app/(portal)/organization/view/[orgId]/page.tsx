@@ -1,26 +1,45 @@
-"use client";
-import React from "react";
-import useSWR from "swr";
-import { useParams } from "next/navigation";
-import env from "@/app/common/env";
-import OrgDetail from "./orgDetail";
-import { getData } from "@/app/common/utils/apiData";
-import { withAuth } from "@/app/common/utils/authToken";
+import type { Metadata } from "next";
+import { getMessages } from "next-intl/server";
+import ViewAction from "./client";
 
-const fetchOrg = async (url: string) => {
-  return await withAuth(async (token: string) => {
-    return await getData(url, token);
-  });
+type Props = {
+  params: Promise<{ orgId: string }>;
 };
 
-const ViewAction: React.FC = () => {
-  const { orgId } = useParams();
-  const url = `${env.API_BASE_URL}/getOrgById/${orgId}`;
-  const { data, mutate } = useSWR(orgId ? url : null, fetchOrg, {
-    revalidateOnFocus: false
-  });
-  const selectedOrg = data?.data || null;
-  return selectedOrg && <OrgDetail org={selectedOrg} mutate={mutate} />;
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { orgId } = await params;
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
+  const messages = await getMessages();
 
-export default ViewAction;
+  const t = (key: string) => messages.Organization?.meta?.[key] ?? key;
+
+  try {
+    const res = await fetch(`${baseUrl}/getOrgById/${orgId}?metaOnly=true`, {
+      cache: "no-store"
+    });
+
+    if (!res.ok) {
+      return {
+        title: `${t("notFoundTitle")} | GoTaskToday`,
+        description: t("notFoundDescription")
+      };
+    }
+
+    const { data: org } = await res.json();
+
+    return {
+      title: `${org.name} | ${t("title")}`,
+      description: `${t("descriptionPrefix")} ${org.name} ${t("descriptionSuffix")}`
+    };
+  } catch (error) {
+    console.error("Metadata fetch error:", error);
+    return {
+      title: `${t("errorTitle")} | GoTaskToday`,
+      description: t("errorDescription")
+    };
+  }
+}
+
+export default function Page() {
+  return <ViewAction />;
+}

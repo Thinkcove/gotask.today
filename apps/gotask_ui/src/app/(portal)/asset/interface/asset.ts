@@ -45,6 +45,7 @@ export interface IAssetAttributes {
   tags?: ITagData;
   typeId: string;
   deviceName?: string;
+  systemType?: string;
   serialNumber?: string;
   ram?: string;
   modelName?: string;
@@ -59,7 +60,7 @@ export interface IAssetAttributes {
   active?: boolean;
   createdBy?: string;
   updatedBy?: string;
-  antivirus?: string;
+  antivirus?: boolean;
   recoveryKey?: string;
   isEncrypted?: boolean;
   lastServicedDate?: string | Date;
@@ -67,6 +68,8 @@ export interface IAssetAttributes {
   assetType?: IAssetType;
   tagData?: ITagData[];
   userId?: string;
+  issuesCount?: string;
+  userAssetCount?: string;
 
   //mobile
   imeiNumber?: string;
@@ -83,6 +86,8 @@ export interface IAssetAttributes {
   assetHistory?: IAssetHistory[];
   type?: string;
   assignedTo?: string;
+  issues?: IAssetIssues[];
+  previouslyUsedBy?: string;
 }
 
 export interface IAssetTags {

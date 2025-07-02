@@ -10,14 +10,14 @@ import {
   findAllTasks,
   findTaskById,
   findTaskCountByStatus,
-  findTasksByProject,
-  findTasksByUser,
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
+import { Project } from "../../domain/model/project/project";
 import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
+import { User } from "../../domain/model/user/user";
 
 // Create a new task
 const createTask = async (
@@ -178,18 +178,32 @@ const getTasksByProject = async (
       { $sort: sortObject },
       {
         $group: {
-          _id: { id: "$project_id", project_name: "$project_name" },
+          _id: "$project_id",
           tasks: { $push: "$$ROOT" },
           total_count: { $sum: 1 },
           latestTaskUpdatedAt: { $max: "$createdAt" }
+        }
+      },
+      {
+        $lookup: {
+          from: "projects",
+          localField: "_id",
+          foreignField: "id",
+          as: "project"
+        }
+      },
+      {
+        $unwind: {
+          path: "$project",
+          preserveNullAndEmptyArrays: true
         }
       },
       { $sort: { latestTaskUpdatedAt: -1 } },
       {
         $project: {
           _id: 0,
-          id: "$_id.id",
-          project_name: "$_id.project_name",
+          id: "$_id",
+          project_name: "$project.name",
           total_count: 1,
           latestTaskUpdatedAt: 1,
           tasks: {
@@ -205,8 +219,38 @@ const getTasksByProject = async (
     ];
 
     // Step 7: Execute aggregation and count
-    const taskGroups = await findTasksByProject(aggregationPipeline);
-    const totalProjects = await Task.distinct("project_name", filter).then((res) => res.length);
+    const taskGroups = await Task.aggregate(aggregationPipeline);
+
+    await Promise.all(
+      taskGroups.map(async (group) => {
+        await Promise.all(
+          group.tasks.map(async (task: any) => {
+            if (task.user_id && task.user_name) {
+              const user = await User.findOne({ id: task.user_id }, { name: 1 }).lean();
+              if (user) {
+                task.user_name = user.name;
+              }
+            }
+
+            if (task.project_id && task.project_name) {
+              const project = await Project.findOne({ id: task.project_id }, { name: 1 }).lean();
+              if (project) {
+                task.project_name = project.name;
+              }
+            }
+          })
+        );
+
+        if (group.project_name && group._id) {
+          const project = await Project.findOne({ id: group._id }, { name: 1 }).lean();
+          if (project) {
+            group.project_name = project.name;
+          }
+        }
+      })
+    );
+
+    const totalProjects = await Task.distinct("project_id", filter).then((res) => res.length);
 
     return {
       success: true,
@@ -314,18 +358,32 @@ const getTasksByUser = async (
       { $sort: sortObject },
       {
         $group: {
-          _id: { id: "$user_id", user_name: "$user_name" },
+          _id: "$user_id",
           tasks: { $push: "$$ROOT" },
           total_count: { $sum: 1 },
           latestTaskUpdatedAt: { $max: "$createdAt" }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "id",
+          as: "user"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true
         }
       },
       { $sort: { latestTaskUpdatedAt: -1 } },
       {
         $project: {
           _id: 0,
-          id: "$_id.id",
-          user_name: "$_id.user_name",
+          id: "$_id",
+          user_name: "$user.name",
           total_count: 1,
           latestTaskUpdatedAt: 1,
           tasks: {
@@ -341,9 +399,38 @@ const getTasksByUser = async (
     ];
 
     // Step 7: Execute aggregation and count
-    const taskGroups = await findTasksByUser(aggregationPipeline);
+    const taskGroups = await Task.aggregate(aggregationPipeline);
 
-    const totalUsers = await Task.distinct("user_name", filter).then((res) => res.length);
+    await Promise.all(
+      taskGroups.map(async (group) => {
+        await Promise.all(
+          group.tasks.map(async (task: any) => {
+            if (task.user_id && task.user_name) {
+              const user = await User.findOne({ id: task.user_id }, { name: 1 }).lean();
+              if (user) {
+                task.user_name = user.name;
+              }
+            }
+
+            if (task.project_id && task.project_name) {
+              const project = await Project.findOne({ id: task.project_id }, { name: 1 }).lean();
+              if (project) {
+                task.project_name = project.name;
+              }
+            }
+          })
+        );
+
+        if (group.user_name && group._id) {
+          const user = await User.findOne({ id: group._id }, { name: 1 }).lean();
+          if (user) {
+            group.user_name = user.name;
+          }
+        }
+      })
+    );
+
+    const totalUsers = await Task.distinct("user_id", filter).then((res) => res.length);
 
     return {
       success: true,

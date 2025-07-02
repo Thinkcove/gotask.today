@@ -192,8 +192,7 @@ const ViewMoreAction: React.FC = () => {
   }
 
   const name = transtask("listViewOf", {
-    name: groupName,
-    type: view === "projects" ? transtask("filterproject") : transtask("filteruser")
+    name: groupName
   });
   const hideProjectFilter = view === "projects";
   const hideUserFilter = view !== "projects";
@@ -201,20 +200,13 @@ const ViewMoreAction: React.FC = () => {
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh" overflow="hidden">
       <ModuleHeader name={name} />
-      <Box
-        mt={2}
-        display="flex"
-        flexDirection={{ xs: "column", sm: "row" }}
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        justifyContent="space-between"
-        flexWrap="wrap"
-        gap={2}
-      >
-        <Box display="flex" alignItems="center" width={{ xs: "100%", sm: "auto" }} gap={2}>
-          <Box sx={{ mr: 2 }}>
+      <Box mt={2} display="flex" flexDirection="row" alignItems="flex-start" gap={2}>
+        {/* Search and Header */}
+        <Box display="flex" alignItems="center" gap={2} minWidth={300}>
+          <Box sx={{ mr: 2, mt: 2 }}>
             <PageHeader onClose={() => window.history.back()} />
           </Box>
-          <Box maxWidth={400} flex={1}>
+          <Box maxWidth={400} flex={1} mt={2}>
             <SearchBar
               value={searchText}
               onChange={updateSearchText}
@@ -228,20 +220,10 @@ const ViewMoreAction: React.FC = () => {
           orientation="vertical"
           flexItem
           sx={{
-            display: { xs: "none", sm: "block" },
-            height: 40,
-            alignSelf: "center"
+            height: 60
           }}
         />
-
-        <Box
-          flex={1}
-          minWidth={280}
-          sx={{
-            overflowX: { xs: "auto", sm: "visible" },
-            width: "100%"
-          }}
-        >
+        <Box flex={1} minWidth={280}>
           <TaskFilters
             statusFilter={statusFilter}
             severityFilter={severityFilter}
@@ -295,7 +277,7 @@ const ViewMoreAction: React.FC = () => {
             selectedGroupId={id as string}
             drawerTasks={drawerTasks}
             isLoadingDrawer={isLoading && !drawerTasks?.length}
-            onTaskClick={(taskId) => (window.location.href = `/task/viewTask/${taskId}`)}
+            onTaskClick={(taskId) => (window.location.href = `/task/view/${taskId}`)}
             view={view}
           />
         )}

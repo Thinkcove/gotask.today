@@ -13,6 +13,7 @@ export interface IFormField {
   user_estimated: string;
   projects?: string;
   story_id?: string;
+  users?: string;
 }
 
 export interface IGroup {
@@ -122,4 +123,12 @@ export interface TimeEntry {
   date: string;
   start_time: string;
   end_time: string;
+}
+
+export interface IComment {
+  id: string;
+  user_id: string;
+  user_name: string;
+  comment: string;
+  updatedAt?: string;
 }

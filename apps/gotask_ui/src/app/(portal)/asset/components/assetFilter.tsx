@@ -1,6 +1,8 @@
 import React from "react";
 import { Box, Link } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
+import DateDropdown from "@/app/component/input/dateDropdown";
+import { ALLOCATION } from "../assetConstants";
 
 interface Props {
   modelNameFilter: string[];
@@ -17,6 +19,14 @@ interface Props {
   statusFilter?: string[];
   allStatuses?: string[];
   onStatusChange?: (val: string[]) => void;
+  dateFrom?: string;
+  dateTo?: string;
+  onDateChange?: (from: string, to: string) => void;
+  systemTypeFilter?: string[];
+  allSystemTypes?: string[];
+  onSystemTypeChange?: (val: string[]) => void;
+  assetAllocationFilter?: string[];
+  onAssetAllocationChange?: (val: string[]) => void;
 }
 
 const AssetFilters: React.FC<Props> = ({
@@ -32,11 +42,23 @@ const AssetFilters: React.FC<Props> = ({
   hideAssignedToFilter,
   statusFilter,
   allStatuses,
-  onStatusChange
+  onStatusChange,
+  dateFrom,
+  dateTo,
+  onDateChange,
+  systemTypeFilter,
+  allSystemTypes,
+  onSystemTypeChange,
+  assetAllocationFilter,
+  onAssetAllocationChange
 }) => {
   const appliedFilterCount =
     (hideModelNameFilter ? 0 : modelNameFilter.length > 0 ? 1 : 0) +
-    (hideAssignedToFilter ? 0 : assignedToFilter.length > 0 ? 1 : 0);
+    (hideAssignedToFilter ? 0 : assignedToFilter.length > 0 ? 1 : 0) +
+    (systemTypeFilter && systemTypeFilter.length > 0 ? 1 : 0) +
+    (dateFrom ? 1 : 0) +
+    (dateTo ? 1 : 0) +
+    (assetAllocationFilter && assetAllocationFilter.length > 0 ? 1 : 0);
 
   return (
     <Box>
@@ -68,12 +90,39 @@ const AssetFilters: React.FC<Props> = ({
             onChange={onAssignedToChange}
           />
         )}
+        {onDateChange && (
+          <DateDropdown
+            dateFrom={dateFrom || ""}
+            dateTo={dateTo || ""}
+            onDateChange={onDateChange}
+            transtask={trans}
+            placeholder={trans("warranty")}
+          />
+        )}
+        {allSystemTypes && onSystemTypeChange && (
+          <FilterDropdown
+            label={trans("systemtype")}
+            options={allSystemTypes}
+            selected={systemTypeFilter || []}
+            onChange={onSystemTypeChange}
+          />
+        )}
+
         {allStatuses && onStatusChange && (
           <FilterDropdown
             label={trans("status")}
             options={allStatuses}
             selected={statusFilter || []}
             onChange={onStatusChange}
+          />
+        )}
+
+        {onAssetAllocationChange && (
+          <FilterDropdown
+            label={trans("assetallocation")}
+            options={ALLOCATION}
+            selected={assetAllocationFilter || []}
+            onChange={onAssetAllocationChange}
           />
         )}
       </Box>

@@ -1,9 +1,15 @@
-import { Metadata } from "next";
+import { getMessages } from "next-intl/server";
+import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "KPI Templates | GoTaskToday",
-  description: "Define, manage, and assign KPI templates to measure performance."
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const messages = await getMessages();
+  const kpi = messages.KPI;
+
+  return {
+    title: kpi.meta.title,
+    description: kpi.meta.description
+  };
+}
 
 export default function KPILayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

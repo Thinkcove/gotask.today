@@ -1,9 +1,15 @@
-import { Metadata } from "next";
+import { getMessages } from "next-intl/server";
+import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Dashboard | GoTaskToday",
-  description: "View performance, activity insights, and key metrics in one place."
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const messages = await getMessages();
+  const dashboard = messages.Dashboard;
+
+  return {
+    title: dashboard.meta.title,
+    description: dashboard.meta.description
+  };
+}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

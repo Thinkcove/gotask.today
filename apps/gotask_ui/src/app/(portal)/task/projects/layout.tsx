@@ -1,9 +1,15 @@
-import { Metadata } from "next";
+import { getMessages } from "next-intl/server";
+import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Task Management | GoTaskToday",
-  description: "Plan, assign, and track tasks across projects."
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const messages = await getMessages();
+  const task = messages.Task;
+
+  return {
+    title: task.meta.title,
+    description: task.meta.description
+  };
+}
 
 export default function TaskLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

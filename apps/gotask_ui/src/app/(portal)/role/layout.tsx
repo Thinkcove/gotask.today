@@ -1,9 +1,15 @@
-import { Metadata } from "next";
+import { getMessages } from "next-intl/server";
+import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Role Management | GoTaskToday",
-  description: "Create, update, and manage roles and access control settings."
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const messages = await getMessages();
+  const role = messages.Role;
+
+  return {
+    title: role.meta.title,
+    description: role.meta.description
+  };
+}
 
 export default function RoleLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

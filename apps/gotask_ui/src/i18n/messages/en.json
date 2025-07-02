@@ -623,7 +623,10 @@
     "issuesCount": "Issues count",
     "assetallocation": "Asset usage",
     "overutilized": "Overutilized",
-    "enabled": "Enabled"
+    "enabled": "Enabled",
+    "accessCardNo": "Access Card No",
+    "personalId": "Personal Id",
+    "accesscarddetails": "Access card details"
   },
 
   "Chatbot": {

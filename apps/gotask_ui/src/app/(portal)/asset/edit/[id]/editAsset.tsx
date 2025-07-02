@@ -20,6 +20,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import IssueHistoryDrawer from "../../createIssues/issuesDrawer";
 import { ArrowBack } from "@mui/icons-material";
 import { systemTypeOptions } from "../../assetConstants";
+import AccessInputs from "../../createAsset/accessInput";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -71,7 +72,9 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     commentService: data?.commentService || "",
     assetType: data?.assetType || undefined,
     userId: data?.tags?.userId || "",
-    tag: data.tags?.id || ""
+    tag: data.tags?.id || "",
+    accessCardNo: data?.accessCardNo || "",
+    personalId: data.personalId || ""
   }));
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -83,14 +86,20 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.id) newErrors.id = transasset("id");
-    if (!formData.typeId) newErrors.typeId = transasset("typeid");
-    if (!formData.deviceName) newErrors.deviceName = transasset("devicename");
-    if (!formData.systemType) newErrors.systemType = transasset("systemtype");
-    if (!formData.ram) newErrors.ram = transasset("ram");
-    if (!formData.modelName) newErrors.modelName = transasset("modelname");
-    if (!formData.os) newErrors.os = transasset("os");
-    if (!formData.processor) newErrors.processor = transasset("processor");
+    if (formData.accessCardNo) {
+      if (!formData.accessCardNo)
+        newErrors.accessCardNo = `${transasset("accessCardNo")} ${transasset("isrequired")}`;
+      if (!formData.personalId)
+        newErrors.personalId = `${transasset("personalId")} ${transasset("isrequired")}`;
+    } else {
+      if (!formData.typeId) newErrors.typeId = transasset("typeid");
+      if (!formData.deviceName) newErrors.deviceName = transasset("devicename");
+      if (!formData.systemType) newErrors.systemType = transasset("systemtype");
+      if (!formData.ram) newErrors.ram = transasset("ram");
+      if (!formData.modelName) newErrors.modelName = transasset("modelname");
+      if (!formData.os) newErrors.os = transasset("os");
+      if (!formData.processor) newErrors.processor = transasset("processor");
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -350,6 +359,14 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
                 systemTypeOptions={systemTypeOptions}
               />
             </Grid>
+          )}
+          {selectedAssetType?.name === ASSET_TYPE.ACCESS_CARDS && (
+            <AccessInputs
+              formData={formData}
+              onChange={handleChange}
+              errors={errors}
+              selectedAssetType={selectedAssetType}
+            />
           )}
         </Box>
       </Paper>

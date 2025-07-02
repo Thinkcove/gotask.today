@@ -1,26 +1,46 @@
-"use client";
-import React from "react";
-import useSWR from "swr";
-import { useParams } from "next/navigation";
-import env from "@/app/common/env";
-import RoleDetail from "./roleDetail";
-import { getData } from "@/app/common/utils/apiData";
-import { withAuth } from "@/app/common/utils/authToken";
+import type { Metadata } from "next";
+import { getMessages } from "next-intl/server";
+import ViewAction from "./client";
 
-const fetchRole = async (url: string) => {
-  return await withAuth(async (token: string) => {
-    return await getData(url, token);
-  });
+type Props = {
+  params: Promise<{ roleId: string }>;
 };
 
-const ViewAction: React.FC = () => {
-  const { roleId } = useParams();
-  const url = `${env.API_BASE_URL}/roles/${roleId}`;
-  const { data, mutate } = useSWR(roleId ? url : null, fetchRole, {
-    revalidateOnFocus: false
-  });
-  const selectedRole = data || null;
-  return selectedRole && <RoleDetail role={selectedRole} mutate={mutate} />;
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { roleId } = await params;
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
+  const messages = await getMessages();
 
-export default ViewAction;
+  // Localization helper
+  const t = (key: string) => messages.RoleDetailPage?.[key] ?? key;
+
+  try {
+    const res = await fetch(`${baseUrl}/roles/${roleId}?metaOnly=true`, {
+      cache: "no-store"
+    });
+
+    if (!res.ok) {
+      return {
+        title: `${t("roleNotFoundTitle")} | GoTaskToday`,
+        description: t("roleNotFoundDescription")
+      };
+    }
+
+    const { data: role } = await res.json();
+
+    return {
+      title: `${role.name} | ${t("title")} | GoTaskToday`,
+      description: `${t("descriptionPrefix")} ${role.name} ${t("descriptionSuffix")}`
+    };
+  } catch (error) {
+    console.error("Metadata fetch error:", error);
+    return {
+      title: `${t("errorTitle")} | GoTaskToday`,
+      description: t("errorDescription")
+    };
+  }
+}
+
+export default function Page() {
+  return <ViewAction />;
+}

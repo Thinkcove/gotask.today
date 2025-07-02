@@ -11,12 +11,22 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import { useAssetById } from "../../services/assetActions";
 import { ASSET_TYPE, getIssuesStatusColor } from "@/app/common/constants/asset";
 import StatusIndicator from "@/app/component/status/statusIndicator";
+import { useState } from "react";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
 const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const router = useRouter();
   const { asset, isLoading } = useAssetById(id);
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+  const [showErkModal, setShowErkModal] = useState(false);
   const handleBack = () => router.back();
+  const handleOpenRecoveryModal = () => setShowRecoveryModal(true);
+  const handleCloseRecoveryModal = () => setShowRecoveryModal(false);
+  const handleOpenErkModal = () => setShowErkModal(true);
+  const handleCloseErkModal = () => setShowErkModal(false);
 
   if (isLoading) {
     return (
@@ -138,11 +148,40 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText
                     label={trans("antivirus")}
-                    value={asset.isEncrypted ? trans("enabled") : "-"}
+                    value={asset.antivirus ? trans("enabled") : "-"}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText label={trans("recoveryKey")} value={asset.recoveryKey || "-"} />
+                  <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                    {trans("recoveryKey")}
+                  </Typography>
+                  <Box display="flex" alignItems="center" flexWrap="nowrap">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "flex",
+                          alignItems: "center"
+                        }}
+                      >
+                        {asset.recoveryKey ? "********" : "-"}
+                      </Typography>
+                      {asset.recoveryKey && (
+                        <IconButton size="small" sx={{ mb: 1 }} onClick={handleOpenRecoveryModal}>
+                          <VisibilityIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </Box>
+                  </Box>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText
@@ -168,26 +207,19 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                       {trans("encryptedkey")}
                     </Typography>
 
-                    <Box
-                      sx={{
-                        p: 2,
-                        backgroundColor: "#f9f9f9",
-                        border: "1px solid #e0e0e0",
-                        borderRadius: 2,
-                        fontFamily: "monospace",
-                        fontSize: "14px",
-                        whiteSpace: "pre-wrap",
-                        wordBreak: "break-word"
-                      }}
-                    >
-                      {(asset?.erk || "-")
-                        .split("Identifier:")
-                        .filter(Boolean)
-                        .map((entry, index) => (
-                          <Box key={index} mb={1}>
-                            {"Identifier:" + entry.trim()}
-                          </Box>
-                        ))}
+                    <Box display="flex" alignItems="center">
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1
+                        }}
+                      >
+                        ********
+                      </Box>
+                      <IconButton size="small" onClick={handleOpenErkModal} sx={{ mb: 1, ml: 1 }}>
+                        <VisibilityIcon fontSize="small" />
+                      </IconButton>
                     </Box>
                   </Grid>
                 )}
@@ -286,6 +318,33 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
               </Box>
             </>
           )}
+          <CommonDialog
+            open={showErkModal}
+            onClose={handleCloseErkModal}
+            title={trans("encryptedkey")}
+          >
+            <Box
+              sx={{
+                p: 2
+              }}
+            >
+              {asset?.erk || "-"}
+            </Box>
+          </CommonDialog>
+
+          <CommonDialog
+            open={showRecoveryModal}
+            onClose={handleCloseRecoveryModal}
+            title={trans("recoveryKey")}
+          >
+            <Box
+              sx={{
+                p: 2
+              }}
+            >
+              {asset?.recoveryKey || "-"}
+            </Box>
+          </CommonDialog>
         </Paper>
       </Box>
     </>

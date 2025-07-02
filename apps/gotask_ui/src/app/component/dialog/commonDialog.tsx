@@ -13,7 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 interface CommonDialogProps extends DialogProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit?: () => void;
   title: string;
   children: React.ReactNode;
   submitLabel?: string;

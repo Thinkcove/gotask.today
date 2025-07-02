@@ -22,7 +22,6 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
-import ProjectGoalList from "./projectGoal/projectGoalList";
 
 interface ProjectDetailProps {
   project: Project;
@@ -33,7 +32,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
-  const [projectGoalOpean, setProjectGoalOpean] = useState(false);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -102,18 +100,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
       });
     }
   };
-  if (projectGoalOpean) {
-    return (
-      <>
-        <ModuleHeader name={transproject("detailview")} />
-        <ProjectGoalList
-          onClose={() => {
-            setProjectGoalOpean(false);
-          }}
-        />
-      </>
-    );
-  }
 
   return (
     <>
@@ -184,7 +170,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 cursor: "pointer",
                 "&:hover": { textDecoration: "underline" }
               }}
-              onClick={() => setProjectGoalOpean(true)}
+              onClick={() => router.push(`/project/view/${projectID}/goals`)}
             >
               {transproject("linkgoals")}
             </Typography>
@@ -199,7 +185,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 cursor: "pointer",
                 "&:hover": { textDecoration: "underline" }
               }}
-              onClick={() => router.push(`/project/viewProject/${projectID}/stories`)}
+              onClick={() => router.push(`/project/view/${projectID}/stories`)}
             >
               {transproject("linkstories")}
             </Typography>

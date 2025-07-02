@@ -10,12 +10,19 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { IAssetAttributes } from "../interface/asset";
-import { getAssetColumns, IAssetDisplayRow, issueStatuses } from "../assetConstants";
+import {
+  getAssetColumns,
+  IAssetDisplayRow,
+  issueStatuses,
+  NOT_UTILIZED,
+  OVERUTILIZED
+} from "../assetConstants";
 import AssetIssueCards from "../createIssues/issuesCard";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+import { SortOrder } from "@/app/common/constants/task";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";
@@ -28,11 +35,14 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [modelNameFilter, setModelNameFilter] = useState<string[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const router = useRouter();
-  const { getAll: allAssets } = useAllAssets();
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [warrantyDateFrom, setWarrantyDateFrom] = useState<string>("");
   const [warrantyDateTo, setWarrantyDateTo] = useState<string>("");
   const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>([]);
+  const [sortKey, setSortKey] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(SortOrder.DESC);
+  const { getAll: allAssets } = useAllAssets(sortKey, sortOrder);
+  const [assetAllocationFilter, setAssetAllocationFilter] = useState<string[]>([]);
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -160,7 +170,26 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       const matchSystemType =
         systemTypeFilter.length === 0 || systemTypeFilter.includes(asset.systemType || "");
 
-      return matchBasic && matchAssigned && matchModel && matchWarranty && matchSystemType;
+      const matchAssetAllocation =
+        assetAllocationFilter.length === 0 ||
+        assetAllocationFilter.some((option) => {
+          if (option === OVERUTILIZED) {
+            return Number(asset.userAssetCount) > 1;
+          }
+          if (option === NOT_UTILIZED) {
+            return !asset.tagData?.some((tag) => !!tag.user?.name);
+          }
+          return true;
+        });
+
+      return (
+        matchBasic &&
+        matchAssigned &&
+        matchModel &&
+        matchWarranty &&
+        matchSystemType &&
+        matchAssetAllocation
+      );
     });
   };
 
@@ -172,20 +201,23 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     warrantyDateFrom,
     warrantyDateTo
   );
+
   const mappedAssets = filteredAssets.map((asset) => ({
     id: asset.id,
     assetType: asset.assetType?.name || "-",
-    assetName: asset.deviceName || "-",
+    deviceName: asset.deviceName || "-",
     modelName: asset.modelName || "-",
     warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
     purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-",
-    users:
+    user:
       asset.tagData
         ?.map((t) => t.user?.name)
         .filter(Boolean)
         .join(", ") || "-",
     encrypted: asset.isEncrypted,
-    previouslyUsedBy: asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-"
+    previouslyUsedBy: asset.tagData?.find((tag) => !!tag.previouslyUsedBy)?.previouslyUsedBy || "-",
+    issuesCount: asset.issuesCount,
+    userAssetCount: asset.userAssetCount
   }));
 
   return (
@@ -234,6 +266,10 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               setModelNameFilter([]);
               setAssignedToFilter([]);
               setSearchText("");
+              setWarrantyDateFrom("");
+              setWarrantyDateTo("");
+              setSystemTypeFilter([]);
+              setAssetAllocationFilter([]);
             }}
             trans={transasset}
             dateFrom={warrantyDateFrom}
@@ -245,6 +281,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             systemTypeFilter={systemTypeFilter}
             allSystemTypes={allSystemTypes}
             onSystemTypeChange={setSystemTypeFilter}
+            assetAllocationFilter={assetAllocationFilter}
+            onAssetAllocationChange={setAssetAllocationFilter}
           />
         ) : (
           <AssetFilters
@@ -298,7 +336,14 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                 >
                   <Box sx={{ width: "100%", flex: 1 }}>
                     <Box sx={{ minWidth: 800 }}>
-                      <Table<IAssetDisplayRow> columns={assetColumns} rows={mappedAssets} />
+                      <Table<IAssetDisplayRow>
+                        columns={assetColumns}
+                        rows={mappedAssets}
+                        onSortChange={(key, order) => {
+                          setSortKey(key);
+                          setSortOrder(order);
+                        }}
+                      />
                     </Box>
                   </Box>
                 </Paper>

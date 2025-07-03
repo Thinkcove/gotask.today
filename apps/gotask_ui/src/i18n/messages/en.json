@@ -803,7 +803,7 @@
   "ProjectGoal": {
     "goal": "Project Goal",
     "goalDesc": "Project Goal Description",
-    "goalDescPlaceholder": "Enter projrct goal",
+    "goalDescPlaceholder": "Enter project goal",
     "createnewpGoal": "Create New Goal",
     "searchplaceholder": "Search Goal",
     "completion": "Completion",

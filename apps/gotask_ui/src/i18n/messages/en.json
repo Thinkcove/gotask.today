@@ -514,6 +514,7 @@
     "userskill": "Skills",
     "general": "General",
     "add": "Add",
+    "selectskill": "Select Skill",
     "addskill": "Add Skill",
     "remove": "Remove",
     "duplicateskills": "Duplicate skills are not allowed.",

@@ -242,11 +242,17 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
               }}
               options={options}
               inputValue={tempSkill.name}
-              onInputChange={(_, newInput) => {
-                setTempSkill({ ...tempSkill, name: newInput });
+              onInputChange={(_, newInput, reason) => {
+                if (reason === "input" || reason === "clear") {
+                  const cleaned = newInput.startsWith("__add__")
+                    ? newInput.replace("__add__", "")
+                    : newInput;
+                  setTempSkill({ ...tempSkill, name: cleaned });
+                }
               }}
               onChange={(_, newValue) => {
                 if (!newValue) return;
+
                 const name =
                   typeof newValue === "string" && newValue.startsWith("__add__")
                     ? newValue.replace("__add__", "")
@@ -257,6 +263,26 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
               renderInput={(params) => (
                 <TextField {...params} placeholder={trans("addskill")} fullWidth />
               )}
+              renderOption={(props, option) => {
+                const isAddOption = typeof option === "string" && option.startsWith("__add__");
+                const skillName = isAddOption ? option.replace("__add__", "") : option;
+                const { key, ...rest } = props;
+
+                return (
+                  <li key={key} {...rest}>
+                    {isAddOption ? (
+                      <Box display="flex" alignItems="center">
+                        <AddIcon fontSize="small" sx={{ mr: 1 }} />
+                        <Typography variant="body2">
+                          {trans("add")} "{skillName}"
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Typography variant="body2">{skillName}</Typography>
+                    )}
+                  </li>
+                );
+              }}
             />
           </Grid>
 

@@ -41,14 +41,15 @@ const EditGoalPage = () => {
 
   const { data: users } = useSWR("fetch-user", fetcherUserList);
 
-  const {
-    data: fetchedGoalData,
-    isLoading: isLoadingGoal
-  } = useSWR(goalID ? `goal-${goalID}` : null, () => fetchGoalData(goalID), {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    errorRetryCount: 1
-  });
+  const { data: fetchedGoalData, isLoading: isLoadingGoal } = useSWR(
+    goalID ? `goal-${goalID}` : null,
+    () => fetchGoalData(goalID),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      errorRetryCount: 1
+    }
+  );
 
   const {
     goalData,
@@ -71,9 +72,9 @@ const EditGoalPage = () => {
       description: transGoal("description"),
       priority: transGoal("priority"),
       projectId: transGoal("projectname"),
-      status: transGoal("status")
-      // weekEnd: transGoal("weekEnd"),
-      // weekStart: transGoal("weekStart")
+      status: transGoal("status"),
+      weekEnd: transGoal("startdate"),
+      weekStart: transGoal("enddate")
     };
 
     return (
@@ -169,45 +170,44 @@ const EditGoalPage = () => {
         }}
       >
         <ModuleHeader name={currentProject?.name} />
-          <FormHeader
-            isEdit={true}
-            onCancel={handleCancel}
-            onSubmit={handleSubmit}
-            onShowHistory={() => setHistory(true)}
-            isSubmitting={isSubmitting}
-            hasHistory={(projectGoalHistory?.updateHistory ?? []).length > 0}
-            edit={transGoal("editgoal")}
-            create={transGoal("creategoal")}
-            cancle={transGoal("cancel")}
-            update={transGoal("update")}
-            showhistory={transGoal("showhistory")}
-          />
-     
-
-          <ProjectGoalForm
-            rteRef={rteRef}
-            goalData={goalData}
-            setGoalData={setGoalData}
-            errors={errors}
-            currentProjectOptions={currentProjectOptions}
-            currentProject={currentProject}
-          />
-        </Box>
-
-        <CustomSnackbar
-          open={snackbar.open}
-          message={snackbar.message}
-          severity={snackbar.severity}
-          onClose={handleSnackbarClose}
+        <FormHeader
+          isEdit={true}
+          onCancel={handleCancel}
+          onSubmit={handleSubmit}
+          onShowHistory={() => setHistory(true)}
+          isSubmitting={isSubmitting}
+          hasHistory={(projectGoalHistory?.updateHistory ?? []).length > 0}
+          edit={transGoal("editgoal")}
+          create={transGoal("creategoal")}
+          cancle={transGoal("cancel")}
+          update={transGoal("update")}
+          showhistory={transGoal("showhistory")}
         />
 
-        <HistoryDrawer
-          open={history}
-          onClose={() => setHistory(false)}
-          history={formattedHistory}
-          text={transGoal("log")}
-          heading={transGoal("projectgoalhistory")}
+        <ProjectGoalForm
+          rteRef={rteRef}
+          goalData={goalData}
+          setGoalData={setGoalData}
+          errors={errors}
+          currentProjectOptions={currentProjectOptions}
+          currentProject={currentProject}
         />
+      </Box>
+
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleSnackbarClose}
+      />
+
+      <HistoryDrawer
+        open={history}
+        onClose={() => setHistory(false)}
+        history={formattedHistory}
+        text={transGoal("log")}
+        heading={transGoal("projectgoalhistory")}
+      />
     </>
   );
 };

@@ -43,7 +43,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   }
 
   return (
-    <Box sx={{p:2}}>
+    <Box sx={{ p: 2 }}>
       <Box
         sx={{
           borderRadius: 4,
@@ -100,7 +100,10 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
           {/* Meta Info */}
           <Grid container spacing={2} mb={3}>
             <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={transGoal("priority")} value={goalData.priority || "-"} />
+              <LabelValueText
+                label={transGoal("filterpriority")}
+                value={goalData.priority || "-"}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText

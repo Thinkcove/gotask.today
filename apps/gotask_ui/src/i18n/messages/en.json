@@ -809,8 +809,8 @@
     "completion": "Completion",
     "goaltitle": "Goal Title",
     "goaltitlePlaceholder": "Enter your goal title",
-    "startdate": "Start Date*",
-    "enddate": "End Date*",
+    "startdateinput": "Start Date*",
+    "enddateinput": "End Date*",
     "status": "Status*",
     "statusPlaceholder": "Select Status",
     "priority": "Priority*",
@@ -858,8 +858,9 @@
     "log": "Log of who performed the updates in the goal",
     "projectgoalhistory": "Goal History",
     "projectname": "Project Name",
-    "clearall": "Clear All"
-    
+    "clearall": "Clear All",
+    "startdate": "Start Date",
+    "enddate": "End Date"
   },
   "Comments": {
     "comment": "Comments",

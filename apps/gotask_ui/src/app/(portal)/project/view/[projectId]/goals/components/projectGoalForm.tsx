@@ -34,10 +34,10 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormField
-              label={transGoal("startdate")}
+              label={transGoal("startdateinput")}
               type="date"
               inputType="date"
-              placeholder={transGoal("startdate")}
+              placeholder={transGoal("startdateinput")}
               value={goalData.weekStart}
               error={errors.weekStart}
               onChange={(value) => {
@@ -53,9 +53,10 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormField
-              label={transGoal("enddate")}
+              label={transGoal("enddateinput")}
+              type="date"
               inputType="date"
-              placeholder={transGoal("enddate")}
+              placeholder={transGoal("enddateinput")}
               value={goalData.weekEnd}
               error={errors.weekEnd}
               onChange={(value) => {

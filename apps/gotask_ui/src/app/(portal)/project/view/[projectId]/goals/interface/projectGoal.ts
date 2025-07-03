@@ -5,6 +5,7 @@ import { RefObject } from "react";
 export interface User {
   id: string;
   name: string;
+  first_name?: string;
 }
 export interface Project {
   id: string;
@@ -101,11 +102,7 @@ export interface HistoryData {
   [key: string]: string;
 }
 
-export interface UpdateHistoryItem {
-  user_id: string;
-  createdAt: string;
-  history_data: HistoryData;
-}
+
 
 export interface ProjectGoalHistory {
   updateHistory: UpdateHistoryItem[];
@@ -128,3 +125,27 @@ export interface GoalFiltersBar {
   filterpriority: string;
   filterstatus: string;
 }
+
+export interface GoalUpdateData {
+  goalTitle?: string;
+  description?: string;
+  priority?: string;
+  projectId?: string;
+  status?: string;
+  weekStart?: string;
+  weekEnd?: string;
+  [key: string]: string | undefined;
+}
+
+export interface UpdateHistoryItem {
+  user_id: string;
+  createdAt?: string;
+  history_data?: {
+    previous_data?: GoalUpdateData;
+    update_data?: GoalUpdateData;
+    action?: string;
+    [key: string]: any;
+  };
+}
+
+

@@ -73,6 +73,7 @@ class ProjectGoalController extends BaseController {
       return this.replyError(error);
     }
   }
+
   // Update a goal by ID
   async updateProjectGoal(requestHelper: RequestHelper, handler: any) {
     try {
@@ -81,11 +82,35 @@ class ProjectGoalController extends BaseController {
 
       const userId = updateData.user_id || requestHelper.getParam("user_id");
 
+      if (!userId) throw new Error("User ID is required for update tracking");
+
       delete updateData.user_id;
 
+      // Get the current goal data before updating
+      const currentGoalResponse = await getProjectGoalByIdService(id);
+      if (!currentGoalResponse || !currentGoalResponse.data) {
+        throw new Error("Goal not found");
+      }
+
+      const currentGoalData = currentGoalResponse.data as any;
+
+      // Store the previous data in update history
+      const historyRecord = new ProjectGoalUpdateHistory({
+        goal_id: id,
+        user_id: userId,
+        history_data: {
+          previous_data: currentGoalData._doc || currentGoalData,
+          update_data: updateData,
+          timestamp: new Date()
+        }
+      });
+
+      await historyRecord.save();
+
+      // Now update the goal
       const updatedGoal = await updateProjectGoalService(id, updateData, userId);
 
-      if (!updatedGoal) throw new Error("Goal not found");
+      if (!updatedGoal) throw new Error("Failed to update goal");
 
       return this.sendResponse(handler, updatedGoal);
     } catch (error) {

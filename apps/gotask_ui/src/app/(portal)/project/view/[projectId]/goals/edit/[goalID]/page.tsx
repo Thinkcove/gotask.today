@@ -13,10 +13,11 @@ import { fetchGoalData, updateWeeklyGoal } from "../../goalservices/projectGoalA
 import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
-import { UpdateHistoryItem, User } from "../../interface/projectGoal";
 import FormHeader from "../../../../../../access/components/FormHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import ModuleHeader from "@/app/component/header/moduleHeader";
+import { GoalUpdateData, UpdateHistoryItem, User } from "../../interface/projectGoal";
+
 const EditGoalPage = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const router = useRouter();
@@ -63,6 +64,7 @@ const EditGoalPage = () => {
   const projectGoalHistory = useMemo(() => {
     return fetchedGoalData?.updateHistory ? { updateHistory: fetchedGoalData.updateHistory } : null;
   }, [fetchedGoalData?.updateHistory]);
+
   console.log("projectGoalHistory", projectGoalHistory);
 
   const formattedHistory = useMemo(() => {
@@ -81,22 +83,67 @@ const EditGoalPage = () => {
         const updatedUser = users?.find((user: User) => user.id === item.user_id);
         const loginuser_name = updatedUser?.first_name || updatedUser?.name || "Unknown";
 
-        const formattedChanges = Object.entries(item.history_data || {})
-          .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
-          .map(([key, value]) => {
-            const label = fieldLabelMap[key] || key;
-            return `${label} updated to "${value}"`;
-          });
+        let formattedChanges: string[] = [];
+
+        if (item.history_data?.previous_data && item.history_data?.update_data) {
+          const previousData = item.history_data.previous_data as GoalUpdateData;
+          const updateData = item.history_data.update_data as GoalUpdateData;
+
+          formattedChanges = Object.entries(updateData)
+            .filter(([key, newValue]) => {
+              if (
+                key === "weekStart" ||
+                key === "weekEnd" ||
+                newValue === "" ||
+                newValue === null ||
+                newValue === undefined
+              ) {
+                return false;
+              }
+
+              const oldValue = previousData[key];
+              return oldValue !== newValue;
+            })
+            .map(([key, newValue]) => {
+              const label = fieldLabelMap[key] || key;
+              const oldValue = previousData[key];
+
+              if (oldValue !== undefined && oldValue !== null && oldValue !== "") {
+                return `${label} changed from "${oldValue}" to "${newValue}"`;
+              } else {
+                return `${label} updated to "${newValue}"`;
+              }
+            });
+        } else {
+          // Handle old format
+          formattedChanges = Object.entries(item.history_data || {})
+            .filter(([key, value]) => {
+              return (
+                value !== "" &&
+                value !== null &&
+                value !== undefined &&
+                key !== "weekStart" &&
+                key !== "weekEnd" &&
+                key !== "timestamp" &&
+                key !== "action"
+              );
+            })
+            .map(([key, value]) => {
+              const label = fieldLabelMap[key] || key;
+              return `${label} updated to "${value}"`;
+            });
+        }
 
         return {
           loginuser_name,
-          formatted_history: formattedChanges.join(". "),
-          created_date: item.createdAt || ""
+          formatted_history:
+            formattedChanges.length > 0 ? formattedChanges.join(". ") : "No changes recorded",
+          created_date: item.createdAt || "",
+          action: item.history_data?.action || "UPDATE"
         };
       }) ?? []
     );
   }, [projectGoalHistory?.updateHistory, users, transGoal]);
-
   const handleCancel = () => {
     router.back();
   };

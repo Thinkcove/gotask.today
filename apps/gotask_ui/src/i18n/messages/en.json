@@ -863,7 +863,9 @@
     "projectname": "Project Name",
     "clearall": "Clear All",
     "startdate": "Start Date",
-    "enddate": "End Date"
+    "enddate": "End Date",
+    "prioritylabel": "Priority",
+    "statuslabel": "Status"
   },
   "Comments": {
     "comment": "Comments",

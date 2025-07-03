@@ -103,7 +103,7 @@ export interface HistoryData {
 
 export interface UpdateHistoryItem {
   user_id: string;
-  timestamp: string;
+  createdAt: string;
   history_data: HistoryData;
 }
 

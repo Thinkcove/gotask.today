@@ -9,7 +9,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import useSWR, { mutate } from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import {  fetchGoalData, updateWeeklyGoal } from "../../goalservices/projectGoalAction";
+import { fetchGoalData, updateWeeklyGoal } from "../../goalservices/projectGoalAction";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
@@ -63,6 +63,7 @@ const EditGoalPage = () => {
   const projectGoalHistory = useMemo(() => {
     return fetchedGoalData?.updateHistory ? { updateHistory: fetchedGoalData.updateHistory } : null;
   }, [fetchedGoalData?.updateHistory]);
+  console.log("projectGoalHistory", projectGoalHistory);
 
   const formattedHistory = useMemo(() => {
     const fieldLabelMap: { [key: string]: string } = {
@@ -77,6 +78,8 @@ const EditGoalPage = () => {
 
     return (
       projectGoalHistory?.updateHistory?.map((item: UpdateHistoryItem) => {
+        console.log("createdAt");
+
         const updatedUser = users?.find((user: User) => user.id === item.user_id);
         const loginuser_name = updatedUser?.first_name || updatedUser?.name || "Unknown";
 
@@ -90,7 +93,7 @@ const EditGoalPage = () => {
         return {
           loginuser_name,
           formatted_history: formattedChanges.join(". "),
-          created_date: item.timestamp || ""
+          created_date: item.createdAt || ""
         };
       }) ?? []
     );

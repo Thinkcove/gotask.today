@@ -1,263 +1,330 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Typography, TextField, Grid, Stack, Paper } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
-import StarIcon from "@mui/icons-material/Star";
+import { Box, Typography, TextField, Grid, Stack, IconButton, Paper, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { ISkill } from "../interfaces/userInterface";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import StarIcon from "@mui/icons-material/Star";
 import useSWR from "swr";
-import env from "@/app/common/env";
-import { createSkill, updateUserSkill, deleteUserSkill, fetchSkills } from "../services/userAction";
-import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
+import Autocomplete from "@mui/material/Autocomplete";
+import { ISkill } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
+import {
+  createSkill,
+  deleteUserSkill,
+  fetchSkills,
+  updateUserSkill,
+  addUserSkills
+} from "../services/userAction";
+import CommonDialog from "@/app/component/dialog/commonDialog";
+import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
+import env from "@/app/common/env";
 
 interface SkillInputProps {
   userId: string;
   skills: ISkill[];
   onChange: (skills: ISkill[]) => void;
 }
-
 const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => {
-  const [inputValue, setInputValue] = useState("");
-  const skillUrl = `${env.API_BASE_URL}/getAllSkills`;
-  const transuser = useTranslations("User");
+  const trans = useTranslations("User");
+  const transInc = useTranslations("User.Increment");
 
-  const {
-    data: options = [],
-    isLoading,
-    mutate
-  } = useSWR(skillUrl, fetchSkills, {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
+
+  const [tempSkill, setTempSkill] = useState<ISkill>({
+    name: "",
+    proficiency: 0,
+    experience: undefined
+  });
+
+  const skillUrl = `${env.API_BASE_URL}/getAllSkills`;
+  const { data: options = [], mutate } = useSWR(skillUrl, fetchSkills, {
     revalidateOnFocus: false
   });
 
-  const onAdd = async (name: string) => {
-    if (!name.trim() || skills.find((s) => s.name.toLowerCase() === name.toLowerCase())) return;
+  const openAddDialog = () => {
+    setTempSkill({ name: "", proficiency: 0 });
+    setCurrentEditIndex(null);
+    setDialogOpen(true);
+  };
+
+  const openEditDialog = (index: number) => {
+    setTempSkill({ ...skills[index] });
+    setCurrentEditIndex(index);
+    setDialogOpen(true);
+  };
+
+  const handleSave = async () => {
+    const trimmed = tempSkill.name.trim();
+    if (!trimmed || !tempSkill.proficiency) return;
+
+    const updated = [...skills];
+    const skillData: ISkill = {
+      name: trimmed,
+      proficiency: tempSkill.proficiency,
+      experience: tempSkill.proficiency >= 3 ? tempSkill.experience : undefined
+    };
 
     try {
-      await createSkill(name);
-      await mutate();
+      if (currentEditIndex !== null) {
+        const existing = updated[currentEditIndex];
+        Object.assign(existing, skillData);
+        if (existing.skill_id) await updateUserSkill(userId, existing.skill_id, existing);
+      } else {
+        await createSkill(trimmed);
+        await mutate();
+        const added = await addUserSkills(userId, [skillData]);
+        if (added?.length) {
+          updated.unshift({ ...skillData, skill_id: added[0].skill_id });
+        }
+      }
 
-      const newSkill: ISkill = {
-        name,
-        proficiency: 0
-      };
-
-      onChange([...skills, newSkill]);
-    } catch (error) {
-      console.error("Create skill failed", error);
+      onChange(updated);
+      setDialogOpen(false);
+      setTempSkill({ name: "", proficiency: 0 });
+      setCurrentEditIndex(null);
+    } catch (err) {
+      console.error("Save skill failed:", err);
     }
   };
 
-  const updateSkill = async (index: number, updated: ISkill) => {
-    const newSkills = [...skills];
-    newSkills[index] = updated;
-    onChange(newSkills);
-
-    if (updated.skill_id) {
-      await updateUserSkill(userId, updated.skill_id, {
-        skill_id: updated.skill_id,
-        name: updated.name,
-        proficiency: updated.proficiency,
-        experience: updated.experience
-      });
-    }
-  };
-
-  const removeSkill = async (index: number) => {
-    const [removed] = skills.splice(index, 1);
-    onChange([...skills]);
-    if (removed.skill_id) await deleteUserSkill(userId, removed.skill_id);
+  const confirmDelete = async () => {
+    if (deleteIndex === null) return;
+    const skill = skills[deleteIndex];
+    if (skill.skill_id) await deleteUserSkill(userId, skill.skill_id);
+    const updated = skills.filter((_, i) => i !== deleteIndex);
+    onChange(updated);
+    setConfirmOpen(false);
+    setDeleteIndex(null);
   };
 
   return (
-    <Box sx={{ pt: 1 }}>
-      {/* Add Skill */}
-      <Grid item xs={12} md={3} pt={2}>
-        <Autocomplete
-          freeSolo
-          options={options}
-          loading={isLoading}
-          inputValue={inputValue}
-          onInputChange={(_, val) => setInputValue(val)}
-          onChange={(_, val) => {
-            if (!val) return;
-            const isAdd = typeof val === "string" && val.startsWith("__add__");
-            const name = isAdd ? val.replace("__add__", "") : val;
-            onAdd(name);
-            setInputValue("");
-          }}
-          filterOptions={(options) => {
-            const filtered = options
-              .filter((opt) => opt.toLowerCase().includes(inputValue.toLowerCase()))
-              .sort((a, b) => a.localeCompare(b));
-
-            const isNew =
-              inputValue && !options.some((opt) => opt.toLowerCase() === inputValue.toLowerCase());
-            return isNew ? [`__add__${inputValue}`, ...filtered] : filtered;
-          }}
-          getOptionLabel={(option) =>
-            typeof option === "string" && option.startsWith("__add__")
-              ? option.replace("__add__", "")
-              : option
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={transuser("addskill")}
-              fullWidth
-              InputProps={{
-                ...params.InputProps,
-                sx: {
-                  alignItems: "center",
-                  height: 50
-                }
-              }}
-            />
-          )}
-          renderOption={(props, option) => {
-            const isAdd = typeof option === "string" && option.startsWith("__add__");
-            const skillName = isAdd ? option.replace("__add__", "") : option;
-
-            return (
-              <li {...props}>
-                <Box display="flex" alignItems="center">
-                  {isAdd && <AddIcon fontSize="small" sx={{ mr: 1 }} />}
-                  <Typography variant="body2">
-                    {isAdd ? `${transuser("add")} "${skillName}"` : skillName}
-                  </Typography>
-                </Box>
-              </li>
-            );
-          }}
-        />
-      </Grid>
-
-      {/* Skill List */}
-      <Grid item xs={12} md={8} pt={2}>
-        <Box
-          sx={{
-            maxHeight: 450,
-            overflowY: "auto",
-            pr: 1,
-            pb: 2,
-            scrollbarWidth: "thin",
-            "&::-webkit-scrollbar": { width: "6px" },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#aaa",
-              borderRadius: "4px"
-            }
-          }}
+    <Box mt={3}>
+      {/* Add Button */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography fontSize={16} fontWeight={600} zIndex={10}>
+          {trans("userskill")}
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={openAddDialog}
+          sx={{ textTransform: "none" }}
         >
-          {skills.length === 0 ? (
-            <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
-              {transuser("noskills")}
-            </Paper>
-          ) : (
-            skills.map((s, idx) => {
-              return (
-                <Box
-                  key={idx}
+          {trans("addskill")}
+        </Button>
+      </Box>
+      <Box
+        sx={{
+          maxHeight: 400,
+          overflow: "auto",
+          border: "1px solid #ddd",
+          borderRadius: 2,
+          px: 2,
+          py: 2,
+          scrollBehavior: "smooth",
+          "&::-webkit-scrollbar": {
+            width: "6px",
+            height: "6px"
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#f1f1f1"
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#bbb",
+            borderRadius: 8
+          }
+        }}
+      >
+        {/* Skill List */}
+        {skills.length === 0 ? (
+          <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
+            {trans("noskills")}
+          </Paper>
+        ) : (
+          <Grid container spacing={2}>
+            {skills.map((skill, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Paper
                   sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
                     p: 2,
-                    mb: 2,
                     borderRadius: 2,
-                    border: "1px solid #e0e0e0",
-                    backgroundColor: "#f5f5f5"
+                    border: "1px solid #e0e0e0"
                   }}
                 >
-                  <Grid container spacing={1} alignItems="center">
-                    <Grid item xs={11}>
-                      <Typography variant="subtitle1" fontWeight="medium">
-                        {s.name}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={1}>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: "red", cursor: "pointer" }}
-                        onClick={() => removeSkill(idx)}
-                      >
-                        {transuser("remove")}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-
-                  <Box sx={{ pt: 1 }}>
-                    <Stack
-                      direction="row"
-                      flexWrap="wrap"
-                      alignItems="center"
-                      display="flex"
-                      justifyContent="space-between"
+                  <Box display="flex" gap={2}>
+                    <Box
+                      sx={{
+                        width: 50,
+                        height: 50,
+                        borderRadius: 1,
+                        backgroundColor: "#f0f0f0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 24
+                      }}
                     >
-                      {Object.entries(PROFICIENCY_DESCRIPTIONS).map(([value, label]) => {
-                        const level = Number(value);
-                        return (
-                          <Box
-                            key={level}
-                            onClick={() => {
-                              updateSkill(idx, {
-                                ...s,
-                                proficiency: level,
-                                experience: s.experience
-                              });
-                            }}
-                            sx={{
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 0.5,
-                              px: 1,
-                              py: 0.5,
-                              borderRadius: 1,
-                              "&:hover": {
-                                backgroundColor: "action.hover"
-                              }
-                            }}
-                          >
-                            <StarIcon
-                              color={s.proficiency >= level ? "primary" : "disabled"}
-                              fontSize="small"
-                            />
-                            <Typography variant="caption">{label}</Typography>
-                          </Box>
-                        );
-                      })}
-
-                      <TextField
-                        type="number"
-                        label={transuser("experience")}
-                        value={s.experience || ""}
-                        onChange={(e) => {
-                          const val = Math.max(1, parseInt(e.target.value || "0", 10) || 0);
-                          updateSkill(idx, { ...s, experience: val });
-                        }}
-                        inputProps={{ min: 1 }}
-                        disabled={s.proficiency < 3}
-                        size="small"
-                        sx={{
-                          width: 100,
-                          mx: 1,
-                          "& .MuiInputBase-root": {
-                            height: 36,
-                            fontSize: 12
-                          },
-                          "& .MuiInputLabel-root": {
-                            fontSize: 12
-                          }
-                        }}
-                      />
-                    </Stack>
+                      🛠️
+                    </Box>
+                    <Box>
+                      <Typography fontSize={14} fontWeight={600}>
+                        {skill.name}
+                      </Typography>
+                      <Typography fontSize={12} color="text.secondary">
+                        {trans("proficiency")}: {PROFICIENCY_DESCRIPTIONS[skill.proficiency]}
+                      </Typography>
+                      {skill.experience && skill.proficiency >= 3 && (
+                        <Typography fontSize={12} color="text.secondary">
+                          {trans("experience")}: {skill.experience} {trans("months")}
+                        </Typography>
+                      )}
+                    </Box>
                   </Box>
-                </Box>
-              );
-            })
+                  <Box>
+                    <IconButton onClick={() => openEditDialog(index)}>
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => {
+                        setDeleteIndex(index);
+                        setConfirmOpen(true);
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" color="error" />
+                    </IconButton>
+                  </Box>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
+      {/* Dialogs (Add/Edit & Delete) */}
+      <CommonDialog
+        open={dialogOpen}
+        onClose={() => {
+          setDialogOpen(false);
+          setTempSkill({ name: "", proficiency: 0 });
+          setCurrentEditIndex(null);
+        }}
+        onSubmit={handleSave}
+        title={currentEditIndex !== null ? trans("editskill") : trans("addskill")}
+        submitLabel={trans("save")}
+        cancelLabel={trans("cancel")}
+      >
+        <Typography color="text.secondary" fontSize={14} mb={2}>
+          {trans("skilldescription")}
+        </Typography>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Typography fontWeight={600} fontSize={14} mb={0.5}>
+              {trans("skills")} <span style={{ color: "red" }}>*</span>
+            </Typography>
+            <Autocomplete
+              freeSolo
+              filterOptions={(opts, state) => {
+                const input = state.inputValue.trim().toLowerCase();
+                const filtered = opts.filter((opt) => opt.toLowerCase().includes(input));
+                const isExisting = opts.some((opt) => opt.toLowerCase() === input);
+                if (input !== "" && !isExisting) {
+                  filtered.push(`__add__${state.inputValue}`);
+                }
+                return filtered;
+              }}
+              options={options}
+              inputValue={tempSkill.name}
+              onInputChange={(_, newInput) => {
+                setTempSkill({ ...tempSkill, name: newInput });
+              }}
+              onChange={(_, newValue) => {
+                if (!newValue) return;
+                const name =
+                  typeof newValue === "string" && newValue.startsWith("__add__")
+                    ? newValue.replace("__add__", "")
+                    : newValue;
+
+                setTempSkill({ ...tempSkill, name });
+              }}
+              renderInput={(params) => (
+                <TextField {...params} placeholder={trans("addskill")} fullWidth />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography fontWeight={600} fontSize={14} mb={0.5}>
+              {trans("proficiency")}
+            </Typography>
+            <Stack direction="column" spacing={1}>
+              {[1, 2, 3, 4].map((level) => {
+                const selected = tempSkill.proficiency === level;
+                return (
+                  <Box
+                    key={level}
+                    display="flex"
+                    alignItems="center"
+                    onClick={() => setTempSkill({ ...tempSkill, proficiency: level })}
+                    sx={{
+                      cursor: "pointer",
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      backgroundColor: selected ? "#f0f0f0" : "transparent"
+                    }}
+                  >
+                    <StarIcon color={selected ? "primary" : "disabled"} fontSize="small" />
+                    <Typography ml={1} fontSize={14}>
+                      {PROFICIENCY_DESCRIPTIONS[level]}
+                    </Typography>
+                  </Box>
+                );
+              })}
+            </Stack>
+          </Grid>
+
+          {tempSkill.proficiency >= 3 && (
+            <Grid item xs={12}>
+              <Typography fontWeight={600} fontSize={14} mb={0.5}>
+                {trans("experience")} <span style={{ color: "red" }}>*</span>
+              </Typography>
+              <TextField
+                type="number"
+                placeholder={trans("months")}
+                value={tempSkill.experience || ""}
+                onChange={(e) =>
+                  setTempSkill({
+                    ...tempSkill,
+                    experience: Math.max(1, parseInt(e.target.value || "0", 10))
+                  })
+                }
+                fullWidth
+                inputProps={{ min: 1 }}
+              />
+            </Grid>
           )}
-        </Box>
-      </Grid>
+        </Grid>
+      </CommonDialog>
+
+      <CommonDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onSubmit={confirmDelete}
+        title={transInc("confirmdelete")}
+        submitLabel={transInc("delete")}
+        cancelLabel={transInc("cancel")}
+      >
+        <Typography>{transInc("deleteincrement")}</Typography>
+      </CommonDialog>
     </Box>
   );
 };
-
 export default SkillInput;

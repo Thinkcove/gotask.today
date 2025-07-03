@@ -514,7 +514,7 @@
     "userskill": "Skills",
     "general": "General",
     "add": "Add",
-    "addskill": "Select Skill",
+    "addskill": "Add Skill",
     "remove": "Remove",
     "duplicateskills": "Duplicate skills are not allowed.",
     "proficiencyrequired": "Please select a proficiency level for \"{skill}\".",
@@ -523,9 +523,35 @@
     "noskills": "No skills added yet.",
     "noprojects": "No projects assigned yet.",
     "noassets": "No assets assigned yet.",
+    "months": "Months",
+    "editskill": "Edit Skill",
+    "skilldescription": "Add details of Skills you possess along with proficiency and experience",
     "meta": {
       "title": "User Management | GoTaskToday",
       "description": "Plan, assign, and track tasks across projects."
+    },
+    "Increment": {
+      "incrementhistory": "Increment History",
+      "increment": " Increment",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "date": "Date",
+      "ctc": "CTC",
+      "addnew": "Add Increment",
+      "add": "Add",
+      "change": "Salary Growth ( % )",
+      "noincrements": "No increments added yet.",
+      "ctcgrowth": "CTC Growth Over Time",
+      "confirmdelete": "Confirm Delete",
+      "deleteincrement": "Are you sure you want to delete this?",
+      "errortitle": "Error",
+      "duplicateincrementdate": "An increment for this date already exists.",
+      "editincrement": "Edit Increment",
+      "addincdesc": "Enter the date and updated CTC for this increment.",
+      "salaryrevisionlog": "Salary Revision Log",
+      "short": "short",
+      "numeric": "numeric"
     }
   },
   "Appbar": {
@@ -865,7 +891,7 @@
     "submit": "Submit",
     "cancel": "Cancel"
   },
-  "Upload":{
+  "Upload": {
     "meta": {
       "title": "File Upload | GoTaskToday",
       "description": "Upload documents and assets securely."

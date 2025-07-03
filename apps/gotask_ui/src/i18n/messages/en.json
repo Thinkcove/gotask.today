@@ -800,7 +800,7 @@
      "searchemployees":"Search Employees",
      "entertemplate":"Enter Template Name",
      "template":"Template",
-     "assignee":"Assignee",
+     "assignee":"Employees",
      "deletesuccess":"Template deleted successfully",
      "enterstatus":"Enter Status",
      "enterfrequency":"Enter Frequency",
@@ -818,6 +818,9 @@
      "assignedtemplateview":"Assigned Template View",
      "deleteConfirmassignment": "Are you sure you want to delete this assigned template?",
      "delete":"Delete",
+     "assignatemplate":"Assign a Template",
+     "titleerror":"Title is required",
+     "descriptionerror":"Description is required",
       "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Define, manage, and assign KPI templates to measure performance."

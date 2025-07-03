@@ -13,12 +13,11 @@ import { CircularProgress, Typography, Box } from "@mui/material";
 
 const Page = () => {
   const params = useParams();
-  const username = params?.id as string; // Treat as username
+  const username = params?.id as string;
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const { data: templates, mutate, error: templatesError } = useSWR("templates", fetchTemplates);
-  const { data: user, error: userError } = useSWR(
-    username ? `user-${username}` : null,
-    () => getUserById(username) // Assume getUserById can handle usernames
+  const { data: user, error: userError } = useSWR(username ? `user-${username}` : null, () =>
+    getUserById(username)
   );
 
   if (templatesError) {
@@ -47,7 +46,7 @@ const Page = () => {
 
   return (
     <>
-      <ModuleHeader name={transkpi("assigntemplate")} />
+      <ModuleHeader name={transkpi("assignatemplate")} />
       <AddTemplate templates={templates} userId={user.id} mutate={mutate} user={user} />
     </>
   );

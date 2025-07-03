@@ -200,7 +200,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         )}
         <Grid item xs={12} md={4}>
           <FormField
-            label={transkpi("status")}
+            label={`${transkpi("status")} ${transkpi("required")}`}
             placeholder={transkpi("enterstatus")}
             type="select"
             options={Object.values(STATUS_OPTIONS)}

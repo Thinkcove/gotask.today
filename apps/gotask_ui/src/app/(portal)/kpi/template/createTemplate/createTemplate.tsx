@@ -43,6 +43,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     if (!formData.frequency) newErrors.frequency = transkpi("frequencyerror");
     if (!formData.status) newErrors.status = transkpi("statuserror");
     if (!formData.measurement_criteria) newErrors.measurement_criteria = transkpi("weightageerror");
+    if (!formData.description) newErrors.description = transkpi("descriptionerror");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

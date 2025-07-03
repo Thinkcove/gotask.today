@@ -61,9 +61,12 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
             label={`${transkpi("weightage")} ${transkpi("required")}`}
             type="select"
             placeholder={transkpi("enterweightage")}
-            options={MEASUREMENT_CRITERIA_OPTIONS.map((opt) => opt.label)}
+            options={MEASUREMENT_CRITERIA_OPTIONS.map((opt) => ({
+              id: String(opt.value),
+              name: opt.label
+            }))}
             required
-            value={formData.measurement_criteria}
+            value={String(formData.measurement_criteria)}
             onChange={(val) => handleChange("measurement_criteria", Number(val))}
             error={errors.measurement_criteria}
           />
@@ -83,7 +86,7 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
 
         <Grid item xs={12}>
           <FormField
-            label={transkpi("labeldescription")}
+            label={`${transkpi("labeldescription")} ${transkpi("required")}`}
             type="text"
             placeholder={transkpi("placeholderdescription")}
             value={formData.description}

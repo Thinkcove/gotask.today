@@ -88,6 +88,10 @@ export interface IAssetAttributes {
   assignedTo?: string;
   issues?: IAssetIssues[];
   previouslyUsedBy?: string;
+
+  //access card
+  accessCardNo?: string;
+  personalId?: string;
 }
 
 export interface IAssetTags {

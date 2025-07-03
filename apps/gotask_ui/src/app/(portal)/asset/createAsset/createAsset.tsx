@@ -16,6 +16,7 @@ import { fetcherUserList } from "../../user/services/userAction";
 import MobileInputs from "./mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
 import { OFFICE_SYSTEM, systemTypeOptions } from "../assetConstants";
+import AccessInputs from "./accessInput";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -53,7 +54,11 @@ export const CreateAsset: React.FC = () => {
     is5GSupported: false,
     insuranceProvider: "",
     insurancePolicyNumber: "",
-    insuranceExpiry: ""
+    insuranceExpiry: "",
+
+    //accesscard
+    accessCardNo: "",
+    personalId: ""
   });
   const [selectedAssetType, setSelectedAssetType] = useState<IAssetType | null>(null);
   const router = useRouter();
@@ -88,22 +93,32 @@ export const CreateAsset: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.typeId) newErrors.typeId = transasset("typeid");
-    if (!formData.deviceName)
-      newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
-    if (!formData.systemType)
-      newErrors.systemType = `${transasset("systemtype")} ${transasset("isrequired")}`;
-    if (!formData.ram) newErrors.ram = `${transasset("ram")} ${transasset("isrequired")}`;
-    if (!formData.modelName)
-      newErrors.modelName = `${transasset("modelname")} ${transasset("isrequired")}`;
-    if (!formData.os) newErrors.os = `${transasset("os")} ${transasset("isrequired")}`;
-    if (!formData.processor)
-      newErrors.processor = `${transasset("processor")} ${transasset("isrequired")}`;
+    if (selectedAssetType?.name !== ASSET_TYPE.ACCESS_CARDS) {
+      if (!formData.typeId) newErrors.typeId = transasset("typeid");
+      if (!formData.deviceName)
+        newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
+      if (!formData.systemType)
+        newErrors.systemType = `${transasset("systemtype")} ${transasset("isrequired")}`;
+      if (!formData.ram) newErrors.ram = `${transasset("ram")} ${transasset("isrequired")}`;
+      if (!formData.modelName)
+        newErrors.modelName = `${transasset("modelname")} ${transasset("isrequired")}`;
+      if (!formData.os) newErrors.os = `${transasset("os")} ${transasset("isrequired")}`;
+      if (!formData.processor)
+        newErrors.processor = `${transasset("processor")} ${transasset("isrequired")}`;
+    }
 
     if (selectedAssetType?.name === ASSET_TYPE.MOBILE) {
       if (!formData.imeiNumber)
         newErrors.imeiNumber = `${transasset("imeiNumber")} ${transasset("isrequired")}`;
     }
+
+    if (selectedAssetType?.name === ASSET_TYPE.ACCESS_CARDS) {
+      if (!formData.accessCardNo)
+        newErrors.accessCardNo = `${transasset("accesscardno")} ${transasset("isrequired")}`;
+      if (!formData.personalId)
+        newErrors.personalId = `${transasset("personalid")} ${transasset("isrequired")}`;
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -220,6 +235,7 @@ export const CreateAsset: React.FC = () => {
 
           {/* Laptop Inputs below if type is Laptop */}
           {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
+            selectedAssetType?.name === ASSET_TYPE.DESKTOP ||
             selectedAssetType?.name === ASSET_TYPE.MOBILE) && (
             <Grid item xs={12}>
               <LaptopInputs
@@ -239,6 +255,16 @@ export const CreateAsset: React.FC = () => {
                 onChange={handleInputChange}
                 errors={errors}
                 systemTypeOptions={systemTypeOptions}
+              />
+            </Grid>
+          )}
+          {selectedAssetType?.name === ASSET_TYPE.ACCESS_CARDS && (
+            <Grid item xs={12}>
+              <AccessInputs
+                formData={formData}
+                onChange={handleInputChange}
+                errors={errors}
+                selectedAssetType={selectedAssetType}
               />
             </Grid>
           )}

@@ -8,7 +8,6 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { Project } from "../interfaces/projectInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import EllipsisText from "@/app/component/text/ellipsisText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
@@ -61,11 +60,6 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                   <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
                     {filteredProject.name}
                   </Typography>
-                </Box>
-
-                {/* Description */}
-                <Box sx={{ mb: 2, pt: 1 }}>
-                  <EllipsisText text={filteredProject.description!} maxWidth={350} />
                 </Box>
 
                 <Box display="flex" alignItems="center" sx={{ mb: 2 }}>

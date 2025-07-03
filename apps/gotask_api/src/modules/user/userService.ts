@@ -18,6 +18,7 @@ import { getAssetByUserId, getIssuesByUserId } from "../../domain/interface/asse
 import { getById } from "../../domain/interface/asset/asset";
 import { IAsset } from "../../domain/model/asset/asset";
 import { ISkill } from "../../domain/model/user/skills";
+import { ICertificate } from "../../domain/model/user/certificate";
 
 class userService {
   // CREATE USER
@@ -502,6 +503,109 @@ class userService {
       return { success: true, message: "Skill deleted successfully" };
     } catch (error: any) {
       return { success: false, message: error.message || "Failed to delete skill" };
+    }
+  }
+  
+  async addCertificates(
+    id: string,
+    certificates: ICertificate[]
+  ): Promise<{ success: boolean; data?: ICertificate[]; message?: string }> {
+    try {
+      const user = await User.findOne({ id });
+      if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
+
+      if (!user.certificates) {
+        user.certificates = [];
+      }
+      user.certificates.push(...certificates);
+      await user.save();
+
+      return {
+        success: true,
+        data: user.certificates,
+        message: UserMessages.CERTIFICATE.ADD_SUCCESS
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED };
+    }
+  }
+
+  async updateCertificate(
+    userId: string,
+    certificateId: string,
+    updatedCertificate: Partial<ICertificate>
+  ): Promise<{ success: boolean; data?: ICertificate; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user || !Array.isArray(user.certificates)) {
+        return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+      }
+
+      // Safe find with typing
+      const cert = user.certificates.find((c) => c._id?.toString() === certificateId);
+
+      if (!cert) {
+        return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+      }
+
+      // Update fields with safety
+      if (updatedCertificate.name !== undefined) cert.name = updatedCertificate.name;
+      if (updatedCertificate.obtained_date !== undefined)
+        cert.obtained_date = updatedCertificate.obtained_date;
+      if (updatedCertificate.notes !== undefined) cert.notes = updatedCertificate.notes;
+
+      await user.save();
+
+      return { success: true, data: cert, message: UserMessages.CERTIFICATE.UPDATE_SUCCESS };
+    } catch (error: any) {
+      return { success: false, message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED };
+    }
+  }
+
+  async deleteCertificate(
+    userId: string,
+    certificateId: string
+  ): Promise<{ success: boolean; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user || !Array.isArray(user.certificates)) {
+        return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+      }
+
+      const originalLength = user.certificates.length;
+
+      user.certificates = user.certificates.filter(
+        (cert) => cert._id?.toString() !== certificateId
+      );
+
+      if (user.certificates.length === originalLength) {
+        return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+      }
+
+      await user.save();
+
+      return { success: true, message: UserMessages.CERTIFICATE.DELETE_SUCCESS };
+    } catch (error: unknown) {
+      let errorMessage = UserMessages.CERTIFICATE.DELETE_FAILED;
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      return { success: false, message: errorMessage };
+    }
+  }
+
+  async getCertificates(
+    userId: string
+  ): Promise<{ success: boolean; data?: ICertificate[]; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
+
+      return { success: true, data: user.certificates || [] };
+    } catch (error: any) {
+      return { success: false, message: error.message || UserMessages.CERTIFICATE.GET_FAILED };
     }
   }
 }

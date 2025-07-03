@@ -26,6 +26,12 @@ interface ISkill {
   proficiency: number;
   experience?: number;
 }
+interface ICertificate {
+  certificate_id: string;
+  name: string;
+  obtained_date: Date;
+  notes?: string;
+}
 
 interface User {
   id: string;
@@ -41,6 +47,7 @@ interface User {
   token: string;
   role: Role;
   skills?: ISkill[];
+  certificates?: ICertificate[];
 }
 
 interface UserContextType {

@@ -36,7 +36,6 @@ export interface IAsset extends Document {
   insuranceExpiry?: Date;
 
   //Access card fields
-
   accessCardNo?: string;
   personalId?: string;
 

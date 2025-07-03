@@ -101,7 +101,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText label={trans("personalId")} value={asset.personalId || "-"} />
+                  <LabelValueText label={trans("personalid")} value={asset.personalId || "-"} />
                 </Grid>
               </Grid>
             </>

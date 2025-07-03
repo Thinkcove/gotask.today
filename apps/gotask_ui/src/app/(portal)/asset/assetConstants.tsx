@@ -8,6 +8,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import Tooltip from "@mui/material/Tooltip";
 import LayersIcon from "@mui/icons-material/Layers";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
+import { IAssetType, ITagData } from "./interface/asset";
 
 export interface IAssetDisplayRow {
   id?: string;
@@ -200,3 +201,96 @@ export const ALLOCATION = ["Overutilized", "Not utilized"];
 export const OVERUTILIZED = "Overutilized";
 
 export const NOT_UTILIZED = "Not utilized";
+
+export interface DownloadAsset {
+  deviceName: string;
+  assetType: IAssetType;
+  warrantyDate: string;
+  modelName: string;
+  dateOfPurchase: string;
+  user: string;
+  os: string;
+  processor: string;
+  seller: string;
+  warrantyPeriod: string;
+  imeiNumber: string;
+  screenSize: string;
+  batteryCapacity: string;
+  cameraSpecs: string;
+  simType: string;
+  insuranceProvider: string;
+  insurancePolicyNumber: string;
+  insuranceExpiry: string;
+  storage: string;
+  ram: string;
+  accessCardNo: string;
+  personalId: string;
+  accessCardNo2: string;
+  issuedOn: Date;
+  name: string;
+  tagData: ITagData[];
+}
+
+export const downloadAssetCSV = (data: DownloadAsset[]) => {
+  const csvContent = [
+    [
+      "Device Name",
+      "Type",
+      "Access Card No1",
+      "Personal Id",
+      "Access Card No2",
+      "Issued On",
+      "Warranty Date",
+      "Model",
+      "Purchase Date",
+      "Assigned To",
+      "Storage",
+      "RAM",
+      "OS",
+      "Processor",
+      "Seller",
+      "Warranty Period",
+      "IMEI number",
+      "Screen size",
+      "Battery capacity",
+      "Camera specs",
+      "Sim type",
+      "Insurance provider",
+      "Insurance number",
+      "Insurance expiry"
+    ],
+    ...data.map((item) => [
+      item.deviceName,
+      item.assetType.name,
+      item.accessCardNo,
+      item.personalId,
+      item.accessCardNo2,
+      item.issuedOn,
+      item.warrantyDate,
+      item.modelName,
+      item.dateOfPurchase,
+      item.tagData?.map((tag: ITagData) => tag?.user?.name) || "-",
+      item.storage,
+      item.ram,
+      item.os,
+      item.processor,
+      item.seller,
+      item.warrantyPeriod,
+      item.imeiNumber,
+      item.screenSize,
+      item.batteryCapacity,
+      item.cameraSpecs,
+      item.simType,
+      item.insuranceProvider,
+      item.insurancePolicyNumber,
+      item.insuranceExpiry
+    ])
+  ].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "assets.csv");
+  link.click();
+};

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Box, Grid, Paper } from "@mui/material";
+import { Box, CircularProgress, Grid, Paper } from "@mui/material";
 import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
@@ -11,6 +11,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { IAssetAttributes } from "../interface/asset";
 import {
+  downloadAssetCSV,
   getAssetColumns,
   IAssetDisplayRow,
   issueStatuses,
@@ -23,6 +24,8 @@ import AssetFilters from "./assetFilter";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { SortOrder } from "@/app/common/constants/task";
+import DownloadIcon from "@mui/icons-material/Download";
+import { Button } from "@mui/material";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";
@@ -41,7 +44,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>([]);
   const [sortKey, setSortKey] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(SortOrder.DESC);
-  const { getAll: allAssets } = useAllAssets(sortKey, sortOrder);
+  const { getAll: allAssets, isLoading } = useAllAssets(sortKey, sortOrder);
   const [assetAllocationFilter, setAssetAllocationFilter] = useState<string[]>([]);
 
   const handleEdit = (row: IAssetDisplayRow) => {
@@ -219,6 +222,24 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     userAssetCount: asset.userAssetCount
   }));
 
+  if (isLoading) {
+    return (
+      <>
+        <ModuleHeader name={transasset("assets")} />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </>
+    );
+  }
+
   return (
     <>
       <ModuleHeader name={"assets"} />
@@ -301,7 +322,16 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           />
         )}
       </Box>
-
+      <Box sx={{ flexShrink: 0 }}>
+        <Button
+          variant="outlined"
+          startIcon={<DownloadIcon />}
+          onClick={() => downloadAssetCSV(allAssets)}
+          sx={{ whiteSpace: "nowrap", textTransform: "none" }}
+        >
+          {transasset("download")}
+        </Button>
+      </Box>
       {/* Updated Box with reduced padding and spacing */}
       <Box
         sx={{

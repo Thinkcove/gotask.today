@@ -56,11 +56,10 @@ OrganizationRoutes.push({
     tags,
     auth: {
       strategy: authStrategy.SIMPLE,
-      mode: "try" 
+      mode: "try"
     }
   }
 });
-
 
 // Route: Update Organization
 OrganizationRoutes.push({

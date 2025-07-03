@@ -299,17 +299,18 @@
     "meta": {
       "title": "Role Management | GoTaskToday",
       "description": "Create, update, and manage roles and access control settings."
+    },
+    "RoleDetailPage": {
+      "roleNotFoundTitle": "Role Not Found",
+      "roleNotFoundDescription": "This role does not exist or may have been removed.",
+      "title": "Role Details",
+      "descriptionPrefix": "View and manage access for the",
+      "descriptionSuffix": "role.",
+      "errorTitle": "Error",
+      "errorDescription": "Unable to fetch role details."
     }
   },
-  "RoleDetailPage": {
-    "roleNotFoundTitle": "Role Not Found",
-    "roleNotFoundDescription": "This role does not exist or may have been removed.",
-    "title": "Role Details",
-    "descriptionPrefix": "View and manage access for the",
-    "descriptionSuffix": "role.",
-    "errorTitle": "Error",
-    "errorDescription": "Unable to fetch role details."
-  },
+ 
   "Task": {
     "filterfrom": "From Date",
     "filterto": "To Date",
@@ -448,8 +449,18 @@
         "title": "Assignee Overview",
         "description": "Review and manage users assigned to various project tasks."
       }
+    },
+    "DetailPage": {
+      "title": "Task Details",
+      "descriptionPrefix": "View and manage task",
+      "descriptionSuffix": "effectively.",
+      "taskNotFoundTitle": "Task Not Found",
+      "taskNotFoundDescription": "This task does not exist or may have been removed.",
+      "errorTitle": "Error",
+      "errorDescription": "Unable to fetch task details."
     }
   },
+ 
   "User": {
     "firstname": "First name is required",
     "lastname": "Last name is required",
@@ -885,5 +896,8 @@
       "title": "File Upload | GoTaskToday",
       "description": "Upload documents and assets securely."
     }
+  },
+  "Common": {
+    "appName": "GoTaskToday"
   }
 }

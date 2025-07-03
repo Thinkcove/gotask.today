@@ -113,7 +113,6 @@ TaskRoutes.push({
   }
 });
 
-
 // Route: Update Task
 TaskRoutes.push({
   path: API_PATHS.UPDATE_TASK,

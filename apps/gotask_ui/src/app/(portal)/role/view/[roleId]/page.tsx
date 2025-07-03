@@ -11,8 +11,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
   const messages = await getMessages();
 
-  // Localization helper
-  const t = (key: string) => messages.RoleDetailPage?.[key] ?? key;
+
+  const t = (key: string) => messages.Role?.RoleDetailPage?.[key] ?? key;
+  const tcommon = (key: string) => messages.Common?.[key] ?? key;
 
   try {
     const res = await fetch(`${baseUrl}/roles/${roleId}?metaOnly=true`, {
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!res.ok) {
       return {
-        title: `${t("roleNotFoundTitle")} | GoTaskToday`,
+        title: `${t("roleNotFoundTitle")} | ${tcommon("appName")}`,
         description: t("roleNotFoundDescription")
       };
     }
@@ -29,13 +30,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { data: role } = await res.json();
 
     return {
-      title: `${role.name} | ${t("title")} | GoTaskToday`,
+      title: `${role.name} | ${t("title")} | ${tcommon("appName")}`,
       description: `${t("descriptionPrefix")} ${role.name} ${t("descriptionSuffix")}`
     };
-  } catch (error) {
-    console.error("Metadata fetch error:", error);
+  } catch {
     return {
-      title: `${t("errorTitle")} | GoTaskToday`,
+      title: `${t("errorTitle")} | ${tcommon("appName")}`,
       description: t("errorDescription")
     };
   }

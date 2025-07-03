@@ -12,6 +12,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const messages = await getMessages();
 
   const t = (key: string) => messages.Organization?.meta?.[key] ?? key;
+  const tcommon = (key: string) => messages.Common?.[key] ?? key;
+
 
   try {
     const res = await fetch(`${baseUrl}/getOrgById/${orgId}?metaOnly=true`, {
@@ -20,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!res.ok) {
       return {
-        title: `${t("notFoundTitle")} | GoTaskToday`,
+        title: `${t("notFoundTitle")} | ${tcommon("appName")}`,
         description: t("notFoundDescription")
       };
     }
@@ -31,10 +33,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${org.name} | ${t("title")}`,
       description: `${t("descriptionPrefix")} ${org.name} ${t("descriptionSuffix")}`
     };
-  } catch (error) {
-    console.error("Metadata fetch error:", error);
+  } catch {
     return {
-      title: `${t("errorTitle")} | GoTaskToday`,
+      title: `${t("errorTitle")}`,
       description: t("errorDescription")
     };
   }

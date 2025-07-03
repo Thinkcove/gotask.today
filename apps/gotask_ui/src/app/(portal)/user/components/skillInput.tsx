@@ -112,10 +112,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   return (
     <Box mt={3}>
       {/* Add Button */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography fontSize={16} fontWeight={600} zIndex={10}>
-          {trans("userskill")}
-        </Typography>
+      <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -129,7 +126,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         sx={{
           maxHeight: 400,
           overflow: "auto",
-          border: "1px solid #ddd",
           borderRadius: 2,
           px: 2,
           py: 2,
@@ -179,7 +175,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                         fontSize: 24
                       }}
                     >
-                      <WorkspacePremiumIcon fontSize="inherit" />
+                      <WorkspacePremiumIcon fontSize="inherit" sx={{ color: "#741B92" }} />
                     </Box>
 
                     <Box>
@@ -231,9 +227,22 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Typography fontWeight={600} fontSize={14} mb={0.5}>
-              {trans("skills")} <span style={{ color: "red" }}>*</span>
-            </Typography>
+            <Box sx={{ position: "relative", display: "inline-block" }}>
+              <Typography fontWeight={600} fontSize={14} mb={0.5}>
+                {trans("skills")}
+              </Typography>
+              <StarIcon
+                fontSize="inherit"
+                sx={{
+                  color: "red",
+                  position: "absolute",
+                  top: -0.5,
+                  right: -12,
+                  fontSize: 8
+                }}
+              />
+            </Box>
+
             <Autocomplete
               freeSolo
               filterOptions={(opts, state) => {
@@ -266,7 +275,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 setTempSkill({ ...tempSkill, name });
               }}
               renderInput={(params) => (
-                <TextField {...params} placeholder={trans("addskill")} fullWidth />
+                <TextField {...params} placeholder={trans("selectskill")} fullWidth />
               )}
               renderOption={(props, option) => {
                 const isAddOption = typeof option === "string" && option.startsWith("__add__");
@@ -290,9 +299,21 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
           </Grid>
 
           <Grid item xs={12}>
-            <Typography fontWeight={600} fontSize={14} mb={0.5}>
-              {trans("proficiency")}
-            </Typography>
+            <Box sx={{ position: "relative", display: "inline-block" }}>
+              <Typography fontWeight={600} fontSize={14} mb={0.5}>
+                {trans("proficiency")}
+              </Typography>
+              <StarIcon
+                fontSize="inherit"
+                sx={{
+                  color: "red",
+                  position: "absolute",
+                  top: -0.5,
+                  right: -12,
+                  fontSize: 8
+                }}
+              />
+            </Box>
             <Stack direction="column" spacing={1}>
               {[1, 2, 3, 4].map((level) => {
                 const selected = tempSkill.proficiency === level;
@@ -320,11 +341,23 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
             </Stack>
           </Grid>
 
-          {tempSkill.proficiency >= 3 && (
+          {tempSkill.proficiency >= PROFICIENCY_MAXIMUM && (
             <Grid item xs={12}>
-              <Typography fontWeight={600} fontSize={14} mb={0.5}>
-                {trans("experience")} <span style={{ color: "red" }}>*</span>
-              </Typography>
+              <Box sx={{ position: "relative", display: "inline-block" }}>
+                <Typography fontWeight={600} fontSize={14} mb={0.5}>
+                  {trans("experience")}
+                </Typography>
+                <StarIcon
+                  fontSize="inherit"
+                  sx={{
+                    color: "red",
+                    position: "absolute",
+                    top: -0.5,
+                    right: -12,
+                    fontSize: 8
+                  }}
+                />
+              </Box>
               <TextField
                 type="number"
                 placeholder={trans("months")}

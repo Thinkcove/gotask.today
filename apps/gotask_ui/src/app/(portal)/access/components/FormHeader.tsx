@@ -26,7 +26,8 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   cancle,
   create,
   update,
-  edit
+  edit,
+  showhistory
 }) => {
   return (
     <>
@@ -90,7 +91,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
                       cursor: "inherit"
                     }}
                   >
-                    Show History
+                    {showhistory}
                   </Typography>
                   <History />
                 </Box>

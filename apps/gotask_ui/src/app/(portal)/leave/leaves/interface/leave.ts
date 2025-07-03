@@ -1,5 +1,3 @@
-
-
 // Leave interface
 export interface LeaveEntry {
   id: string;
@@ -43,7 +41,7 @@ export interface LeavePayload {
   to_date: string;
   leave_type: string;
   user_name?: string;
-   reasons: string;
+  reasons: string;
 }
 export interface LeaveFilters {
   user_id?: string;
@@ -54,33 +52,4 @@ export interface LeaveFilters {
   page_size?: number;
   sort_field?: string;
   sort_order?: string;
-}
-
-// Placeholder types
-interface Project {
-  id: string;
-  name: string;
-}
-
-interface User {
-  id: string;
-  name: string;
-}
-
-// Custom interface for Leave form data
-interface LeaveFormField {
-  from_date: string;
-  to_date: string;
-  leave_type: string;
-  reasons: string;
-  title?: string;
-  description?: string;
-  status?: string;
-  severity?: string;
-  priority?: string;
-  due_date?: string;
-  assigned_to?: string[];
-  created_at?: string;
-  updated_at?: string;
-  [key: string]: string | string[] | undefined;
 }

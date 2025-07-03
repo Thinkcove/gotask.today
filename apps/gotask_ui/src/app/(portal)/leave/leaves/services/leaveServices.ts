@@ -17,23 +17,25 @@ const DELETE_LEAVE_URL = (id: string) => `${env.API_BASE_URL}/leave/${id}`;
 export const createLeave = async (payload: LeavePayload): Promise<LeaveApiResponse> => {
   try {
     console.log("Creating leave with payload:", payload);
-    
-    const response = await withAuth((token) => postData(LEAVE_API_URL, payload as unknown as Record<string, unknown>, token));
-    
+
+    const response = await withAuth((token) =>
+      postData(LEAVE_API_URL, payload as unknown as Record<string, unknown>, token)
+    );
+
     console.log("Create leave response:", response);
-    
+
     if (!response) {
       throw new Error("No response received from server");
     }
-    
+
     if (!response.success) {
       throw new Error(response.message || "Failed to create leave");
     }
-    
+
     return response;
   } catch (error: any) {
     console.error("Error in createLeave:", error);
-    
+
     // Re-throw with more context
     if (error?.response?.data?.message) {
       throw new Error(error.response.data.message);
@@ -48,23 +50,25 @@ export const createLeave = async (payload: LeavePayload): Promise<LeaveApiRespon
 export const updateLeave = async (id: string, payload: LeavePayload): Promise<LeaveApiResponse> => {
   try {
     console.log("Updating leave with ID:", id, "payload:", payload);
-    
-    const response = await withAuth((token) => putData(UPDATE_LEAVE_URL(id), payload as unknown as Record<string, unknown>, token));
-    
+
+    const response = await withAuth((token) =>
+      putData(UPDATE_LEAVE_URL(id), payload as unknown as Record<string, unknown>, token)
+    );
+
     console.log("Update leave response:", response);
-    
+
     if (!response) {
       throw new Error("No response received from server");
     }
-    
+
     if (!response.success) {
       throw new Error(response.message || "Failed to update leave");
     }
-    
+
     return response;
   } catch (error: any) {
     console.error("Error in updateLeave:", error);
-    
+
     if (error?.response?.data?.message) {
       throw new Error(error.response.data.message);
     } else if (error?.message) {
@@ -78,23 +82,23 @@ export const updateLeave = async (id: string, payload: LeavePayload): Promise<Le
 export const deleteLeave = async (id: string): Promise<LeaveApiResponse> => {
   try {
     console.log("Deleting leave with ID:", id);
-    
+
     const response = await withAuth((token) => deleteData(DELETE_LEAVE_URL(id), token));
-    
+
     console.log("Delete leave response:", response);
-    
+
     if (!response) {
       throw new Error("No response received from server");
     }
-    
+
     if (!response.success) {
       throw new Error(response.message || "Failed to delete leave");
     }
-    
+
     return response;
   } catch (error: any) {
     console.error("Error in deleteLeave:", error);
-    
+
     if (error?.response?.data?.message) {
       throw new Error(error.response.data.message);
     } else if (error?.message) {
@@ -148,7 +152,7 @@ export const useGetAllLeaves = (shouldFetch: boolean) => {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       errorRetryCount: 2,
-      errorRetryInterval: 1000,
+      errorRetryInterval: 1000
     }
   );
   return { data, isLoading, isError: !!error, error, mutate };
@@ -221,7 +225,11 @@ export const useGetLeaveById = (id: string, shouldFetch: boolean) => {
   return { data, isLoading, isError: !!error, error, mutate };
 };
 
-export const useUpdateLeave = (id: string, payload: Partial<LeavePayload>, shouldFetch: boolean) => {
+export const useUpdateLeave = (
+  id: string,
+  payload: Partial<LeavePayload>,
+  shouldFetch: boolean
+) => {
   const { data, error, isLoading, mutate } = useSWR(
     shouldFetch && id ? ["updateLeave", id, JSON.stringify(payload)] : null,
     async ([, id, payloadString]) => {
@@ -252,19 +260,19 @@ export const useUpdateLeave = (id: string, payload: Partial<LeavePayload>, shoul
 // Enhanced delete hook with better error handling
 export const useDeleteLeave = () => {
   const { mutate } = useSWRConfig();
-  
+
   const { trigger, isMutating, error } = useSWRMutation(
-    "deleteLeave", 
+    "deleteLeave",
     async (url, { arg }: { arg: string }) => {
       try {
         const response = await deleteLeave(arg);
-        
+
         if (response && response.success) {
           // Invalidate cache to refresh leaves
           await mutate(["getAllLeaves"]);
           return response.data;
         }
-        
+
         throw new Error(response?.message || "Failed to delete leave");
       } catch (err: any) {
         console.error("Error deleting leave:", err);
@@ -276,26 +284,26 @@ export const useDeleteLeave = () => {
   return {
     mutate: trigger,
     isLoading: isMutating,
-    error,
+    error
   };
 };
 
 // Hook for creating leave with SWR mutation
 export const useCreateLeave = () => {
   const { mutate } = useSWRConfig();
-  
+
   const { trigger, isMutating, error } = useSWRMutation(
     "createLeave",
     async (url, { arg }: { arg: LeavePayload }) => {
       try {
         const response = await createLeave(arg);
-        
+
         if (response && response.success) {
           // Invalidate cache to refresh leaves
           await mutate(["getAllLeaves"]);
           return response.data;
         }
-        
+
         throw new Error(response?.message || "Failed to create leave");
       } catch (err: any) {
         console.error("Error creating leave:", err);
@@ -307,6 +315,6 @@ export const useCreateLeave = () => {
   return {
     mutate: trigger,
     isLoading: isMutating,
-    error,
+    error
   };
 };

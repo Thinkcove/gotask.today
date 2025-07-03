@@ -96,7 +96,7 @@ const EditLeave: React.FC = () => {
         severity: "success",
       });
       router.push("/leave/leaves");
-    } catch (error) {
+    } catch (e) {
       setSnackbar({
         open: true,
         message: "Error updating leave",

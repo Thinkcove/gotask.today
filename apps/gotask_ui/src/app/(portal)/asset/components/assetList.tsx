@@ -333,37 +333,38 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             />
           )}
         </Box>
-
-        <Box
-          sx={{
-            flexShrink: 0,
-            alignSelf: "flex-start",
-            mt: 1
-          }}
-        >
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            onClick={() => downloadAssetCSV(allAssets)}
+        {initialView === transasset("selectedAsset") && (
+          <Box
             sx={{
-              whiteSpace: "nowrap",
-              textTransform: "none",
-              "& .MuiButton-startIcon": {
-                margin: { xs: 0, lg: "0 8px 0 -4px" }
-              },
-              minWidth: { xs: "40px", lg: "auto" },
-              width: { xs: "40px", lg: "auto" },
-              height: "40px",
-              padding: { xs: "8px", lg: "6px 16px" },
-              borderRadius: "8px",
-              "& .button-text": {
-                display: { xs: "none", lg: "inline" }
-              }
+              flexShrink: 0,
+              alignSelf: "flex-start",
+              mt: 1
             }}
           >
-            <span className="button-text">{transasset("download")}</span>
-          </Button>
-        </Box>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={() => downloadAssetCSV(allAssets)}
+              sx={{
+                whiteSpace: "nowrap",
+                textTransform: "none",
+                "& .MuiButton-startIcon": {
+                  margin: { xs: 0, lg: "0 8px 0 -4px" }
+                },
+                minWidth: { xs: "40px", lg: "auto" },
+                width: { xs: "40px", lg: "auto" },
+                height: "40px",
+                padding: { xs: "8px", lg: "6px 16px" },
+                borderRadius: "8px",
+                "& .button-text": {
+                  display: { xs: "none", lg: "inline" }
+                }
+              }}
+            >
+              <span className="button-text">{transasset("download")}</span>
+            </Button>
+          </Box>
+        )}
       </Box>
       <Box
         sx={{

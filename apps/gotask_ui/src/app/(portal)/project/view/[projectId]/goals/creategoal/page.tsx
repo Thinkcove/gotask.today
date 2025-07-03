@@ -2,10 +2,9 @@
 
 import React from "react";
 import { Box } from "@mui/material";
-import CreateGoal from "./components/CreateGoal";
+import CreateGoal from "@/app/(portal)/project/view/[projectId]/goals/creategoal/components/CreateGoal";
 
 const page = () => {
-
   return (
     <Box
       sx={{

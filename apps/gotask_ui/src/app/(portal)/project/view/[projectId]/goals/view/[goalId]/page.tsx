@@ -19,27 +19,9 @@ import { GoalComment, GoalData } from "../../interface/projectGoal";
 import ProjectGoalView from "../../components/projectGoalView";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
+import { fetchGoalWithComments } from "@/app/common/constants/project";
 
-// Fetcher functions for SWR
-const fetchGoalWithComments = async (goalId: string) => {
-  if (!goalId) throw new Error("Goal ID is missing");
 
-  const [goalResponse, commentsResponse] = await Promise.all([
-    getWeeklyGoalById(goalId),
-    getCommentsByGoalId(goalId)
-  ]);
-
-  if (!goalResponse || !goalResponse.data) {
-    throw new Error("Goal not found");
-  }
-
-  const fullGoal: GoalData & { comments: GoalComment[] } = {
-    ...goalResponse.data,
-    comments: commentsResponse || []
-  };
-
-  return fullGoal;
-};
 
 const ProjectGoalViewPage = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);

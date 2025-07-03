@@ -1,7 +1,7 @@
 "use client";
 import { Box, CircularProgress, Grid, Divider } from "@mui/material";
 import { useMemo, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import {
@@ -29,7 +29,12 @@ const ViewMoreAction: React.FC = () => {
   const { id } = useParams();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { canAccess } = useUserPermission();
-  const view = searchParams.get("view") as "projects" | "users" | null;
+  const pathname = usePathname();
+  const view = pathname.includes("/task/project")
+    ? "projects"
+    : pathname.includes("/task/user")
+      ? "users"
+      : null;
   const minDate = searchParams.get("minDate") || "";
   const maxDate = searchParams.get("maxDate") || "";
   const moreDays = searchParams.get("moreDays") || "";

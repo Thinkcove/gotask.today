@@ -839,10 +839,7 @@
     "titlerequired": "Goal title is required",
     "startweekrequired": "Start Week is required",
     "endweekrequired": "Week end date is required",
-<<<<<<< HEAD
     "viewdetails": "View Details",
-=======
->>>>>>> main
     "statusrequired": "Status is required",
     "priorityreuired": "Priority is required",
     "filterpriority": "Priority",

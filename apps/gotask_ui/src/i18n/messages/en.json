@@ -867,7 +867,8 @@
     "prioritylabel": "Priority has been updated from",
     "statuslabel": "Status has been updated from",
     "descriptionlabel": "Description has been updated from",
-    "title": "Title has been updated from"
+    "title": "Title has been updated from",
+    "to": "to"
   },
   "Comments": {
     "comment": "Comments",

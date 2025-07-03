@@ -1,7 +1,7 @@
 export const KpiAssignmentMessages = {
   CREATE: {
     REQUIRED:
-      "Employee ID, frequency, weightage, and assigned by are required. If not using a template, title is also required.",
+      "Employee ID, measurement criteria, frequency, weightage, and assigned by are required. If not using a template, title and description are also required.",
     REVIEWER_REQUIRED: "Reviewer ID is required when assigned by the employee themselves",
     TEMPLATE_NOT_FOUND: "KPI template not found",
     EMPLOYEE_SELF_ASSIGN_ONLY: "Employees can only assign KPIs to themselves",

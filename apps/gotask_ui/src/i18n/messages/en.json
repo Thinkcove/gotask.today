@@ -864,8 +864,10 @@
     "clearall": "Clear All",
     "startdate": "Start Date",
     "enddate": "End Date",
-    "prioritylabel": "Priority",
-    "statuslabel": "Status"
+    "prioritylabel": "Priority has been updated from",
+    "statuslabel": "Status has been updated from",
+    "descriptionlabel": "Description has been updated from",
+    "title": "Title has been updated from"
   },
   "Comments": {
     "comment": "Comments",

@@ -71,8 +71,8 @@ const EditGoalPage = () => {
     if (!projectGoalHistory?.updateHistory) return [];
 
     const fieldLabelMap: Record<keyof GoalUpdateData, string> = {
-      goalTitle: transGoal("goaltitle"),
-      description: transGoal("description"),
+      goalTitle: transGoal("title"),
+      description: transGoal("descriptionlabel"),
       priority: transGoal("prioritylabel"),
       status: transGoal("statuslabel"),
       weekEnd: transGoal("startdate"),
@@ -95,7 +95,7 @@ const EditGoalPage = () => {
         const oldValue = previous_data[typedKey];
         if (oldValue !== undefined && oldValue !== newValue) {
           const label = fieldLabelMap[typedKey] || key;
-          acc.push(`${label}  has been updated from "${oldValue}" to "${newValue}"`);
+          acc.push(`${label} "${oldValue}" to "${newValue}"`);
         }
 
         return acc;

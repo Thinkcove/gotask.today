@@ -7,10 +7,10 @@ import ProjectGoalList from "./components/projectGoalList";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import { useParams } from "next/navigation";
 
-const page = () => {
-  const { getAllProjects } = useAllProjects();
+const Page = () => {
 
   const { projectId } = useParams();
+  const { getAllProjects } = useAllProjects();
 
   const projectID = projectId as string;
 
@@ -39,4 +39,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -179,6 +179,13 @@ class assetService {
             await Promise.all(tagData.map((tag) => getAssetByUserId(tag.userId)))
           ).flat();
 
+          const accessCards = await Promise.all(
+            assetByUsers.map((asset) => getAssetById(asset.assetId))
+          );
+          const filteredCount = accessCards.filter(
+            (card) => card && !card.accessCardNo?.trim()
+          ).length;
+
           const issuesList = (
             await Promise.all(
               tagData
@@ -208,7 +215,7 @@ class assetService {
             assetType: asset || null,
             tagData: tagDataWithUsers || null,
             issuesCount: issuesList.length || 0,
-            userAssetCount: assetByUsers.length || 0,
+            userAssetCount: filteredCount || 0,
             userAsset: assetByUsers || null
           };
         })

@@ -11,7 +11,7 @@ import useSWR, { mutate } from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import { fetchGoalData, updateWeeklyGoal } from "../../goalservices/projectGoalAction";
 import ProjectGoalForm from "../../components/projectGoalForm";
-import HistoryDrawer from "../../components/history";
+import HistoryDrawer from "../../../../../../access/components/ShowHistory";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import FormHeader from "../../../../../../access/components/FormHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";

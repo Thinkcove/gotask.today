@@ -96,7 +96,7 @@ const CreateTask: React.FC = () => {
       if (storyId) {
         router.push(`/project/view/${formData.project_id}/stories/${storyId}`);
       } else {
-        router.push("/task/projects?refresh=true");
+        router.back();
       }
     } catch (error) {
       console.error("Error while creating task:", error);

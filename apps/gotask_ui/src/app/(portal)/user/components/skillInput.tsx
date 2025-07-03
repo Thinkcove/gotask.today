@@ -273,9 +273,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                     {isAddOption ? (
                       <Box display="flex" alignItems="center">
                         <AddIcon fontSize="small" sx={{ mr: 1 }} />
-                        <Typography variant="body2">
-                          {trans("add")} "{skillName}"
-                        </Typography>
+                        <Typography variant="body2">{`${trans("add")} "${skillName}"`}</Typography>
                       </Box>
                     ) : (
                       <Typography variant="body2">{skillName}</Typography>

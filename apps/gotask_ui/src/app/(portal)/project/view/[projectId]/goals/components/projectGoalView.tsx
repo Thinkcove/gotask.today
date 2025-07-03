@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Edit } from "@mui/icons-material";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
@@ -20,7 +20,8 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   handleEditComment,
   handleDeleteComment,
   user,
-  handleBack
+  handleBack,
+  onEdit
 }) => {
   const comments: GoalComment[] = goalData?.comments || [];
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -42,7 +43,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   }
 
   return (
-    <Box>
+    <Box sx={{ p: 2 }}>
       <Box
         sx={{
           borderRadius: 4,
@@ -62,6 +63,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
                 <ArrowBack />
               </IconButton>
             </Grid>
+
             <Grid item xs>
               <Typography
                 variant="h5"
@@ -72,6 +74,16 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
               </Typography>
               <StatusIndicator status={goalData.status} getColor={getStatusColor} />
             </Grid>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(goalData);
+              }}
+              sx={{ ml: "auto" }}
+              color="primary"
+            >
+              <Edit />
+            </IconButton>
           </Grid>
 
           {/* Description */}
@@ -88,29 +100,27 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
           {/* Meta Info */}
           <Grid container spacing={2} mb={3}>
             <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label="Priority" value={goalData.priority || "-"} />
+              <LabelValueText
+                label={transGoal("filterpriority")}
+                value={goalData.priority || "-"}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Created"
+                label={transGoal("create")}
                 value={goalData.createdAt && <FormattedDateTime date={goalData.createdAt} />}
               />
             </Grid>
+      
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Updated"
-                value={goalData.updatedAt && <FormattedDateTime date={goalData.updatedAt} />}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText
-                label="Week Start"
+                label={transGoal("startdate")}
                 value={<FormattedDateTime date={goalData.weekStart} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Week End"
+                label={transGoal("enddate")}
                 value={<FormattedDateTime date={goalData.weekEnd} />}
               />
             </Grid>

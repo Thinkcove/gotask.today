@@ -664,6 +664,9 @@
     "assetallocation": "Asset usage",
     "overutilized": "Overutilized",
     "enabled": "Enabled",
+    "accesscardno": "Access card no",
+    "personalid": "Personal id",
+    "accesscarddetails": "Access card details",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage company assets efficiently."
@@ -803,17 +806,17 @@
   "ProjectGoal": {
     "goal": "Project Goal",
     "goalDesc": "Project Goal Description",
-    "goalDescPlaceholder": "Enter your projrct goal",
+    "goalDescPlaceholder": "Enter project goal",
     "createnewpGoal": "Create New Goal",
     "searchplaceholder": "Search Goal",
     "completion": "Completion",
-    "goaltitle": "Goal Title",
-    "goaltitlePlaceholder": "Enter your goal title",
-    "startdate": "Start Date*",
-    "enddate": "End Date*",
-    "status": "Status*",
+    "goaltitle": "Title",
+    "goaltitlePlaceholder": "Enter goal title",
+    "startdateinput": "Start Date *",
+    "enddateinput": "End Date *",
+    "status": "Status *",
     "statusPlaceholder": "Select Status",
-    "priority": "Priority*",
+    "priority": "Priority *",
     "priorityPlaceholder": "Select Priority",
     "description": "Description",
     "descriptionPlaceholder": "Enter your goal description",
@@ -839,6 +842,7 @@
     "titlerequired": "Goal title is required",
     "startweekrequired": "Start Week is required",
     "endweekrequired": "Week end date is required",
+    "viewdetails": "View Details",
     "statusrequired": "Status is required",
     "priorityreuired": "Priority is required",
     "filterpriority": "Priority",
@@ -856,7 +860,10 @@
     "showhistory": "Show History",
     "log": "Log of who performed the updates in the goal",
     "projectgoalhistory": "Goal History",
-    "projectname": "Project Name"
+    "projectname": "Project Name",
+    "clearall": "Clear All",
+    "startdate": "Start Date",
+    "enddate": "End Date"
   },
   "Comments": {
     "comment": "Comments",
@@ -865,7 +872,7 @@
     "submit": "Submit",
     "cancel": "Cancel"
   },
-  "Upload":{
+  "Upload": {
     "meta": {
       "title": "File Upload | GoTaskToday",
       "description": "Upload documents and assets securely."

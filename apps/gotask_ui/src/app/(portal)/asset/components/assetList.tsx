@@ -272,67 +272,99 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           <Toggle options={toggleOptions} selected={labels[view]} onChange={handleToggleChange} />
         </Box>
       </Box>
+      <Box
+        marginTop={"15px"}
+        sx={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          flexWrap: "nowrap",
+          gap: 2,
+          pr: 2,
+          overflowX: "auto"
+        }}
+      >
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          {view === "assets" ? (
+            <AssetFilters
+              modelNameFilter={modelNameFilter}
+              assignedToFilter={assignedToFilter}
+              allModelNames={modelNames}
+              allUsers={assignedUserNames}
+              onModelNameChange={setModelNameFilter}
+              onAssignedToChange={setAssignedToFilter}
+              onClearFilters={() => {
+                setModelNameFilter([]);
+                setAssignedToFilter([]);
+                setSearchText("");
+                setWarrantyDateFrom("");
+                setWarrantyDateTo("");
+                setSystemTypeFilter([]);
+                setAssetAllocationFilter([]);
+              }}
+              trans={transasset}
+              dateFrom={warrantyDateFrom}
+              dateTo={warrantyDateTo}
+              onDateChange={(from, to) => {
+                setWarrantyDateFrom(from);
+                setWarrantyDateTo(to);
+              }}
+              systemTypeFilter={systemTypeFilter}
+              allSystemTypes={allSystemTypes}
+              onSystemTypeChange={setSystemTypeFilter}
+              assetAllocationFilter={assetAllocationFilter}
+              onAssetAllocationChange={setAssetAllocationFilter}
+            />
+          ) : (
+            <AssetFilters
+              modelNameFilter={[]}
+              assignedToFilter={[]}
+              allModelNames={[]}
+              allUsers={[]}
+              onModelNameChange={() => {}}
+              onAssignedToChange={() => {}}
+              onClearFilters={() => setStatusFilter([])}
+              trans={transasset}
+              hideModelNameFilter
+              hideAssignedToFilter
+              allStatuses={issueStatuses}
+              statusFilter={statusFilter}
+              onStatusChange={setStatusFilter}
+            />
+          )}
+        </Box>
 
-      <Box marginTop={"15px"}>
-        {view === "assets" ? (
-          <AssetFilters
-            modelNameFilter={modelNameFilter}
-            assignedToFilter={assignedToFilter}
-            allModelNames={modelNames}
-            allUsers={assignedUserNames}
-            onModelNameChange={setModelNameFilter}
-            onAssignedToChange={setAssignedToFilter}
-            onClearFilters={() => {
-              setModelNameFilter([]);
-              setAssignedToFilter([]);
-              setSearchText("");
-              setWarrantyDateFrom("");
-              setWarrantyDateTo("");
-              setSystemTypeFilter([]);
-              setAssetAllocationFilter([]);
-            }}
-            trans={transasset}
-            dateFrom={warrantyDateFrom}
-            dateTo={warrantyDateTo}
-            onDateChange={(from, to) => {
-              setWarrantyDateFrom(from);
-              setWarrantyDateTo(to);
-            }}
-            systemTypeFilter={systemTypeFilter}
-            allSystemTypes={allSystemTypes}
-            onSystemTypeChange={setSystemTypeFilter}
-            assetAllocationFilter={assetAllocationFilter}
-            onAssetAllocationChange={setAssetAllocationFilter}
-          />
-        ) : (
-          <AssetFilters
-            modelNameFilter={[]}
-            assignedToFilter={[]}
-            allModelNames={[]}
-            allUsers={[]}
-            onModelNameChange={() => {}}
-            onAssignedToChange={() => {}}
-            onClearFilters={() => setStatusFilter([])}
-            trans={transasset}
-            hideModelNameFilter
-            hideAssignedToFilter
-            allStatuses={issueStatuses}
-            statusFilter={statusFilter}
-            onStatusChange={setStatusFilter}
-          />
-        )}
-      </Box>
-      <Box sx={{ flexShrink: 0 }}>
-        <Button
-          variant="outlined"
-          startIcon={<DownloadIcon />}
-          onClick={() => downloadAssetCSV(allAssets)}
-          sx={{ whiteSpace: "nowrap", textTransform: "none" }}
+        <Box
+          sx={{
+            flexShrink: 0,
+            alignSelf: "flex-start",
+            mt: 1
+          }}
         >
-          {transasset("download")}
-        </Button>
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            onClick={() => downloadAssetCSV(allAssets)}
+            sx={{
+              whiteSpace: "nowrap",
+              textTransform: "none",
+              "& .MuiButton-startIcon": {
+                margin: { xs: 0, lg: "0 8px 0 -4px" }
+              },
+              minWidth: { xs: "40px", lg: "auto" },
+              width: { xs: "40px", lg: "auto" },
+              height: "40px",
+              padding: { xs: "8px", lg: "6px 16px" },
+              borderRadius: "8px",
+              "& .button-text": {
+                display: { xs: "none", lg: "inline" }
+              }
+            }}
+          >
+            <span className="button-text">{transasset("download")}</span>
+          </Button>
+        </Box>
       </Box>
-      {/* Updated Box with reduced padding and spacing */}
       <Box
         sx={{
           width: "100%",
@@ -386,7 +418,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
         )}
       </Box>
 
-      {/* Floating Action Button */}
       <Box
         sx={{
           position: "fixed",

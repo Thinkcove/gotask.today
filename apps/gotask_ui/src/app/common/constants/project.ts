@@ -40,11 +40,7 @@ export const statusOptions = ["to-do", "in-progress", "hold", "completed"];
 
 export const priorityOptions = ["high", "medium", "low"];
 
-export const fetchGoalData = async (goalId: string) => {
-  if (!goalId) throw new Error("Goal ID is required");
-  const response = await getWeeklyGoalById(goalId);
-  return response?.data || null;
-};
+
 
 export const GOAL_STATUS = {
   COMPLETED: "completed",

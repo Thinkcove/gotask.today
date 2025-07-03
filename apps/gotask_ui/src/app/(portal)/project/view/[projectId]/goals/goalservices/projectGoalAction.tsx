@@ -148,3 +148,8 @@ export const fetchGoalWithComments = async (goalId: string) => {
 
   return fullGoal;
 };
+export const fetchGoalData = async (goalId: string) => {
+  if (!goalId) throw new Error("Goal ID is required");
+  const response = await getWeeklyGoalById(goalId);
+  return response?.data || null;
+};

@@ -9,14 +9,13 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import useSWR, { mutate } from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import {  updateWeeklyGoal } from "../../goalservices/projectGoalAction";
+import {  fetchGoalData, updateWeeklyGoal } from "../../goalservices/projectGoalAction";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import { UpdateHistoryItem, User } from "../../interface/projectGoal";
 import FormHeader from "../../../../../../access/components/FormHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
-import { fetchGoalData } from "@/app/common/constants/project";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 const EditGoalPage = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);

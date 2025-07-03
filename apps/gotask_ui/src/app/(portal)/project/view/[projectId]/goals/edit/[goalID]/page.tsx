@@ -95,7 +95,7 @@ const EditGoalPage = () => {
         const oldValue = previous_data[typedKey];
         if (oldValue !== undefined && oldValue !== newValue) {
           const label = fieldLabelMap[typedKey] || key;
-          acc.push(`${label} changed from "${oldValue}" to "${newValue}"`);
+          acc.push(`${label}  has been updated from "${oldValue}" to "${newValue}"`);
         }
 
         return acc;

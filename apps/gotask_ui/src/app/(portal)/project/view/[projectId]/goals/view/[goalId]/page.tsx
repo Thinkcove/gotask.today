@@ -143,7 +143,7 @@ const ProjectGoalViewPage = () => {
       return;
     }
 
-    router.push(`/project/view/${projectID}/goals/editGoal/${goalID}`);
+    router.push(`/project/view/${projectID}/goals/edit/${goalID}`);
   };
 
   // Step 2: Find current project

@@ -102,8 +102,6 @@ export interface HistoryData {
   [key: string]: string;
 }
 
-
-
 export interface ProjectGoalHistory {
   updateHistory: UpdateHistoryItem[];
 }
@@ -147,5 +145,3 @@ export interface UpdateHistoryItem {
     [key: string]: any;
   };
 }
-
-

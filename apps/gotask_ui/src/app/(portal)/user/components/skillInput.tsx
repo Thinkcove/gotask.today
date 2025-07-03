@@ -48,6 +48,11 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     revalidateOnFocus: false
   });
 
+  const availableOptions = options.filter(
+    (option) =>
+      !skills.some((skill) => skill.name.trim().toLowerCase() === option.trim().toLowerCase())
+  );
+
   const openAddDialog = () => {
     setTempSkill({ name: "", proficiency: 0 });
     setCurrentEditIndex(null);
@@ -254,7 +259,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 }
                 return filtered;
               }}
-              options={options}
+              options={availableOptions}
               inputValue={tempSkill.name}
               onInputChange={(_, newInput, reason) => {
                 if (reason === "input" || reason === "clear") {

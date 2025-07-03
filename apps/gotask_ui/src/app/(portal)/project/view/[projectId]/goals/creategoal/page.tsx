@@ -17,7 +17,6 @@ const page = () => {
         overflow: "hidden"
       }}
     >
-
       <Box sx={{ flex: 1, overflowY: "auto" }}>
         <CreateGoal />
       </Box>

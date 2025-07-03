@@ -9,19 +9,15 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import { getWeeklyGoalById, updateWeeklyGoal } from "../../goalservices/projectGoalAction";
+import { updateWeeklyGoal } from "../../goalservices/projectGoalAction";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import { UpdateHistoryItem, User } from "../../interface/projectGoal";
 import FormHeader from "../../../../../../access/components/FormHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
-
-const fetchGoalData = async (goalId: string) => {
-  if (!goalId) throw new Error("Goal ID is required");
-  const response = await getWeeklyGoalById(goalId);
-  return response?.data || null;
-};
+import { fetchGoalData } from "@/app/common/constants/project";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 
 const EditGoalPage = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -47,7 +43,6 @@ const EditGoalPage = () => {
 
   const {
     data: fetchedGoalData,
-    error: goalError,
     isLoading: isLoadingGoal
   } = useSWR(goalID ? `goal-${goalID}` : null, () => fetchGoalData(goalID), {
     revalidateOnFocus: false,
@@ -76,9 +71,9 @@ const EditGoalPage = () => {
       description: transGoal("description"),
       priority: transGoal("priority"),
       projectId: transGoal("projectname"),
-      status: transGoal("status"),
-      weekEnd: transGoal("weekEnd"),
-      weekStart: transGoal("weekStart")
+      status: transGoal("status")
+      // weekEnd: transGoal("weekEnd"),
+      // weekStart: transGoal("weekStart")
     };
 
     return (
@@ -159,59 +154,61 @@ const EditGoalPage = () => {
     );
   }
 
-  if (goalError) {
-    showSnackbar(transGoal("fetchError") || "Error fetching goal data", SNACKBAR_SEVERITY.ERROR);
-  }
   const currentProjectOptions = currentProject ? [currentProject] : [];
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        m: 0,
-        p: 0,
-        overflow: "hidden"
-      }}
-    >
-      <FormHeader
-        isEdit={true}
-        onCancel={handleCancel}
-        onSubmit={handleSubmit}
-        onShowHistory={() => setHistory(true)}
-        isSubmitting={isSubmitting}
-        hasHistory={(projectGoalHistory?.updateHistory ?? []).length > 0}
-        showModuleHeader={true}
-        projectname={currentProject?.name}
-      />
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          m: 0,
+          p: 0,
+          overflow: "hidden"
+        }}
+      >
+        <ModuleHeader name={currentProject?.name} />
+          <FormHeader
+            isEdit={true}
+            onCancel={handleCancel}
+            onSubmit={handleSubmit}
+            onShowHistory={() => setHistory(true)}
+            isSubmitting={isSubmitting}
+            hasHistory={(projectGoalHistory?.updateHistory ?? []).length > 0}
+            edit={transGoal("editgoal")}
+            create={transGoal("creategoal")}
+            cancle={transGoal("cancel")}
+            update={transGoal("update")}
+            showhistory={transGoal("showhistory")}
+          />
+     
 
-      <Box sx={{ flex: 1, overflowY: "auto" }}>
-        <ProjectGoalForm
-          rteRef={rteRef}
-          goalData={goalData}
-          setGoalData={setGoalData}
-          errors={errors}
-          currentProjectOptions={currentProjectOptions} 
-          currentProject={currentProject} 
+          <ProjectGoalForm
+            rteRef={rteRef}
+            goalData={goalData}
+            setGoalData={setGoalData}
+            errors={errors}
+            currentProjectOptions={currentProjectOptions}
+            currentProject={currentProject}
+          />
+        </Box>
+
+        <CustomSnackbar
+          open={snackbar.open}
+          message={snackbar.message}
+          severity={snackbar.severity}
+          onClose={handleSnackbarClose}
         />
-      </Box>
 
-      <CustomSnackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={handleSnackbarClose}
-      />
-
-      <HistoryDrawer
-        open={history}
-        onClose={() => setHistory(false)}
-        history={formattedHistory}
-        text={transGoal("log")}
-        heading={transGoal("projectgoalhistory")}
-      />
-    </Box>
+        <HistoryDrawer
+          open={history}
+          onClose={() => setHistory(false)}
+          history={formattedHistory}
+          text={transGoal("log")}
+          heading={transGoal("projectgoalhistory")}
+        />
+    </>
   );
 };
 

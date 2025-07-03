@@ -41,7 +41,7 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onClick }) => {
         <Stack direction="row" gap={1} flexWrap="wrap" alignItems="center" mb={1.5}>
           <StatusIndicator status={goal.status} getColor={getStatusColor} />
 
-          {goal.status === "completed" && <input type="checkbox" disabled checked />}
+          {goal.status === transGoal("completed") && <input type="checkbox" disabled checked />}
           <Divider orientation="vertical" sx={{ height: 20 }} />
 
           <SeverityIndicator severity={goal.priority} getColor={getSeverityColor} />

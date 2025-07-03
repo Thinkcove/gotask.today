@@ -796,7 +796,8 @@
     "log": "Log of who performed the updates in the goal",
     "projectgoalhistory": "Goal History",
     "projectname": "Project Name",
-    "clearall": "Clear All"
+    "clearall": "Clear All",
+    "completed":"completed"
   },
   "Comments": {
     "comment": "Comments",

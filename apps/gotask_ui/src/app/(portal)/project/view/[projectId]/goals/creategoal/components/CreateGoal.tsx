@@ -12,6 +12,7 @@ import { createWeeklyGoal } from "../../goalservices/projectGoalAction";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import FormHeader from "@/app/(portal)/access/components/FormHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 
 const CreateGoal = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -81,49 +82,50 @@ const CreateGoal = () => {
       setIsSubmitting(false);
     }
   };
-  // In your parent component where you're calling ProjectGoalForm
-
-
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        m: 0,
-        p: 0,
-        overflow: "hidden"
-      }}
-    >
-      <FormHeader
-        isEdit={false}
-        onCancel={handleCancel}
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-        showModuleHeader={true}
-        projectname={currentProject?.name}
-      />
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          m: 0,
+          p: 0,
+          overflow: "hidden"
+        }}
+      >
+        <ModuleHeader name={currentProject?.name} />
 
-      <Box sx={{ flex: 1, overflowY: "auto" }}>
+        <FormHeader
+          isEdit={false}
+          onCancel={handleCancel}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          edit={transGoal("editgoal")}
+          create={transGoal("creategoal")}
+          cancle={transGoal("cancel")}
+          update={transGoal("update")}
+          showhistory={transGoal("showhistory")}
+        />
+
         <ProjectGoalForm
           rteRef={rteRef}
           goalData={goalData}
           setGoalData={setGoalData}
           errors={errors}
-          currentProjectOptions={currentProjectOptions} // Array of projects for dropdown
-          currentProject={currentProject} // Current selected project
-          
+          currentProjectOptions={currentProjectOptions}
+          currentProject={currentProject}
+        />
+
+        <CustomSnackbar
+          open={snackbar.open}
+          message={snackbar.message}
+          severity={snackbar.severity}
+          onClose={handleSnackbarClose}
         />
       </Box>
-
-      <CustomSnackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={handleSnackbarClose}
-      />
-    </Box>
+    </>
   );
 };
 

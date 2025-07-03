@@ -1,11 +1,10 @@
 // GoalFilterBar.tsx
 import React from "react";
-import { Box, IconButton, Link } from "@mui/material";
+import { Box, Divider, IconButton, Link } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import { GoalFilterBarProps } from "../interface/projectGoal";
-
 
 const GoalFilterBar: React.FC<GoalFilterBarProps> = ({
   searchTerm,
@@ -51,6 +50,7 @@ const GoalFilterBar: React.FC<GoalFilterBarProps> = ({
             />
           </Box>
         </Box>
+        <Divider orientation="vertical" sx={{pr:2, height: 30 }} />
 
         {/* Filters */}
         <Box

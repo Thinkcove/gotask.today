@@ -1,26 +1,36 @@
 import React from "react";
 import { Box, Button, Typography, IconButton } from "@mui/material";
 import { ArrowBack, History } from "@mui/icons-material";
-import { useTranslations } from "next-intl";
-import { LOCALIZATION } from "@/app/common/constants/localization";
-import ModuleHeader from "@/app/component/header/moduleHeader";
-import { GoalFormHeaderProps } from "../../project/view/[projectId]/goals/interface/projectGoal";
 
-const FormHeader: React.FC<GoalFormHeaderProps> = ({
+export interface FormHeaderProps {
+  isEdit: boolean;
+  onCancel: () => void;
+  onSubmit: () => void;
+  onShowHistory?: () => void;
+  isSubmitting?: boolean;
+  hasHistory?: boolean;
+  edit: string;
+  create: string;
+  cancle: string;
+  update: string;
+  showhistory: string;
+}
+
+const FormHeader: React.FC<FormHeaderProps> = ({
   isEdit,
   onCancel,
   onSubmit,
   onShowHistory,
   isSubmitting = false,
   hasHistory = false,
-  showModuleHeader = false,
-  projectname,
+  showhistory,
+  cancle,
+  create,
+  edit,
+  update
 }) => {
-  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   return (
     <>
-      {showModuleHeader && <ModuleHeader name={projectname}/>}
-
       <Box
         sx={{
           display: "flex",
@@ -29,6 +39,7 @@ const FormHeader: React.FC<GoalFormHeaderProps> = ({
           width: "100%",
           flexWrap: "wrap",
           gap: 2,
+          p:2
         }}
       >
         {/* Left Section: Arrow + Title */}
@@ -43,7 +54,7 @@ const FormHeader: React.FC<GoalFormHeaderProps> = ({
             <ArrowBack />
           </IconButton>
           <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {isEdit ? transGoal("editgoal") : transGoal("creategoal")}
+            {isEdit ? edit : create}
           </Typography>
         </Box>
 
@@ -71,7 +82,7 @@ const FormHeader: React.FC<GoalFormHeaderProps> = ({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            {transGoal("cancel")}
+            {cancle}
           </Button>
           <Button
             variant="contained"
@@ -89,13 +100,7 @@ const FormHeader: React.FC<GoalFormHeaderProps> = ({
             onClick={onSubmit}
             disabled={isSubmitting}
           >
-            {isSubmitting
-              ? isEdit
-                ? transGoal("update")
-                : transGoal("create")
-              : isEdit
-                ? transGoal("update")
-                : transGoal("create")}
+            {isSubmitting ? (isEdit ? update : create) : isEdit ? update : create}
           </Button>
         </Box>
       </Box>
@@ -113,11 +118,12 @@ const FormHeader: React.FC<GoalFormHeaderProps> = ({
             alignItems: "center"
           }}
         >
-          <Typography>{transGoal("showhistory")}</Typography>
+          <Typography>{showhistory}</Typography>
           <History />
         </Box>
       )}
     </>
   );
 };
+
 export default FormHeader;

@@ -97,16 +97,7 @@ export interface ProjectGoalFormProps {
   currentProject: Project | undefined;
 }
 
-export interface GoalFormHeaderProps {
-  isEdit: boolean;
-  onCancel: () => void;
-  onSubmit: () => void;
-  onShowHistory?: () => void;
-  isSubmitting?: boolean;
-  hasHistory?: boolean;
-  showModuleHeader?: boolean;
- projectname?:string
-}
+
 export interface HistoryData {
   [key: string]: string;
 }

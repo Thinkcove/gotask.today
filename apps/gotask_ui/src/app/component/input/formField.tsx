@@ -22,7 +22,7 @@ export interface SelectOption {
 
 interface FormFieldProps {
   label: string;
-  type: "text" | "select" | "date" | "multiselect" | "number";
+  type?: "text" | "select" | "date" | "multiselect" | "number";
   required?: boolean;
   placeholder?: string;
   options?: SelectOption[] | string[];

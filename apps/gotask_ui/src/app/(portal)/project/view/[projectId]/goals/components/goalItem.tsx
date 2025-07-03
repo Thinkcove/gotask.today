@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, Divider, Stack } from "@mui/material";
 import { ArrowForward } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { getStatusColor } from "@/app/common/constants/project";
+import { getStatusColor, GOAL_STATUS } from "@/app/common/constants/project";
 import { GoalCardProps } from "../interface/projectGoal";
 import SeverityIndicator from "@/app/(portal)/access/components/SeverityIndicator";
 import { getSeverityColor } from "@/app/common/constants/task";
@@ -40,7 +40,8 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onClick }) => {
         {/* Info Row */}
         <Stack direction="row" gap={1} flexWrap="wrap" alignItems="center" mb={1.5}>
           <StatusIndicator status={goal.status} getColor={getStatusColor} />
-          {goal.status === transGoal("completed") && <input type="checkbox" disabled checked />}
+
+          {goal.status === GOAL_STATUS.COMPLETED && <input type="checkbox" disabled checked />}
           <Divider orientation="vertical" sx={{ height: 20 }} />
 
           <SeverityIndicator severity={goal.priority} getColor={getSeverityColor} />

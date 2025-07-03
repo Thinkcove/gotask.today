@@ -72,7 +72,7 @@ export const useGoalForm = (projectId: string, initialData?: GoalData) => {
       priority: "",
       projectId: projectId,
       user_id: "",
-      id: ''
+      id: ""
     });
     setErrors({});
   };

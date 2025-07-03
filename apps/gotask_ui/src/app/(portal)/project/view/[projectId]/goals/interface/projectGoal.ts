@@ -97,7 +97,6 @@ export interface ProjectGoalFormProps {
   currentProject: Project | undefined;
 }
 
-
 export interface HistoryData {
   [key: string]: string;
 }

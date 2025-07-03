@@ -6,6 +6,7 @@ export const ProjectStatuses = [
   { label: "Hold", color: "#E2A3D5" },
   { label: "Completed", color: "#4CAF50" }
 ];
+
 export const formatStatus = (status: string) => {
   switch (status?.toLowerCase()) {
     case "to-do":
@@ -36,6 +37,7 @@ export const getStatusColor = (status: string): string => {
   }
 };
 export const statusOptions = ["to-do", "in-progress", "hold", "completed"];
+
 export const priorityOptions = ["high", "medium", "low"];
 
 export const fetchGoalData = async (goalId: string) => {
@@ -43,3 +45,9 @@ export const fetchGoalData = async (goalId: string) => {
   const response = await getWeeklyGoalById(goalId);
   return response?.data || null;
 };
+
+export const GOAL_STATUS = {
+  COMPLETED: "completed",
+  IN_PROGRESS: "in-progress",
+  TO_DO: "to-do"
+} as const;

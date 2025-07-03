@@ -26,6 +26,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   cancle,
   create,
   update,
+  edit
 }) => {
   return (
     <>
@@ -64,7 +65,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
                 <ArrowBack />
               </IconButton>
               <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-                {isEdit ? "Edit" : "Create"}
+                {isEdit ? edit : create}
               </Typography>
             </Box>
             <Box>

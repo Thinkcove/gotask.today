@@ -64,10 +64,23 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     setCurrentEditIndex(index);
     setDialogOpen(true);
   };
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [errorDialogMessage, setErrorDialogMessage] = useState("");
 
   const handleSave = async () => {
     const trimmed = tempSkill.name.trim();
     if (!trimmed || !tempSkill.proficiency) return;
+
+    const isDuplicate = skills.some(
+      (skill, idx) =>
+        skill.name.trim().toLowerCase() === trimmed.toLowerCase() && idx !== currentEditIndex
+    );
+
+    if (isDuplicate) {
+      setErrorDialogMessage(trans("skillalreadyexists"));
+      setErrorDialogOpen(true);
+      return;
+    }
 
     const updated = [...skills];
     const skillData: ISkill = {
@@ -390,6 +403,16 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         cancelLabel={transInc("cancel")}
       >
         <Typography>{transInc("deleteincrement")}</Typography>
+      </CommonDialog>
+
+      <CommonDialog
+        open={errorDialogOpen}
+        onClose={() => setErrorDialogOpen(false)}
+        onSubmit={() => setErrorDialogOpen(false)}
+        title={trans("Increment.errortitle")}
+        submitLabel={trans("ok")}
+      >
+        <Typography>{errorDialogMessage}</Typography>
       </CommonDialog>
     </Box>
   );

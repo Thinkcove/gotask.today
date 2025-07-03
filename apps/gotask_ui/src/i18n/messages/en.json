@@ -527,6 +527,8 @@
     "months": "Months",
     "editskill": "Edit Skill",
     "skilldescription": "Add details of Skills you possess along with proficiency and experience",
+    "skillalreadyexists": "This skill is already added.",
+    "ok":"Ok",
     "meta": {
       "title": "User Management | GoTaskToday",
       "description": "Plan, assign, and track tasks across projects."

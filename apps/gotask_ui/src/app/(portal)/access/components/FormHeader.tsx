@@ -8,22 +8,17 @@ export interface FormHeaderProps {
   onSubmit: () => void;
   onShowHistory?: () => void;
   isSubmitting?: boolean;
-  hasHistory?: boolean;
   edit: string;
   create: string;
   cancle: string;
   update: string;
-  showhistory: string;
 }
 
 const FormHeader: React.FC<FormHeaderProps> = ({
   isEdit,
   onCancel,
   onSubmit,
-  onShowHistory,
   isSubmitting = false,
-  hasHistory = false,
-  showhistory,
   cancle,
   create,
   edit,
@@ -104,24 +99,6 @@ const FormHeader: React.FC<FormHeaderProps> = ({
           </Button>
         </Box>
       </Box>
-
-      {/* History Link */}
-      {hasHistory && onShowHistory && (
-        <Box
-          onClick={onShowHistory}
-          sx={{
-            textDecoration: "underline",
-            display: "flex",
-            color: "#741B92",
-            px: 3,
-            cursor: "pointer",
-            alignItems: "center"
-          }}
-        >
-          <Typography>{showhistory}</Typography>
-          <History />
-        </Box>
-      )}
     </>
   );
 };

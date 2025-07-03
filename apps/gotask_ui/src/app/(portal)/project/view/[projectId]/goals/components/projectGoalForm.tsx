@@ -95,7 +95,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormField
-              label="Project"
+              label={transGoal("projectname")}
               type="select"
               options={currentProjectOptions}
               value={currentProject?.id || ""}

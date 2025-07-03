@@ -66,7 +66,7 @@
     "emailuppercase": "Capital letters are not allowed in email. Use lowercase only.",
     "meta": {
       "title": "Access Management | GoTaskToday",
-      "description": "Configure user access, permissions, and authorization settings."
+      "description": "Manage user permissions and control access across the system."
     }
   },
   "Dashboard": {
@@ -78,7 +78,7 @@
     "totals": "Total Tasks",
     "meta": {
       "title": "Dashboard | GoTaskToday",
-      "description": "View performance, activity insights, and key metrics in one place."
+      "description": "Get a quick overview of tasks, performance, and system activity."
     }
   },
   "Organization": {
@@ -118,7 +118,7 @@
     "searchplaceholder": "Search Organizations",
     "meta": {
       "title": "Organization | GoTaskToday",
-      "description": "Manage company structure, departments, and details."
+      "description": "Define departments, roles, and reporting structure for the organization."
     }
   },
   "Projects": {
@@ -174,7 +174,7 @@
     "filterapply": "Apply",
     "meta": {
       "title": "Project Management | GoTaskToday",
-      "description": "Manage projects, assign teams, and track progress efficiently."
+      "description": " Create, assign, and monitor progress of ongoing projects."
     },
 
     "Stories": {
@@ -292,7 +292,7 @@
     "searchplaceholder": "Search Roles",
     "meta": {
       "title": "Role Management | GoTaskToday",
-      "description": "Create, update, and manage roles and access control settings."
+      "description": "Define user roles and assign permissions within the system."
     }
   },
   "Task": {
@@ -425,13 +425,13 @@
     "Project": {
       "meta": {
         "title": "Task Projects",
-        "description": "Manage all your projects, timelines, and milestones efficiently."
+        "description": "Manage tasks under each project and track their status."
       }
     },
     "Assignees": {
       "meta": {
         "title": "Assignee Overview",
-        "description": "Review and manage users assigned to various project tasks."
+        "description": "Assign users to tasks and monitor individual task progress."
       }
     }
   },
@@ -554,7 +554,8 @@
       "addincdesc": "Enter the date and updated CTC for this increment.",
       "salaryrevisionlog": "Salary Revision Log",
       "short": "short",
-      "numeric": "numeric"
+      "numeric": "numeric",
+      "description": "View, create, and manage user profiles and credentials."
     }
   },
   "Appbar": {
@@ -589,7 +590,7 @@
     "placeholderProject": "Project",
     "meta": {
       "title": "Work Log | GoTaskToday",
-      "description": "View time logs, performance metrics, and summaries."
+      "description": "Generate and analyze reports across modules for insights and audits."
     }
   },
   "Assets": {
@@ -698,12 +699,12 @@
     "accesscarddetails": "Access card details",
     "meta": {
       "title": "Assets | GoTaskToday",
-      "description": "Track and manage company assets efficiently."
+      "description": "Track and manage all company-owned assets and equipment efficiently."
     },
     "Issues": {
       "meta": {
         "title": "Asset Issues",
-        "description": "Monitor and resolve issues related to assets effectively."
+        "description": "Log, view, and resolve asset-related issues and incidents."
       }
     }
   },
@@ -760,53 +761,99 @@
     "validation": "No valid attendance records processed",
     "meta": {
       "title": "AI Assistant | GoTaskToday",
-      "description": "Interact with your virtual assistant to get quick answers and help."
+      "description": "Ask questions and get automated responses through the chatbot assistant."
     }
   },
-  "KPI": {
-    "viewname": "KPI Template",
-    "createnewtemplate": " Create new template",
-    "searchplaceholder": "Search",
-    "validationerror": "Name,Weightage,frequency fields are required",
-    "createerror": "Creation failed",
-    "fetcherror": "Failled to fetch",
-    "loading": "Loading",
-    "name": "Name",
-    "description": "Description",
-    "weightage": "Weightage",
-    "isActive": "isActive",
-    "cancel": "Cancel",
-    "create": "Create",
-    "updateerror": "Failed to update",
-    "notemplates": "No Templates",
-    "nodescription": "No Description",
-    "frequency": "Frequency",
-    "edittemplate": "Edit Template",
-    "save": "Save",
-    "active": "Active",
-    "inactive": "Inactive",
-    "locked": "Locked",
-    "selectstatus": "Select Status",
-    "status": "Status",
-    "entername": "Enter Template Name",
-    "enterdescription": "Enter description",
-    "templatetitle": "Template Details",
-    "deleteTitle": "Delete template",
-    "deleteConfirm": "Are you sure you want to delete this template?",
-    "selectfrequency": "Select Frequency",
-    "createtemplate": "Create Template",
-    "required": "*",
-    "nameerror": "Template Name is required",
-    "frequencyerror": "Frequency is required",
-    "statuserror": "Status is required",
-    "weightageerror": "Weightage is required",
-    "update": "Update",
-    "updatesuccess": "Template updated successfully",
-    "templatelabel": "Template",
-    "assigneelabbel": "Assignee",
-    "meta": {
+  "KPI":{
+    "title":"Title",
+     "viewname": "KPI Template",
+     "createnewtemplate":" Create new template",
+     "searchplaceholder":"Search",
+     "validationerror":"Name,Weightage,frequency fields are required",
+     "createerror":"Creation failed",
+     "fetcherror":"Failled to fetch",
+     "loading":"Loading...",
+     "name":"Name",
+     "description":"Description",
+     "weightage":"Weightage",
+     "isActive":"isActive",
+     "cancel":"Cancel",
+     "create":"Create",
+     "updateerror":"Failed to update",
+     "notemplates":"No Templates",
+     "nodescription":"No Description",
+     "frequency":"Frequency",
+     "edittemplate":"Edit Template",
+     "save":"Save",
+     "active":"Active",
+     "inactive":"Inactive",
+     "locked":"Locked",
+     "selectstatus":"Select Status",
+     "status":"Status",
+     "entername":"Enter Template Tittle",
+     "enterdescription":"Enter description",
+     "templatetitle":"Template Details",
+     "deleteTitle":"Delete template",
+     "deleteConfirm":"Are you sure you want to delete this template?",
+     "selectfrequency":"Select Frequency",
+     "createtemplate":"Create Template",
+     "required": "*",
+     "nameerror":"Template Name is required",
+     "frequencyerror":"Frequency is required",
+     "statuserror":"Status is required",
+     "weightageerror":"Weightage is required",
+     "update":"Update",
+     "updatesuccess":"Template updated successfully",
+     "templatelabel":"Template",
+     "assigneelabel":"Assignee",
+     "assigneetitle":"Assignee Details",
+     "role":"Role",
+     "assignedtemplates":"Assigned Templates",
+     "notemplatesassigned":"No Assigned Templates",
+     "assigntemplate":"Select Template",
+     "entermeasurementcriteria":"Enter Measurement_criteria",
+     "enterweightage":"Enter Weightage",
+     "entertargetvalue":"Enetr Target Value",
+     "enterassignedby":"Enter Assigned by",
+     "enterreviewerid":"Enter Reviewer Id",
+     "measurementcriteria":"Measurement Criteria",
+     "targetvalue":"Target Value",
+     "comments":"Comments",
+     "entercomments":"Enter Comment",
+     "assignedby":"Assigned by",
+     "reviewerid":"Reviewer Id",
+     "assign":"Assign",
+     "assignedbyerror":"Assigned By Id is required",
+     "targetvalueerror":"Target value is required",
+     "measurementerror":"Measurement Crirteria is required",
+     "viewdetails":"View Details",
+     "searchemployees":"Search Employees",
+     "entertemplate":"Enter Template Name",
+     "template":"Template",
+     "assignee":"Employees",
+     "deletesuccess":"Template deleted successfully",
+     "enterstatus":"Enter Status",
+     "enterfrequency":"Enter Frequency",
+     "labeldescription":"Description",
+     "placeholderdescription": "Enter Description",
+     "selecttemplate":"Select Template",
+     "entertitle":"Enter Template title",
+     "editassignment":"Edit Assigned Template",
+     "updatesuccessassignment":"Assigned Template updated successfully",
+     "assignsuccess":"Template assigned successfully",
+     "assignfailed":"Template assign failed",
+     "errorLoadingAssignment":"Error in Loading...",
+     "deletesuccessassignment":"Assignment deleted successfully",
+     "deletefailed":"Delete failed",
+     "assignedtemplateview":"Assigned Template View",
+     "deleteConfirmassignment": "Are you sure you want to delete this assigned template?",
+     "delete":"Delete",
+     "assignatemplate":"Assign a Template",
+     "titleerror":"Title is required",
+     "descriptionerror":"Description is required",
+      "meta": {
       "title": "KPI Templates | GoTaskToday",
-      "description": "Define, manage, and assign KPI templates to measure performance."
+      "description": "Monitor and evaluate performance metrics for teams and individuals."
     }
   },
   "WorkPlanned": {
@@ -829,7 +876,7 @@
     "idp": "project-ids",
     "meta": {
       "title": "Work Planned | GoTaskToday",
-      "description": "Monitor planned work, milestones, and schedules."
+      "description": "Schedule and monitor planned work activities and milestones."
     }
   },
   "ProjectGoal": {
@@ -904,7 +951,7 @@
   "Upload": {
     "meta": {
       "title": "File Upload | GoTaskToday",
-      "description": "Upload documents and assets securely."
+      "description": "Upload and manage files and documents securely."
     }
   }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Button, Typography, IconButton } from "@mui/material";
-import { ArrowBack, History } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
 
 export interface FormHeaderProps {
   isEdit: boolean;
@@ -20,7 +20,6 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   isEdit,
   onCancel,
   onSubmit,
-  onShowHistory,
   isSubmitting = false,
   cancle,
   create,

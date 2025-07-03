@@ -78,6 +78,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
             border: "1px solid #e0e0e0"
           }}
         >
+          {/* Header */}
           <Box display="flex" alignItems="center" mb={3}>
             <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
               <ArrowBack />
@@ -96,6 +97,8 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
               </Box>
             </Box>
           </Box>
+
+          {/* Description Section */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
               <LabelValueText
@@ -104,9 +107,14 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
               />
             </Grid>
           </Grid>
+
+          {/* KPI Info Section */}
           <Grid container spacing={2} mb={3}>
             <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText label={transkpi("weightage")} value={template.measurement_criteria} />
+              <LabelValueText
+                label={transkpi("measurementcriteria")}
+                value={template.measurement_criteria || "N/A"}
+              />
             </Grid>
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText label={transkpi("frequency")} value={template.frequency || "N/A"} />
@@ -128,9 +136,12 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
               />
             </Grid>
           </Grid>
+
           <Divider sx={{ mb: 4 }} />
         </Box>
       </Box>
+
+      {/* Delete Confirmation Dialog */}
       <CommonDialog
         open={openDialog}
         onClose={handleDialogClose}
@@ -142,6 +153,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
           {transkpi("deleteConfirm")}
         </Typography>
       </CommonDialog>
+
       <CustomSnackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Typography, IconButton, Grid, TextField, Button } from "@mui/material";
+import { Box, IconButton, Grid, TextField, Button, Typography } from "@mui/material";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { deleteKpiAssignment, updateKpiAssignment } from "../../../service/templateAction";
 import { getUserStatusColor } from "@/app/common/constants/status";
@@ -13,6 +13,7 @@ import { KpiAssignment } from "../../../service/templateInterface";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import LabelValueText from "@/app/component/text/labelValueText";
 
 interface Props {
   assignment: KpiAssignment;
@@ -23,10 +24,10 @@ interface Props {
 
 const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) => {
   const router = useRouter();
-  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
-  const [snackbarMessage, setSnackbarMessage] = React.useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = React.useState<"success" | "error">("success");
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditingComment, setIsEditingComment] = useState(false);
@@ -90,43 +91,46 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
         </Box>
 
         <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <Typography fontWeight={600}>{transkpi("description")}</Typography>
-            <Typography>{assignment.kpi_Description || "N/A"}</Typography>
+          <Grid item xs={12} sm={6} md={4}>
+            <LabelValueText
+              label={transkpi("description")}
+              value={assignment.kpi_Description || "N/A"}
+            />
           </Grid>
-          <Grid item xs={4}>
-            <Typography fontWeight={600}>{transkpi("frequency")}</Typography>
-            <Typography>{assignment.frequency}</Typography>
+          <Grid item xs={12} sm={6} md={4}>
+            <LabelValueText label={transkpi("frequency")} value={assignment.frequency} />
           </Grid>
-          <Grid item xs={4}>
-            <Typography fontWeight={600}>{transkpi("measurementcriteria")}</Typography>
-            <Typography>{assignment.measurement_criteria}</Typography>
+          <Grid item xs={12} sm={6} md={4}>
+            <LabelValueText
+              label={transkpi("measurementcriteria")}
+              value={assignment.measurement_criteria}
+            />
           </Grid>
-          <Grid item xs={4}>
-            <Typography fontWeight={600}>{transkpi("weightage")}</Typography>
-            <Typography>{assignment.weightage ?? "N/A"}</Typography>
+          <Grid item xs={12} sm={6} md={4}>
+            <LabelValueText label={transkpi("weightage")} value={assignment.weightage ?? "N/A"} />
           </Grid>
-          <Grid item xs={4}>
-            <Typography fontWeight={600}>{transkpi("assignedby")}</Typography>
-            <Typography>{assignment.assigned_by}</Typography>
+          <Grid item xs={12} sm={6} md={4}>
+            <LabelValueText label={transkpi("assignedby")} value={assignment.assigned_by} />
           </Grid>
-          <Grid item xs={4}>
-            <Typography fontWeight={600}>{transkpi("reviewerid")}</Typography>
-            <Typography>{assignment.reviewer_id || "N/A"}</Typography>
+          <Grid item xs={12} sm={6} md={4}>
+            <LabelValueText
+              label={transkpi("reviewerid")}
+              value={assignment.reviewer_id || "N/A"}
+            />
           </Grid>
-          <Grid item xs={4}>
-            <Typography fontWeight={600}>{transkpi("status")}</Typography>
-            <Typography
+          <Grid item xs={12} sm={6} md={4}>
+            <LabelValueText
+              label={transkpi("status")}
+              value={assignment.status}
               sx={{ color: getUserStatusColor(assignment.status), textTransform: "capitalize" }}
-            >
-              {assignment.status}
-            </Typography>
+            />
           </Grid>
+
+          {/* Comment Section */}
           <Grid item xs={12}>
             <Typography fontWeight={600} mb={1}>
               {transkpi("comments")}
             </Typography>
-
             <Box
               sx={{
                 position: "relative",

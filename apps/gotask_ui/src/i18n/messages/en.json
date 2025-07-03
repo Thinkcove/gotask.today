@@ -664,6 +664,9 @@
     "assetallocation": "Asset usage",
     "overutilized": "Overutilized",
     "enabled": "Enabled",
+    "accesscardno": "Access card no",
+    "personalid": "Personal id",
+    "accesscarddetails": "Access card details",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage company assets efficiently."
@@ -908,7 +911,7 @@
     "submit": "Submit",
     "cancel": "Cancel"
   },
-  "Upload":{
+  "Upload": {
     "meta": {
       "title": "File Upload | GoTaskToday",
       "description": "Upload documents and assets securely."

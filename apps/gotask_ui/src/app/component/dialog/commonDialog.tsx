@@ -13,12 +13,13 @@ import CloseIcon from "@mui/icons-material/Close";
 interface CommonDialogProps extends DialogProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit?: () => void;
   title: string;
   children: React.ReactNode;
   submitLabel?: string;
   cancelLabel?: string;
   submitColor?: string; // New prop for dynamic color
+  hideCancelButton?: boolean;
 }
 
 const CommonDialog: React.FC<CommonDialogProps> = ({
@@ -30,6 +31,7 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
   submitLabel = "Submit",
   cancelLabel = "Cancel",
   submitColor,
+  hideCancelButton = false,
   ...dialogProps
 }) => {
   return (
@@ -77,19 +79,21 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
 
       {/* Footer */}
       <DialogActions sx={{ justifyContent: "flex-end", gap: 1, p: 2 }}>
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          color="inherit"
-          sx={{
-            textTransform: "none",
-            borderRadius: 3,
-            px: 3,
-            py: 1.2
-          }}
-        >
-          {cancelLabel}
-        </Button>
+        {!hideCancelButton && (
+          <Button
+            onClick={onClose}
+            variant="outlined"
+            color="inherit"
+            sx={{
+              textTransform: "none",
+              borderRadius: 3,
+              px: 3,
+              py: 1.2
+            }}
+          >
+            {cancelLabel}
+          </Button>
+        )}
         {onSubmit && (
           <Button
             onClick={onSubmit}

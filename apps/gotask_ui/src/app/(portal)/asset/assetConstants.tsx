@@ -7,6 +7,7 @@ import { isBefore, isAfter, addDays } from "date-fns";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import Tooltip from "@mui/material/Tooltip";
 import LayersIcon from "@mui/icons-material/Layers";
+import { ASSET_TYPE } from "@/app/common/constants/asset";
 
 export interface IAssetDisplayRow {
   id?: string;
@@ -116,14 +117,14 @@ export const getAssetColumns = (
         : typeof row.user === "string"
           ? row.user
           : "-";
-
       const userAssetCount = Number(row.userAssetCount);
       const isOverloaded = !isNaN(userAssetCount) && userAssetCount > 1;
+      const showLayerIcon = isOverloaded && row.assetType !== ASSET_TYPE.ACCESS_CARDS;
 
       return (
         <Box display="flex" alignItems="center" gap={1}>
           <Typography whiteSpace="nowrap">{userDisplay}</Typography>
-          <Box sx={{ visibility: isOverloaded ? "visible" : "hidden" }}>
+          <Box sx={{ visibility: showLayerIcon ? "visible" : "hidden" }}>
             <Tooltip
               placement="top"
               title={

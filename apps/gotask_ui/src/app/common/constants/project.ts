@@ -1,13 +1,15 @@
+
 export const ProjectStatuses = [
   { label: "To Do", color: "#B1AAAA" },
   { label: "In Progress", color: "#F29807" },
   { label: "Hold", color: "#E2A3D5" },
   { label: "Completed", color: "#4CAF50" }
 ];
+
 export const formatStatus = (status: string) => {
   switch (status?.toLowerCase()) {
-    case "not-started":
-      return "Not Started";
+    case "to-do":
+      return "To-Do";
     case "in-progress":
       return "In Progress";
     case "completed":
@@ -21,21 +23,26 @@ export const formatStatus = (status: string) => {
 
 export const getStatusColor = (status: string): string => {
   switch (status) {
+    case "to-do":
+      return "#B0BEC5";
     case "in-progress":
       return "#FF9800";
     case "hold":
       return "#CE93D8";
     case "completed":
       return "#4CAF50";
-    case "not-started":
-      return "#B0BEC5";
-    case "blocked":
-      return "#D32F2F";
     default:
-      return "000000";
+      return "#B0BEC5";
   }
 };
-export const statusOptions = ["not-started", "in-progress", "to-do", "hold","completed", "blocked"];
+export const statusOptions = ["to-do", "in-progress", "hold", "completed"];
+
 export const priorityOptions = ["high", "medium", "low"];
 
 
+
+export const GOAL_STATUS = {
+  COMPLETED: "completed",
+  IN_PROGRESS: "in-progress",
+  TO_DO: "to-do"
+} as const;

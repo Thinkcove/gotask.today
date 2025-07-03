@@ -46,7 +46,6 @@ export interface Filters {
   projectIds: string[];
 }
 
-
 export interface WorkPlannedGridProps {
   data: WorkPlannedEntry[];
   fromDate: string;

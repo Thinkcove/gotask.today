@@ -66,7 +66,6 @@ const ProjectGoalViewPage = () => {
   // Use SWR for data fetching
   const {
     data: projectGoalView,
-    error,
     isLoading,
     mutate
   } = useSWR(goalID ? `goal-${goalID}` : null, () => fetchGoalWithComments(goalID), {

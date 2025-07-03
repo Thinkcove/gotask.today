@@ -20,6 +20,8 @@ import {
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import env from "@/app/common/env";
+import { PROFICIENCY_MAXIMUM } from "@/app/common/constants/user";
+import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 
 interface SkillInputProps {
   userId: string;
@@ -66,7 +68,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     const skillData: ISkill = {
       name: trimmed,
       proficiency: tempSkill.proficiency,
-      experience: tempSkill.proficiency >= 3 ? tempSkill.experience : undefined
+      experience: tempSkill.proficiency >= PROFICIENCY_MAXIMUM ? tempSkill.experience : undefined
     };
 
     try {
@@ -100,6 +102,11 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     onChange(updated);
     setConfirmOpen(false);
     setDeleteIndex(null);
+  };
+  const resetDialogState = () => {
+    setDialogOpen(false);
+    setTempSkill({ name: "", proficiency: 0 });
+    setCurrentEditIndex(null);
   };
 
   return (
@@ -172,8 +179,9 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                         fontSize: 24
                       }}
                     >
-                      🛠️
+                      <WorkspacePremiumIcon fontSize="inherit" />
                     </Box>
+
                     <Box>
                       <Typography fontSize={14} fontWeight={600}>
                         {skill.name}
@@ -208,13 +216,10 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         )}
       </Box>
       {/* Dialogs (Add/Edit & Delete) */}
+
       <CommonDialog
         open={dialogOpen}
-        onClose={() => {
-          setDialogOpen(false);
-          setTempSkill({ name: "", proficiency: 0 });
-          setCurrentEditIndex(null);
-        }}
+        onClose={resetDialogState}
         onSubmit={handleSave}
         title={currentEditIndex !== null ? trans("editskill") : trans("addskill")}
         submitLabel={trans("save")}

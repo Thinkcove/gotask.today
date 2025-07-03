@@ -81,7 +81,7 @@ const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" })
       <Grid container spacing={3}>
         {isLoading ? (
           <Box width="100%" textAlign="center" mt={4}>
-            <Typography variant="body1">Loading...</Typography>
+            <Typography variant="body1">{transkpi("loading")}</Typography>
           </Box>
         ) : (
           filteredUsers.map((user: any) => (

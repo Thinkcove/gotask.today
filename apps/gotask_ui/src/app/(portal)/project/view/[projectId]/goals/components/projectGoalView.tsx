@@ -111,12 +111,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
                 value={goalData.createdAt && <FormattedDateTime date={goalData.createdAt} />}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText
-                label={transGoal("update")}
-                value={goalData.updatedAt && <FormattedDateTime date={goalData.updatedAt} />}
-              />
-            </Grid>
+      
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label={transGoal("startdate")}

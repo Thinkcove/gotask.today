@@ -45,7 +45,7 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
       setSnackbarOpen(true);
       setOpenDialog(false);
       setTimeout(() => {
-        router.push("/kpi/assignee");
+        router.push("/kpi/employee");
       }, 1000);
     } catch (error: any) {
       setSnackbarMessage(error.message || transkpi("deletefailed"));
@@ -79,7 +79,7 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
           <Box>
             <IconButton
               color="primary"
-              onClick={() => router.push(`/kpi/assignee/assignedTemplateEdit/${assignmentId}`)}
+              onClick={() => router.push(`/kpi/employee/assignedTemplateEdit/${assignmentId}`)}
             >
               <Edit />
             </IconButton>

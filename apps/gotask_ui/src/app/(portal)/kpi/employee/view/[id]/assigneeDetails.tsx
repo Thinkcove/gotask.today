@@ -58,7 +58,7 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
         <Box display="flex" alignItems="center" gap={2}>
           <ArrowBackIcon
             sx={{ cursor: "pointer", color: "#741B92" }}
-            onClick={() => router.push("/kpi/assignee")}
+            onClick={() => router.push("/kpi/employee")}
           />
           <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
           <Box>
@@ -78,7 +78,7 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
           <ActionButton
             label={transkpi("assignatemplate")}
             icon={<AddIcon sx={{ color: "white" }} />}
-            onClick={() => router.push(`/kpi/assignee/addTemplate/${user.id}`)}
+            onClick={() => router.push(`/kpi/employee/addTemplate/${user.id}`)}
           />
         )}
       </Box>
@@ -119,7 +119,7 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
                         cursor: "pointer"
                       }
                     }}
-                    onClick={() => router.push(`/kpi/assignee/assignedTemplate/${assignmentId}`)}
+                    onClick={() => router.push(`/kpi/employee/assignedTemplate/${assignmentId}`)}
                   >
                     <Typography variant="h6" fontWeight={600} mb={1}>
                       {template.title}

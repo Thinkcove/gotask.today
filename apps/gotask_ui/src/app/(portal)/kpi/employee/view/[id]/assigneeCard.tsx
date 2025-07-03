@@ -96,7 +96,7 @@ const AssigneeCard: React.FC<AssigneeCardProps> = ({ user, assignedTemplates }) 
               cursor: "pointer",
               "&:hover": { textDecoration: "underline" }
             }}
-            onClick={() => router.push(`/kpi/assignee/view/${user.id}`)}
+            onClick={() => router.push(`/kpi/employee/view/${user.id}`)}
           >
             <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
               {transkpi("viewdetails")}

@@ -71,7 +71,7 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
     const nextView = labelToKey[selectedLabel];
     if (nextView !== view) {
       setView(nextView);
-      router.push(nextView === "template" ? "/kpi/template" : "/kpi/assignee");
+      router.push(nextView === "template" ? "/kpi/template" : "/kpi/employee");
     }
   };
 

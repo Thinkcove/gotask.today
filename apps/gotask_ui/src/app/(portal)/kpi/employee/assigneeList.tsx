@@ -54,7 +54,7 @@ const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" })
     const nextView = labelToKey[selectedLabel];
     if (nextView !== view) {
       setView(nextView);
-      router.push(nextView === "template" ? "/kpi/template" : "/kpi/assignee");
+      router.push(nextView === "template" ? "/kpi/template" : "/kpi/employee");
     }
   };
 

@@ -94,7 +94,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
       mutate();
-      router.push(`/kpi/assignee/view/${userId}`);
+      router.push(`/kpi/employee/view/${userId}`);
     } catch (err: any) {
       setSnackbarMessage(err.message || transkpi("assignfailed"));
       setSnackbarSeverity("error");

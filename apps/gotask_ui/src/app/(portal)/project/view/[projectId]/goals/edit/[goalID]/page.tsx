@@ -68,82 +68,50 @@ const EditGoalPage = () => {
   console.log("projectGoalHistory", projectGoalHistory);
 
   const formattedHistory = useMemo(() => {
-    const fieldLabelMap: { [key: string]: string } = {
+    if (!projectGoalHistory?.updateHistory) return [];
+
+    const fieldLabelMap: Record<string, string> = {
       goalTitle: transGoal("goaltitle"),
       description: transGoal("description"),
       priority: transGoal("prioritylabel"),
-      projectId: transGoal("projectname"),
       status: transGoal("statuslabel"),
       weekEnd: transGoal("startdate"),
       weekStart: transGoal("enddate")
     };
 
-    return (
-      projectGoalHistory?.updateHistory?.map((item: UpdateHistoryItem) => {
-        const updatedUser = users?.find((user: User) => user.id === item.user_id);
-        const loginuser_name = updatedUser?.first_name || updatedUser?.name || "Unknown";
+    return projectGoalHistory.updateHistory.flatMap((item: UpdateHistoryItem) => {
+      const user = users?.find((u: User) => u.id === item.user_id);
+      const userName = user?.first_name || user?.name || "Unknown";
+      const { previous_data, update_data, action = "UPDATE" } = item.history_data || {};
 
-        let formattedChanges: string[] = [];
+      if (!previous_data || !update_data) return [];
 
-        if (item.history_data?.previous_data && item.history_data?.update_data) {
-          const previousData = item.history_data.previous_data as GoalUpdateData;
-          const updateData = item.history_data.update_data as GoalUpdateData;
+      const changes = Object.entries(update_data).reduce<string[]>((acc, [key, newValue]) => {
+        if (["weekStart", "weekEnd"].includes(key) || newValue === "" || newValue == null)
+          return acc;
 
-          formattedChanges = Object.entries(updateData)
-            .filter(([key, newValue]) => {
-              if (
-                key === "weekStart" ||
-                key === "weekEnd" ||
-                newValue === "" ||
-                newValue === null ||
-                newValue === undefined
-              ) {
-                return false;
-              }
-
-              const oldValue = previousData[key];
-              return oldValue !== newValue;
-            })
-            .map(([key, newValue]) => {
-              const label = fieldLabelMap[key] || key;
-              const oldValue = previousData[key];
-
-              if (oldValue !== undefined && oldValue !== null && oldValue !== "") {
-                return `${label} changed from "${oldValue}" to "${newValue}"`;
-              } else {
-                return `${label} updated to "${newValue}"`;
-              }
-            });
-        } else {
-          // Handle old format
-          formattedChanges = Object.entries(item.history_data || {})
-            .filter(([key, value]) => {
-              return (
-                value !== "" &&
-                value !== null &&
-                value !== undefined &&
-                key !== "weekStart" &&
-                key !== "weekEnd" &&
-                key !== "timestamp" &&
-                key !== "action"
-              );
-            })
-            .map(([key, value]) => {
-              const label = fieldLabelMap[key] || key;
-              return `${label} updated to "${value}"`;
-            });
+        const oldValue = (previous_data as any)[key];
+        if (oldValue !== undefined && oldValue !== newValue) {
+          const label = fieldLabelMap[key] || key;
+          acc.push(`${label} changed from "${oldValue}" to "${newValue}"`);
         }
 
-        return {
-          loginuser_name,
-          formatted_history:
-            formattedChanges.length > 0 ? formattedChanges.join(". ") : "No changes recorded",
+        return acc;
+      }, []);
+
+      if (changes.length === 0) return [];
+
+      return [
+        {
+          loginuser_name: userName,
+          formatted_history: changes.join(". "),
           created_date: item.createdAt || "",
-          action: item.history_data?.action || "UPDATE"
-        };
-      }) ?? []
-    );
+          action
+        }
+      ];
+    });
   }, [projectGoalHistory?.updateHistory, users, transGoal]);
+
   const handleCancel = () => {
     router.back();
   };

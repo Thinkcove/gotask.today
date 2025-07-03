@@ -1,32 +1,32 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import LoginForm from "./loginForm";
-import { CircularProgress, Box } from "@mui/material";
+import React from "react";
+import useSWR from "swr";
 import { useRouter } from "next/navigation";
+import { Box, CircularProgress } from "@mui/material";
+import LoginForm from "./loginForm";
 import { fetchToken, isTokenExpired } from "../common/utils/authToken";
 
+// SWR fetcher for token validation
+const authFetcher = () => {
+  const token = fetchToken();
+  if (!token || isTokenExpired(token)) return null;
+  return { token };
+};
+
 const LoginPage = () => {
-  const [checkingAuth, setCheckingAuth] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const token = fetchToken();
-    const valid = token && !isTokenExpired(token);
+  const { data, isLoading } = useSWR("auth-check", authFetcher, {
+    revalidateOnFocus: false,
+    dedupingInterval: 10000
+  });
 
-    if (valid) {
-      router.replace("/dashboard");
-    }
 
-    // Delay added for smoother loader transition
-    const delay = setTimeout(() => {
-      setCheckingAuth(false);
-    }, 1000);
+  if (data?.token) {
+    Promise.resolve().then(() => router.replace("/dashboard"));
 
-    return () => clearTimeout(delay);
-  }, [router]);
-
-  if (checkingAuth) {
+    // loader
     return (
       <Box
         height="100vh"
@@ -34,15 +34,29 @@ const LoginPage = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        sx={{
-          background: "#f5f7fa",
-          transition: "opacity 0.3s ease-in-out"
-        }}
+        sx={{ backgroundColor: "#f5f7fa" }}
       >
         <CircularProgress size={50} />
       </Box>
     );
   }
+
+  //  loader while checking
+  if (isLoading) {
+    return (
+      <Box
+        height="100vh"
+        width="100vw"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        sx={{ backgroundColor: "#f5f7fa" }}
+      >
+        <CircularProgress size={50} />
+      </Box>
+    );
+  }
+
 
   return <LoginForm />;
 };

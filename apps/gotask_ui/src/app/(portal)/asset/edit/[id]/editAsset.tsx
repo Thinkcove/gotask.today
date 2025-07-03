@@ -88,7 +88,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     const newErrors: { [key: string]: string } = {};
     if (formData.accessCardNo) {
       if (!formData.accessCardNo)
-        newErrors.accessCardNo = `${transasset("accessCardNo")} ${transasset("isrequired")}`;
+        newErrors.accessCardNo = `${transasset("accesscardno")} ${transasset("isrequired")}`;
       if (!formData.personalId)
         newErrors.personalId = `${transasset("personalid")} ${transasset("isrequired")}`;
     } else {

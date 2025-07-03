@@ -19,9 +19,9 @@ const AccessInputs: React.FC<AccessInputsProps> = ({ formData, onChange, errors 
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
         <FormField
-          label={`${transasset("accessCardNo")} ${transasset("required")}`}
+          label={`${transasset("accesscardno")} ${transasset("required")}`}
           type="text"
-          placeholder={transasset("accessCardNo")}
+          placeholder={transasset("accesscardno")}
           value={formData.accessCardNo || ""}
           error={errors?.accessCardNo}
           required

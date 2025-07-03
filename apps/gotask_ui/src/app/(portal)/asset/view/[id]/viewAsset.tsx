@@ -97,7 +97,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                 )}
 
                 <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText label={trans("accessCardNo")} value={asset.accessCardNo || "-"} />
+                  <LabelValueText label={trans("accesscardno")} value={asset.accessCardNo || "-"} />
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={4}>

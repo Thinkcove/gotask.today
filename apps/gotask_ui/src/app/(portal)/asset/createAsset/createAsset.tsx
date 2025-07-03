@@ -114,7 +114,7 @@ export const CreateAsset: React.FC = () => {
 
     if (selectedAssetType?.name === ASSET_TYPE.ACCESS_CARDS) {
       if (!formData.accessCardNo)
-        newErrors.accessCardNo = `${transasset("accessCardNo")} ${transasset("isrequired")}`;
+        newErrors.accessCardNo = `${transasset("accesscardno")} ${transasset("isrequired")}`;
       if (!formData.personalId)
         newErrors.personalId = `${transasset("personalid")} ${transasset("isrequired")}`;
     }

@@ -317,7 +317,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                                 </Typography>
                                 <Box display="flex" justifyContent="space-between">
                                   <Typography {...labelTextStyle}>
-                                    {transasset("accessCardNo")}:
+                                    {transasset("accesscardno")}:
                                   </Typography>
                                   <EllipsisText text={asset.accessCardNo ?? "-"} maxWidth={160} />
                                 </Box>

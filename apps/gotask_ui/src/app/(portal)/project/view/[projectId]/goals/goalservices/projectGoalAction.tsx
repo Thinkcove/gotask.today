@@ -29,7 +29,7 @@ export const updateWeeklyGoal = async (
     status: string;
     description: string;
     priority: string;
-    updated_by: string;
+    user_id: string;
   }
 ) => {
   return withAuth(async (token) => {

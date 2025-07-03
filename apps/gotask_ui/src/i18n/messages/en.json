@@ -66,7 +66,7 @@
     "emailuppercase": "Capital letters are not allowed in email. Use lowercase only.",
     "meta": {
       "title": "Access Management | GoTaskToday",
-      "description": "Configure user access, permissions, and authorization settings."
+      "description": "Manage user permissions and control access across the system."
     }
   },
   "Dashboard": {
@@ -78,7 +78,7 @@
     "totals": "Total Tasks",
     "meta": {
       "title": "Dashboard | GoTaskToday",
-      "description": "View performance, activity insights, and key metrics in one place."
+      "description": "Get a quick overview of tasks, performance, and system activity."
     }
   },
   "Organization": {
@@ -118,7 +118,7 @@
     "searchplaceholder": "Search Organizations",
     "meta": {
       "title": "Organization | GoTaskToday",
-      "description": "Manage company structure, departments, and details."
+      "description": "Define departments, roles, and reporting structure for the organization."
     }
   },
   "Projects": {
@@ -174,7 +174,7 @@
     "filterapply": "Apply",
     "meta": {
       "title": "Project Management | GoTaskToday",
-      "description": "Manage projects, assign teams, and track progress efficiently."
+      "description": " Create, assign, and monitor progress of ongoing projects."
     },
 
     "Stories": {
@@ -292,7 +292,7 @@
     "searchplaceholder": "Search Roles",
     "meta": {
       "title": "Role Management | GoTaskToday",
-      "description": "Create, update, and manage roles and access control settings."
+      "description": "Define user roles and assign permissions within the system."
     }
   },
   "Task": {
@@ -425,13 +425,13 @@
     "Project": {
       "meta": {
         "title": "Task Projects",
-        "description": "Manage all your projects, timelines, and milestones efficiently."
+        "description": "Manage tasks under each project and track their status."
       }
     },
     "Assignees": {
       "meta": {
         "title": "Assignee Overview",
-        "description": "Review and manage users assigned to various project tasks."
+        "description": "Assign users to tasks and monitor individual task progress."
       }
     }
   },
@@ -525,7 +525,7 @@
     "noassets": "No assets assigned yet.",
     "meta": {
       "title": "User Management | GoTaskToday",
-      "description": "Plan, assign, and track tasks across projects."
+      "description": "View, create, and manage user profiles and credentials."
     }
   },
   "Appbar": {
@@ -560,7 +560,7 @@
     "placeholderProject": "Project",
     "meta": {
       "title": "Work Log | GoTaskToday",
-      "description": "View time logs, performance metrics, and summaries."
+      "description": "Generate and analyze reports across modules for insights and audits."
     }
   },
   "Assets": {
@@ -669,12 +669,12 @@
     "accesscarddetails": "Access card details",
     "meta": {
       "title": "Assets | GoTaskToday",
-      "description": "Track and manage company assets efficiently."
+      "description": "Track and manage all company-owned assets and equipment efficiently."
     },
     "Issues": {
       "meta": {
         "title": "Asset Issues",
-        "description": "Monitor and resolve issues related to assets effectively."
+        "description": "Log, view, and resolve asset-related issues and incidents."
       }
     }
   },
@@ -731,7 +731,7 @@
     "validation": "No valid attendance records processed",
     "meta": {
       "title": "AI Assistant | GoTaskToday",
-      "description": "Interact with your virtual assistant to get quick answers and help."
+      "description": "Ask questions and get automated responses through the chatbot assistant."
     }
   },
   "KPI": {
@@ -777,7 +777,7 @@
     "assigneelabbel": "Assignee",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
-      "description": "Define, manage, and assign KPI templates to measure performance."
+      "description": "Monitor and evaluate performance metrics for teams and individuals."
     }
   },
   "WorkPlanned": {
@@ -800,7 +800,7 @@
     "idp": "project-ids",
     "meta": {
       "title": "Work Planned | GoTaskToday",
-      "description": "Monitor planned work, milestones, and schedules."
+      "description": "Schedule and monitor planned work activities and milestones."
     }
   },
   "ProjectGoal": {
@@ -875,7 +875,7 @@
   "Upload": {
     "meta": {
       "title": "File Upload | GoTaskToday",
-      "description": "Upload documents and assets securely."
+      "description": "Upload and manage files and documents securely."
     }
   }
 }

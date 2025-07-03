@@ -103,7 +103,7 @@ const CreateGoal = () => {
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
           edit={transGoal("editgoal")}
-          create={transGoal("creategoal")}
+          create={transGoal("create")}
           cancle={transGoal("cancel")}
           update={transGoal("update")}
           showhistory={transGoal("showhistory")}

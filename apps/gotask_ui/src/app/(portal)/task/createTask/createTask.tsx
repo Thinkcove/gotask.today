@@ -148,7 +148,7 @@ const CreateTask: React.FC = () => {
                 px: 2,
                 textTransform: "none",
                 "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.2)100%)"
+                  backgroundColor: "rgba(255, 255, 255, 0.2)"
                 }
               }}
               onClick={() => router.back()}
@@ -165,7 +165,7 @@ const CreateTask: React.FC = () => {
                 textTransform: "none",
                 fontWeight: "bold",
                 "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201)"
+                  backgroundColor: "rgb(202, 187, 201)100%)"
                 }
               }}
               onClick={handleSubmit}

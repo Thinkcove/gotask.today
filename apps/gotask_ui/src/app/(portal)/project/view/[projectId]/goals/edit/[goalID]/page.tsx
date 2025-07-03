@@ -123,7 +123,8 @@ const EditGoalPage = () => {
 
     setIsSubmitting(true);
     try {
-      const editorContent = rteRef.current?.editor?.getHTML() || goalData.description;
+      const editorContentRaw = rteRef.current?.editor?.getHTML() || goalData.description;
+      const editorContent = editorContentRaw.replace(/<[^>]+>/g, "").trim(); 
 
       const payload = {
         projectId: projectID,

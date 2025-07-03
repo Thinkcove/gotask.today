@@ -1,4 +1,3 @@
-import { getWeeklyGoalById } from "@/app/(portal)/project/services/projectAction";
 
 export const ProjectStatuses = [
   { label: "To Do", color: "#B1AAAA" },

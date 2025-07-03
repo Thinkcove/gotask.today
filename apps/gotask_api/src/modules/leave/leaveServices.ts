@@ -12,6 +12,9 @@ const createLeaveService = async (leaveData: Partial<ILeave>) => {
   try {
     if (new Date(leaveData.from_date!) > new Date(leaveData.to_date!)) {
       throw new Error("From date cannot be later than To date");
+        }
+    if (!leaveData.reasons) {
+      throw new Error("Reasons field is required");
     }
 
     const newLeave = await createNewLeave(leaveData);
@@ -76,6 +79,10 @@ const updateLeaveService = async (id: string, updateData: Partial<ILeave>) => {
       if (new Date(updateData.from_date) > new Date(updateData.to_date)) {
         throw new Error("From date cannot be later than To date");
       }
+          }
+    if (updateData.reasons === "") {
+      throw new Error("Reasons field cannot be empty");
+
     }
 
     const updatedLeave = await updateALeave(id, updateData);

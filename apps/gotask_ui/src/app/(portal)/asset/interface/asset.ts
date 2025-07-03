@@ -94,6 +94,7 @@ export interface IAssetAttributes {
   accessCardNo2?: string;
   personalId?: string;
   issuedOn?: string;
+  typeData?: IAssetType;
 }
 
 export interface IAssetTags {

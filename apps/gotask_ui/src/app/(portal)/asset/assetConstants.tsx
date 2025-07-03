@@ -8,7 +8,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import Tooltip from "@mui/material/Tooltip";
 import LayersIcon from "@mui/icons-material/Layers";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
-import { IAssetType, ITagData } from "./interface/asset";
+import { IAssetAttributes, ITagData } from "./interface/asset";
 
 export interface IAssetDisplayRow {
   id?: string;
@@ -202,36 +202,7 @@ export const OVERUTILIZED = "Overutilized";
 
 export const NOT_UTILIZED = "Not utilized";
 
-export interface DownloadAsset {
-  deviceName: string;
-  assetType: IAssetType;
-  warrantyDate: string;
-  modelName: string;
-  dateOfPurchase: string;
-  user: string;
-  os: string;
-  processor: string;
-  seller: string;
-  warrantyPeriod: string;
-  imeiNumber: string;
-  screenSize: string;
-  batteryCapacity: string;
-  cameraSpecs: string;
-  simType: string;
-  insuranceProvider: string;
-  insurancePolicyNumber: string;
-  insuranceExpiry: string;
-  storage: string;
-  ram: string;
-  accessCardNo: string;
-  personalId: string;
-  accessCardNo2: string;
-  issuedOn: Date;
-  name: string;
-  tagData: ITagData[];
-}
-
-export const downloadAssetCSV = (data: DownloadAsset[], transasset: (key: string) => string) => {
+export const downloadAssetCSV = (data: IAssetAttributes[], transasset: (key: string) => string) => {
   const csvContent = [
     [
       transasset("devicename"),
@@ -261,7 +232,7 @@ export const downloadAssetCSV = (data: DownloadAsset[], transasset: (key: string
     ],
     ...data.map((item) => [
       item.deviceName,
-      item.assetType.name,
+      item.assetType?.name,
       item.accessCardNo,
       item.personalId,
       item.accessCardNo2,

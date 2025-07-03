@@ -8,16 +8,19 @@ export interface FormHeaderProps {
   onSubmit: () => void;
   onShowHistory?: () => void;
   isSubmitting?: boolean;
+  hasHistory?: boolean;
   edit: string;
   create: string;
   cancle: string;
   update: string;
+  showhistory: string;
 }
 
 const FormHeader: React.FC<FormHeaderProps> = ({
   isEdit,
   onCancel,
   onSubmit,
+  onShowHistory,
   isSubmitting = false,
   cancle,
   create,

@@ -35,6 +35,10 @@ export interface IAsset extends Document {
   insurancePolicyNumber?: string;
   insuranceExpiry?: Date;
 
+  //Access card fields
+  accessCardNo?: string;
+  personalId?: string;
+
   // Laptop-specific fields
   antivirus?: boolean;
   recoveryKey?: string;
@@ -88,7 +92,11 @@ const AssetSchema = new Schema<IAsset>(
     isEncrypted: { type: Boolean, default: false },
     lastServicedDate: { type: Date },
     commentService: { type: String },
-    erk: { type: String }
+    erk: { type: String },
+
+    //Access card fields
+    accessCardNo: { type: String },
+    personalId: { type: String }
   },
   {
     timestamps: true

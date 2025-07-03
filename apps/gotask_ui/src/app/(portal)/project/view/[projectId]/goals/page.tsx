@@ -3,12 +3,21 @@
 import React from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { useTranslations } from "next-intl";
 import ProjectGoalList from "./components/projectGoalList";
-import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
+import { useParams } from "next/navigation";
 
-const StoriesPage = () => {
-  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
+const Page = () => {
+
+  const { projectId } = useParams();
+  const { getAllProjects } = useAllProjects();
+
+  const projectID = projectId as string;
+
+
+  const currentProject = getAllProjects?.find(
+    (project: { id: string }) => project.id === projectID
+  );
 
   return (
     <Box
@@ -21,7 +30,7 @@ const StoriesPage = () => {
         overflow: "hidden"
       }}
     >
-      <ModuleHeader name={transGoal("goal")} />
+      <ModuleHeader name={currentProject?.name} />
 
       <Box sx={{ flex: 1, overflowY: "auto" }}>
         <ProjectGoalList />
@@ -30,4 +39,4 @@ const StoriesPage = () => {
   );
 };
 
-export default StoriesPage;
+export default Page;

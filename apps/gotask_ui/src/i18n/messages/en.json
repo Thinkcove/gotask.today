@@ -873,5 +873,32 @@
       "title": "File Upload | GoTaskToday",
       "description": "Upload documents and assets securely."
     }
+  },
+  "Leave":{
+    "applyleave" : "Apply Leave",
+    "cancel": "Cancel",
+    "fromdate": "From Date",
+    "todate": "To Date",
+    "leavetype": "Leave Type",
+    "reason": "Reason",
+    "selecttype": "Select Leave Type",
+    "enterreason": "Enter the reason for your leave...",
+    "deletetitle": " Delete Leave Request",
+    "deleteconfirm": "Are you sure you want to delete this leave request for",
+    "question": "?",
+    "username": "User Name",
+    "clearall" : "Clear All Filters",
+    "editleave": "Edit Leave",
+    "save": "Save",
+    "leaves": "Leaves",
+    "error": "Error loading leave details",
+    "close": "Close",
+    "actions": "Actions",
+    "viewdetails": "View Details",
+    "deleteleave": "Delete Leave",
+    "loading": "Loading leaves...",
+    "noleave": "No leaves available",
+    "nodata": "No data found matching your filters" ,
+    "createleave": "Create Leave"
   }
 }

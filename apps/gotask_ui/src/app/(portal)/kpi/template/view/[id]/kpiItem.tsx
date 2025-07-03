@@ -3,11 +3,11 @@ import React from "react";
 import { Box, Card, CardContent, Typography, Grid } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { Template } from "../../service/templateInterface";
 import { useRouter } from "next/navigation";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getUserStatusColor } from "@/app/common/constants/status";
 import { mildStatusColor } from "@/app/common/constants/kpi";
+import { Template } from "../../../service/templateInterface";
 
 interface TemplateCardsProps {
   templates: Template[] | null;
@@ -55,7 +55,7 @@ const KpiItem: React.FC<TemplateCardsProps> = ({ templates, onView }) => {
                 if (onView) {
                   onView(template.id);
                 } else {
-                  router.push(`/kpi/view/${template.id}`);
+                  router.push(`/kpi/template/view/${template.id}`);
                 }
               }}
             >

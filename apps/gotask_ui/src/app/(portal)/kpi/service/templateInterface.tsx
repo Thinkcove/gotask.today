@@ -33,5 +33,5 @@ export interface KpiAssignment {
   reviewer_id: string;
   status: string;
   comments: string[] | string;
-  change_History?: any;
+  change_History?: string[] | string;
 }

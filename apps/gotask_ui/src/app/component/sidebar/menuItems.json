@@ -62,7 +62,7 @@
   { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" },
   {"text":"KPI Template",
   "icon":"InsightsIcon",
-  "path":"/kpi",
+  "path":"/kpi/template",
   "access":"KPI System"
 }
 ]

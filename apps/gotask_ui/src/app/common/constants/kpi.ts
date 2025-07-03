@@ -13,7 +13,7 @@ export const KPI_FREQUENCY = {
   WEEKLY: "Weekly"
 };
 
-export const STATUS_OPTIONS = ["Active", "Inactive"];
+export const STATUS_OPTIONS = { ACTIVE: "Active", INACTIVE: "Inactive" };
 
 export const mildStatusColor = (status: string) => {
   switch (status.toLowerCase()) {

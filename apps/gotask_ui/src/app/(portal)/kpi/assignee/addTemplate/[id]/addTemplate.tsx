@@ -127,7 +127,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
           <Button
             variant="contained"
             sx={{ backgroundColor: "#741B92" }}
-            onClick={() => router.push("/kpi/createTemplate")}
+            onClick={() => router.push("/kpi/template/createTemplate")}
           >
             {transkpi("createnewtemplate")}
           </Button>
@@ -203,7 +203,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
             label={transkpi("status")}
             placeholder={transkpi("enterstatus")}
             type="select"
-            options={STATUS_OPTIONS}
+            options={Object.values(STATUS_OPTIONS)}
             value={form.status}
             onChange={(val) => setForm({ ...form, status: String(val) })}
             error={errors.status}
@@ -229,7 +229,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         </Button>
       </Box>
 
-      {/* ✅ CommonDialog Integration */}
+      {/*  CommonDialog Integration */}
       <CommonDialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}

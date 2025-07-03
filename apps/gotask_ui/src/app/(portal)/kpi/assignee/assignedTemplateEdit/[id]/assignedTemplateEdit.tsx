@@ -169,7 +169,7 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
           <FormField
             label={`${transkpi("status")} *`}
             type="select"
-            options={STATUS_OPTIONS}
+            options={Object.values(STATUS_OPTIONS)}
             value={form.status}
             onChange={(val) => handleChange("status", val)}
             error={errors.status}

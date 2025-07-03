@@ -14,8 +14,8 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { deleteTemplate, fetcher, updateTemplate } from "../service/templateAction";
 import { Template } from "../service/templateInterface";
 import Chat from "../../chatbot/components/chat";
-import TemplateCards from "../view/[id]/kpiItem";
 import Toggle from "@/app/component/toggle/toggle";
+import KpiItem from "./view/[id]/kpiItem";
 
 interface TemplateListProps {
   initialView?: "template" | "assignee";
@@ -71,7 +71,7 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
     const nextView = labelToKey[selectedLabel];
     if (nextView !== view) {
       setView(nextView);
-      router.push(nextView === "template" ? "/kpi" : "/kpi/assignee");
+      router.push(nextView === "template" ? "/kpi/template" : "/kpi/assignee");
     }
   };
 
@@ -107,11 +107,11 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
         <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
       </Box>
 
-      <TemplateCards
+      <KpiItem
         templates={templates}
         onDelete={handleDelete}
         onUpdate={handleUpdate}
-        onView={(id) => router.push(`/kpi/view/${id}`)}
+        onView={(id) => router.push(`/kpi/template/view/${id}`)}
       />
 
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
@@ -120,7 +120,7 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
         <ActionButton
           label={transkpi("createnewtemplate")}
           icon={<AddIcon sx={{ color: "white" }} />}
-          onClick={() => router.push("/kpi/createTemplate")}
+          onClick={() => router.push("/kpi/template/createTemplate")}
         />
       )}
     </Box>

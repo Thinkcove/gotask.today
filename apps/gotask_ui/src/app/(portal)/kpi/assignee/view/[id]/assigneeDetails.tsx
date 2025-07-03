@@ -80,7 +80,7 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
       </Box>
 
       {/* Assigned Templates as Cards */}
-      <Grid container spacing={2}>
+      <Grid container spacing={2} mt={2}>
         {assignedTemplates.flatMap((assignment) =>
           assignment.template.map((template: Template, i: number) => {
             const status = template.status?.toLowerCase() || "inactive";

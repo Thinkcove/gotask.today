@@ -4,11 +4,11 @@ import { Box, Typography, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useRouter } from "next/navigation";
-import { Template } from "../../service/templateInterface";
-import { updateTemplate } from "../../service/templateAction";
 import TemplateInput from "../../createTemplate/templateInput";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { Template } from "../../../service/templateInterface";
+import { updateTemplate } from "../../../service/templateAction";
 
 interface EditTemplateProps {
   template: Template;
@@ -76,7 +76,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       setTimeout(() => {
-        router.push(`/kpi/view/${template.id}`);
+        router.push(`/kpi/template/view/${template.id}`);
       }, 1500);
     } catch {
       setSnackbar({
@@ -88,7 +88,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
   };
 
   const handleCancel = () => {
-    router.push("/kpi");
+    router.push("/kpi/template");
   };
 
   return (

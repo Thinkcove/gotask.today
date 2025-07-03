@@ -5,12 +5,12 @@ import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { Template } from "../../service/templateInterface";
-import { deleteTemplate } from "../../service/templateAction";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { getUserStatusColor } from "@/app/common/constants/status";
+import { Template } from "../../../service/templateInterface";
+import { deleteTemplate } from "../../../service/templateAction";
 
 interface TemplateDetailProps {
   template: Template;
@@ -26,7 +26,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const handleBack = () => {
-    router.push("/kpi");
+    router.push("/kpi/template");
   };
 
   const handleDeleteClick = () => {
@@ -58,7 +58,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
   };
 
   const handleEditOpen = () => {
-    router.push(`/kpi/edit/${template.id}`);
+    router.push(`/kpi/template/edit/${template.id}`);
   };
 
   return (
@@ -136,7 +136,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
         onClose={handleDialogClose}
         onSubmit={handleDeleteConfirm}
         title={transkpi("deleteTitle")}
-        submitLabel="Delete"
+        submitLabel={transkpi("delete")}
       >
         <Typography variant="body1" color="text.secondary">
           {transkpi("deleteConfirm")}

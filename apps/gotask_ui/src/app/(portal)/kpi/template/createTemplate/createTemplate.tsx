@@ -1,12 +1,13 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { Template } from "../service/templateInterface";
-import { createTemplate } from "../service/templateAction";
 import { useRouter } from "next/navigation";
 import TemplateInput from "./templateInput";
+import { Template } from "../../service/templateInterface";
+import { createTemplate } from "../../service/templateAction";
+import { STATUS_OPTIONS } from "@/app/common/constants/kpi";
 
 interface CreateTemplateProps {
   mutate?: () => void;
@@ -20,7 +21,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     title: "",
     description: "",
     frequency: "",
-    status: transkpi("active"),
+    status: STATUS_OPTIONS.ACTIVE,
     measurement_criteria: 0
   });
 

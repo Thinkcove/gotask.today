@@ -25,7 +25,7 @@ const Page = () => {
 
   return (
     <>
-      <ModuleHeader name={transkpi("assigneetitle")} />
+      <ModuleHeader name={transkpi("assignedtemplates")} />
       <AssigneeDetail user={user} assignedTemplates={assignedTemplates || []} mutate={mutate} />
     </>
   );

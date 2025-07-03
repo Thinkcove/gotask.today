@@ -1,7 +1,7 @@
 "use client";
 
-import React, { RefObject, useMemo } from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import React from "react";
+import { Grid } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import {
   KPI_FREQUENCY,
@@ -10,9 +10,7 @@ import {
 } from "@/app/common/constants/kpi";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { Template } from "../service/templateInterface";
-import useSWR from "swr";
-import { fetchUsers } from "../../user/services/userAction";
+import { Template } from "../../service/templateInterface";
 
 interface TemplateInputProps {
   formData: Partial<Template>;
@@ -30,7 +28,6 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
 }) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
-  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
 
   return (
     <>
@@ -77,7 +74,7 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
             label={transkpi("status")}
             placeholder={transkpi("enterstatus")}
             type="select"
-            options={STATUS_OPTIONS}
+            options={Object.values(STATUS_OPTIONS)}
             value={formData.status}
             onChange={(val) => handleChange("status", String(val))}
             error={errors.status}

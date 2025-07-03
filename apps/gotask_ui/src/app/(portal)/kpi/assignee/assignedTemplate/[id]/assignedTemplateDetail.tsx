@@ -12,6 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { KpiAssignment } from "../../../service/templateInterface";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
 interface Props {
   assignment: KpiAssignment;
@@ -27,22 +28,7 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<"success" | "error">("success");
 
-  const handleDelete = async () => {
-    try {
-      await deleteKpiAssignment(assignment.assignment_id);
-      setSnackbarMessage(transkpi("deletesuccessassignment"));
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-      setTimeout(() => {
-        router.push("/kpi/assignee");
-      }, 1000);
-    } catch (error: any) {
-      setSnackbarMessage(error.message || transkpi("deletefailed"));
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-    }
-  };
-
+  const [openDialog, setOpenDialog] = useState(false);
   const [isEditingComment, setIsEditingComment] = useState(false);
   const [commentText, setCommentText] = useState(
     Array.isArray(assignment.comments)
@@ -50,6 +36,24 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
       : (assignment.comments ?? "")
   );
   const { user: loginUser } = useUser();
+
+  const handleDelete = async () => {
+    try {
+      await deleteKpiAssignment(assignment.assignment_id);
+      setSnackbarMessage(transkpi("deletesuccessassignment"));
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      setOpenDialog(false);
+      setTimeout(() => {
+        router.push("/kpi/assignee");
+      }, 1000);
+    } catch (error: any) {
+      setSnackbarMessage(error.message || transkpi("deletefailed"));
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setOpenDialog(false);
+    }
+  };
 
   const handleSaveComment = async () => {
     if (!loginUser?.id) return;
@@ -79,7 +83,7 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
             >
               <Edit />
             </IconButton>
-            <IconButton color="error" onClick={handleDelete}>
+            <IconButton color="error" onClick={() => setOpenDialog(true)}>
               <Delete />
             </IconButton>
           </Box>
@@ -178,6 +182,19 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
           </Grid>
         </Grid>
       </Box>
+
+      {/* Delete Confirmation Dialog */}
+      <CommonDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onSubmit={handleDelete}
+        title={transkpi("deleteTitle")}
+        submitLabel={transkpi("delete")}
+      >
+        <Typography variant="body1" color="text.secondary">
+          {transkpi("deleteConfirmassignment")}
+        </Typography>
+      </CommonDialog>
 
       <CustomSnackbar
         open={snackbarOpen}

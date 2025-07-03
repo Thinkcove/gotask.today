@@ -199,7 +199,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     <>
       <ModuleHeader name={transasset("assets")} />
 
-      <Paper elevation={2} sx={{ p: 2 }}>
+      <Box sx={{ p: 2 }}>
         <Box
           sx={{
             display: "flex",
@@ -375,7 +375,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
             />
           )}
         </Box>
-      </Paper>
+      </Box>
       {openHistoryDrawer && (
         <IssueHistoryDrawer
           open={openHistoryDrawer}

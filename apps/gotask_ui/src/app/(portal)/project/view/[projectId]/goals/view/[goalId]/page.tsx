@@ -12,16 +12,12 @@ import {
   createComment,
   deleteComment,
   fetchGoalWithComments,
-  getCommentsByGoalId,
-  getWeeklyGoalById,
   updateComment
 } from "../../goalservices/projectGoalAction";
-import { GoalComment, GoalData } from "../../interface/projectGoal";
+import { GoalData } from "../../interface/projectGoal";
 import ProjectGoalView from "../../components/projectGoalView";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
-
-
 
 const ProjectGoalViewPage = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -51,15 +47,7 @@ const ProjectGoalViewPage = () => {
     isLoading,
     mutate
   } = useSWR(goalID ? `goal-${goalID}` : null, () => fetchGoalWithComments(goalID), {
-    onError: (error) => {
-      console.error("Error fetching goal details:", error);
-      showSnackbar(
-        error.message === "Goal not found"
-          ? "Goal not found"
-          : transGoal("fetchError") || "Error fetching goal data",
-        SNACKBAR_SEVERITY.ERROR
-      );
-    },
+   
     revalidateOnFocus: false,
     revalidateOnReconnect: false
   });
@@ -99,7 +87,7 @@ const ProjectGoalViewPage = () => {
       showSnackbar(transGoal("goalSaved"), SNACKBAR_SEVERITY.SUCCESS);
     } catch (error) {
       showSnackbar(transGoal("goalfiled"), SNACKBAR_SEVERITY.ERROR);
-      console.error("Error saving comment:", error);
+      console.error(error);
     }
   };
 
@@ -113,7 +101,7 @@ const ProjectGoalViewPage = () => {
       showSnackbar(transGoal("goalupdate"), SNACKBAR_SEVERITY.SUCCESS);
     } catch (err) {
       showSnackbar(transGoal("goalfiled"), SNACKBAR_SEVERITY.ERROR);
-      console.error("Error updating comment:", err);
+      console.error(err);
     }
   };
 
@@ -124,7 +112,7 @@ const ProjectGoalViewPage = () => {
       showSnackbar(transGoal("deletegoal"), SNACKBAR_SEVERITY.SUCCESS);
     } catch (error) {
       showSnackbar(transGoal("deletegoalfiled"), SNACKBAR_SEVERITY.ERROR);
-      console.error("Error deleting comment:", error);
+      console.error(error);
     }
   };
 
@@ -149,11 +137,9 @@ const ProjectGoalViewPage = () => {
     );
   }
 
-
   const handleEditGoal = (goal: GoalData) => {
     const goalID = goal.id;
     if (!goal.id) {
-      console.error("Goal ID is missing");
       return;
     }
 

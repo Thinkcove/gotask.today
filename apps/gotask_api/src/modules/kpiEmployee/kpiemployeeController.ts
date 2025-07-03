@@ -31,12 +31,11 @@ class KpiAssignmentController extends BaseController {
 
       if (
         !assignmentData.user_id ||
-        !assignmentData.measurement_criteria ||
         !assignmentData.frequency ||
         !assignmentData.weightage ||
         !assignmentData.assigned_by ||
         (!assignmentData.template_id &&
-          (!assignmentData.kpi_Title || !assignmentData.kpi_Description))
+          (!assignmentData.kpi_Title ))
       ) {
         return this.replyError(new Error(KpiAssignmentMessages.CREATE.REQUIRED));
       }

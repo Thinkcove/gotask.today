@@ -45,11 +45,10 @@ const createKpiAssignment = async (
     // Validate required fields
     if (
       !filteredData.user_id ||
-      !filteredData.measurement_criteria ||
       !filteredData.frequency ||
       !filteredData.weightage ||
       !filteredData.assigned_by ||
-      (!filteredData.template_id && (!filteredData.kpi_Title || !filteredData.kpi_Description))
+      (!filteredData.template_id && !filteredData.kpi_Title)
     ) {
       return {
         success: false,
@@ -86,8 +85,6 @@ const createKpiAssignment = async (
         };
       }
       filteredData.kpi_Title = template.title;
-      filteredData.kpi_Description = template.description;
-      filteredData.measurement_criteria = template.measurement_criteria;
       filteredData.frequency = filteredData.frequency || template.frequency;
     }
 
@@ -95,8 +92,7 @@ const createKpiAssignment = async (
     if (filteredData.saveAs_Template) {
       const templateData: Partial<IKpiTemplate> = {
         title: filteredData.kpi_Title,
-        description: filteredData.kpi_Description,
-        measurement_criteria: filteredData.measurement_criteria,
+        measurement_criteria: undefined,
         frequency: filteredData.frequency,
         status: filteredData.status
       };
@@ -285,59 +281,35 @@ async function getTemplatesByUserId(user_id: string): Promise<{
       };
     }
 
-    const enrichedAssignments = await Promise.all(
-      assignments.map(async (assignment: IKpiAssignment) => {
-        const templateArray: Array<Partial<IKpiTemplate>> = [];
+const enrichedAssignments = await Promise.all(
+  assignments.map(async (assignment: IKpiAssignment) => {
+    const templateArray: Array<Partial<IKpiTemplate>> = [];
 
-        if (assignment.template_id) {
-          const template = await getKpiTemplateByIdFromDb(assignment.template_id);
-          if (template) {
-            templateArray.push({
-              id: template.id,
-              title: template.title,
-              description: template.description,
-              measurement_criteria: template.measurement_criteria,
-              frequency: template.frequency,
-              status: template.status
-            });
-          }
-        } else {
-          templateArray.push({
-            title: assignment.kpi_Title,
-            description: assignment.kpi_Description,
-            measurement_criteria: assignment.measurement_criteria,
-            frequency: assignment.frequency
-          });
-        }
+    if (assignment.template_id) {
+      const template = await getKpiTemplateByIdFromDb(assignment.template_id);
+      if (template) {
+        templateArray.push(template); 
+      }
+    } else {
+      templateArray.push({
+        title: assignment.kpi_Title,
+        description: assignment.kpi_Description,
+        measurement_criteria: assignment.measurement_criteria,
+        frequency: assignment.frequency
+      });
+    }
 
-        const {
-          assignment_id,
-          user_id,
-          template_id,
-          kpi_Title,
-          kpi_Description,
-          measurement_criteria,
-          frequency,
-          weightage,
-          assigned_by,
-          reviewer_id
-        } = assignment;
-
-        return {
-          assignment_id,
-          user_id,
-          template_id,
-          kpi_Title,
-          kpi_Description,
-          measurement_criteria,
-          frequency,
-          weightage,
-          assigned_by,
-          reviewer_id,
-          template: templateArray
-        };
-      })
-    );
+    return {
+      assignment_id: assignment.assignment_id,
+      user_id: assignment.user_id,
+      frequency: assignment.frequency,
+      weightage: assignment.weightage,
+      assigned_by: assignment.assigned_by,
+      reviewer_id: assignment.reviewer_id,
+      template: templateArray
+    };
+  })
+);
 
     return {
       success: true,

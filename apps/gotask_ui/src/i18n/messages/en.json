@@ -669,6 +669,7 @@
     "accesscardno2": "Access card no 2",
     "accesscarddetails": "Access card details",
     "download": "Download",
+    "assigned": "Assigned user",
     "issuedon": "Issued on",
     "meta": {
       "title": "Assets | GoTaskToday",

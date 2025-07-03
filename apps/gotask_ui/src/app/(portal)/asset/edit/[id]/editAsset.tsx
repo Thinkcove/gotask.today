@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Box, Button, CircularProgress, Grid, IconButton, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, IconButton, Typography } from "@mui/material";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";

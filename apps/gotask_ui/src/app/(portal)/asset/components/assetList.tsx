@@ -344,7 +344,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             <Button
               variant="outlined"
               startIcon={<DownloadIcon />}
-              onClick={() => downloadAssetCSV(allAssets)}
+              onClick={() => downloadAssetCSV(allAssets, transasset)}
               sx={{
                 whiteSpace: "nowrap",
                 textTransform: "none",

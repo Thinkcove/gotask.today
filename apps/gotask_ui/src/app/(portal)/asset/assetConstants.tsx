@@ -231,33 +231,33 @@ export interface DownloadAsset {
   tagData: ITagData[];
 }
 
-export const downloadAssetCSV = (data: DownloadAsset[]) => {
+export const downloadAssetCSV = (data: DownloadAsset[], transasset: (key: string) => string) => {
   const csvContent = [
     [
-      "Device Name",
-      "Type",
-      "Access Card No1",
-      "Personal Id",
-      "Access Card No2",
-      "Issued On",
-      "Warranty Date",
-      "Model",
-      "Purchase Date",
-      "Assigned To",
-      "Storage",
-      "RAM",
-      "OS",
-      "Processor",
-      "Seller",
-      "Warranty Period",
-      "IMEI number",
-      "Screen size",
-      "Battery capacity",
-      "Camera specs",
-      "Sim type",
-      "Insurance provider",
-      "Insurance number",
-      "Insurance expiry"
+      transasset("devicename"),
+      transasset("type"),
+      transasset("accesscardno"),
+      transasset("personalid"),
+      transasset("accesscardno2"),
+      transasset("issuedon"),
+      transasset("warranty"),
+      transasset("model"),
+      transasset("purchaseDate"),
+      transasset("assigned"),
+      transasset("storage"),
+      transasset("ram"),
+      transasset("os"),
+      transasset("processor"),
+      transasset("seller"),
+      transasset("warrantyPeriod"),
+      transasset("imeiNumber"),
+      transasset("screenSize"),
+      transasset("batteryCapacity"),
+      transasset("cameraSpecs"),
+      transasset("simType"),
+      transasset("insuranceProvider"),
+      transasset("insurancePolicyNumber"),
+      transasset("insuranceExpiry")
     ],
     ...data.map((item) => [
       item.deviceName,

@@ -7,15 +7,13 @@ import ProjectGoalList from "./components/projectGoalList";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import { useParams } from "next/navigation";
 
-const StoriesPage = () => {
-    const { projectId } = useParams();
-  
+const page = () => {
+  const { projectId } = useParams();
+
   const projectID = projectId as string;
 
   const { getAllProjects } = useAllProjects();
-  console.log("getAllProjects", getAllProjects);
 
-  // Step 2: Find current project
   const currentProject = getAllProjects?.find(
     (project: { id: string }) => project.id === projectID
   );
@@ -40,4 +38,4 @@ const StoriesPage = () => {
   );
 };
 
-export default StoriesPage;
+export default page;

@@ -22,10 +22,12 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   onSubmit,
   onShowHistory,
   isSubmitting = false,
+  hasHistory = false,
   cancle,
   create,
   edit,
-  update
+  update,
+  showhistory
 }) => {
   return (
     <>
@@ -37,10 +39,9 @@ const FormHeader: React.FC<FormHeaderProps> = ({
           width: "100%",
           flexWrap: "wrap",
           gap: 2,
-          p:2
+          p: 2
         }}
       >
-        {/* Left Section: Arrow + Title */}
         <Box
           sx={{
             display: "flex",
@@ -48,14 +49,56 @@ const FormHeader: React.FC<FormHeaderProps> = ({
             alignItems: "center"
           }}
         >
-          <IconButton color="primary" onClick={onCancel}>
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {isEdit ? edit : create}
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column"
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center"
+              }}
+            >
+              <IconButton color="primary" onClick={onCancel}>
+                <ArrowBack />
+              </IconButton>
+              <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+                {isEdit ? "Edit" : "Create"}
+              </Typography>
+            </Box>
+            <Box>
+              {hasHistory && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    px: 2,
+                    cursor: "pointer",
+                    color: "#741B92",
+                    "&:hover": {
+                      opacity: 0.8
+                    }
+                  }}
+                  onClick={onShowHistory}
+                >
+                  <Typography
+                    sx={{
+                      textDecoration: "underline",
+                      cursor: "inherit"
+                    }}
+                  >
+                    Show History
+                  </Typography>
+                  <History />
+                </Box>
+              )}
+            </Box>
+          </Box>
         </Box>
-
         {/* Right Section: Buttons */}
         <Box
           sx={{
@@ -101,6 +144,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
             {isSubmitting ? (isEdit ? update : create) : isEdit ? update : create}
           </Button>
         </Box>
+        {/* History Section - Only show if there's history */}
       </Box>
     </>
   );

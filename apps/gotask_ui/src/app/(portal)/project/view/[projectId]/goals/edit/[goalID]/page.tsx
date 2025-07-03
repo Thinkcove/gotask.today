@@ -173,7 +173,7 @@ const EditGoalPage = () => {
           isEdit={true}
           onCancel={handleCancel}
           onSubmit={handleSubmit}
-          onShowHistory={() => setHistory(true)}
+          onShowHistory={() => setHistory(true)} // Changed from onOpean
           isSubmitting={isSubmitting}
           hasHistory={(projectGoalHistory?.updateHistory ?? []).length > 0}
           edit={transGoal("editgoal")}
@@ -181,6 +181,7 @@ const EditGoalPage = () => {
           cancle={transGoal("cancel")}
           update={transGoal("update")}
           showhistory={transGoal("showhistory")}
+          // Remove the onOpean prop entirely
         />
 
         <ProjectGoalForm

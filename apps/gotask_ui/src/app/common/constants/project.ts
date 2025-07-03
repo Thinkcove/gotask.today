@@ -1,11 +1,4 @@
-import {
-  getCommentsByGoalId,
-  getWeeklyGoalById
-} from "@/app/(portal)/project/services/projectAction";
-import {
-  GoalComment,
-  GoalData
-} from "@/app/(portal)/project/view/[projectId]/goals/interface/projectGoal";
+import { getWeeklyGoalById } from "@/app/(portal)/project/services/projectAction";
 
 export const ProjectStatuses = [
   { label: "To Do", color: "#B1AAAA" },
@@ -51,27 +44,6 @@ export const fetchGoalData = async (goalId: string) => {
   if (!goalId) throw new Error("Goal ID is required");
   const response = await getWeeklyGoalById(goalId);
   return response?.data || null;
-};
-
-// Fetcher functions for SWR
-export const fetchGoalWithComments = async (goalId: string) => {
-  if (!goalId) throw new Error("Goal ID is missing");
-
-  const [goalResponse, commentsResponse] = await Promise.all([
-    getWeeklyGoalById(goalId),
-    getCommentsByGoalId(goalId)
-  ]);
-
-  if (!goalResponse || !goalResponse.data) {
-    throw new Error("Goal not found");
-  }
-
-  const fullGoal: GoalData & { comments: GoalComment[] } = {
-    ...goalResponse.data,
-    comments: commentsResponse || []
-  };
-
-  return fullGoal;
 };
 
 export const GOAL_STATUS = {

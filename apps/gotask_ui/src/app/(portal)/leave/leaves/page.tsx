@@ -1,7 +1,7 @@
 // page.tsx
 "use client";
 import React from "react";
-import LeavePage from "./components/leave";
+import LeavePage from "./leave";
 
 const Page = () => {
   return (

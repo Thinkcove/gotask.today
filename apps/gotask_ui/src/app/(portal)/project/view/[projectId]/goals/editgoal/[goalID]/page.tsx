@@ -9,7 +9,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import useSWR, { mutate } from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import { fetchWeeklyGoals, updateWeeklyGoal } from "../../goalservices/projectGoalAction";
+import {  updateWeeklyGoal } from "../../goalservices/projectGoalAction";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";

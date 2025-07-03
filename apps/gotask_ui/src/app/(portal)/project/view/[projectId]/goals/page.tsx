@@ -8,11 +8,12 @@ import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import { useParams } from "next/navigation";
 
 const page = () => {
+  const { getAllProjects } = useAllProjects();
+
   const { projectId } = useParams();
 
   const projectID = projectId as string;
 
-  const { getAllProjects } = useAllProjects();
 
   const currentProject = getAllProjects?.find(
     (project: { id: string }) => project.id === projectID

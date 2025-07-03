@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
 import { createTask } from "../service/taskAction";
@@ -44,15 +44,18 @@ const CreateTask: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Handle input changes
-  const handleInputChange = (name: string, value: string | Date | Project[] | User[]) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value instanceof Date ? value.toISOString().split("T")[0] : value
-    }));
-  };
+  const handleInputChange = useCallback(
+    (name: string, value: string | Date | Project[] | User[]) => {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value instanceof Date ? value.toISOString().split("T")[0] : value
+      }));
+    },
+    []
+  );
 
   // Validate form fields
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.title) newErrors.title = transtask("tasktitle");
     if (!formData.user_id) newErrors.user_id = transtask("assigneename");
@@ -62,19 +65,19 @@ const CreateTask: React.FC = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData, transtask]);
 
   // Remove unwanted fields before sending
-  const getCleanedPayload = (data: IFormField) => {
+  const getCleanedPayload = useCallback((data: IFormField) => {
     const cleaned = { ...data };
     delete cleaned.users;
     delete cleaned.projects;
     delete cleaned.user_name;
     delete cleaned.project_name;
     return cleaned;
-  };
+  }, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     const html = rteRef.current?.editor?.getHTML?.() || "";
     const updatedFormData = {
       ...formData,
@@ -93,11 +96,7 @@ const CreateTask: React.FC = () => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
 
-      if (storyId) {
-        router.push(`/project/view/${formData.project_id}/stories/${storyId}`);
-      } else {
-        router.push("/task/projects?refresh=true");
-      }
+      router.back();
     } catch (error) {
       console.error("Error while creating task:", error);
       setSnackbar({
@@ -106,7 +105,7 @@ const CreateTask: React.FC = () => {
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }
-  };
+  }, [formData, validateForm, getCleanedPayload, transtask, router]);
 
   return (
     <Box
@@ -145,7 +144,7 @@ const CreateTask: React.FC = () => {
               sx={{
                 borderRadius: "30px",
                 color: "black",
-                border: "2px solid  #741B92",
+                border: "2px solid #741B92",
                 px: 2,
                 textTransform: "none",
                 "&:hover": {
@@ -166,7 +165,7 @@ const CreateTask: React.FC = () => {
                 textTransform: "none",
                 fontWeight: "bold",
                 "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201) 100%)"
+                  backgroundColor: "rgb(202, 187, 201)100%)"
                 }
               }}
               onClick={handleSubmit}

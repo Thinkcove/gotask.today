@@ -112,7 +112,7 @@ export interface ProjectGoalHistory {
   updateHistory: UpdateHistoryItem[];
 }
 
-export interface GoalFilterBarProps {
+export interface GoalFiltersBar {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onBack: () => void;

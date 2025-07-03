@@ -10,5 +10,5 @@ export const getLeaveTypeColor = (leaveType: string): string => {
 };
 
 export const LeaveBackgroundColor = {
-  num:"20"
+  num: "20"
 };

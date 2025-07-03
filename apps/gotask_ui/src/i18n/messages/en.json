@@ -63,7 +63,11 @@
     "selectallFields": "Select All",
     "noFieldsAvailable": "No fields available",
     "permissionsFor": "Permissions for {module}",
-    "emailuppercase": "Capital letters are not allowed in email. Use lowercase only."
+    "emailuppercase": "Capital letters are not allowed in email. Use lowercase only.",
+    "meta": {
+      "title": "Access Management | GoTaskToday",
+      "description": "Configure user access, permissions, and authorization settings."
+    }
   },
   "Dashboard": {
     "overview": "Dashboard Overview",
@@ -71,7 +75,11 @@
     "project": "Project Distribution",
     "total": "Total Projects",
     "task": "Task Distribution",
-    "totals": "Total Tasks"
+    "totals": "Total Tasks",
+    "meta": {
+      "title": "Dashboard | GoTaskToday",
+      "description": "View performance, activity insights, and key metrics in one place."
+    }
   },
   "Organization": {
     "createtitle": "Create New Organization",
@@ -107,14 +115,18 @@
     "errorphonevalid": "Enter a valid phone number.",
     "errormailvalid": "Please enter a valid email address.",
     "projectsyet": "No projects yet.",
-    "searchplaceholder": "Search Organizations"
+    "searchplaceholder": "Search Organizations",
+    "meta": {
+      "title": "Organization | GoTaskToday",
+      "description": "Manage company structure, departments, and details."
+    }
   },
   "Projects": {
     "Projecttitle": "Project Title is required",
     "description": "Description is required",
     "status": "Status is required",
-    "errormessage": "Project created successfully!",
-    "successmessage": "Error while creating project",
+    "errormessage": "Error while creating project",
+    "successmessage": "Project created successfully!",
     "createnew": "Create New Project",
     "errorloading": " Error loading projects:",
     "noprojects": " No projects available.",
@@ -160,6 +172,10 @@
     "filterduedate": "Select Due Date",
     "filterclear": "Clear",
     "filterapply": "Apply",
+    "meta": {
+      "title": "Project Management | GoTaskToday",
+      "description": "Manage projects, assign teams, and track progress efficiently."
+    },
 
     "Stories": {
       "noStoriesFound": "No stories found for this project.",
@@ -273,7 +289,11 @@
     "revokepermission": " This will revoke the permissions granted by this access.",
     "role": "Role",
     "noaccess": "No access mapped to this role",
-    "searchplaceholder": "Search Roles"
+    "searchplaceholder": "Search Roles",
+    "meta": {
+      "title": "Role Management | GoTaskToday",
+      "description": "Create, update, and manage roles and access control settings."
+    }
   },
   "Task": {
     "filterfrom": "From Date",
@@ -401,7 +421,19 @@
     "placeholdercontent": "Write your here...",
     "loadinguser": "Loading user mentions...",
     "reuseplaceholder": "Write something here...",
-    "saved": "Save"
+    "saved": "Save",
+    "Project": {
+      "meta": {
+        "title": "Task Projects",
+        "description": "Manage all your projects, timelines, and milestones efficiently."
+      }
+    },
+    "Assignees": {
+      "meta": {
+        "title": "Assignee Overview",
+        "description": "Review and manage users assigned to various project tasks."
+      }
+    }
   },
   "User": {
     "firstname": "First name is required",
@@ -490,7 +522,11 @@
     "experiencepositive": "Experience must be a positive number for \"{skill}\".",
     "noskills": "No skills added yet.",
     "noprojects": "No projects assigned yet.",
-    "noassets": "No assets assigned yet."
+    "noassets": "No assets assigned yet.",
+    "meta": {
+      "title": "User Management | GoTaskToday",
+      "description": "Plan, assign, and track tasks across projects."
+    }
   },
   "Appbar": {
     "logout": "Logout"
@@ -521,7 +557,11 @@
     "labelUser": "User",
     "labelProject": "Project",
     "placeholderUser": "User",
-    "placeholderProject": "Project"
+    "placeholderProject": "Project",
+    "meta": {
+      "title": "Work Log | GoTaskToday",
+      "description": "View time logs, performance metrics, and summaries."
+    }
   },
   "Assets": {
     "asset": "Assets and Resources",
@@ -623,7 +663,17 @@
     "issuesCount": "Issues count",
     "assetallocation": "Asset usage",
     "overutilized": "Overutilized",
-    "enabled": "Enabled"
+    "enabled": "Enabled",
+    "meta": {
+      "title": "Assets | GoTaskToday",
+      "description": "Track and manage company assets efficiently."
+    },
+    "Issues": {
+      "meta": {
+        "title": "Asset Issues",
+        "description": "Monitor and resolve issues related to assets effectively."
+      }
+    }
   },
 
   "Chatbot": {
@@ -675,7 +725,11 @@
     "name": "Upload",
     "uploadfile": "Upload the files here",
     "uploadsuccess": "Upload successfully",
-    "validation": "No valid attendance records processed"
+    "validation": "No valid attendance records processed",
+    "meta": {
+      "title": "AI Assistant | GoTaskToday",
+      "description": "Interact with your virtual assistant to get quick answers and help."
+    }
   },
   "KPI": {
     "viewname": "KPI Template",
@@ -717,7 +771,11 @@
     "update": "Update",
     "updatesuccess": "Template updated successfully",
     "templatelabel": "Template",
-    "assigneelabbel": "Assignee"
+    "assigneelabbel": "Assignee",
+    "meta": {
+      "title": "KPI Templates | GoTaskToday",
+      "description": "Define, manage, and assign KPI templates to measure performance."
+    }
   },
   "WorkPlanned": {
     "nodata": "No work planned data found for the selected date range",
@@ -736,7 +794,11 @@
     "labelu": "user-id-label",
     "idu": "user-ids",
     "labelp": "project-id-label",
-    "idp": "project-ids"
+    "idp": "project-ids",
+    "meta": {
+      "title": "Work Planned | GoTaskToday",
+      "description": "Monitor planned work, milestones, and schedules."
+    }
   },
   "ProjectGoal": {
     "goal": "Project Goal",
@@ -777,7 +839,6 @@
     "titlerequired": "Goal title is required",
     "startweekrequired": "Start Week is required",
     "endweekrequired": "Week end date is required",
-
     "statusrequired": "Status is required",
     "priorityreuired": "Priority is required",
     "filterpriority": "Priority",
@@ -803,5 +864,11 @@
     "placeholder": "Write your content here...",
     "submit": "Submit",
     "cancel": "Cancel"
+  },
+  "Upload":{
+    "meta": {
+      "title": "File Upload | GoTaskToday",
+      "description": "Upload documents and assets securely."
+    }
   }
 }

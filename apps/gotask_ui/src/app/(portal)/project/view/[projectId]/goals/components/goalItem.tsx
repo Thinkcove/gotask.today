@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, IconButton, Tooltip, Divider, Stack } from "@mui/material";
+import { Box, Typography, IconButton, Divider, Stack } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/project";

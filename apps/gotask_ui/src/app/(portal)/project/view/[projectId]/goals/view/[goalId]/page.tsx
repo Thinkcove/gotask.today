@@ -168,22 +168,7 @@ const ProjectGoalViewPage = () => {
     );
   }
 
-  // Handle error state
-  if (error && !projectGoalView) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-        }}
-      >
-        <div>Error loading goal data</div>
-      </Box>
-    );
-  }
+
   const handleEditGoal = (goal: GoalData) => {
     const goalID = goal.id;
     if (!goal.id) {
@@ -191,7 +176,7 @@ const ProjectGoalViewPage = () => {
       return;
     }
 
-    router.push(`/project/view/${projectID}/goals/editgoal/${goalID}`);
+    router.push(`/project/view/${projectID}/goals/editGoal/${goalID}`);
   };
 
   // Step 2: Find current project

@@ -80,7 +80,7 @@ function ProjectGoalList() {
 
   // Navigation handlers
   const handleCreateGoal = () => {
-    router.push(`/project/view/${projectID}/goals/creategoal`);
+    router.push(`/project/view/${projectID}/goals/createGoal`);
   };
 
   const handleGoBack = () => {

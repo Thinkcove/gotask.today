@@ -18,7 +18,9 @@ const GoalFilterBar: React.FC<GoalFiltersBar> = ({
   priorityOptions,
   showClear,
   clearText,
-  searchPlaceholder
+  searchPlaceholder,
+  filterpriority,
+  filterstatus
 }) => {
   return (
     <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={2}>
@@ -70,13 +72,13 @@ const GoalFilterBar: React.FC<GoalFiltersBar> = ({
           }}
         >
           <FilterDropdown
-            label="Status"
+            label={filterstatus}
             options={statusOptions}
             selected={statusFilter}
             onChange={onStatusChange}
           />
           <FilterDropdown
-            label="Priority"
+            label={filterpriority}
             options={priorityOptions}
             selected={severityFilter}
             onChange={onSeverityChange}

@@ -40,7 +40,6 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onClick }) => {
         {/* Info Row */}
         <Stack direction="row" gap={1} flexWrap="wrap" alignItems="center" mb={1.5}>
           <StatusIndicator status={goal.status} getColor={getStatusColor} />
-
           {goal.status === transGoal("completed") && <input type="checkbox" disabled checked />}
           <Divider orientation="vertical" sx={{ height: 20 }} />
 

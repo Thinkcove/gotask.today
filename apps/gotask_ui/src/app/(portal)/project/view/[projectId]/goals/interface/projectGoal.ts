@@ -126,4 +126,6 @@ export interface GoalFiltersBar {
   showClear: boolean;
   clearText: string;
   searchPlaceholder: string;
+  filterpriority: string;
+  filterstatus: string;
 }

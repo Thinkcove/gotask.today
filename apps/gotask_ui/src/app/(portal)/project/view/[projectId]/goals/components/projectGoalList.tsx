@@ -166,9 +166,10 @@ function ProjectGoalList() {
         showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
         clearText={transGoal("clearall")}
         searchPlaceholder={transGoal("searchplaceholder")}
+        filterpriority={transGoal("filterpriority")}
+        filterstatus={transGoal("filterstatus")}
       />
 
-     
       {filteredGoals?.length === 0 ? (
         <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
       ) : (

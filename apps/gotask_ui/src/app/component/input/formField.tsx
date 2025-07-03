@@ -208,6 +208,28 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
             }}
             isOptionEqualToValue={(option, val) => option.id === val.id}
             disabled={disabled}
+            ListboxProps={{
+              style: { maxHeight: 200, overflowY: "auto" }
+            }}
+            renderOption={(props, option) => {
+              const isCreate = option.id === "create";
+              return (
+                <li
+                  {...props}
+                  key={option.id}
+                  style={{
+                    position: isCreate ? "sticky" : "relative",
+                    top: isCreate ? 0 : undefined,
+                    backgroundColor: isCreate ? "#F3E5F5" : undefined,
+                    color: isCreate ? "#741B92" : undefined,
+                    fontWeight: isCreate ? 600 : undefined,
+                    zIndex: isCreate ? 1 : undefined
+                  }}
+                >
+                  {option.name}
+                </li>
+              );
+            }}
             renderInput={(params) => (
               <TextField
                 {...params}

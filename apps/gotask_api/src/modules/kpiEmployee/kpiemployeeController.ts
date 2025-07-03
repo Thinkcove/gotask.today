@@ -34,8 +34,7 @@ class KpiAssignmentController extends BaseController {
         !assignmentData.frequency ||
         !assignmentData.weightage ||
         !assignmentData.assigned_by ||
-        (!assignmentData.template_id &&
-          (!assignmentData.kpi_Title ))
+        (!assignmentData.template_id && !assignmentData.kpi_Title)
       ) {
         return this.replyError(new Error(KpiAssignmentMessages.CREATE.REQUIRED));
       }

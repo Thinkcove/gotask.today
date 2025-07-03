@@ -24,7 +24,7 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
       unique: true
     },
     description: {
-      type: String,
+      type: String
     },
     measurement_criteria: {
       type: String,

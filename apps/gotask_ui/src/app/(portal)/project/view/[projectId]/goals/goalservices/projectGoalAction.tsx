@@ -1,6 +1,7 @@
 import env from "@/app/common/env";
 import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
+import { GoalComment, GoalData } from "../interface/projectGoal";
 
 export const createWeeklyGoal = async (goalData: {
   projectId: string;
@@ -10,6 +11,7 @@ export const createWeeklyGoal = async (goalData: {
   status: string;
   description: string;
   priority: string;
+  user_id: string | number
 }) => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/project/goals`;
@@ -27,7 +29,7 @@ export const updateWeeklyGoal = async (
     status: string;
     description: string;
     priority: string;
-    updated_by: string;
+    user_id: string;
   }
 ) => {
   return withAuth(async (token) => {
@@ -97,7 +99,8 @@ export const fetchWeeklyGoals = async ({
   status,
   startDate,
   endDate,
-  goalTitle
+  goalTitle,
+  projectId
 }: {
   page?: number;
   pageSize?: number;
@@ -106,23 +109,47 @@ export const fetchWeeklyGoals = async ({
   startDate?: string;
   endDate?: string;
   goalTitle?: string;
-  projectId?:string;
+  projectId?: string;
 }) => {
   return withAuth(async (token) => {
-    // Construct the payload with only the provided parameters
-    const payload: { [key: string]: any } = {
+    const payload = {
       page,
-      pageSize
+      pageSize,
+      ...(priority && { priority }),
+      ...(status && { status }),
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
+      ...(goalTitle && { goalTitle }),
+      ...(projectId && { projectId })
     };
-
-    if (priority) payload.priority = priority;
-    if (status) payload.status = status;
-    if (startDate) payload.startDate = startDate;
-    if (endDate) payload.endDate = endDate;
-    if (goalTitle) payload.goalTitle = goalTitle;
 
     const url = `${env.API_BASE_URL}/projectgoals`;
     const { data } = await postData(url, payload, token);
     return data || { items: [], totalPages: 1 };
   });
+};
+
+export const fetchGoalWithComments = async (goalId: string) => {
+  if (!goalId) throw new Error("Goal ID is missing");
+
+  const [goalResponse, commentsResponse] = await Promise.all([
+    getWeeklyGoalById(goalId),
+    getCommentsByGoalId(goalId)
+  ]);
+
+  if (!goalResponse || !goalResponse.data) {
+    throw new Error("Goal not found");
+  }
+
+  const fullGoal: GoalData & { comments: GoalComment[] } = {
+    ...goalResponse.data,
+    comments: commentsResponse || []
+  };
+
+  return fullGoal;
+};
+export const fetchGoalData = async (goalId: string) => {
+  if (!goalId) throw new Error("Goal ID is required");
+  const response = await getWeeklyGoalById(goalId);
+  return response?.data || null;
 };

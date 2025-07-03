@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
-import useSWR, { mutate } from "swr";
-import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
+import React, { useState } from "react";
+import useSWR from "swr";
+import { Box, CircularProgress } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -9,58 +9,31 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { formatStatus, priorityOptions, statusOptions } from "@/app/common/constants/project";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
-import { useUser } from "@/app/userContext";
-import SearchBar from "@/app/component/searchBar/searchBar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { ArrowBack, History } from "@mui/icons-material";
-import {
-  createComment,
-  createWeeklyGoal,
-  deleteComment,
-  fetchWeeklyGoals,
-  getCommentsByGoalId,
-  getWeeklyGoalById,
-  updateComment,
-  updateWeeklyGoal
-} from "../goalservices/projectGoalAction";
-import { GoalComment, GoalData } from "../interface/projectGoal";
-import ProjectGoalView from "./projectGoalView";
-import ProjectGoalForm from "./projectGoalForm";
+import { fetchWeeklyGoals } from "../goalservices/projectGoalAction";
+import { GoalData } from "../interface/projectGoal";
 import ProjectGoals from "./projectGoals";
-import FilterDropdown from "@/app/component/input/filterDropDown";
-import HistoryDrawer from "./history";
-import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import { RichTextEditorRef } from "mui-tiptap";
+import GoalFilterBar from "./goalFilterBar";
 
 function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const { projectId } = useParams();
-
-  const { user } = useUser();
+  const router = useRouter();
 
   const projectID = projectId as string;
-  const [openDialog, setOpenDialog] = useState(false);
 
-  const [goalData, setGoalData] = useState<GoalData>({
-    goalTitle: "",
-    description: "",
-    weekStart: "",
-    weekEnd: "",
-    status: "",
-    priority: "",
-    projectId: projectID,
-    user_id: ""
-  });
   const [searchTerm, setSearchTerm] = useState("");
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
+
   const handleSnackbarClose = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
+
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [allGoals, setAllGoals] = useState<GoalData[]>([]);
@@ -79,7 +52,7 @@ function ProjectGoalList() {
         pageSize: 10,
         status: statusFilter.length ? statusFilter[0] : undefined,
         priority: severityFilter.length ? severityFilter[0] : undefined,
-        goalTitle: searchTerm || undefined // Use goalTitle instead of search
+        goalTitle: searchTerm || undefined
       }),
     {
       revalidateOnFocus: false,
@@ -95,7 +68,9 @@ function ProjectGoalList() {
           // Append new goals for pagination
           setAllGoals((prev) => {
             const existingIds = new Set(prev.map((goal) => goal.id));
-            const newGoals = (res?.goals || []).filter((goal: any) => !existingIds.has(goal.id));
+            const newGoals = (res?.goals || []).filter(
+              (goal: GoalData) => !existingIds.has(goal.id)
+            );
             return [...prev, ...newGoals];
           });
         }
@@ -103,271 +78,33 @@ function ProjectGoalList() {
     }
   );
 
-  const [projectGoalHistory, setProjectGoalHistory] = useState<{
-    updateHistory?: any[];
-  } | null>(null);
-
-  const fieldLabelMap: { [key: string]: string } = {
-    goalTitle: transGoal("goaltitle"),
-    description: transGoal("description"),
-    priority: transGoal("priority"),
-    projectId: transGoal("projectname"),
-    status: transGoal("status"),
-    weekEnd: transGoal("weekEnd"),
-    weekStart: transGoal("weekStart")
-  };
-  const { data: users } = useSWR("fetch-user", fetcherUserList);
-
-  const formattedHistory =
-    projectGoalHistory?.updateHistory?.map((item: any) => {
-      const updatedUser = users?.find((user: any) => user.id === item.user_id);
-      const loginuser_name = updatedUser?.first_name || updatedUser?.name;
-
-      const formattedChanges = Object.entries(item.history_data || {})
-        .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
-        .map(([key, value]) => {
-          const label = fieldLabelMap[key] || key;
-          return `${label} updated to "${value}"`;
-        });
-
-      return {
-        loginuser_name: loginuser_name,
-        formatted_history: formattedChanges.join(". "),
-        created_date: item.timestamp || ""
-      };
-    }) ?? [];
-
-  const handelOpen = () => {
-    setGoalData({
-      goalTitle: "",
-      projectId: projectID,
-      status: "",
-      description: "",
-      priority: "",
-      weekStart: "",
-      weekEnd: ""
-    });
-    setOpenDialog(true);
-    setprojectGoalView(null);
-  };
-
-  const handleEditGoal = async (goal: GoalData) => {
-    setGoalData({
-      id: goal.id,
-      goalTitle: goal.goalTitle || "",
-      description: goal.description || "",
-      weekStart: goal.weekStart || "",
-      weekEnd: goal.weekEnd || "",
-      status: goal.status || "",
-      priority: goal.priority || "",
-      projectId: goal.projectId || ""
-    });
-
-    if (!goal.id) {
-      console.error("Goal ID is missing");
-      return;
-    }
-
-    try {
-      const fetchedGoal = await getWeeklyGoalById(goal.id);
-      setProjectGoalHistory({
-        updateHistory: fetchedGoal.data.updateHistory || []
-      });
-
-      setOpenDialog(true);
-    } catch (error) {
-      console.error("Error fetching goal for edit:", error);
-    }
-    setErrors({}); // Reset errors when opening the dialog
-  };
-
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [history, setHistory] = useState(false);
-
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!goalData.goalTitle) newErrors.goalTitle = transGoal("titlerequired");
-    if (!goalData.weekStart) newErrors.weekStart = transGoal("startweekrequired");
-    if (!goalData.weekEnd) newErrors.weekEnd = transGoal("endweekrequired");
-    if (!goalData.priority) newErrors.priority = transGoal("priorityreuired");
-    if (!goalData.status) newErrors.status = transGoal("statusrequired");
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleCancel = () => {
-    setOpenDialog(false);
-    setprojectGoalView(null);
-  };
-  const rteRef = useRef<RichTextEditorRef>(null);
-
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
-
-    try {
-      const editorContent = rteRef.current?.editor?.getHTML() || goalData.description;
-
-      const payload = {
-        projectId: projectID,
-        goalTitle: goalData.goalTitle,
-        weekStart: goalData.weekStart,
-        weekEnd: goalData.weekEnd,
-        status: goalData.status,
-        description: editorContent,
-        priority: goalData.priority,
-        user_id: user?.id
-      };
-
-      if (goalData.id) {
-        await updateWeeklyGoal(goalData.id, payload as any);
-        setSnackbar({
-          open: true,
-          message: transGoal("goalupdate"),
-          severity: SNACKBAR_SEVERITY.SUCCESS
-        });
-      } else {
-        await createWeeklyGoal(payload as any);
-        setSnackbar({
-          open: true,
-          message: transGoal("savegoal"),
-          severity: SNACKBAR_SEVERITY.SUCCESS
-        });
-      }
-
-      setOpenDialog(false);
-      setprojectGoalView(null);
-
-      setPage(1);
-      setHasMore(true);
-      setAllGoals([]);
-
-      await mutate(swrKey);
-    } catch (err) {
-      console.error("Error saving weekly goal:", err);
-      setSnackbar({
-        open: true,
-        message: transGoal("saveError"),
-        severity: SNACKBAR_SEVERITY.ERROR
-      });
-    }
-  };
-
-  const [projectGoalView, setprojectGoalView] = useState<
-    (GoalData & { comments: GoalComment[] }) | null
-  >(null);
-
-  const handelProjectGoalView = async (goalId: string) => {
-    try {
-      const goal = await getWeeklyGoalById(goalId);
-      const comments = await getCommentsByGoalId(goalId);
-      const fullGoal = {
-        ...goal.data,
-        comments: comments || []
-      };
-      setView(true);
-      setprojectGoalView(fullGoal);
-    } catch (error) {
-      console.error("Error fetching goal details:", error);
-    }
-  };
-
-  const handleSaveComment = async (commentData: {
-    goal_id: string;
-    comment: string;
-    user_id?: string;
-  }) => {
-    try {
-      const payload = {
-        goal_id: commentData.goal_id,
-        user_id: commentData.user_id,
-        comments: [commentData.comment]
-      };
-      await createComment(payload);
-      await handelProjectGoalView(commentData.goal_id);
-      setSnackbar({
-        open: true,
-        message: transGoal("goalSaved"),
-        severity: SNACKBAR_SEVERITY.SUCCESS
-      });
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: transGoal("goalfiled"),
-        severity: SNACKBAR_SEVERITY.ERROR
-      });
-      console.error("Error Project Goal View:", error);
-    }
-  };
-
-  const handleEditComment = async (
-    commentId: string | number,
-    updatedComment: { comment: string }
-  ) => {
-    try {
-      await updateComment(commentId, { comments: [updatedComment.comment] });
-      if (projectGoalView?.id) {
-        await handelProjectGoalView(projectGoalView.id);
-      }
-      setSnackbar({
-        open: true,
-        message: transGoal("goalupdate"),
-        severity: SNACKBAR_SEVERITY.SUCCESS
-      });
-    } catch (err) {
-      setSnackbar({
-        open: true,
-        message: transGoal("goalfiled"),
-        severity: SNACKBAR_SEVERITY.ERROR
-      });
-      console.error("Error Project Goal View:", err);
-    }
-  };
-
-  const handleDeleteComment = async (commentId: string | number) => {
-    try {
-      await deleteComment(commentId);
-      if (projectGoalView?.id) {
-        await handelProjectGoalView(projectGoalView.id);
-      }
-      setSnackbar({
-        open: true,
-        message: transGoal("deletegoal"),
-        severity: SNACKBAR_SEVERITY.SUCCESS
-      });
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: transGoal("deletegoalfiled"),
-        severity: SNACKBAR_SEVERITY.ERROR
-      });
-      console.error("Error Project Goal Delete:", error);
-    }
-  };
-
-  const router = useRouter();
-
-  const handleGoBackFromView = () => {
-    setView(false);
-    setprojectGoalView(null);
-    // Refresh the list when coming back from view
-    setPage(1);
-    setHasMore(true);
-    setAllGoals([]);
-    mutate(swrKey);
+  // Navigation handlers
+  const handleCreateGoal = () => {
+    router.push(`/project/view/${projectID}/goals/createGoal`);
   };
 
   const handleGoBack = () => {
     setTimeout(() => router.back(), 200);
   };
 
+  // Updated view handler to use router navigation
+  const handleProjectGoalView = (goalId: string) => {
+    if (!goalId) {
+      console.error("Goal ID is missing");
+      return;
+    }
+    router.push(`/project/view/${projectID}/goals/view/${goalId}`);
+  };
+
+  // Filter handlers
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
+    setPage(1);
   };
 
   const onSeverityChange = (selected: string[]) => {
     setSeverityFilter(selected);
+    setPage(1);
   };
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
@@ -376,6 +113,12 @@ function ProjectGoalList() {
     if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
       setPage((prev) => prev + 1);
     }
+  };
+  const onClearFilters = () => {
+    setStatusFilter([]);
+    setSeverityFilter([]);
+    setSearchTerm("");
+    setPage(1);
   };
 
   // Filter goals based on search and filters (client-side filtering as backup)
@@ -387,8 +130,6 @@ function ProjectGoalList() {
     const matchesSeverity = severityFilter.length ? severityFilter.includes(goal.priority) : true;
     return matchesSearchTerm && matchesStatus && matchesSeverity;
   });
-
-  const [view, setView] = useState(false);
 
   if (isLoading && allGoals.length === 0) {
     return (
@@ -407,214 +148,57 @@ function ProjectGoalList() {
   }
 
   return (
-    <>
-      <Box sx={{ pt: 2 }}>
-        {!openDialog && !projectGoalView && (
-          <>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              pb={2}
-              pr={2}
-              flexWrap="wrap"
-              gap={2}
-            >
-              {/* Left section: Back arrow + Search */}
-              <Box display="flex" pl={1} alignItems="center" gap={2} flexWrap="wrap">
-                <IconButton color="primary" onClick={handleGoBack}>
-                  <ArrowBack />
-                </IconButton>
-                <Box maxWidth={400}>
-                  <SearchBar
-                    value={searchTerm}
-                    onChange={setSearchTerm}
-                    sx={{ width: "100%" }}
-                    placeholder={transGoal("searchplaceholder")}
-                  />
-                </Box>
-              </Box>
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              gap={2}
-              pb={1}
-              pl={2}
-              justifyContent=""
-              flexWrap="wrap"
-              mt={{ xs: 2, md: 0 }}
-              sx={{ flexGrow: 1 }}
-            >
-              <FilterDropdown
-                label={transGoal("filterstatus")}
-                options={Object.values(statusOptions)}
-                selected={statusFilter}
-                onChange={onStatusChange}
-              />
-              <FilterDropdown
-                label={transGoal("filterpriority")}
-                options={Object.values(priorityOptions)}
-                selected={severityFilter}
-                onChange={onSeverityChange}
-              />
-            </Box>
-          </>
-        )}
+    <Box sx={{ pt: 2 }}>
+      <GoalFilterBar
+        searchTerm={searchTerm}
+        onSearchChange={(value) => {
+          setSearchTerm(value);
+          setPage(1);
+        }}
+        onBack={handleGoBack}
+        statusFilter={statusFilter}
+        severityFilter={severityFilter}
+        onStatusChange={onStatusChange}
+        onSeverityChange={onSeverityChange}
+        onClearFilters={onClearFilters}
+        statusOptions={Object.values(statusOptions)}
+        priorityOptions={Object.values(priorityOptions)}
+        showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
+        clearText={transGoal("clearall")}
+        searchPlaceholder={transGoal("searchplaceholder")}
+        filterpriority={transGoal("filterpriority")}
+        filterstatus={transGoal("filterstatus")}
+      />
 
-        {view ? (
-          <ProjectGoalView
-            goalData={projectGoalView}
-            handleSaveComment={handleSaveComment}
-            handleEditComment={handleEditComment}
-            handleDeleteComment={handleDeleteComment}
-            handleBack={handleGoBackFromView}
-            user={user}
-          />
-        ) : (
-          <>
-            {openDialog && (
-              <>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    width: "100%",
-                    flexWrap: "wrap",
-                    gap: 2,
-                    pr: 2
-                  }}
-                >
-                  {/* Left Section: Arrow + Title */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "flex-start",
-                      alignItems: "center"
-                    }}
-                  >
-                    <IconButton color="primary" onClick={() => setOpenDialog(false)}>
-                      <ArrowBack />
-                    </IconButton>
-                    <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-                      {goalData.id ? transGoal("editgoal") : transGoal("creategoal")}
-                    </Typography>
-                  </Box>
+      {filteredGoals?.length === 0 ? (
+        <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
+      ) : (
+        <ProjectGoals
+          projectGoals={filteredGoals}
+          isLoading={isLoading}
+          error={!!error}
+          formatStatus={formatStatus}
+          projectId={projectID}
+          projectGoalView={handleProjectGoalView}
+          handleScroll={handleScroll}
+        />
+      )}
 
-                  {/* Right Section: Buttons */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                      gap: 2
-                    }}
-                  >
-                    <Button
-                      variant="outlined"
-                      sx={{
-                        borderRadius: "30px",
-                        color: "black",
-                        border: "2px solid #741B92",
-                        px: 2,
-                        textTransform: "none",
-                        "&:hover": {
-                          backgroundColor: "rgba(255, 255, 255, 0.2)"
-                        }
-                      }}
-                      onClick={handleCancel}
-                    >
-                      {transGoal("cancel")}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        borderRadius: "30px",
-                        backgroundColor: "#741B92",
-                        color: "white",
-                        px: 2,
-                        textTransform: "none",
-                        fontWeight: "bold",
-                        "&:hover": {
-                          backgroundColor: "rgb(202, 187, 201)"
-                        }
-                      }}
-                      onClick={handleSubmit}
-                    >
-                      {goalData.id ? transGoal("update") : transGoal("create")}
-                    </Button>
-                  </Box>
-                </Box>
-                {(projectGoalHistory?.updateHistory ?? []).length > 0 && goalData.id && (
-                  <Box
-                    onClick={() => {
-                      setHistory(true);
-                    }}
-                    sx={{
-                      textDecoration: "underline",
-                      display: "flex",
-                      gap: 1,
-                      color: "#741B92",
-                      px: 2,
-                      cursor: "pointer",
-                      alignItems: "center"
-                    }}
-                  >
-                    <Typography>{transGoal("showhistory")}</Typography>
-                    <History />
-                  </Box>
-                )}
-              </>
-            )}
-            {openDialog ? (
-              <Box sx={{ p: 2 }}>
-                <ProjectGoalForm
-                  rteRef={rteRef}
-                  goalData={goalData}
-                  setGoalData={setGoalData}
-                  errors={errors}
-                />
-              </Box>
-            ) : filteredGoals?.length === 0 ? (
-              <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
-            ) : (
-              <>
-                <ProjectGoals
-                  projectGoals={filteredGoals}
-                  isLoading={isLoading}
-                  error={!!error}
-                  formatStatus={formatStatus}
-                  handleEditGoal={handleEditGoal}
-                  projectId={projectID}
-                  projectGoalView={handelProjectGoalView}
-                  handleScroll={handleScroll}
-                />
-              </>
-            )}
-          </>
-        )}
-        <CustomSnackbar
-          open={snackbar.open}
-          message={snackbar.message}
-          severity={snackbar.severity}
-          onClose={handleSnackbarClose}
-        />
-        <HistoryDrawer
-          open={history}
-          onClose={() => setHistory(false)}
-          history={formattedHistory}
-          text={transGoal("log")}
-          heading={transGoal("projectgoalhistory")}
-        />
-        {!openDialog && !view && (
-          <ActionButton
-            label={transGoal("creategoal")}
-            icon={<AddIcon sx={{ color: "white" }} />}
-            onClick={handelOpen}
-          />
-        )}
-      </Box>
-    </>
+      {/* Snackbar */}
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleSnackbarClose}
+      />
+
+      {/* Floating Action Button */}
+      <ActionButton
+        label={transGoal("creategoal")}
+        icon={<AddIcon sx={{ color: "white" }} />}
+        onClick={handleCreateGoal}
+      />
+    </Box>
   );
 }
 

@@ -57,7 +57,6 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
     if (!form.measurement_criteria)
       newErrors.measurement_criteria = transkpi("measurement_criteriaerror");
     if (!form.weightage) newErrors.weightage = transkpi("weightageerror");
-    // if (!form.target_value) newErrors.target_value = transkpi("targetvalue");
     if (!form.assigned_by) newErrors.assigned_by = transkpi("assignedbyerror");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

@@ -331,6 +331,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
             </Box>
           </Grid>
           {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
+            selectedAssetType?.name === ASSET_TYPE.DESKTOP ||
             selectedAssetType?.name === ASSET_TYPE.MOBILE) && (
             <AssetInput
               formData={formData}

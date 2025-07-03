@@ -70,7 +70,7 @@ const EditGoalPage = () => {
   const formattedHistory = useMemo(() => {
     if (!projectGoalHistory?.updateHistory) return [];
 
-    const fieldLabelMap: Record<string, string> = {
+    const fieldLabelMap: Record<keyof GoalUpdateData, string> = {
       goalTitle: transGoal("goaltitle"),
       description: transGoal("description"),
       priority: transGoal("prioritylabel"),
@@ -87,12 +87,14 @@ const EditGoalPage = () => {
       if (!previous_data || !update_data) return [];
 
       const changes = Object.entries(update_data).reduce<string[]>((acc, [key, newValue]) => {
-        if (["weekStart", "weekEnd"].includes(key) || newValue === "" || newValue == null)
+        const typedKey = key as keyof GoalUpdateData;
+        if (["weekStart", "weekEnd"].includes(key) || newValue === "" || newValue == null) {
           return acc;
+        }
 
-        const oldValue = (previous_data as any)[key];
+        const oldValue = previous_data[typedKey];
         if (oldValue !== undefined && oldValue !== newValue) {
-          const label = fieldLabelMap[key] || key;
+          const label = fieldLabelMap[typedKey] || key;
           acc.push(`${label} changed from "${oldValue}" to "${newValue}"`);
         }
 

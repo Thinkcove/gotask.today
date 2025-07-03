@@ -78,8 +78,6 @@ const EditGoalPage = () => {
 
     return (
       projectGoalHistory?.updateHistory?.map((item: UpdateHistoryItem) => {
-        console.log("createdAt");
-
         const updatedUser = users?.find((user: User) => user.id === item.user_id);
         const loginuser_name = updatedUser?.first_name || updatedUser?.name || "Unknown";
 

@@ -25,9 +25,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   hasHistory = false,
   cancle,
   create,
-  edit,
   update,
-  showhistory
 }) => {
   return (
     <>

@@ -29,7 +29,8 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
       <Box>
         <Grid container spacing={2}>
           {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
-            selectedAssetType?.name === ASSET_TYPE.MOBILE) && (
+            selectedAssetType?.name === ASSET_TYPE.MOBILE ||
+            selectedAssetType?.name === ASSET_TYPE.DESKTOP) && (
             <>
               <Grid item xs={12} sm={4}>
                 <FormField
@@ -157,7 +158,8 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
               </Grid>
             </>
           )}
-          {selectedAssetType?.name === ASSET_TYPE.LAPTOP && (
+          {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
+            selectedAssetType?.name === ASSET_TYPE.DESKTOP) && (
             <>
               <Grid item xs={12} sm={4}>
                 <FormField

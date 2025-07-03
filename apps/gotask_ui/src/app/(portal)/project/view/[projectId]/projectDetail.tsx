@@ -18,10 +18,11 @@ import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 interface ProjectDetailProps {
   project: Project;
@@ -155,10 +156,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Project Description & Dates */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
-              <LabelValueText
-                label={transproject("detaildescription")}
-                value={project.description}
-              />
+              <RichTextReadOnly content={project.description} extensions={getTipTapExtensions()} />
             </Grid>
           </Grid>
           <Box display="flex" alignItems="center" mb={1} gap={2}>

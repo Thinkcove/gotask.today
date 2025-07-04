@@ -26,7 +26,7 @@ setup_environment() {
             ;;
         uat)
             envFile=".env.uat"
-            pm2Name="test-gotask-web"
+            pm2Name="test-gotask-today"
             appFolder="/home/ec2-user/gotask/test/app/"
             ;;
         *)

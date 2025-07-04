@@ -28,11 +28,16 @@ import { useTranslations } from "next-intl";
 import { ESTIMATION_FORMAT } from "@/app/common/constants/regex";
 import { formatTimeValue } from "@/app/common/utils/taskTime";
 import useSWR from "swr";
+import { fetchAllLeaves } from "../../project/services/projectAction";
 import {
-  fetchAllLeaves,
-
-} from "../../project/services/projectAction";
-import { calculatePermissionDuration, fetchAllPermissions, formatPermissionTime, getLeaveTypeColor, getPermissionColor, LeaveBackgroundColor, PERMISSION_BACKGROUND_COLOR } from "@/app/common/constants/leave";
+  calculatePermissionDuration,
+  fetchAllPermissions,
+  formatPermissionTime,
+  getLeaveTypeColor,
+  getPermissionColor,
+  LeaveBackgroundColor,
+  PERMISSION_BACKGROUND_COLOR
+} from "@/app/common/constants/leave";
 
 interface WorkPlannedGridPropsWithPermissions extends WorkPlannedGridProps {
   permissionData?: PermissionEntry[];
@@ -277,7 +282,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridPropsWithPermissions> = (
                   zIndex: 2
                 }}
               >
-                Permission Info
+                {transworkplanned("permissioninfo")}
               </TableCell>
               <TableCell
                 rowSpan={2}
@@ -510,7 +515,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridPropsWithPermissions> = (
                                       mb: 0.5
                                     }}
                                   >
-                                    PERMISSION
+                                    {transworkplanned("permission")}
                                   </Typography>
                                   <Typography
                                     variant="caption"

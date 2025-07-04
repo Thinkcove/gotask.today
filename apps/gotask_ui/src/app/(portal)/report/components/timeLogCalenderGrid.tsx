@@ -79,11 +79,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
       if (isValid(parsedDate)) {
         return format(parsedDate, "yyyy-MM-dd");
       }
-
-      console.warn("Could not normalize date:", date);
       return date;
     } catch (error) {
-      console.error("Error normalizing date:", date, error);
       return date;
     }
   };
@@ -91,7 +88,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
   const extractDateFromTimeLog = (entry: TimeLogEntry): string | null => {
     try {
       if (!entry.date) {
-        console.warn("Entry has no date:", entry);
         return null;
       }
 
@@ -105,21 +101,12 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           return format(parsedDate, "yyyy-MM-dd");
         }
       }
-
-      console.warn("Could not extract date from time log entry:", entry);
       return null;
     } catch (error) {
-      console.error("Error extracting date from time log:", entry, error);
       return null;
     }
   };
   const dateRange = getDateRange(fromDate, toDate);
-  console.log("data", data);
-
-  console.log(
-    "Date range:",
-    dateRange.map((d) => format(d, "yyyy-MM-dd"))
-  );
 
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
@@ -205,7 +192,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
 
     const date = extractDateFromTimeLog(entry);
     if (!date) {
-      console.warn("Skipping entry with invalid date:", entry);
       return acc;
     }
 
@@ -305,7 +291,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
               color: "#009688"
             }}
           >
-            PERMISSION
+            {transreport("permission")}
           </Typography>
           <Typography
             variant="caption"
@@ -371,7 +357,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
               color: getPermissionColor()
             }}
           >
-            PERMISSION
+            {transreport("permission")}
           </Typography>
           <Typography
             variant="caption"

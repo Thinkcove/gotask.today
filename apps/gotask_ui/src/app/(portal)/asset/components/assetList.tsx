@@ -11,7 +11,6 @@ import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { IAssetAttributes } from "../interface/asset";
 import {
-  downloadAssetCSV,
   getAssetColumns,
   IAssetDisplayRow,
   issueStatuses,
@@ -26,6 +25,7 @@ import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { SortOrder } from "@/app/common/constants/task";
 import DownloadIcon from "@mui/icons-material/Download";
 import { Button } from "@mui/material";
+import { downloadAssetCSV } from "../download/assetcsv";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";

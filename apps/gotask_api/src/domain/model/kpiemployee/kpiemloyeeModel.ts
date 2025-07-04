@@ -10,8 +10,8 @@ export interface IKpiAssignment extends Document {
   kpi_Description: string;
   measurement_criteria: string;
   frequency: string;
-  weightage: number;
-  target_Value?: number;
+  weightage: string;
+  target_value?: string;
   assigned_by: string;
   reviewer_id?: string;
   comments?: string[];
@@ -52,11 +52,11 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
       required: true
     },
     weightage: {
-      type: Number,
+      type: String,
       required: true
     },
-    target_Value: {
-      type: Number
+    target_value: {
+      type: String
     },
     assigned_by: {
       type: String,

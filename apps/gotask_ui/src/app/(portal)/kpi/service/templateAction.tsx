@@ -111,10 +111,11 @@ export const createKpiAssignment = async (payload: {
   kpi_Description?: string;
   measurement_criteria: string;
   frequency: string;
-  weightage: number;
+  weightage: string;
   assigned_by: string;
   reviewer_id?: string;
   status?: string;
+  target_value?: string;
   saveAs_Template?: boolean;
   authUserId?: string;
 }) => {
@@ -137,6 +138,7 @@ export const createKpiAssignment = async (payload: {
       assigned_by: data.assigned_by,
       reviewer_id: data.reviewer_id,
       status: data.status,
+      target_value: data.target_value,
       saveAs_Template: data.saveAs_Template,
       comments: data.comments || [],
       change_History: data.change_History || []
@@ -158,7 +160,7 @@ export const fetchAllKpiAssignments = async () => {
         kpi_Description: string;
         measurement_criteria: string;
         frequency: string;
-        weightage: number;
+        weightage: string;
         assigned_by: string;
         reviewer_id?: string;
         status: string;
@@ -200,6 +202,7 @@ export const fetchKpiAssignmentById = async (assignmentId: string) => {
       assigned_by: data.assigned_by,
       reviewer_id: data.reviewer_id,
       status: data.status,
+      target_value: data.target_value,
       comments: data.comments || [],
       change_History: data.change_History || []
     };
@@ -216,10 +219,11 @@ export const updateKpiAssignment = async (
     kpi_Description?: string;
     measurement_criteria: string;
     frequency: string;
-    weightage: number;
+    weightage: string;
     assigned_by: string;
     reviewer_id?: string;
     status?: string;
+    target_value: string;
     comments?: string[];
     authUserId: string;
   }>
@@ -240,6 +244,7 @@ export const updateKpiAssignment = async (
       assigned_by: data.assigned_by,
       reviewer_id: data.reviewer_id,
       status: data.status,
+      target_value: data.target_value,
       comments: data.comments || [],
       change_History: data.change_History || []
     };

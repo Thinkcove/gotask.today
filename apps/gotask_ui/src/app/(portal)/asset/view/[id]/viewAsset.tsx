@@ -69,7 +69,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                 {asset?.deviceName
                   ? asset.deviceName
                   : asset?.accessCardNo
-                    ? trans("accessdetails")
+                    ? trans("accesscarddetails")
                     : "-"}
               </Typography>
             </Grid>
@@ -87,21 +87,24 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                   <LabelValueText label={trans("assignedTo")} value={asset.assignedTo || "-"} />
                 </Grid>
 
-                {asset?.tags?.previouslyUsedBy && (
-                  <Grid item xs={12} sm={6} md={4}>
-                    <LabelValueText
-                      label={trans("previouslyUsedBy")}
-                      value={asset.tags.previouslyUsedBy || "-"}
-                    />
-                  </Grid>
-                )}
-
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText label={trans("accesscardno")} value={asset.accessCardNo || "-"} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText
+                    label={trans("accesscardno2")}
+                    value={asset.accessCardNo2 || "-"}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText label={trans("personalid")} value={asset.personalId || "-"} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText
+                    label={trans("issuedon")}
+                    value={asset?.issuedOn ? <FormattedDateTime date={asset?.issuedOn} /> : "-"}
+                  />
                 </Grid>
               </Grid>
             </>

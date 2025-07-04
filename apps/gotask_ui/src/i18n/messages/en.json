@@ -694,9 +694,13 @@
     "assetallocation": "Asset usage",
     "overutilized": "Overutilized",
     "enabled": "Enabled",
-    "accesscardno": "Access card no",
+    "accesscardno": "Access card no 1",
     "personalid": "Personal id",
+    "accesscardno2": "Access card no 2",
     "accesscarddetails": "Access card details",
+    "download": "Download",
+    "assigned": "Assigned user",
+    "issuedon": "Issued on",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."

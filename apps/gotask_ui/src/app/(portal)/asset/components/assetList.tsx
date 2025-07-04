@@ -240,6 +240,16 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     );
   }
 
+  const clearAssetFilters = () => {
+    setModelNameFilter([]);
+    setAssignedToFilter([]);
+    setSearchText("");
+    setWarrantyDateFrom("");
+    setWarrantyDateTo("");
+    setSystemTypeFilter([]);
+    setAssetAllocationFilter([]);
+  };
+
   return (
     <>
       <ModuleHeader name={"assets"} />
@@ -273,7 +283,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
         </Box>
       </Box>
       <Box
-        marginTop={"15px"}
         sx={{
           display: "flex",
           alignItems: "flex-start",
@@ -281,7 +290,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           flexWrap: "nowrap",
           gap: 2,
           pr: 2,
-          overflowX: "auto"
+          overflowX: "auto",
+          mt: 1
         }}
       >
         <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -293,15 +303,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               allUsers={assignedUserNames}
               onModelNameChange={setModelNameFilter}
               onAssignedToChange={setAssignedToFilter}
-              onClearFilters={() => {
-                setModelNameFilter([]);
-                setAssignedToFilter([]);
-                setSearchText("");
-                setWarrantyDateFrom("");
-                setWarrantyDateTo("");
-                setSystemTypeFilter([]);
-                setAssetAllocationFilter([]);
-              }}
+              onClearFilters={clearAssetFilters}
               trans={transasset}
               dateFrom={warrantyDateFrom}
               dateTo={warrantyDateTo}

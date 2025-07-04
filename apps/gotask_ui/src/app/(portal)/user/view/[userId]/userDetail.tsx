@@ -22,6 +22,7 @@ import Toggle from "../../../../component/toggle/toggle";
 import EllipsisText from "@/app/component/text/ellipsisText";
 import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
+import SkillInput from "../../components/skillInput";
 
 interface UserDetailProps {
   user: User;
@@ -208,41 +209,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {/* Skills */}
           {selectedTab === transuser("userskill") && (
-            <Box>
-              {user.skills && user.skills.length > 0 ? (
-                <Grid container spacing={2}>
-                  {user.skills.map((skill, index) => (
-                    <Grid item xs={12} sm={6} md={4} key={index}>
-                      <Box sx={{ border: "1px solid #ccc", borderRadius: 2, p: 2 }}>
-                        <Typography variant="subtitle1" fontWeight={600}>
-                          {skill.name}
-                        </Typography>
-                        <Typography variant="body2">
-                          Proficiency:{" "}
-                          {
-                            {
-                              1: "Knowledge",
-                              2: "Can Work",
-                              3: "Have Work Exposure",
-                              4: "Has exposure, can provide solution, and train others"
-                            }[skill.proficiency]
-                          }
-                        </Typography>
-                        {skill.proficiency >= 3 && skill.experience && (
-                          <Typography variant="body2">
-                            Experience: {skill.experience} months
-                          </Typography>
-                        )}
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
-              ) : (
-                <Typography color="text.secondary" fontStyle="italic">
-                  {transuser("noskills")}
-                </Typography>
-              )}
-            </Box>
+            <SkillInput
+              userId={userID}
+              skills={user.skills ?? []}
+              onChange={async () => {
+                await mutate();
+              }}
+            />
           )}
 
           {/* Projects */}

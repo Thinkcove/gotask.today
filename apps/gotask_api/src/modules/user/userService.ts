@@ -505,7 +505,7 @@ class userService {
       return { success: false, message: error.message || "Failed to delete skill" };
     }
   }
-  
+
   async addCertificates(
     id: string,
     certificates: ICertificate[]
@@ -517,6 +517,7 @@ class userService {
       if (!user.certificates) {
         user.certificates = [];
       }
+
       user.certificates.push(...certificates);
       await user.save();
 
@@ -526,7 +527,10 @@ class userService {
         message: UserMessages.CERTIFICATE.ADD_SUCCESS
       };
     } catch (error: any) {
-      return { success: false, message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED };
+      return {
+        success: false,
+        message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED
+      };
     }
   }
 
@@ -541,14 +545,12 @@ class userService {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
 
-      // Safe find with typing
-      const cert = user.certificates.find((c) => c._id?.toString() === certificateId);
+      const cert = user.certificates.find((c) => c.certificate_id === certificateId); 
 
       if (!cert) {
         return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
       }
 
-      // Update fields with safety
       if (updatedCertificate.name !== undefined) cert.name = updatedCertificate.name;
       if (updatedCertificate.obtained_date !== undefined)
         cert.obtained_date = updatedCertificate.obtained_date;
@@ -556,9 +558,16 @@ class userService {
 
       await user.save();
 
-      return { success: true, data: cert, message: UserMessages.CERTIFICATE.UPDATE_SUCCESS };
+      return {
+        success: true,
+        data: cert,
+        message: UserMessages.CERTIFICATE.UPDATE_SUCCESS
+      };
     } catch (error: any) {
-      return { success: false, message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED };
+      return {
+        success: false,
+        message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED
+      };
     }
   }
 
@@ -575,7 +584,7 @@ class userService {
       const originalLength = user.certificates.length;
 
       user.certificates = user.certificates.filter(
-        (cert) => cert._id?.toString() !== certificateId
+        (cert) => cert.certificate_id !== certificateId
       );
 
       if (user.certificates.length === originalLength) {
@@ -587,7 +596,6 @@ class userService {
       return { success: true, message: UserMessages.CERTIFICATE.DELETE_SUCCESS };
     } catch (error: unknown) {
       let errorMessage = UserMessages.CERTIFICATE.DELETE_FAILED;
-
       if (error instanceof Error) {
         errorMessage = error.message;
       }
@@ -605,7 +613,10 @@ class userService {
 
       return { success: true, data: user.certificates || [] };
     } catch (error: any) {
-      return { success: false, message: error.message || UserMessages.CERTIFICATE.GET_FAILED };
+      return {
+        success: false,
+        message: error.message || UserMessages.CERTIFICATE.GET_FAILED
+      };
     }
   }
 }

@@ -173,8 +173,6 @@ UserRoutes.push({
   }
 });
 
-// Certificate Routes
-
 // Get all certificates of a user
 UserRoutes.push({
   path: `/certificates/{id}`,
@@ -207,7 +205,7 @@ UserRoutes.push({
 
 // Update a specific certificate of a user
 UserRoutes.push({
-  path: `/certificates/{id}/{certificate_id}`,
+  path: `/certificates/{id}/{certificate_id}`, 
   method: API_METHODS.PUT,
   handler: (request: Request, handler: ResponseToolkit) =>
     userController.updateUserCertificate(new RequestHelper(request), handler),
@@ -222,7 +220,7 @@ UserRoutes.push({
 
 // Delete a specific certificate from a user
 UserRoutes.push({
-  path: `/certificates/{id}/{certificate_id}`,
+  path: `/certificates/{id}/{certificate_id}`, 
   method: API_METHODS.DELETE,
   handler: (request: Request, handler: ResponseToolkit) =>
     userController.deleteUserCertificate(new RequestHelper(request), handler),
@@ -234,5 +232,6 @@ UserRoutes.push({
     }
   }
 });
+
 
 export default UserRoutes;

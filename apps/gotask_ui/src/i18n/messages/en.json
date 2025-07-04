@@ -531,6 +531,22 @@
       "title": "User Management | GoTaskToday",
       "description": "Plan, assign, and track tasks across projects."
     },
+
+    "Certificate": {
+      "certificate": "Certificate",
+      "certificates": "Certificates",
+      "certificatename": " Certificate Name",
+      "obtaineddate": "Obtained Date",
+      "obtained": " Obtained  ",
+      "notes": " Notes",
+      "addcertificate": "Add Certificate",
+      "editcertificate": "Edit Certificate",
+      "subtitle": "Add details of Certifications you have achieved/completed",
+      "cname": "Please enter your certification name",
+      "notesplaceholder": "Add any optional notes",
+      "nocertifications": "No certifications added yet."
+    },
+
     "Increment": {
       "incrementhistory": "Increment History",
       "increment": " Increment",

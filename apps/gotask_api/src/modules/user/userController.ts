@@ -225,7 +225,7 @@ class UserController extends BaseController {
 
       // Strip manually set certificate_id if present (ensure auto UUID applies)
       const sanitizedCertificates = certificates.map((cert: any) => {
-        const { certificate_id, ...rest } = cert;
+        const { certificate_id, _id, ...rest } = cert;
         return rest;
       });
 
@@ -239,7 +239,7 @@ class UserController extends BaseController {
   async updateUserCertificate(requestHelper: RequestHelper, handler: any) {
     try {
       const userId = requestHelper.getParam("id");
-      const certificateId = requestHelper.getParam("certificate_id"); // certificate_id, not _id
+      const certificateId = requestHelper.getParam("certificate_id"); // ✅ updated from _id
       const updatedCertificate = requestHelper.getPayload();
 
       const result = await userService.updateCertificate(userId, certificateId, updatedCertificate);
@@ -252,7 +252,7 @@ class UserController extends BaseController {
   async deleteUserCertificate(requestHelper: RequestHelper, handler: any) {
     try {
       const userId = requestHelper.getParam("id");
-      const certificateId = requestHelper.getParam("certificate_id"); // certificate_id
+      const certificateId = requestHelper.getParam("certificate_id"); // ✅ updated from _id
 
       const result = await userService.deleteCertificate(userId, certificateId);
       return this.sendResponse(handler, result);

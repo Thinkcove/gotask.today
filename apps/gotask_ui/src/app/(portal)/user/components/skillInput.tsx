@@ -36,6 +36,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
+  const [saveError, setSaveError] = useState(false);
 
   const [tempSkill, setTempSkill] = useState<ISkill>({
     name: "",
@@ -142,8 +143,8 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
       setDialogOpen(false);
       setTempSkill({ name: "", proficiency: 0 });
       setCurrentEditIndex(null);
-    } catch (err) {
-      console.error("Save skill failed:", err);
+    } catch {
+      setSaveError(true);
     }
   };
 
@@ -239,7 +240,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                       <Typography fontSize={12} color="text.secondary">
                         {trans("proficiency")}: {PROFICIENCY_DESCRIPTIONS[skill.proficiency]}
                       </Typography>
-                      {skill.experience && skill.proficiency >= 3 && (
+                      {skill.experience && skill.proficiency >= PROFICIENCY_MAXIMUM && (
                         <Typography fontSize={12} color="text.secondary">
                           {trans("experience")}: {skill.experience} {trans("months")}
                         </Typography>
@@ -315,17 +316,12 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 setSkillErrors((prev) => ({ ...prev, name: "" }));
               }}
               onChange={(_, newValue) => {
-                // const name =
-                //   typeof newValue === "string" && newValue.startsWith("__add__")
-                //     ? newValue.replace("__add__", "")
-                //     : newValue;
-                // setTempSkill({ ...tempSkill, name });
                 let name =
                   typeof newValue === "string" && newValue.startsWith("__add__")
                     ? newValue.replace("__add__", "")
                     : newValue;
 
-                if (name == null) name = ""; // Ensure string, avoid TS error
+                if (name == null) name = "";
 
                 setTempSkill({ ...tempSkill, name });
 

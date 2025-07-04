@@ -1,18 +1,20 @@
 import React from "react";
-import { Box, Typography, IconButton, Divider, Stack } from "@mui/material";
-import { Edit } from "@mui/icons-material";
+import { Box, Typography, Divider, Stack } from "@mui/material";
+import { ArrowForward } from "@mui/icons-material";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { getStatusColor } from "@/app/common/constants/project";
+import { getStatusColor, GOAL_STATUS } from "@/app/common/constants/project";
 import { GoalCardProps } from "../interface/projectGoal";
 import SeverityIndicator from "@/app/(portal)/access/components/SeverityIndicator";
 import { getSeverityColor } from "@/app/common/constants/task";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
-const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
+const GoalItem: React.FC<GoalCardProps> = ({ goal, onClick }) => {
   const color = getStatusColor(goal.status);
+  const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   return (
     <Box
-      onClick={onClick}
       sx={{
         p: 2,
         borderRadius: 2,
@@ -36,24 +38,32 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onEdit, onClick }) => {
         </Typography>
 
         {/* Info Row */}
-        <Stack direction="row" gap={1.5} flexWrap="wrap" alignItems="center" mb={1.5}>
+        <Stack direction="row" gap={1} flexWrap="wrap" alignItems="center" mb={1.5}>
           <StatusIndicator status={goal.status} getColor={getStatusColor} />
 
-          {goal.status === "completed" && <input type="checkbox" disabled checked />}
+          {goal.status === GOAL_STATUS.COMPLETED && <input type="checkbox" disabled checked />}
           <Divider orientation="vertical" sx={{ height: 20 }} />
 
           <SeverityIndicator severity={goal.priority} getColor={getSeverityColor} />
-
-          <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(goal);
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              color: "#741B92",
+              fontWeight: 500,
+              cursor: "pointer",
+              ml: "auto",
+              "&:hover": {
+                textDecoration: "underline"
+              }
             }}
-            sx={{ ml: "auto" }}
-            color="primary"
+            onClick={onClick}
           >
-            <Edit />
-          </IconButton>
+            <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
+              {transGoal("viewdetails")}
+            </Typography>
+            <ArrowForward fontSize="small" />
+          </Box>
         </Stack>
       </Box>
     </Box>

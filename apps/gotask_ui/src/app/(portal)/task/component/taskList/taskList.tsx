@@ -269,9 +269,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   };
 
   const handleViewMore = (id: string) => {
-    const params = new URLSearchParams({
-      view
-    });
+    const params = new URLSearchParams();
 
     if (searchText.trim()) params.set("title", searchText);
     if (minDate) params.set("minDate", minDate);

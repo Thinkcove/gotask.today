@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -13,13 +14,32 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { deleteTemplate, fetcher, updateTemplate } from "../service/templateAction";
 import { Template } from "../service/templateInterface";
 import Chat from "../../chatbot/components/chat";
-import KpiItem from "../view/[id]/kpiItem";
+import Toggle from "@/app/component/toggle/toggle";
+import KpiItem from "./view/[id]/kpiItem";
 
-const TemplateList = () => {
+interface TemplateListProps {
+  initialView?: "template" | "assignee";
+}
+
+const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" }) => {
   const { canAccess } = useUserPermission();
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const [view, setView] = useState<"template" | "assignee">(initialView);
+
+  const labels = {
+    template: transkpi("template"),
+    assignee: transkpi("assignee")
+  };
+
+  const toggleOptions = [labels.template, labels.assignee];
+
+  const labelToKey = {
+    [labels.template]: "template",
+    [labels.assignee]: "assignee"
+  } as const;
+
   const {
     data: templates,
     error,
@@ -47,6 +67,14 @@ const TemplateList = () => {
     }
   };
 
+  const handleViewChange = (selectedLabel: string) => {
+    const nextView = labelToKey[selectedLabel];
+    if (nextView !== view) {
+      setView(nextView);
+      router.push(nextView === "template" ? "/kpi/template" : "/kpi/employee");
+    }
+  };
+
   if (error) {
     return (
       <Box sx={{ textAlign: "center", mt: 4 }}>
@@ -66,35 +94,33 @@ const TemplateList = () => {
   }
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        height: "100vh",
-        overflowY: "auto",
-        maxHeight: "calc(100vh - 100px)",
-        p: 3
-      }}
-    >
-      <Box mb={3} maxWidth={400}>
-        <SearchBar
-          value={searchTerm}
-          onChange={setSearchTerm}
-          sx={{ width: "100%" }}
-          placeholder={transkpi("searchplaceholder")}
-        />
+    <Box sx={{ position: "relative", height: "100vh", overflowY: "auto", p: 3 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box mb={3} maxWidth={400}>
+          <SearchBar
+            value={searchTerm}
+            onChange={setSearchTerm}
+            sx={{ width: "100%" }}
+            placeholder={transkpi("searchplaceholder")}
+          />
+        </Box>
+        <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
       </Box>
+
       <KpiItem
         templates={templates}
         onDelete={handleDelete}
         onUpdate={handleUpdate}
-        onView={(id) => router.push(`/kpi/view/${id}`)}
+        onView={(id) => router.push(`/kpi/template/view/${id}`)}
       />
+
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
+
       {canAccess(APPLICATIONS.KPI, ACTIONS.CREATE) && (
         <ActionButton
           label={transkpi("createnewtemplate")}
           icon={<AddIcon sx={{ color: "white" }} />}
-          onClick={() => router.push("/kpi/createTemplate")}
+          onClick={() => router.push("/kpi/template/createTemplate")}
         />
       )}
     </Box>

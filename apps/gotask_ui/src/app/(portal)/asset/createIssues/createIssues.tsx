@@ -53,7 +53,10 @@ const CreateIssue: React.FC = () => {
   );
 
   const assetOptions = useMemo(
-    () => assets?.map((a: IAssetAttributes) => ({ id: a.id, name: a.deviceName })) || [],
+    () =>
+      assets
+        ?.filter((a: IAssetAttributes) => a.deviceName && a.deviceName.trim() !== "")
+        .map((a: IAssetAttributes) => ({ id: a.id, name: a.deviceName })) || [],
     [assets]
   );
 

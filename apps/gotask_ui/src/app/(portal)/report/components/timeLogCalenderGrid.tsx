@@ -12,7 +12,14 @@ import {
   Typography
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
-import { GroupedLogs, LeaveEntry, TaskLog, TimeLogEntry } from "../interface/timeLog";
+import {
+  EnhancedTimeLogGridPropsWithPermissions,
+  GroupedLogs,
+  LeaveEntry,
+  PermissionEntry,
+  TaskLog,
+  TimeLogEntry
+} from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { extractHours } from "@/app/common/utils/taskTime";
@@ -22,13 +29,11 @@ import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import {
   calculatePermissionDuration,
-  EnhancedTimeLogGridPropsWithPermissions,
   fetchAllPermissions,
   getLeaveTypeColor,
   getPermissionColor,
   LeaveBackgroundColor,
-  PERMISSION_BACKGROUND_COLOR,
-  PermissionEntry
+  PERMISSION_BACKGROUND_COLOR
 } from "@/app/common/constants/leave";
 
 const headerCellStyle = {
@@ -53,7 +58,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
   permissionData
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
-  
+
   const getDateRange = (from: string, to: string) =>
     eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
 

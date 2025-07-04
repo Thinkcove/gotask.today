@@ -72,22 +72,3 @@ export const calculatePermissionDuration = (startTime: string, endTime: string):
 
   return Math.round((durationMinutes / 60) * 100) / 100; 
 };
-
-export interface PermissionEntry {
-  _id: string;
-  user_id: string;
-  user_name: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-  comments: string[];
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-// Updated interface to include permission data
-export interface EnhancedTimeLogGridPropsWithPermissions extends EnhancedTimeLogGridProps {
-  permissionData?: PermissionEntry[];
-}

@@ -15,6 +15,7 @@ import {
 import {
   GroupedTasks,
   LeaveEntry,
+  PermissionEntry,
   WorkPlannedEntry,
   WorkPlannedGridProps
 } from "../interface/workPlanned";
@@ -31,7 +32,7 @@ import {
   fetchAllLeaves,
 
 } from "../../project/services/projectAction";
-import { calculatePermissionDuration, fetchAllPermissions, formatPermissionTime, getLeaveTypeColor, getPermissionColor, LeaveBackgroundColor, PERMISSION_BACKGROUND_COLOR, PermissionEntry } from "@/app/common/constants/leave";
+import { calculatePermissionDuration, fetchAllPermissions, formatPermissionTime, getLeaveTypeColor, getPermissionColor, LeaveBackgroundColor, PERMISSION_BACKGROUND_COLOR } from "@/app/common/constants/leave";
 
 interface WorkPlannedGridPropsWithPermissions extends WorkPlannedGridProps {
   permissionData?: PermissionEntry[];

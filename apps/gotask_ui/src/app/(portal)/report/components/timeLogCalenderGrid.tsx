@@ -35,6 +35,7 @@ import {
   LeaveBackgroundColor,
   PERMISSION_BACKGROUND_COLOR
 } from "@/app/common/constants/leave";
+import DateFormats from "@/app/component/dateTime/dateFormat";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -71,13 +72,13 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
       if (date.includes("T")) {
         const parsedDate = parseISO(date);
         if (isValid(parsedDate)) {
-          return format(parsedDate, "yyyy-MM-dd");
+          return format(parsedDate, DateFormats.ISO_DATE);
         }
       }
 
       const parsedDate = parseISO(date);
       if (isValid(parsedDate)) {
-        return format(parsedDate, "yyyy-MM-dd");
+        return format(parsedDate, DateFormats.ISO_DATE);
       }
       return date;
     } catch (error) {
@@ -98,7 +99,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
       if (typeof entry.date === "string") {
         const parsedDate = parseISO(entry.date);
         if (isValid(parsedDate)) {
-          return format(parsedDate, "yyyy-MM-dd");
+          return format(parsedDate, DateFormats.ISO_DATE);
         }
       }
       return null;
@@ -546,7 +547,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
                       </TableCell>
                     )}
                     {dateRange.map((date) => {
-                      const key = format(date, "yyyy-MM-dd");
+                      const key = format(date, DateFormats.ISO_DATE);
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
                       const permissionForDate = getPermissionForUserAndDate(userId, key);
 
@@ -648,7 +649,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
 
                     {dateRange.map((date) => {
                       // FIXED: Ensure consistent date formatting
-                      const key = format(date, "yyyy-MM-dd");
+                      const key = format(date, DateFormats.ISO_DATE);
                       const value = taskEntry.dailyLogs[key];
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
                       const permissionForDate = getPermissionForUserAndDate(userId, key);

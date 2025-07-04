@@ -5,7 +5,6 @@ import { RefObject } from "react";
 export interface User {
   id: string;
   name: string;
-  first_name?: string;
 }
 export interface Project {
   id: string;

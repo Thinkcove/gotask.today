@@ -65,8 +65,6 @@ const EditGoalPage = () => {
     return fetchedGoalData?.updateHistory ? { updateHistory: fetchedGoalData.updateHistory } : null;
   }, [fetchedGoalData?.updateHistory]);
 
-  console.log("projectGoalHistory", projectGoalHistory);
-
   const formattedHistory = useMemo(() => {
     if (!projectGoalHistory?.updateHistory) return [];
 
@@ -81,8 +79,8 @@ const EditGoalPage = () => {
 
     return projectGoalHistory.updateHistory.flatMap((item: UpdateHistoryItem) => {
       const user = users?.find((u: User) => u.id === item.user_id);
-      const userName = user?.first_name || user?.name || "Unknown";
-      const { previous_data, update_data, action = "UPDATE" } = item.history_data || {};
+      const userName = user?.name;
+      const { previous_data, update_data } = item.history_data || {};
 
       if (!previous_data || !update_data) return [];
 
@@ -107,8 +105,7 @@ const EditGoalPage = () => {
         {
           loginuser_name: userName,
           formatted_history: changes.join(". "),
-          created_date: item.createdAt || "",
-          action
+          created_date: item.createdAt || ""
         }
       ];
     });
@@ -124,7 +121,7 @@ const EditGoalPage = () => {
     setIsSubmitting(true);
     try {
       const editorContentRaw = rteRef.current?.editor?.getHTML() || goalData.description;
-      const editorContent = editorContentRaw.replace(/<[^>]+>/g, "").trim(); 
+      const editorContent = editorContentRaw.replace(/<[^>]+>/g, "").trim();
 
       const payload = {
         projectId: projectID,

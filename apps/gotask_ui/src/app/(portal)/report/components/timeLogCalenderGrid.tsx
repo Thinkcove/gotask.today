@@ -82,6 +82,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
       }
       return date;
     } catch (error) {
+      console.log(error);
+
       return date;
     }
   };
@@ -104,6 +106,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
       }
       return null;
     } catch (error) {
+      console.log(error);
+
       return null;
     }
   };

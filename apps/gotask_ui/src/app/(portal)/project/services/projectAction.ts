@@ -210,7 +210,7 @@ export const PERMISSION_BACKGROUND_COLOR = {
 };
 
 export const getPermissionColor = () => {
-  return "red"; // Orange color for permissions
+  return "#ff9800"; // Orange color for permissions
 };
 export const formatPermissionTime = (startTime: string, endTime: string): string => {
   // Handle different time formats

@@ -12,13 +12,7 @@ import {
   Typography
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
-import {
-  EnhancedTimeLogGridProps,
-  GroupedLogs,
-  LeaveEntry,
-  TaskLog,
-  TimeLogEntry
-} from "../interface/timeLog";
+import { GroupedLogs, LeaveEntry, TaskLog, TimeLogEntry } from "../interface/timeLog";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { extractHours } from "@/app/common/utils/taskTime";
@@ -49,70 +43,6 @@ const headerCellStyle = {
   color: "#333"
 };
 
-const getDateRange = (from: string, to: string) =>
-  eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
-
-// FIXED: Improved date normalization function
-const normalizeDate = (date: string): string => {
-  try {
-    // If it's already in YYYY-MM-DD format, return as is
-    if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      return date;
-    }
-
-    // Handle ISO date strings (with time) - use UTC to avoid timezone issues
-    if (date.includes("T")) {
-      const parsedDate = parseISO(date);
-      if (isValid(parsedDate)) {
-        return format(parsedDate, "yyyy-MM-dd");
-      }
-    }
-
-    // Try parsing other formats
-    const parsedDate = parseISO(date);
-    if (isValid(parsedDate)) {
-      return format(parsedDate, "yyyy-MM-dd");
-    }
-
-    // If all else fails, return the original date
-    console.warn("Could not normalize date:", date);
-    return date;
-  } catch (error) {
-    console.error("Error normalizing date:", date, error);
-    return date;
-  }
-};
-
-// FIXED: Improved date extraction for time logs
-const extractDateFromTimeLog = (entry: TimeLogEntry): string | null => {
-  try {
-    // Handle null/undefined dates
-    if (!entry.date) {
-      console.warn("Entry has no date:", entry);
-      return null;
-    }
-
-    // If entry.date is already a string in YYYY-MM-DD format
-    if (typeof entry.date === "string" && entry.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      return entry.date;
-    }
-
-    // If it's a string that needs parsing (ISO format, etc.)
-    if (typeof entry.date === "string") {
-      const parsedDate = parseISO(entry.date);
-      if (isValid(parsedDate)) {
-        return format(parsedDate, "yyyy-MM-dd");
-      }
-    }
-
-    console.warn("Could not extract date from time log entry:", entry);
-    return null;
-  } catch (error) {
-    console.error("Error extracting date from time log:", entry, error);
-    return null;
-  }
-};
-
 const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = ({
   data,
   fromDate,
@@ -123,6 +53,61 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
   permissionData
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
+  
+  const getDateRange = (from: string, to: string) =>
+    eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
+
+  const normalizeDate = (date: string): string => {
+    try {
+      if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return date;
+      }
+
+      if (date.includes("T")) {
+        const parsedDate = parseISO(date);
+        if (isValid(parsedDate)) {
+          return format(parsedDate, "yyyy-MM-dd");
+        }
+      }
+
+      const parsedDate = parseISO(date);
+      if (isValid(parsedDate)) {
+        return format(parsedDate, "yyyy-MM-dd");
+      }
+
+      console.warn("Could not normalize date:", date);
+      return date;
+    } catch (error) {
+      console.error("Error normalizing date:", date, error);
+      return date;
+    }
+  };
+
+  const extractDateFromTimeLog = (entry: TimeLogEntry): string | null => {
+    try {
+      if (!entry.date) {
+        console.warn("Entry has no date:", entry);
+        return null;
+      }
+
+      if (typeof entry.date === "string" && entry.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return entry.date;
+      }
+
+      if (typeof entry.date === "string") {
+        const parsedDate = parseISO(entry.date);
+        if (isValid(parsedDate)) {
+          return format(parsedDate, "yyyy-MM-dd");
+        }
+      }
+
+      console.warn("Could not extract date from time log entry:", entry);
+      return null;
+    } catch (error) {
+      console.error("Error extracting date from time log:", entry, error);
+      return null;
+    }
+  };
   const dateRange = getDateRange(fromDate, toDate);
   console.log("data", data);
 
@@ -130,20 +115,10 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     "Date range:",
     dateRange.map((d) => format(d, "yyyy-MM-dd"))
   );
-  // console.log(
-  //   "Sample time log entries:",
-  //   data.slice(0, 3).map((d) => ({
-  //     user: d.user_name,
-  //     date: d.date,
-  //     normalizedDate: extractDateFromTimeLog(d),
-  //     hours: extractHours(d.total_time_logged || [])
-  //   }))
-  // );
 
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
 
-  // Handle leave data properly
   let leaves: LeaveEntry[] = [];
   if (leaveData && leaveData.length > 0) {
     leaves = leaveData;
@@ -151,7 +126,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     leaves = leaveResponse.data || leaveResponse;
   }
 
-  // Handle permission data properly
   let permissions: PermissionEntry[] = [];
   if (permissionData && permissionData.length > 0) {
     permissions = permissionData;
@@ -219,13 +193,11 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     return fromTimeLogs || "";
   };
 
-  // FIXED: Improved grouping logic with better date handling
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
     const project = entry.project_name || transreport("noproject");
     const task = entry.task_title || transreport("notask");
 
-    // Use the improved date extraction
     const date = extractDateFromTimeLog(entry);
     if (!date) {
       console.warn("Skipping entry with invalid date:", entry);
@@ -237,14 +209,10 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
 
     if (!acc[key]) acc[key] = {};
 
-    // FIXED: Ensure we're not overwriting existing hours for the same date
     if (!acc[key][date]) {
       acc[key][date] = 0;
     }
     acc[key][date] += timeLogged;
-
-    // Debug logging
-    // console.log(`Adding ${timeLogged}h for ${user} on ${date}. Total now: ${acc[key][date]}h`);
 
     return acc;
   }, {});
@@ -275,7 +243,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     });
   });
 
-  // Add users who have leaves or permissions but no time logs
   [...leaves, ...permissions].forEach((item) => {
     const userName = item.user_name;
     const isInRange =

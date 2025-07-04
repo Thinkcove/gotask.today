@@ -33,7 +33,6 @@ import {
 } from "../../project/services/projectAction";
 import { calculatePermissionDuration, fetchAllPermissions, formatPermissionTime, getLeaveTypeColor, getPermissionColor, LeaveBackgroundColor, PERMISSION_BACKGROUND_COLOR, PermissionEntry } from "@/app/common/constants/leave";
 
-// Update the interface to include permissions
 interface WorkPlannedGridPropsWithPermissions extends WorkPlannedGridProps {
   permissionData?: PermissionEntry[];
 }
@@ -47,11 +46,9 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridPropsWithPermissions> = (
 }) => {
   const transworkplanned = useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
 
-  // Use passed leave data or fetch from API
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const leaves: LeaveEntry[] = leaveData && leaveData.length > 0 ? leaveData : leaveResponse || [];
 
-  // Use passed permission data or fetch from API
   const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
   const permissions: PermissionEntry[] =
     permissionData && permissionData.length > 0 ? permissionData : permissionResponse || [];
@@ -123,7 +120,6 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridPropsWithPermissions> = (
     );
   };
 
-  // New function to get permissions for a user within the date range
   const getUserPermissionsInRange = (userId: string): PermissionEntry[] => {
     return permissions.filter(
       (permission) =>
@@ -135,7 +131,6 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridPropsWithPermissions> = (
 
   const filteredData = data.filter(isTaskInDateRange);
 
-  // Update GroupedTasks interface to include permissions
   interface GroupedTasksWithPermissions {
     [userKey: string]: {
       userName: string;

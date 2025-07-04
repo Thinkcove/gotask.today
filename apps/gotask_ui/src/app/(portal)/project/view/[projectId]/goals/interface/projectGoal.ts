@@ -140,7 +140,5 @@ export interface UpdateHistoryItem {
   history_data?: {
     previous_data?: GoalUpdateData;
     update_data?: GoalUpdateData;
-    action?: string;
-    [key: string]: any;
-  };
+    };
 }

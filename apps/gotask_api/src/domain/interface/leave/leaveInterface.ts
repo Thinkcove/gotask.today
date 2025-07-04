@@ -76,11 +76,6 @@ const createNewLeave = async (leaveData: Partial<ILeave>): Promise<ILeave> => {
     throw new Error("Invalid user_id");
   }
 
-  if (!leaveData.reasons) {
-    throw new Error("Reasons field is required");
-  }
-
-
   const newLeave = new Leave({
     ...leaveData,
     user_name: user.name
@@ -106,9 +101,6 @@ const updateALeave = async (id: string, updateData: Partial<ILeave>): Promise<IL
       const user = await User.findOne({ id: updateData.user_id });
       if (!user) throw new Error("Invalid user_id");
       updateData.user_name = user.name;
-    }
-     if (updateData.reasons === "") {
-      throw new Error("Reasons field cannot be empty");
     }
 
     const updatedLeave = await Leave.findOneAndUpdate(

@@ -9,7 +9,7 @@ export interface ILeave extends Document {
   from_date: Date;
   to_date: Date;
   leave_type: string;
-  reasons: string;
+  reasons?: string;
 }
 
 const LeaveSchema = new Schema<ILeave>(
@@ -24,7 +24,7 @@ const LeaveSchema = new Schema<ILeave>(
       enum: Object.values(LEAVE_TYPE),
       required: true
     },
-     reasons: { type: String, required: true }
+    reasons: { type: String, required: false }
   },
   { timestamps: true }
 );

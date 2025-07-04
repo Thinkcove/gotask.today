@@ -25,36 +25,17 @@ import { extractHours } from "@/app/common/utils/taskTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
 import useSWR from "swr";
+import { fetchAllLeaves } from "../../project/services/projectAction";
 import {
-  fetchAllLeaves,
-  fetchAllPermissions,
   calculatePermissionDuration,
-  formatPermissionTime,
+  EnhancedTimeLogGridPropsWithPermissions,
+  fetchAllPermissions,
+  getLeaveTypeColor,
   getPermissionColor,
-  PERMISSION_BACKGROUND_COLOR
-} from "../../project/services/projectAction";
-import { getLeaveTypeColor, LeaveBackgroundColor } from "@/app/common/constants/leave";
-import DateFormats from "@/app/component/dateTime/dateFormat";
-
-// Interface for Permission Entry
-export interface PermissionEntry {
-  _id: string;
-  user_id: string;
-  user_name: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-  comments: string[];
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-// Updated interface to include permission data
-interface EnhancedTimeLogGridPropsWithPermissions extends EnhancedTimeLogGridProps {
-  permissionData?: PermissionEntry[];
-}
+  LeaveBackgroundColor,
+  PERMISSION_BACKGROUND_COLOR,
+  PermissionEntry
+} from "@/app/common/constants/leave";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -71,22 +52,64 @@ const headerCellStyle = {
 const getDateRange = (from: string, to: string) =>
   eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
 
-// FIXED: Utility function to normalize dates to YYYY-MM-DD format
+// FIXED: Improved date normalization function
 const normalizeDate = (date: string): string => {
   try {
-    // Handle ISO date strings (with time)
-    if (date.includes("T")) {
-      return format(parseISO(date), "yyyy-MM-dd");
-    }
-    // Handle already formatted dates
+    // If it's already in YYYY-MM-DD format, return as is
     if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
       return date;
     }
-    // Try to parse other formats
-    return format(parseISO(date), "yyyy-MM-dd");
+
+    // Handle ISO date strings (with time) - use UTC to avoid timezone issues
+    if (date.includes("T")) {
+      const parsedDate = parseISO(date);
+      if (isValid(parsedDate)) {
+        return format(parsedDate, "yyyy-MM-dd");
+      }
+    }
+
+    // Try parsing other formats
+    const parsedDate = parseISO(date);
+    if (isValid(parsedDate)) {
+      return format(parsedDate, "yyyy-MM-dd");
+    }
+
+    // If all else fails, return the original date
+    console.warn("Could not normalize date:", date);
+    return date;
   } catch (error) {
     console.error("Error normalizing date:", date, error);
     return date;
+  }
+};
+
+// FIXED: Improved date extraction for time logs
+const extractDateFromTimeLog = (entry: TimeLogEntry): string | null => {
+  try {
+    // Handle null/undefined dates
+    if (!entry.date) {
+      console.warn("Entry has no date:", entry);
+      return null;
+    }
+
+    // If entry.date is already a string in YYYY-MM-DD format
+    if (typeof entry.date === "string" && entry.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return entry.date;
+    }
+
+    // If it's a string that needs parsing (ISO format, etc.)
+    if (typeof entry.date === "string") {
+      const parsedDate = parseISO(entry.date);
+      if (isValid(parsedDate)) {
+        return format(parsedDate, "yyyy-MM-dd");
+      }
+    }
+
+    console.warn("Could not extract date from time log entry:", entry);
+    return null;
+  } catch (error) {
+    console.error("Error extracting date from time log:", entry, error);
+    return null;
   }
 };
 
@@ -101,12 +124,24 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
   const dateRange = getDateRange(fromDate, toDate);
-  // console.log("permissionData", permissionData);
-  console.log("fromDate", fromDate);
+  console.log("data", data);
+
+  console.log(
+    "Date range:",
+    dateRange.map((d) => format(d, "yyyy-MM-dd"))
+  );
+  // console.log(
+  //   "Sample time log entries:",
+  //   data.slice(0, 3).map((d) => ({
+  //     user: d.user_name,
+  //     date: d.date,
+  //     normalizedDate: extractDateFromTimeLog(d),
+  //     hours: extractHours(d.total_time_logged || [])
+  //   }))
+  // );
 
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
-console.log("permissionResponse", permissionResponse);
 
   // Handle leave data properly
   let leaves: LeaveEntry[] = [];
@@ -146,12 +181,10 @@ console.log("permissionResponse", permissionResponse);
     return checkDate >= fromDate && checkDate <= toDate;
   };
 
-  // FIXED: Updated permission date comparison
   const isDateInPermission = (date: string, permissionDate: string): boolean => {
     const checkDate = normalizeDate(date);
     const permDate = normalizeDate(permissionDate);
 
-    // console.log("Comparing dates:", { checkDate, permDate, match: checkDate === permDate });
     return checkDate === permDate;
   };
 
@@ -169,14 +202,6 @@ console.log("permissionResponse", permissionResponse);
     const permission = permissions.find((permission) => {
       const userMatches = permission.user_id === userId;
       const dateMatches = isDateInPermission(date, permission.date);
-      // console.log("Permission check:", {
-      //   userId,
-      //   date,
-      //   permission_user_id: permission.user_id,
-      //   permission_date: permission.date,
-      //   userMatches,
-      //   dateMatches
-      // });
       return userMatches && dateMatches;
     });
 
@@ -194,21 +219,32 @@ console.log("permissionResponse", permissionResponse);
     return fromTimeLogs || "";
   };
 
-  // FIXED: Ensure consistent date formatting throughout
+  // FIXED: Improved grouping logic with better date handling
   const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
     const project = entry.project_name || transreport("noproject");
     const task = entry.task_title || transreport("notask");
 
-    // Use consistent date format
-    const date = isValid(parseISO(entry.date)) ? format(parseISO(entry.date), "yyyy-MM-dd") : null;
-    if (!date) return acc;
+    // Use the improved date extraction
+    const date = extractDateFromTimeLog(entry);
+    if (!date) {
+      console.warn("Skipping entry with invalid date:", entry);
+      return acc;
+    }
 
     const timeLogged = extractHours(entry.total_time_logged || []);
     const key = [user, project, task].join("|");
 
     if (!acc[key]) acc[key] = {};
-    acc[key][date] = (acc[key][date] || 0) + timeLogged;
+
+    // FIXED: Ensure we're not overwriting existing hours for the same date
+    if (!acc[key][date]) {
+      acc[key][date] = 0;
+    }
+    acc[key][date] += timeLogged;
+
+    // Debug logging
+    // console.log(`Adding ${timeLogged}h for ${user} on ${date}. Total now: ${acc[key][date]}h`);
 
     return acc;
   }, {});
@@ -294,7 +330,7 @@ console.log("permissionResponse", permissionResponse);
             sx={{
               fontSize: "0.5rem",
               fontWeight: 500,
-              color: getPermissionColor()
+              color: "#009688"
             }}
           >
             PERMISSION
@@ -304,7 +340,7 @@ console.log("permissionResponse", permissionResponse);
             sx={{
               fontSize: "0.5rem",
               fontWeight: 500,
-              color: getPermissionColor()
+              color: "#009688"
             }}
           >
             {calculatePermissionDuration(permissionForDate.start_time, permissionForDate.end_time)}h
@@ -653,7 +689,7 @@ console.log("permissionResponse", permissionResponse);
                     )}
 
                     {dateRange.map((date) => {
-                      // FIXED: Consistent date formatting
+                      // FIXED: Ensure consistent date formatting
                       const key = format(date, "yyyy-MM-dd");
                       const value = taskEntry.dailyLogs[key];
                       const leaveForDate = getLeaveForUserAndDate(userId, key);

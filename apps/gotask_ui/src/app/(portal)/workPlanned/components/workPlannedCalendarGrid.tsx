@@ -28,15 +28,10 @@ import { ESTIMATION_FORMAT } from "@/app/common/constants/regex";
 import { formatTimeValue } from "@/app/common/utils/taskTime";
 import useSWR from "swr";
 import {
-  calculatePermissionDuration,
   fetchAllLeaves,
-  fetchAllPermissions,
-  formatPermissionTime,
-  getPermissionColor,
-  PERMISSION_BACKGROUND_COLOR,
-  PermissionEntry
+
 } from "../../project/services/projectAction";
-import { getLeaveTypeColor, LeaveBackgroundColor } from "@/app/common/constants/leave";
+import { calculatePermissionDuration, fetchAllPermissions, formatPermissionTime, getLeaveTypeColor, getPermissionColor, LeaveBackgroundColor, PERMISSION_BACKGROUND_COLOR, PermissionEntry } from "@/app/common/constants/leave";
 
 // Update the interface to include permissions
 interface WorkPlannedGridPropsWithPermissions extends WorkPlannedGridProps {

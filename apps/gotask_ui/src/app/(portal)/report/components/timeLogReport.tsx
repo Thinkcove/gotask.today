@@ -98,6 +98,7 @@ const TimeLogReport = () => {
     isLoading: isReportLoading,
     isError: isReportError
   } = useUserTimeLogReport(payload, shouldFetch);
+  console.log("report", reportData);
 
   if (userError) {
     return (

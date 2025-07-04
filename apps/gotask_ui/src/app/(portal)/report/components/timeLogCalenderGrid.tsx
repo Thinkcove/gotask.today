@@ -282,7 +282,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
               color: getLeaveTypeColor(leaveForDate.leave_type)
             }}
           >
-            {leaveForDate.leave_type.toUpperCase()}
+            {leaveForDate.leave_type ? transreport("leave") : ""}
           </Typography>
           <Typography
             variant="caption"
@@ -330,7 +330,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
               color: getLeaveTypeColor(leaveForDate.leave_type)
             }}
           >
-            {leaveForDate.leave_type.toUpperCase()}
+            {leaveForDate.leave_type ? transreport("leave") : ""}
           </Typography>
           {value && (
             <Typography

@@ -5,10 +5,6 @@ import { withAuth } from "../utils/authToken";
 
 export const getLeaveTypeColor = (leaveType: string): string => {
   switch (leaveType.toLowerCase()) {
-    case "sick":
-      return "#ff9800";
-    case "personal":
-      return "#2196f3";
     default:
       return "#9c27b0";
   }
@@ -18,7 +14,6 @@ export const LeaveBackgroundColor = {
   num: "20"
 };
 
-
 export const fetchAllPermissions = async () => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/getpermission`;
@@ -27,9 +22,8 @@ export const fetchAllPermissions = async () => {
   });
 };
 
-
 export const PERMISSION_BACKGROUND_COLOR = {
-  num: "20" 
+  num: "20"
 };
 
 export const getPermissionColor = () => {
@@ -70,5 +64,5 @@ export const calculatePermissionDuration = (startTime: string, endTime: string):
   const endMinutes = parseTime(endTime);
   const durationMinutes = endMinutes - startMinutes;
 
-  return Math.round((durationMinutes / 60) * 100) / 100; 
+  return Math.round((durationMinutes / 60) * 100) / 100;
 };

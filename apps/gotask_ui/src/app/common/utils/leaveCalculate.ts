@@ -1,6 +1,8 @@
+import { TIME_PERIOD } from "../constants/regex";
+
 export const calculatePermissionDuration = (startTime: string, endTime: string): number => {
   const parseTime = (time: string): number => {
-    const cleanTime = time.replace(/\s*(AM|PM)\s*/i, "");
+    const cleanTime = time.replace(TIME_PERIOD, "");
     const [hours, minutes] = cleanTime.split(":").map(Number);
     let totalMinutes = hours * 60 + minutes;
 

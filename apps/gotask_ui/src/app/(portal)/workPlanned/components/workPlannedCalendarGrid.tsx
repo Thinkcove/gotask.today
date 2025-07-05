@@ -28,6 +28,7 @@ import { ESTIMATION_FORMAT } from "@/app/common/constants/regex";
 import { formatTimeValue } from "@/app/common/utils/taskTime";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
+import { getLeaveColor } from "@/app/common/constants/leave";
 
 const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
   data,
@@ -375,7 +376,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                                       fontWeight: 600,
                                       fontSize: "0.7rem",
                                       textTransform: "uppercase",
-                                      color: "red",
+                                      color: getLeaveColor(),
                                       mb: 0.5
                                     }}
                                   >

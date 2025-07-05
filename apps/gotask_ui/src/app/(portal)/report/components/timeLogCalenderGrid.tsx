@@ -27,7 +27,7 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
-import { getPermissionColor } from "@/app/common/constants/leave";
+import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
 import { calculatePermissionDuration } from "@/app/common/utils/leaveCalculate";
@@ -275,7 +275,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
             sx={{
               fontSize: "0.5rem",
               fontWeight: 500,
-              color: "red"
+              color: getLeaveColor()
             }}
           >
             {leaveForDate.leave_type ? transreport("leave") : ""}
@@ -323,7 +323,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
             sx={{
               fontSize: "0.6rem",
               fontWeight: 500,
-              color: "red"
+              color: getLeaveColor()
             }}
           >
             {leaveForDate.leave_type ? transreport("leave") : ""}

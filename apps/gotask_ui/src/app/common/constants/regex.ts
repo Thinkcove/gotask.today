@@ -26,3 +26,5 @@ export const ESTIMATION_FORMAT = /[^\d.]/g;
 export const TRAILING_DOTS_REGEX = /\.+$/;
 
 export const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+export const TIME_PERIOD = /\s*(AM|PM)\s*/i;

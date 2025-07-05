@@ -20,7 +20,7 @@ import {
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import env from "@/app/common/env";
-import { PROFICIENCY_MAXIMUM } from "@/app/common/constants/user";
+import { MINIMUM_EXPERIENCE_REQUIRED, PROFICIENCY_MAXIMUM } from "@/app/common/constants/user";
 
 interface SkillInputProps {
   userId: string;
@@ -35,7 +35,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
-  const [saveError, setSaveError] = useState(false);
 
   const [tempSkill, setTempSkill] = useState<ISkill>({
     name: "",
@@ -82,7 +81,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
     if (
       tempSkill.proficiency >= PROFICIENCY_MAXIMUM &&
-      (!tempSkill.experience || tempSkill.experience < 1)
+      (!tempSkill.experience || tempSkill.experience < MINIMUM_EXPERIENCE_REQUIRED)
     ) {
       newErrors.experience = trans("pleaseenterexperience");
     }
@@ -143,7 +142,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
       setTempSkill({ name: "", proficiency: 0 });
       setCurrentEditIndex(null);
     } catch {
-      setSaveError(true);
+      console.error("Failed to save skill");
     }
   };
 
@@ -290,7 +289,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
               }}
               options={availableOptions}
               inputValue={tempSkill.name}
-              onInputChange={(_, newInput, reason) => {
+              onInputChange={(_, newInput) => {
                 const cleaned = newInput.startsWith("__add__")
                   ? newInput.replace("__add__", "")
                   : newInput;

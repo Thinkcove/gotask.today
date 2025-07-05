@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Box, Button, CircularProgress, Grid, IconButton, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, IconButton, Typography } from "@mui/material";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -74,7 +74,9 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     userId: data?.tags?.userId || "",
     tag: data.tags?.id || "",
     accessCardNo: data?.accessCardNo || "",
-    personalId: data.personalId || ""
+    personalId: data.personalId || "",
+    accessCardNo2: data?.accessCardNo2 || "",
+    issuedOn: data.issuedOn || ""
   }));
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -91,6 +93,10 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
         newErrors.accessCardNo = `${transasset("accesscardno")} ${transasset("isrequired")}`;
       if (!formData.personalId)
         newErrors.personalId = `${transasset("personalid")} ${transasset("isrequired")}`;
+      if (!formData.accessCardNo2)
+        newErrors.accessCardNo2 = `${transasset("accesscardno2")} ${transasset("isrequired")}`;
+      if (!formData.issuedOn)
+        newErrors.issuedOn = `${transasset("issuedon")} ${transasset("isrequired")}`;
     } else {
       if (!formData.typeId) newErrors.typeId = transasset("typeid");
       if (!formData.deviceName) newErrors.deviceName = transasset("devicename");
@@ -193,7 +199,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
     <>
       <ModuleHeader name={transasset("assets")} />
 
-      <Paper elevation={2} sx={{ p: 2 }}>
+      <Box sx={{ p: 2 }}>
         <Box
           sx={{
             display: "flex",
@@ -369,7 +375,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
             />
           )}
         </Box>
-      </Paper>
+      </Box>
       {openHistoryDrawer && (
         <IssueHistoryDrawer
           open={openHistoryDrawer}

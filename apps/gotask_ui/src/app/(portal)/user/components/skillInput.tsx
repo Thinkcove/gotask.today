@@ -21,7 +21,6 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import env from "@/app/common/env";
 import { PROFICIENCY_MAXIMUM } from "@/app/common/constants/user";
-import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 
 interface SkillInputProps {
   userId: string;
@@ -218,21 +217,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                   }}
                 >
                   <Box display="flex" gap={2}>
-                    <Box
-                      sx={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: 1,
-                        backgroundColor: "#f0f0f0",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 24
-                      }}
-                    >
-                      <WorkspacePremiumIcon fontSize="inherit" sx={{ color: "#741B92" }} />
-                    </Box>
-
                     <Box>
                       <Typography fontSize={14} fontWeight={600}>
                         {skill.name}

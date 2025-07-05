@@ -28,8 +28,6 @@ export const calculatePermissionDuration = (startTime: string, endTime: string):
 };
 
 export const calculateLeaveDuration = (fromDate: string, toDate: string): number => {
-
-
   const startDate = normalizeDate(fromDate);
   const endDate = normalizeDate(toDate);
 

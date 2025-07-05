@@ -117,8 +117,16 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
           zIndex: 1
         }}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Box maxWidth={400}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap"
+          gap={2}
+          mb={3}
+        >
+          {/* Left-aligned SearchBar */}
+          <Box sx={{ flexGrow: 1, maxWidth: 400 }}>
             <SearchBar
               value={searchTerm}
               onChange={setSearchTerm}
@@ -126,7 +134,11 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
               placeholder={transkpi("searchplaceholder")}
             />
           </Box>
-          <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
+
+          {/* Right-aligned Toggle */}
+          <Box sx={{ flexShrink: 0 }}>
+            <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
+          </Box>
         </Box>
       </Box>
 

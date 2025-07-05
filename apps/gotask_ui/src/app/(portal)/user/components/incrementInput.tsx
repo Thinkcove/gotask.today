@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -33,6 +32,8 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   const [errorOpen, setErrorOpen] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [formData, setFormData] = useState<IIncrementHistory>({ date: "", ctc: 0 });
+  const [dateError, setDateError] = useState(false);
+  const [ctcError, setCtcError] = useState(false);
 
   const {
     data: responseData,
@@ -58,6 +59,8 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   const resetForm = () => {
     setFormData({ date: "", ctc: 0 });
     setEditIndex(null);
+    setDateError(false);
+    setCtcError(false);
   };
 
   const handleAddClick = () => {
@@ -66,7 +69,13 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.date || formData.ctc <= 0) return;
+    const isDateEmpty = !formData.date;
+    const isCtcInvalid = formData.ctc <= 0;
+
+    setDateError(isDateEmpty);
+    setCtcError(isCtcInvalid);
+
+    if (isDateEmpty || isCtcInvalid) return;
 
     const formattedDate = new Date(formData.date).toISOString().split("T")[0];
 
@@ -90,7 +99,6 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
     resetForm();
     setDialogOpen(false);
   };
-
 
   const reversed = [...sorted].reverse();
 
@@ -242,7 +250,12 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
               type="date"
               fullWidth
               value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, date: e.target.value });
+                if (dateError) setDateError(false);
+              }}
+              error={dateError}
+              helperText={dateError ? trans("dateisrequired") : ""}
             />
           </Box>
           <Box>
@@ -253,7 +266,13 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
               type="number"
               fullWidth
               value={formData.ctc}
-              onChange={(e) => setFormData({ ...formData, ctc: Math.max(0, +e.target.value) })}
+              onChange={(e) => {
+                const value = Math.max(0, +e.target.value);
+                setFormData({ ...formData, ctc: value });
+                if (ctcError) setCtcError(false);
+              }}
+              error={ctcError}
+              helperText={ctcError ? trans("ctcisrequired") : ""}
             />
           </Box>
         </Stack>

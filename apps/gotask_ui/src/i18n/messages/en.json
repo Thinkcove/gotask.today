@@ -576,7 +576,9 @@
       "salaryrevisionlog": "Salary Revision Log",
       "short": "short",
       "numeric": "numeric",
-      "description": "View, create, and manage user profiles and credentials."
+      "description": "View, create, and manage user profiles and credentials.",
+      "dateisrequired": "Date is required",
+      "ctcisrequired": "CTC must be greater than 0"
     }
   },
   "Appbar": {

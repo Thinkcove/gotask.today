@@ -182,8 +182,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
           maxHeight: 400,
           overflow: "auto",
           borderRadius: 2,
-          px: 2,
-          py: 2,
           scrollBehavior: "smooth",
           "&::-webkit-scrollbar": {
             width: "6px",
@@ -199,7 +197,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         }}
       >
         {skills.length === 0 ? (
-          <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
+          <Paper elevation={1} sx={{ color: "text.secondary" }}>
             {trans("noskills")}
           </Paper>
         ) : (
@@ -442,6 +440,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         title={transInc("confirmdelete")}
         submitLabel={transInc("delete")}
         cancelLabel={transInc("cancel")}
+        submitColor="#b71c1c"
       >
         <Typography>
           {trans("deleteskill", { skill: `"${skills[deleteIndex!]?.name || ""}"` })}

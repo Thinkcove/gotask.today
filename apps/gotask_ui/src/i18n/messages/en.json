@@ -521,7 +521,7 @@
     "proficiencyrequired": "Please select a proficiency level for \"{skill}\".",
     "experiencerequired": "Experience required for \"{skill}\" when proficiency is 3 or 4.",
     "experiencepositive": "Experience must be a positive number for \"{skill}\".",
-    "deleteskill": "Are you sure you want to delete \"{skill}\" ?",
+    "deleteskill": "Are you sure you want to delete {skill} ?",
     "noskills": "No skills added yet.",
     "noprojects": "No projects assigned yet.",
     "noassets": "No assets assigned yet.",

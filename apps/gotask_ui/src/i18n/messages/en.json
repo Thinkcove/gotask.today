@@ -176,7 +176,6 @@
       "title": "Project Management | GoTaskToday",
       "description": " Create, assign, and monitor progress of ongoing projects."
     },
-
     "Stories": {
       "noStoriesFound": "No stories found for this project.",
       "createdat": "Created At",
@@ -218,7 +217,6 @@
       "suffixtoday": "Today",
       "storyTitle": "Story Title *",
       "description": "Description *",
-
       "filters": {
         "status": "Status",
         "all": "All",
@@ -235,7 +233,6 @@
         "clearAll": "Clear All",
         "search": "Search"
       },
-
       "placeholders": {
         "title": "Enter story title",
         "description": "Enter story description",
@@ -608,7 +605,7 @@
     "placeholderUser": "User",
     "placeholderProject": "Project",
     "leave": "LEAVE",
-    "permission":"PERMISSION",
+    "permission": "PERMISSION",
     "meta": {
       "title": "Work Log | GoTaskToday",
       "description": "Generate and analyze reports across modules for insights and audits."
@@ -721,7 +718,13 @@
     "accesscarddetails": "Access card details",
     "download": "Download",
     "assigned": "Assigned user",
+    "accessno1": "Access No.1",
+    "accessno2": "Access No.2",
     "issuedon": "Issued on",
+    "assettypes": "Asset type",
+    "warrantyvalidity": "Warranty Validity",
+    "assetid": "Id",
+    "acquisitiondate": "Acquisition date",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."
@@ -733,7 +736,6 @@
       }
     }
   },
-
   "Chatbot": {
     "viewname": "Chatbot",
     "title": "Thinkrove Chatbot",

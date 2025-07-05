@@ -28,19 +28,42 @@ import { ESTIMATION_FORMAT } from "@/app/common/constants/regex";
 import { formatTimeValue } from "@/app/common/utils/taskTime";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
-import { getLeaveTypeColor, LeaveBackgroundColor } from "@/app/common/constants/leave";
+import {
+  getLeaveTypeColor,
+  LeaveBackgroundColor,
+  getPermissionColor,
+  PERMISSION_BACKGROUND_COLOR,
+  calculatePermissionDuration,
+  fetchAllPermissions
+} from "@/app/common/constants/leave";
+import { PermissionEntry } from "../../report/interface/timeLog";
 
-const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
+// Enhanced interface to include permissions
+interface EnhancedWorkPlannedGridProps extends WorkPlannedGridProps {
+  permissionData?: PermissionEntry[];
+}
+
+const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   data,
   fromDate,
   toDate,
-  leaveData
+  leaveData,
+  permissionData
 }) => {
   const transworkplanned = useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
 
   // Use passed leave data
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
+  const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
+
   const leaves: LeaveEntry[] = leaveData && leaveData.length > 0 ? leaveData : leaveResponse || [];
+
+  let permissions: PermissionEntry[] = [];
+  if (permissionData && permissionData.length > 0) {
+    permissions = permissionData;
+  } else if (permissionResponse) {
+    permissions = permissionResponse.data || permissionResponse;
+  }
 
   const MS_IN_A_DAY = 1000 * 60 * 60 * 24;
 
@@ -66,6 +89,18 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
   const normalizeDate = (dateString: string): Date => {
     const date = new Date(dateString);
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  };
+
+  // Helper function to check if two dates are the same day
+  const isSameDate = (date1: string, date2: string): boolean => {
+    try {
+      const d1 = normalizeDate(date1);
+      const d2 = normalizeDate(date2);
+      return d1.getTime() === d2.getTime();
+    } catch (error) {
+      console.error("Error comparing dates:", error);
+      return false;
+    }
   };
 
   // Improved date overlap function with proper date normalization
@@ -98,6 +133,20 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     }
   };
 
+  // Helper function to check if permission date is within range
+  const isPermissionInRange = (permissionDate: string): boolean => {
+    try {
+      const permDate = normalizeDate(permissionDate);
+      const fromDateObj = normalizeDate(fromDate);
+      const toDateObj = normalizeDate(toDate);
+
+      return permDate >= fromDateObj && permDate <= toDateObj;
+    } catch (error) {
+      console.error("Error in permission date range check:", error);
+      return false;
+    }
+  };
+
   // Helper function to check if a task falls within the date range
   const isTaskInDateRange = (task: WorkPlannedEntry): boolean => {
     if (!task.start_date || !task.end_date) {
@@ -116,6 +165,46 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
         leave.from_date &&
         leave.to_date &&
         datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
+    );
+  };
+
+  // Helper function to get permissions for a user within the date range
+  const getUserPermissionsInRange = (userId: string): PermissionEntry[] => {
+    return permissions.filter(
+      (permission) =>
+        permission.user_id === userId && permission.date && isPermissionInRange(permission.date)
+    );
+  };
+
+  // Helper function to check if a task has permission on the same date
+  const getTaskPermissionsOnSameDate = (
+    task: WorkPlannedEntry,
+    userPermissions: PermissionEntry[]
+  ): PermissionEntry[] => {
+    if (!task.start_date) return [];
+
+    return userPermissions.filter(
+      (permission) =>
+        permission.date && task.start_date && isSameDate(task.start_date, permission.date)
+    );
+  };
+
+  // Helper function to group permissions by date
+  const groupPermissionsByDate = (
+    permissions: PermissionEntry[]
+  ): { [date: string]: PermissionEntry[] } => {
+    return permissions.reduce(
+      (acc, permission) => {
+        if (permission.date) {
+          const dateKey = normalizeDate(permission.date).toISOString().split("T")[0];
+          if (!acc[dateKey]) {
+            acc[dateKey] = [];
+          }
+          acc[dateKey].push(permission);
+        }
+        return acc;
+      },
+      {} as { [date: string]: PermissionEntry[] }
     );
   };
 
@@ -161,6 +250,21 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
     }
   });
 
+  // Add users who only have permissions but no tasks (within date range)
+  permissions.forEach((permission) => {
+    if (permission.date && isPermissionInRange(permission.date)) {
+      const userKey = permission.user_id;
+      if (!groupedData[userKey]) {
+        groupedData[userKey] = {
+          userName: permission.user_name,
+          tasks: [],
+          totalEstimation: 0,
+          leaves: getUserLeavesInRange(userKey)
+        };
+      }
+    }
+  });
+
   // Check if there's any data to display
   const hasFilteredTasks = filteredData.length > 0;
   const leavesInRange = leaves.filter(
@@ -169,9 +273,13 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
       leave.to_date &&
       datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
   );
+  const permissionsInRange = permissions.filter(
+    (permission) => permission.date && isPermissionInRange(permission.date)
+  );
   const hasLeavesInRange = leavesInRange.length > 0;
+  const hasPermissionsInRange = permissionsInRange.length > 0;
 
-  if (!hasFilteredTasks && !hasLeavesInRange) {
+  if (!hasFilteredTasks && !hasLeavesInRange && !hasPermissionsInRange) {
     return (
       <Box sx={{ p: 4, textAlign: "center" }}>
         <Typography variant="h6" color="textSecondary">
@@ -224,21 +332,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
               >
                 {transworkplanned("testimation")}
               </TableCell>
-              <TableCell
-                rowSpan={2}
-                sx={{
-                  padding: "12px",
-                  textAlign: "center",
-                  backgroundColor: "#f5f5f5",
-                  minWidth: 150,
-                  position: "sticky",
-                  verticalAlign: "middle",
-                  top: 0,
-                  zIndex: 2
-                }}
-              >
-                {transworkplanned("leaveinfo")}
-              </TableCell>
+
               <TableCell
                 rowSpan={2}
                 sx={{
@@ -306,12 +400,58 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
           <TableBody>
             {Object.entries(groupedData).map(([userKey, userGroup]) => {
               const { userName, tasks, totalEstimation } = userGroup;
-              const totalRows = Math.max(tasks.length, 1);
               const userLeaves = getUserLeavesInRange(userKey);
+              const userPermissions = getUserPermissionsInRange(userKey);
+
+              // Create combined rows for tasks, leaves, and permissions
+              const allItems: (
+                | WorkPlannedEntry
+                | (LeaveEntry & { isLeave: boolean })
+                | (PermissionEntry & { isPermission: boolean })
+              )[] = [...tasks];
+
+              // Add leaves
+              userLeaves.forEach((leave) => {
+                allItems.push({
+                  ...leave,
+                  isLeave: true
+                });
+              });
+
+              // Add standalone permissions (not on same date as tasks)
+              const taskDates = tasks.map((task) => task.start_date).filter(Boolean);
+              const standalonePermissions = userPermissions.filter(
+                (permission) =>
+                  !taskDates.some(
+                    (taskDate) =>
+                      taskDate && permission.date && isSameDate(taskDate, permission.date)
+                  )
+              );
+
+              standalonePermissions.forEach((permission) => {
+                allItems.push({
+                  ...permission,
+                  isPermission: true
+                });
+              });
+
+              const totalRows = Math.max(allItems.length, 1);
 
               return Array.from({ length: totalRows }, (_, index) => {
-                const task = tasks[index];
+                const item = allItems[index];
                 const isFirstRow = index === 0;
+                const isLeave = item && "isLeave" in item && item.isLeave;
+                const isPermission = item && "isPermission" in item && item.isPermission;
+                const task = !isLeave && !isPermission ? (item as WorkPlannedEntry) : null;
+                const leave = isLeave ? (item as LeaveEntry & { isLeave: boolean }) : null;
+                const permission = isPermission
+                  ? (item as PermissionEntry & { isPermission: boolean })
+                  : null;
+
+                // Get permissions for this task if it exists
+                const taskPermissions = task
+                  ? getTaskPermissionsOnSameDate(task, userPermissions)
+                  : [];
 
                 return (
                   <TableRow key={`${userKey}-${index}`}>
@@ -349,88 +489,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                       </TableCell>
                     )}
 
-                    {/* Leave Information - Only show for first row of each user */}
-                    {isFirstRow && (
-                      <TableCell
-                        rowSpan={totalRows}
-                        sx={{
-                          padding: "10px",
-                          textAlign: "center",
-                          border: "1px solid #eee",
-                          verticalAlign: "middle"
-                        }}
-                      >
-                        {userLeaves.length > 0 ? (
-                          <Box display="flex" flexDirection="column" gap={1}>
-                            {userLeaves.map((leave, leaveIndex) => {
-                              const leaveFrom = normalizeDate(leave.from_date);
-                              const leaveTo = normalizeDate(leave.to_date);
-                              const days =
-                                Math.ceil((leaveTo.getTime() - leaveFrom.getTime()) / MS_IN_A_DAY) +
-                                1;
-
-                              return (
-                                <Box
-                                  key={leave.id || leaveIndex}
-                                  sx={{
-                                    p: 1,
-                                    backgroundColor:
-                                      getLeaveTypeColor(leave.leave_type) + LeaveBackgroundColor.num,
-                                    borderRadius: "8px",
-                                    border: `1px solid ${getLeaveTypeColor(leave.leave_type)}40`
-                                  }}
-                                >
-                                  <Typography
-                                    sx={{
-                                      fontWeight: 600,
-                                      fontSize: "0.7rem",
-                                      textTransform: "uppercase",
-                                      color: getLeaveTypeColor(leave.leave_type),
-                                      mb: 0.5
-                                    }}
-                                  >
-                                    {leave.leave_type}
-                                  </Typography>
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      fontSize: "0.7rem",
-                                      display: "block",
-                                      mb: 0.5
-                                    }}
-                                  >
-                                    <FormattedDateTime
-                                      date={leave.from_date}
-                                      format={DateFormats.DATE_ONLY}
-                                    />{" "}
-                                    {transworkplanned("to")}{" "}
-                                    <FormattedDateTime
-                                      date={leave.to_date}
-                                      format={DateFormats.DATE_ONLY}
-                                    />
-                                  </Typography>
-                                  <Chip
-                                    label={`${days} day${days > 1 ? "s" : ""}`}
-                                    size="small"
-                                    sx={{
-                                      backgroundColor: "#B1AAAA",
-                                      color: "#fff",
-                                      fontSize: "0.65rem",
-                                      height: 20,
-                                      borderRadius: "5px"
-                                    }}
-                                  />
-                                </Box>
-                              );
-                            })}
-                          </Box>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                    )}
-
-                    {/* Task - Show task if exists, otherwise show empty cell */}
+                    {/* Task/Leave/Permission Column */}
                     <TableCell
                       sx={{
                         padding: "12px",
@@ -479,13 +538,101 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                             </Typography>
                           )}
                           <StatusIndicator status={task.status} getColor={getStatusColor} />
+
+                          {/* Display permissions for this task if they exist on the same date */}
+                          {taskPermissions.length > 0 && (
+                            <Box mt={1}>
+                              <Typography
+                                sx={{
+                                  fontWeight: 600,
+                                  fontSize: "0.7rem",
+                                  textTransform: "uppercase",
+                                  color: getPermissionColor(),
+                                  mb: 0.5
+                                }}
+                              >
+                                LOGIN HOURS
+                              </Typography>
+                              {taskPermissions.map((perm, permIndex) => (
+                                <Chip
+                                  key={permIndex}
+                                  label={`${calculatePermissionDuration(perm.start_time, perm.end_time)}h`}
+                                  size="small"
+                                  sx={{
+                                    backgroundColor: getPermissionColor(),
+                                    color: "#fff",
+                                    fontSize: "0.65rem",
+                                    height: 20,
+                                    borderRadius: "5px",
+                                    mr: 0.5
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          )}
+                        </Box>
+                      ) : leave ? (
+                        <Box display="flex" flexDirection="column" gap={1}>
+                          <Box>
+                            <Typography
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: "0.7rem",
+                                textTransform: "uppercase",
+                                color: getLeaveTypeColor(leave.leave_type),
+                                mb: 0.5
+                              }}
+                            >
+                              {leave.leave_type ? "LEAVE" : ""}
+                            </Typography>
+
+                            <Chip
+                              label={`${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1} day${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1 > 1 ? "s" : ""}`}
+                              size="small"
+                              sx={{
+                                backgroundColor: "red",
+                                color: "#fff",
+                                fontSize: "0.65rem",
+                                height: 20,
+                                borderRadius: "5px"
+                              }}
+                            />
+                          </Box>
+                        </Box>
+                      ) : permission ? (
+                        <Box display="flex" flexDirection="column" gap={1}>
+                          <Box>
+                            <Typography
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: "0.7rem",
+                                textTransform: "uppercase",
+                                color: getPermissionColor(),
+                                mb: 0.5
+                              }}
+                            >
+                              LOGIN HOURS
+                            </Typography>
+
+                            <Chip
+                              label={`${calculatePermissionDuration(permission.start_time, permission.end_time)}h`}
+                              size="small"
+                              sx={{
+                                backgroundColor: getPermissionColor(),
+                                color: "#fff",
+                                fontSize: "0.65rem",
+                                height: 20,
+                                borderRadius: "5px"
+                              }}
+                            />
+                          </Box>
                         </Box>
                       ) : (
                         "-"
                       )}
                     </TableCell>
 
-                    {/* Start Date */}
+                    {/* Start Date - Show task date, leave from_date, or permission date */}
                     <TableCell
                       sx={{
                         padding: "12px",
@@ -497,12 +644,16 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                     >
                       {task && task.start_date ? (
                         <FormattedDateTime date={task.start_date} format={DateFormats.DATE_ONLY} />
+                      ) : leave && leave.from_date ? (
+                        <FormattedDateTime date={leave.from_date} format={DateFormats.DATE_ONLY} />
+                      ) : permission && permission.date ? (
+                        <FormattedDateTime date={permission.date} format={DateFormats.DATE_ONLY} />
                       ) : (
                         "-"
                       )}
                     </TableCell>
 
-                    {/* End Date */}
+                    {/* End Date - Show task date, leave to_date, or permission date */}
                     <TableCell
                       sx={{
                         padding: "12px",
@@ -514,12 +665,16 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                     >
                       {task && task.end_date ? (
                         <FormattedDateTime date={task.end_date} format={DateFormats.DATE_ONLY} />
+                      ) : leave && leave.to_date ? (
+                        <FormattedDateTime date={leave.to_date} format={DateFormats.DATE_ONLY} />
+                      ) : permission && permission.date ? (
+                        <FormattedDateTime date={permission.date} format={DateFormats.DATE_ONLY} />
                       ) : (
                         "-"
                       )}
                     </TableCell>
 
-                    {/* Task Estimation */}
+                    {/* Task Estimation - Only show for tasks, not leaves or permissions */}
                     <TableCell
                       sx={{
                         padding: "12px",

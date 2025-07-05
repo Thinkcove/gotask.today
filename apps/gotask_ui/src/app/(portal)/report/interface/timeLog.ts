@@ -48,3 +48,17 @@ export interface LeaveEntry {
 export interface EnhancedTimeLogGridProps extends TimeLogGridProps {
   leaveData?: LeaveEntry[];
 }
+export interface PermissionEntry {
+  _id: string;
+  user_id: string;
+  user_name: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  comments: string[];
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+

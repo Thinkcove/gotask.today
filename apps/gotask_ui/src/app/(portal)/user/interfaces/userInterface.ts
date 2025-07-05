@@ -7,6 +7,13 @@ export interface ISkill {
   experience?: number; // required if proficiency 3 or 4
 }
 
+export interface ICertificate {
+  certificate_id: string;
+  name: string;
+  obtained_date: string;
+  notes?: string;
+}
+
 export interface IUserField {
   name: string;
   status: boolean;
@@ -19,6 +26,7 @@ export interface IUserField {
   first_name: string;
   last_name: string;
   skills?: ISkill[];
+  certificates?: ICertificate[];
 }
 
 export interface User {
@@ -42,6 +50,7 @@ export interface User {
   last_name: string;
   assetDetails?: IAssetAttributes[];
   skills?: ISkill[];
+  certificates?: ICertificate[];
   issuesCount: string;
 }
 

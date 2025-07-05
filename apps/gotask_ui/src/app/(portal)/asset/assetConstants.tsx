@@ -42,8 +42,13 @@ export const getAssetColumns = (
     render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
   {
+    id: "modelName",
+    label: transasset("assetid"),
+    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
+  },
+  {
     id: "warrantyDate",
-    label: transasset("warrantyDate"),
+    label: transasset("warrantyvalidity"),
     render: (value: string | boolean | undefined) => {
       if (typeof value === "string" && !isNaN(Date.parse(value))) {
         const warrantyDate = new Date(value);
@@ -94,13 +99,8 @@ export const getAssetColumns = (
     }
   },
   {
-    id: "modelName",
-    label: transasset("model"),
-    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
-  },
-  {
     id: "purchaseDate",
-    label: transasset("purchaseDate"),
+    label: transasset("acquisitiondate"),
     render: (value: string | boolean | undefined) =>
       typeof value === "string" && !isNaN(Date.parse(value)) ? (
         <FormattedDateTime date={value} />

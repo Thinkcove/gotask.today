@@ -50,3 +50,5 @@ export const calculatePermissionDuration = (startTime: string, endTime: string):
 
   return Math.round((durationMinutes / 60) * 100) / 100;
 };
+
+export const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;

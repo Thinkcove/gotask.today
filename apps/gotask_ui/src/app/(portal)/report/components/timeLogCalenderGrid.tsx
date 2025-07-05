@@ -32,6 +32,7 @@ import {
   fetchAllPermissions,
   getLeaveTypeColor,
   getPermissionColor,
+  ISO_DATE_REGEX,
   LeaveBackgroundColor,
   PERMISSION_BACKGROUND_COLOR
 } from "@/app/common/constants/leave";
@@ -68,7 +69,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     if (!date) return date;
 
     // If already in YYYY-MM-DD format, return as-is
-    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    if (ISO_DATE_REGEX.test(date)) {
       return date;
     }
 
@@ -90,15 +91,13 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     return date;
   };
 
-
-
   const extractDateFromTimeLog = (entry: TimeLogEntry): string | null => {
     if (!entry?.date || typeof entry.date !== "string") {
       return null;
     }
 
     // Return directly if it's already in YYYY-MM-DD format
-    if (/^\d{4}-\d{2}-\d{2}$/.test(entry.date)) {
+    if (ISO_DATE_REGEX.test(entry.date)) {
       return entry.date;
     }
 
@@ -109,7 +108,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
 
     return null;
   };
-  
+
   const dateRange = getDateRange(fromDate, toDate);
 
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);

@@ -66,8 +66,16 @@ const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" })
 
   return (
     <Box sx={{ p: 3, height: "calc(100vh - 100px)", overflowY: "auto" }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Box mb={3} maxWidth={400}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        flexWrap="wrap"
+        gap={2}
+        mb={3}
+      >
+        {/* Left: Search Bar */}
+        <Box sx={{ flexGrow: 1, maxWidth: 400 }}>
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
@@ -75,7 +83,11 @@ const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" })
             placeholder={transkpi("searchemployees")}
           />
         </Box>
-        <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
+
+        {/* Right: Toggle */}
+        <Box sx={{ flexShrink: 0 }}>
+          <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
+        </Box>
       </Box>
 
       <Grid container spacing={3}>

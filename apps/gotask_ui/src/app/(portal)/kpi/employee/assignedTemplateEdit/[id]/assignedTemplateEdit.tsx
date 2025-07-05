@@ -94,7 +94,7 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
 
   return (
     <Box p={3} sx={{ overflowY: "auto", maxHeight: "calc(100vh - 60px)" }}>
-      <Typography variant="h6" fontWeight="bold" mb={3}>
+      <Typography variant="h6" fontWeight="bold" mb={3} color="#741B92">
         {transkpi("editassignment")}
       </Typography>
 
@@ -122,17 +122,6 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
 
         <Grid item xs={12} md={4}>
           <FormField
-            label={`${transkpi("measurementcriteria")} *`}
-            type="text"
-            value={form.measurement_criteria}
-            onChange={(val) => handleChange("measurement_criteria", String(val))}
-            placeholder={transkpi("entermeasurementcriteria")}
-            error={errors.measurement_criteria}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <FormField
             label={`${transkpi("frequency")} *`}
             type="select"
             options={Object.values(KPI_FREQUENCY)}
@@ -150,6 +139,15 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
             onChange={(val) => handleChange("weightage", String(val))}
             placeholder={transkpi("enterweightage")}
             error={errors.weightage}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <FormField
+            label={transkpi("targetvalue")}
+            type="text"
+            value={form.target_value}
+            onChange={(val) => handleChange("target_value", String(val))}
+            placeholder={transkpi("entertargetvalue")}
           />
         </Grid>
 

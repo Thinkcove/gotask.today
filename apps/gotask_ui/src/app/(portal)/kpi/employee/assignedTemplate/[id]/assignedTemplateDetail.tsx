@@ -73,7 +73,16 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
   };
 
   return (
-    <Box sx={{ p: 4, background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)" }}>
+    <Box
+      sx={{
+        p: 4,
+        background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)",
+        minHeight: "100vh",
+        height: "100vh",
+        overflowY: "auto",
+        boxSizing: "border-box"
+      }}
+    >
       <Box sx={{ borderRadius: 4, p: 4, bgcolor: "#f9fafb", border: "1px solid #e0e0e0" }}>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
           <Box display="flex" alignItems="center">
@@ -109,6 +118,12 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <LabelValueText label={transkpi("weightage")} value={assignment.weightage ?? "N/A"} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <LabelValueText
+              label={transkpi("targetvalue")}
+              value={assignment.target_value || "N/A"}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={4}>

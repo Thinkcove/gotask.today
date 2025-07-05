@@ -57,3 +57,10 @@ export interface LeaveFilters {
   sort_field?: string;
   sort_order?: string;
 }
+
+export interface LeaveFormField {
+  from_date: string;
+  to_date: string;
+  leave_type: string;
+  reasons: string;
+}

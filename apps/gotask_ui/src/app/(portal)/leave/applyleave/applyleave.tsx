@@ -12,13 +12,7 @@ import { LEAVE_TYPE } from "../constants/leaveConstants";
 import { createLeave } from "../services/leaveServices";
 import FormHeader from "../../access/components/FormHeader";
 import ReusableEditor from "@/app/component/richText/textEditor";
-
-interface LeaveFormField {
-  from_date: string;
-  to_date: string;
-  leave_type: string;
-  reasons: string;
-}
+import { LeaveFormField } from "../interface/leaveInterface";
 
 const ApplyLeave: React.FC = () => {
   const router = useRouter();
@@ -146,7 +140,6 @@ const ApplyLeave: React.FC = () => {
         create={transleave("create")}
         cancle={transleave("cancel")}
         update={transleave("update")}
-        showhistory={""}
         isSubmitting={isSubmitting}
       />
       <Box sx={{ pl: 2, pr: 2 }}>

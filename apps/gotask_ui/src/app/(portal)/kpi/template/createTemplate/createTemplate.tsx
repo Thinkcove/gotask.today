@@ -3,16 +3,17 @@ import React, { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { Template } from "../service/templateInterface";
-import { createTemplate } from "../service/templateAction";
 import { useRouter } from "next/navigation";
 import TemplateInput from "./templateInput";
+import { Template } from "../../service/templateInterface";
+import { createTemplate } from "../../service/templateAction";
+import { STATUS_OPTIONS } from "@/app/common/constants/kpi";
 
 interface CreateTemplateProps {
   mutate?: () => void;
 }
 
-const CreateTemplate: React.FC<CreateTemplateProps> = ({ mutate }) => {
+const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
 
@@ -20,7 +21,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ mutate }) => {
     title: "",
     description: "",
     frequency: "",
-    status: "",
+    status: STATUS_OPTIONS.ACTIVE,
     measurement_criteria: ""
   });
 
@@ -42,28 +43,22 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ mutate }) => {
     if (!formData.frequency) newErrors.frequency = transkpi("frequencyerror");
     if (!formData.status) newErrors.status = transkpi("statuserror");
     if (!formData.measurement_criteria) newErrors.measurement_criteria = transkpi("weightageerror");
+    if (!formData.description) newErrors.description = transkpi("descriptionerror");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleCreate = async () => {
+    const updatedData = {
+      ...formData
+    };
     if (!validateForm()) return;
 
-    const newTemplate: Partial<Template> = {
-      title: formData.title,
-      description: formData.description || undefined,
-      measurement_criteria: formData.measurement_criteria,
-      frequency: formData.frequency,
-      status: formData.status
-    };
-
     try {
-      await createTemplate(newTemplate);
-      if (mutate) {
-        await mutate();
-      }
-      router.push("/kpi");
+      const payload = updatedData;
+      await createTemplate(payload);
+      router.back();
     } catch (err: any) {
       console.error("Error creating template:", err);
       setErrors({ general: err.message || transkpi("createFailed") });
@@ -71,7 +66,11 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ mutate }) => {
   };
 
   const handleCancel = () => {
-    router.push("/kpi");
+    router.back();
+  };
+
+  const handleInputChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -155,7 +154,12 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ mutate }) => {
           width: "100%"
         }}
       >
-        <TemplateInput formData={formData} handleChange={handleChange} errors={errors} />
+        <TemplateInput
+          formData={formData}
+          handleChange={handleChange}
+          errors={errors}
+          handleInputChange={handleInputChange}
+        />
 
         {errors.general && (
           <Typography color="error.main" fontSize="0.875rem" mb={2}>

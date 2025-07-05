@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { Grid, Typography, Paper, Box, Button } from "@mui/material";
+import { Grid, Typography, Box, Button } from "@mui/material";
 import { createAssetAttributes, useAllAssets, useAllTypes } from "../services/assetActions"; // adjust path as needed
 import FormField from "../../../component/input/formField"; // assuming same reusable FormField
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -58,7 +58,9 @@ export const CreateAsset: React.FC = () => {
 
     //accesscard
     accessCardNo: "",
-    personalId: ""
+    personalId: "",
+    accessCardNo2: "",
+    issuedOn: ""
   });
   const [selectedAssetType, setSelectedAssetType] = useState<IAssetType | null>(null);
   const router = useRouter();
@@ -117,6 +119,10 @@ export const CreateAsset: React.FC = () => {
         newErrors.accessCardNo = `${transasset("accesscardno")} ${transasset("isrequired")}`;
       if (!formData.personalId)
         newErrors.personalId = `${transasset("personalid")} ${transasset("isrequired")}`;
+      if (!formData.accessCardNo2)
+        newErrors.accessCardNo2 = `${transasset("accesscardno2")} ${transasset("isrequired")}`;
+      if (!formData.issuedOn)
+        newErrors.issuedOn = `${transasset("issuedon")} ${transasset("isrequired")}`;
     }
 
     setErrors(newErrors);
@@ -152,7 +158,7 @@ export const CreateAsset: React.FC = () => {
   };
 
   return (
-    <Paper elevation={2} sx={{ padding: 2 }}>
+    <Box sx={{ padding: 2 }}>
       <Box
         sx={{
           display: "flex",
@@ -164,43 +170,41 @@ export const CreateAsset: React.FC = () => {
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
           {transasset("createasset")}
         </Typography>
-        {selectedAssetType && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Button
-              variant="outlined"
-              sx={{
-                borderRadius: "30px",
-                color: "black",
-                border: "2px solid  #741B92",
-                px: 2,
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.2)"
-                }
-              }}
-              onClick={() => router.back()}
-            >
-              {transasset("cancel")}
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                borderRadius: "30px",
-                backgroundColor: " #741B92",
-                color: "white",
-                px: 2,
-                textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201) 100%)"
-                }
-              }}
-              onClick={handleSubmit}
-            >
-              {transasset("create")}
-            </Button>
-          </Box>
-        )}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Button
+            variant="outlined"
+            sx={{
+              borderRadius: "30px",
+              color: "black",
+              border: "2px solid  #741B92",
+              px: 2,
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.2)"
+              }
+            }}
+            onClick={() => router.back()}
+          >
+            {transasset("cancel")}
+          </Button>
+          <Button
+            variant="contained"
+            sx={{
+              borderRadius: "30px",
+              backgroundColor: " #741B92",
+              color: "white",
+              px: 2,
+              textTransform: "none",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "rgb(202, 187, 201) 100%)"
+              }
+            }}
+            onClick={handleSubmit}
+          >
+            {transasset("create")}
+          </Button>
+        </Box>
       </Box>
       <Box sx={{ maxHeight: "calc(100vh - 180px)", overflowY: "auto", pr: 1 }}>
         <Grid container>
@@ -276,7 +280,7 @@ export const CreateAsset: React.FC = () => {
           onClose={() => setSnackbar({ ...snackbar, open: false })}
         />
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

@@ -30,6 +30,17 @@ const AccessInputs: React.FC<AccessInputsProps> = ({ formData, onChange, errors 
       </Grid>
       <Grid item xs={12} sm={6}>
         <FormField
+          label={`${transasset("accesscardno2")} ${transasset("required")}`}
+          type="text"
+          placeholder={transasset("accesscardno2")}
+          value={formData.accessCardNo2 || ""}
+          error={errors?.accessCardNo2}
+          required
+          onChange={(val) => onChange("accessCardNo2", String(val))}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <FormField
           label={`${transasset("personalid")} ${transasset("required")}`}
           type="text"
           placeholder={transasset("personalid")}
@@ -37,6 +48,21 @@ const AccessInputs: React.FC<AccessInputsProps> = ({ formData, onChange, errors 
           error={errors?.personalId}
           required
           onChange={(val) => onChange("personalId", String(val))}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <FormField
+          label={`${transasset("issuedon")} ${transasset("required")}`}
+          type="date"
+          placeholder={transasset("issuedon")}
+          value={formData.issuedOn}
+          error={errors?.issuedOn}
+          onChange={(val) =>
+            onChange(
+              "issuedOn",
+              val instanceof Date ? val.toISOString().split("T")[0] : String(val)
+            )
+          }
         />
       </Grid>
     </Grid>

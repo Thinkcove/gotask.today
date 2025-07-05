@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";

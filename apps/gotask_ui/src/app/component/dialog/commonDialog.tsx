@@ -18,7 +18,7 @@ interface CommonDialogProps extends DialogProps {
   children: React.ReactNode;
   submitLabel?: string;
   cancelLabel?: string;
-  submitColor?: string; // New prop for dynamic color
+  submitColor?: string;
   hideCancelButton?: boolean;
 }
 

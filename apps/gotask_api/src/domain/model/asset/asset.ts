@@ -38,6 +38,8 @@ export interface IAsset extends Document {
   //Access card fields
   accessCardNo?: string;
   personalId?: string;
+  issuedOn?: string;
+  accessCardNo2?: string;
 
   // Laptop-specific fields
   antivirus?: boolean;
@@ -96,7 +98,9 @@ const AssetSchema = new Schema<IAsset>(
 
     //Access card fields
     accessCardNo: { type: String },
-    personalId: { type: String }
+    personalId: { type: String },
+    issuedOn: { type: String },
+    accessCardNo2: { type: String }
   },
   {
     timestamps: true

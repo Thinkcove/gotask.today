@@ -201,6 +201,65 @@ class UserController extends BaseController {
       return this.replyError(error);
     }
   }
+  // Certificates
+
+  async getUserCertificates(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const result = await userService.getCertificates(userId);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async addUserCertificates(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const payload = requestHelper.getPayload();
+      const certificates = payload.certificates;
+
+      if (!Array.isArray(certificates) || certificates.length === 0) {
+        throw new Error("Certificates payload must be a non-empty array.");
+      }
+
+      const sanitizedCertificates = certificates.map((cert: any) => {
+        if ("certificate_id" in cert) delete cert.certificate_id;
+        if ("_id" in cert) delete cert._id;
+        return cert;
+      });
+
+      const updatedUser = await userService.addCertificates(userId, sanitizedCertificates);
+      return this.sendResponse(handler, updatedUser);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async updateUserCertificate(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const certificateId = requestHelper.getParam("certificate_id");
+      const updatedCertificate = requestHelper.getPayload();
+
+      const result = await userService.updateCertificate(userId, certificateId, updatedCertificate);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async deleteUserCertificate(requestHelper: RequestHelper, handler: any) {
+    try {
+      const userId = requestHelper.getParam("id");
+      const certificateId = requestHelper.getParam("certificate_id");
+
+      const result = await userService.deleteCertificate(userId, certificateId);
+      return this.sendResponse(handler, result);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
 }
 
 export default UserController;

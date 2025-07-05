@@ -173,4 +173,64 @@ UserRoutes.push({
   }
 });
 
+// Get all certificates of a user
+UserRoutes.push({
+  path: `/certificates/{id}`,
+  method: API_METHODS.GET,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.getUserCertificates(new RequestHelper(request), handler),
+  config: {
+    notes: "Get all certificates of a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Add certificate(s) to a user
+UserRoutes.push({
+  path: `/certificates/{id}`,
+  method: API_METHODS.POST,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.addUserCertificates(new RequestHelper(request), handler),
+  config: {
+    notes: "Add certificate(s) to a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Update a specific certificate of a user
+UserRoutes.push({
+  path: `/certificates/{id}/{certificate_id}`,
+  method: API_METHODS.PUT,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.updateUserCertificate(new RequestHelper(request), handler),
+  config: {
+    notes: "Update a specific certificate of a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+// Delete a specific certificate from a user
+UserRoutes.push({
+  path: `/certificates/{id}/{certificate_id}`,
+  method: API_METHODS.DELETE,
+  handler: (request: Request, handler: ResponseToolkit) =>
+    userController.deleteUserCertificate(new RequestHelper(request), handler),
+  config: {
+    notes: "Delete a specific certificate from a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
 export default UserRoutes;

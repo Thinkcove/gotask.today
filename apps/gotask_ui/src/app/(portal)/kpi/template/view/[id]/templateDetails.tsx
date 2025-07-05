@@ -5,12 +5,12 @@ import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { Template } from "../../service/templateInterface";
-import { deleteTemplate } from "../../service/templateAction";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { getUserStatusColor } from "@/app/common/constants/status";
+import { Template } from "../../../service/templateInterface";
+import { deleteTemplate } from "../../../service/templateAction";
 
 interface TemplateDetailProps {
   template: Template;
@@ -26,7 +26,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const handleBack = () => {
-    router.push("/kpi");
+    router.push("/kpi/template");
   };
 
   const handleDeleteClick = () => {
@@ -36,7 +36,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
   const handleDeleteConfirm = async () => {
     try {
       await deleteTemplate(template.id);
-      setSnackbarMessage(transkpi("deleteSuccess"));
+      setSnackbarMessage(transkpi("deletesuccess"));
       setSnackbarSeverity("success");
       setOpenDialog(false);
       setSnackbarOpen(true);
@@ -58,7 +58,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
   };
 
   const handleEditOpen = () => {
-    router.push(`/kpi/edit/${template.id}`);
+    router.push(`/kpi/template/edit/${template.id}`);
   };
 
   return (
@@ -78,6 +78,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
             border: "1px solid #e0e0e0"
           }}
         >
+          {/* Header */}
           <Box display="flex" alignItems="center" mb={3}>
             <IconButton color="primary" onClick={handleBack} sx={{ mr: 2 }}>
               <ArrowBack />
@@ -96,6 +97,8 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
               </Box>
             </Box>
           </Box>
+
+          {/* Description Section */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
               <LabelValueText
@@ -104,9 +107,14 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
               />
             </Grid>
           </Grid>
+
+          {/* KPI Info Section */}
           <Grid container spacing={2} mb={3}>
             <Grid item xs={4} sm={6} md={4}>
-              <LabelValueText label={transkpi("weightage")} value={template.measurement_criteria} />
+              <LabelValueText
+                label={transkpi("measurementcriteria")}
+                value={template.measurement_criteria || "N/A"}
+              />
             </Grid>
             <Grid item xs={4} sm={6} md={4}>
               <LabelValueText label={transkpi("frequency")} value={template.frequency || "N/A"} />
@@ -128,20 +136,24 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
               />
             </Grid>
           </Grid>
+
           <Divider sx={{ mb: 4 }} />
         </Box>
       </Box>
+
+      {/* Delete Confirmation Dialog */}
       <CommonDialog
         open={openDialog}
         onClose={handleDialogClose}
         onSubmit={handleDeleteConfirm}
         title={transkpi("deleteTitle")}
-        submitLabel="Delete"
+        submitLabel={transkpi("delete")}
       >
         <Typography variant="body1" color="text.secondary">
           {transkpi("deleteConfirm")}
         </Typography>
       </CommonDialog>
+
       <CustomSnackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}

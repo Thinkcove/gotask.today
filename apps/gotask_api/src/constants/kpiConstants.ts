@@ -8,7 +8,7 @@ export const KPI_FREQUENCY = {
   MONTHLY: "Monthly",
   QUARTERLY: "Quarterly",
   ANNUALLY: "Annually",
-  WEEKLY:"Weekly"
+  WEEKLY: "Weekly"
 };
 
 export const STATUS = {

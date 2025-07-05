@@ -28,7 +28,7 @@ import { ESTIMATION_FORMAT } from "@/app/common/constants/regex";
 import { formatTimeValue } from "@/app/common/utils/taskTime";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
-import { getLeaveTypeColor, LeaveBackgroundColor } from "@/app/common/constants/leave";
+import { getLeaveColor } from "@/app/common/constants/leave";
 
 const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
   data,
@@ -370,22 +370,13 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                                 1;
 
                               return (
-                                <Box
-                                  key={leave.id || leaveIndex}
-                                  sx={{
-                                    p: 1,
-                                    backgroundColor:
-                                      getLeaveTypeColor(leave.leave_type) + LeaveBackgroundColor.num,
-                                    borderRadius: "8px",
-                                    border: `1px solid ${getLeaveTypeColor(leave.leave_type)}40`
-                                  }}
-                                >
+                                <Box key={leave.id || leaveIndex}>
                                   <Typography
                                     sx={{
                                       fontWeight: 600,
                                       fontSize: "0.7rem",
                                       textTransform: "uppercase",
-                                      color: getLeaveTypeColor(leave.leave_type),
+                                      color: getLeaveColor(),
                                       mb: 0.5
                                     }}
                                   >

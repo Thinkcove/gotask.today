@@ -6,3 +6,6 @@ export const statusOptions = [
   { id: "true", name: "Active" },
   { id: "false", name: "In Active" }
 ];
+
+export const PROFICIENCY_MAXIMUM = 3;
+export const MINIMUM_EXPERIENCE_REQUIRED = 1;

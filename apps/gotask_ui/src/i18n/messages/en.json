@@ -608,7 +608,7 @@
     "placeholderUser": "User",
     "placeholderProject": "Project",
     "leave": "LEAVE",
-    "permission":"PERMISSION",
+    "permission": "PERMISSION",
     "meta": {
       "title": "Work Log | GoTaskToday",
       "description": "Generate and analyze reports across modules for insights and audits."
@@ -900,6 +900,8 @@
     "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids",
+    "leave": "LEAVE",
+    "permission": "PERMISSION",
     "meta": {
       "title": "Work Planned | GoTaskToday",
       "description": "Schedule and monitor planned work activities and milestones."

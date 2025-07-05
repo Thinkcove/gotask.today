@@ -1,28 +1,21 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { Box, Typography, Grid } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Grid } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useRouter } from "next/navigation";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { RichTextEditorRef } from "mui-tiptap";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { LEAVE_TYPE } from "../constants/leaveConstants";
-import { createLeave } from "../services/leaveServices";
+import { createLeave } from "../services/leaveAction";
 import FormHeader from "../../access/components/FormHeader";
-import ReusableEditor from "@/app/component/richText/textEditor";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import { LeaveFormField } from "../interface/leaveInterface";
 
-interface LeaveFormField {
-  from_date: string;
-  to_date: string;
-  leave_type: string;
-  reasons: string;
-}
 
 const ApplyLeave: React.FC = () => {
   const router = useRouter();
-  const editorRef = useRef<RichTextEditorRef>(null);
   const [formData, setFormData] = useState<LeaveFormField>({
     from_date: "",
     to_date: "",
@@ -34,7 +27,7 @@ const ApplyLeave: React.FC = () => {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
-    severity: "info" as "info" | "success" | "error" | "warning"
+    severity:SNACKBAR_SEVERITY.INFO
   });
 
   const handleInputChange = (name: string, value: string) => {
@@ -81,6 +74,10 @@ const ApplyLeave: React.FC = () => {
       newErrors.leave_type = transleave("leavetyperequired");
     }
 
+    if (!formData.reasons) {
+      newErrors.reasons = transleave("reasonrequired");
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -90,7 +87,7 @@ const ApplyLeave: React.FC = () => {
       setSnackbar({
         open: true,
         message: transleave("valerr"),
-        severity: "error"
+        severity: SNACKBAR_SEVERITY.ERROR
       });
       return;
     }
@@ -99,35 +96,25 @@ const ApplyLeave: React.FC = () => {
 
     try {
       const payload = {
-        ...formData,
-        reasons: editorRef.current?.editor?.getHTML() || formData.reasons
+        ...formData
       };
 
-      const response = await createLeave(payload);
-
-      if (response && response.success) {
-        setSnackbar({
-          open: true,
-          message: transleave("leavesubmit"),
-          severity: "success"
-        });
-
-        // Wait a bit before navigating to show the success message
-        setTimeout(() => {
-          router.push("/leave");
-        }, 1000);
-      } else {
-        throw new Error(response?.message);
-      }
-    } catch (error) {
-      console.error("Error creating leave:", error);
-
-      const errorMessage = transleave("failedsubmit");
+      await createLeave(payload);
 
       setSnackbar({
         open: true,
-        message: errorMessage,
-        severity: "error"
+        message: transleave("leavesubmit"),
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
+
+      setTimeout(() => {
+        router.push("/leave");
+      }, 1000);
+    } catch {
+      setSnackbar({
+        open: true,
+        message: transleave("failedsubmit"),
+        severity: SNACKBAR_SEVERITY.ERROR
       });
     } finally {
       setIsSubmitting(false);
@@ -155,7 +142,7 @@ const ApplyLeave: React.FC = () => {
             <FormField
               label={transleave("fromdate")}
               type="date"
-              placeholder="dd-mm-yyyy"
+              placeholder={transleave( "dateformat")}
               value={formData.from_date}
               onChange={(value) => {
                 const dateValue =
@@ -170,7 +157,7 @@ const ApplyLeave: React.FC = () => {
             <FormField
               label={transleave("todate")}
               type="date"
-              placeholder="dd-mm-yyyy"
+              placeholder={transleave( "dateformat")}
               value={formData.to_date}
               onChange={(value) => {
                 const dateValue =
@@ -199,20 +186,16 @@ const ApplyLeave: React.FC = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-              {transleave("reason")}
-            </Typography>
-            <ReusableEditor
-              ref={editorRef}
+            <FormField
+              label={transleave("reason")}
+              type="text"
               placeholder={transleave("enterreason")}
-              onSave={(html) => handleInputChange("reasons", html)}
-              content={formData.reasons}
+              value={formData.reasons}
+              onChange={(val) => handleInputChange("reasons", String(val))}
+              error={errors.reasons}
+              required
+              multiline
             />
-            {errors.reasons && (
-              <Typography variant="caption" color="error" sx={{ mt: 1 }}>
-                {errors.reasons}
-              </Typography>
-            )}
           </Grid>
         </Grid>
       </Box>

@@ -1,14 +1,13 @@
 "use client";
 import React, { useState, useRef } from "react";
-import { Box, Typography, Grid } from "@mui/material";
+import { Box ,Grid } from "@mui/material";
 import { useRouter, useParams } from "next/navigation";
 import FormField from "@/app/component/input/formField";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { RichTextEditorRef } from "mui-tiptap";
-import ReusableEditor from "@/app/component/richText/textEditor";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { updateLeave, useGetLeaveById } from "../../services/leaveServices";
+import { updateLeave, useGetLeaveById } from "../../services/leaveAction";
 import { LEAVE_TYPE } from "../../constants/leaveConstants";
 import FormHeader from "@/app/(portal)/access/components/FormHeader";
 
@@ -180,7 +179,7 @@ const EditLeave: React.FC = () => {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="body1" sx={{ mb: 1, fontWeight: "medium" }}>
+          {/* <Typography variant="body1" sx={{ mb: 1, fontWeight: "medium" }}>
             {transleave("reason")}
             <span style={{ color: "red" }}>*</span>
           </Typography>
@@ -194,7 +193,17 @@ const EditLeave: React.FC = () => {
             <Typography variant="caption" color="error" sx={{ mt: 1 }}>
               {errors.reasons}
             </Typography>
-          )}
+          )} */}
+           <FormField
+              label={transleave("reason")}
+              type="text"
+              placeholder={transleave("enterreason")}
+              value={formData.reasons}
+              onChange={(val) => handleInputChange("reasons", String(val))}
+              error={errors.reasons}
+              required
+              multiline
+            />
         </Grid>
       </Box>
 

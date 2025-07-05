@@ -1002,6 +1002,8 @@
     "create": "Create",
     "update": "Update",
     "leave": "Apply Leave",
-    "dateformat": "dd-mm-yyyy"
+    "dateformat": "dd-mm-yyyy",
+    "delete": "Delete",
+    "faileddelete": "Failed to delete leave request"
   }
 }

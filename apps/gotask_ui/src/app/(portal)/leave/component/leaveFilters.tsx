@@ -3,26 +3,8 @@ import { Box, Link, TextField } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import MultiSelectFilter from "@/app/component/multiSelect/multiSelectFilter";
+import { Item, Props } from "../interface/leaveInterface";
 
-interface Item {
-  id: string;
-  name: string | null | undefined;
-}
-
-interface Props {
-  userIdFilter: string[];
-  leaveTypeFilter: string[];
-  fromDate: string;
-  toDate: string;
-  allUserIds: string[];
-  allUserNames: string[];
-  allLeaveTypes: string[];
-  onUserIdChange: (val: string[]) => void;
-  onLeaveTypeChange: (val: string[]) => void;
-  onFromDateChange: (val: string) => void;
-  onToDateChange: (val: string) => void;
-  onClearFilters: () => void;
-}
 
 const LeaveFilters: React.FC<Props> = ({
   userIdFilter,

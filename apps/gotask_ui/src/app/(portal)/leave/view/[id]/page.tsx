@@ -5,7 +5,7 @@ import { ArrowBack, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import LabelValueText from "@/app/component/text/labelValueText";
-import { useGetLeaveById } from "../../services/leaveServices";
+import { useGetLeaveById } from "../../services/leaveAction";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
@@ -91,7 +91,7 @@ const ViewLeave: React.FC = () => {
               <Typography variant="h5">{leave.user_name}</Typography>
             </Grid>
             <Grid item xs="auto">
-              <IconButton color="primary" onClick={() => router.push(`/leave/leaves/edit/${leave.id}`)}>
+              <IconButton color="primary" onClick={() => router.push(`/leave/edit/${leave.id}`)}>
                 <Edit />
               </IconButton>
             </Grid>

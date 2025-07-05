@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { Box, Grid, Paper, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, Grid, Paper, IconButton, Tooltip, Typography, CircularProgress } from "@mui/material";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import Table, { Column } from "@/app/component/table/table";
@@ -13,9 +13,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { LeaveEntry } from "./interface/leaveInterface";
-import { useDeleteLeave, useGetAllLeaves } from "./services/leaveServices";
-import DeleteConfirmationPopup from "./component/deletebox";
+import { useDeleteLeave, useGetAllLeaves } from "./services/leaveAction";
 import LeaveFilters from "./component/leaveFilters";
+import CommonDialog from "@/app/component/dialog/commonDialog";
 const LeavePage: React.FC = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState<string>("");
@@ -27,12 +27,12 @@ const LeavePage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false); // State for dialog
 
-  const { data: allLeaves, isLoading, error: allError } = useGetAllLeaves(true);
-  const { mutate: deleteLeave, isLoading: isDeleting} = useDeleteLeave(); // Delete service
+  const { data: allLeaves, isLoading } = useGetAllLeaves(true);
+  const { mutate: deleteLeave} = useDeleteLeave(); // Delete service
 
   const displayData = useMemo(() => (Array.isArray(allLeaves) ? allLeaves : []), [allLeaves]);
 
-    const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
+  const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
 
   const handleActionClick = () => {
     router.push("/leave/applyleave");
@@ -48,18 +48,17 @@ const LeavePage: React.FC = () => {
 
   const handleDeleteClick = (leave: LeaveEntry) => {
     setSelectedLeave(leave);
-    setIsDeleteDialogOpen(true); // Open the delete confirmation dialog
+    setIsDeleteDialogOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
     if (!selectedLeave) return;
     try {
-      await deleteLeave(selectedLeave.id); // Call the delete service
+      await deleteLeave(selectedLeave.id); 
       setIsDeleteDialogOpen(false); // Close dialog
-      setSelectedLeave(null); // Clear selected leave
-    } catch (error) {
-      console.error("Delete failed:", error);
-      setErrorMessage("Failed to delete leave request");
+      setSelectedLeave(null); 
+    } catch  {
+      setErrorMessage(transleave("faileddelete"));
     }
   };
 
@@ -95,18 +94,29 @@ const LeavePage: React.FC = () => {
     return leaves.filter((leave) => {
       const matchSearch =
         !searchText ||
-        [leave.user_name, leave.leave_type, leave.from_date, leave.to_date, leave.user_id]
-          .some((field) => field && field.toString().toLowerCase().includes(searchText.toLowerCase()));
+        [leave.user_name, leave.leave_type, leave.from_date, leave.to_date, leave.user_id].some(
+          (field) => field && field.toString().toLowerCase().includes(searchText.toLowerCase())
+        );
       const matchUserId = userIdFilter.length === 0 || userIdFilter.includes(leave.user_id);
-      const matchLeaveType = leaveTypeFilter.length === 0 || leaveTypeFilter.includes(leave.leave_type);
-      const matchFromDate = !fromDateFilter || new Date(leave.from_date) >= new Date(fromDateFilter);
+      const matchLeaveType =
+        leaveTypeFilter.length === 0 || leaveTypeFilter.includes(leave.leave_type);
+      const matchFromDate =
+        !fromDateFilter || new Date(leave.from_date) >= new Date(fromDateFilter);
       const matchToDate = !toDateFilter || new Date(leave.to_date) <= new Date(toDateFilter);
       return matchSearch && matchUserId && matchLeaveType && matchFromDate && matchToDate;
     });
   };
 
   const filteredData = useMemo(
-    () => filterLeaves(displayData, searchText, userIdFilter, leaveTypeFilter, fromDateFilter, toDateFilter),
+    () =>
+      filterLeaves(
+        displayData,
+        searchText,
+        userIdFilter,
+        leaveTypeFilter,
+        fromDateFilter,
+        toDateFilter
+      ),
     [displayData, searchText, userIdFilter, leaveTypeFilter, fromDateFilter, toDateFilter]
   );
 
@@ -124,19 +134,19 @@ const LeavePage: React.FC = () => {
   };
 
   const leaveColumns: Column<LeaveEntry>[] = [
-    { id: "user_name", label:transleave("username"), sortable: true },
+    { id: "user_name", label: transleave("username"), sortable: true },
     { id: "leave_type", label: transleave("leavetype"), sortable: false },
     {
       id: "from_date",
       label: transleave("fromdate"),
       render: (value: string | undefined, row: LeaveEntry) => formatDate(row.from_date || ""),
-      sortable: true,
+      sortable: true
     },
     {
       id: "to_date",
       label: transleave("todate"),
       render: (value: string | undefined, row: LeaveEntry) => formatDate(row.to_date || ""),
-      sortable: true,
+      sortable: true
     },
     {
       id: "actions",
@@ -155,13 +165,17 @@ const LeavePage: React.FC = () => {
             </IconButton>
           </Tooltip>
           <Tooltip title={transleave("deleteleave")}>
-            <IconButton size="small" onClick={() => handleDeleteClick(row)} sx={{ color: "#741B92" }}>
+            <IconButton
+              size="small"
+              onClick={() => handleDeleteClick(row)}
+              sx={{ color: "#741B92" }}
+            >
               <Delete fontSize="small" />
             </IconButton>
           </Tooltip>
         </Box>
-      ),
-    },
+      )
+    }
   ];
 
   const handleClearFilters = () => {
@@ -174,23 +188,17 @@ const LeavePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <>
-        <ModuleHeader name="leave" />
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
-       {transleave("loading")}
-        </Box>
-      </>
-    );
-  }
-
-  if (allError) {
-    return (
-      <>
-        <ModuleHeader name="leave" />
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
-          {transleave("error")} {allError.message}
-        </Box>
-      </>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+        }}
+      >
+        <CircularProgress size={50} thickness={4} />
+      </Box>
     );
   }
 
@@ -211,7 +219,7 @@ const LeavePage: React.FC = () => {
           gap: 1,
           px: 2,
           mt: 2,
-          flexWrap: "nowrap",
+          flexWrap: "nowrap"
         }}
       >
         <Box sx={{ flex: "1 1 auto", maxWidth: "300px" }}>
@@ -244,7 +252,15 @@ const LeavePage: React.FC = () => {
             ) : filteredData.length === 0 ? (
               <EmptyState imageSrc={NoAssetsImage} message={transleave("nodata")} />
             ) : (
-              <Paper sx={{ p: 2, overflow: "auto", display: "flex", flexDirection: "column", overflowY: "auto" }}>
+              <Paper
+                sx={{
+                  p: 2,
+                  overflow: "auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflowY: "auto"
+                }}
+              >
                 <Box sx={{ width: "100%", flex: 1 }}>
                   <Box sx={{ minWidth: 800 }}>
                     <Table<LeaveEntry> columns={leaveColumns} rows={filteredData} />
@@ -263,15 +279,17 @@ const LeavePage: React.FC = () => {
           onClick={handleActionClick}
         />
       </Box>
-
-      <DeleteConfirmationPopup
+      <CommonDialog
         open={isDeleteDialogOpen}
         onClose={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        transleave={transleave}
-        leave={selectedLeave}
-        isDeleting={isDeleting}
-      />
+        onSubmit={handleDeleteConfirm}
+        title={transleave("deletetitle")}
+        submitLabel={transleave("delete")}
+        cancelLabel={transleave("cancel")}
+        submitColor="#b71c1c"
+      >
+        <Typography sx={{ pt: 2 }}>{transleave("deleteconfirm")}</Typography>
+      </CommonDialog>
     </>
   );
 };

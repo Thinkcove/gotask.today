@@ -1,5 +1,4 @@
 // page.tsx
-"use client";
 import React from "react";
 import ApplyLeave from "./applyleave";
 import ModuleHeader from "@/app/component/header/moduleHeader";

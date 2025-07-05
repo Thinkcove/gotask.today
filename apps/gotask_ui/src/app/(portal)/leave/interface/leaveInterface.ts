@@ -22,7 +22,6 @@ export interface LeaveGridProps {
   toDate: string;
 }
 
-// API Response interface with enhanced structure
 export interface LeaveApiResponse {
   success: boolean;
   message: string;
@@ -32,8 +31,6 @@ export interface LeaveApiResponse {
   current_page?: number;
   error?: string;
 }
-
-// For the filtered response structure
 export interface LeaveResponseData {
   leaves: LeaveEntry[];
   total_count: number;
@@ -56,4 +53,31 @@ export interface LeaveFilters {
   page_size?: number;
   sort_field?: string;
   sort_order?: string;
+}
+
+export interface LeaveFormField {
+  from_date: string;
+  to_date: string;
+  leave_type: string;
+  reasons: string;
+}
+
+export interface Item {
+  id: string;
+  name: string | null | undefined;
+}
+
+export interface Props {
+  userIdFilter: string[];
+  leaveTypeFilter: string[];
+  fromDate: string;
+  toDate: string;
+  allUserIds: string[];
+  allUserNames: string[];
+  allLeaveTypes: string[];
+  onUserIdChange: (val: string[]) => void;
+  onLeaveTypeChange: (val: string[]) => void;
+  onFromDateChange: (val: string) => void;
+  onToDateChange: (val: string) => void;
+  onClearFilters: () => void;
 }

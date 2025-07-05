@@ -86,28 +86,18 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
   // Helper function to check if two dates are the same day
   const isSameDate = (date1: string, date2: string): boolean => {
-    try {
-      const d1 = normalizeDate(date1);
-      const d2 = normalizeDate(date2);
-      return d1.getTime() === d2.getTime();
-    } catch (error) {
-      console.error("Error comparing dates:", error);
-      return false;
-    }
+    const d1 = normalizeDate(date1);
+    const d2 = normalizeDate(date2);
+    return d1.getTime() === d2.getTime();
   };
 
   // Helper function to check if a date falls within a leave period
   const isDateInLeaveRange = (date: string, leave: LeaveEntry): boolean => {
-    try {
-      const checkDate = normalizeDate(date);
-      const leaveStart = normalizeDate(leave.from_date);
-      const leaveEnd = normalizeDate(leave.to_date);
+    const checkDate = normalizeDate(date);
+    const leaveStart = normalizeDate(leave.from_date);
+    const leaveEnd = normalizeDate(leave.to_date);
 
-      return checkDate >= leaveStart && checkDate <= leaveEnd;
-    } catch (error) {
-      console.error("Error checking date in leave range:", error);
-      return false;
-    }
+    return checkDate >= leaveStart && checkDate <= leaveEnd;
   };
 
   // Improved date overlap function with proper date normalization
@@ -117,41 +107,31 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     secondLeaveStart: string,
     secondLeaveEnd: string
   ): boolean => {
-    try {
-      const firstLeaveStartDate = new Date(firstLeaveStart);
-      const firstLeaveEndDate = new Date(firstLeaveEnd);
-      const secondLeaveStartDate = new Date(secondLeaveStart);
-      const secondLeaveEndDate = new Date(secondLeaveEnd);
+    const firstLeaveStartDate = new Date(firstLeaveStart);
+    const firstLeaveEndDate = new Date(firstLeaveEnd);
+    const secondLeaveStartDate = new Date(secondLeaveStart);
+    const secondLeaveEndDate = new Date(secondLeaveEnd);
 
-      // Check if all dates are valid
-      if (
-        isNaN(firstLeaveStartDate.getTime()) ||
-        isNaN(firstLeaveEndDate.getTime()) ||
-        isNaN(secondLeaveStartDate.getTime()) ||
-        isNaN(secondLeaveEndDate.getTime())
-      ) {
-        return false;
-      }
-
-      return firstLeaveStartDate <= secondLeaveEndDate && secondLeaveStartDate <= firstLeaveEndDate;
-    } catch (error) {
-      console.error("Error in date overlap check:", error);
+    // Check if all dates are valid
+    if (
+      isNaN(firstLeaveStartDate.getTime()) ||
+      isNaN(firstLeaveEndDate.getTime()) ||
+      isNaN(secondLeaveStartDate.getTime()) ||
+      isNaN(secondLeaveEndDate.getTime())
+    ) {
       return false;
     }
+
+    return firstLeaveStartDate <= secondLeaveEndDate && secondLeaveStartDate <= firstLeaveEndDate;
   };
 
   // Helper function to check if permission date is within range
   const isPermissionInRange = (permissionDate: string): boolean => {
-    try {
-      const permDate = normalizeDate(permissionDate);
-      const fromDateObj = normalizeDate(fromDate);
-      const toDateObj = normalizeDate(toDate);
+    const permDate = normalizeDate(permissionDate);
+    const fromDateObj = normalizeDate(fromDate);
+    const toDateObj = normalizeDate(toDate);
 
-      return permDate >= fromDateObj && permDate <= toDateObj;
-    } catch (error) {
-      console.error("Error in permission date range check:", error);
-      return false;
-    }
+    return permDate >= fromDateObj && permDate <= toDateObj;
   };
 
   // Helper function to check if a task falls within the date range
@@ -565,7 +545,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                   fontWeight: 600,
                                   fontSize: "0.7rem",
                                   textTransform: "uppercase",
-                                  color: "red",
+                                  color: getLeaveColor(),
                                   mb: 0.5
                                 }}
                               >
@@ -577,7 +557,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                   label={`${Math.ceil((normalizeDate(taskLeave.to_date).getTime() - normalizeDate(taskLeave.from_date).getTime()) / MS_IN_A_DAY) + 1} day${Math.ceil((normalizeDate(taskLeave.to_date).getTime() - normalizeDate(taskLeave.from_date).getTime()) / MS_IN_A_DAY) + 1 > 1 ? "s" : ""}`}
                                   size="small"
                                   sx={{
-                                    backgroundColor: "red",
+                                    backgroundColor: getLeaveColor(),
                                     color: "#fff",
                                     fontSize: "0.65rem",
                                     height: 20,
@@ -640,7 +620,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               label={`${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1} day${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1 > 1 ? "s" : ""}`}
                               size="small"
                               sx={{
-                                backgroundColor: "red",
+                                backgroundColor: getLeaveColor(),
                                 color: "#fff",
                                 fontSize: "0.65rem",
                                 height: 20,

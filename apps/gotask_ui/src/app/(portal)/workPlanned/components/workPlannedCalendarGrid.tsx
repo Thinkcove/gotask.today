@@ -214,24 +214,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     );
   };
 
-  // Helper function to group permissions by date
-  const groupPermissionsByDate = (
-    permissions: PermissionEntry[]
-  ): { [date: string]: PermissionEntry[] } => {
-    return permissions.reduce(
-      (acc, permission) => {
-        if (permission.date) {
-          const dateKey = normalizeDate(permission.date).toISOString().split("T")[0];
-          if (!acc[dateKey]) {
-            acc[dateKey] = [];
-          }
-          acc[dateKey].push(permission);
-        }
-        return acc;
-      },
-      {} as { [date: string]: PermissionEntry[] }
-    );
-  };
+
 
   // Filter data by date range BEFORE grouping
   const filteredData = data.filter(isTaskInDateRange);

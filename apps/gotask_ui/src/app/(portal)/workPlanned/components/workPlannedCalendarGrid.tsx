@@ -31,7 +31,10 @@ import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { PermissionEntry } from "../../report/interface/timeLog";
 import { fetchAllPermissions } from "../../report/services/reportService";
-import { calculatePermissionDuration } from "@/app/common/utils/leaveCalculate";
+import {
+  calculatePermissionDuration,
+  
+} from "@/app/common/utils/leaveCalculate";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 
 // Enhanced interface to include permissions
@@ -57,8 +60,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   } else if (permissionResponse) {
     permissions = permissionResponse.data || permissionResponse;
   }
-
-  const MS_IN_A_DAY = 1000 * 60 * 60 * 24;
 
   const formatEstimation = (estimation: string | number | null | undefined) => {
     if (!estimation || estimation === null || estimation === undefined || estimation === "") {
@@ -574,7 +575,10 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               {taskLeaves.map((taskLeave, leaveIndex) => (
                                 <Chip
                                   key={leaveIndex}
-                                  label={`${Math.ceil((normalizeDate(taskLeave.to_date).getTime() - normalizeDate(taskLeave.from_date).getTime()) / MS_IN_A_DAY) + 1} day${Math.ceil((normalizeDate(taskLeave.to_date).getTime() - normalizeDate(taskLeave.from_date).getTime()) / MS_IN_A_DAY) + 1 > 1 ? "s" : ""}`}
+                                  label={calculatePermissionDuration(
+                                    taskLeave.from_date,
+                                    taskLeave.to_date
+                                  )}
                                   size="small"
                                   sx={{
                                     backgroundColor: "red",
@@ -637,7 +641,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             </Typography>
 
                             <Chip
-                              label={`${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1} day${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1 > 1 ? "s" : ""}`}
+                              label={calculatePermissionDuration(leave.from_date, leave.to_date)}
                               size="small"
                               sx={{
                                 backgroundColor: "red",

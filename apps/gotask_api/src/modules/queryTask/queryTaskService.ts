@@ -9,7 +9,7 @@ import {
   deleteByTaskId,
   findAllTasks,
   findTaskById,
-  findTaskCountByStatus,
+  getTaskCountByStatus,
   findTasksByProject,
   findTasksByUser,
   updateATask,
@@ -132,7 +132,7 @@ export const getTaskCountByStatusService = async (): Promise<{
   message?: string;
 }> => {
   try {
-    const counts = await findTaskCountByStatus();
+    const counts = await getTaskCountByStatus();
     return { success: true, data: counts, message: QueryTaskMessages.EMPLOYEE_TASKS.COUNT };
   } catch (error: any) {
     return { success: false, message: error.message || QueryTaskMessages.QUERY.FAILED };

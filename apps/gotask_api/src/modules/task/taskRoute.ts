@@ -89,9 +89,9 @@ TaskRoutes.push({
   path: API_PATHS.GET_TASK_COUNT_BY_STATUS,
   method: API_METHODS.GET,
   handler: (request: Request, handler: ResponseToolkit) =>
-    taskController.getTaskCountByStatus(new RequestHelper(request), handler),
+    taskController.getDashboardSummary(new RequestHelper(request), handler),
   config: {
-    notes: "Get task count grouped by status",
+    notes: "Get dashboard summary for tasks",
     tags
   }
 });

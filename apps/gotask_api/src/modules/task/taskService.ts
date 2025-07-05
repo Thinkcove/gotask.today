@@ -1,5 +1,5 @@
 import TaskMessages from "../../constants/apiMessages/taskMessage";
-import { SortField, SortOrder } from "../../constants/taskConstant";
+import { SortField, SortOrder, TASK_STATUS } from "../../constants/taskConstant";
 import { TimeUtil } from "../../constants/utils/timeUtils";
 import {
   addTimeSpentToTask,
@@ -9,7 +9,8 @@ import {
   deleteCommentFromTask,
   findAllTasks,
   findTaskById,
-  findTaskCountByStatus,
+  getTaskCountBySeverity,
+  getTaskCountByStatus,
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
@@ -450,21 +451,48 @@ const getTasksByUser = async (
 };
 
 // Get task count grouped by status
-const getTaskCountByStatus = async (): Promise<{
+const getDashboardSummary = async (): Promise<{
   success: boolean;
-  data?: Record<string, number>;
+  data?: any;
   message?: string;
 }> => {
   try {
-    const taskCounts = await findTaskCountByStatus();
+    const [statusCounts, severityCounts, totalCount, completedCount, overdueCount, upcomingCount] =
+      await Promise.all([
+        getTaskCountByStatus(),
+        getTaskCountBySeverity(),
+        Task.countDocuments({}),
+        Task.countDocuments({ status: TASK_STATUS.COMPLETED }),
+        Task.countDocuments({
+          due_date: { $lt: new Date() },
+          status: { $ne: TASK_STATUS.COMPLETED }
+        }),
+        Task.countDocuments({
+          due_date: {
+            $gte: new Date(),
+            $lte: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+          } // 7 days
+        })
+      ]);
+
+    const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
     return {
       success: true,
-      data: taskCounts
+      data: {
+        statusCounts: statusCounts.data,
+        severityCounts,
+        totalCount,
+        completedCount,
+        progress,
+        overdueCount,
+        upcomingCount
+      }
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || TaskMessages.FETCH.FAILED_COUNTS
+      message: error.message || "Failed to fetch dashboard data"
     };
   }
 };
@@ -627,6 +655,7 @@ export {
   getTasksByProject,
   getTasksByUser,
   getTaskCountByStatus,
+  getDashboardSummary,
   getTaskById,
   updateTask,
   createComment,

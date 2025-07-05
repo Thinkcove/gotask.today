@@ -6,6 +6,12 @@ export const TaskStatuses = [
   { label: "Completed", color: "#4CAF50" }
 ];
 
+export const TaskSeverities = [
+  { label: "LOW", color: "#8BC34A" },
+  { label: "MEDIUM", color: "#FFC107" },
+  { label: "HIGH", color: "#F44336" }
+];
+
 export const getStatusColor = (status: string): string => {
   switch (status) {
     case "to-do":

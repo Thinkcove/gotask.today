@@ -14,7 +14,8 @@ import {
   getTasksByUser,
   updateComment,
   deleteComment,
-  updateTask
+  updateTask,
+  getDashboardSummary
 } from "./taskService";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 
@@ -126,10 +127,10 @@ class TaskController extends BaseController {
   }
 
   // Get Task Count by Status
-  async getTaskCountByStatus(_requestHelper: RequestHelper, handler: any) {
+  async getDashboardSummary(_requestHelper: RequestHelper, handler: any) {
     try {
-      const result = await getTaskCountByStatus();
-      return this.sendResponse(handler, result);
+      const summary = await getDashboardSummary();
+      return this.sendResponse(handler, summary);
     } catch (error) {
       return this.replyError(error, handler);
     }

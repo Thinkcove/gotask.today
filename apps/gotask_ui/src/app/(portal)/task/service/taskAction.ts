@@ -128,7 +128,8 @@ export const useUserGroupTask = (
 };
 
 //fetch status count
-export const fetchTaskStatusCounts = async () => {
+
+export const fetchDashboardSummary = async () => {
   return getData(`${env.API_BASE_URL}/tasks/status-count`);
 };
 

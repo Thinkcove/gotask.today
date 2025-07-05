@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { TASK_STATUS } from "../../../constants/taskConstant";
+import { TASK_SEVERITY, TASK_STATUS } from "../../../constants/taskConstant";
 import { generateHistoryEntry } from "../../../constants/utils/taskHistory";
 import { Project } from "../../model/project/project";
 import { ITask, Task } from "../../model/task/task";
@@ -63,7 +63,7 @@ const findTasksByUser = async (aggregationPipeline: any[]): Promise<any> => {
 };
 
 // Get task count grouped by status
-const findTaskCountByStatus = async (): Promise<Record<string, number>> => {
+const getTaskCountByStatus = async (): Promise<Record<string, number>> => {
   const taskCounts = await Task.aggregate([
     {
       $group: {
@@ -85,6 +85,30 @@ const findTaskCountByStatus = async (): Promise<Record<string, number>> => {
     acc[item._id] = item.count;
     return acc;
   }, defaultStatuses);
+};
+
+const getTaskCountBySeverity = async (): Promise<Record<string, number>> => {
+  const severityCounts = await Task.aggregate([
+    {
+      $group: {
+        _id: "$severity",
+        count: { $sum: 1 }
+      }
+    }
+  ]);
+
+  const defaultSeverities: Record<string, number> = Object.values(TASK_SEVERITY).reduce(
+    (acc: Record<string, number>, severity: string) => {
+      acc[severity] = 0;
+      return acc;
+    },
+    {}
+  );
+
+  return severityCounts.reduce((acc: Record<string, number>, item) => {
+    acc[item._id] = item.count;
+    return acc;
+  }, defaultSeverities);
 };
 
 // Update task
@@ -253,7 +277,8 @@ export {
   findTaskById,
   findTasksByProject,
   findTasksByUser,
-  findTaskCountByStatus,
+  getTaskCountByStatus,
+  getTaskCountBySeverity,
   updateATask,
   createCommentInTask,
   updateCommentInTask,

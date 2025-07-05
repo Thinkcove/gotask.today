@@ -902,6 +902,8 @@
     "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids",
+    "leave": "LEAVE",
+    "permission": "PERMISSION",
     "meta": {
       "title": "Work Planned | GoTaskToday",
       "description": "Schedule and monitor planned work activities and milestones."

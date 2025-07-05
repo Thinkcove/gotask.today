@@ -239,7 +239,7 @@ class UserController extends BaseController {
   async updateUserCertificate(requestHelper: RequestHelper, handler: any) {
     try {
       const userId = requestHelper.getParam("id");
-      const certificateId = requestHelper.getParam("certificate_id"); // ✅ updated from _id
+      const certificateId = requestHelper.getParam("certificate_id"); 
       const updatedCertificate = requestHelper.getPayload();
 
       const result = await userService.updateCertificate(userId, certificateId, updatedCertificate);
@@ -252,7 +252,7 @@ class UserController extends BaseController {
   async deleteUserCertificate(requestHelper: RequestHelper, handler: any) {
     try {
       const userId = requestHelper.getParam("id");
-      const certificateId = requestHelper.getParam("certificate_id"); // ✅ updated from _id
+      const certificateId = requestHelper.getParam("certificate_id"); 
 
       const result = await userService.deleteCertificate(userId, certificateId);
       return this.sendResponse(handler, result);

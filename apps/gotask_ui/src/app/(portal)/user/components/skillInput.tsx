@@ -443,7 +443,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         submitLabel={transInc("delete")}
         cancelLabel={transInc("cancel")}
       >
-        {/* <Typography>{trans("deleteskill")}</Typography> */}
         <Typography>
           {trans("deleteskill", { skill: `"${skills[deleteIndex!]?.name || ""}"` })}
         </Typography>

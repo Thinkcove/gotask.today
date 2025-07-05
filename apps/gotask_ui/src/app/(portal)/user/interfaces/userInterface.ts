@@ -10,7 +10,7 @@ export interface ISkill {
 export interface ICertificate {
   certificate_id: string;
   name: string;
-  obtained_date: string; // or Date
+  obtained_date: string; 
   notes?: string;
 }
 

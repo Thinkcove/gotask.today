@@ -32,7 +32,10 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
   const hasSentProjectNameRef = useRef(false); // Track whether projectName has been sent to parent
 
-  const getKey = (pageIndex: number, previousPageData: any) => {
+  const getKey = (
+    pageIndex: number,
+    previousPageData: PaginatedStoryResponse | null | undefined
+  ) => {
     if (previousPageData && "data" in previousPageData && !previousPageData.data.length)
       return null;
     return `stories-${projectId}-${status.join(",")}-${startDate}-${searchTerm}-page-${pageIndex + 1}`;
@@ -88,7 +91,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
       observerRef.current.observe(node);
     },
-    [isLoading, isValidating, hasMore]
+    [isLoading, isValidating, hasMore, setSize]
   );
 
   return (

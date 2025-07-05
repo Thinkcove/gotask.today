@@ -210,7 +210,7 @@ export const updateUserCertificate = async (
   updatedCertificate: Partial<ICertificate>
 ): Promise<{ success: boolean; message?: string }> => {
   return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateId}`; 
+    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateId}`;
     return await putData(url, updatedCertificate as unknown as Record<string, unknown>, token);
   });
 };

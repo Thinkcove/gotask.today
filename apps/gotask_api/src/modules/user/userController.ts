@@ -223,10 +223,10 @@ class UserController extends BaseController {
         throw new Error("Certificates payload must be a non-empty array.");
       }
 
-      // Strip manually set certificate_id if present (ensure auto UUID applies)
       const sanitizedCertificates = certificates.map((cert: any) => {
-        const { certificate_id, _id, ...rest } = cert;
-        return rest;
+        if ("certificate_id" in cert) delete cert.certificate_id;
+        if ("_id" in cert) delete cert._id;
+        return cert;
       });
 
       const updatedUser = await userService.addCertificates(userId, sanitizedCertificates);
@@ -239,7 +239,7 @@ class UserController extends BaseController {
   async updateUserCertificate(requestHelper: RequestHelper, handler: any) {
     try {
       const userId = requestHelper.getParam("id");
-      const certificateId = requestHelper.getParam("certificate_id"); 
+      const certificateId = requestHelper.getParam("certificate_id");
       const updatedCertificate = requestHelper.getPayload();
 
       const result = await userService.updateCertificate(userId, certificateId, updatedCertificate);
@@ -252,7 +252,7 @@ class UserController extends BaseController {
   async deleteUserCertificate(requestHelper: RequestHelper, handler: any) {
     try {
       const userId = requestHelper.getParam("id");
-      const certificateId = requestHelper.getParam("certificate_id"); 
+      const certificateId = requestHelper.getParam("certificate_id");
 
       const result = await userService.deleteCertificate(userId, certificateId);
       return this.sendResponse(handler, result);

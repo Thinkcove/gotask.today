@@ -13,6 +13,7 @@ import {
   Chip
 } from "@mui/material";
 import {
+  EnhancedWorkPlannedGridProps,
   GroupedTasks,
   LeaveEntry,
   WorkPlannedEntry,
@@ -34,9 +35,6 @@ import { calculatePermissionDuration } from "@/app/common/utils/leaveCalculate";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 
 // Enhanced interface to include permissions
-interface EnhancedWorkPlannedGridProps extends WorkPlannedGridProps {
-  permissionData?: PermissionEntry[];
-}
 
 const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   data,

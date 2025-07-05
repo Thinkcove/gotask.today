@@ -19,6 +19,7 @@ import { getById } from "../../domain/interface/asset/asset";
 import { IAsset } from "../../domain/model/asset/asset";
 import { ISkill } from "../../domain/model/user/skills";
 import { ICertificate } from "../../domain/model/user/certificate";
+import { IIncrementHistory } from "../../domain/model/user/increment";
 
 class userService {
   // CREATE USER
@@ -604,6 +605,89 @@ class userService {
         success: false,
         message: error.message || UserMessages.CERTIFICATE.GET_FAILED
       };
+    }
+  }
+
+  async getIncrementHistory(
+    userId: string
+  ): Promise<{ success: boolean; data?: IIncrementHistory[]; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
+
+      return { success: true, data: user.increment_history || [] };
+    } catch (error: any) {
+      return { success: false, message: error.message || UserMessages.INCREMENT.GET_FAILED };
+    }
+  }
+
+  async addIncrement(
+    userId: string,
+    increment: IIncrementHistory
+  ): Promise<{ success: boolean; data?: IIncrementHistory[]; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
+
+      if (!user.increment_history) user.increment_history = [];
+      user.increment_history.push(increment);
+      await user.save();
+
+      return {
+        success: true,
+        data: user.increment_history,
+        message: UserMessages.INCREMENT.ADD_SUCCESS
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message || UserMessages.INCREMENT.ADD_FAILED };
+    }
+  }
+
+  async updateIncrement(
+    userId: string,
+    index: number,
+    updatedIncrement: Partial<IIncrementHistory>
+  ): Promise<{ success: boolean; data?: IIncrementHistory; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user || !Array.isArray(user.increment_history)) {
+        return { success: false, message: UserMessages.INCREMENT.NOT_FOUND };
+      }
+
+      if (index < 0 || index >= user.increment_history.length) {
+        return { success: false, message: UserMessages.INCREMENT.INVALID_INDEX };
+      }
+
+      const inc = user.increment_history[index];
+      if (updatedIncrement.date) inc.date = updatedIncrement.date;
+      if (updatedIncrement.ctc !== undefined) inc.ctc = updatedIncrement.ctc;
+
+      await user.save();
+      return { success: true, data: inc, message: UserMessages.INCREMENT.UPDATE_SUCCESS };
+    } catch (error: any) {
+      return { success: false, message: error.message || UserMessages.INCREMENT.UPDATE_FAILED };
+    }
+  }
+
+  async deleteIncrement(
+    userId: string,
+    index: number
+  ): Promise<{ success: boolean; message?: string }> {
+    try {
+      const user = await User.findOne({ id: userId });
+      if (!user || !Array.isArray(user.increment_history)) {
+        return { success: false, message: UserMessages.INCREMENT.NOT_FOUND };
+      }
+
+      if (index < 0 || index >= user.increment_history.length) {
+        return { success: false, message: UserMessages.INCREMENT.INVALID_INDEX };
+      }
+
+      user.increment_history.splice(index, 1);
+      await user.save();
+      return { success: true, message: UserMessages.INCREMENT.DELETE_SUCCESS };
+    } catch (error: any) {
+      return { success: false, message: error.message || UserMessages.INCREMENT.DELETE_FAILED };
     }
   }
 }

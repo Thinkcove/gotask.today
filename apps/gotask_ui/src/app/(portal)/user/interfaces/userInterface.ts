@@ -14,6 +14,11 @@ export interface ICertificate {
   notes?: string;
 }
 
+export interface IIncrementHistory {
+  date: string;
+  ctc: number;
+}
+
 export interface IUserField {
   name: string;
   status: boolean;
@@ -27,6 +32,7 @@ export interface IUserField {
   last_name: string;
   skills?: ISkill[];
   certificates?: ICertificate[];
+  increment_history?: IIncrementHistory[];
 }
 
 export interface User {
@@ -51,6 +57,8 @@ export interface User {
   assetDetails?: IAssetAttributes[];
   skills?: ISkill[];
   certificates?: ICertificate[];
+  increment_history?: IIncrementHistory[];
+
   issuesCount: string;
 }
 

@@ -346,7 +346,7 @@
     "placeholderseverity": "Select Severity Type",
     "labelcreateon": "Created Date * :",
     "placeholdercreatedon": "Select Created Date",
-    "labelduedate": "Due Date * :",
+    "labelduedate": "Due Date :",
     "placeholderduedate": "Select Due Date",
     "labeldescription": "Description :",
     "placeholderdescription": "Enter Description",
@@ -422,6 +422,7 @@
     "loadinguser": "Loading user mentions...",
     "reuseplaceholder": "Write something here...",
     "saved": "Save",
+    "noupdates": "No updates",
     "Project": {
       "meta": {
         "title": "Task Projects",

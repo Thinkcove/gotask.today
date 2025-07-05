@@ -224,21 +224,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
               >
                 {transworkplanned("testimation")}
               </TableCell>
-              <TableCell
-                rowSpan={2}
-                sx={{
-                  padding: "12px",
-                  textAlign: "center",
-                  backgroundColor: "#f5f5f5",
-                  minWidth: 150,
-                  position: "sticky",
-                  verticalAlign: "middle",
-                  top: 0,
-                  zIndex: 2
-                }}
-              >
-                {transworkplanned("leaveinfo")}
-              </TableCell>
+
               <TableCell
                 rowSpan={2}
                 sx={{
@@ -306,12 +292,27 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
           <TableBody>
             {Object.entries(groupedData).map(([userKey, userGroup]) => {
               const { userName, tasks, totalEstimation } = userGroup;
-              const totalRows = Math.max(tasks.length, 1);
               const userLeaves = getUserLeavesInRange(userKey);
 
+              // Create combined rows for tasks and leaves
+              const allItems: (WorkPlannedEntry | (LeaveEntry & { isLeave: boolean }))[] = [
+                ...tasks
+              ];
+              userLeaves.forEach((leave) => {
+                allItems.push({
+                  ...leave,
+                  isLeave: true
+                });
+              });
+
+              const totalRows = Math.max(allItems.length, 1);
+
               return Array.from({ length: totalRows }, (_, index) => {
-                const task = tasks[index];
+                const item = allItems[index];
                 const isFirstRow = index === 0;
+                const isLeave = item && "isLeave" in item && item.isLeave;
+                const task = isLeave ? null : (item as WorkPlannedEntry);
+                const leave = isLeave ? (item as LeaveEntry & { isLeave: boolean }) : null;
 
                 return (
                   <TableRow key={`${userKey}-${index}`}>
@@ -349,88 +350,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                       </TableCell>
                     )}
 
-                    {/* Leave Information - Only show for first row of each user */}
-                    {isFirstRow && (
-                      <TableCell
-                        rowSpan={totalRows}
-                        sx={{
-                          padding: "10px",
-                          textAlign: "center",
-                          border: "1px solid #eee",
-                          verticalAlign: "middle"
-                        }}
-                      >
-                        {userLeaves.length > 0 ? (
-                          <Box display="flex" flexDirection="column" gap={1}>
-                            {userLeaves.map((leave, leaveIndex) => {
-                              const leaveFrom = normalizeDate(leave.from_date);
-                              const leaveTo = normalizeDate(leave.to_date);
-                              const days =
-                                Math.ceil((leaveTo.getTime() - leaveFrom.getTime()) / MS_IN_A_DAY) +
-                                1;
-
-                              return (
-                                <Box
-                                  key={leave.id || leaveIndex}
-                                  sx={{
-                                    p: 1,
-                                    backgroundColor:
-                                      getLeaveTypeColor(leave.leave_type) + LeaveBackgroundColor.num,
-                                    borderRadius: "8px",
-                                    border: `1px solid ${getLeaveTypeColor(leave.leave_type)}40`
-                                  }}
-                                >
-                                  <Typography
-                                    sx={{
-                                      fontWeight: 600,
-                                      fontSize: "0.7rem",
-                                      textTransform: "uppercase",
-                                      color: getLeaveTypeColor(leave.leave_type),
-                                      mb: 0.5
-                                    }}
-                                  >
-                                    {leave.leave_type}
-                                  </Typography>
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      fontSize: "0.7rem",
-                                      display: "block",
-                                      mb: 0.5
-                                    }}
-                                  >
-                                    <FormattedDateTime
-                                      date={leave.from_date}
-                                      format={DateFormats.DATE_ONLY}
-                                    />{" "}
-                                    {transworkplanned("to")}{" "}
-                                    <FormattedDateTime
-                                      date={leave.to_date}
-                                      format={DateFormats.DATE_ONLY}
-                                    />
-                                  </Typography>
-                                  <Chip
-                                    label={`${days} day${days > 1 ? "s" : ""}`}
-                                    size="small"
-                                    sx={{
-                                      backgroundColor: "#B1AAAA",
-                                      color: "#fff",
-                                      fontSize: "0.65rem",
-                                      height: 20,
-                                      borderRadius: "5px"
-                                    }}
-                                  />
-                                </Box>
-                              );
-                            })}
-                          </Box>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                    )}
-
-                    {/* Task - Show task if exists, otherwise show empty cell */}
+                    {/* Task/Leave Column */}
                     <TableCell
                       sx={{
                         padding: "12px",
@@ -480,12 +400,42 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                           )}
                           <StatusIndicator status={task.status} getColor={getStatusColor} />
                         </Box>
+                      ) : leave ? (
+                        <Box display="flex" flexDirection="column" gap={1}>
+                          <Box
+                        
+                          >
+                            <Typography
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: "0.7rem",
+                                textTransform: "uppercase",
+                                color: getLeaveTypeColor(leave.leave_type),
+                                mb: 0.5
+                              }}
+                            >
+                              {leave.leave_type ? "LEAVE" : ""}
+                            </Typography>
+
+                            <Chip
+                              label={`${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1} day${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1 > 1 ? "s" : ""}`}
+                              size="small"
+                              sx={{
+                                backgroundColor: "red",
+                                color: "#fff",
+                                fontSize: "0.65rem",
+                                height: 20,
+                                borderRadius: "5px"
+                              }}
+                            />
+                          </Box>
+                        </Box>
                       ) : (
                         "-"
                       )}
                     </TableCell>
 
-                    {/* Start Date */}
+                    {/* Start Date - Show task date or leave from_date */}
                     <TableCell
                       sx={{
                         padding: "12px",
@@ -497,12 +447,14 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                     >
                       {task && task.start_date ? (
                         <FormattedDateTime date={task.start_date} format={DateFormats.DATE_ONLY} />
+                      ) : leave && leave.from_date ? (
+                        <FormattedDateTime date={leave.from_date} format={DateFormats.DATE_ONLY} />
                       ) : (
                         "-"
                       )}
                     </TableCell>
 
-                    {/* End Date */}
+                    {/* End Date - Show task date or leave to_date */}
                     <TableCell
                       sx={{
                         padding: "12px",
@@ -514,12 +466,14 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                     >
                       {task && task.end_date ? (
                         <FormattedDateTime date={task.end_date} format={DateFormats.DATE_ONLY} />
+                      ) : leave && leave.to_date ? (
+                        <FormattedDateTime date={leave.to_date} format={DateFormats.DATE_ONLY} />
                       ) : (
                         "-"
                       )}
                     </TableCell>
 
-                    {/* Task Estimation */}
+                    {/* Task Estimation - Only show for tasks, not leaves */}
                     <TableCell
                       sx={{
                         padding: "12px",

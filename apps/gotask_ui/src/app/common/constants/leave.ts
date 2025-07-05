@@ -1,6 +1,3 @@
-import env from "../env";
-import { getData } from "../utils/apiData";
-import { withAuth } from "../utils/authToken";
 
 export const getLeaveTypeColor = (leaveType: string): string => {
   switch (leaveType.toLowerCase()) {

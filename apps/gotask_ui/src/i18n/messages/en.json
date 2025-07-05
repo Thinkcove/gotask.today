@@ -856,6 +856,7 @@
      "titleerror":"Title is required",
      "descriptionerror":"Description is required",
      "saveastemplate":"Save as Template",
+     "templatesavesuccess":"Template created Successfully",
       "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."

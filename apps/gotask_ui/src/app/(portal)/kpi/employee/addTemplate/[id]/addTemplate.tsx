@@ -122,7 +122,6 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
       };
 
       await createTemplate(payload);
-
       setSnackbarMessage(transkpi("templatesavesuccess") || "Template saved successfully");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -134,130 +133,169 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
   };
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Box display="flex" alignItems="center" gap={2}>
-          <ArrowBackIcon
-            sx={{ cursor: "pointer", color: "#741B92" }}
-            onClick={() => history.back()}
-          />
-          <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
-          <Box>
-            <Typography variant="h6">{user.name}</Typography>
-            {user.role?.name && (
-              <Typography variant="body2" color="textSecondary">
-                {user.role.name}
-              </Typography>
-            )}
+    <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Sticky Header */}
+      <Box
+        sx={{
+          px: 4,
+          py: 2,
+          position: "sticky",
+          top: 0,
+          zIndex: 100
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box display="flex" alignItems="center" gap={2}>
+            <ArrowBackIcon
+              sx={{ cursor: "pointer", color: "#741B92" }}
+              onClick={() => history.back()}
+            />
+            <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
+            <Box>
+              <Typography variant="h6">{user.name}</Typography>
+              {user.role?.name && (
+                <Typography variant="body2" color="textSecondary">
+                  {user.role.name}
+                </Typography>
+              )}
+            </Box>
           </Box>
-        </Box>
-        <Box display="flex" gap={2}>
-          <Button variant="outlined" onClick={() => setOpenDialog(true)}>
-            {transkpi("assigntemplate")}
-          </Button>
+          <Box display="flex" gap={2}>
+            <Button variant="outlined" onClick={() => setOpenDialog(true)}>
+              {transkpi("assigntemplate")}
+            </Button>
+          </Box>
         </Box>
       </Box>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("title")} ${transkpi("required")}`}
-            placeholder={transkpi("entertitle")}
-            type="text"
-            value={form.title}
-            onChange={(val) => setForm({ ...form, title: String(val) })}
-            error={errors.title}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={transkpi("description")}
-            placeholder={transkpi("enterdescription")}
-            type="text"
-            value={form.description}
-            onChange={(val) => setForm({ ...form, description: String(val) })}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("frequency")} ${transkpi("required")}`}
-            placeholder={transkpi("enterfrequency")}
-            type="select"
-            options={Object.values(KPI_FREQUENCY)}
-            value={form.frequency}
-            onChange={(val) => setForm({ ...form, frequency: String(val) })}
-            error={errors.frequency}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("weightage")} ${transkpi("required")}`}
-            placeholder={transkpi("enterweightage")}
-            type="text"
-            value={form.weightage}
-            onChange={(val) => setForm({ ...form, weightage: String(val) })}
-            error={errors.weightage}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("targetvalue")} ${transkpi("required")}`}
-            placeholder={transkpi("entertargetvalue")}
-            type="text"
-            value={form.target_value}
-            onChange={(val) => setForm({ ...form, target_value: String(val) })}
-            error={errors.target_value}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("assignedby")} ${transkpi("required")}`}
-            type="select"
-            options={users.map((u: User) => ({ id: u.name, name: u.name }))}
-            value={form.assigned_by}
-            onChange={(val) => setForm({ ...form, assigned_by: String(val) })}
-            error={errors.assigned_by}
-            disabled
-          />
-        </Grid>
-        {userId === form.assigned_by && (
+      {/* Scrollable Form Content */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          px: 4,
+          py: 2,
+          pb: 16
+        }}
+      >
+        <Grid container spacing={1}>
           <Grid item xs={12} md={4}>
             <FormField
-              label={transkpi("reviewerid")}
-              type="select"
-              options={users.map((u: User) => ({ id: u.name, name: u.name }))}
-              value={form.reviewer_id}
-              onChange={(val) => setForm({ ...form, reviewer_id: String(val) })}
+              label={`${transkpi("title")} ${transkpi("required")}`}
+              placeholder={transkpi("entertitle")}
+              type="text"
+              value={form.title}
+              onChange={(val) => setForm({ ...form, title: String(val) })}
+              error={errors.title}
             />
           </Grid>
-        )}
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("status")} ${transkpi("required")}`}
-            placeholder={transkpi("enterstatus")}
-            type="select"
-            options={Object.values(STATUS_OPTIONS)}
-            value={form.status}
-            onChange={(val) => setForm({ ...form, status: String(val) })}
-            error={errors.status}
-          />
+          <Grid item xs={12} md={4}>
+            <FormField
+              label={transkpi("description")}
+              placeholder={transkpi("enterdescription")}
+              type="text"
+              value={form.description}
+              onChange={(val) => setForm({ ...form, description: String(val) })}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormField
+              label={`${transkpi("frequency")} ${transkpi("required")}`}
+              placeholder={transkpi("enterfrequency")}
+              type="select"
+              options={Object.values(KPI_FREQUENCY)}
+              value={form.frequency}
+              onChange={(val) => setForm({ ...form, frequency: String(val) })}
+              error={errors.frequency}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormField
+              label={`${transkpi("weightage")} ${transkpi("required")}`}
+              placeholder={transkpi("enterweightage")}
+              type="text"
+              value={form.weightage}
+              onChange={(val) => setForm({ ...form, weightage: String(val) })}
+              error={errors.weightage}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormField
+              label={`${transkpi("targetvalue")} ${transkpi("required")}`}
+              placeholder={transkpi("entertargetvalue")}
+              type="text"
+              value={form.target_value}
+              onChange={(val) => setForm({ ...form, target_value: String(val) })}
+              error={errors.target_value}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormField
+              label={`${transkpi("assignedby")} ${transkpi("required")}`}
+              type="select"
+              options={users.map((u: User) => ({ id: u.name, name: u.name }))}
+              value={form.assigned_by}
+              onChange={(val) => setForm({ ...form, assigned_by: String(val) })}
+              error={errors.assigned_by}
+              disabled
+            />
+          </Grid>
+          {userId === form.assigned_by && (
+            <Grid item xs={12} md={4}>
+              <FormField
+                label={transkpi("reviewerid")}
+                type="select"
+                options={users.map((u: User) => ({ id: u.name, name: u.name }))}
+                value={form.reviewer_id}
+                onChange={(val) => setForm({ ...form, reviewer_id: String(val) })}
+              />
+            </Grid>
+          )}
+          <Grid item xs={12} md={4}>
+            <FormField
+              label={`${transkpi("status")} ${transkpi("required")}`}
+              placeholder={transkpi("enterstatus")}
+              type="select"
+              options={Object.values(STATUS_OPTIONS)}
+              value={form.status}
+              onChange={(val) => setForm({ ...form, status: String(val) })}
+              error={errors.status}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormField
+              label={transkpi("comments")}
+              placeholder={transkpi("entercomments")}
+              type="text"
+              value={form.comments}
+              onChange={(val) => setForm({ ...form, comments: String(val) })}
+              multiline
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={transkpi("comments")}
-            placeholder={transkpi("entercomments")}
-            type="text"
-            value={form.comments}
-            onChange={(val) => setForm({ ...form, comments: String(val) })}
-          />
-        </Grid>
-      </Grid>
+      </Box>
 
-      <Box display="flex" justifyContent="space-between" mt={4}>
+      {/* Fixed Footer Buttons */}
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          backgroundColor: "#fff",
+          borderTop: "1px solid #ddd",
+          px: 4,
+          py: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          zIndex: 200,
+          flexWrap: "wrap"
+        }}
+      >
         <Button variant="contained" color="primary" onClick={handleSaveAsTemplate}>
           {transkpi("saveastemplate")}
         </Button>
-        <Box display="flex" gap={2}>
+        <Box display="flex" gap={2} mt={{ xs: 2, sm: 0 }}>
           <Button variant="outlined" onClick={() => router.back()}>
             {transkpi("cancel")}
           </Button>
@@ -267,6 +305,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         </Box>
       </Box>
 
+      {/* Dialog */}
       <CommonDialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
@@ -289,6 +328,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         />
       </CommonDialog>
 
+      {/* Snackbar */}
       <CustomSnackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}

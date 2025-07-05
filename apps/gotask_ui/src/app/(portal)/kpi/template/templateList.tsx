@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Box, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -75,6 +75,13 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
     }
   };
 
+  const filteredTemplates = useMemo(() => {
+    if (!templates) return [];
+    return templates.filter((template: Template) =>
+      template.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [templates, searchTerm]);
+
   if (error) {
     return (
       <Box sx={{ textAlign: "center", mt: 4 }}>
@@ -94,25 +101,52 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
   }
 
   return (
-    <Box sx={{ position: "relative", height: "100vh", overflowY: "auto", p: 3 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Box mb={3} maxWidth={400}>
-          <SearchBar
-            value={searchTerm}
-            onChange={setSearchTerm}
-            sx={{ width: "100%" }}
-            placeholder={transkpi("searchplaceholder")}
-          />
+    <Box
+      sx={{
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      {/* Header Section */}
+      <Box
+        sx={{
+          p: 3,
+          pb: 0,
+          backgroundColor: "#fff",
+          zIndex: 1
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box maxWidth={400}>
+            <SearchBar
+              value={searchTerm}
+              onChange={setSearchTerm}
+              sx={{ width: "100%" }}
+              placeholder={transkpi("searchplaceholder")}
+            />
+          </Box>
+          <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
         </Box>
-        <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
       </Box>
 
-      <KpiItem
-        templates={templates}
-        onDelete={handleDelete}
-        onUpdate={handleUpdate}
-        onView={(id) => router.push(`/kpi/template/view/${id}`)}
-      />
+      {/* Template List */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          overflowY: "auto",
+          p: 3,
+          pt: 2,
+          pb: 8
+        }}
+      >
+        <KpiItem
+          templates={filteredTemplates}
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
+          onView={(id) => router.push(`/kpi/template/view/${id}`)}
+        />
+      </Box>
 
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
 

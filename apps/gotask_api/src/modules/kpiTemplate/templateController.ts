@@ -13,38 +13,29 @@ import { KpiTemplateMessages } from "../../constants/apiMessages/kpiMessages";
 
 class KpiTemplateController extends BaseController {
   // Create KPI Template
-  async createKpiTemplate(
-    requestHelper: RequestHelper,
-    handler: any,
-    restrictedFields: string[] = []
-  ) {
-    try {
-      const templateData = requestHelper.getPayload() as Partial<IKpiTemplate>;
+async createKpiTemplate(
+  requestHelper: RequestHelper,
+  handler: any,
+  restrictedFields: string[] = []
+) {
+  try {
+    const templateData = requestHelper.getPayload();
 
-      // Cast to any to allow dynamic delete without TS error
-      const templateDataAny = templateData as any;
-
-      // Remove restricted fields from templateData
-      restrictedFields.forEach((field) => {
-        if (field in templateDataAny) {
-          delete templateDataAny[field];
-        }
-      });
-
-      if (!templateData.title || !templateData.description || !templateData.measurement_criteria) {
-        return this.replyError(new Error(KpiTemplateMessages.CREATE.REQUIRED));
+    const templateDataAny = templateData as any;
+    restrictedFields.forEach((field) => {
+      if (field in templateDataAny) {
+        delete templateDataAny[field];
       }
+    });
 
-      const newTemplate = await createKpiTemplate(templateData);
-      if (!newTemplate.success) {
-        return this.replyError(new Error(newTemplate.message || KpiTemplateMessages.CREATE.FAILED));
-      }
+    const result = await createKpiTemplate(templateData, restrictedFields);
+    if (!result.success) throw new Error(result.message);
 
-      return this.sendResponse(handler, newTemplate.data);
-    } catch (error) {
-      return this.replyError(error);
-    }
+    return this.sendResponse(handler, result.data);
+  } catch (error) {
+    return this.replyError(error);
   }
+}
 
   // Get All KPI Templates
   async getAllKpiTemplates(_requestHelper: RequestHelper, handler: any) {

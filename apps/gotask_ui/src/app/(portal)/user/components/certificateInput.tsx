@@ -134,20 +134,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
                   }}
                 >
                   <Box display="flex" gap={2}>
-                    <Box
-                      sx={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: 1,
-                        backgroundColor: "#f0f0f0",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 24
-                      }}
-                    >
-                      🎓
-                    </Box>
                     <Box>
                       <Typography fontSize={14} fontWeight={600}>
                         {cert.name}

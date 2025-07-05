@@ -3,6 +3,7 @@ import { deleteData, getData, postData, putData } from "@/app/common/utils/apiDa
 import { IUserField } from "../interfaces/userInterface";
 import { withAuth } from "@/app/common/utils/authToken";
 import { ISkill } from "../interfaces/userInterface";
+import { ICertificate } from "../interfaces/userInterface";
 
 export const createUser = async (
   formData: IUserField
@@ -179,6 +180,49 @@ export const deleteUserSkill = async (userId: string, skillId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/skills/${userId}/${skillId}`;
     return deleteData(url, token);
+  });
+};
+
+// Get all certificates of a user
+export const getUserCertificates = async (userId: string): Promise<ICertificate[]> => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/certificates/${userId}`;
+    const response = await getData(url, token);
+    return response?.data || [];
+  });
+};
+
+// Add certificate(s) to a user
+export const addUserCertificates = async (
+  userId: string,
+  certificates: ICertificate[]
+): Promise<{ success: boolean; message?: string }> => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/certificates/${userId}`;
+    return await postData(url, { certificates }, token);
+  });
+};
+
+// Update a specific certificate
+export const updateUserCertificate = async (
+  userId: string,
+  certificateId: string,
+  updatedCertificate: Partial<ICertificate>
+): Promise<{ success: boolean; message?: string }> => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateId}`; // certificateId is UUID
+    return await putData(url, updatedCertificate as unknown as Record<string, unknown>, token);
+  });
+};
+
+// Delete a specific certificate
+export const deleteUserCertificate = async (
+  userId: string,
+  certificateId: string
+): Promise<{ success: boolean; message?: string }> => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/certificates/${userId}/${certificateId}`;
+    return await deleteData(url, token);
   });
 };
 

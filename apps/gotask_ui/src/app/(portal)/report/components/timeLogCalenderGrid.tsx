@@ -386,19 +386,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     }
   };
 
-  //   leaveForDate: LeaveEntry | null,
-  //   permissionForDate: PermissionEntry | null
-  // ): string => {
-  //   if (leaveForDate && permissionForDate) {
-  //     // Create a gradient for both leave and permission
-  //     return `linear-gradient(135deg, ${getLeaveTypeColor(leaveForDate.leave_type)}${LeaveBackgroundColor.num} 50%, ${getPermissionColor()}${PERMISSION_BACKGROUND_COLOR.num} 50%)`;
-  //   } else if (leaveForDate) {
-  //     return getLeaveTypeColor(leaveForDate.leave_type) + LeaveBackgroundColor.num;
-  //   } else if (permissionForDate) {
-  //     return getPermissionColor() + PERMISSION_BACKGROUND_COLOR.num;
-  //   }
-  //   return "transparent";
-  // };
+ 
 
   return (
     <>

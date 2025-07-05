@@ -46,7 +46,7 @@ export const formatPermissionTime = (startTime: string, endTime: string): string
 
 export const calculatePermissionDuration = (startTime: string, endTime: string): number => {
   const parseTime = (time: string): number => {
-    const cleanTime = time.replace(/\s*(AM|PM)\s*/i, ""); 
+    const cleanTime = time.replace(/\s*(AM|PM)\s*/i, "");
     const [hours, minutes] = cleanTime.split(":").map(Number);
     let totalMinutes = hours * 60 + minutes;
 
@@ -65,4 +65,3 @@ export const calculatePermissionDuration = (startTime: string, endTime: string):
 
   return Math.round((durationMinutes / 60) * 100) / 100;
 };
-

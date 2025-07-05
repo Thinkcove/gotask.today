@@ -49,8 +49,6 @@ export interface EnhancedTimeLogGridProps extends TimeLogGridProps {
   leaveData?: LeaveEntry[];
 }
 
-
-
 export interface PermissionEntry {
   _id: string;
   user_id: string;

@@ -63,54 +63,53 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
   const getDateRange = (from: string, to: string) =>
     eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
 
+
   const normalizeDate = (date: string): string => {
-    try {
-      if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        return date;
-      }
+    if (!date) return date;
 
-      if (date.includes("T")) {
-        const parsedDate = parseISO(date);
-        if (isValid(parsedDate)) {
-          return format(parsedDate, DateFormats.ISO_DATE);
-        }
-      }
-
-      const parsedDate = parseISO(date);
-      if (isValid(parsedDate)) {
-        return format(parsedDate, DateFormats.ISO_DATE);
-      }
-      return date;
-    } catch (error) {
-      console.log(error);
-
+    // If already in YYYY-MM-DD format, return as-is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return date;
     }
+
+    // If contains 'T', it's likely an ISO string with time
+    if (date.includes("T")) {
+      const parsed = parseISO(date);
+      if (isValid(parsed)) {
+        return format(parsed, DateFormats.ISO_DATE);
+      }
+    }
+
+    // Fallback parse for any other format
+    const parsed = parseISO(date);
+    if (isValid(parsed)) {
+      return format(parsed, DateFormats.ISO_DATE);
+    }
+
+    // If parsing fails, return original input
+    return date;
   };
+
+
 
   const extractDateFromTimeLog = (entry: TimeLogEntry): string | null => {
-    try {
-      if (!entry.date) {
-        return null;
-      }
-
-      if (typeof entry.date === "string" && entry.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        return entry.date;
-      }
-
-      if (typeof entry.date === "string") {
-        const parsedDate = parseISO(entry.date);
-        if (isValid(parsedDate)) {
-          return format(parsedDate, DateFormats.ISO_DATE);
-        }
-      }
-      return null;
-    } catch (error) {
-      console.log(error);
-
+    if (!entry?.date || typeof entry.date !== "string") {
       return null;
     }
+
+    // Return directly if it's already in YYYY-MM-DD format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(entry.date)) {
+      return entry.date;
+    }
+
+    const parsedDate = parseISO(entry.date);
+    if (isValid(parsedDate)) {
+      return format(parsedDate, DateFormats.ISO_DATE);
+    }
+
+    return null;
   };
+  
   const dateRange = getDateRange(fromDate, toDate);
 
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);

@@ -1,34 +1,28 @@
 "use client";
-import React, { useState, useRef } from "react";
-import { Box ,Grid } from "@mui/material";
+import React, { useState } from "react";
+import { Box ,CircularProgress,Grid } from "@mui/material";
 import { useRouter, useParams } from "next/navigation";
 import FormField from "@/app/component/input/formField";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { RichTextEditorRef } from "mui-tiptap";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { updateLeave, useGetLeaveById } from "../../services/leaveAction";
-import { LEAVE_TYPE } from "../../constants/leaveConstants";
 import FormHeader from "@/app/(portal)/access/components/FormHeader";
+import { LEAVE_TYPE } from "@/app/common/constants/leave";
+import { LeaveFormField } from "../../interface/leaveInterface";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 
-interface LeaveFormField {
-  from_date: string;
-  to_date: string;
-  leave_type: string;
-  reasons: string;
-}
 
 const EditLeave: React.FC = () => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
   const router = useRouter();
   const { id } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const editorRef = useRef<RichTextEditorRef>(null);
-  const { data: leave, isLoading, isError } = useGetLeaveById(id as string, true);
+  const { data: leave, isLoading} = useGetLeaveById(id as string, true);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
-    severity: "info" as "info" | "success" | "error" | "warning"
+    severity:  SNACKBAR_SEVERITY.INFO
   });
 
   const [formData, setFormData] = useState<LeaveFormField>({
@@ -75,9 +69,6 @@ const EditLeave: React.FC = () => {
       newErrors.to_date = transleave("todateearlier");
     }
     if (!formData.leave_type) newErrors.leave_type = transleave("leavetyperequired");
-    if (!formData.reasons || editorRef.current?.editor?.getText().trim() === "") {
-      newErrors.reasons = transleave("reasonrequired");
-    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -87,32 +78,42 @@ const EditLeave: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const reason = editorRef.current?.editor?.getHTML() || formData.reasons;
       const payload = {
         ...formData,
-        reasons: reason
       };
       await updateLeave(id as string, payload);
       setSnackbar({
         open: true,
         message: transleave("leaveupdated"),
-        severity: "success"
+        severity:  SNACKBAR_SEVERITY.SUCCESS
       });
       router.push("/leave");
-    } catch (error) {
-      console.error("Failed to update", error);
+    } catch  {
       setSnackbar({
         open: true,
         message: transleave("errorupdate"),
-        severity: "error"
+        severity:  SNACKBAR_SEVERITY.ERROR
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (isLoading) return <div>{transleave("loading")}</div>;
-  if (isError || !leave) return <div>{transleave("errorloading")}</div>;
+   if (isLoading) {
+     return (
+       <Box
+         sx={{
+           minHeight: "100vh",
+           display: "flex",
+           alignItems: "center",
+           justifyContent: "center",
+           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+         }}
+       >
+         <CircularProgress size={50} thickness={4} />
+       </Box>
+     );
+   }
 
   return (
     <>
@@ -179,21 +180,6 @@ const EditLeave: React.FC = () => {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          {/* <Typography variant="body1" sx={{ mb: 1, fontWeight: "medium" }}>
-            {transleave("reason")}
-            <span style={{ color: "red" }}>*</span>
-          </Typography>
-          <ReusableEditor
-            ref={editorRef}
-            placeholder={transleave("enterreason")}
-            onSave={(html) => handleInputChange("reasons", html)}
-            content={formData.reasons}
-          />
-          {errors.reasons && (
-            <Typography variant="caption" color="error" sx={{ mt: 1 }}>
-              {errors.reasons}
-            </Typography>
-          )} */}
            <FormField
               label={transleave("reason")}
               type="text"

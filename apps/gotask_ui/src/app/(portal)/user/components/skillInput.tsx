@@ -223,7 +223,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                       </Typography>
                       {skill.experience && skill.proficiency >= PROFICIENCY_MAXIMUM && (
                         <Typography fontSize={12} color="text.secondary">
-                          {trans("experience")}: {skill.experience} {trans("months")}
+                          {trans("experienceview")}: {skill.experience} {trans("months")}
                         </Typography>
                       )}
                     </Box>

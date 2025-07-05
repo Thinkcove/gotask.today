@@ -65,6 +65,10 @@
     {
       "access":"KPI System",
       "actions":["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
+    },
+    {
+      "access": "Leave",
+      "actions":["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
     }
   ]
 }

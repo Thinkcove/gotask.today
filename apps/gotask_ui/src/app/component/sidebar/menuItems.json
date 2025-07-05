@@ -64,5 +64,11 @@
   "icon":"InsightsIcon",
   "path":"/kpi/template",
   "access":"KPI System"
-}
+},
+{
+    "text": "Leave",
+    "icon": "ManageAccountsIcon",
+    "path": "/leave",
+    "access": "Leave"
+  }
 ]

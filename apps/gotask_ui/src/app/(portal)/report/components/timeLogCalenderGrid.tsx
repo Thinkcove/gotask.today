@@ -28,7 +28,6 @@ import { getStatusColor } from "@/app/common/constants/task";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import {
-  getLeaveTypeColor,
   getPermissionColor,
   LeaveBackgroundColor,
   PERMISSION_BACKGROUND_COLOR
@@ -280,7 +279,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
             sx={{
               fontSize: "0.5rem",
               fontWeight: 500,
-              color: getLeaveTypeColor(leaveForDate.leave_type)
+              color: "red"
             }}
           >
             {leaveForDate.leave_type ? transreport("leave") : ""}
@@ -328,7 +327,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
             sx={{
               fontSize: "0.6rem",
               fontWeight: 500,
-              color: getLeaveTypeColor(leaveForDate.leave_type)
+              color: "red"
             }}
           >
             {leaveForDate.leave_type ? transreport("leave") : ""}
@@ -391,20 +390,19 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     }
   };
 
-  const getCellBackgroundColor = (
-    leaveForDate: LeaveEntry | null,
-    permissionForDate: PermissionEntry | null
-  ): string => {
-    if (leaveForDate && permissionForDate) {
-      // Create a gradient for both leave and permission
-      return `linear-gradient(135deg, ${getLeaveTypeColor(leaveForDate.leave_type)}${LeaveBackgroundColor.num} 50%, ${getPermissionColor()}${PERMISSION_BACKGROUND_COLOR.num} 50%)`;
-    } else if (leaveForDate) {
-      return getLeaveTypeColor(leaveForDate.leave_type) + LeaveBackgroundColor.num;
-    } else if (permissionForDate) {
-      return getPermissionColor() + PERMISSION_BACKGROUND_COLOR.num;
-    }
-    return "transparent";
-  };
+  //   leaveForDate: LeaveEntry | null,
+  //   permissionForDate: PermissionEntry | null
+  // ): string => {
+  //   if (leaveForDate && permissionForDate) {
+  //     // Create a gradient for both leave and permission
+  //     return `linear-gradient(135deg, ${getLeaveTypeColor(leaveForDate.leave_type)}${LeaveBackgroundColor.num} 50%, ${getPermissionColor()}${PERMISSION_BACKGROUND_COLOR.num} 50%)`;
+  //   } else if (leaveForDate) {
+  //     return getLeaveTypeColor(leaveForDate.leave_type) + LeaveBackgroundColor.num;
+  //   } else if (permissionForDate) {
+  //     return getPermissionColor() + PERMISSION_BACKGROUND_COLOR.num;
+  //   }
+  //   return "transparent";
+  // };
 
   return (
     <>
@@ -558,8 +556,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
                           sx={{
                             padding: "10px",
                             textAlign: "center" as const,
-                            border: "1px solid #eee",
-                            background: getCellBackgroundColor(leaveForDate, permissionForDate)
+                            border: "1px solid #eee"
                           }}
                         >
                           {renderCellContent(undefined, leaveForDate, permissionForDate)}
@@ -661,8 +658,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
                           sx={{
                             padding: "10px",
                             textAlign: "center" as const,
-                            border: "1px solid #eee",
-                            background: getCellBackgroundColor(leaveForDate, permissionForDate)
+                            border: "1px solid #eee"
                           }}
                         >
                           {renderCellContent(value, leaveForDate, permissionForDate)}

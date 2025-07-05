@@ -22,7 +22,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     description: "",
     frequency: "",
     status: STATUS_OPTIONS.ACTIVE,
-    measurement_criteria: 0
+    measurement_criteria: ""
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});

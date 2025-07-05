@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FormField from "@/app/component/input/formField";
 import { KPI_FREQUENCY, STATUS_OPTIONS } from "@/app/common/constants/kpi";
-import { createKpiAssignment } from "../../../service/templateAction";
+import { createKpiAssignment, createTemplate } from "../../../service/templateAction";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import { User, useUser } from "@/app/userContext";
@@ -33,14 +33,14 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
   const [form, setForm] = useState({
     template_id: "",
     title: "",
+    description: "",
     frequency: "",
-    weightage: 0,
-    target_Value: 0,
+    weightage: "",
+    target_value: "",
     comments: "",
-    status: "",
+    status: STATUS_OPTIONS.ACTIVE,
     assigned_by: loginUser?.name || "",
-    reviewer_id: "",
-    saveAs_Template: false
+    reviewer_id: ""
   });
 
   const [openDialog, setOpenDialog] = useState(false);
@@ -57,8 +57,9 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         ...prev,
         template_id: template.id,
         title: template.title || "",
+        description: template.kpi_Description || template.description || "",
         frequency: template.frequency || "",
-        weightage: template.measurement_criteria || 0,
+        weightage: template.measurement_criteria || "",
         comments: template.comments || "",
         status: template.status || ""
       }));
@@ -73,7 +74,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
     if (!form.status) newErrors.status = transkpi("statuserror");
     if (!form.weightage) newErrors.weightage = transkpi("weightageerror");
     if (!form.assigned_by) newErrors.assigned_by = transkpi("assignedbyerror");
-    if (!form.target_Value) newErrors.target_Value = transkpi("targetvalue");
+    if (!form.target_value) newErrors.target_value = transkpi("targetvalue");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -84,10 +85,12 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
       const payload = {
         user_id: userId,
         ...form,
-        measurement_criteria: String(form.weightage),
+        kpi_Description: form.description?.trim(),
+        measurement_criteria: form.weightage,
+        target_value: form.target_value,
         ...(form.template_id ? { template_id: form.template_id } : { kpi_Title: form.title }),
         assigned_by: users.find((u: User) => u.name === form.assigned_by)?.id,
-        reviewer_id: users.find((u: User) => u.name === form.reviewer_id)?.id || undefined
+        reviewer_id: users.find((u: User) => u.name === form.reviewer_id)?.name || undefined
       };
       await createKpiAssignment(payload);
       setSnackbarMessage(transkpi("assignsuccess"));
@@ -97,6 +100,34 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
       router.push(`/kpi/employee/view/${userId}`);
     } catch (err: any) {
       setSnackbarMessage(err.message || transkpi("assignfailed"));
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleSaveAsTemplate = async () => {
+    if (!validateForm()) return;
+    try {
+      const payload: Partial<Template> = {
+        title: form.title,
+        description: form.description?.trim(),
+        frequency: form.frequency,
+        measurement_criteria: form.weightage,
+        comments: form.comments,
+        status: form.status,
+        kpi_Title: form.title,
+        target_value: form.target_value,
+        reviewer_id: form.reviewer_id,
+        assigned_by: form.assigned_by
+      };
+
+      await createTemplate(payload);
+
+      setSnackbarMessage(transkpi("templatesavesuccess") || "Template saved successfully");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (err: any) {
+      setSnackbarMessage(err.message || "Failed to save template");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
@@ -124,13 +155,6 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
           <Button variant="outlined" onClick={() => setOpenDialog(true)}>
             {transkpi("assigntemplate")}
           </Button>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#741B92" }}
-            onClick={() => router.push("/kpi/template/createTemplate")}
-          >
-            {transkpi("createnewtemplate")}
-          </Button>
         </Box>
       </Box>
 
@@ -143,6 +167,15 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
             value={form.title}
             onChange={(val) => setForm({ ...form, title: String(val) })}
             error={errors.title}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <FormField
+            label={transkpi("description")}
+            placeholder={transkpi("enterdescription")}
+            type="text"
+            value={form.description}
+            onChange={(val) => setForm({ ...form, description: String(val) })}
           />
         </Grid>
         <Grid item xs={12} md={4}>
@@ -160,9 +193,9 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
           <FormField
             label={`${transkpi("weightage")} ${transkpi("required")}`}
             placeholder={transkpi("enterweightage")}
-            type="number"
+            type="text"
             value={form.weightage}
-            onChange={(val) => setForm({ ...form, weightage: +val })}
+            onChange={(val) => setForm({ ...form, weightage: String(val) })}
             error={errors.weightage}
           />
         </Grid>
@@ -170,10 +203,10 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
           <FormField
             label={`${transkpi("targetvalue")} ${transkpi("required")}`}
             placeholder={transkpi("entertargetvalue")}
-            type="number"
-            value={form.target_Value}
-            onChange={(val) => setForm({ ...form, target_Value: +val })}
-            error={errors.target_Value}
+            type="text"
+            value={form.target_value}
+            onChange={(val) => setForm({ ...form, target_value: String(val) })}
+            error={errors.target_value}
           />
         </Grid>
         <Grid item xs={12} md={4}>
@@ -220,16 +253,20 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         </Grid>
       </Grid>
 
-      <Box display="flex" justifyContent="flex-end" gap={2} mt={4}>
-        <Button variant="outlined" onClick={() => router.back()}>
-          {transkpi("cancel")}
+      <Box display="flex" justifyContent="space-between" mt={4}>
+        <Button variant="contained" color="primary" onClick={handleSaveAsTemplate}>
+          {transkpi("saveastemplate")}
         </Button>
-        <Button variant="contained" sx={{ backgroundColor: "#741B92" }} onClick={handleSubmit}>
-          {transkpi("assign")}
-        </Button>
+        <Box display="flex" gap={2}>
+          <Button variant="outlined" onClick={() => router.back()}>
+            {transkpi("cancel")}
+          </Button>
+          <Button variant="contained" sx={{ backgroundColor: "#741B92" }} onClick={handleSubmit}>
+            {transkpi("assign")}
+          </Button>
+        </Box>
       </Box>
 
-      {/*  CommonDialog Integration */}
       <CommonDialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}

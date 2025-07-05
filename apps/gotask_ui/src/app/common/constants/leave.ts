@@ -13,13 +13,7 @@ export const LeaveBackgroundColor = {
   num: "20"
 };
 
-export const fetchAllPermissions = async () => {
-  return withAuth(async (token) => {
-    const url = `${env.API_BASE_URL}/getpermission`;
-    const { data } = await getData(url, token);
-    return data || [];
-  });
-};
+
 
 export const PERMISSION_BACKGROUND_COLOR = {
   num: "20"

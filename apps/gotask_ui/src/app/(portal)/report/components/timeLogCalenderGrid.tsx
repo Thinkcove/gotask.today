@@ -28,7 +28,6 @@ import { getStatusColor } from "@/app/common/constants/task";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import {
-  fetchAllPermissions,
   getLeaveTypeColor,
   getPermissionColor,
   LeaveBackgroundColor,
@@ -37,6 +36,7 @@ import {
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
 import { calculatePermissionDuration } from "@/app/common/utils/leaveCalculate";
+import { fetchAllPermissions } from "../services/reportService";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -63,7 +63,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
 
   const getDateRange = (from: string, to: string) =>
     eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
-
 
   const normalizeDate = (date: string): string => {
     if (!date) return date;

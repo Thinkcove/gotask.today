@@ -549,7 +549,9 @@
       "subtitle": "Add details of Certifications you have achieved/completed",
       "cname": "Please enter your certification name",
       "notesplaceholder": "Add any optional notes",
-      "nocertifications": "No certifications added yet."
+      "nocertifications": "No certifications added yet.",
+      "nameisrequired": "Certificate name is required",
+      "dateisrequired": "Obtained date is required"
     },
 
     "Increment": {

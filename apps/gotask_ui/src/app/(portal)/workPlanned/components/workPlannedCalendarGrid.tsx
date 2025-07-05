@@ -16,7 +16,7 @@ import {
   EnhancedWorkPlannedGridProps,
   GroupedTasks,
   LeaveEntry,
-  WorkPlannedEntry,
+  WorkPlannedEntry
 } from "../interface/workPlanned";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
@@ -30,7 +30,11 @@ import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { PermissionEntry } from "../../report/interface/timeLog";
 import { fetchAllPermissions } from "../../report/services/reportService";
-import {  calculatePermissionDuration, formatLeaveDuration } from "@/app/common/utils/leaveCalculate";
+import {
+  calculatePermissionDuration,
+  formatLeaveDuration,
+  normalizeDate
+} from "@/app/common/utils/leaveCalculate";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 
 // Enhanced interface to include permissions
@@ -57,7 +61,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     permissions = permissionResponse.data || permissionResponse;
   }
 
-
   const formatEstimation = (estimation: string | number | null | undefined) => {
     if (!estimation || estimation === null || estimation === undefined || estimation === "") {
       return "-";
@@ -77,16 +80,12 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   };
 
   // Fixed date normalization function
-  const normalizeDate = (dateString: string): Date => {
-    const date = new Date(dateString);
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  };
 
   // Helper function to check if two dates are the same day
   const isSameDate = (date1: string, date2: string): boolean => {
-    const d1 = normalizeDate(date1);
-    const d2 = normalizeDate(date2);
-    return d1.getTime() === d2.getTime();
+    const fromDate = normalizeDate(date1);
+    const toDate = normalizeDate(date2);
+    return fromDate.getTime() === toDate.getTime();
   };
 
   // Helper function to check if a date falls within a leave period

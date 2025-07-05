@@ -1,5 +1,10 @@
 import { TIME_PERIOD } from "../constants/regex";
 
+export const normalizeDate = (dateString: string): Date => {
+  const date = new Date(dateString);
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
+
 export const calculatePermissionDuration = (startTime: string, endTime: string): number => {
   const parseTime = (time: string): number => {
     const cleanTime = time.replace(TIME_PERIOD, "");
@@ -23,11 +28,7 @@ export const calculatePermissionDuration = (startTime: string, endTime: string):
 };
 
 export const calculateLeaveDuration = (fromDate: string, toDate: string): number => {
-  
-  const normalizeDate = (dateString: string): Date => {
-    const date = new Date(dateString);
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  };
+
 
   const startDate = normalizeDate(fromDate);
   const endDate = normalizeDate(toDate);

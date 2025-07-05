@@ -29,20 +29,6 @@ export const getPermissionColor = () => {
   return "#009688";
 };
 
-export const formatPermissionTime = (startTime: string, endTime: string): string => {
-  const formatTime = (time: string): string => {
-    if (time.includes("AM") || time.includes("PM")) {
-      return time;
-    }
-    const [hours, minutes] = time.split(":");
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    const displayHour = hour % 12 || 12;
-    return `${displayHour}:${minutes} ${ampm}`;
-  };
-
-  return `${formatTime(startTime)} - ${formatTime(endTime)}`;
-};
 
 export const calculatePermissionDuration = (startTime: string, endTime: string): number => {
   const parseTime = (time: string): number => {

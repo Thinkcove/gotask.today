@@ -214,15 +214,13 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     );
   };
 
-
-
   // Filter data by date range BEFORE grouping
   const filteredData = data.filter(isTaskInDateRange);
 
   // Group filtered data by user
   const groupedData: GroupedTasks = filteredData.reduce((acc, entry) => {
-    const userKey = entry.user_id || "unknown";
-    const userName = entry.user_name || "Unknown User";
+    const userKey = entry.user_id;
+    const userName = entry.user_name;
 
     if (!acc[userKey]) {
       acc[userKey] = {

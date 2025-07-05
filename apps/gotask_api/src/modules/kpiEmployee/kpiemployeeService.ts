@@ -85,7 +85,9 @@ const createKpiAssignment = async (
         };
       }
       filteredData.kpi_Title = template.title;
+      filteredData.kpi_Description = template.description; 
       filteredData.frequency = filteredData.frequency || template.frequency;
+      filteredData.target_value= filteredData.target_value;
     }
 
     // Save as template if requested
@@ -295,7 +297,8 @@ async function getTemplatesByUserId(user_id: string): Promise<{
             title: assignment.kpi_Title,
             description: assignment.kpi_Description,
             measurement_criteria: assignment.measurement_criteria,
-            frequency: assignment.frequency
+            frequency: assignment.frequency,
+            status:assignment.status
           });
         }
 
@@ -303,6 +306,7 @@ async function getTemplatesByUserId(user_id: string): Promise<{
           assignment_id: assignment.assignment_id,
           user_id: assignment.user_id,
           frequency: assignment.frequency,
+          target_value: assignment.target_value,
           weightage: assignment.weightage,
           assigned_by: assignment.assigned_by,
           reviewer_id: assignment.reviewer_id,

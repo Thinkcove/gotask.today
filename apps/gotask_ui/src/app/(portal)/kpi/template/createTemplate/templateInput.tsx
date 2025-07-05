@@ -67,7 +67,7 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
             }))}
             required
             value={String(formData.measurement_criteria)}
-            onChange={(val) => handleChange("measurement_criteria", Number(val))}
+            onChange={(val) => handleChange("measurement_criteria", String(val))}
             error={errors.measurement_criteria}
           />
         </Grid>

@@ -183,7 +183,6 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     router
   ]);
 
-  // 💾 Save to localStorage when filters change
   useEffect(() => {
     const filtersToStore = {
       searchText,

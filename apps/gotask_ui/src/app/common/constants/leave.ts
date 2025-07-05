@@ -29,7 +29,6 @@ export const getPermissionColor = () => {
   return "#009688";
 };
 
-
 export const calculatePermissionDuration = (startTime: string, endTime: string): number => {
   const parseTime = (time: string): number => {
     const cleanTime = time.replace(/\s*(AM|PM)\s*/i, "");

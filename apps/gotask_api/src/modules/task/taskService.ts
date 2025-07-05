@@ -13,11 +13,9 @@ import {
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
-import { Project } from "../../domain/model/project/project";
 import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
-import { User } from "../../domain/model/user/user";
 
 // Create a new task
 const createTask = async (
@@ -189,6 +187,10 @@ const getTasksByProject = async (
       },
 
       {
+        $sort: sortObject
+      },
+
+      {
         $group: {
           _id: "$project_id",
           id: { $first: "$project_id" },
@@ -232,7 +234,6 @@ const getTasksByProject = async (
     };
   }
 };
-
 
 // Get tasks by user with pagination
 const getTasksByUser = async (
@@ -334,6 +335,10 @@ const getTasksByUser = async (
       },
 
       {
+        $sort: sortObject
+      },
+
+      {
         $group: {
           _id: "$user_id",
           id: { $first: "$user_id" },
@@ -377,7 +382,6 @@ const getTasksByUser = async (
     };
   }
 };
-
 
 // Get task count grouped by status
 const getTaskCountByStatus = async (): Promise<{

@@ -207,10 +207,15 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const mappedAssets = filteredAssets.map((asset) => ({
     id: asset.id,
     assetType: asset.assetType?.name || "-",
-    deviceName: asset.deviceName || "-",
-    modelName: asset.modelName || "-",
+    deviceName: asset.deviceName || asset.accessCardNo || "-",
+    modelName: asset.modelName || asset.accessCardNo2 || "-",
     warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
-    purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-",
+    purchaseDate: asset.dateOfPurchase
+      ? new Date(asset.dateOfPurchase).toLocaleDateString()
+      : asset.issuedOn
+        ? new Date(asset.issuedOn).toLocaleDateString()
+        : "-",
+
     user:
       asset.tagData
         ?.map((t) => t.user?.name)

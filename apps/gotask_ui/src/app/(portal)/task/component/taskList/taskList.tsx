@@ -10,7 +10,7 @@ import {
   useUserGroupTask
 } from "../../service/taskAction";
 import TaskToggle from "../taskLayout/taskToggle";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import TaskCard from "../taskLayout/taskCard";
 import { IGroup, Project, User } from "../../interface/taskInterface";
 import SearchBar from "@/app/component/searchBar/searchBar";
@@ -24,6 +24,7 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import TaskFilters from "@/app/component/filters/taskFilters";
+import { FILTER_STORAGE_KEY } from "@/app/common/constants/task";
 
 interface TaskListProps {
   initialView?: "projects" | "users";
@@ -31,7 +32,6 @@ interface TaskListProps {
 
 const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { canAccess } = useUserPermission();
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllProjects: allProjects } = useAllProjects();
@@ -48,62 +48,53 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const [allTasks, setAllTasks] = useState<IGroup[]>([]);
   const [hasMoreData, setHasMoreData] = useState(true);
 
-  // Filters
-  const [searchText, setSearchText] = useState<string>(searchParams.get("title") || "");
+  const storedFilters =
+    typeof window !== "undefined" ? localStorage.getItem(FILTER_STORAGE_KEY) : null;
+  const parsedFilters = storedFilters ? JSON.parse(storedFilters) : {};
+
+  const [searchText, setSearchText] = useState<string>(parsedFilters.searchText || "");
+  const [statusFilter, setStatusFilter] = useState<string[]>(parsedFilters.statusFilter || []);
+  const [severityFilter, setSeverityFilter] = useState<string[]>(
+    parsedFilters.severityFilter || []
+  );
+  const [projectFilter, setProjectFilter] = useState<string[]>(parsedFilters.projectFilter || []);
+  const [userFilter, setUserFilter] = useState<string[]>(parsedFilters.userFilter || []);
+  const [minDate, setMinDate] = useState<string | undefined>(parsedFilters.minDate || undefined);
+  const [maxDate, setMaxDate] = useState<string | undefined>(parsedFilters.maxDate || undefined);
+  const [dateVar] = useState<string>(parsedFilters.dateVar || "due_date");
+  const [moreDays, setMoreDays] = useState<string | undefined>(parsedFilters.moreDays || undefined);
+  const [lessDays, setLessDays] = useState<string | undefined>(parsedFilters.lessDays || undefined);
+  const [variationType, setVariationType] = useState<"more" | "less" | "">(
+    parsedFilters.variationType || ""
+  );
+  const [variationDays, setVariationDays] = useState<number>(parsedFilters.variationDays || 0);
+  const [dateFrom, setDateFrom] = useState<string>(parsedFilters.dateFrom || "");
+  const [dateTo, setDateTo] = useState<string>(parsedFilters.dateTo || "");
+
   const [searchParamsObj, setSearchParamsObj] = useState<{
     search_vals?: string[][];
     search_vars?: string[][];
   }>({});
-  const [statusFilter, setStatusFilter] = useState<string[]>(searchParams.getAll("status"));
-  const [severityFilter, setSeverityFilter] = useState<string[]>(searchParams.getAll("severity"));
-  const [projectFilter, setProjectFilter] = useState<string[]>(searchParams.getAll("project_name"));
-  const [userFilter, setUserFilter] = useState<string[]>(searchParams.getAll("user_name"));
-
-  const [minDate, setMinDate] = useState<string | undefined>(
-    searchParams.get("minDate") || undefined
-  );
-  const [maxDate, setMaxDate] = useState<string | undefined>(
-    searchParams.get("maxDate") || undefined
-  );
-  const [dateVar] = useState<string>(searchParams.get("dateVar") || "due_date");
-  const [moreDays, setMoreDays] = useState<string | undefined>(
-    searchParams.get("moreDays") || undefined
-  );
-  const [lessDays, setLessDays] = useState<string | undefined>(
-    searchParams.get("lessDays") || undefined
-  );
-  const rawVariationType = searchParams.get("variationType");
-  const [variationType, setVariationType] = useState<"more" | "less" | "">(
-    rawVariationType === "more" || rawVariationType === "less" ? rawVariationType : ""
-  );
-  const [variationDays, setVariationDays] = useState<number>(
-    Number(searchParams.get("variationDays")) || 0
-  );
-  const [dateFrom, setDateFrom] = useState<string>(searchParams.get("dateFrom") || "");
-  const [dateTo, setDateTo] = useState<string>(searchParams.get("dateTo") || "");
-
-  // Memoize filters
-  const search_vals = searchParamsObj.search_vals;
-  const search_vars = searchParamsObj.search_vars;
 
   const isProjectView = view === "projects";
 
   const projectData = useProjectGroupTask(
     page,
     6,
-    search_vals,
-    search_vars,
+    searchParamsObj.search_vals,
+    searchParamsObj.search_vars,
     minDate,
     maxDate,
     dateVar,
     moreDays,
     lessDays
   );
+
   const userData = useUserGroupTask(
     page,
     6,
-    search_vals,
-    search_vars,
+    searchParamsObj.search_vals,
+    searchParamsObj.search_vars,
     minDate,
     maxDate,
     dateVar,
@@ -192,7 +183,25 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     router
   ]);
 
+  // 💾 Save to localStorage when filters change
   useEffect(() => {
+    const filtersToStore = {
+      searchText,
+      statusFilter,
+      severityFilter,
+      projectFilter,
+      userFilter,
+      minDate,
+      maxDate,
+      dateVar,
+      moreDays,
+      lessDays,
+      variationType,
+      variationDays,
+      dateFrom,
+      dateTo
+    };
+    localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filtersToStore));
     updateURLParams();
 
     const search_vals: string[][] = [];
@@ -220,16 +229,8 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     });
 
     setSearchParamsObj({ search_vals, search_vars });
-    const shouldRefresh = searchParams.get("refresh") === "true";
-    if (shouldRefresh) {
-      resetTaskState();
-      const params = new URLSearchParams(window.location.search);
-      params.delete("refresh");
-    } else {
-      resetTaskState();
-    }
+    resetTaskState();
   }, [
-    updateURLParams,
     searchText,
     statusFilter,
     severityFilter,
@@ -243,7 +244,8 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     variationDays,
     dateFrom,
     dateTo,
-    searchParams
+    dateVar,
+    updateURLParams
   ]);
 
   const handleScroll = () => {
@@ -381,6 +383,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
           setVariationDays(0);
           setMoreDays(undefined);
           setLessDays(undefined);
+          localStorage.removeItem(FILTER_STORAGE_KEY);
         }}
         transtask={transtask}
       />

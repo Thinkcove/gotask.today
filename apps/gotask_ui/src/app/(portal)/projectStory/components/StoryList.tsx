@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
 import StoryFilters from "../components/StoryFilters";
+import { STORY_FILTER_STORAGE_KEY } from "@/app/common/constants/project";
 
 const limit = 12;
 
@@ -21,18 +22,44 @@ interface StoryListProps {
   onProjectNameLoad?: (name: string) => void;
 }
 
+// Helper to get initial filters without useEffect
+function getInitialStoryFilters() {
+  if (typeof window === "undefined")
+    return {
+      status: [],
+      startDate: "",
+      searchTerm: ""
+    };
+
+  const stored = localStorage.getItem(STORY_FILTER_STORAGE_KEY);
+  try {
+    return stored ? JSON.parse(stored) : { status: [], startDate: "", searchTerm: "" };
+  } catch {
+    return { status: [], startDate: "", searchTerm: "" };
+  }
+}
+
 const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
   const { projectId } = useParams();
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  const [status, setStatus] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const {
+    status: initialStatus,
+    startDate: initialStartDate,
+    searchTerm: initialSearch
+  } = getInitialStoryFilters();
 
-  const hasSentProjectNameRef = useRef(false); // Track whether projectName has been sent to parent
+  const [status, setStatus] = useState<string[]>(initialStatus);
+  const [startDate, setStartDate] = useState<string>(initialStartDate);
+  const [searchTerm, setSearchTerm] = useState<string>(initialSearch);
 
-  const getKey = (pageIndex: number, previousPageData: any) => {
+  const hasSentProjectNameRef = useRef(false);
+
+  const getKey = (
+    pageIndex: number,
+    previousPageData: PaginatedStoryResponse | null | undefined
+  ) => {
     if (previousPageData && "data" in previousPageData && !previousPageData.data.length)
       return null;
     return `stories-${projectId}-${status.join(",")}-${startDate}-${searchTerm}-page-${pageIndex + 1}`;
@@ -74,6 +101,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
   const hasMore = allStories.length < totalCount;
 
   const observerRef = useRef<IntersectionObserver | null>(null);
+
   const lastStoryRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (!node || isLoading || isValidating || !hasMore) return;
@@ -88,8 +116,22 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
       observerRef.current.observe(node);
     },
-    [isLoading, isValidating, hasMore]
+    [isLoading, isValidating, hasMore, setSize]
   );
+
+  // Persist filters on every change manually
+  const updateFilterStorage = (next: {
+    status?: string[];
+    startDate?: string;
+    searchTerm?: string;
+  }) => {
+    const updated = {
+      status: next.status ?? status,
+      startDate: next.startDate ?? startDate,
+      searchTerm: next.searchTerm ?? searchTerm
+    };
+    localStorage.setItem(STORY_FILTER_STORAGE_KEY, JSON.stringify(updated));
+  };
 
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
@@ -122,20 +164,24 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
         onStatusChange={(val) => {
           setStatus(val);
           setSize(1);
+          updateFilterStorage({ status: val });
         }}
         onStartDateChange={(val) => {
           setStartDate(val);
           setSize(1);
+          updateFilterStorage({ startDate: val });
         }}
         onSearchChange={(val) => {
           setSearchTerm(val);
           setSize(1);
+          updateFilterStorage({ searchTerm: val });
         }}
         onClearFilters={() => {
           setStatus([]);
           setStartDate("");
           setSearchTerm("");
           setSize(1);
+          localStorage.removeItem(STORY_FILTER_STORAGE_KEY);
         }}
       />
 

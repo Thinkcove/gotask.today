@@ -16,25 +16,90 @@ import { User } from "../interfaces/userInterface";
 import UserStatusFilter from "@/app/component/filters/userFilter";
 import { STATUS_CONFIG, getUserStatusColor } from "@/app/common/constants/status";
 import { useRouter } from "next/navigation";
+import { USER_FILTER_STORAGE_KEY } from "@/app/common/constants/user";
+
+function getInitialUserFilters() {
+  if (typeof window === "undefined") {
+    return {
+      searchTerm: "",
+      userStatusFilter: ["All"]
+    };
+  }
+
+  try {
+    const stored = localStorage.getItem(USER_FILTER_STORAGE_KEY);
+    return stored
+      ? JSON.parse(stored)
+      : {
+          searchTerm: "",
+          userStatusFilter: ["All"]
+        };
+  } catch {
+    return {
+      searchTerm: "",
+      userStatusFilter: ["All"]
+    };
+  }
+}
 
 const UserList = () => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [userStatusFilter, setUserStatusFilter] = useState<string[]>(["All"]);
-  const { data: users } = useSWR("fetch-user", fetcherUserList);
   const router = useRouter();
+
+  const initialFilters = getInitialUserFilters();
+
+  const [searchTerm, setSearchTerm] = useState(initialFilters.searchTerm);
+  const [userStatusFilter, setUserStatusFilter] = useState<string[]>(
+    initialFilters.userStatusFilter
+  );
+
+  const { data: users } = useSWR("fetch-user", fetcherUserList);
+
+  const updateFilterStorage = (next: { searchTerm?: string; userStatusFilter?: string[] }) => {
+    const updated = {
+      searchTerm: next.searchTerm ?? searchTerm,
+      userStatusFilter: next.userStatusFilter ?? userStatusFilter
+    };
+    localStorage.setItem(USER_FILTER_STORAGE_KEY, JSON.stringify(updated));
+  };
+
+  const handleStatusChange = (newValue: string[]) => {
+    let updatedValue = newValue;
+
+    if (newValue.includes("All")) {
+      updatedValue = ["All"];
+    } else {
+      updatedValue = newValue.filter((val) => val !== "All");
+    }
+
+    setUserStatusFilter(updatedValue);
+    updateFilterStorage({ userStatusFilter: updatedValue });
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    updateFilterStorage({ searchTerm: value });
+  };
+
+  const handleClearStatus = () => {
+    setUserStatusFilter(["All"]);
+    updateFilterStorage({ userStatusFilter: ["All"] });
+  };
 
   const filteredUsers =
     users
       ?.filter((user: User) => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
       ?.filter((user: User) => {
-        if (userStatusFilter.length === 0 || userStatusFilter.includes(STATUS_CONFIG.ALL_STATUS))
+        if (userStatusFilter.length === 0 || userStatusFilter.includes(STATUS_CONFIG.ALL_STATUS)) {
           return true;
-        return userStatusFilter.includes(
-          user.status ? STATUS_CONFIG.STATUS_OPTIONS[0].id : STATUS_CONFIG.STATUS_OPTIONS[1].id
-        );
+        }
+
+        const userStatusId = user.status
+          ? STATUS_CONFIG.STATUS_OPTIONS[0].id
+          : STATUS_CONFIG.STATUS_OPTIONS[1].id;
+
+        return userStatusFilter.includes(userStatusId);
       }) || null;
 
   return (
@@ -52,7 +117,7 @@ const UserList = () => {
         <Box mb={2} maxWidth={400}>
           <SearchBar
             value={searchTerm}
-            onChange={setSearchTerm}
+            onChange={handleSearchChange}
             sx={{ width: "100%" }}
             placeholder={transuser("searchplaceholder")}
           />
@@ -69,14 +134,8 @@ const UserList = () => {
         {/* User Status Filter */}
         <UserStatusFilter
           userStatus={userStatusFilter}
-          onStatusChange={(newValue) => {
-            if (newValue.includes("All")) {
-              setUserStatusFilter(["All"]);
-            } else {
-              setUserStatusFilter(newValue.filter((val) => val !== "All"));
-            }
-          }}
-          onClearStatus={() => setUserStatusFilter(["All"])}
+          onStatusChange={handleStatusChange}
+          onClearStatus={handleClearStatus}
           transuser={transuser}
         />
       </Box>

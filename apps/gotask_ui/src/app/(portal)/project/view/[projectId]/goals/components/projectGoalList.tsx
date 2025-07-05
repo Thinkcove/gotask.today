@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import useSWR from "swr";
 import { Box, CircularProgress } from "@mui/material";
@@ -6,7 +8,12 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { formatStatus, priorityOptions, statusOptions } from "@/app/common/constants/project";
+import {
+  formatStatus,
+  GOAL_FILTER_STORAGE_KEY,
+  priorityOptions,
+  statusOptions
+} from "@/app/common/constants/project";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
@@ -16,6 +23,33 @@ import { GoalData } from "../interface/projectGoal";
 import ProjectGoals from "./projectGoals";
 import GoalFilterBar from "./goalFilterBar";
 
+function getInitialGoalFilters() {
+  if (typeof window === "undefined") {
+    return {
+      searchTerm: "",
+      statusFilter: [],
+      severityFilter: []
+    };
+  }
+
+  try {
+    const stored = localStorage.getItem(GOAL_FILTER_STORAGE_KEY);
+    return stored
+      ? JSON.parse(stored)
+      : {
+          searchTerm: "",
+          statusFilter: [],
+          severityFilter: []
+        };
+  } catch {
+    return {
+      searchTerm: "",
+      statusFilter: [],
+      severityFilter: []
+    };
+  }
+}
+
 function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const { projectId } = useParams();
@@ -23,7 +57,15 @@ function ProjectGoalList() {
 
   const projectID = projectId as string;
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const initialFilters = getInitialGoalFilters();
+
+  const [searchTerm, setSearchTerm] = useState(initialFilters.searchTerm);
+  const [statusFilter, setStatusFilter] = useState<string[]>(initialFilters.statusFilter);
+  const [severityFilter, setSeverityFilter] = useState<string[]>(initialFilters.severityFilter);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [allGoals, setAllGoals] = useState<GoalData[]>([]);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -34,13 +76,19 @@ function ProjectGoalList() {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [allGoals, setAllGoals] = useState<GoalData[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [severityFilter, setSeverityFilter] = useState<string[]>([]);
+  const updateFilterStorage = (next: {
+    statusFilter?: string[];
+    severityFilter?: string[];
+    searchTerm?: string;
+  }) => {
+    const updated = {
+      statusFilter: next.statusFilter ?? statusFilter,
+      severityFilter: next.severityFilter ?? severityFilter,
+      searchTerm: next.searchTerm ?? searchTerm
+    };
+    localStorage.setItem(GOAL_FILTER_STORAGE_KEY, JSON.stringify(updated));
+  };
 
-  // Create a unique SWR key that includes projectID
   const swrKey = `weekly-goals-${projectID}-${page}-${statusFilter.join(",")}-${severityFilter.join(",")}-${searchTerm}`;
 
   const { isLoading, error } = useSWR(
@@ -100,35 +148,45 @@ function ProjectGoalList() {
   const onStatusChange = (selected: string[]) => {
     setStatusFilter(selected);
     setPage(1);
+    updateFilterStorage({ statusFilter: selected });
   };
 
   const onSeverityChange = (selected: string[]) => {
     setSeverityFilter(selected);
     setPage(1);
+    updateFilterStorage({ severityFilter: selected });
   };
 
-  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-
-    if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
-      setPage((prev) => prev + 1);
-    }
+  const onSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setPage(1);
+    updateFilterStorage({ searchTerm: value });
   };
+
   const onClearFilters = () => {
     setStatusFilter([]);
     setSeverityFilter([]);
     setSearchTerm("");
     setPage(1);
+    localStorage.removeItem(GOAL_FILTER_STORAGE_KEY);
   };
 
-  // Filter goals based on search and filters (client-side filtering as backup)
+  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
   const filteredGoals = allGoals?.filter((goal) => {
-    const matchesSearchTerm =
+    const matchesSearch =
       goal.goalTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       goal.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesStatus = statusFilter.length ? statusFilter.includes(goal.status) : true;
     const matchesSeverity = severityFilter.length ? severityFilter.includes(goal.priority) : true;
-    return matchesSearchTerm && matchesStatus && matchesSeverity;
+
+    return matchesSearch && matchesStatus && matchesSeverity;
   });
 
   if (isLoading && allGoals.length === 0) {
@@ -151,10 +209,7 @@ function ProjectGoalList() {
     <Box sx={{ pt: 2 }}>
       <GoalFilterBar
         searchTerm={searchTerm}
-        onSearchChange={(value) => {
-          setSearchTerm(value);
-          setPage(1);
-        }}
+        onSearchChange={onSearchChange}
         onBack={handleGoBack}
         statusFilter={statusFilter}
         severityFilter={severityFilter}

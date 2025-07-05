@@ -8,3 +8,5 @@ export const statusOptions = [
 ];
 
 export const PROFICIENCY_MAXIMUM = 3;
+
+export const USER_FILTER_STORAGE_KEY = "user-filter-state";

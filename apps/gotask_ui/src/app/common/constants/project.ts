@@ -43,3 +43,7 @@ export const GOAL_STATUS = {
   IN_PROGRESS: "in-progress",
   TO_DO: "to-do"
 } as const;
+
+export const STORY_FILTER_STORAGE_KEY = "story_filters";
+
+export const GOAL_FILTER_STORAGE_KEY = "goal-filter-state";

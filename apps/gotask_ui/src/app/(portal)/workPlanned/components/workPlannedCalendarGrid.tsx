@@ -17,7 +17,6 @@ import {
   GroupedTasks,
   LeaveEntry,
   WorkPlannedEntry,
-  WorkPlannedGridProps
 } from "../interface/workPlanned";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
@@ -58,7 +57,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     permissions = permissionResponse.data || permissionResponse;
   }
 
-  const MS_IN_A_DAY = 1000 * 60 * 60 * 24;
 
   const formatEstimation = (estimation: string | number | null | undefined) => {
     if (!estimation || estimation === null || estimation === undefined || estimation === "") {

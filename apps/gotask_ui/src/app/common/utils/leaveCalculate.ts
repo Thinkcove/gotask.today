@@ -21,3 +21,25 @@ export const calculatePermissionDuration = (startTime: string, endTime: string):
 
   return Math.round((durationMinutes / 60) * 100) / 100;
 };
+
+export const calculateLeaveDuration = (fromDate: string, toDate: string): number => {
+  
+  const normalizeDate = (dateString: string): Date => {
+    const date = new Date(dateString);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  };
+
+  const startDate = normalizeDate(fromDate);
+  const endDate = normalizeDate(toDate);
+
+  const diffInMs = endDate.getTime() - startDate.getTime();
+
+  const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24)) + 1;
+
+  return diffInDays;
+};
+
+export const formatLeaveDuration = (fromDate: string, toDate: string): string => {
+  const days = calculateLeaveDuration(fromDate, toDate);
+  return `${days} day${days > 1 ? "s" : ""}`;
+};

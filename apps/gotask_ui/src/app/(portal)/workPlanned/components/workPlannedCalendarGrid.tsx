@@ -31,7 +31,7 @@ import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { PermissionEntry } from "../../report/interface/timeLog";
 import { fetchAllPermissions } from "../../report/services/reportService";
-import { calculatePermissionDuration } from "@/app/common/utils/leaveCalculate";
+import {  calculatePermissionDuration, formatLeaveDuration } from "@/app/common/utils/leaveCalculate";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 
 // Enhanced interface to include permissions
@@ -554,7 +554,10 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               {taskLeaves.map((taskLeave, leaveIndex) => (
                                 <Chip
                                   key={leaveIndex}
-                                  label={`${Math.ceil((normalizeDate(taskLeave.to_date).getTime() - normalizeDate(taskLeave.from_date).getTime()) / MS_IN_A_DAY) + 1} day${Math.ceil((normalizeDate(taskLeave.to_date).getTime() - normalizeDate(taskLeave.from_date).getTime()) / MS_IN_A_DAY) + 1 > 1 ? "s" : ""}`}
+                                  label={formatLeaveDuration(
+                                    taskLeave.from_date,
+                                    taskLeave.to_date
+                                  )}
                                   size="small"
                                   sx={{
                                     backgroundColor: getLeaveColor(),
@@ -617,7 +620,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             </Typography>
 
                             <Chip
-                              label={`${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1} day${Math.ceil((normalizeDate(leave.to_date).getTime() - normalizeDate(leave.from_date).getTime()) / MS_IN_A_DAY) + 1 > 1 ? "s" : ""}`}
+                              label={formatLeaveDuration(leave.from_date, leave.to_date)}
                               size="small"
                               sx={{
                                 backgroundColor: getLeaveColor(),

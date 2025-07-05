@@ -369,13 +369,7 @@ const WorkPlannedCalendarGrid: React.FC<WorkPlannedGridProps> = ({
                                 1;
 
                               return (
-                                <Box
-                                  key={leave.id || leaveIndex}
-                                  sx={{
-                                    p: 1,
-                                    borderRadius: "8px", 
-                                  }}
-                                >
+                                <Box key={leave.id || leaveIndex}>
                                   <Typography
                                     sx={{
                                       fontWeight: 600,

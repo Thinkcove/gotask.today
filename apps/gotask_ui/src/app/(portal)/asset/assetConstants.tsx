@@ -8,6 +8,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import Tooltip from "@mui/material/Tooltip";
 import LayersIcon from "@mui/icons-material/Layers";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export interface IAssetDisplayRow {
   id?: string;
@@ -26,7 +27,8 @@ export interface IAssetDisplayRow {
 export const getAssetColumns = (
   transasset: (key: string) => string,
   onEdit: (row: IAssetDisplayRow) => void,
-  onView: (row: IAssetDisplayRow) => void
+  onView: (row: IAssetDisplayRow) => void,
+  onDelete: (row: IAssetDisplayRow) => void
 ): Column<IAssetDisplayRow>[] => [
   {
     id: "assetType",
@@ -153,6 +155,9 @@ export const getAssetColumns = (
         </IconButton>
         <IconButton onClick={() => onView(row)} color="primary" aria-label="view">
           <VisibilityIcon />
+        </IconButton>
+        <IconButton onClick={() => onDelete(row)} color="error" aria-label="delete">
+          <DeleteIcon />
         </IconButton>
       </>
     )

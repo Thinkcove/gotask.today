@@ -724,6 +724,9 @@
     "assettypes": "Asset type",
     "warrantyvalidity": "Warranty Validity",
     "assetid": "Id",
+    "deleteconfirm": "Are you sure you want to delete this asset?",
+    "delete": "Delete",
+    "deleteAsset": "Delete Asset",
     "acquisitiondate": "Acquisition date",
     "meta": {
       "title": "Assets | GoTaskToday",

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
@@ -253,24 +253,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     userAssetCount: asset.userAssetCount
   }));
 
-  if (isLoading) {
-    return (
-      <>
-        <ModuleHeader name={transasset("assets")} />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "80vh"
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      </>
-    );
-  }
-
   const clearAssetFilters = () => {
     setModelNameFilter([]);
     setAssignedToFilter([]);
@@ -438,6 +420,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                           setSortKey(key);
                           setSortOrder(order);
                         }}
+                        isLoading={isLoading}
                       />
                     </Box>
                   </Box>

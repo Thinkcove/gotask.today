@@ -9,8 +9,6 @@ import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { PermissionData } from "../interface/interface";
 import { useUser } from "@/app/userContext";
-import EmptyState from "@/app/component/emptyState/emptyState";
-import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import Table, { Column } from "@/app/component/table/table";

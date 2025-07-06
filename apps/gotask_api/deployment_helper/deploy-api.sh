@@ -4,6 +4,8 @@
 # You can set them in the .env.dev file for dev or in the .env.uat file for uat or .env.prod for prod.
 # ensure you have the tc-test-key1.pem file in the same directory as this script.
 # Then run the script with the appropriate argument:
+
+# now we are using in separate files for each environment:
 # For uat: bash deploy-api.sh uat
 # For prod: bash deploy-api.sh prod  
 # For dev: bash deploy-api.sh dev

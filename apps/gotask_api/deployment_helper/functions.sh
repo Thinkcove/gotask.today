@@ -51,7 +51,8 @@ run_build() {
 
 transfer_files() {
     log_info "Transferring files to $env environment..."
-    ssh -i "$keyfile" "$user@$ipaddr" "rm -rf $appFolder && mkdir -p $appFolder"
+
+    ssh -i "$keyfile" "$user@$ipaddr" "cd $appFolder && find . -mindepth 1 -name node_modules -prune -o -exec rm -rf {} +"
     
     # Transfer files
     log_info "Transferring new build..."
@@ -62,12 +63,15 @@ transfer_files() {
 }
 
 deploy() {    
-    log_info "Installing dependencies..."
-    ssh -i "$keyfile" "$user@$ipaddr" "
-        echo '[$(date)] Starting npm install...'
-        cd $appFolder && npm install --production --loglevel=info
-        echo '[$(date)] npm install finished!'
-    "
+    # TODO  
+    # now we dont installfor each built.
+
+    # log_info "Installing dependencies..."
+    # ssh -i "$keyfile" "$user@$ipaddr" "
+    #     echo '[$(date)] Starting npm install...'
+    #     cd $appFolder && npm install --production --loglevel=info
+    #     echo '[$(date)] npm install finished!'
+    # "
     log_info "Restarting PM2 process: $pm2Name"
     ssh -i "$keyfile" "$user@$ipaddr" "pm2 restart $pm2Name"
 }

@@ -7,17 +7,16 @@ import { useUser } from "@/app/userContext";
 import PremissionForm from "./conponents/premissionForm";
 import FormHeader from "@/app/(portal)/access/components/FormHeader";
 import { useParams, useRouter } from "next/navigation";
-import { createPermission } from "../../services/permissionAction";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { PermissionPayload } from "../../interface/interface";
+import { PermissionPayload } from "../interface/interface";
+import { createPermission } from "../services/permissionAction";
 
 const Page = () => {
   const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
-  const params = useParams();
   const { user } = useUser();
   const router = useRouter();
 
@@ -125,7 +124,7 @@ const Page = () => {
           overflow: "hidden"
         }}
       >
-        {params?.userId === user?.id && <ModuleHeader name={user?.name} />}
+        {user?.id && <ModuleHeader name={user?.name} />}
         <FormHeader
           isEdit={false}
           onCancel={handleCancel}

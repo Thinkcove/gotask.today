@@ -3,11 +3,11 @@
 run_steps_from() {
     steps=(
         "update_code"
-        "setup_env_file"
+        # "setup_env_file"
         "run_linters"
         "run_next_build"
         "organize_standalone_folder"
-        "restore_env_file"
+        # "restore_env_file"
         "deploy"
     )
 
@@ -28,17 +28,17 @@ run_steps_from() {
 update_code() {
     log_info "Pulling latest changes..."
     git pull
-    log_info "Installing dependencies..."
-    npm install
+    # log_info "Installing dependencies..."
+    # npm install
 }
 
-setup_env_file() {
-    log_info "Cleaning previous build..."
-    rm -rf .next
-    log_info "Backing up and applying .env"
-    cp .env .env.copy
-    cp "$envFile" .env
-}
+# setup_env_file() {
+#     log_info "Cleaning previous build..."
+#     rm -rf .next
+#     log_info "Backing up and applying .env"
+#     cp .env .env.copy
+#     cp "$envFile" .env
+# }
 
 run_linters() {
     log_info "Running lint and format..."
@@ -47,9 +47,25 @@ run_linters() {
 }
 
 run_next_build() {
-    log_info "Building the project..."
-    npm run build
+    log_info "Building the project for $env environment..."
+
+    case "$env" in
+        dev)
+            npm run build:dev
+            ;;
+        uat)
+            npm run build:uat
+            ;;
+        prod)
+            npm run build:prod
+            ;;
+        *)
+            log_error "Unknown environment: $env"
+            exit 1
+            ;;
+    esac
 }
+
 
 organize_standalone_folder() {
     log_info "Organizing build output..."
@@ -58,11 +74,11 @@ organize_standalone_folder() {
     rm -rf .next/static
 }
 
-restore_env_file() {
-    log_info "Restoring original .env..."
-    cp .env.copy .env
-    rm -rf .env.copy
-}
+# restore_env_file() {
+#     log_info "Restoring original .env..."
+#     cp .env.copy .env
+#     rm -rf .env.copy
+# }
 
 deploy() {
     log_info "Deploying to $env environment..."

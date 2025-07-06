@@ -28,10 +28,12 @@ main() {
     setup_environment "$env"
 
     current_step="update_code"; update_code
+    #To-Do
     # current_step="setup_env_file"; setup_env_file
     current_step="run_linters"; run_linters
     current_step="run_next_build"; run_next_build
     current_step="organize_standalone_folder"; organize_standalone_folder
+    #To-Do
     # current_step="restore_env_file"; restore_env_file
     current_step="deploy"; deploy "$env"
 

@@ -3,10 +3,12 @@
 run_steps_from() {
     steps=(
         "update_code"
+        #To-Do
         # "setup_env_file"
         "run_linters"
         "run_next_build"
         "organize_standalone_folder"
+        #To-Do
         # "restore_env_file"
         "deploy"
     )
@@ -28,10 +30,12 @@ run_steps_from() {
 update_code() {
     log_info "Pulling latest changes..."
     git pull
+    #To-Do
     # log_info "Installing dependencies..."
     # npm install
 }
 
+#To-Do
 # setup_env_file() {
 #     log_info "Cleaning previous build..."
 #     rm -rf .next
@@ -74,6 +78,7 @@ organize_standalone_folder() {
     rm -rf .next/static
 }
 
+#To-Do
 # restore_env_file() {
 #     log_info "Restoring original .env..."
 #     cp .env.copy .env

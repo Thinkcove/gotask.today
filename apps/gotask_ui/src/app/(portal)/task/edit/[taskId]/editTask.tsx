@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Box, Typography, Button, IconButton } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { ArrowBack, History } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
-
 import TimeSpentPopup from "../timeSpentPopup";
 import HistoryDrawer from "../taskHistory";
 import ModuleHeader from "@/app/component/header/moduleHeader";
@@ -22,15 +21,13 @@ import { IFormField, ITask, Project, User } from "../../interface/taskInterface"
 import { KeyedMutator } from "swr";
 import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields";
 import TimeProgressBar from "../timeProgressBar";
-import { RichTextEditorRef } from "mui-tiptap";
+
 interface EditTaskProps {
   data: ITask;
   mutate: KeyedMutator<ITask>;
 }
 
 const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
-  const rteRef = useRef<RichTextEditorRef>(null);
-
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const { user } = useUser();
@@ -79,8 +76,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
 
   const handleSubmit = async () => {
     try {
-      const html = rteRef.current?.editor?.getHTML?.() || "";
-
       const isUserEstimatedChanged = formData.user_estimated !== data.user_estimated;
       const isUserEstimateProvided =
         formData.user_estimated !== null &&
@@ -106,13 +101,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       if (fieldCheck("due_date", formattedDueDate)) updatedFields.due_date = formData.due_date;
       if (fieldCheck("start_date", formattedStartDate))
         updatedFields.start_date = formData.start_date;
-
-      // Directly compare and set description (fixed)
-      if (
-        !isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, "description") &&
-        html !== data.description
-      ) {
-        updatedFields.description = html;
+      if (fieldCheck("description", data.description)) {
+        updatedFields.description = formData.description;
       }
 
       if (isUserEstimatedChanged && isUserEstimateProvided) {
@@ -242,7 +232,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             readOnlyFields={readOnlyFields}
             isUserEstimatedLocked={!!data.user_estimated}
             isStartDateLocked={!!data.start_date}
-            rteRef={rteRef}
           />
         </Box>
 

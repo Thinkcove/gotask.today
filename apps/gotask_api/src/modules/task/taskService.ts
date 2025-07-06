@@ -47,11 +47,22 @@ const createTask = async (
 // Get all tasks
 const getAllTasks = async (): Promise<{
   success: boolean;
-  data?: ITask[];
+  data?: Partial<ITask>[];
   message?: string;
 }> => {
   try {
-    const tasks = await findAllTasks();
+    const tasks = await Task.find(
+      {},
+      { 
+        id: 1,
+        title: 1, 
+        status: 1, 
+        project_id: 1, 
+        user_id: 1, 
+        due_date: 1
+      }
+    ).lean();
+
     return {
       success: true,
       data: tasks

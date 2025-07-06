@@ -445,9 +445,21 @@ class userService {
 
       const skill = user.skills[skillIndex];
 
-      if (updatedSkill.name !== undefined) skill.name = updatedSkill.name;
-      if (updatedSkill.proficiency !== undefined) skill.proficiency = updatedSkill.proficiency;
-      if (updatedSkill.experience !== undefined) skill.experience = updatedSkill.experience;
+      if (updatedSkill.name !== undefined) {
+        skill.name = updatedSkill.name;
+      }
+
+      if (updatedSkill.proficiency !== undefined) {
+        skill.proficiency = updatedSkill.proficiency;
+
+        if (updatedSkill.proficiency < 3 && "experience" in skill) {
+          skill.experience = undefined;
+        }
+      }
+
+      if (updatedSkill.experience !== undefined && updatedSkill.proficiency! >= 3) {
+        skill.experience = updatedSkill.experience;
+      }
 
       await user.save();
       return { success: true, data: skill, message: "Skill updated successfully" };

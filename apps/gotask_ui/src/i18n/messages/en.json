@@ -1008,10 +1008,14 @@
     "endtimebeforeendtime": "End time must be after start time on the same day",
     "successmessage": "Permission request submitted successfully!",
     "failedmessage": "Failed to submit permission request. Please try again.",
-    "create":"Create",
-    "edit":"Edit",
-    "cancel":"Cancel",
-    "update":"Update",
-    "createpermission":"Create Permission"
+    "create": "Create",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "update": "Update",
+    "createpermission": "Create Permission",
+    "actions": "Actions",
+    "deletepermission": "Delete Permission",
+    "editpermission": "Edit Permission",
+    "data": "Date"
   }
 }

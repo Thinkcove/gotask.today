@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, Grid, Paper, IconButton, Tooltip, Typography, CircularProgress } from "@mui/material";
+import { Edit, Delete, Visibility } from "@mui/icons-material";
 import useSWR from "swr";
 import { fetchAllgetpermission } from "../services/permissionAction";
 import SearchBar from "@/app/component/searchBar/searchBar";
@@ -7,18 +8,23 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { PermissionData } from "../interface/interface";
-import { PermissionItem } from "./permissionItem";
-import CommonGridList from "./commonGridList";
 import { useUser } from "@/app/userContext";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import Table, { Column } from "@/app/component/table/table";
+import CommonDialog from "@/app/component/dialog/commonDialog";
 
 const PermissionList = () => {
   const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
   const router = useRouter();
   const { user } = useUser();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPermission, setSelectedPermission] = useState<PermissionData | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { data, isLoading } = useSWR("getpermission", fetchAllgetpermission, {
     refreshInterval: 30000,
@@ -26,7 +32,7 @@ const PermissionList = () => {
     revalidateOnReconnect: true
   });
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const displayData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
 
   const onSearchChange = (val: string) => {
     setSearchTerm(val);
@@ -38,12 +44,119 @@ const PermissionList = () => {
     }
   };
 
+  const handleViewClick = (permission: PermissionData) => {
+    router.push(`/permission/view/${permission.id}`);
+  };
+
+  const handleEditClick = (permission: PermissionData) => {
+    router.push(`/permission/edit/${permission.id}`);
+  };
+
+  const handleDeleteClick = (permission: PermissionData) => {
+    setSelectedPermission(permission);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedPermission) return;
+    try {
+      setIsDeleteDialogOpen(false);
+      setSelectedPermission(null);
+    } catch {
+      setErrorMessage(transpermishion("faileddelete"));
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteDialogOpen(false);
+    setSelectedPermission(null);
+  };
+
   const filteredPermissions = useMemo(() => {
-    if (!data) return [];
-    return data.filter((perm: PermissionData) =>
+    if (!displayData || !Array.isArray(displayData)) return [];
+    return displayData.filter((perm: PermissionData) =>
       perm.user_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [data, searchTerm]);
+  }, [displayData, searchTerm]);
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatTime = (timeString: string) => {
+    if (!timeString) return "";
+    try {
+      const [hours, minutes] = timeString.split(":");
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${ampm}`;
+    } catch {
+      return timeString;
+    }
+  };
+
+  const permissionColumns: Column<PermissionData>[] = [
+    { id: "user_name", label: transpermishion("username"), sortable: true },
+    {
+      id: "date",
+      label: transpermishion("date"),
+      render: (value: string | number | string[] | undefined, row: PermissionData) =>
+        formatDate(row.date),
+      sortable: true
+    },
+    {
+      id: "start_time",
+      label: transpermishion("starttime"),
+      render: (value: string | number | string[] | undefined, row: PermissionData) =>
+        formatTime(row.start_time || ""),
+      sortable: true
+    },
+    {
+      id: "end_time",
+      label: transpermishion("endtime"),
+      render: (value: string | number | string[] | undefined, row: PermissionData) =>
+        formatTime(row.end_time || ""),
+      sortable: true
+    },
+    {
+      id: "actions",
+      label: transpermishion("actions"),
+      sortable: false,
+      render: (value: string | number | string[] | undefined, row: PermissionData) => (
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Tooltip title={transpermishion("viewdetails")}>
+            <IconButton size="small" onClick={() => handleViewClick(row)} sx={{ color: "#741B92" }}>
+              <Visibility fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={transpermishion("editpermission") }>
+            <IconButton size="small" onClick={() => handleEditClick(row)} sx={{ color: "#741B92" }}>
+              <Edit fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={transpermishion("deletepermission")}>
+            <IconButton
+              size="small"
+              onClick={() => handleDeleteClick(row)}
+              sx={{ color: "#741B92" }}
+            >
+              <Delete fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )
+    }
+  ];
 
   if (isLoading) {
     return (
@@ -61,45 +174,92 @@ const PermissionList = () => {
     );
   }
 
-  const handlePrimessionView = (permissionId: string) => {
-    router.push(`/permission/view/${permissionId}`);
-  };
-
   return (
     <>
-      <Box sx={{ width: "100%", pt: 4 }}>
-        <Box
-          sx={{
-            pr: 2,
-            pl: 2,
-            flexGrow: 1,
-            pb: 2,
-            maxWidth: { xs: "none", sm: 400 },
-            minWidth: { xs: "auto", sm: 200 }
-          }}
-        >
+      {errorMessage && (
+        <Typography color="error" sx={{ p: 2, textAlign: "center" }}>
+          {errorMessage}
+        </Typography>
+      )}
+
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          gap: 1,
+          px: 2,
+          mt: 2,
+          flexWrap: "nowrap"
+        }}
+      >
+        <Box sx={{ flex: "1 1 auto", maxWidth: "300px" }}>
           <SearchBar
             value={searchTerm}
             onChange={onSearchChange}
-            sx={{ width: "100%" }}
-            placeholder={transpermishion("search")}
+            placeholder={transpermishion("search") || "Search Permission"}
           />
         </Box>
-        <CommonGridList<PermissionData>
-          items={filteredPermissions}
-          noDataMessage={
-            <EmptyState imageSrc={NoAssetsImage} message={transpermishion("nodatafound")} />
-          }
-          renderItem={(permission) => (
-            <PermissionItem permission={permission} onClick={handlePrimessionView} />
-          )}
+      </Box>
+
+      <Box
+        sx={{ width: "100%", display: "flex", flexDirection: "column", overflowY: "auto", mt: 2 }}
+      >
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            {!displayData || displayData.length === 0 ? (
+              <EmptyState
+                imageSrc={NoAssetsImage}
+                message={transpermishion("nopermission")}
+              />
+            ) : filteredPermissions.length === 0 ? (
+              <EmptyState
+                imageSrc={NoAssetsImage}
+                message={transpermishion("nodata") || "No data found"}
+              />
+            ) : (
+              <Paper
+                sx={{
+                  p: 2,
+                  overflow: "auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflowY: "auto"
+                }}
+              >
+                <Box sx={{ width: "100%", flex: 1 }}>
+                  <Box sx={{ minWidth: 800 }}>
+                    <Table<PermissionData> columns={permissionColumns} rows={filteredPermissions} />
+                  </Box>
+                </Box>
+              </Paper>
+            )}
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
+        <ActionButton
+          label={transpermishion("createpermission")}
+          icon={<AddIcon sx={{ color: "white" }} />}
+          onClick={handleCreatePermission}
         />
       </Box>
-      <ActionButton
-        label={"Create Permission"}
-        icon={<AddIcon sx={{ color: "white" }} />}
-        onClick={handleCreatePermission}
-      />
+
+      <CommonDialog
+        open={isDeleteDialogOpen}
+        onClose={handleDeleteCancel}
+        onSubmit={handleDeleteConfirm}
+        title={transpermishion("deletetitle")}
+        submitLabel={transpermishion("delete")}
+        cancelLabel={transpermishion("cancel")}
+        submitColor="#b71c1c"
+      >
+        <Typography sx={{ pt: 2 }}>
+          {transpermishion("deleteconfirm")}
+        </Typography>
+      </CommonDialog>
     </>
   );
 };

@@ -44,9 +44,6 @@ const PermissionList = () => {
     router.push(`/permission/view/${permission.id}`);
   };
 
-
-
-
   const filteredPermissions = useMemo(() => {
     if (!displayData || !Array.isArray(displayData)) return [];
     return displayData.filter((perm: PermissionData) =>
@@ -137,8 +134,6 @@ const PermissionList = () => {
 
   return (
     <>
-  
-
       <Box
         sx={{
           display: "flex",
@@ -168,10 +163,7 @@ const PermissionList = () => {
             {!displayData || displayData.length === 0 ? (
               <EmptyState imageSrc={NoAssetsImage} message={transpermishion("nopermission")} />
             ) : filteredPermissions.length === 0 ? (
-              <EmptyState
-                imageSrc={NoAssetsImage}
-                message={transpermishion("nodata") || "No data found"}
-              />
+              <EmptyState imageSrc={NoAssetsImage} message={transpermishion("nodatafound")} />
             ) : (
               <Paper
                 sx={{

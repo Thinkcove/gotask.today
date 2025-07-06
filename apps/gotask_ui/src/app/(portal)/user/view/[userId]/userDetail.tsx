@@ -24,6 +24,7 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
 import SkillInput from "../../components/skillInput";
 import CertificateInput from "../../components/certificateInput";
+import IncrementInput from "../../components/incrementInput";
 
 interface UserDetailProps {
   user: User;
@@ -122,6 +123,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 transuser("general"),
                 transuser("userskill"),
                 transuser("Certificate.certificates"),
+                transuser("Increment.incrementhistory"),
                 transuser("projectdetails"),
                 transasset("assetdetails")
               ]}
@@ -265,10 +267,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             <Grid item xs={12}>
               {user.assetDetails && user.assetDetails.length > 0 ? (
                 <Box sx={{ display: "flex", overflowX: "auto", gap: 2, py: 1, pr: 1 }}>
-                  {user.assetDetails.map((asset: IAssetAttributes, index: number) => {
-                    const isAccessCard = Boolean(asset.accessCardNo);
-
-                    return (
+                  {user.assetDetails.map((asset: IAssetAttributes, index: number) => (
+                    <>
                       <Box
                         key={asset.id || index}
                         sx={{
@@ -286,90 +286,84 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                           }}
                         >
                           <Stack spacing={1}>
-                            {isAccessCard ? (
-                              <>
+                            <Box>
+                              <Typography {...labelTextStyle}>{asset.deviceName ?? ""}</Typography>
+                            </Box>
+                            {asset.modelName && (
+                              <Box display="flex" justifyContent="space-between">
                                 <Typography {...labelTextStyle}>
-                                  {transasset("accesscarddetails")}
+                                  {transasset("modelname")}:
                                 </Typography>
-                                <Box display="flex" justifyContent="space-between">
-                                  <Typography {...labelTextStyle}>
-                                    {transasset("accessCardNo")}:
-                                  </Typography>
-                                  <EllipsisText text={asset.accessCardNo ?? "-"} maxWidth={160} />
-                                </Box>
-                                <Box display="flex" justifyContent="space-between">
-                                  <Typography {...labelTextStyle}>
-                                    {transasset("personalId")}:
-                                  </Typography>
-                                  <EllipsisText text={asset.personalId ?? "-"} maxWidth={160} />
-                                </Box>
-                              </>
-                            ) : (
-                              <>
+                                <EllipsisText text={asset.modelName} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.os && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>{transasset("os")}:</Typography>
+                                <EllipsisText text={asset.os} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.processor && (
+                              <Box display="flex" justifyContent="space-between">
                                 <Typography {...labelTextStyle}>
-                                  {asset.deviceName ?? ""}
+                                  {transasset("processor")}:
                                 </Typography>
-                                {asset.modelName && (
-                                  <Box display="flex" justifyContent="space-between">
-                                    <Typography {...labelTextStyle}>
-                                      {transasset("modelname")}:
-                                    </Typography>
-                                    <EllipsisText text={asset.modelName} maxWidth={160} />
-                                  </Box>
-                                )}
-                                {asset.os && (
-                                  <Box display="flex" justifyContent="space-between">
-                                    <Typography {...labelTextStyle}>{transasset("os")}:</Typography>
-                                    <EllipsisText text={asset.os} maxWidth={160} />
-                                  </Box>
-                                )}
-                                {asset.processor && (
-                                  <Box display="flex" justifyContent="space-between">
-                                    <Typography {...labelTextStyle}>
-                                      {transasset("processor")}:
-                                    </Typography>
-                                    <EllipsisText text={asset.processor} maxWidth={160} />
-                                  </Box>
-                                )}
-                                {asset.ram && (
-                                  <Box display="flex" justifyContent="space-between">
-                                    <Typography {...labelTextStyle}>
-                                      {transasset("ram")}:
-                                    </Typography>
-                                    <EllipsisText text={asset.ram} maxWidth={160} />
-                                  </Box>
-                                )}
-                                {asset.storage && (
-                                  <Box display="flex" justifyContent="space-between">
-                                    <Typography {...labelTextStyle}>
-                                      {transasset("storage")}:
-                                    </Typography>
-                                    <EllipsisText text={asset.storage} maxWidth={160} />
-                                  </Box>
-                                )}
-                                {asset.serialNumber && (
-                                  <Box display="flex" justifyContent="space-between">
-                                    <Typography {...labelTextStyle}>
-                                      {transasset("serialnumber")}:
-                                    </Typography>
-                                    <EllipsisText text={asset.serialNumber} maxWidth={160} />
-                                  </Box>
-                                )}
-                                {asset.dateOfPurchase && (
-                                  <Box display="flex" justifyContent="space-between">
-                                    <Typography {...labelTextStyle}>
-                                      {transasset("dateOfPurchase")}:
-                                    </Typography>
-                                    <FormattedDateTime date={asset.dateOfPurchase} />
-                                  </Box>
-                                )}
-                              </>
+                                <EllipsisText text={asset.processor} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.ram && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>{transasset("ram")}:</Typography>
+                                <EllipsisText text={asset.ram} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.storage && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>
+                                  {transasset("storage")}:
+                                </Typography>
+                                <EllipsisText text={asset.storage} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.serialNumber && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>
+                                  {transasset("serialnumber")}:
+                                </Typography>
+                                <EllipsisText text={asset.serialNumber} maxWidth={160} />
+                              </Box>
+                            )}
+                            {asset.dateOfPurchase && (
+                              <Box display="flex" justifyContent="space-between">
+                                <Typography {...labelTextStyle}>
+                                  {transasset("dateOfPurchase")}:
+                                </Typography>
+                                <FormattedDateTime date={asset.dateOfPurchase} />
+                              </Box>
+                            )}
+
+                            {Number(user.issuesCount) > 0 && (
+                              <Box display="flex" justifyContent="flex-end" mt={1}>
+                                <Box
+                                  sx={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    cursor: "pointer",
+                                    px: 1,
+                                    pb: 0.3
+                                  }}
+                                >
+                                  <Typography sx={{ color: "#e42003", fontWeight: 200 }}>
+                                    {transasset("reportedissues")} ({user.issuesCount})
+                                  </Typography>
+                                </Box>
+                              </Box>
                             )}
                           </Stack>
                         </CardComponent>
                       </Box>
-                    );
-                  })}
+                    </>
+                  ))}
                 </Box>
               ) : (
                 <Typography color="text.secondary" fontStyle="italic">
@@ -388,6 +382,11 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   await mutate();
                 }}
               />
+            </Box>
+          )}
+          {selectedTab === transuser("Increment.incrementhistory") && (
+            <Box>
+              <IncrementInput userId={userID} />
             </Box>
           )}
         </Box>

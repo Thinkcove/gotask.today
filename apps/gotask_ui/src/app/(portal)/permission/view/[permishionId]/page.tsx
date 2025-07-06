@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { usePermissionById } from "../../services/permissionAction";
 import PermissionLoadingState from "../../components/permissionLoadingState";
-import PermissionErrorState from "../../components/permissionErrorState";
 import PermissionDetails from "./conponents/permishionView";
 
 const ViewPermission: React.FC = () => {
@@ -22,36 +21,11 @@ const ViewPermission: React.FC = () => {
 
   const handleBack = () => router.back();
 
-  const handleRetry = () => mutate();
-
-  // Loading state
   if (isLoading) {
     return <PermissionLoadingState title={transpermishion("permission")} />;
   }
 
-  // Error state
-  if (isError) {
-    return (
-      <>
-        <ModuleHeader name={transpermishion("permission")} />
-        <PermissionErrorState
-          message="Failed to load permission details"
-          onRetry={handleRetry}
-          onBack={handleBack}
-        />
-      </>
-    );
-  }
 
-  // No permission found
-  if (!permission) {
-    return (
-      <>
-        <ModuleHeader name={transpermishion("permission")} />
-        <PermissionErrorState message="Permission not found" onBack={handleBack} />
-      </>
-    );
-  }
 
   // Success state
   return (

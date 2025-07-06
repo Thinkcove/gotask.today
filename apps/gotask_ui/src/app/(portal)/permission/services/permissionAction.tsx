@@ -2,23 +2,8 @@ import { getData, postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import env from "@/app/common/env";
 import useSWR from "swr";
-// Interface for permission payload
-export interface PermissionPayload {
-  date: string;
-  start_time: string;
-  end_time: string;
-}
+import { PermissionPayload } from "../interface/interface";
 
-// Interface for permission response (adjust based on your API response)
-export interface PermissionResponse {
-  id?: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-  status?: string;
-  created_at?: string;
-  updated_at?: string;
-}
 export const fetchAllgetpermission = async () => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/getpermission`;

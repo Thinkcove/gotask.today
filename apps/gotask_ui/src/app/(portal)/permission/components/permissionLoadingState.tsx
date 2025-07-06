@@ -2,10 +2,9 @@
 import React from "react";
 import { Box, CircularProgress } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
+import { PermissionLoadingStateProps } from "../interface/interface";
 
-interface PermissionLoadingStateProps {
-  title: string;
-}
+
 
 const PermissionLoadingState: React.FC<PermissionLoadingStateProps> = ({ title }) => {
   return (

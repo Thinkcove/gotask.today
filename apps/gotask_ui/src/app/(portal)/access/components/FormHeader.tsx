@@ -9,11 +9,12 @@ export interface FormHeaderProps {
   onShowHistory?: () => void;
   isSubmitting?: boolean;
   hasHistory?: boolean;
-  edit: string;
-  create: string;
-  cancle: string;
-  update: string;
+  editheading?: string;
+  create?: string;
+  cancle?: string;
+  update?: string;
   showhistory?: string;
+  createHeading: string;
 }
 
 const FormHeader: React.FC<FormHeaderProps> = ({
@@ -23,8 +24,9 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   isSubmitting = false,
   cancle,
   create,
-  edit,
-  update
+  editheading,
+  update,
+  createHeading
 }) => {
   return (
     <>
@@ -36,7 +38,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
           width: "100%",
           flexWrap: "wrap",
           gap: 2,
-          p:2
+          p: 2
         }}
       >
         {/* Left Section: Arrow + Title */}
@@ -51,7 +53,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
             <ArrowBack />
           </IconButton>
           <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {isEdit ? edit : create}
+            {isEdit ? editheading : createHeading}
           </Typography>
         </Box>
 

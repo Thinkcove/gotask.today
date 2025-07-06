@@ -1,14 +1,13 @@
 "use client";
-
 import React from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
-import { useParams } from "next/navigation";
 import PermissionList from "./components/permissionList";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const Page = () => {
-
+  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
   return (
     <Box
@@ -21,7 +20,7 @@ const Page = () => {
         overflow: "hidden"
       }}
     >
-      <ModuleHeader name={"Permission"} />
+      <ModuleHeader name={transpermishion("permission")} />
 
       <Box sx={{ flex: 1, overflowY: "auto" }}>
         <PermissionList />

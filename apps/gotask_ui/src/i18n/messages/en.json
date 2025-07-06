@@ -990,13 +990,28 @@
   },
   "Permission": {
     "permission": "Permission",
-    "username":"User Name",
-    "date":"Permission Date",
-    "starttime":" Start Time",
-    "endtime":"End Time",
-    "createdat":"Created At",
-    "comments":"Permission Comments",
-    "close":"Close"
-
+    "username": "User Name",
+    "date": "Permission Date",
+    "starttime": "Start Time",
+    "endtime": "End Time",
+    "createdat": "Created At",
+    "comments": "Permission Comments",
+    "close": "Close",
+    "search": "Search by user name",
+    "nodatafound": "No permishion found.",
+    "viewdetails": "View Details",
+    "startdate": "Start Date",
+    "startdaterequired": "Start date is required",
+    "starttimerequired": "Start time is required",
+    "endtimerequired": "End time is required",
+    "starttimebeforeendtime": "Start time must be before end time on the same day",
+    "endtimebeforeendtime": "End time must be after start time on the same day",
+    "successmessage": "Permission request submitted successfully!",
+    "failedmessage": "Failed to submit permission request. Please try again.",
+    "create":"Create",
+    "edit":"Edit",
+    "cancel":"Cancel",
+    "update":"Update",
+    "createpermission":"Create Permission"
   }
 }

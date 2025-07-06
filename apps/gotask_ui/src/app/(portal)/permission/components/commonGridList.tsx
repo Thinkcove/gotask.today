@@ -1,20 +1,15 @@
 // app/component/common/CommonGridList.tsx
 import React from "react";
 import { Box, Grid, Typography } from "@mui/material";
+import { CommonGridListProps } from "../interface/interface";
 
-interface CommonGridListProps<T> {
-  items: T[];
-  renderItem: (item: T) => React.ReactNode;
-  onScroll?: () => void;
-  noDataMessage?: React.ReactNode; // Changed from string to React.ReactNode
-  maxHeight?: string;
-}
+
 
 const CommonGridList = <T,>({
   items,
   renderItem,
   onScroll,
-  noDataMessage = "No data found",
+  noDataMessage,
   maxHeight = "calc(100vh - 250px)"
 }: CommonGridListProps<T>) => {
   return (
@@ -30,12 +25,7 @@ const CommonGridList = <T,>({
 
         {items.length === 0 && (
           <Box sx={{ textAlign: "center", py: 4 }}>
-            {/* Check if noDataMessage is a string or React element */}
-            {typeof noDataMessage === "string" ? (
-              <Typography variant="h6">{noDataMessage}</Typography>
-            ) : (
-              noDataMessage
-            )}
+            <Typography variant="h6">{noDataMessage}</Typography>
           </Box>
         )}
       </Box>

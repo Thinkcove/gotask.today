@@ -13,8 +13,12 @@ import CommonGridList from "./commonGridList";
 import { useUser } from "@/app/userContext";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const PermissionList = () => {
+  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+
   const { data, isLoading, error } = useSWR("getpermission", fetchAllgetpermission, {
     refreshInterval: 30000,
     revalidateOnFocus: true,
@@ -32,8 +36,6 @@ const PermissionList = () => {
   const handleCreatePermission = () => {
     if (user?.id) {
       router.push(`/permission/createPremission/${user.id}`);
-    } else {
-      console.warn("User ID not found in logged-in user");
     }
   };
 
@@ -60,10 +62,6 @@ const PermissionList = () => {
     );
   }
   const handlePrimessionView = (permissionId: string) => {
-    if (!permissionId) {
-      console.error("Goal ID is missing");
-      return;
-    }
     router.push(`/permission/view/${permissionId}`);
   };
   return (
@@ -83,12 +81,14 @@ const PermissionList = () => {
             value={searchTerm}
             onChange={onSearchChange}
             sx={{ width: "100%" }}
-            placeholder="Search by user name"
+            placeholder={transpermishion("search")}
           />
         </Box>
         <CommonGridList<PermissionData>
           items={filteredPermissions}
-          noDataMessage={<EmptyState imageSrc={NoAssetsImage} message={"nodatafound"} />}
+          noDataMessage={
+            <EmptyState imageSrc={NoAssetsImage} message={transpermishion("nodatafound")} />
+          }
           renderItem={(permission) => (
             <PermissionItem permission={permission} onClick={handlePrimessionView} />
           )}

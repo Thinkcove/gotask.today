@@ -2,22 +2,11 @@ import React from "react";
 import Grid from "@mui/material/Grid/Grid";
 import { Box, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { PremissionFormProps } from "../../../interface/interface";
 
-interface PremissionFormProps {
-  formData: {
-    startDate: string;
-    startTime: string;
-    endTime: string;
-  };
-  errors: {
-    startDate?: string;
-    startTime?: string;
-    endTime?: string;
-  };
-  onFormDataChange: (field: string, value: string) => void;
-  isSubmitting: boolean;
-  user?: string;
-}
+
 
 function PremissionForm({
   formData,
@@ -26,6 +15,8 @@ function PremissionForm({
   isSubmitting,
   user
 }: PremissionFormProps) {
+  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+
   const handleDateChange = (
     field: "startDate" | "endDate",
     value: string | number | Date | string[]
@@ -48,10 +39,10 @@ function PremissionForm({
         {user && (
           <Grid item xs={12} sm={6}>
             <FormField
-              label="User Name"
+              label={transpermishion("username")}
               type="text"
               inputType="text"
-              placeholder="User name"
+              placeholder={transpermishion("username")}
               value={user}
               required
               disabled={true}
@@ -61,10 +52,10 @@ function PremissionForm({
 
         <Grid item xs={12} sm={6}>
           <FormField
-            label="Start Date"
+            label={transpermishion("startdate")}
             type="date"
             inputType="date"
-            placeholder="Select start date"
+            placeholder={transpermishion("startdate")}
             value={formData.startDate}
             error={errors.startDate}
             onChange={(value: string | number | Date | string[]) =>
@@ -77,10 +68,10 @@ function PremissionForm({
 
         <Grid item xs={12} sm={6}>
           <FormField
-            label="Start Time"
+            label={transpermishion("starttime")}
             type="text"
             inputType="time"
-            placeholder="Select start time"
+            placeholder={transpermishion("starttime")}
             value={formData.startTime}
             error={errors.startTime}
             onChange={(value: string | number | Date | string[]) =>
@@ -93,10 +84,10 @@ function PremissionForm({
 
         <Grid item xs={12} sm={6}>
           <FormField
-            label="End Time"
+            label={transpermishion("endtime")}
             type="text"
             inputType="time"
-            placeholder="Select end time"
+            placeholder={transpermishion("endtime")}
             value={formData.endTime}
             error={errors.endTime}
             onChange={(value: string | number | Date | string[]) =>

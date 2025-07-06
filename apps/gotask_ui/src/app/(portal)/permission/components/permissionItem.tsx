@@ -8,12 +8,16 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { PermissionData } from "../interface/interface";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
 
 export const PermissionItem: React.FC<{
   permission: PermissionData;
   onClick: (permissionId: string) => void;
 }> = ({ permission, onClick }) => {
+  
   const color = "#741B92";
+  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
   return (
     <Box
@@ -62,7 +66,10 @@ export const PermissionItem: React.FC<{
             }}
             onClick={() => onClick(permission.id)}
           >
-            <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>View Details</Typography>
+            <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
+              {" "}
+              {transpermishion("viewdetails")}
+            </Typography>
             <ArrowForward fontSize="small" />
           </Box>
         </Stack>

@@ -69,11 +69,7 @@ class AssetController extends BaseController {
     try {
       const id = requestHelper.getParam("id");
       const result = await assetServices.deleteAsset(id);
-      if (!result.success) {
-        return this.replyError(new Error(result.message));
-      }
-
-      return this.sendResponse(handler, { message: AssetMessages.DELETE.SUCCESS });
+      return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error);
     }

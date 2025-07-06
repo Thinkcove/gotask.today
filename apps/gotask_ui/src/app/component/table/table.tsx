@@ -127,11 +127,11 @@ const CustomTable = <T extends object>({
   rows,
   minWidth = 700,
   rowsPerPageOptions = [
-    PAGE_OPTIONS.DEFAULT_ROWS_5,
-    PAGE_OPTIONS.DEFAULT_ROWS_10,
-    PAGE_OPTIONS.DEFAULT_ROWS_25
+    PAGE_OPTIONS.DEFAULT_ROWS_25,
+    PAGE_OPTIONS.DEFAULT_ROWS_35,
+    PAGE_OPTIONS.DEFAULT_ROWS_45
   ],
-  defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_5,
+  defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_25,
   maxHeight = "60vh",
   onSortChange
 }: CustomTableProps<T>) => {

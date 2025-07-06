@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Box, Grid, Paper, IconButton, Tooltip, Typography, CircularProgress } from "@mui/material";
-import { Edit, Delete, Visibility } from "@mui/icons-material";
+import { Box, Grid, Paper, IconButton, Tooltip, CircularProgress } from "@mui/material";
+import { Visibility } from "@mui/icons-material";
 import useSWR from "swr";
 import { fetchAllgetpermission } from "../services/permissionAction";
 import SearchBar from "@/app/component/searchBar/searchBar";
@@ -14,7 +14,6 @@ import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import Table, { Column } from "@/app/component/table/table";
-import CommonDialog from "@/app/component/dialog/commonDialog";
 
 const PermissionList = () => {
   const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
@@ -22,9 +21,6 @@ const PermissionList = () => {
   const { user } = useUser();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPermission, setSelectedPermission] = useState<PermissionData | null>(null);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { data, isLoading } = useSWR("getpermission", fetchAllgetpermission, {
     refreshInterval: 30000,
@@ -48,29 +44,8 @@ const PermissionList = () => {
     router.push(`/permission/view/${permission.id}`);
   };
 
-  const handleEditClick = (permission: PermissionData) => {
-    router.push(`/permission/edit/${permission.id}`);
-  };
 
-  const handleDeleteClick = (permission: PermissionData) => {
-    setSelectedPermission(permission);
-    setIsDeleteDialogOpen(true);
-  };
 
-  const handleDeleteConfirm = async () => {
-    if (!selectedPermission) return;
-    try {
-      setIsDeleteDialogOpen(false);
-      setSelectedPermission(null);
-    } catch {
-      setErrorMessage(transpermishion("faileddelete"));
-    }
-  };
-
-  const handleDeleteCancel = () => {
-    setIsDeleteDialogOpen(false);
-    setSelectedPermission(null);
-  };
 
   const filteredPermissions = useMemo(() => {
     if (!displayData || !Array.isArray(displayData)) return [];
@@ -139,20 +114,6 @@ const PermissionList = () => {
               <Visibility fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip title={transpermishion("editpermission") }>
-            <IconButton size="small" onClick={() => handleEditClick(row)} sx={{ color: "#741B92" }}>
-              <Edit fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={transpermishion("deletepermission")}>
-            <IconButton
-              size="small"
-              onClick={() => handleDeleteClick(row)}
-              sx={{ color: "#741B92" }}
-            >
-              <Delete fontSize="small" />
-            </IconButton>
-          </Tooltip>
         </Box>
       )
     }
@@ -176,11 +137,7 @@ const PermissionList = () => {
 
   return (
     <>
-      {errorMessage && (
-        <Typography color="error" sx={{ p: 2, textAlign: "center" }}>
-          {errorMessage}
-        </Typography>
-      )}
+  
 
       <Box
         sx={{
@@ -209,10 +166,7 @@ const PermissionList = () => {
         <Grid container spacing={1}>
           <Grid item xs={12}>
             {!displayData || displayData.length === 0 ? (
-              <EmptyState
-                imageSrc={NoAssetsImage}
-                message={transpermishion("nopermission")}
-              />
+              <EmptyState imageSrc={NoAssetsImage} message={transpermishion("nopermission")} />
             ) : filteredPermissions.length === 0 ? (
               <EmptyState
                 imageSrc={NoAssetsImage}
@@ -246,20 +200,6 @@ const PermissionList = () => {
           onClick={handleCreatePermission}
         />
       </Box>
-
-      <CommonDialog
-        open={isDeleteDialogOpen}
-        onClose={handleDeleteCancel}
-        onSubmit={handleDeleteConfirm}
-        title={transpermishion("deletetitle")}
-        submitLabel={transpermishion("delete")}
-        cancelLabel={transpermishion("cancel")}
-        submitColor="#b71c1c"
-      >
-        <Typography sx={{ pt: 2 }}>
-          {transpermishion("deleteconfirm")}
-        </Typography>
-      </CommonDialog>
     </>
   );
 };

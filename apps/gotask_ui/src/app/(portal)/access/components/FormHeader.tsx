@@ -13,7 +13,7 @@ export interface FormHeaderProps {
   create: string;
   cancle: string;
   update: string;
-  showhistory: string;
+  showhistory?: string;
 }
 
 const FormHeader: React.FC<FormHeaderProps> = ({

@@ -987,5 +987,16 @@
       "title": "File Upload | GoTaskToday",
       "description": "Upload and manage files and documents securely."
     }
+  },
+  "Permission": {
+    "permission": "Permission",
+    "username":"User Name",
+    "date":"Permission Date",
+    "starttime":" Start Time",
+    "endtime":"End Time",
+    "createdat":"Created At",
+    "comments":"Permission Comments",
+    "close":"Close"
+
   }
 }

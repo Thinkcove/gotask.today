@@ -26,10 +26,10 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
   const [form, setForm] = useState({
     kpi_Title: assignment.kpi_Title ?? "",
     kpi_Description: assignment.kpi_Description ?? "",
-    measurement_criteria: Number(assignment.measurement_criteria) || 0,
+    measurement_criteria: assignment.measurement_criteria || "",
     frequency: assignment.frequency || "",
-    weightage: assignment.weightage || 0,
-    target_value: assignment.target_value || 0,
+    weightage: assignment.weightage || "",
+    target_value: assignment.target_value || "",
     actual_value: assignment.actual_value || 0,
     assigned_by: assignment.assigned_by || "",
     reviewer_id: assignment.reviewer_id || "",
@@ -68,7 +68,7 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
     try {
       await updateKpiAssignment(assignment.assignment_id, {
         ...form,
-        measurement_criteria: String(form.measurement_criteria),
+        measurement_criteria: form.measurement_criteria,
         comments: [form.comments],
         authUserId: loginUser.id
       });
@@ -123,9 +123,9 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
         <Grid item xs={12} md={4}>
           <FormField
             label={`${transkpi("measurementcriteria")} *`}
-            type="number"
+            type="text"
             value={form.measurement_criteria}
-            onChange={(val) => handleChange("measurement_criteria", Number(val))}
+            onChange={(val) => handleChange("measurement_criteria", String(val))}
             placeholder={transkpi("entermeasurementcriteria")}
             error={errors.measurement_criteria}
           />
@@ -145,9 +145,9 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
         <Grid item xs={12} md={4}>
           <FormField
             label={`${transkpi("weightage")} *`}
-            type="number"
+            type="text"
             value={form.weightage}
-            onChange={(val) => handleChange("weightage", Number(val))}
+            onChange={(val) => handleChange("weightage", String(val))}
             placeholder={transkpi("enterweightage")}
             error={errors.weightage}
           />

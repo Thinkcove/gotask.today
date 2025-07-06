@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, RefObject } from "react";
+import React, { useState, useMemo } from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "../../../component/input/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
@@ -14,7 +14,6 @@ import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import ReusableEditor from "@/app/component/richText/textEditor";
-import { RichTextEditorRef } from "mui-tiptap";
 import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
@@ -26,8 +25,6 @@ interface TaskInputProps {
   readOnlyFields?: string[];
   isUserEstimatedLocked?: boolean;
   isStartDateLocked?: boolean;
-  onDescriptionSave?: () => void;
-  rteRef?: RefObject<RichTextEditorRef | null>;
 }
 
 const TaskInput: React.FC<TaskInputProps> = ({
@@ -36,9 +33,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
   errors,
   readOnlyFields = [],
   isUserEstimatedLocked,
-  isStartDateLocked,
-  onDescriptionSave,
-  rteRef
+  isStartDateLocked
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers();
@@ -174,13 +169,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const userList = useMemo(() => {
     return mapUsersToMentions(fetchedUsers || []);
   }, [fetchedUsers]);
-
-  const handleDescriptionSave = (html: string) => {
-    handleInputChange("description", html);
-    if (onDescriptionSave) {
-      onDescriptionSave();
-    }
-  };
 
   const userOptions = getUserOptions();
   const projectOptions = getProjectOptions();
@@ -331,9 +319,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
             {transtask("labeldescription")}
           </Typography>
           <ReusableEditor
-            ref={rteRef}
             content={formData.description || ""}
-            onSave={handleDescriptionSave}
+            onChange={(html) => handleInputChange("description", html)}
             placeholder={transtask("placeholderdescription")}
             readOnly={isReadOnly("description")}
             showSaveButton={false}

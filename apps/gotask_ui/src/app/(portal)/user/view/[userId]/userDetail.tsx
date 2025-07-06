@@ -23,6 +23,7 @@ import EllipsisText from "@/app/component/text/ellipsisText";
 import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
 import SkillInput from "../../components/skillInput";
+import CertificateInput from "../../components/certificateInput";
 
 interface UserDetailProps {
   user: User;
@@ -120,6 +121,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               options={[
                 transuser("general"),
                 transuser("userskill"),
+                transuser("Certificate.certificates"),
                 transuser("projectdetails"),
                 transasset("assetdetails")
               ]}
@@ -258,6 +260,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             </Grid>
           )}
 
+          {/* Assets */}
           {selectedTab === transasset("assetdetails") && (
             <Grid item xs={12}>
               {user.assetDetails && user.assetDetails.length > 0 ? (
@@ -290,13 +293,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                                 </Typography>
                                 <Box display="flex" justifyContent="space-between">
                                   <Typography {...labelTextStyle}>
-                                    {transasset("accesscardno")}:
+                                    {transasset("accessCardNo")}:
                                   </Typography>
                                   <EllipsisText text={asset.accessCardNo ?? "-"} maxWidth={160} />
                                 </Box>
                                 <Box display="flex" justifyContent="space-between">
                                   <Typography {...labelTextStyle}>
-                                    {transasset("personalid")}:
+                                    {transasset("personalId")}:
                                   </Typography>
                                   <EllipsisText text={asset.personalId ?? "-"} maxWidth={160} />
                                 </Box>
@@ -374,6 +377,18 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 </Typography>
               )}
             </Grid>
+          )}
+
+          {selectedTab === transuser("Certificate.certificates") && (
+            <Box>
+              <CertificateInput
+                userId={userID}
+                certificates={user?.certificates || []}
+                onChange={async () => {
+                  await mutate();
+                }}
+              />
+            </Box>
           )}
         </Box>
 

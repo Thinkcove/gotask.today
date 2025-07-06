@@ -36,7 +36,6 @@ const CreateGoal = () => {
     setGoalData,
     errors,
     snackbar,
-    rteRef,
     validateForm,
     handleSnackbarClose,
     showSnackbar
@@ -51,7 +50,6 @@ const CreateGoal = () => {
 
     setIsSubmitting(true);
     try {
-      const editorContent = rteRef.current?.editor?.getHTML() || goalData.description;
       const payload = {
         projectId: projectID,
         goalTitle: goalData.goalTitle,
@@ -62,7 +60,7 @@ const CreateGoal = () => {
         weekEnd:
           typeof goalData.weekEnd === "string" ? goalData.weekEnd : goalData.weekEnd.toISOString(),
         status: goalData.status,
-        description: editorContent,
+        description: goalData.description,
         priority: goalData.priority,
         user_id: user?.id ?? ""
       };
@@ -110,7 +108,6 @@ const CreateGoal = () => {
         />
 
         <ProjectGoalForm
-          rteRef={rteRef}
           goalData={goalData}
           setGoalData={setGoalData}
           errors={errors}

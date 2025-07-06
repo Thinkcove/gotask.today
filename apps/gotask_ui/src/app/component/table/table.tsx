@@ -11,7 +11,8 @@ import {
   TablePagination,
   useTheme,
   useMediaQuery,
-  TableSortLabel
+  TableSortLabel,
+  Skeleton
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
@@ -110,6 +111,7 @@ export interface Column<T> {
   render?: (value: T[keyof T] | undefined, row: T) => ReactNode;
   minWidth?: number;
   sortable?: boolean;
+  isLoading?: boolean;
 }
 
 interface CustomTableProps<T> {
@@ -120,6 +122,7 @@ interface CustomTableProps<T> {
   defaultRowsPerPage?: number;
   maxHeight?: string;
   onSortChange?: (key: string, order: "asc" | "desc") => void;
+  isLoading?: boolean;
 }
 
 const CustomTable = <T extends object>({
@@ -127,13 +130,14 @@ const CustomTable = <T extends object>({
   rows,
   minWidth = 700,
   rowsPerPageOptions = [
-    PAGE_OPTIONS.DEFAULT_ROWS_5,
-    PAGE_OPTIONS.DEFAULT_ROWS_10,
-    PAGE_OPTIONS.DEFAULT_ROWS_25
+    PAGE_OPTIONS.DEFAULT_ROWS_25,
+    PAGE_OPTIONS.DEFAULT_ROWS_35,
+    PAGE_OPTIONS.DEFAULT_ROWS_45
   ],
-  defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_5,
+  defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_25,
   maxHeight = "60vh",
-  onSortChange
+  onSortChange,
+  isLoading
 }: CustomTableProps<T>) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
@@ -254,11 +258,15 @@ const CustomTable = <T extends object>({
                       align={column.align || "left"}
                       sx={{ minWidth: column.minWidth }}
                     >
-                      {column.render
-                        ? column.render(value, row)
-                        : typeof value === "object" && value !== null
-                          ? JSON.stringify(value)
-                          : (value as ReactNode)}
+                      {isLoading ? (
+                        <Skeleton variant="rectangular" height={16} />
+                      ) : column.render ? (
+                        column.render(value, row)
+                      ) : typeof value === "object" && value !== null ? (
+                        JSON.stringify(value)
+                      ) : (
+                        (value as ReactNode)
+                      )}
                     </StyledTableCell>
                   );
                 })}

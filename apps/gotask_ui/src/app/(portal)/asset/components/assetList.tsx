@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
-import { Box, CircularProgress, Grid, Paper } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { useAllAssets } from "../services/assetActions";
+import { deleteAsset, useAllAssets } from "../services/assetActions";
 import Table from "../../../component/table/table";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -26,6 +26,8 @@ import { SortOrder } from "@/app/common/constants/task";
 import DownloadIcon from "@mui/icons-material/Download";
 import { Button } from "@mui/material";
 import { downloadAssetCSV } from "../download/assetcsv";
+import CommonDialog from "@/app/component/dialog/commonDialog";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";
@@ -44,9 +46,15 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>([]);
   const [sortKey, setSortKey] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(SortOrder.DESC);
-  const { getAll: allAssets, isLoading } = useAllAssets(sortKey, sortOrder);
+  const { getAll: allAssets, isLoading, mutate } = useAllAssets(sortKey, sortOrder);
   const [assetAllocationFilter, setAssetAllocationFilter] = useState<string[]>([]);
-
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error" | "info" | "warning"
+  });
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
     if (originalAsset) {
@@ -80,7 +88,25 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     [labels.issues]: "issues"
   } as const;
 
-  const assetColumns = getAssetColumns(transasset, handleEdit, handleView);
+  const handleDeleteClick = (row: IAssetDisplayRow) => {
+    setSelectedAssetId(row.id || null);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedAssetId) return;
+    const res = await deleteAsset(selectedAssetId);
+    if (res.success) {
+      setSnackbar({ open: true, message: res.message, severity: "success" });
+      mutate();
+    } else {
+      setSnackbar({ open: true, message: res.message, severity: "error" });
+    }
+    setDeleteDialogOpen(false);
+    setSelectedAssetId(null);
+  };
+
+  const assetColumns = getAssetColumns(transasset, handleEdit, handleView, handleDeleteClick);
 
   const handleActionClick = () => {
     if (initialView === transasset("selectedAsset")) {
@@ -207,10 +233,15 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const mappedAssets = filteredAssets.map((asset) => ({
     id: asset.id,
     assetType: asset.assetType?.name || "-",
-    deviceName: asset.deviceName || "-",
-    modelName: asset.modelName || "-",
+    deviceName: asset.deviceName || asset.accessCardNo || "-",
+    modelName: asset.modelName || asset.accessCardNo2 || "-",
     warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
-    purchaseDate: asset.dateOfPurchase ? new Date(asset.dateOfPurchase).toLocaleDateString() : "-",
+    purchaseDate: asset.dateOfPurchase
+      ? new Date(asset.dateOfPurchase).toLocaleDateString()
+      : asset.issuedOn
+        ? new Date(asset.issuedOn).toLocaleDateString()
+        : "-",
+
     user:
       asset.tagData
         ?.map((t) => t.user?.name)
@@ -221,24 +252,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     issuesCount: asset.issuesCount,
     userAssetCount: asset.userAssetCount
   }));
-
-  if (isLoading) {
-    return (
-      <>
-        <ModuleHeader name={transasset("assets")} />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "80vh"
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      </>
-    );
-  }
 
   const clearAssetFilters = () => {
     setModelNameFilter([]);
@@ -407,6 +420,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                           setSortKey(key);
                           setSortOrder(order);
                         }}
+                        isLoading={isLoading}
                       />
                     </Box>
                   </Box>
@@ -441,6 +455,25 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           onClick={handleActionClick}
         />
       </Box>
+
+      <CommonDialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onSubmit={confirmDelete}
+        title={transasset("deleteAsset")}
+        submitLabel={transasset("delete")}
+      >
+        <Typography variant="body1" color="text.secondary">
+          {transasset("deleteconfirm")}
+        </Typography>
+      </CommonDialog>
+
+      <CustomSnackbar
+        open={snackbar.open}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+        severity={snackbar.severity}
+      />
     </>
   );
 };

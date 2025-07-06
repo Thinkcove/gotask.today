@@ -187,3 +187,10 @@ export const useUserByAssetId = (id: string) => {
     error: error ? error.message : null
   };
 };
+
+export const deleteAsset = async (id: string) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/asset/delete/${id}`;
+    return postData(url, {}, token);
+  });
+};

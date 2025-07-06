@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Grid, Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { updateKpiAssignment } from "../../../service/templateAction";
-import FormField from "@/app/component/input/formField";
-import { STATUS_OPTIONS, KPI_FREQUENCY } from "@/app/common/constants/kpi";
 import { KpiAssignment } from "../../../service/templateInterface";
 import { useUser } from "@/app/userContext";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
+import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
+import KpiFormFields from "../../addTemplate/[id]/assignmentInput";
 
 interface Props {
   assignment: KpiAssignment;
@@ -19,18 +20,19 @@ interface Props {
 const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate }) => {
   const { user: loginUser } = useUser();
   const router = useRouter();
+  const { data: users = [] } = useSWR("fetch-users", fetcherUserList); // Fetch users for consistency
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<Partial<KpiAssignment>>({
     kpi_Title: assignment.kpi_Title ?? "",
     kpi_Description: assignment.kpi_Description ?? "",
     measurement_criteria: assignment.measurement_criteria || "",
     frequency: assignment.frequency || "",
     weightage: assignment.weightage || "",
     target_value: assignment.target_value || "",
-    actual_value: assignment.actual_value || 0,
+    actual_value: assignment.actual_value || "",
     assigned_by: assignment.assigned_by || "",
     reviewer_id: assignment.reviewer_id || "",
     status: assignment.status || "",
@@ -42,7 +44,13 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   if (!assignment || !loginUser) return null;
 
-  const handleChange = (key: keyof typeof form, value: any) => {
+  const handleChange = (
+    key: keyof Omit<
+      KpiAssignment,
+      "assignment_id" | "user_id" | "template_id" | "change_History" | "description"
+    >,
+    value: any
+  ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     if (errors[key]) {
       setErrors((prev) => ({ ...prev, [key]: "" }));
@@ -68,8 +76,12 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
     try {
       await updateKpiAssignment(assignment.assignment_id, {
         ...form,
-        measurement_criteria: form.measurement_criteria,
-        comments: [form.comments],
+        measurement_criteria: form.measurement_criteria || "",
+        comments: Array.isArray(form.comments)
+          ? form.comments
+          : form.comments
+            ? [form.comments]
+            : undefined,
         authUserId: loginUser.id
       });
 
@@ -81,8 +93,9 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
       setTimeout(() => {
         router.back();
       }, 1000);
-    } catch (err: any) {
-      setSnackbarMessage(err?.message || transkpi("updateFailed"));
+    } catch (err) {
+      console.error("Failed to update:", err);
+      setSnackbarMessage(transkpi("updateFailed"));
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
@@ -98,81 +111,14 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
         {transkpi("editassignment")}
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("title")} *`}
-            type="text"
-            value={form.kpi_Title}
-            onChange={(val) => handleChange("kpi_Title", val)}
-            placeholder={transkpi("entertitle")}
-            error={errors.kpi_Title}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={transkpi("description")}
-            type="text"
-            value={form.kpi_Description}
-            onChange={(val) => handleChange("kpi_Description", val)}
-            placeholder={transkpi("enterdescription")}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("frequency")} *`}
-            type="select"
-            options={Object.values(KPI_FREQUENCY)}
-            value={form.frequency}
-            onChange={(val) => handleChange("frequency", val)}
-            error={errors.frequency}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("weightage")} *`}
-            type="text"
-            value={form.weightage}
-            onChange={(val) => handleChange("weightage", String(val))}
-            placeholder={transkpi("enterweightage")}
-            error={errors.weightage}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={transkpi("targetvalue")}
-            type="text"
-            value={form.target_value}
-            onChange={(val) => handleChange("target_value", String(val))}
-            placeholder={transkpi("entertargetvalue")}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("assignedby")} *`}
-            type="text"
-            value={form.assigned_by}
-            onChange={(val) => handleChange("assigned_by", val)}
-            disabled
-            error={errors.assigned_by}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("status")} *`}
-            type="select"
-            options={Object.values(STATUS_OPTIONS)}
-            value={form.status}
-            onChange={(val) => handleChange("status", val)}
-            error={errors.status}
-          />
-        </Grid>
-      </Grid>
+      <KpiFormFields
+        form={form}
+        errors={errors}
+        handleChange={handleChange}
+        disabledFields={["assigned_by"]}
+        showCommentsField={false}
+        users={users}
+      />
 
       <Box display="flex" justifyContent="flex-end" gap={2} mt={4}>
         <Button variant="outlined" onClick={handleCancel}>

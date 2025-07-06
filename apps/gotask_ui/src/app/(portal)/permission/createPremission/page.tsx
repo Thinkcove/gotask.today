@@ -6,7 +6,7 @@ import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useUser } from "@/app/userContext";
 import PremissionForm from "./conponents/premissionForm";
 import FormHeader from "@/app/(portal)/access/components/FormHeader";
-import { useParams, useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { useTranslations } from "next-intl";

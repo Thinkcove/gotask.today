@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { PremissionFormProps } from "../../../interface/interface";
+import { PremissionFormProps } from "../../interface/interface";
 
 function PremissionForm({
   formData,

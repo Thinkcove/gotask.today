@@ -16,7 +16,7 @@ const ViewPermission: React.FC = () => {
   console.log("permishionId", permishionId);
 
   const permishionID = permishionId as string;
-  const { permission, isLoading, isError, mutate } = usePermissionById(permishionID);
+  const { permission, isLoading } = usePermissionById(permishionID);
 
   const handleBack = () => router.back();
 

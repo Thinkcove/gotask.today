@@ -1,13 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { Grid, Box, Typography, Divider, Stack, CircularProgress } from "@mui/material";
-import { ArrowForward } from "@mui/icons-material";
+import { Box, CircularProgress } from "@mui/material";
 import useSWR from "swr";
 import { fetchAllgetpermission } from "../services/permissionAction";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
-import { PermissionData, PermissionListProps } from "../interface/interface";
+import { PermissionData } from "../interface/interface";
 import { PermissionItem } from "./permissionItem";
 import CommonGridList from "./commonGridList";
 import { useUser } from "@/app/userContext";
@@ -18,8 +17,10 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const PermissionList = () => {
   const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+  const router = useRouter();
+  const { user } = useUser();
 
-  const { data, isLoading, error } = useSWR("getpermission", fetchAllgetpermission, {
+  const { data, isLoading } = useSWR("getpermission", fetchAllgetpermission, {
     refreshInterval: 30000,
     revalidateOnFocus: true,
     revalidateOnReconnect: true
@@ -30,11 +31,9 @@ const PermissionList = () => {
   const onSearchChange = (val: string) => {
     setSearchTerm(val);
   };
-  const router = useRouter();
-  const { user } = useUser();
 
   const handleCreatePermission = () => {
-    if (user?.id) {
+    if (user && user?.id) {
       router.push(`/permission/createPremission/${user.id}`);
     }
   };
@@ -61,9 +60,11 @@ const PermissionList = () => {
       </Box>
     );
   }
+
   const handlePrimessionView = (permissionId: string) => {
     router.push(`/permission/view/${permissionId}`);
   };
+
   return (
     <>
       <Box sx={{ width: "100%", pt: 4 }}>

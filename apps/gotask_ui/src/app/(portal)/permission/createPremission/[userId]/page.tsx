@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
-import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import { useUser } from "@/app/userContext";
 import PremissionForm from "./conponents/premissionForm";
 import FormHeader from "@/app/(portal)/access/components/FormHeader";
@@ -49,9 +48,11 @@ const Page = () => {
       severity: severity as SNACKBAR_SEVERITY
     });
   };
+
   const handleSnackbarClose = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -90,7 +91,6 @@ const Page = () => {
         endTime: ""
       });
       setErrors({});
-
       setTimeout(() => {
         router.back();
       }, 1500);
@@ -107,7 +107,6 @@ const Page = () => {
 
   const handleFormDataChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-
     // Clear error when user starts typing
     if (errors[field as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));

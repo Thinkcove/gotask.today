@@ -1,12 +1,6 @@
-import React, { useState, useMemo } from "react";
-import { Grid, Box, Typography, Divider, Stack } from "@mui/material";
+import React from "react";
+import {  Box, Typography, Divider, Stack } from "@mui/material";
 import { ArrowForward } from "@mui/icons-material";
-import useSWR from "swr";
-import { fetchAllgetpermission } from "../services/permissionAction";
-import SearchBar from "@/app/component/searchBar/searchBar";
-import ActionButton from "@/app/component/floatingButton/actionButton";
-import AddIcon from "@mui/icons-material/Add";
-import { useRouter } from "next/navigation";
 import { PermissionData } from "../interface/interface";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -67,7 +61,6 @@ export const PermissionItem: React.FC<{
             onClick={() => onClick(permission.id)}
           >
             <Typography sx={{ textTransform: "capitalize", mr: 0.5 }}>
-              {" "}
               {transpermishion("viewdetails")}
             </Typography>
             <ArrowForward fontSize="small" />

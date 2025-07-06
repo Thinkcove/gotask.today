@@ -160,27 +160,21 @@ const PermissionList = () => {
       >
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            {!displayData || displayData.length === 0 ? (
-              <EmptyState imageSrc={NoAssetsImage} message={transpermishion("nopermission")} />
-            ) : filteredPermissions.length === 0 ? (
-              <EmptyState imageSrc={NoAssetsImage} message={transpermishion("nodatafound")} />
-            ) : (
-              <Paper
-                sx={{
-                  p: 2,
-                  overflow: "auto",
-                  display: "flex",
-                  flexDirection: "column",
-                  overflowY: "auto"
-                }}
-              >
-                <Box sx={{ width: "100%", flex: 1 }}>
-                  <Box sx={{ minWidth: 800 }}>
-                    <Table<PermissionData> columns={permissionColumns} rows={filteredPermissions} />
-                  </Box>
+            <Paper
+              sx={{
+                p: 2,
+                overflow: "auto",
+                display: "flex",
+                flexDirection: "column",
+                overflowY: "auto"
+              }}
+            >
+              <Box sx={{ width: "100%", flex: 1 }}>
+                <Box sx={{ minWidth: 800 }}>
+                  <Table<PermissionData> columns={permissionColumns} rows={filteredPermissions} />
                 </Box>
-              </Paper>
-            )}
+              </Box>
+            </Paper>
           </Grid>
         </Grid>
       </Box>

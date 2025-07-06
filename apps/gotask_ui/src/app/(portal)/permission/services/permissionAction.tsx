@@ -21,27 +21,13 @@ export const createPermission = async (formData: PermissionPayload) => {
   });
 };
 
-
 export const getPermissionById = async (permissionId: string) => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/getpermissionbyid/${permissionId}`;
     const response = await getData(url, token);
-    console.log("permissionId", response);
-
-    // Handle the response structure based on your API response
-    if (!response.success) {
-      throw new Error(response.message || "Failed to fetch permission");
-    }
-
-    if (!response.data) {
-      throw new Error("Permission data missing in response");
-    }
-
     return response.data;
   });
 };
-
-// SWR hook to use the permission data
 export const usePermissionById = (permissionId: string | null) => {
   const { data, error, isLoading, mutate } = useSWR(
     permissionId ? `permission-${permissionId}` : null,
@@ -52,7 +38,6 @@ export const usePermissionById = (permissionId: string | null) => {
       errorRetryCount: 3
     }
   );
-
   return {
     permission: data,
     isLoading,
@@ -60,6 +45,3 @@ export const usePermissionById = (permissionId: string | null) => {
     mutate
   };
 };
-
-
-

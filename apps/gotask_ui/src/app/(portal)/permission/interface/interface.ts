@@ -42,14 +42,12 @@ export interface PremissionFormProps {
   isSubmitting: boolean;
   user?: string;
 }
-// Interface for permission payload
 export interface PermissionPayload {
   date: string;
   start_time: string;
   end_time: string;
 }
 
-// Interface for permission response (adjust based on your API response)
 export interface PermissionResponse {
   id?: string;
   date: string;

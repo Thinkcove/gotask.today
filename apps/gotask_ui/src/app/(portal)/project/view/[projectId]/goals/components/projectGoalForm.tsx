@@ -11,7 +11,6 @@ import { Box, Typography } from "@mui/material";
 const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
   goalData,
   errors,
-  rteRef,
   setGoalData,
   currentProjectOptions,
   currentProject
@@ -109,9 +108,8 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
             {transGoal("description")}
           </Typography>
           <ReusableEditor
-            ref={rteRef}
             content={goalData.description}
-            onSave={(val) => setGoalData({ ...goalData, description: val as string })}
+            onChange={(val) => setGoalData({ ...goalData, description: val as string })}
             placeholder={transGoal("descriptionPlaceholder")}
             showSaveButton={false}
           />

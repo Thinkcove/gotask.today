@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
 import { createTask } from "../service/taskAction";
@@ -12,10 +12,8 @@ import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import moment from "moment-timezone";
-import { RichTextEditorRef } from "mui-tiptap";
 
 const CreateTask: React.FC = () => {
-  const rteRef = useRef<RichTextEditorRef>(null);
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -78,16 +76,10 @@ const CreateTask: React.FC = () => {
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    const html = rteRef.current?.editor?.getHTML?.() || "";
-    const updatedFormData = {
-      ...formData,
-      description: html
-    };
-
     if (!validateForm()) return;
 
     try {
-      const payload = getCleanedPayload(updatedFormData);
+      const payload = getCleanedPayload(formData);
       await createTask(payload);
 
       setSnackbar({
@@ -189,7 +181,6 @@ const CreateTask: React.FC = () => {
           handleInputChange={handleInputChange}
           errors={errors}
           readOnlyFields={storyId ? ["status"] : ["status"]}
-          rteRef={rteRef}
         />
       </Box>
 

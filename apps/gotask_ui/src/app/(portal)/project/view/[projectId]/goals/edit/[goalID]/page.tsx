@@ -9,7 +9,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import useSWR, { mutate } from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
-import {  fetchGoalData, updateWeeklyGoal } from "../../goalservices/projectGoalAction";
+import { fetchGoalData, updateWeeklyGoal } from "../../goalservices/projectGoalAction";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
@@ -17,6 +17,7 @@ import { UpdateHistoryItem, User } from "../../interface/projectGoal";
 import FormHeader from "../../../../../../access/components/FormHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import ModuleHeader from "@/app/component/header/moduleHeader";
+
 const EditGoalPage = () => {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
   const router = useRouter();
@@ -54,7 +55,6 @@ const EditGoalPage = () => {
     setGoalData,
     errors,
     snackbar,
-    rteRef,
     validateForm,
     handleSnackbarClose,
     showSnackbar
@@ -105,8 +105,6 @@ const EditGoalPage = () => {
 
     setIsSubmitting(true);
     try {
-      const editorContent = rteRef.current?.editor?.getHTML() || goalData.description;
-
       const payload = {
         projectId: projectID,
         goalTitle: goalData.goalTitle,
@@ -117,7 +115,7 @@ const EditGoalPage = () => {
         weekEnd:
           typeof goalData.weekEnd === "string" ? goalData.weekEnd : goalData.weekEnd.toISOString(),
         status: goalData.status,
-        description: editorContent,
+        description: goalData.description,
         priority: goalData.priority,
         user_id: user?.id ?? ""
       };
@@ -184,7 +182,6 @@ const EditGoalPage = () => {
         />
 
         <ProjectGoalForm
-          rteRef={rteRef}
           goalData={goalData}
           setGoalData={setGoalData}
           errors={errors}

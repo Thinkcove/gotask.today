@@ -7,13 +7,15 @@ import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { deleteKpiAssignment, updateKpiAssignment } from "../../../service/templateAction";
 import { getUserStatusColor } from "@/app/common/constants/status";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { useUser } from "@/app/userContext";
+import { User, useUser } from "@/app/userContext";
 import EditIcon from "@mui/icons-material/Edit";
 import { KpiAssignment } from "../../../service/templateInterface";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import LabelValueText from "@/app/component/text/labelValueText";
+import useSWR from "swr";
+import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 
 interface Props {
   assignment: KpiAssignment;
@@ -28,6 +30,7 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const { data: users = [] } = useSWR("fetch-users", fetcherUserList);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditingComment, setIsEditingComment] = useState(false);
@@ -37,6 +40,10 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
       : (assignment.comments ?? "")
   );
   const { user: loginUser } = useUser();
+  const getUserNameById = (id: string) => {
+    const user = users.find((u: User) => u.id === id);
+    return user ? user.name : id;
+  };
 
   const handleDelete = async () => {
     try {
@@ -46,7 +53,7 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
       setSnackbarOpen(true);
       setOpenDialog(false);
       setTimeout(() => {
-        router.push("/kpi/employee");
+        router.back();
       }, 1000);
     } catch (error: any) {
       setSnackbarMessage(error.message || transkpi("deletefailed"));
@@ -101,21 +108,19 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
             <LabelValueText label={transkpi("frequency")} value={assignment.frequency} />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <LabelValueText
-              label={transkpi("measurementcriteria")}
-              value={assignment.measurement_criteria}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
             <LabelValueText label={transkpi("weightage")} value={assignment.weightage ?? "N/A"} />
           </Grid>
+
           <Grid item xs={12} sm={6} md={4}>
-            <LabelValueText label={transkpi("assignedby")} value={assignment.assigned_by} />
+            <LabelValueText
+              label={transkpi("assignedby")}
+              value={getUserNameById(assignment.assigned_by)}
+            />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <LabelValueText
               label={transkpi("reviewerid")}
-              value={assignment.reviewer_id || "N/A"}
+              value={assignment.reviewer_id ? getUserNameById(assignment.reviewer_id) : "N/A"}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>

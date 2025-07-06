@@ -55,12 +55,10 @@ const Page = () => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    // Validate required fields
     if (!formData.startDate) newErrors.startDate = transpermishion("startdaterequired");
     if (!formData.startTime) newErrors.startTime = transpermishion("starttimerequired");
     if (!formData.endTime) newErrors.endTime = transpermishion("endtimerequired");
 
-    // Validate time range for same day
     if (formData.startTime && formData.endTime && formData.startTime >= formData.endTime) {
       newErrors.startTime = transpermishion("starttimebeforeendtime");
       newErrors.endTime = transpermishion("endtimebeforeendtime");
@@ -76,7 +74,6 @@ const Page = () => {
     setIsSubmitting(true);
 
     try {
-      // For single day permission
       const payload: PermissionPayload = {
         date: formData.startDate,
         start_time: formData.startTime,
@@ -87,7 +84,6 @@ const Page = () => {
 
       showSnackbar(transpermishion("successmessage"), SNACKBAR_SEVERITY.SUCCESS);
 
-      // Reset form
       setFormData({
         startDate: "",
         startTime: "",
@@ -95,7 +91,6 @@ const Page = () => {
       });
       setErrors({});
 
-      // Navigate back after successful creation
       setTimeout(() => {
         router.back();
       }, 1500);

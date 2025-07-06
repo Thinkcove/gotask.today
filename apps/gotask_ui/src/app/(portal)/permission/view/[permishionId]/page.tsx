@@ -1,12 +1,11 @@
 "use client";
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { usePermissionById } from "../../services/permissionAction";
-import PermissionLoadingState from "../../components/permissionLoadingState";
 import PermissionDetails from "./conponents/permishionView";
 
 const ViewPermission: React.FC = () => {
@@ -22,12 +21,21 @@ const ViewPermission: React.FC = () => {
   const handleBack = () => router.back();
 
   if (isLoading) {
-    return <PermissionLoadingState title={transpermishion("permission")} />;
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+        }}
+      >
+        <CircularProgress size={50} thickness={4} />
+      </Box>
+    );
   }
 
-
-
-  // Success state
   return (
     <>
       <ModuleHeader name={transpermishion("permission")} />

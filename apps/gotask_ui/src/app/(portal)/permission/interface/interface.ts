@@ -59,3 +59,22 @@ export interface PermissionResponse {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface PermissionData {
+  _id: string;
+  user_id: string;
+  user_name: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  comments: string[];
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface PermissionDetailsProps {
+  permission: PermissionData;
+  onBack: () => void;
+}

@@ -6,8 +6,6 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PremissionFormProps } from "../../../interface/interface";
 
-
-
 function PremissionForm({
   formData,
   errors,

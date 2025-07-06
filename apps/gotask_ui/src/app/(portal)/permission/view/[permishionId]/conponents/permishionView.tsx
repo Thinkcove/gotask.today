@@ -4,25 +4,7 @@ import { ArrowBack } from "@mui/icons-material";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-
-interface PermissionData {
-  _id: string;
-  user_id: string;
-  user_name: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-  comments: string[];
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-interface PermissionDetailsProps {
-  permission: PermissionData;
-  onBack: () => void;
-}
+import { PermissionDetailsProps } from "../../../interface/interface";
 
 const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBack }) => {
   const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);

@@ -1,9 +1,6 @@
-// app/component/common/CommonGridList.tsx
 import React from "react";
 import { Box, Grid, Typography } from "@mui/material";
 import { CommonGridListProps } from "../interface/interface";
-
-
 
 const CommonGridList = <T,>({
   items,

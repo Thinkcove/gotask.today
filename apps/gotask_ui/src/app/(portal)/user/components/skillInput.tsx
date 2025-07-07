@@ -20,7 +20,7 @@ import {
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import env from "@/app/common/env";
-import { MINIMUM_EXPERIENCE_REQUIRED, PROFICIENCY_MAXIMUM } from "@/app/common/constants/user";
+import { DEFAULT_PROFICIENCY, MINIMUM_EXPERIENCE_REQUIRED, PROFICIENCY_MAXIMUM } from "@/app/common/constants/user";
 
 interface SkillInputProps {
   userId: string;
@@ -139,7 +139,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
       onChange(updated);
       setDialogOpen(false);
-      setTempSkill({ name: "", proficiency: 0 });
+      setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
       setCurrentEditIndex(null);
     } catch {
       console.error("Failed to save skill");
@@ -158,7 +158,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
   const resetDialogState = () => {
     setDialogOpen(false);
-    setTempSkill({ name: "", proficiency: 0 });
+    setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
     setCurrentEditIndex(null);
     setSkillErrors({});
   };

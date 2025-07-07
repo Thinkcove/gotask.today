@@ -53,23 +53,6 @@ const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBac
             value={formatDate(permission?.createdAt)}
           />
         </Grid>
-
-        {permission?.comments && permission?.comments.length > 0 && (
-          <Grid item xs={12}>
-            <LabelValueText
-              label={transpermishion("comments")}
-              value={
-                <Box>
-                  {permission?.comments.map((comment: string, index: number) => (
-                    <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                      {comment}
-                    </Typography>
-                  ))}
-                </Box>
-              }
-            />
-          </Grid>
-        )}
       </Grid>
 
       {/* Close Button */}

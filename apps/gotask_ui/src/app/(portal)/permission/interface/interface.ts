@@ -74,3 +74,15 @@ export interface PermissionDetailsProps {
   permission: PermissionData;
   onBack: () => void;
 }
+export interface PermissionFilterProps {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  onBack: () => void;
+  dateFrom: string;
+  dateTo: string;
+  onDateChange: (from: string, to: string) => void;
+  showClear?: boolean;
+  clearText?: string;
+  onClearFilters?: () => void;
+  datetext?: (key: string) => string;
+}

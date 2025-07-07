@@ -95,7 +95,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
       ? formatDate(dateFrom)
       : dateFrom && dateTo
         ? `${formatDate(dateFrom)} – ${formatDate(dateTo)}`
-        : placeholder || transtask("filterduedate");
+        : placeholder 
 
   return (
     <>

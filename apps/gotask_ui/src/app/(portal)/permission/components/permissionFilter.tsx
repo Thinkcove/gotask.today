@@ -3,34 +3,25 @@ import { Box, Divider, IconButton, Link } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import DateDropdown from "@/app/component/input/dateDropdown";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { PermissionFilterProps } from "../interface/interface";
 
-interface PermissionFiltersBar {
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
-  onBack: () => void;
-  dateFrom: string;
-  dateTo: string;
-  onDateChange: (from: string, to: string) => void;
-  onClearFilters: () => void;
-  showClear: boolean;
-  clearText: string;
-  searchPlaceholder: string;
-  datetext: (key: string) => string;
-}
 
-const PermissionFilter: React.FC<PermissionFiltersBar> = ({
+const PermissionFilter: React.FC<PermissionFilterProps> = ({
   searchTerm,
   onSearchChange,
   onBack,
   dateFrom,
   dateTo,
   onDateChange,
-  onClearFilters,
-  showClear,
+  showClear = false,
   clearText,
-  searchPlaceholder,
+  onClearFilters,
   datetext
 }) => {
+  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+
   return (
     <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={2}>
       <Box
@@ -55,8 +46,7 @@ const PermissionFilter: React.FC<PermissionFiltersBar> = ({
             <SearchBar
               value={searchTerm}
               onChange={onSearchChange}
-              sx={{ width: "100%" }}
-              placeholder={searchPlaceholder}
+              placeholder={transpermishion("search")}
             />
           </Box>
         </Box>
@@ -84,9 +74,9 @@ const PermissionFilter: React.FC<PermissionFiltersBar> = ({
             dateFrom={dateFrom}
             dateTo={dateTo}
             onDateChange={onDateChange}
-            transtask={datetext}
+            transtask={transpermishion}
           />
-          {showClear && (
+          {showClear && onClearFilters && (
             <Box sx={{ flexShrink: 0 }}>
               <Link
                 component="button"

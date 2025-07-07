@@ -1,7 +1,8 @@
-import { getData, postData } from "@/app/common/utils/apiData";
-import { withAuth } from "@/app/common/utils/authToken";
-import env from "@/app/common/env";
 import useSWR from "swr";
+import env from "@/app/common/env";
+import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
+import { withAuth } from "@/app/common/utils/authToken";
+
 import { PermissionPayload } from "../interface/interface";
 
 export const fetchAllgetpermission = async () => {
@@ -26,20 +27,30 @@ export const getPermissionById = async (permissionId: string) => {
     return response.data;
   });
 };
-export const usePermissionById = (permissionId: string | null) => {
+
+export const usePermissionById = (permissionId: string | null | undefined) => {
   const { data, error, isLoading, mutate } = useSWR(
     permissionId ? `permission-${permissionId}` : null,
-    () => getPermissionById(permissionId!),
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      errorRetryCount: 3
+    () => {
+      if (!permissionId) {
+        throw new Error("Permission ID is required");
+      }
+      return getPermissionById(permissionId);
     }
   );
+
   return {
     permission: data,
     isLoading,
     isError: error,
     mutate
   };
+};
+
+export const deletePermission = async (permissionId: string) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/permission/${permissionId}`;
+    const response = await deleteData(url, token);
+    return response;
+  });
 };

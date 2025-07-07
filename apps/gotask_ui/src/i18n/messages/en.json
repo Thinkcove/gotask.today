@@ -997,7 +997,7 @@
     "createdat": "Created At",
     "comments": "Permission Comments",
     "close": "Close",
-    "search": "Search by user name",
+    "search": "Search user name",
     "nodatafound": "No permishion found.",
     "viewdetails": "View Details",
     "startdate": "Start Date",
@@ -1016,6 +1016,11 @@
     "actions": "Actions",
     "deletepermission": "Delete Permission",
     "editpermission": "Edit Permission",
-    "data": "Date"
+    "data": "Date",
+    "filterdate": "Date",
+    "deleteconfirm": "Are you sure you want to delete this permission?",
+    "deletetitle":"Delete Permission",
+    "delete":"Delete",
+    "clearall":"Clear All"
   }
 }

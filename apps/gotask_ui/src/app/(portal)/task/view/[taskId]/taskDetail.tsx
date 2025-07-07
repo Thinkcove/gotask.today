@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
@@ -16,6 +18,8 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import CommentSection from "../../../../component/comments/commentSection";
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import MetadataSetter from "../../component/MetadataSetter";
+
 interface TaskDetailViewProps {
   task: any;
   loading?: boolean;
@@ -48,6 +52,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
   }
   return (
     <>
+      <MetadataSetter title={task?.title || ""} description={task?.description || ""} />
       <ModuleHeader name={transtask("tasks")} />
       <Box
         sx={{

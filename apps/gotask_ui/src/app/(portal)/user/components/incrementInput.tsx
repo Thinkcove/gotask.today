@@ -25,6 +25,7 @@ import { calculateIncrementPercent } from "@/app/common/constants/user";
 import formatCTC from "@/app/common/utils/formatCtc";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import PercentIcon from "@mui/icons-material/Percent";
+import IncrementChart from "./incrementChart";
 
 interface IncrementInputProps {
   userId: string;
@@ -203,42 +204,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
           }
         }}
       >
-        {chartData.length > 1 && (
-          <Box px={2} pb={2}>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" fontSize={12} />
-                <YAxis
-                  fontSize={12}
-                  tickFormatter={(value) => `₹${value}`}
-                  label={{
-                    value: "CTC (Lakh)",
-                    angle: -90,
-                    position: "insideLeft",
-                    fontSize: 12,
-                    dy: 60
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="ctc"
-                  stroke="#1976d2"
-                  strokeWidth={2.2}
-                  dot={{ r: 4, strokeWidth: 2, stroke: "#1976d2", fill: "#fff" }}
-                >
-                  <LabelList
-                    dataKey="ctc"
-                    position="top"
-                    formatter={(value: number) => `₹${value} L`}
-                    style={{ fontSize: 12 }}
-                  />
-                </Line>
-              </LineChart>
-            </ResponsiveContainer>
-          </Box>
-        )}
-
+        <IncrementChart chartData={chartData} />
         <Box px={2}>
           <CustomTable columns={columns} rows={rows} />
         </Box>

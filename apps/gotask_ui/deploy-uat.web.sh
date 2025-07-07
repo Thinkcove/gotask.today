@@ -1,0 +1,1 @@
+source ./deployment_helper/deploy-ui.sh uat

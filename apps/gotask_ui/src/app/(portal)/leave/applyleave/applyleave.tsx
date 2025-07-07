@@ -13,9 +13,11 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LeaveFormField } from "../interface/leaveInterface";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
 
-
 const ApplyLeave: React.FC = () => {
+   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
+
   const router = useRouter();
+  
   const [formData, setFormData] = useState<LeaveFormField>({
     from_date: "",
     to_date: "",
@@ -27,7 +29,7 @@ const ApplyLeave: React.FC = () => {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
-    severity:SNACKBAR_SEVERITY.INFO
+    severity: SNACKBAR_SEVERITY.INFO
   });
 
   const handleInputChange = (name: string, value: string) => {
@@ -91,15 +93,9 @@ const ApplyLeave: React.FC = () => {
       });
       return;
     }
-
     setIsSubmitting(true);
-
     try {
-      const payload = {
-        ...formData
-      };
-
-      await createLeave(payload);
+      await createLeave(formData);
 
       setSnackbar({
         open: true,
@@ -121,8 +117,6 @@ const ApplyLeave: React.FC = () => {
     }
   };
 
-  const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
-
   return (
     <>
       <FormHeader
@@ -133,7 +127,6 @@ const ApplyLeave: React.FC = () => {
         create={transleave("create")}
         cancle={transleave("cancel")}
         update={transleave("update")}
-        showhistory={""}
         isSubmitting={isSubmitting}
       />
       <Box sx={{ pl: 2, pr: 2 }}>
@@ -142,7 +135,7 @@ const ApplyLeave: React.FC = () => {
             <FormField
               label={transleave("fromdate")}
               type="date"
-              placeholder={transleave( "dateformat")}
+              placeholder={transleave("dateformat")}
               value={formData.from_date}
               onChange={(value) => {
                 const dateValue =
@@ -157,7 +150,7 @@ const ApplyLeave: React.FC = () => {
             <FormField
               label={transleave("todate")}
               type="date"
-              placeholder={transleave( "dateformat")}
+              placeholder={transleave("dateformat")}
               value={formData.to_date}
               onChange={(value) => {
                 const dateValue =

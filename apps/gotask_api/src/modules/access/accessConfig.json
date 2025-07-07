@@ -69,6 +69,6 @@
     {
       "access": "Leave",
       "actions":["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
-    }
+    } 
   ]
 }

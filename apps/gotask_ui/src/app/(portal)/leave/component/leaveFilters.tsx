@@ -2,9 +2,8 @@ import React from "react";
 import { Box, Link, TextField } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import MultiSelectFilter from "@/app/component/multiSelect/multiSelectFilter";
-import { Item, Props } from "../interface/leaveInterface";
-
+import FilterDropdown from "@/app/component/input/filterDropDown"; 
+import { Props } from "../interface/leaveInterface";
 
 const LeaveFilters: React.FC<Props> = ({
   userIdFilter,
@@ -22,17 +21,20 @@ const LeaveFilters: React.FC<Props> = ({
 }) => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
 
-  // Convert user IDs and names to Item interface for MultiSelectFilter
-  const userItems: Item[] = allUserIds.map((id, index) => ({
-    id,
-    name: allUserNames[index] || id
-  }));
+  // Handler for user selection - maps usernames back to user IDs
+  const handleUserChange = (selectedUsernames: string[]) => {
+    const selectedUserIds = selectedUsernames.map(username => {
+      const index = allUserNames.findIndex(name => name === username);
+      return index !== -1 ? allUserIds[index] : username;
+    });
+    onUserIdChange(selectedUserIds);
+  };
 
-  // Convert leave types to Item interface for MultiSelectFilter
-  const leaveTypeItems: Item[] = allLeaveTypes.map((type) => ({
-    id: type,
-    name: type
-  }));
+  // Get selected usernames for display
+  const selectedUsernames = userIdFilter.map(userId => {
+    const index = allUserIds.findIndex(id => id === userId);
+    return index !== -1 ? allUserNames[index] : userId;
+  });
 
   const appliedFilterCount =
     (userIdFilter.length > 0 ? 1 : 0) +
@@ -55,33 +57,19 @@ const LeaveFilters: React.FC<Props> = ({
         }}
       >
         {/* User Name Filter (displaying usernames, filtering by user_id) */}
-        <MultiSelectFilter
-          placeholder={transleave("username")}
-          selectedIds={userIdFilter}
-          items={userItems}
-          onChange={onUserIdChange}
-          sxRoot={{ minWidth: 200, width: 200 }}
-          listBoxProps={{
-            style: {
-              maxHeight: 200,
-              width: 250
-            }
-          }}
+        <FilterDropdown
+          label={transleave("username")}
+          options={allUserNames}
+          selected={selectedUsernames}
+          onChange={handleUserChange}
         />
 
         {/* Leave Type Filter */}
-        <MultiSelectFilter
-          placeholder={transleave("leavetype")}
-          selectedIds={leaveTypeFilter}
-          items={leaveTypeItems}
+        <FilterDropdown
+          label={transleave("leavetype")}
+          options={allLeaveTypes}
+          selected={leaveTypeFilter}
           onChange={onLeaveTypeChange}
-          sxRoot={{ minWidth: 200, width: 200 }}
-          listBoxProps={{
-            style: {
-              maxHeight: 200,
-              width: 250
-            }
-          }}
         />
 
         {/* From Date Filter */}

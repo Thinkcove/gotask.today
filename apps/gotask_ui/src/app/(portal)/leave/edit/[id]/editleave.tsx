@@ -78,10 +78,7 @@ const EditLeave: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const payload = {
-        ...formData,
-      };
-      await updateLeave(id as string, payload);
+      await updateLeave(id as string, formData);
       setSnackbar({
         open: true,
         message: transleave("leaveupdated"),

@@ -7,7 +7,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionDetailsProps } from "../../../interface/interface";
 import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
 import { Delete } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
 
 const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBack,handleDeleteClick }) => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);

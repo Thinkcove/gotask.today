@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Box, Typography, TextField, Grid, Stack, IconButton, Paper, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import StarIcon from "@mui/icons-material/Star";
 import useSWR from "swr";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -20,7 +19,11 @@ import {
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import env from "@/app/common/env";
-import { DEFAULT_PROFICIENCY, MINIMUM_EXPERIENCE_REQUIRED, PROFICIENCY_MAXIMUM } from "@/app/common/constants/user";
+import {
+  DEFAULT_PROFICIENCY,
+  MINIMUM_EXPERIENCE_REQUIRED,
+  PROFICIENCY_MAXIMUM
+} from "@/app/common/constants/user";
 
 interface SkillInputProps {
   userId: string;
@@ -55,12 +58,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   const openAddDialog = () => {
     setTempSkill({ name: "", proficiency: 0 });
     setCurrentEditIndex(null);
-    setDialogOpen(true);
-  };
-
-  const openEditDialog = (index: number) => {
-    setTempSkill({ ...skills[index] });
-    setCurrentEditIndex(index);
     setDialogOpen(true);
   };
 
@@ -229,9 +226,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                     </Box>
                   </Box>
                   <Box>
-                    <IconButton onClick={() => openEditDialog(index)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
                     <IconButton
                       onClick={() => {
                         setDeleteIndex(index);

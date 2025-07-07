@@ -5,7 +5,6 @@ import useSWR from "swr";
 import { Box, Typography, TextField, IconButton, Button, Paper, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import { ICertificate } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
@@ -53,12 +52,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
     setDialogOpen(true);
   };
 
-  const openEditDialog = (cert: ICertificate) => {
-    setTempCert({ ...cert });
-    setEditingId(cert.certificate_id ?? null);
-    setDialogOpen(true);
-  };
-
   const handleSave = async () => {
     const isNameEmpty = !tempCert.name.trim();
     const isDateEmpty = !tempCert.obtained_date;
@@ -67,7 +60,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
     setDateError(isDateEmpty);
 
     if (isNameEmpty || isDateEmpty) return;
-
     if (editingId) {
       await updateUserCertificate(userId, editingId, tempCert);
     } else {
@@ -168,10 +160,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
                   </Box>
 
                   <Box>
-                    <IconButton onClick={() => openEditDialog(cert)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-
                     <IconButton
                       onClick={() => {
                         if (cert.certificate_id) {

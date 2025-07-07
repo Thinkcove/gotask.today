@@ -170,33 +170,43 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       </Box>
 
       {/* Chart and Table */}
-      <Box
-        sx={{
-          maxHeight: 400,
-          overflow: "auto",
-          border: "1px solid #ddd",
-          borderRadius: 2,
-          px: 2,
-          py: 2,
-          scrollBehavior: "smooth",
-          "&::-webkit-scrollbar": {
-            width: "6px",
-            height: "6px"
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "#f1f1f1"
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#bbb",
-            borderRadius: 8
-          }
-        }}
-      >
-        <IncrementChart chartData={chartData} />
-        <Box px={2}>
-          <CustomTable columns={columns} rows={rows} />
+      {rows.length === 0 ? (
+        <Box
+          sx={{
+            color: "text.secondary"
+          }}
+        >
+          <Typography>{trans("noincrements")}</Typography>
         </Box>
-      </Box>
+      ) : (
+        <Box
+          sx={{
+            maxHeight: 400,
+            overflow: "auto",
+            border: "1px solid #ddd",
+            borderRadius: 2,
+            px: 2,
+            py: 2,
+            scrollBehavior: "smooth",
+            "&::-webkit-scrollbar": {
+              width: "6px",
+              height: "6px"
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "#f1f1f1"
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#bbb",
+              borderRadius: 8
+            }
+          }}
+        >
+          <IncrementChart chartData={chartData} />
+          <Box px={2}>
+            <CustomTable columns={columns} rows={rows} />
+          </Box>
+        </Box>
+      )}
 
       {/* Add/Edit Dialog */}
       <CommonDialog

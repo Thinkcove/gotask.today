@@ -11,7 +11,7 @@ export interface FormHeaderProps {
   hasHistory?: boolean;
   editheading?: string;
   create?: string;
-  cancle?: string;
+  cancel?: string;
   update?: string;
   showhistory?: string;
   createHeading?: string;
@@ -22,7 +22,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   onCancel,
   onSubmit,
   isSubmitting = false,
-  cancle,
+  cancel,
   create,
   editheading,
   update,
@@ -81,7 +81,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            {cancle}
+            {cancel}
           </Button>
           <Button
             variant="contained"

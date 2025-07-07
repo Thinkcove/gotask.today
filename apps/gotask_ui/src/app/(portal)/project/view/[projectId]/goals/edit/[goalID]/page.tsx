@@ -175,7 +175,7 @@ const EditGoalPage = () => {
           isSubmitting={isSubmitting}
           hasHistory={(projectGoalHistory?.updateHistory ?? []).length > 0}
           editheading={transGoal("editgoal")}
-          cancle={transGoal("cancel")}
+          cancel={transGoal("cancel")}
           update={transGoal("update")}
           showhistory={transGoal("showhistory")}
         />

@@ -131,7 +131,7 @@ const Page = () => {
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
           create={transpermishion("create")}
-          cancle={transpermishion("cancel")}
+          cancel={transpermishion("cancel")}
           createHeading={transpermishion("createpermission")}
         />
         <Box sx={{ flex: 1, overflowY: "auto" }}>

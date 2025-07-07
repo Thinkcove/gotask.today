@@ -101,7 +101,7 @@ const CreateGoal = () => {
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
           createHeading={transGoal("creategoal")}
-          cancle={transGoal("cancel")}
+          cancel={transGoal("cancel")}
           create={transGoal("create")}
           showhistory={transGoal("showhistory")}
         />

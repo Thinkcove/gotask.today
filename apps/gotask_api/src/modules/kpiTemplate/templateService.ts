@@ -34,6 +34,19 @@ const createKpiTemplate = async (
       };
     }
 
+    // Check for duplicate title (case-insensitive)
+    const existingTemplates = await getAllKpiTemplatesFromDb();
+    const isDuplicate = existingTemplates.some(
+      (template) => template.title.toLowerCase() === filteredData.title!.toLowerCase()
+    );
+
+    if (isDuplicate) {
+      return {
+        success: false,
+        message: KpiTemplateMessages.CREATE.DUPLICATE
+      };
+    }
+
     const newTemplate = await createKpiTemplateInDb(filteredData);
 
     return {

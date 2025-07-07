@@ -81,12 +81,13 @@ export const fetchAllIssues = () =>
   withAuth((token) => getData(`${env.API_BASE_URL}/getallissues`, token));
 
 export const useAllIssues = () => {
-  const { data, mutate } = useSWR([`fetchallissues`], fetchAllIssues, {
+  const { data, mutate, isLoading } = useSWR([`fetchallissues`], fetchAllIssues, {
     revalidateOnFocus: false
   });
   return {
     getAll: data?.data || [],
-    mutate
+    mutate,
+    isLoading
   };
 };
 

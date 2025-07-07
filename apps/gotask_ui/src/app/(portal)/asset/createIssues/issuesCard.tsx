@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Grid, Typography, Stack, Avatar, IconButton } from "@mui/material";
+import { Box, Grid, Typography, Stack, Avatar, IconButton, CircularProgress } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import CardComponent from "@/app/component/card/cardComponent";
@@ -15,6 +15,7 @@ import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useRouter } from "next/navigation";
 import { ArrowForward } from "@mui/icons-material";
+import ModuleHeader from "@/app/component/header/moduleHeader";
 
 interface AssetIssueCardsProps {
   searchText: string;
@@ -26,7 +27,7 @@ const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFilter }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const router = useRouter();
-  const { getAll: allissues } = useAllIssues();
+  const { getAll: allissues, isLoading } = useAllIssues();
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -48,6 +49,24 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
 
     return matchesSearch && matchesStatus;
   });
+
+  if (isLoading) {
+    return (
+      <>
+        <ModuleHeader name={trans("assets")} />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </>
+    );
+  }
 
   return (
     <Box

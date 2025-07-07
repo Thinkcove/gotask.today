@@ -84,5 +84,4 @@ export interface PermissionFilterProps {
   showClear?: boolean;
   clearText?: string;
   onClearFilters?: () => void;
-  datetext?: (key: string) => string;
 }

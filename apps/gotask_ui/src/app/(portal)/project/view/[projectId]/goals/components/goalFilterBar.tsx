@@ -1,35 +1,26 @@
 import React from "react";
 import { Box, Divider, IconButton, Link } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
+import FilterDropdown from "@/app/component/input/filterDropDown";
 import SearchBar from "@/app/component/searchBar/searchBar";
-import DateDropdown from "@/app/component/input/dateDropdown";
+import { GoalFiltersBar } from "../interface/projectGoal";
 
-interface PermissionFiltersBar {
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
-  onBack: () => void;
-  dateFrom: string;
-  dateTo: string;
-  onDateChange: (from: string, to: string) => void;
-  onClearFilters: () => void;
-  showClear: boolean;
-  clearText: string;
-  searchPlaceholder: string;
-  datetext: (key: string) => string;
-}
-
-const PermissionFilter: React.FC<PermissionFiltersBar> = ({
+const GoalFilterBar: React.FC<GoalFiltersBar> = ({
   searchTerm,
   onSearchChange,
   onBack,
-  dateFrom,
-  dateTo,
-  onDateChange,
+  statusFilter,
+  severityFilter,
+  onStatusChange,
+  onSeverityChange,
   onClearFilters,
+  statusOptions,
+  priorityOptions,
   showClear,
   clearText,
   searchPlaceholder,
-  datetext
+  filterpriority,
+  filterstatus
 }) => {
   return (
     <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={2}>
@@ -80,11 +71,17 @@ const PermissionFilter: React.FC<PermissionFiltersBar> = ({
             }
           }}
         >
-          <DateDropdown
-            dateFrom={dateFrom}
-            dateTo={dateTo}
-            onDateChange={onDateChange}
-            transtask={datetext}
+          <FilterDropdown
+            label={filterstatus}
+            options={statusOptions}
+            selected={statusFilter}
+            onChange={onStatusChange}
+          />
+          <FilterDropdown
+            label={filterpriority}
+            options={priorityOptions}
+            selected={severityFilter}
+            onChange={onSeverityChange}
           />
           {showClear && (
             <Box sx={{ flexShrink: 0 }}>
@@ -108,4 +105,4 @@ const PermissionFilter: React.FC<PermissionFiltersBar> = ({
   );
 };
 
-export default PermissionFilter;
+export default GoalFilterBar;

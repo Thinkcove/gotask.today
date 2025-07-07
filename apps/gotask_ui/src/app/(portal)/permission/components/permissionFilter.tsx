@@ -18,7 +18,6 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
   showClear = false,
   clearText,
   onClearFilters,
-  datetext
 }) => {
   const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 

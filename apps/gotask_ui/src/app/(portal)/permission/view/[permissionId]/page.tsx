@@ -16,39 +16,28 @@ const PermissionViewPage: React.FC = () => {
   const params = useParams();
   const permissionId = params.permissionId as string;
 
-  console.log("Permission ID from params:", permissionId);
-
-  const { permission, isLoading, isError } = usePermissionById(permissionId);
-
-  console.log("permission view", permission);
-
+  const { permission, isLoading } = usePermissionById(permissionId);
+  
   const handleBack = () => {
     router.back();
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         minHeight: "100vh",
-  //         display: "flex",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //         background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-  //       }}
-  //     >
-  //       <CircularProgress size={50} thickness={4} />
-  //     </Box>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+        }}
+      >
+        <CircularProgress size={50} thickness={4} />
+      </Box>
+    );
+  }
 
-  // if (isError) {
-  //   return (
-  //     <Box sx={{ p: 4 }}>
-  //       <div>Error loading permission details</div>
-  //     </Box>
-  //   );
-  // }
 
   return (
     <Box

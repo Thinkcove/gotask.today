@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Box, Grid, Paper, IconButton, Tooltip, CircularProgress, Typography } from "@mui/material";
-import { Edit, Delete, Visibility } from "@mui/icons-material";
+import {  Delete, Visibility } from "@mui/icons-material";
 import useSWR from "swr";
 import { fetchAllgetpermission, deletePermission } from "../services/permissionAction";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -47,8 +47,6 @@ const PermissionList = () => {
   };
 
   const handleViewClick = (permission: PermissionData) => {
-    console.log("getpermissionbyid", permission.id);
-
     router.push(`/permission/view/${permission.id}`);
   };
 

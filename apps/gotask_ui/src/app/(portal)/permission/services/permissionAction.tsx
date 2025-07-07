@@ -1,8 +1,7 @@
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
+import { deleteData, getData, postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
-
 import { PermissionPayload } from "../interface/interface";
 
 export const fetchAllgetpermission = async () => {

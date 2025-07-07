@@ -28,7 +28,7 @@ const ViewLeave: React.FC = () => {
   };
 
   const handleBack = () => router.back();
-   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
+  const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
 
   if (isLoading) {
     return (
@@ -61,7 +61,7 @@ const ViewLeave: React.FC = () => {
           }}
         >
           <Typography variant="h6" color="error">
-           {transleave("error")}
+            {transleave("error")}
           </Typography>
         </Box>
       </>
@@ -111,11 +111,13 @@ const ViewLeave: React.FC = () => {
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText label={transleave("todate")} value={formatDate(leave.to_date)} />
             </Grid>
-             <Grid item xs={12}>
-              <LabelValueText label={transleave("reason")} value={<div dangerouslySetInnerHTML={{ __html: leave.reasons || "-" }} />} />
-
+            <Grid item xs={12}>
+              <LabelValueText
+                label={transleave("reason")}
+                value={<div dangerouslySetInnerHTML={{ __html: leave.reasons || "-" }} />}
+              />
             </Grid>
-            </Grid>
+          </Grid>
 
           {/* Close Button */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
@@ -124,7 +126,7 @@ const ViewLeave: React.FC = () => {
               onClick={handleBack}
               sx={{ borderRadius: "30px", textTransform: "none" }}
             >
-            {transleave("close")}
+              {transleave("close")}
             </Button>
           </Box>
         </Paper>

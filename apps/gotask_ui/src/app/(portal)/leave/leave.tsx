@@ -28,7 +28,7 @@ const LeavePage: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false); // State for dialog
 
   const { data: allLeaves, isLoading } = useGetAllLeaves(true);
-  const { mutate: deleteLeave} = useDeleteLeave(); // Delete service
+  const { mutate: deleteLeave } = useDeleteLeave(); // Delete service
 
   const displayData = useMemo(() => (Array.isArray(allLeaves) ? allLeaves : []), [allLeaves]);
 
@@ -54,10 +54,10 @@ const LeavePage: React.FC = () => {
   const handleDeleteConfirm = async () => {
     if (!selectedLeave) return;
     try {
-      await deleteLeave(selectedLeave.id); 
+      await deleteLeave(selectedLeave.id);
       setIsDeleteDialogOpen(false); // Close dialog
-      setSelectedLeave(null); 
-    } catch  {
+      setSelectedLeave(null);
+    } catch {
       setErrorMessage(transleave("faileddelete"));
     }
   };

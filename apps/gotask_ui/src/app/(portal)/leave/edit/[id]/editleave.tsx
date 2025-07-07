@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box ,CircularProgress,Grid } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 import { useRouter, useParams } from "next/navigation";
 import FormField from "@/app/component/input/formField";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -12,17 +12,16 @@ import { LEAVE_TYPE } from "@/app/common/constants/leave";
 import { LeaveFormField } from "../../interface/leaveInterface";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 
-
 const EditLeave: React.FC = () => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
   const router = useRouter();
   const { id } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: leave, isLoading} = useGetLeaveById(id as string, true);
+  const { data: leave, isLoading } = useGetLeaveById(id as string, true);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
-    severity:  SNACKBAR_SEVERITY.INFO
+    severity: SNACKBAR_SEVERITY.INFO
   });
 
   const [formData, setFormData] = useState<LeaveFormField>({
@@ -82,35 +81,35 @@ const EditLeave: React.FC = () => {
       setSnackbar({
         open: true,
         message: transleave("leaveupdated"),
-        severity:  SNACKBAR_SEVERITY.SUCCESS
+        severity: SNACKBAR_SEVERITY.SUCCESS
       });
       router.push("/leave");
-    } catch  {
+    } catch {
       setSnackbar({
         open: true,
         message: transleave("errorupdate"),
-        severity:  SNACKBAR_SEVERITY.ERROR
+        severity: SNACKBAR_SEVERITY.ERROR
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-   if (isLoading) {
-     return (
-       <Box
-         sx={{
-           minHeight: "100vh",
-           display: "flex",
-           alignItems: "center",
-           justifyContent: "center",
-           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-         }}
-       >
-         <CircularProgress size={50} thickness={4} />
-       </Box>
-     );
-   }
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+        }}
+      >
+        <CircularProgress size={50} thickness={4} />
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -177,16 +176,16 @@ const EditLeave: React.FC = () => {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-           <FormField
-              label={transleave("reason")}
-              type="text"
-              placeholder={transleave("enterreason")}
-              value={formData.reasons}
-              onChange={(val) => handleInputChange("reasons", String(val))}
-              error={errors.reasons}
-              required
-              multiline
-            />
+          <FormField
+            label={transleave("reason")}
+            type="text"
+            placeholder={transleave("enterreason")}
+            value={formData.reasons}
+            onChange={(val) => handleInputChange("reasons", String(val))}
+            error={errors.reasons}
+            required
+            multiline
+          />
         </Grid>
       </Box>
 

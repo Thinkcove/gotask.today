@@ -14,10 +14,10 @@ import { LeaveFormField } from "../interface/leaveInterface";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
 
 const ApplyLeave: React.FC = () => {
-   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
+  const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
 
   const router = useRouter();
-  
+
   const [formData, setFormData] = useState<LeaveFormField>({
     from_date: "",
     to_date: "",

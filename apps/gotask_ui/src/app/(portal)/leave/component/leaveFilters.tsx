@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Link, TextField } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import FilterDropdown from "@/app/component/input/filterDropDown"; 
+import FilterDropdown from "@/app/component/input/filterDropDown";
 import { Props } from "../interface/leaveInterface";
 
 const LeaveFilters: React.FC<Props> = ({
@@ -23,16 +23,16 @@ const LeaveFilters: React.FC<Props> = ({
 
   // Handler for user selection - maps usernames back to user IDs
   const handleUserChange = (selectedUsernames: string[]) => {
-    const selectedUserIds = selectedUsernames.map(username => {
-      const index = allUserNames.findIndex(name => name === username);
+    const selectedUserIds = selectedUsernames.map((username) => {
+      const index = allUserNames.findIndex((name) => name === username);
       return index !== -1 ? allUserIds[index] : username;
     });
     onUserIdChange(selectedUserIds);
   };
 
   // Get selected usernames for display
-  const selectedUsernames = userIdFilter.map(userId => {
-    const index = allUserIds.findIndex(id => id === userId);
+  const selectedUsernames = userIdFilter.map((userId) => {
+    const index = allUserIds.findIndex((id) => id === userId);
     return index !== -1 ? allUserNames[index] : userId;
   });
 

@@ -75,6 +75,7 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
             dateTo={dateTo}
             onDateChange={onDateChange}
             transtask={transpermishion}
+            placeholder={transpermishion("filterdate")}
           />
           {showClear && onClearFilters && (
             <Box sx={{ flexShrink: 0 }}>

@@ -1021,6 +1021,10 @@
     "deleteconfirm": "Are you sure you want to delete this permission?",
     "deletetitle":"Delete Permission",
     "delete":"Delete",
-    "clearall":"Clear All"
+    "clearall":"Clear All",
+    "filterfrom":"From Date",
+    "filterclear":"Clear",
+    "filterapply":"Apply",
+    "filterto":"To Date"
   }
 }

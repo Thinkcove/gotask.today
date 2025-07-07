@@ -33,8 +33,9 @@ const PermissionList = () => {
   };
 
   const handleCreatePermission = () => {
+    //permission
     if (user && user?.id) {
-      router.push(`/permission/createPremission/${user.id}`);
+      router.push(`/permission/createPremission`);
     }
   };
 

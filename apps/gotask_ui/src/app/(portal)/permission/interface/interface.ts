@@ -9,7 +9,6 @@ export interface PermissionData {
   id: string;
   createdAt: string;
   updatedAt: string;
-  __v: number;
 }
 
 export interface PermissionListProps {
@@ -69,7 +68,6 @@ export interface PermissionData {
   id: string;
   createdAt: string;
   updatedAt: string;
-  __v: number;
 }
 
 export interface PermissionDetailsProps {

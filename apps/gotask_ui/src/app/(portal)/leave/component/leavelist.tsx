@@ -1,22 +1,24 @@
 "use client";
-import React, { useState, useMemo } from "react";
-import { Box, Grid, Paper, IconButton, Tooltip, Typography, CircularProgress } from "@mui/material";
-import { Edit, Delete, Visibility } from "@mui/icons-material";
-import ModuleHeader from "@/app/component/header/moduleHeader";
-import Table, { Column } from "@/app/component/table/table";
-import ActionButton from "@/app/component/floatingButton/actionButton";
-import AddIcon from "@mui/icons-material/Add";
+import React, { useState, useMemo, useCallback } from "react";
+import { Box, Grid, Paper, Typography, CircularProgress } from "@mui/material";
+import Table from "@/app/component/table/table";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { LeaveEntry } from "./interface/leaveInterface";
-import { useDeleteLeave, useGetAllLeaves } from "./services/leaveAction";
-import LeaveFilters from "./component/leaveFilters";
+import { LeaveEntry } from "../interface/leaveInterface";
+import { useDeleteLeave, useGetAllLeaves } from "../services/leaveAction";
+import LeaveFilters from "./leaveFilters";
 import CommonDialog from "@/app/component/dialog/commonDialog";
-const LeavePage: React.FC = () => {
+import { getLeaveColumns } from "./leaveColumns";
+import ActionButton from "@/app/component/floatingButton/actionButton";
+import AddIcon from "@mui/icons-material/Add";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+
+const LeaveList: React.FC = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState<string>("");
   const [userIdFilter, setUserIdFilter] = useState<string[]>([]);
@@ -24,47 +26,66 @@ const LeavePage: React.FC = () => {
   const [fromDateFilter, setFromDateFilter] = useState<string>("");
   const [toDateFilter, setToDateFilter] = useState<string>("");
   const [selectedLeave, setSelectedLeave] = useState<LeaveEntry | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false); // State for dialog
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
 
   const { data: allLeaves, isLoading } = useGetAllLeaves(true);
-  const { mutate: deleteLeave } = useDeleteLeave(); // Delete service
-
+  const { mutate: deleteLeave } = useDeleteLeave();
   const displayData = useMemo(() => (Array.isArray(allLeaves) ? allLeaves : []), [allLeaves]);
-
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
 
-  const handleActionClick = () => {
-    router.push("/leave/applyleave");
-  };
+  const handleViewClick = useCallback(
+    (leave: LeaveEntry) => {
+      router.push(`/leave/view/${leave.id}`);
+    },
+    [router]
+  );
 
-  const handleViewClick = (leave: LeaveEntry) => {
-    router.push(`/leave/view/${leave.id}`);
-  };
+  const handleEditClick = useCallback(
+    (leave: LeaveEntry) => {
+      router.push(`/leave/edit/${leave.id}`);
+    },
+    [router]
+  );
 
-  const handleEditClick = (leave: LeaveEntry) => {
-    router.push(`/leave/edit/${leave.id}`);
-  };
-
-  const handleDeleteClick = (leave: LeaveEntry) => {
+  const handleDeleteClick = useCallback((leave: LeaveEntry) => {
     setSelectedLeave(leave);
     setIsDeleteDialogOpen(true);
-  };
+  }, []);
 
   const handleDeleteConfirm = async () => {
     if (!selectedLeave) return;
     try {
       await deleteLeave(selectedLeave.id);
-      setIsDeleteDialogOpen(false); // Close dialog
+      setIsDeleteDialogOpen(false);
       setSelectedLeave(null);
+      setSnackbar({
+        open: true,
+        message: transleave("deletesuccess"),
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
     } catch {
-      setErrorMessage(transleave("faileddelete"));
+      setSnackbar({
+        open: true,
+        message: transleave("faileddelete"),
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+    } finally {
+      setTimeout(() => {}, 100);
     }
   };
 
   const handleDeleteCancel = () => {
-    setIsDeleteDialogOpen(false); // Close dialog
-    setSelectedLeave(null); // Clear selected leave
+    setIsDeleteDialogOpen(false);
+    setSelectedLeave(null);
+  };
+
+  const handleActionClick = () => {
+    router.push("/leave/applyleave");
   };
 
   const leaveTypes = useMemo(() => {
@@ -120,63 +141,16 @@ const LeavePage: React.FC = () => {
     [displayData, searchText, userIdFilter, leaveTypeFilter, fromDateFilter, toDateFilter]
   );
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    try {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}-${month}-${year}`;
-    } catch {
-      return dateString;
-    }
-  };
-
-  const leaveColumns: Column<LeaveEntry>[] = [
-    { id: "user_name", label: transleave("username"), sortable: true },
-    { id: "leave_type", label: transleave("leavetype"), sortable: false },
-    {
-      id: "from_date",
-      label: transleave("fromdate"),
-      render: (value: string | undefined, row: LeaveEntry) => formatDate(row.from_date || ""),
-      sortable: true
-    },
-    {
-      id: "to_date",
-      label: transleave("todate"),
-      render: (value: string | undefined, row: LeaveEntry) => formatDate(row.to_date || ""),
-      sortable: true
-    },
-    {
-      id: "actions",
-      label: transleave("actions"),
-      sortable: false,
-      render: (value: string | undefined, row: LeaveEntry) => (
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Tooltip title={transleave("viewdetails")}>
-            <IconButton size="small" onClick={() => handleViewClick(row)} sx={{ color: "#741B92" }}>
-              <Visibility fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={transleave("editleave")}>
-            <IconButton size="small" onClick={() => handleEditClick(row)} sx={{ color: "#741B92" }}>
-              <Edit fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={transleave("deleteleave")}>
-            <IconButton
-              size="small"
-              onClick={() => handleDeleteClick(row)}
-              sx={{ color: "#741B92" }}
-            >
-              <Delete fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      )
-    }
-  ];
+  const leaveColumns = useMemo(
+    () =>
+      getLeaveColumns({
+        transleave,
+        onViewClick: handleViewClick,
+        onEditClick: handleEditClick,
+        onDeleteClick: handleDeleteClick
+      }),
+    [transleave, handleViewClick, handleEditClick, handleDeleteClick]
+  );
 
   const handleClearFilters = () => {
     setUserIdFilter([]);
@@ -204,12 +178,6 @@ const LeavePage: React.FC = () => {
 
   return (
     <>
-      <ModuleHeader name="leave" />
-      {errorMessage && (
-        <Typography color="error" sx={{ p: 2, textAlign: "center" }}>
-          {errorMessage}
-        </Typography>
-      )}
       <Box
         sx={{
           display: "flex",
@@ -271,7 +239,6 @@ const LeavePage: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
-
       <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
         <ActionButton
           label={transleave("createleave")}
@@ -279,6 +246,7 @@ const LeavePage: React.FC = () => {
           onClick={handleActionClick}
         />
       </Box>
+
       <CommonDialog
         open={isDeleteDialogOpen}
         onClose={handleDeleteCancel}
@@ -290,8 +258,15 @@ const LeavePage: React.FC = () => {
       >
         <Typography sx={{ pt: 2 }}>{transleave("deleteconfirm")}</Typography>
       </CommonDialog>
+
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </>
   );
 };
 
-export default LeavePage;
+export default LeaveList;

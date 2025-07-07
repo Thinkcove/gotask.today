@@ -59,7 +59,7 @@ export interface LeaveFormField {
   from_date: string;
   to_date: string;
   leave_type: string;
-  reasons: string;
+  reasons?: string;
 }
 
 export interface Item {
@@ -67,7 +67,7 @@ export interface Item {
   name: string | null | undefined;
 }
 
-export interface Props {
+export interface leaveFilterProps {
   userIdFilter: string[];
   leaveTypeFilter: string[];
   fromDate: string;

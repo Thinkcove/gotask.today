@@ -3,9 +3,9 @@ import { Box, Link, TextField } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FilterDropdown from "@/app/component/input/filterDropDown";
-import { Props } from "../interface/leaveInterface";
+import { leaveFilterProps } from "../interface/leaveInterface";
 
-const LeaveFilters: React.FC<Props> = ({
+const LeaveFilters: React.FC<leaveFilterProps> = ({
   userIdFilter,
   leaveTypeFilter,
   fromDate,

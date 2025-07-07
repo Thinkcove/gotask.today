@@ -883,8 +883,8 @@
     "titleerror": "Title is required",
     "descriptionerror": "Description is required",
     "saveastemplate": "Save as Template",
-    "templatesavesuccess":"Template created Successfully",
-    "saveerror":"Failed to save template",
+    "templatesavesuccess": "Template created Successfully",
+    "saveerror": "Failed to save template",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."
@@ -990,8 +990,8 @@
       "description": "Upload and manage files and documents securely."
     }
   },
-  "Leave":{
-    "applyleave" : "Apply Leave",
+  "Leave": {
+    "applyleave": "Apply Leave",
     "cancel": "Cancel",
     "fromdate": "From Date",
     "todate": "To Date",
@@ -1002,7 +1002,7 @@
     "deletetitle": " Delete Leave Request",
     "deleteconfirm": "Are you sure you want to delete this leave request",
     "username": "User Name",
-    "clearall" : "Clear All Filters: ",
+    "clearall": "Clear All Filters: ",
     "editleave": "Edit Leave",
     "save": "Save",
     "leaves": "Leaves",
@@ -1013,7 +1013,7 @@
     "deleteleave": "Delete Leave",
     "loading": "Loading leaves...",
     "noleave": "No leaves available",
-    "nodata": "No data found matching your filters" ,
+    "nodata": "No data found matching your filters",
     "createleave": "Create Leave",
     "user": "User: ",
     "leavetype:": "Leave Type: ",
@@ -1027,7 +1027,7 @@
     "errorloading": "Error loading leave",
     "sickc": "SICK",
     "frompast": "From Date cannot be in the past",
-    "toearlier":"To Date cannot be earlier than From Date",
+    "toearlier": "To Date cannot be earlier than From Date",
     "valerr": "Please fix the validation errors",
     "leavesubmit": "Leave application submitted successfully",
     "failedsubmit": "Failed to submit leave application",
@@ -1036,6 +1036,11 @@
     "leave": "Apply Leave",
     "dateformat": "dd-mm-yyyy",
     "delete": "Delete",
-    "faileddelete": "Failed to delete leave request"
+    "deletesuccess": "Leave Deleted successfully",
+    "faileddelete": "Failed to delete leave request",
+    "meta": {
+      "title": "Leave Management | GoTaskToday",
+      "description": "Manage employee leave requests and approvals"
+    }
   }
 }

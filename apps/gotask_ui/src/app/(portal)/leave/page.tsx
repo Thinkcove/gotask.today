@@ -1,14 +1,20 @@
-// page.tsx
 "use client";
 import React from "react";
-import LeavePage from "./leave";
+import ModuleHeader from "@/app/component/header/moduleHeader";
+import { useTranslations } from "next-intl";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import LeaveList from "./component/leavelist";
 
-const Page = () => {
+const LeavePage: React.FC = () => {
+  const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
+
   return (
-    <div>
-      <LeavePage />
-    </div>
+    <>
+      <ModuleHeader name={transleave("leave")} />
+
+      <LeaveList />
+    </>
   );
 };
 
-export default Page;
+export default LeavePage;

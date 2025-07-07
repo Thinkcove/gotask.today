@@ -364,8 +364,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                                     </Typography>
                                     <FormattedDateTime date={asset.dateOfPurchase} />
                                   </Box>
-                                  )}
-                                  
+                                )}
                               </>
                             )}
                           </Stack>

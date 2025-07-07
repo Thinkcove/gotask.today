@@ -105,8 +105,6 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
     setDialogOpen(false);
   };
 
-  const reversed = [...sorted].reverse();
-
   const chartData = sorted.map((item, idx, arr) => {
     const label = moment(item.date)
       .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)

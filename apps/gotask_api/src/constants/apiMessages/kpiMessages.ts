@@ -4,7 +4,7 @@ export const KpiTemplateMessages = {
       "Title, description, and measurement criteria are required for creating a KPI template",
     FAILED: "Failed to create KPI template",
     SUCCESS: "KPI template created successfully",
-    DUPLICATE:"Template name already exists"
+    DUPLICATE: "Template name already exists"
   },
   FETCH: {
     FAILED_ALL: "Failed to fetch KPI templates",

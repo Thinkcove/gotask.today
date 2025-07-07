@@ -17,14 +17,14 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import CustomTable, { Column } from "@/app/component/table/table";
 import { IIncrementHistory } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
-import {
-  getUserIncrements,
-  addUserIncrement,
-  updateUserIncrement
-} from "../services/userAction";
+import { getUserIncrements, addUserIncrement, updateUserIncrement } from "../services/userAction";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import moment from "moment";
+import { calculateIncrementPercent } from "@/app/common/constants/user";
+import formatCTC from "@/app/common/utils/formatCtc";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import PercentIcon from "@mui/icons-material/Percent";
 
 interface IncrementInputProps {
   userId: string;
@@ -36,7 +36,11 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<IIncrementHistory>({ increment_id: "",date: "", ctc: 0 });
+  const [formData, setFormData] = useState<IIncrementHistory>({
+    increment_id: "",
+    date: "",
+    ctc: 0
+  });
   const [dateError, setDateError] = useState(false);
   const [ctcError, setCtcError] = useState(false);
 
@@ -113,8 +117,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       .format(DateFormats.MONTH_YEAR);
 
     const prev = idx > 0 ? arr[idx - 1] : null;
-    const percent =
-      prev && prev.ctc ? +(((item.ctc - prev.ctc) / prev.ctc) * 100).toFixed(2) : null;
+    const percent = prev ? calculateIncrementPercent(item.ctc, prev.ctc) : null;
 
     return {
       name: label,
@@ -122,7 +125,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       percent
     };
   });
-  
+
   const columns: Column<IIncrementHistory & { percent?: string }>[] = [
     {
       id: "date",
@@ -135,21 +138,28 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       id: "ctc",
       label: trans("ctc"),
       align: "left",
-      render: (value) => `₹${(value as number).toLocaleString("en-IN")} L`
+      render: (value) => formatCTC(value as number)
     },
     {
       id: "percent",
       label: trans("change"),
       align: "left",
       render: (value) =>
-        value !== undefined ? <Typography color="green">↑ {value}%</Typography> : "-"
+        value !== undefined ? (
+          <Typography color="green" display="flex" alignItems="center" gap={0.5}>
+            <ArrowUpwardIcon fontSize="small" />
+            {value}
+            <PercentIcon fontSize="small" />
+          </Typography>
+        ) : (
+          "-"
+        )
     }
   ];
 
   const rows = [...sorted].reverse().map((inc, idx, arr) => {
     const prev = arr[idx + 1];
-    const percent =
-      prev && prev.ctc ? (((inc.ctc - prev.ctc) / prev.ctc) * 100).toFixed(2) : undefined;
+    const percent = prev ? calculateIncrementPercent(inc.ctc, prev.ctc)?.toFixed(2) : undefined;
     return { ...inc, percent };
   });
 

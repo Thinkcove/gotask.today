@@ -1,6 +1,5 @@
 export interface PermissionData {
-  _id: string;
-  user_id: string;
+    user_id: string;
   user_name: string;
   date: string;
   start_time: string;
@@ -58,7 +57,6 @@ export interface PermissionResponse {
 }
 
 export interface PermissionData {
-  _id: string;
   user_id: string;
   user_name: string;
   date: string;

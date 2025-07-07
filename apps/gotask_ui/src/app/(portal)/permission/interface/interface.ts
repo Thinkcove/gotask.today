@@ -81,3 +81,18 @@ export interface PermissionFilterProps {
   clearText?: string;
   onClearFilters?: () => void;
 }
+
+export interface PermissionColumnsConfig {
+  onViewClick: (permission: PermissionData) => void;
+  onDeleteClick: (permission: PermissionData) => void;
+  isDeleting?: boolean;
+  translations: {
+    username: string;
+    date: string;
+    starttime: string;
+    endtime: string;
+    actions: string;
+    viewdetails: string;
+    deletepermission: string;
+  };
+}

@@ -3,22 +3,9 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import { Delete, Visibility } from "@mui/icons-material";
 import { Column } from "@/app/component/table/table";
 import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
-import { PermissionData } from "../interface/interface";
+import { PermissionColumnsConfig, PermissionData } from "../interface/interface";
 
-interface PermissionColumnsConfig {
-  onViewClick: (permission: PermissionData) => void;
-  onDeleteClick: (permission: PermissionData) => void;
-  isDeleting?: boolean;
-  translations: {
-    username: string;
-    date: string;
-    starttime: string;
-    endtime: string;
-    actions: string;
-    viewdetails: string;
-    deletepermission: string;
-  };
-}
+
 
 export const getPermissionColumns = ({
   onViewClick,

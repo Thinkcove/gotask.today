@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Box, Grid, Paper, IconButton, Tooltip, CircularProgress, Typography } from "@mui/material";
-import {  Delete, Visibility } from "@mui/icons-material";
+import { Box, Grid, Paper, IconButton, Tooltip, Typography } from "@mui/material";
+import { Delete, Visibility } from "@mui/icons-material";
 import useSWR from "swr";
 import { fetchAllgetpermission, deletePermission } from "../services/permissionAction";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -27,7 +27,7 @@ const PermissionList = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-  const { data, isLoading, mutate } = useSWR("getpermission", fetchAllgetpermission);
+  const { data, mutate } = useSWR("getpermission", fetchAllgetpermission);
 
   const displayData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
 
@@ -143,7 +143,7 @@ const PermissionList = () => {
       render: (value: string | number | string[] | undefined, row: PermissionData) => (
         <Box sx={{ display: "flex", gap: 1 }}>
           <Tooltip title={transpermishion("viewdetails")}>
-            <IconButton size="small" onClick={() => handleViewClick(row)} sx={{ color: "#741B92" }}>
+            <IconButton size="small" onClick={() => handleViewClick(row)} color="primary">
               <Visibility fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -151,7 +151,7 @@ const PermissionList = () => {
             <IconButton
               size="small"
               onClick={() => handleDeleteClick(row)}
-              sx={{ color: "#741B92" }}
+              color="error"
               disabled={isDeleting}
             >
               <Delete fontSize="small" />
@@ -164,22 +164,6 @@ const PermissionList = () => {
 
   // Check if filters are active - ensure it returns boolean
   const hasActiveFilters = Boolean(searchTerm || dateFrom || dateTo);
-
-  // if (isLoading) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         minHeight: "100vh",
-  //         display: "flex",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //         background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-  //       }}
-  //     >
-  //       <CircularProgress size={50} thickness={4} />
-  //     </Box>
-  //   );
-  // }
 
   return (
     <>

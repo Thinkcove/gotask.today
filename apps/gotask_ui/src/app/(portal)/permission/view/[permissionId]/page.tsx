@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, CircularProgress } from "@mui/material";
+import { Box } from "@mui/material";
 import { useRouter, useParams } from "next/navigation";
 import { usePermissionById } from "../../services/permissionAction";
 import PermissionDetails from "./conponents/permishionView";
@@ -16,28 +16,11 @@ const PermissionViewPage: React.FC = () => {
   const params = useParams();
   const permissionId = params.permissionId as string;
 
-  const { permission, isLoading } = usePermissionById(permissionId);
+  const { permission } = usePermissionById(permissionId);
   
   const handleBack = () => {
     router.back();
   };
-
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-        }}
-      >
-        <CircularProgress size={50} thickness={4} />
-      </Box>
-    );
-  }
-
 
   return (
     <Box

@@ -46,15 +46,30 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>([]);
   const [sortKey, setSortKey] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(SortOrder.DESC);
-  const { getAll: allAssets, isLoading, mutate } = useAllAssets(sortKey, sortOrder);
   const [assetAllocationFilter, setAssetAllocationFilter] = useState<string[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [assetTypeFilter, setAssetTypeFilter] = useState<string[]>([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success" as "success" | "error" | "info" | "warning"
   });
+
+  const {
+    getAll: allAssets,
+    isLoading,
+    mutate
+  } = useAllAssets(sortKey, sortOrder, {
+    assignedToFilter,
+    modelNameFilter,
+    warrantyDateFrom,
+    warrantyDateTo,
+    systemTypeFilter,
+    assetAllocationFilter,
+    assetTypeFilter
+  });
+
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
     if (originalAsset) {
@@ -116,18 +131,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     }
   };
 
-  const modelNames: string[] = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          allAssets
-            .map((a: IAssetAttributes) => a.modelName)
-            .filter((m: string): m is string => !!m)
-        )
-      ),
-    [allAssets]
-  );
-
   const assignedUserNames: string[] = useMemo(() => {
     const users = Array.from(
       new Set(
@@ -146,6 +149,16 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       new Set(
         allAssets
           .map((a: IAssetAttributes) => a.systemType)
+          .filter((type: string): type is string => !!type)
+      )
+    );
+  }, [allAssets]);
+
+  const allAssetTypes: string[] = useMemo(() => {
+    return Array.from(
+      new Set(
+        allAssets
+          .map((a: IAssetAttributes) => a.assetType?.name)
           .filter((type: string): type is string => !!type)
       )
     );
@@ -210,13 +223,17 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           return true;
         });
 
+      const matchAssetType =
+        assetTypeFilter.length === 0 || assetTypeFilter.includes(asset.assetType?.name || "");
+
       return (
         matchBasic &&
         matchAssigned &&
         matchModel &&
         matchWarranty &&
         matchSystemType &&
-        matchAssetAllocation
+        matchAssetAllocation &&
+        matchAssetType
       );
     });
   };
@@ -261,6 +278,22 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     setWarrantyDateTo("");
     setSystemTypeFilter([]);
     setAssetAllocationFilter([]);
+  };
+
+  const appliedAnyFilter = () => {
+    return (
+      assignedToFilter.length > 0 ||
+      warrantyDateFrom !== "" ||
+      warrantyDateTo !== "" ||
+      systemTypeFilter.length > 0 ||
+      assetAllocationFilter.length > 0 ||
+      assetTypeFilter.length > 0
+    );
+  };
+
+  const handleDownload = () => {
+    const dataToDownload = appliedAnyFilter() ? filteredAssets : allAssets;
+    downloadAssetCSV(dataToDownload, transasset);
   };
 
   return (
@@ -312,9 +345,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             <AssetFilters
               modelNameFilter={modelNameFilter}
               assignedToFilter={assignedToFilter}
-              allModelNames={modelNames}
               allUsers={assignedUserNames}
-              onModelNameChange={setModelNameFilter}
               onAssignedToChange={setAssignedToFilter}
               onClearFilters={clearAssetFilters}
               trans={transasset}
@@ -329,14 +360,15 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               onSystemTypeChange={setSystemTypeFilter}
               assetAllocationFilter={assetAllocationFilter}
               onAssetAllocationChange={setAssetAllocationFilter}
+              assetTypeFilter={assetTypeFilter}
+              allAssetTypes={allAssetTypes}
+              onAssetTypeChange={setAssetTypeFilter}
             />
           ) : (
             <AssetFilters
               modelNameFilter={[]}
               assignedToFilter={[]}
-              allModelNames={[]}
               allUsers={[]}
-              onModelNameChange={() => {}}
               onAssignedToChange={() => {}}
               onClearFilters={() => setStatusFilter([])}
               trans={transasset}
@@ -359,7 +391,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             <Button
               variant="outlined"
               startIcon={<DownloadIcon />}
-              onClick={() => downloadAssetCSV(allAssets, transasset)}
+              onClick={handleDownload}
               sx={{
                 whiteSpace: "nowrap",
                 textTransform: "none",

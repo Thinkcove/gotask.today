@@ -2,19 +2,23 @@ import { getData, postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { IAssetAttributes, IAssetIssues, IAssetTags } from "../interface/asset";
+import { AssetFilters, IAssetAttributes, IAssetIssues, IAssetTags } from "../interface/asset";
 import { CREATED_AT, DESC } from "../assetConstants";
 
 //fetch all assets
-export const fetchAllAssets = (sortVar = CREATED_AT, sortType = DESC) =>
+export const fetchAllAssets = (sortVar = CREATED_AT, sortType = DESC, filters: AssetFilters = {}) =>
   withAuth((token) =>
-    postData(`${env.API_BASE_URL}/assets/getAll`, { sort_var: sortVar, sort_type: sortType }, token)
+    postData(
+      `${env.API_BASE_URL}/assets/getAll`,
+      { sort_var: sortVar, sort_type: sortType, filters },
+      token
+    )
   );
 
-export const useAllAssets = (sortVar = CREATED_AT, sortType = DESC) => {
+export const useAllAssets = (sortVar = CREATED_AT, sortType = DESC, filters: AssetFilters = {}) => {
   const { data, mutate, isLoading } = useSWR(
-    [`fetchallassets`, sortVar, sortType],
-    () => fetchAllAssets(sortVar, sortType),
+    [`fetchallassets`, sortVar, sortType, filters],
+    () => fetchAllAssets(sortVar, sortType, filters),
     { revalidateOnFocus: false, keepPreviousData: true }
   );
 

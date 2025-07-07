@@ -1028,6 +1028,7 @@
     "filterclear":"Clear",
     "filterapply":"Apply",
     "filterto":"To Date",
-    "labelcomment":"Comment"
+    "labelcomment":"Comment",
+    "leaveapplier,":"Leave Applier,"
   }
 }

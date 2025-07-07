@@ -15,6 +15,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import EditOrganization from "./edit";
+import MetadataSetter from "@/app/component/meta/MetadataSetter";
 
 interface OrgDetailProps {
   org: Organization;
@@ -42,6 +43,10 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
 
   return (
     <>
+      <MetadataSetter
+        title={transorganization("meta.detailTitle", { name: org.name })}
+        description={transorganization("meta.detailDescription", { name: org.name })}
+      />
       <ModuleHeader name={transorganization("detailview")} />
       <Box
         sx={{

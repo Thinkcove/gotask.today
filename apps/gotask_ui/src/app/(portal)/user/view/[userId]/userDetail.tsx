@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Box, Typography, IconButton, Stack, Chip, Grid } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
@@ -24,6 +25,8 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
 import SkillInput from "../../components/skillInput";
 import CertificateInput from "../../components/certificateInput";
+import MetadataSetter from "@/app/component/meta/MetadataSetter";
+
 
 interface UserDetailProps {
   user: User;
@@ -71,6 +74,11 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
   return (
     <>
+      <MetadataSetter
+        title={transuser("meta.detailTitle", { name: user.name })}
+        description={transuser("meta.detailDescription", { name: user.name })}
+      />
+
       <ModuleHeader name={transuser("userdetail")} />
 
       <Box

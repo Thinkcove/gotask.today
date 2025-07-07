@@ -18,7 +18,7 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import CommentSection from "../../../../component/comments/commentSection";
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
-import MetadataSetter from "../../component/MetadataSetter";
+import MetadataSetter from "../../../../component/meta/MetadataSetter";
 
 interface TaskDetailViewProps {
   task: any;
@@ -35,6 +35,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
   if (loading || !task || Object.keys(task).length === 0) {
     return (
       <>
+
         <ModuleHeader name={transtask("tasks")} />
         <Box
           sx={{

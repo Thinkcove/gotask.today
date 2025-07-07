@@ -23,6 +23,7 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import MetadataSetter from "@/app/component/meta/MetadataSetter";
 
 interface ProjectDetailProps {
   project: Project;
@@ -104,6 +105,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
 
   return (
     <>
+      <MetadataSetter
+        title={transproject("meta.detailTitle", { name: project.name })}
+        description={transproject("meta.detailDescription", { name: project.name })}
+      />
       <ModuleHeader name={transproject("detailview")} />
       <Box
         sx={{

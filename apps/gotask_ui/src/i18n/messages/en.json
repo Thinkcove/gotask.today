@@ -118,7 +118,9 @@
     "searchplaceholder": "Search Organizations",
     "meta": {
       "title": "Organization | GoTaskToday",
-      "description": "Define departments, roles, and reporting structure for the organization."
+      "description": "Define departments, roles, and reporting structure for the organization.",
+      "detailTitle": "{name} | Organization Detail",
+      "detailDescription": "Overview and resources for organization {name}."
     }
   },
   "Projects": {
@@ -174,7 +176,9 @@
     "filterapply": "Apply",
     "meta": {
       "title": "Project Management | GoTaskToday",
-      "description": " Create, assign, and monitor progress of ongoing projects."
+      "description": " Create, assign, and monitor progress of ongoing projects.",
+      "detailTitle": "{name} | Project Detail",
+      "detailDescription": "Explore resources and team associated with project {name}."
     },
     "Stories": {
       "noStoriesFound": "No stories found for this project.",
@@ -289,7 +293,9 @@
     "searchplaceholder": "Search Roles",
     "meta": {
       "title": "Role Management | GoTaskToday",
-      "description": "Define user roles and assign permissions within the system."
+      "description": "Define user roles and assign permissions within the system.",
+      "detailTitle": "{name} | Role Detail",
+      "detailDescription": "View permissions, assignments, and responsibilities for role {name}."
     }
   },
   "Task": {
@@ -532,7 +538,9 @@
     "pleaseenterexperience": "Please enter experience in months.",
     "meta": {
       "title": "User Management | GoTaskToday",
-      "description": "Plan, assign, and track tasks across projects."
+      "description": "Plan, assign, and track tasks across projects.",
+      "detailTitle": "{name} | User Detail",
+      "detailDescription": "Detailed view of {name}'s profile, skills, and credentials."
     },
 
     "Certificate": {

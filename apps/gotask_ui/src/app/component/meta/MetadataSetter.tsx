@@ -1,5 +1,5 @@
-// components/MetadataSetter.tsx
 "use client";
+
 import { useEffect } from "react";
 
 export default function MetadataSetter({

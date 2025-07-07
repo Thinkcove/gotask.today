@@ -27,6 +27,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
+import MetadataSetter from "@/app/component/meta/MetadataSetter";
 
 interface RoleDetailProps {
   role: Role;
@@ -92,6 +93,11 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
 
   return (
     <>
+      <MetadataSetter
+        title={transrole("meta.detailTitle", { name: role.name })}
+        description={transrole("meta.detailDescription", { name: role.name })}
+      />
+
       <ModuleHeader name={transrole("roledetail")} />
       <Box
         sx={{

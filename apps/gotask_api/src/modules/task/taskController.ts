@@ -139,25 +139,8 @@ class TaskController extends BaseController {
   async getTaskById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
-      const result = await getTaskById(id); // This returns { success, data?, message? }
-
-      // If unsuccessful or no task found, return the original structure
-      if (!result.success || !result.data) {
-        return this.sendResponse(handler, result);
-      }
-
-      const task = result.data;
-
-      const metadata = {
-        title: task.title || "Task Detail",
-        description: task.description || `Details of task ${task.title}`
-      };
-
-      // Attach metadata to result before sending
-      return handler.response({
-        ...result, 
-        metadata 
-      });
+      const task = await getTaskById(id);
+      return this.sendResponse(handler, task);
     } catch (error) {
       return this.replyError(error, handler);
     }

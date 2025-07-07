@@ -24,7 +24,7 @@ function PremissionForm({
   };
 
   const handleTimeChange = (
-    field: "startTime" | "endTime",
+    field: "startTime" | "endTime" | "comment",
     value: string | number | Date | string[]
   ): void => {
     if (typeof value !== "string") return;
@@ -93,6 +93,17 @@ function PremissionForm({
             }
             required
             disabled={isSubmitting}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <FormField
+            label={transpermishion("labelcomment")}
+            type="text"
+            placeholder={transpermishion("comments")}
+            value={formData.comment}
+            onChange={(val) => handleTimeChange("comment", String(val))}
+            required
+            multiline
           />
         </Grid>
       </Grid>

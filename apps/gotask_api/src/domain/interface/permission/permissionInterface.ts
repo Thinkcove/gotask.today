@@ -112,6 +112,7 @@ const createCommentInPermission = async (
   commentData: IPermissionComment
 ): Promise<IPermissionComment> => {
   const { permission_id, user_id, comment, user_name } = commentData;
+
   const permission = await Permission.findOne({ id: permission_id });
   if (!permission) throw new Error("Permission not found");
 
@@ -119,11 +120,8 @@ const createCommentInPermission = async (
   const newComment = new PermissionComment({ permission_id, user_id, comment, user_name });
   await newComment.save();
 
-  // Add only the comment text to the Permission's comments array
-  if (!permission.comments) {
-    permission.comments = [];
-  }
-  permission.comments.unshift(comment); // Store only the comment string
+  // Append the comment text to the Permission's comments string
+  permission.comments += (permission.comments ? "\n" : "") + comment;
   await permission.save();
 
   return newComment;
@@ -166,7 +164,7 @@ const updateCommentInPermission = async (
     const commentIndex = permission.comments.indexOf(existingComment.comment);
     if (commentIndex !== -1 && newCommentText.comment) {
       // Replace the old comment text with the new one
-      permission.comments[commentIndex] = newCommentText.comment;
+      permission.comments = newCommentText.comment;
       await permission.save();
       logger.info(
         `Updated comment in Permission document ${permission.id} at index ${commentIndex}`

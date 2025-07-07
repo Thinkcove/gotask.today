@@ -1027,6 +1027,7 @@
     "filterfrom":"From Date",
     "filterclear":"Clear",
     "filterapply":"Apply",
-    "filterto":"To Date"
+    "filterto":"To Date",
+    "labelcomment":"Comment"
   }
 }

@@ -146,17 +146,19 @@ const PermissionList = () => {
   return (
     <>
       {/* Filter Component */}
-      <PermissionFilter
-        searchTerm={searchTerm}
-        onSearchChange={onSearchChange}
-        onBack={handleBack}
-        dateFrom={dateFrom}
-        dateTo={dateTo}
-        onDateChange={onDateChange}
-        onClearFilters={handleClearFilters}
-        showClear={hasActiveFilters}
-        clearText={transpermishion("clearall")}
-      />
+      <Box sx={{ pt: 2 }}>
+        <PermissionFilter
+          searchTerm={searchTerm}
+          onSearchChange={onSearchChange}
+          onBack={handleBack}
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          onDateChange={onDateChange}
+          onClearFilters={handleClearFilters}
+          showClear={hasActiveFilters}
+          clearText={transpermishion("clearall")}
+        />
+      </Box>
 
       <Box
         sx={{ width: "100%", display: "flex", flexDirection: "column", overflowY: "auto", mt: 2 }}

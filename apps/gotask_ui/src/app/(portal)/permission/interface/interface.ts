@@ -29,6 +29,7 @@ export interface PremissionFormProps {
     startDate: string;
     startTime: string;
     endTime: string;
+    comment: string;
   };
   errors: {
     startDate?: string;
@@ -43,6 +44,7 @@ export interface PermissionPayload {
   date: string;
   start_time: string;
   end_time: string;
+  comment:string;
 }
 
 export interface PermissionResponse {

@@ -39,7 +39,7 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
             sx={{
               flexGrow: 1,
               maxWidth: { xs: "none", sm: 400 },
-              minWidth: { xs: "auto", sm: 200 }
+              minWidth: { xs: "none", sm: 200 }
             }}
           >
             <SearchBar

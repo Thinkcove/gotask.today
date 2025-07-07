@@ -23,7 +23,8 @@ const Page = () => {
   const [formData, setFormData] = useState({
     startDate: "",
     startTime: "",
-    endTime: ""
+    endTime: "",
+    comment: ""
   });
 
   const [errors, setErrors] = useState<{
@@ -77,7 +78,8 @@ const Page = () => {
       const payload: PermissionPayload = {
         date: formData.startDate,
         start_time: formData.startTime,
-        end_time: formData.endTime
+        end_time: formData.endTime,
+        comment: formData.comment
       };
 
       await createPermission(payload);
@@ -87,7 +89,8 @@ const Page = () => {
       setFormData({
         startDate: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
+        comment: ""
       });
       setErrors({});
       setTimeout(() => {

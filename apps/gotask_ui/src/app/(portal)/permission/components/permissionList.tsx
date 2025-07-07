@@ -11,7 +11,7 @@ import { useUser } from "@/app/userContext";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import Table, { Column } from "@/app/component/table/table";
-import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
+import { formatDate, formatTime, isDateInRange } from "@/app/common/utils/dateTimeUtils";
 import PermissionFilter from "./permissionFilter";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 
@@ -77,28 +77,6 @@ const PermissionList = () => {
   const handleDeleteCancel = () => {
     setIsDeleteDialogOpen(false);
     setSelectedPermission(null);
-  };
-
-  const isDateInRange = (dateString: string, fromDate: string, toDate: string) => {
-    if (!fromDate && !toDate) return true;
-
-    const targetDate = new Date(dateString);
-    const fromDateObj = fromDate ? new Date(fromDate) : null;
-    const toDateObj = toDate ? new Date(toDate) : null;
-
-    targetDate.setHours(0, 0, 0, 0);
-    if (fromDateObj) fromDateObj.setHours(0, 0, 0, 0);
-    if (toDateObj) toDateObj.setHours(23, 59, 59, 999);
-
-    if (fromDateObj && toDateObj) {
-      return targetDate >= fromDateObj && targetDate <= toDateObj;
-    } else if (fromDateObj) {
-      return targetDate >= fromDateObj;
-    } else if (toDateObj) {
-      return targetDate <= toDateObj;
-    }
-
-    return true;
   };
 
   const filteredPermissions = useMemo(() => {

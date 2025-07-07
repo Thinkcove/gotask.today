@@ -44,3 +44,24 @@ export const formatTime = (timeString: string): string => {
     return timeString;
   }
 };
+
+export const isDateInRange = (dateString: string, fromDate: string, toDate: string): boolean => {
+  if (!fromDate && !toDate) return true;
+
+  const targetDate = new Date(dateString);
+  const fromDateObj = fromDate ? new Date(fromDate) : null;
+  const toDateObj = toDate ? new Date(toDate) : null;
+
+  targetDate.setHours(0, 0, 0, 0);
+  if (fromDateObj) fromDateObj.setHours(0, 0, 0, 0);
+  if (toDateObj) toDateObj.setHours(23, 59, 59, 999);
+  if (fromDateObj && toDateObj) {
+    return targetDate >= fromDateObj && targetDate <= toDateObj;
+  } else if (fromDateObj) {
+    return targetDate >= fromDateObj;
+  } else if (toDateObj) {
+    return targetDate <= toDateObj;
+  }
+
+  return true;
+};

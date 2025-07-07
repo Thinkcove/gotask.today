@@ -56,6 +56,13 @@ TaskRoutes.push({
     tags,
     auth: {
       strategy: authStrategy.SIMPLE
+    },
+    plugins: {
+      metadata: {
+        module: "task",
+        feature: "view",
+        access: "read-only"
+      }
     }
   }
 });

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Typography,
-  Grid,
-  IconButton,
-  Divider,
-  CircularProgress
-} from "@mui/material";
+import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -19,16 +12,13 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { formatTimeValue } from "@/app/common/utils/taskTime";
-import {
-  createComment,
-  deleteComment,
-  updateComment
-} from "../../service/taskAction";
+import { createComment, deleteComment, updateComment } from "../../service/taskAction";
 import { useUser } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import CommentSection from "../../../../component/comments/commentSection";
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import { Head } from "next/document";
 
 interface Task {
   id: string;
@@ -127,10 +117,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, loading = false, mutate }
 
             {canAccess(APPLICATIONS.TASK, ACTIONS.UPDATE) && (
               <Grid item xs="auto">
-                <IconButton
-                  color="primary"
-                  onClick={() => router.push(`/task/edit/${task.id}`)}
-                >
+                <IconButton color="primary" onClick={() => router.push(`/task/edit/${task.id}`)}>
                   <Edit />
                 </IconButton>
               </Grid>
@@ -143,10 +130,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, loading = false, mutate }
               {transtask("detaildesc")}
             </Typography>
 
-            <RichTextReadOnly
-              content={task.description || ""}
-              extensions={getTipTapExtensions()}
-            />
+            <RichTextReadOnly content={task.description || ""} extensions={getTipTapExtensions()} />
           </Box>
 
           {/* Meta Info */}
@@ -208,9 +192,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, loading = false, mutate }
                 label={transtask("variationt")}
                 value={formatTimeValue(task.variation || "-", true)}
               />
-              {task.variation &&
-              task.variation !== "0d0h" &&
-              task.variation !== "0d0h0m" ? (
+              {task.variation && task.variation !== "0d0h" && task.variation !== "0d0h0m" ? (
                 task.variation.startsWith("-") ? (
                   <Typography variant="caption" color="success.main">
                     {transtask("variation")}

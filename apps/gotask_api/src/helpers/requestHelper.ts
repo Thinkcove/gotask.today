@@ -31,6 +31,10 @@ class RequestHelper {
     return this.request.query?.[key] as T;
   }
 
+  getMetaData(): any {
+    return this.request.route.settings.tags || {};
+  }
+
   getQuery() {
     return this.request.query;
   }

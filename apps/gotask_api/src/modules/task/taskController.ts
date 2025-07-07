@@ -44,8 +44,13 @@ class TaskController extends BaseController {
   // Get All Tasks
   async getAllTasks(_requestHelper: RequestHelper, handler: any) {
     try {
+      const metadata = _requestHelper.getMetaData();
+      console.log("metadata", metadata);
       const tasks = await getAllTasks();
-      return this.sendResponse(handler, tasks);
+      return this.sendResponse(handler, {
+        ...tasks,
+        metadata
+      });
     } catch (error) {
       return this.replyError(error, handler);
     }

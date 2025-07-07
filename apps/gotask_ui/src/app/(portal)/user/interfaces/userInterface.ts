@@ -15,6 +15,7 @@ export interface ICertificate {
 }
 
 export interface IIncrementHistory {
+  increment_id?: string;
   date: string;
   ctc: number;
 }

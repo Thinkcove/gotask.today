@@ -263,15 +263,14 @@ UserRoutes.push({
     }
   }
 });
-
-// Update specific increment record by index
+// Update specific increment record by increment_id
 UserRoutes.push({
-  path: `/increments/{id}/{index}`,
+  path: `/increments/{id}/{increment_id}`,
   method: API_METHODS.PUT,
   handler: (request: Request, handler: ResponseToolkit) =>
     userController.updateUserIncrement(new RequestHelper(request), handler),
   config: {
-    notes: "Update a specific increment record of a user",
+    notes: "Update a specific increment record of a user by increment_id",
     tags,
     auth: {
       strategy: authStrategy.SIMPLE
@@ -279,14 +278,14 @@ UserRoutes.push({
   }
 });
 
-// Delete specific increment record by index
+// Delete specific increment record by increment_id
 UserRoutes.push({
-  path: `/increments/{id}/{index}`,
+  path: `/increments/{id}/{increment_id}`,
   method: API_METHODS.DELETE,
   handler: (request: Request, handler: ResponseToolkit) =>
     userController.deleteUserIncrement(new RequestHelper(request), handler),
   config: {
-    notes: "Delete a specific increment record of a user",
+    notes: "Delete a specific increment record of a user by increment_id",
     tags,
     auth: {
       strategy: authStrategy.SIMPLE

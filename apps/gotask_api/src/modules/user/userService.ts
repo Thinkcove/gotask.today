@@ -20,6 +20,7 @@ import { IAsset } from "../../domain/model/asset/asset";
 import { ISkill } from "../../domain/model/user/skills";
 import { ICertificate } from "../../domain/model/user/certificate";
 import { IIncrementHistory } from "../../domain/model/user/increment";
+import { PROFICIENCY_MAXIMUM } from "../../constants/utils/userConstant";
 
 class userService {
   // CREATE USER
@@ -452,12 +453,15 @@ class userService {
       if (updatedSkill.proficiency !== undefined) {
         skill.proficiency = updatedSkill.proficiency;
 
-        if (updatedSkill.proficiency < 3 && "experience" in skill) {
+        if (updatedSkill.proficiency < PROFICIENCY_MAXIMUM && "experience" in skill) {
           skill.experience = undefined;
         }
       }
 
-      if (updatedSkill.experience !== undefined && updatedSkill.proficiency! >= 3) {
+      if (
+        updatedSkill.experience !== undefined &&
+        updatedSkill.proficiency! >= PROFICIENCY_MAXIMUM
+      ) {
         skill.experience = updatedSkill.experience;
       }
 
@@ -607,7 +611,7 @@ class userService {
 
   async updateIncrement(
     userId: string,
-    index: number,
+    incrementId: string,
     updatedIncrement: Partial<IIncrementHistory>
   ): Promise<{ success: boolean; data?: IIncrementHistory; message?: string }> {
     try {
@@ -616,16 +620,16 @@ class userService {
         return { success: false, message: "User or increment history not found" };
       }
 
-      if (index < 0 || index >= user.increment_history.length) {
-        return { success: false, message: "Invalid increment index" };
+      const increment = user.increment_history.find((inc) => inc.increment_id === incrementId);
+      if (!increment) {
+        return { success: false, message: "Increment not found" };
       }
 
-      const inc = user.increment_history[index];
-      if (updatedIncrement.date) inc.date = updatedIncrement.date;
-      if (updatedIncrement.ctc !== undefined) inc.ctc = updatedIncrement.ctc;
+      if (updatedIncrement.date) increment.date = updatedIncrement.date;
+      if (updatedIncrement.ctc !== undefined) increment.ctc = updatedIncrement.ctc;
 
       await user.save();
-      return { success: true, data: inc, message: "Increment updated successfully" };
+      return { success: true, data: increment, message: "Increment updated successfully" };
     } catch (error: any) {
       return { success: false, message: error.message || "Failed to update increment" };
     }
@@ -633,7 +637,7 @@ class userService {
 
   async deleteIncrement(
     userId: string,
-    index: number
+    incrementId: string
   ): Promise<{ success: boolean; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
@@ -641,8 +645,9 @@ class userService {
         return { success: false, message: "User or increment history not found" };
       }
 
-      if (index < 0 || index >= user.increment_history.length) {
-        return { success: false, message: "Invalid increment index" };
+      const index = user.increment_history.findIndex((inc) => inc.increment_id === incrementId);
+      if (index === -1) {
+        return { success: false, message: "Increment not found" };
       }
 
       user.increment_history.splice(index, 1);

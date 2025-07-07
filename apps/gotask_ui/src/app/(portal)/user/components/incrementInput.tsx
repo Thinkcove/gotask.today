@@ -17,9 +17,14 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import CustomTable, { Column } from "@/app/component/table/table";
 import { IIncrementHistory } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
-import { getUserIncrements, addUserIncrement, updateUserIncrement } from "../services/userAction";
+import {
+  getUserIncrements,
+  addUserIncrement,
+  updateUserIncrement
+} from "../services/userAction";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
+import moment from "moment";
 
 interface IncrementInputProps {
   userId: string;
@@ -30,8 +35,8 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [formData, setFormData] = useState<IIncrementHistory>({ date: "", ctc: 0 });
+  const [editId, setEditId] = useState<string | null>(null);
+  const [formData, setFormData] = useState<IIncrementHistory>({ increment_id: "",date: "", ctc: 0 });
   const [dateError, setDateError] = useState(false);
   const [ctcError, setCtcError] = useState(false);
 
@@ -57,8 +62,8 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   if (!userId || isLoading) return null;
 
   const resetForm = () => {
-    setFormData({ date: "", ctc: 0 });
-    setEditIndex(null);
+    setFormData({ increment_id: "", date: "", ctc: 0 });
+    setEditId(null);
     setDateError(false);
     setCtcError(false);
   };
@@ -80,8 +85,8 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
     const formattedDate = new Date(formData.date).toISOString().split("T")[0];
 
     const isDuplicate = increment_history.some(
-      (i: IIncrementHistory, idx: number) =>
-        new Date(i.date).toISOString().split("T")[0] === formattedDate && idx !== editIndex
+      (i) =>
+        new Date(i.date).toISOString().split("T")[0] === formattedDate && i.increment_id !== editId
     );
 
     if (isDuplicate) {
@@ -89,8 +94,8 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       return;
     }
 
-    if (editIndex !== null) {
-      await updateUserIncrement(userId, editIndex, formData);
+    if (editId) {
+      await updateUserIncrement(userId, Number(editId), formData);
     } else {
       await addUserIncrement(userId, formData);
     }
@@ -103,11 +108,9 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   const reversed = [...sorted].reverse();
 
   const chartData = sorted.map((item, idx, arr) => {
-    const date = new Date(item.date);
-    const label = date.toLocaleDateString("en-IN", {
-      month: "short",
-      year: "numeric"
-    });
+    const label = moment(item.date)
+      .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+      .format(DateFormats.MONTH_YEAR);
 
     const prev = idx > 0 ? arr[idx - 1] : null;
     const percent =
@@ -119,32 +122,32 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       percent
     };
   });
-
+  
   const columns: Column<IIncrementHistory & { percent?: string }>[] = [
     {
       id: "date",
       label: trans("date"),
-      align: "center",
+      align: "left",
       render: (value) =>
         value ? <FormattedDateTime date={value as string} format={DateFormats.DATE_ONLY} /> : "-"
     },
     {
       id: "ctc",
       label: trans("ctc"),
-      align: "center",
+      align: "left",
       render: (value) => `₹${(value as number).toLocaleString("en-IN")} L`
     },
     {
       id: "percent",
       label: trans("change"),
-      align: "center",
+      align: "left",
       render: (value) =>
         value !== undefined ? <Typography color="green">↑ {value}%</Typography> : "-"
     }
   ];
 
-  const rows = reversed.map((inc, idx) => {
-    const prev = reversed[idx + 1];
+  const rows = [...sorted].reverse().map((inc, idx, arr) => {
+    const prev = arr[idx + 1];
     const percent =
       prev && prev.ctc ? (((inc.ctc - prev.ctc) / prev.ctc) * 100).toFixed(2) : undefined;
     return { ...inc, percent };
@@ -167,6 +170,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
         </Button>
       </Box>
 
+      {/* Chart and Table */}
       <Box
         sx={{
           maxHeight: 400,
@@ -189,7 +193,6 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
           }
         }}
       >
-        {/* Chart */}
         {chartData.length > 1 && (
           <Box px={2} pb={2}>
             <ResponsiveContainer width="100%" height={280}>
@@ -226,7 +229,6 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
           </Box>
         )}
 
-        {/* Table */}
         <Box px={2}>
           <CustomTable columns={columns} rows={rows} />
         </Box>
@@ -237,7 +239,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         onSubmit={handleSubmit}
-        title={editIndex !== null ? trans("edit") : trans("addnew")}
+        title={editId ? trans("edit") : trans("addnew")}
         submitLabel={trans("save")}
         cancelLabel={trans("cancel")}
       >

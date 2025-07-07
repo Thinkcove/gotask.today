@@ -12,9 +12,11 @@ import {
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
+import { Project } from "../../domain/model/project/project";
 import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
+import { User } from "../../domain/model/user/user";
 
 // Create a new task
 const createTask = async (
@@ -137,19 +139,22 @@ const getTasksByProject = async (
     const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
       Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
 
-    // Step 1: Group all search values by field
+    // Step 1: Group all values by field
     const fieldGroups: Record<string, RegExp[]> = {};
+
     if (isValidSearch(search_vars) && isValidSearch(search_vals)) {
       for (let i = 0; i < search_vars.length; i++) {
         const rawField = search_vars[i][0];
         const value = search_vals[i][0];
         const field = rawField === "id" ? "project_id" : rawField;
         const regex = new RegExp(value, "i");
+
         if (!fieldGroups[field]) fieldGroups[field] = [];
         fieldGroups[field].push(regex);
       }
     }
 
+    // Step 2: Build AND filter with single or multiple values
     for (const field in fieldGroups) {
       const regexes = fieldGroups[field];
       if (regexes.length === 1) {
@@ -159,7 +164,7 @@ const getTasksByProject = async (
       }
     }
 
-    // Step 2: Date filter
+    // Step 3: Add date filter if provided
     if (date_var && min_date && max_date) {
       andConditions.push({
         [date_var]: {
@@ -169,7 +174,7 @@ const getTasksByProject = async (
       });
     }
 
-    // Step 3: Variation filters
+    // Step 4: Add variation filters
     if (more_variation?.length && !more_variation.startsWith("-")) {
       andConditions.push({
         variation: { $regex: new RegExp(`^${more_variation}`, "i") }
@@ -184,10 +189,12 @@ const getTasksByProject = async (
 
     const filter = andConditions.length > 0 ? { $and: andConditions } : {};
 
+    // Step 5: Determine sort fields
     const sortObject = sortField
       ? { [sortField]: sortOrder === SortOrder.ASC ? 1 : -1 }
       : { due_date: -1, user_name: 1 };
 
+    // Step 6: Build aggregation pipeline
     const aggregationPipeline: any[] = [
       { $match: filter },
       { $sort: sortObject },
@@ -207,7 +214,12 @@ const getTasksByProject = async (
           as: "project"
         }
       },
-      { $unwind: { path: "$project", preserveNullAndEmptyArrays: true } },
+      {
+        $unwind: {
+          path: "$project",
+          preserveNullAndEmptyArrays: true
+        }
+      },
       { $sort: { latestTaskUpdatedAt: -1 } },
       {
         $project: {
@@ -218,7 +230,12 @@ const getTasksByProject = async (
           latestTaskUpdatedAt: 1,
           tasks: {
             $map: {
-              input: { $sortArray: { input: "$tasks", sortBy: sortObject } },
+              input: {
+                $sortArray: {
+                  input: "$tasks",
+                  sortBy: sortObject
+                }
+              },
               as: "task",
               in: {
                 _id: "$$task._id",
@@ -235,12 +252,12 @@ const getTasksByProject = async (
                 start_date: "$$task.start_date",
                 due_date: "$$task.due_date",
                 created_on: "$$task.created_on",
-                updated_on: "$$task.updated_on",
+                user_estimated: "$$task.user_estimated",
                 estimated_time: "$$task.estimated_time",
                 time_spent_total: "$$task.time_spent_total",
                 remaining_time: "$$task.remaining_time",
                 variation: "$$task.variation",
-                user_estimated: "$$task.user_estimated",
+                updated_on: "$$task.updated_on",
                 createdAt: "$$task.createdAt",
                 updatedAt: "$$task.updatedAt",
                 __v: "$$task.__v"
@@ -253,7 +270,38 @@ const getTasksByProject = async (
       { $limit: pageSize }
     ];
 
+    // Step 7: Execute aggregation and count
     const taskGroups = await Task.aggregate(aggregationPipeline);
+
+    await Promise.all(
+      taskGroups.map(async (group) => {
+        await Promise.all(
+          group.tasks.map(async (task: any) => {
+            if (task.user_id && task.user_name) {
+              const user = await User.findOne({ id: task.user_id }, { name: 1 }).lean();
+              if (user) {
+                task.user_name = user.name;
+              }
+            }
+
+            if (task.project_id && task.project_name) {
+              const project = await Project.findOne({ id: task.project_id }, { name: 1 }).lean();
+              if (project) {
+                task.project_name = project.name;
+              }
+            }
+          })
+        );
+
+        if (group.project_name && group._id) {
+          const project = await Project.findOne({ id: group._id }, { name: 1 }).lean();
+          if (project) {
+            group.project_name = project.name;
+          }
+        }
+      })
+    );
+
     const totalProjects = await Task.distinct("project_id", filter).then((res) => res.length);
 
     return {
@@ -268,7 +316,7 @@ const getTasksByProject = async (
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || TaskMessages.FETCH.FAILED_BY_PROJECT
+      message: error.message || "Failed to fetch tasks by project"
     };
   }
 };
@@ -298,18 +346,22 @@ const getTasksByUser = async (
     const isValidSearch = (arr: any[][] | undefined): arr is any[][] =>
       Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]) && arr[0].length > 0;
 
+    // Step 1: Group all values by field
     const fieldGroups: Record<string, RegExp[]> = {};
+
     if (isValidSearch(search_vars) && isValidSearch(search_vals)) {
       for (let i = 0; i < search_vars.length; i++) {
         const rawField = search_vars[i][0];
         const value = search_vals[i][0];
         const field = rawField === "id" ? "user_id" : rawField;
         const regex = new RegExp(value, "i");
+
         if (!fieldGroups[field]) fieldGroups[field] = [];
         fieldGroups[field].push(regex);
       }
     }
 
+    // Step 2: Build AND filter with single or multiple values
     for (const field in fieldGroups) {
       const regexes = fieldGroups[field];
       if (regexes.length === 1) {
@@ -319,12 +371,14 @@ const getTasksByUser = async (
       }
     }
 
+    // Step 3: Add date filter if provided
     if (date_var && min_date && max_date) {
       andConditions.push({
         [date_var]: { $gte: new Date(min_date), $lte: new Date(max_date) }
       });
     }
 
+    // Step 4: Add variation filters
     if (more_variation?.length && !more_variation.startsWith("-")) {
       andConditions.push({
         variation: { $regex: new RegExp(`^${more_variation}`, "i") }
@@ -339,10 +393,12 @@ const getTasksByUser = async (
 
     const filter = andConditions.length > 0 ? { $and: andConditions } : {};
 
+    // Step 5: Determine sort fields
     const sortObject = sortField
       ? { [sortField]: sortOrder === SortOrder.ASC ? 1 : -1 }
       : { due_date: -1, user_name: 1 };
 
+    // Step 6: Build aggregation pipeline
     const aggregationPipeline: any[] = [
       { $match: filter },
       { $sort: sortObject },
@@ -373,7 +429,12 @@ const getTasksByUser = async (
           latestTaskUpdatedAt: 1,
           tasks: {
             $map: {
-              input: { $sortArray: { input: "$tasks", sortBy: sortObject } },
+              input: {
+                $sortArray: {
+                  input: "$tasks",
+                  sortBy: sortObject
+                }
+              },
               as: "task",
               in: {
                 _id: "$$task._id",
@@ -390,14 +451,14 @@ const getTasksByUser = async (
                 start_date: "$$task.start_date",
                 due_date: "$$task.due_date",
                 created_on: "$$task.created_on",
-                updated_on: "$$task.updated_on",
+                user_estimated: "$$task.user_estimated",
                 estimated_time: "$$task.estimated_time",
                 time_spent_total: "$$task.time_spent_total",
                 remaining_time: "$$task.remaining_time",
                 variation: "$$task.variation",
+                updated_on: "$$task.updated_on",
                 createdAt: "$$task.createdAt",
                 updatedAt: "$$task.updatedAt",
-                user_estimated: "$$task.user_estimated",
                 __v: "$$task.__v"
               }
             }
@@ -408,7 +469,38 @@ const getTasksByUser = async (
       { $limit: pageSize }
     ];
 
+    // Step 7: Execute aggregation and count
     const taskGroups = await Task.aggregate(aggregationPipeline);
+
+    await Promise.all(
+      taskGroups.map(async (group) => {
+        await Promise.all(
+          group.tasks.map(async (task: any) => {
+            if (task.user_id && task.user_name) {
+              const user = await User.findOne({ id: task.user_id }, { name: 1 }).lean();
+              if (user) {
+                task.user_name = user.name;
+              }
+            }
+
+            if (task.project_id && task.project_name) {
+              const project = await Project.findOne({ id: task.project_id }, { name: 1 }).lean();
+              if (project) {
+                task.project_name = project.name;
+              }
+            }
+          })
+        );
+
+        if (group.user_name && group._id) {
+          const user = await User.findOne({ id: group._id }, { name: 1 }).lean();
+          if (user) {
+            group.user_name = user.name;
+          }
+        }
+      })
+    );
+
     const totalUsers = await Task.distinct("user_id", filter).then((res) => res.length);
 
     return {

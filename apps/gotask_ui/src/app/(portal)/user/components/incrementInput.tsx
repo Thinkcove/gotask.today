@@ -4,15 +4,6 @@ import React, { useState, useMemo } from "react";
 import useSWR from "swr";
 import { Box, Typography, TextField, Button, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  LabelList
-} from "recharts";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import CustomTable, { Column } from "@/app/component/table/table";
 import { IIncrementHistory } from "../interfaces/userInterface";
@@ -108,8 +99,6 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
     resetForm();
     setDialogOpen(false);
   };
-
-  const reversed = [...sorted].reverse();
 
   const chartData = sorted.map((item, idx, arr) => {
     const label = moment(item.date)

@@ -8,8 +8,6 @@ export const fetchAllgetpermission = async () => {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/getpermission`;
     const { data } = await getData(url, token);
-    console.log(data);
-
     return data || [];
   });
 };

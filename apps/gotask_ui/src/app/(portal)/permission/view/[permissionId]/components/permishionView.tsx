@@ -33,6 +33,12 @@ const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBac
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
+          <LabelValueText
+            label={transpermission("createdat")}
+            value={formatDate(permission?.createdAt)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
           <LabelValueText label={transpermission("date")} value={formatDate(permission?.date)} />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
@@ -45,12 +51,6 @@ const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBac
           <LabelValueText
             label={transpermission("endtime")}
             value={formatTime(permission?.end_time)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <LabelValueText
-            label={transpermission("createdat")}
-            value={formatDate(permission?.createdAt)}
           />
         </Grid>
       </Grid>

@@ -165,21 +165,21 @@ const PermissionList = () => {
   // Check if filters are active - ensure it returns boolean
   const hasActiveFilters = Boolean(searchTerm || dateFrom || dateTo);
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-        }}
-      >
-        <CircularProgress size={50} thickness={4} />
-      </Box>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         minHeight: "100vh",
+  //         display: "flex",
+  //         alignItems: "center",
+  //         justifyContent: "center",
+  //         background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+  //       }}
+  //     >
+  //       <CircularProgress size={50} thickness={4} />
+  //     </Box>
+  //   );
+  // }
 
   return (
     <>

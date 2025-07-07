@@ -102,5 +102,3 @@ export enum SortOrder {
   ASC = "asc",
   DESC = "desc"
 }
-
-export const FILTER_STORAGE_KEY = "task_filters";

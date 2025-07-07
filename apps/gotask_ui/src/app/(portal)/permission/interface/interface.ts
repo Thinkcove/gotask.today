@@ -1,5 +1,5 @@
 export interface PermissionData {
-    user_id: string;
+  user_id: string;
   user_name: string;
   date: string;
   start_time: string;
@@ -7,7 +7,6 @@ export interface PermissionData {
   comments: string[];
   id: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface PermissionListProps {
@@ -53,7 +52,6 @@ export interface PermissionResponse {
   end_time: string;
   status?: string;
   created_at?: string;
-  updated_at?: string;
 }
 
 export interface PermissionData {
@@ -65,7 +63,6 @@ export interface PermissionData {
   comments: string[];
   id: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface PermissionDetailsProps {

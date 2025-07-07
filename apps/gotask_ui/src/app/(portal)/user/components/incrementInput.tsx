@@ -38,7 +38,6 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   const [errorOpen, setErrorOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [formData, setFormData] = useState<IIncrementHistory>({
-    increment_id: "",
     date: "",
     ctc: 0
   });
@@ -67,7 +66,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   if (!userId || isLoading) return null;
 
   const resetForm = () => {
-    setFormData({ increment_id: "", date: "", ctc: 0 });
+    setFormData({ date: "", ctc: 0 });
     setEditId(null);
     setDateError(false);
     setCtcError(false);

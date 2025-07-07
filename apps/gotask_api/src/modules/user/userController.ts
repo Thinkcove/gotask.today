@@ -292,14 +292,13 @@ class UserController extends BaseController {
   async updateUserIncrement(requestHelper: RequestHelper, handler: any) {
     try {
       const userId = requestHelper.getParam("id");
-      const index = parseInt(requestHelper.getParam("index"));
+      const incrementId = requestHelper.getParam("incrementId");
       const updateData = requestHelper.getPayload();
 
       if (!updateData || updateData.ctc == null || !updateData.date) {
         throw new Error("Updated increment object must include date and ctc.");
       }
-
-      const result = await userService.updateIncrement(userId, index, updateData);
+      const result = await userService.updateIncrement(userId, incrementId, updateData);
       return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error);
@@ -309,9 +308,8 @@ class UserController extends BaseController {
   async deleteUserIncrement(requestHelper: RequestHelper, handler: any) {
     try {
       const userId = requestHelper.getParam("id");
-      const index = parseInt(requestHelper.getParam("index"));
-
-      const result = await userService.deleteIncrement(userId, index);
+      const incrementId = requestHelper.getParam("incrementId");
+      const result = await userService.deleteIncrement(userId, incrementId);
       return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error);

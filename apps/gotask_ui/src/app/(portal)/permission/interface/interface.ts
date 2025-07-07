@@ -21,9 +21,7 @@ export interface CommonGridListProps<T> {
   noDataMessage?: React.ReactNode;
   maxHeight?: string;
 }
-export interface PermissionLoadingStateProps {
-  title: string;
-}
+
 export interface PremissionFormProps {
   formData: {
     startDate: string;

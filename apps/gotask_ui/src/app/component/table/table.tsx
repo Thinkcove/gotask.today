@@ -259,7 +259,7 @@ const CustomTable = <T extends object>({
                       sx={{ minWidth: column.minWidth }}
                     >
                       {isLoading ? (
-                        <Skeleton variant="rectangular" height={16} />
+                        <Skeleton variant="rectangular" height={20} sx={{ borderRadius: 4 }} />
                       ) : column.render ? (
                         column.render(value, row)
                       ) : typeof value === "object" && value !== null ? (

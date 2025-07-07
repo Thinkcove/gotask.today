@@ -87,7 +87,6 @@ const createKpiAssignment = async (
       filteredData.kpi_Title = template.title;
       filteredData.kpi_Description = template.description; 
       filteredData.frequency = filteredData.frequency || template.frequency;
-      filteredData.target_value= filteredData.target_value;
     }
 
     // Save as template if requested

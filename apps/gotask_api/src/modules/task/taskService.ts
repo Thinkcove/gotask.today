@@ -7,7 +7,6 @@ import {
   createNewTask,
   deleteByTaskId,
   deleteCommentFromTask,
-  findAllTasks,
   findTaskById,
   findTaskCountByStatus,
   updateATask,
@@ -53,13 +52,28 @@ const getAllTasks = async (): Promise<{
   try {
     const tasks = await Task.find(
       {},
-      { 
+      {
+        _id: 1,
         id: 1,
-        title: 1, 
-        status: 1, 
-        project_id: 1, 
-        user_id: 1, 
-        due_date: 1
+        title: 1,
+        description: 1,
+        status: 1,
+        severity: 1,
+        user_id: 1,
+        user_name: 1,
+        project_id: 1,
+        project_name: 1,
+        story_id: 1,
+        start_date: 1,
+        due_date: 1,
+        created_on: 1,
+        updated_on: 1,
+        estimated_time: 1,
+        time_spent_total: 1,
+        remaining_time: 1,
+        variation: 1,
+        createdAt: 1,
+        updatedAt: 1
       }
     ).lean();
 

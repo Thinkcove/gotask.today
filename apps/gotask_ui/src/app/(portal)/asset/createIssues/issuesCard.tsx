@@ -15,7 +15,6 @@ import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useRouter } from "next/navigation";
 import { ArrowForward } from "@mui/icons-material";
-import ModuleHeader from "@/app/component/header/moduleHeader";
 
 interface AssetIssueCardsProps {
   searchText: string;
@@ -53,7 +52,6 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
   if (isLoading) {
     return (
       <>
-        <ModuleHeader name={trans("assets")} />
         <Box
           sx={{
             display: "flex",

@@ -20,8 +20,6 @@ import {
 import AssetIssueCards from "../createIssues/issuesCard";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
-import EmptyState from "@/app/component/emptyState/emptyState";
-import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { SortOrder } from "@/app/common/constants/task";
 import DownloadIcon from "@mui/icons-material/Download";
 import { Button } from "@mui/material";
@@ -424,40 +422,29 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
         {initialView === transasset("selectedAsset") && (
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              {mappedAssets.length === 0 ? (
-                <EmptyState
-                  imageSrc={NoAssetsImage}
-                  message={
-                    searchText || modelNameFilter.length || assignedToFilter.length
-                      ? transasset("nodata")
-                      : transasset("noasset")
-                  }
-                />
-              ) : (
-                <Paper
-                  sx={{
-                    p: 2,
-                    overflow: "auto",
-                    display: "flex",
-                    flexDirection: "column",
-                    overflowY: "auto"
-                  }}
-                >
-                  <Box sx={{ width: "100%", flex: 1 }}>
-                    <Box sx={{ minWidth: 800 }}>
-                      <Table<IAssetDisplayRow>
-                        columns={assetColumns}
-                        rows={mappedAssets}
-                        onSortChange={(key, order) => {
-                          setSortKey(key);
-                          setSortOrder(order);
-                        }}
-                        isLoading={isLoading}
-                      />
-                    </Box>
+              <Paper
+                sx={{
+                  p: 2,
+                  overflow: "auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflowY: "auto"
+                }}
+              >
+                <Box sx={{ width: "100%", flex: 1 }}>
+                  <Box sx={{ minWidth: 800 }}>
+                    <Table<IAssetDisplayRow>
+                      columns={assetColumns}
+                      rows={mappedAssets}
+                      onSortChange={(key, order) => {
+                        setSortKey(key);
+                        setSortOrder(order);
+                      }}
+                      isLoading={isLoading}
+                    />
                   </Box>
-                </Paper>
-              )}
+                </Box>
+              </Paper>
             </Grid>
           </Grid>
         )}

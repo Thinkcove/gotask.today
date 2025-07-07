@@ -348,7 +348,7 @@ const getTasksByUser = async (
 
     const sortObject = sortField
       ? { [sortField]: sortOrder === SortOrder.ASC ? 1 : -1 }
-      : { due_date: -1, project_name: 1 };
+      : { due_date: -1, user_name: 1 };
 
     const pipeline: any[] = [
       { $match: filter },

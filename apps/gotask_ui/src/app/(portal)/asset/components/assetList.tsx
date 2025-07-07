@@ -298,7 +298,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
 
   return (
     <>
-      <ModuleHeader name={"assets"} />
+      <ModuleHeader name={transasset("assets")} />
       <Box
         sx={{
           display: "flex",

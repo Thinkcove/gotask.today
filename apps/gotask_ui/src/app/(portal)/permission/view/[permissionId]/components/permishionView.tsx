@@ -6,10 +6,11 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionDetailsProps } from "../../../interface/interface";
 import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
+import { Delete } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
-const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBack }) => {
+const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBack,handleDeleteClick }) => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
-
   return (
     <Paper sx={{ p: 4, pb: 8, borderRadius: 4, border: "1px solid #e0e0e0" }}>
       {/* Header */}
@@ -21,6 +22,11 @@ const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBac
         </Grid>
         <Grid item xs>
           <Typography variant="h5">{permission?.user_name}</Typography>
+        </Grid>
+        <Grid item xs="auto">
+          <IconButton color="error" onClick={handleDeleteClick}>
+            <Delete />
+          </IconButton>
         </Grid>
       </Grid>
 

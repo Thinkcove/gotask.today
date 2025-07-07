@@ -42,7 +42,7 @@ export interface PermissionPayload {
   date: string;
   start_time: string;
   end_time: string;
-  comment:string;
+  comment: string;
 }
 
 export interface PermissionResponse {
@@ -68,6 +68,7 @@ export interface PermissionData {
 export interface PermissionDetailsProps {
   permission: PermissionData;
   onBack: () => void;
+  handleDeleteClick: () => void;
 }
 export interface PermissionFilterProps {
   searchTerm: string;

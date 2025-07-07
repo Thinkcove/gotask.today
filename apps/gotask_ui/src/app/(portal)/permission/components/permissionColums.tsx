@@ -5,8 +5,6 @@ import { Column } from "@/app/component/table/table";
 import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
 import { PermissionColumnsConfig, PermissionData } from "../interface/interface";
 
-
-
 export const getPermissionColumns = ({
   onViewClick,
   onDeleteClick,

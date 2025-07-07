@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Grid, IconButton, Paper, Button } from "@mui/material";
+import { Typography, Grid, IconButton, Paper } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { useTranslations } from "next-intl";

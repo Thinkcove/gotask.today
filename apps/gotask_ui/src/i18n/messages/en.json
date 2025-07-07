@@ -620,7 +620,7 @@
       "description": "Generate and analyze reports across modules for insights and audits."
     }
   },
-  "Assets": {
+"Assets": {
     "asset": "Assets and Resources",
     "assets": "Asset",
     "type": "Type",

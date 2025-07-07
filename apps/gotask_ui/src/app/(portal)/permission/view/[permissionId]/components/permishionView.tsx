@@ -8,7 +8,11 @@ import { PermissionDetailsProps } from "../../../interface/interface";
 import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
 import { Delete } from "@mui/icons-material";
 
-const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBack,handleDeleteClick }) => {
+const PermissionDetails: React.FC<PermissionDetailsProps> = ({
+  permission,
+  onBack,
+  handleDeleteClick
+}) => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
   return (
     <Paper sx={{ p: 4, pb: 8, borderRadius: 4, border: "1px solid #e0e0e0" }}>

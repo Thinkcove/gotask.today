@@ -14,6 +14,8 @@ import { isDateInRange } from "@/app/common/utils/dateTimeUtils";
 import PermissionFilter from "./permissionFilter";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { getPermissionColumns } from "./permissionColums";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
 
 const PermissionList = () => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
@@ -27,6 +29,19 @@ const PermissionList = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
+
+  const showSnackbar = (message: string, severity: string) => {
+    setSnackbar({
+      open: true,
+      message,
+      severity: severity as SNACKBAR_SEVERITY
+    });
+  };
   const { data, mutate } = useSWR("getpermission", fetchAllgetpermission);
 
   const displayData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
@@ -61,13 +76,24 @@ const PermissionList = () => {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
   const handleDeleteConfirm = async () => {
     if (!selectedPermission) return;
+
     setIsDeleting(true);
-    await deletePermission(selectedPermission.id);
-    setIsDeleteDialogOpen(false);
-    setSelectedPermission(null);
-    mutate();
+    try {
+      await deletePermission(selectedPermission.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedPermission(null);
+      mutate();
+      showSnackbar(transpermission("deletesuccess"), SNACKBAR_SEVERITY.SUCCESS);
+    } catch {
+      showSnackbar(transpermission("deletefailed"), SNACKBAR_SEVERITY.ERROR);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleDeleteCancel = () => {
@@ -166,6 +192,12 @@ const PermissionList = () => {
       >
         <Typography sx={{ pt: 2 }}>{transpermission("deleteconfirm")}</Typography>
       </CommonDialog>
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleSnackbarClose}
+      />
     </>
   );
 };

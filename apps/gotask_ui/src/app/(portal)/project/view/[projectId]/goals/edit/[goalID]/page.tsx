@@ -14,7 +14,7 @@ import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import { UpdateHistoryItem, User } from "../../interface/projectGoal";
-import FormHeader from "../../../../../../access/components/FormHeader";
+import FormHeader from "../../../../../../../component/formHeader/FormHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 

@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Box, Grid, Paper, IconButton, Tooltip, Typography } from "@mui/material";
-import { Delete, Visibility } from "@mui/icons-material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
 import { fetchAllgetpermission, deletePermission } from "../services/permissionAction";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -10,13 +9,14 @@ import { PermissionData } from "../interface/interface";
 import { useUser } from "@/app/userContext";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import Table, { Column } from "@/app/component/table/table";
-import { formatDate, formatTime, isDateInRange } from "@/app/common/utils/dateTimeUtils";
+import Table from "@/app/component/table/table";
+import { isDateInRange } from "@/app/common/utils/dateTimeUtils";
 import PermissionFilter from "./permissionFilter";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import { getPermissionColumns } from "./permissionColums";
 
 const PermissionList = () => {
-  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+  const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
   const router = useRouter();
   const { user } = useUser();
 
@@ -50,10 +50,6 @@ const PermissionList = () => {
     router.push(`/permission/view/${permission.id}`);
   };
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const handleClearFilters = () => {
     setSearchTerm("");
     setDateFrom("");
@@ -84,79 +80,46 @@ const PermissionList = () => {
 
     return displayData.filter((perm: PermissionData) => {
       const matchesSearch = perm.user_name.toLowerCase().includes(searchTerm.toLowerCase());
-
       const matchesDateRange = isDateInRange(perm.date, dateFrom, dateTo);
-
       return matchesSearch && matchesDateRange;
     });
   }, [displayData, searchTerm, dateFrom, dateTo]);
 
-  const permissionColumns: Column<PermissionData>[] = [
-    { id: "user_name", label: transpermishion("username"), sortable: true },
-    {
-      id: "date",
-      label: transpermishion("date"),
-      render: (value: string | number | string[] | undefined, row: PermissionData) =>
-        formatDate(row.date),
-      sortable: true
-    },
-    {
-      id: "start_time",
-      label: transpermishion("starttime"),
-      render: (value: string | number | string[] | undefined, row: PermissionData) =>
-        formatTime(row.start_time || ""),
-      sortable: true
-    },
-    {
-      id: "end_time",
-      label: transpermishion("endtime"),
-      render: (value: string | number | string[] | undefined, row: PermissionData) =>
-        formatTime(row.end_time || ""),
-      sortable: true
-    },
-    {
-      id: "actions",
-      label: transpermishion("actions"),
-      sortable: false,
-      render: (value: string | number | string[] | undefined, row: PermissionData) => (
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Tooltip title={transpermishion("viewdetails")}>
-            <IconButton size="small" onClick={() => handleViewClick(row)} color="primary">
-              <Visibility fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={transpermishion("deletepermission")}>
-            <IconButton
-              size="small"
-              onClick={() => handleDeleteClick(row)}
-              color="error"
-              disabled={isDeleting}
-            >
-              <Delete fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      )
-    }
-  ];
+  // Use the common column configuration
+  const permissionColumns = useMemo(
+    () =>
+      getPermissionColumns({
+        onViewClick: handleViewClick,
+        onDeleteClick: handleDeleteClick,
+        isDeleting,
+        translations: {
+          username: transpermission("username"),
+          date: transpermission("date"),
+          starttime: transpermission("starttime"),
+          endtime: transpermission("endtime"),
+          actions: transpermission("actions"),
+          viewdetails: transpermission("viewdetails"),
+          deletepermission: transpermission("deletepermission")
+        }
+      }),
+    [isDeleting, transpermission]
+  );
 
-  // Check if filters are active - ensure it returns boolean
   const hasActiveFilters = Boolean(searchTerm || dateFrom || dateTo);
 
   return (
     <>
       {/* Filter Component */}
-      <Box sx={{ pt: 2 }}>
+      <Box sx={{ pt: 2, pl: 2 }}>
         <PermissionFilter
           searchTerm={searchTerm}
           onSearchChange={onSearchChange}
-          onBack={handleBack}
           dateFrom={dateFrom}
           dateTo={dateTo}
           onDateChange={onDateChange}
           onClearFilters={handleClearFilters}
           showClear={hasActiveFilters}
-          clearText={transpermishion("clearall")}
+          clearText={transpermission("clearall")}
         />
       </Box>
 
@@ -186,7 +149,7 @@ const PermissionList = () => {
 
       <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
         <ActionButton
-          label={transpermishion("createpermission")}
+          label={transpermission("createpermission")}
           icon={<AddIcon sx={{ color: "white" }} />}
           onClick={handleCreatePermission}
         />
@@ -196,12 +159,12 @@ const PermissionList = () => {
         open={isDeleteDialogOpen}
         onClose={handleDeleteCancel}
         onSubmit={handleDeleteConfirm}
-        title={transpermishion("deletetitle")}
-        submitLabel={transpermishion("delete")}
-        cancelLabel={transpermishion("cancel")}
+        title={transpermission("deletetitle")}
+        submitLabel={transpermission("delete")}
+        cancelLabel={transpermission("cancel")}
         submitColor="#b71c1c"
       >
-        <Typography sx={{ pt: 2 }}>{transpermishion("deleteconfirm")}</Typography>
+        <Typography sx={{ pt: 2 }}>{transpermission("deleteconfirm")}</Typography>
       </CommonDialog>
     </>
   );

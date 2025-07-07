@@ -8,7 +8,7 @@ import { PermissionDetailsProps } from "../../../interface/interface";
 import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
 
 const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBack }) => {
-  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+  const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
   return (
     <Paper sx={{ p: 4, pb: 8, borderRadius: 4, border: "1px solid #e0e0e0" }}>
@@ -28,43 +28,32 @@ const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBac
       <Grid container spacing={2} mb={3}>
         <Grid item xs={12} sm={6} md={4}>
           <LabelValueText
-            label={transpermishion("username")}
+            label={transpermission("username")}
             value={permission?.user_name || "-"}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <LabelValueText label={transpermishion("date")} value={formatDate(permission?.date)} />
+          <LabelValueText label={transpermission("date")} value={formatDate(permission?.date)} />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <LabelValueText
-            label={transpermishion("starttime")}
+            label={transpermission("starttime")}
             value={formatTime(permission?.start_time)}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <LabelValueText
-            label={transpermishion("endtime")}
+            label={transpermission("endtime")}
             value={formatTime(permission?.end_time)}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <LabelValueText
-            label={transpermishion("createdat")}
+            label={transpermission("createdat")}
             value={formatDate(permission?.createdAt)}
           />
         </Grid>
       </Grid>
-
-      {/* Close Button */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-        <Button
-          variant="outlined"
-          onClick={onBack}
-          sx={{ borderRadius: "30px", textTransform: "none" }}
-        >
-          {transpermishion("close")}
-        </Button>
-      </Box>
     </Paper>
   );
 };

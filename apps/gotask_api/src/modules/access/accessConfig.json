@@ -63,8 +63,12 @@
       "actions": ["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
     },
     {
-      "access":"KPI System",
-      "actions":["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
+      "access": "KPI System",
+      "actions": ["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
+    },
+    {
+      "access": "Permission",
+      "actions": ["READ", "CREATE", "EDIT", "DELETE", "VIEW"]
     }
   ]
 }

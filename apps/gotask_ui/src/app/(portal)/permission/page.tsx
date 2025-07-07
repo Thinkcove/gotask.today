@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 
 const Page = () => {
-  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+  const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
   return (
     <Box
@@ -20,7 +20,7 @@ const Page = () => {
         overflow: "hidden"
       }}
     >
-      <ModuleHeader name={transpermishion("permission")} />
+      <ModuleHeader name={transpermission("permission")} />
 
       <Box sx={{ flex: 1, overflowY: "auto" }}>
         <PermissionList />

@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useUser } from "@/app/userContext";
-import PremissionForm from "./conponents/premissionForm";
-import FormHeader from "@/app/(portal)/access/components/FormHeader";
+import PremissionForm from "./components/premissionForm";
+import FormHeader from "@/app/component/formHeader/FormHeader";
 import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -15,7 +15,7 @@ import { PermissionPayload } from "../interface/interface";
 import { createPermission } from "../services/permissionAction";
 
 const Page = () => {
-  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+  const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
   const { user } = useUser();
   const router = useRouter();
@@ -56,13 +56,13 @@ const Page = () => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!formData.startDate) newErrors.startDate = transpermishion("startdaterequired");
-    if (!formData.startTime) newErrors.startTime = transpermishion("starttimerequired");
-    if (!formData.endTime) newErrors.endTime = transpermishion("endtimerequired");
+    if (!formData.startDate) newErrors.startDate = transpermission("startdaterequired");
+    if (!formData.startTime) newErrors.startTime = transpermission("starttimerequired");
+    if (!formData.endTime) newErrors.endTime = transpermission("endtimerequired");
 
     if (formData.startTime && formData.endTime && formData.startTime >= formData.endTime) {
-      newErrors.startTime = transpermishion("starttimebeforeendtime");
-      newErrors.endTime = transpermishion("endtimebeforeendtime");
+      newErrors.startTime = transpermission("starttimebeforeendtime");
+      newErrors.endTime = transpermission("endtimebeforeendtime");
     }
 
     setErrors(newErrors);
@@ -84,7 +84,7 @@ const Page = () => {
 
       await createPermission(payload);
 
-      showSnackbar(transpermishion("successmessage"), SNACKBAR_SEVERITY.SUCCESS);
+      showSnackbar(transpermission("successmessage"), SNACKBAR_SEVERITY.SUCCESS);
 
       setFormData({
         startDate: "",
@@ -97,7 +97,7 @@ const Page = () => {
         router.back();
       }, 1500);
     } catch {
-      showSnackbar(transpermishion("failedmessage"), SNACKBAR_SEVERITY.ERROR);
+      showSnackbar(transpermission("failedmessage"), SNACKBAR_SEVERITY.ERROR);
     } finally {
       setIsSubmitting(false);
     }
@@ -127,15 +127,15 @@ const Page = () => {
           overflow: "hidden"
         }}
       >
-        <ModuleHeader name={transpermishion("permission")} />
+        <ModuleHeader name={transpermission("permission")} />
         <FormHeader
           isEdit={false}
           onCancel={handleCancel}
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
-          create={transpermishion("create")}
-          cancel={transpermishion("cancel")}
-          createHeading={transpermishion("createpermission")}
+          create={transpermission("create")}
+          cancel={transpermission("cancel")}
+          createHeading={transpermission("createpermission")}
         />
         <Box sx={{ flex: 1, overflowY: "auto" }}>
           <PremissionForm

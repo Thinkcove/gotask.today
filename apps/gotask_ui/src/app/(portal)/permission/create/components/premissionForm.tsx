@@ -13,7 +13,7 @@ function PremissionForm({
   isSubmitting,
   user
 }: PremissionFormProps) {
-  const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+  const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
   const handleDateChange = (
     field: "startDate" | "endDate",
@@ -37,10 +37,10 @@ function PremissionForm({
         {user && (
           <Grid item xs={12} sm={6}>
             <FormField
-              label={transpermishion("username")}
+              label={transpermission("username")}
               type="text"
               inputType="text"
-              placeholder={transpermishion("username")}
+              placeholder={transpermission("username")}
               value={user}
               required
               disabled={true}
@@ -50,10 +50,10 @@ function PremissionForm({
 
         <Grid item xs={12} sm={6}>
           <FormField
-            label={transpermishion("startdate")}
+            label={transpermission("startdate")}
             type="date"
             inputType="date"
-            placeholder={transpermishion("startdate")}
+            placeholder={transpermission("startdate")}
             value={formData.startDate}
             error={errors.startDate}
             onChange={(value: string | number | Date | string[]) =>
@@ -66,10 +66,10 @@ function PremissionForm({
 
         <Grid item xs={12} sm={6}>
           <FormField
-            label={transpermishion("starttime")}
+            label={transpermission("starttime")}
             type="text"
             inputType="time"
-            placeholder={transpermishion("starttime")}
+            placeholder={transpermission("starttime")}
             value={formData.startTime}
             error={errors.startTime}
             onChange={(value: string | number | Date | string[]) =>
@@ -82,10 +82,10 @@ function PremissionForm({
 
         <Grid item xs={12} sm={6}>
           <FormField
-            label={transpermishion("endtime")}
+            label={transpermission("endtime")}
             type="text"
             inputType="time"
-            placeholder={transpermishion("endtime")}
+            placeholder={transpermission("endtime")}
             value={formData.endTime}
             error={errors.endTime}
             onChange={(value: string | number | Date | string[]) =>
@@ -97,9 +97,9 @@ function PremissionForm({
         </Grid>
         <Grid item xs={12}>
           <FormField
-            label={transpermishion("labelcomment")}
+            label={transpermission("labelcomment")}
             type="text"
-            placeholder={transpermishion("comments")}
+            placeholder={transpermission("comments")}
             value={formData.comment}
             onChange={(val) => handleTimeChange("comment", String(val))}
             required

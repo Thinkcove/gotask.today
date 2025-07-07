@@ -74,7 +74,6 @@ export interface PermissionDetailsProps {
 export interface PermissionFilterProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  onBack: () => void;
   dateFrom: string;
   dateTo: string;
   onDateChange: (from: string, to: string) => void;

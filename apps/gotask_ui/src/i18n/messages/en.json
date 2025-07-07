@@ -343,7 +343,7 @@
     "placeholderseverity": "Select Severity Type",
     "labelcreateon": "Created Date * :",
     "placeholdercreatedon": "Select Created Date",
-    "labelduedate": "Due Date * :",
+    "labelduedate": "Due Date :",
     "placeholderduedate": "Select Due Date",
     "labeldescription": "Description :",
     "placeholderdescription": "Enter Description",
@@ -419,6 +419,7 @@
     "loadinguser": "Loading user mentions...",
     "reuseplaceholder": "Write something here...",
     "saved": "Save",
+    "noupdates": "No updates",
     "Project": {
       "meta": {
         "title": "Task Projects",
@@ -724,6 +725,9 @@
     "assettypes": "Asset type",
     "warrantyvalidity": "Warranty Validity",
     "assetid": "Id",
+    "deleteconfirm": "Are you sure you want to delete this asset?",
+    "delete": "Delete",
+    "deleteAsset": "Delete Asset",
     "acquisitiondate": "Acquisition date",
     "meta": {
       "title": "Assets | GoTaskToday",
@@ -879,6 +883,8 @@
     "titleerror": "Title is required",
     "descriptionerror": "Description is required",
     "saveastemplate": "Save as Template",
+    "templatesavesuccess":"Template created Successfully",
+    "saveerror":"Failed to save template",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."
@@ -902,6 +908,8 @@
     "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids",
+    "leave": "LEAVE",
+    "permission": "PERMISSION",
     "meta": {
       "title": "Work Planned | GoTaskToday",
       "description": "Schedule and monitor planned work activities and milestones."

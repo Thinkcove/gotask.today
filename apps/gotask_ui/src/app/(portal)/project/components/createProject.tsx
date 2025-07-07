@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { IProjectField, Project, PROJECT_STATUS } from "../interfaces/projectInterface";
 import { createProject } from "../services/projectAction";
 import ProjectInput from "./projectInputs";
@@ -9,7 +9,6 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { RichTextEditorRef } from "mui-tiptap";
 import { User } from "../../user/interfaces/userInterface";
 
 interface CreateProjectProps {
@@ -26,7 +25,6 @@ const initialFormState: IProjectField = {
 };
 
 const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
-  const rteRef = useRef<RichTextEditorRef>(null);
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   const [formData, setFormData] = useState<IProjectField>(initialFormState);
@@ -55,13 +53,10 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
   };
 
   const handleSubmit = async () => {
-    const html = rteRef.current?.editor?.getHTML?.() || "";
-    const updatedForm = { ...formData, description: html };
-
-    if (!validateForm(updatedForm)) return;
+    if (!validateForm(formData)) return;
 
     try {
-      await createProject(updatedForm);
+      await createProject(formData);
       await mutate();
       setSnackbar({
         open: true,
@@ -97,7 +92,6 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
           handleChange={handleChange}
           errors={errors}
           readOnlyFields={["status"]}
-          rteRef={rteRef}
         />
       </CommonDialog>
       <CustomSnackbar

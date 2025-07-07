@@ -5,35 +5,10 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionDetailsProps } from "../../../interface/interface";
+import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
 
 const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBack }) => {
   const transpermishion = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "-";
-    try {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}-${month}-${year}`;
-    } catch {
-      return dateString;
-    }
-  };
-
-  const formatTime = (timeString: string) => {
-    if (!timeString) return "-";
-    try {
-      const [hours, minutes] = timeString.split(":");
-      const hour = parseInt(hours, 10);
-      const ampm = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour % 12 || 12;
-      return `${displayHour}:${minutes} ${ampm}`;
-    } catch {
-      return timeString;
-    }
-  };
 
   return (
     <Paper sx={{ p: 4, pb: 8, borderRadius: 4, border: "1px solid #e0e0e0" }}>

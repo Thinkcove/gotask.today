@@ -13,29 +13,29 @@ import { KpiTemplateMessages } from "../../constants/apiMessages/kpiMessages";
 
 class KpiTemplateController extends BaseController {
   // Create KPI Template
-async createKpiTemplate(
-  requestHelper: RequestHelper,
-  handler: any,
-  restrictedFields: string[] = []
-) {
-  try {
-    const templateData = requestHelper.getPayload();
+  async createKpiTemplate(
+    requestHelper: RequestHelper,
+    handler: any,
+    restrictedFields: string[] = []
+  ) {
+    try {
+      const templateData = requestHelper.getPayload();
 
-    const templateDataAny = templateData as any;
-    restrictedFields.forEach((field) => {
-      if (field in templateDataAny) {
-        delete templateDataAny[field];
-      }
-    });
+      const templateDataAny = templateData as any;
+      restrictedFields.forEach((field) => {
+        if (field in templateDataAny) {
+          delete templateDataAny[field];
+        }
+      });
 
-    const result = await createKpiTemplate(templateData, restrictedFields);
-    if (!result.success) throw new Error(result.message);
+      const result = await createKpiTemplate(templateData, restrictedFields);
+      if (!result.success) throw new Error(result.message);
 
-    return this.sendResponse(handler, result.data);
-  } catch (error) {
-    return this.replyError(error);
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
   }
-}
 
   // Get All KPI Templates
   async getAllKpiTemplates(_requestHelper: RequestHelper, handler: any) {

@@ -33,7 +33,7 @@ const PermissionDetails: React.FC<PermissionDetailsProps> = ({ permission, onBac
       <Grid container spacing={2} mb={3}>
         <Grid item xs={12} sm={6} md={4}>
           <LabelValueText
-            label={transpermission("leaveapplier")}
+            label={transpermission("permissionapplier")}
             value={permission?.user_name || "-"}
           />
         </Grid>

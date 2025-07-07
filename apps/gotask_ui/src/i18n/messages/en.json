@@ -1029,7 +1029,7 @@
     "filterapply":"Apply",
     "filterto":"To Date",
     "labelcomment":"Comment",
-    "leaveapplier":"Permission Applier",
+    "permissionapplier":"Permission Applier",
     "deletesuccess":"Permission deleted successfully!",
     "deletefailed":"Failed to delete permission. Please try again."
   }

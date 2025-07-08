@@ -42,7 +42,7 @@ export interface PermissionPayload {
   date: string;
   start_time: string;
   end_time: string;
-  comment: string;
+  comments: string;
 }
 
 export interface PermissionResponse {

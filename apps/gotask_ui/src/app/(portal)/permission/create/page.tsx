@@ -79,7 +79,7 @@ const Page = () => {
         date: formData.startDate,
         start_time: formData.startTime,
         end_time: formData.endTime,
-        comment: formData.comments
+        comments: formData.comments
       };
 
       await createPermission(payload);

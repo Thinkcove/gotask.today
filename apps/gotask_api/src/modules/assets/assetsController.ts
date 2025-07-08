@@ -56,7 +56,9 @@ class AssetController extends BaseController {
         systemType,
         warrantyFrom,
         warrantyTo,
-        assetAllocationFilter
+        assetAllocationFilter,
+        page,
+        limit
       } = payload;
       const users = await assetServices.getAllAssets({
         sortType: sort_type || DESC,
@@ -69,7 +71,9 @@ class AssetController extends BaseController {
           warrantyFrom,
           warrantyTo,
           assetAllocationFilter
-        }
+        },
+        page,
+        limit
       });
       return this.sendResponse(handler, users);
     } catch (error) {

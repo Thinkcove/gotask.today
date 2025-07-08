@@ -6,26 +6,39 @@ import { AssetFilters, IAssetAttributes, IAssetIssues, IAssetTags } from "../int
 import { CREATED_AT, DESC } from "../assetConstants";
 
 //fetch all assets
-export const fetchAllAssets = (sortVar = CREATED_AT, sortType = DESC, filters: AssetFilters = {}) =>
+export const fetchAllAssets = (
+  sortVar = CREATED_AT,
+  sortType = DESC,
+  filters: AssetFilters = {},
+  page = 1,
+  limit = 25
+) =>
   withAuth((token) =>
     postData(
       `${env.API_BASE_URL}/assets/getAll`,
-      { sort_var: sortVar, sort_type: sortType, filters },
+      { sort_var: sortVar, sort_type: sortType, filters, page, limit },
       token
     )
   );
 
-export const useAllAssets = (sortVar = CREATED_AT, sortType = DESC, filters: AssetFilters = {}) => {
+export const useAllAssets = (
+  sortVar = CREATED_AT,
+  sortType = DESC,
+  filters: AssetFilters = {},
+  page = 1,
+  limit = 25
+) => {
   const { data, mutate, isLoading } = useSWR(
-    [`fetchallassets`, sortVar, sortType, filters],
-    () => fetchAllAssets(sortVar, sortType, filters),
+    [`fetchallassets`, sortVar, sortType, filters, page, limit],
+    () => fetchAllAssets(sortVar, sortType, filters, page, limit),
     { revalidateOnFocus: false, keepPreviousData: true }
   );
 
   return {
     getAll: data?.data || [],
     mutate,
-    isLoading
+    isLoading,
+    total: data?.total ?? 0
   };
 };
 

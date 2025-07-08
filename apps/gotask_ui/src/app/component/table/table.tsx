@@ -123,6 +123,8 @@ interface CustomTableProps<T> {
   maxHeight?: string;
   onSortChange?: (key: string, order: "asc" | "desc") => void;
   isLoading?: boolean;
+  onPageChange?: (page: number, limit: number) => void;
+  totalCount?: number;
 }
 
 const CustomTable = <T extends object>({
@@ -137,7 +139,9 @@ const CustomTable = <T extends object>({
   defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_25,
   maxHeight = "60vh",
   onSortChange,
-  isLoading
+  isLoading,
+  onPageChange,
+  totalCount
 }: CustomTableProps<T>) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
@@ -204,7 +208,7 @@ const CustomTable = <T extends object>({
     return [...rows].sort(comparator);
   }, [rows, order, orderBy, onSortChange]);
 
-  const paginatedRows = sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // const paginatedRows = sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Box
@@ -251,7 +255,7 @@ const CustomTable = <T extends object>({
             {isLoading ? (
               <TableSkeletonRows columns={columns} rowsPerPage={rowsPerPage} />
             ) : (
-              paginatedRows.map((row, rowIndex) => (
+              rows.map((row, rowIndex) => (
                 <StyledTableRow key={rowIndex}>
                   {columns.map((column) => {
                     const value = column.id in row ? row[column.id as keyof T] : undefined;
@@ -288,12 +292,23 @@ const CustomTable = <T extends object>({
         <TablePagination
           rowsPerPageOptions={rowsPerPageOptions}
           component="div"
-          count={sortedRows.length}
+          // count={sortedRows.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          // onPageChange={handleChangePage}
+          onPageChange={(event, newPage) => {
+            setPage(newPage);
+            onPageChange?.(newPage, rowsPerPage);
+          }}
+          // onRowsPerPageChange={handleChangeRowsPerPage}
+          onRowsPerPageChange={(event) => {
+            const newLimit = parseInt(event.target.value, 10);
+            setRowsPerPage(newLimit);
+            setPage(0);
+            onPageChange?.(0, newLimit);
+          }}
           size={isMobile ? "small" : "medium"}
+          count={totalCount ?? sortedRows.length}
         />
       </Box>
     </Box>

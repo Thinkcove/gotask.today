@@ -22,6 +22,7 @@ import {
   updateTag
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
+import { Asset } from "../../domain/model/asset/asset";
 import { generateAssetHistoryEntry } from "./utils/assetHistory";
 
 class assetService {
@@ -202,10 +203,34 @@ class assetService {
     return query;
   };
 
-  getAllAssets = async ({ sortType = DESC, sortVar = CREATE_AT, filters = {} }) => {
+  getAllAssets = async ({
+    sortType = DESC,
+    sortVar = CREATE_AT,
+    filters = {},
+    page,
+    limit
+  }: {
+    sortType?: string;
+    sortVar?: string;
+    filters?: Record<string, any>;
+    page?: number;
+    limit?: number;
+  }) => {
     try {
       const query = this.buildAssetFilterQuery(filters);
-      const assets = await getAllAssets(query);
+      // const total = await Asset.countDocuments(query);
+      // const skip = (page - 1) * limit;
+      // const assets = await getAllAssets(query, skip, limit);
+      let assets = [];
+      const total = await Asset.countDocuments(query);
+
+      if (typeof page === "number" && typeof limit === "number") {
+        const skip = (page - 1) * limit;
+        assets = await getAllAssets(query, skip, limit);
+      } else {
+        assets = await getAllAssets(query); // no pagination
+      }
+
       const tagsData = await Promise.all(
         assets.map(async (assetDoc) => {
           const asset = assetDoc.toObject();
@@ -249,7 +274,7 @@ class assetService {
         })
       );
       const sortedData = this.sortData(tagsData, sortVar, sortType);
-      return { success: true, data: sortedData };
+      return { success: true, data: sortedData, total };
     } catch (error: any) {
       return {
         success: false,

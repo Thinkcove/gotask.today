@@ -53,20 +53,31 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     message: "",
     severity: "success" as "success" | "error" | "info" | "warning"
   });
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(25);
 
   const {
     getAll: allAssets,
     isLoading,
-    mutate
-  } = useAllAssets(sortKey, sortOrder, {
-    assignedToFilter,
-    modelNameFilter,
-    warrantyDateFrom,
-    warrantyDateTo,
-    systemTypeFilter,
-    assetAllocationFilter,
-    assetTypeFilter
-  });
+    mutate,
+    total
+  } = useAllAssets(
+    sortKey,
+    sortOrder,
+    {
+      assignedToFilter,
+      modelNameFilter,
+      warrantyDateFrom,
+      warrantyDateTo,
+      systemTypeFilter,
+      assetAllocationFilter,
+      assetTypeFilter
+    },
+    page + 1, // API expects 1-based page
+    rowsPerPage
+  );
+
+  console.log("total", total);
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -439,8 +450,14 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                       onSortChange={(key, order) => {
                         setSortKey(key);
                         setSortOrder(order);
+                        setPage(0); // Reset to first page on sort change
                       }}
                       isLoading={isLoading}
+                      onPageChange={(newPage, newLimit) => {
+                        setPage(newPage);
+                        setRowsPerPage(newLimit);
+                      }}
+                      totalCount={total}
                     />
                   </Box>
                 </Box>

@@ -14,6 +14,7 @@ import moment from "moment";
 import { calculateIncrementPercent } from "@/app/common/constants/user";
 import IncrementChart from "./incrementChart";
 import { useIncrementColumns } from "./incrementColumn";
+import Toggle from "@/app/component/toggle/toggle"; // make sure you import your Toggle component
 
 interface IncrementInputProps {
   userId: string;
@@ -31,6 +32,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   });
   const [dateError, setDateError] = useState(false);
   const [ctcError, setCtcError] = useState(false);
+  const [selectedView, setSelectedView] = useState<string>("Chart");
 
   const {
     data: responseData,
@@ -119,12 +121,18 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   });
 
   return (
-    <Box mt={3}>
+    <Box>
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} px={2}>
-        <Typography fontWeight={600} fontSize={16}>
-          {trans("salaryrevisionlog")}
-        </Typography>
+        {rows.length > 0 && (
+          <Box>
+            <Toggle
+              options={["Table", "Chart"]}
+              selected={selectedView}
+              onChange={setSelectedView}
+            />
+          </Box>
+        )}
         <Button
           startIcon={<AddIcon />}
           variant="contained"
@@ -135,13 +143,9 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
         </Button>
       </Box>
 
-      {/* Chart and Table */}
+      {/* Chart / Table View */}
       {rows.length === 0 ? (
-        <Box
-          sx={{
-            color: "text.secondary"
-          }}
-        >
+        <Box sx={{ color: "text.secondary" }}>
           <Typography>{trans("noincrements")}</Typography>
         </Box>
       ) : (
@@ -149,10 +153,6 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
           sx={{
             maxHeight: 400,
             overflow: "auto",
-            border: "1px solid #ddd",
-            borderRadius: 2,
-            px: 2,
-            py: 2,
             scrollBehavior: "smooth",
             "&::-webkit-scrollbar": {
               width: "6px",
@@ -167,10 +167,13 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
             }
           }}
         >
-          <IncrementChart chartData={chartData} />
-          <Box px={2}>
-            <CustomTable columns={columns} rows={rows} />
-          </Box>
+          {selectedView === "Chart" ? (
+            <IncrementChart chartData={chartData} />
+          ) : (
+            <Box>
+              <CustomTable columns={columns} rows={rows} />
+            </Box>
+          )}
         </Box>
       )}
 

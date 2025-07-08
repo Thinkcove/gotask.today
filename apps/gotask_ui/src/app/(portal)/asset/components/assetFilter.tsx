@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Link } from "@mui/material";
+import { Box, Link, Skeleton } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { ALLOCATION } from "../assetConstants";
@@ -28,6 +28,7 @@ interface Props {
   assetTypeFilter?: string[];
   allAssetTypes?: string[];
   onAssetTypeChange?: (val: string[]) => void;
+  loading?: boolean;
 }
 
 const AssetFilters: React.FC<Props> = ({
@@ -52,7 +53,8 @@ const AssetFilters: React.FC<Props> = ({
   onAssetAllocationChange,
   assetTypeFilter,
   allAssetTypes,
-  onAssetTypeChange
+  onAssetTypeChange,
+  loading = false
 }) => {
   const appliedFilterCount =
     (hideModelNameFilter ? 0 : modelNameFilter.length > 0 ? 1 : 0) +
@@ -77,56 +79,70 @@ const AssetFilters: React.FC<Props> = ({
           "&::-webkit-scrollbar": { display: "none" }
         }}
       >
-        {allAssetTypes && onAssetTypeChange && (
-          <FilterDropdown
-            label={trans("assettype")}
-            options={allAssetTypes}
-            selected={assetTypeFilter || []}
-            onChange={onAssetTypeChange}
-          />
-        )}
-        {!hideAssignedToFilter && (
-          <FilterDropdown
-            label={trans("assignedTo")}
-            options={allUsers}
-            selected={assignedToFilter}
-            onChange={onAssignedToChange}
-          />
-        )}
-        {onDateChange && (
-          <DateDropdown
-            dateFrom={dateFrom || ""}
-            dateTo={dateTo || ""}
-            onDateChange={onDateChange}
-            transtask={trans}
-            placeholder={trans("warranty")}
-          />
-        )}
-        {allSystemTypes && onSystemTypeChange && (
-          <FilterDropdown
-            label={trans("systemtype")}
-            options={allSystemTypes}
-            selected={systemTypeFilter || []}
-            onChange={onSystemTypeChange}
-          />
-        )}
-
-        {allStatuses && onStatusChange && (
-          <FilterDropdown
-            label={trans("status")}
-            options={allStatuses}
-            selected={statusFilter || []}
-            onChange={onStatusChange}
-          />
-        )}
-
-        {onAssetAllocationChange && (
-          <FilterDropdown
-            label={trans("assetallocation")}
-            options={ALLOCATION}
-            selected={assetAllocationFilter || []}
-            onChange={onAssetAllocationChange}
-          />
+        {loading ? (
+          <>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                variant="rectangular"
+                width={220}
+                height={42}
+                sx={{ borderRadius: 1 }}
+              />
+            ))}
+          </>
+        ) : (
+          <>
+            {allAssetTypes && onAssetTypeChange && (
+              <FilterDropdown
+                label={trans("assettype")}
+                options={allAssetTypes}
+                selected={assetTypeFilter || []}
+                onChange={onAssetTypeChange}
+              />
+            )}
+            {!hideAssignedToFilter && (
+              <FilterDropdown
+                label={trans("assignedTo")}
+                options={allUsers}
+                selected={assignedToFilter}
+                onChange={onAssignedToChange}
+              />
+            )}
+            {onDateChange && (
+              <DateDropdown
+                dateFrom={dateFrom || ""}
+                dateTo={dateTo || ""}
+                onDateChange={onDateChange}
+                transtask={trans}
+                placeholder={trans("warranty")}
+              />
+            )}
+            {allSystemTypes && onSystemTypeChange && (
+              <FilterDropdown
+                label={trans("systemtype")}
+                options={allSystemTypes}
+                selected={systemTypeFilter || []}
+                onChange={onSystemTypeChange}
+              />
+            )}
+            {allStatuses && onStatusChange && (
+              <FilterDropdown
+                label={trans("status")}
+                options={allStatuses}
+                selected={statusFilter || []}
+                onChange={onStatusChange}
+              />
+            )}
+            {onAssetAllocationChange && (
+              <FilterDropdown
+                label={trans("assetallocation")}
+                options={ALLOCATION}
+                selected={assetAllocationFilter || []}
+                onChange={onAssetAllocationChange}
+              />
+            )}
+          </>
         )}
       </Box>
 

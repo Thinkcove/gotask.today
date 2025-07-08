@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Box, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Paper, Skeleton, Typography } from "@mui/material";
 import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
@@ -316,11 +316,15 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             maxWidth: "300px"
           }}
         >
-          <SearchBar
-            value={searchText}
-            onChange={setSearchText}
-            placeholder={transasset("searchAsset")}
-          />
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="100%" height={43} sx={{ borderRadius: 1 }} />
+          ) : (
+            <SearchBar
+              value={searchText}
+              onChange={setSearchText}
+              placeholder={transasset("searchAsset")}
+            />
+          )}
         </Box>
 
         <Box sx={{ flexShrink: 0 }}>
@@ -362,6 +366,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               assetTypeFilter={assetTypeFilter}
               allAssetTypes={allAssetTypes}
               onAssetTypeChange={setAssetTypeFilter}
+              loading={isLoading}
             />
           ) : (
             <AssetFilters
@@ -376,10 +381,11 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               allStatuses={issueStatuses}
               statusFilter={statusFilter}
               onStatusChange={setStatusFilter}
+              loading={isLoading}
             />
           )}
         </Box>
-        {initialView === transasset("selectedAsset") && (
+        {initialView === transasset("selectedAsset") && !isLoading && (
           <Box
             sx={{
               flexShrink: 0,

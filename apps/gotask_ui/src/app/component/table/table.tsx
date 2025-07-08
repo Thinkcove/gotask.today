@@ -175,13 +175,6 @@ const CustomTable = <T extends object>({
     }
   };
 
-  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const sortedRows = React.useMemo(() => {
     if (onSortChange) return rows;
     if (!orderBy) return rows;
@@ -207,8 +200,6 @@ const CustomTable = <T extends object>({
 
     return [...rows].sort(comparator);
   }, [rows, order, orderBy, onSortChange]);
-
-  // const paginatedRows = sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Box
@@ -292,15 +283,12 @@ const CustomTable = <T extends object>({
         <TablePagination
           rowsPerPageOptions={rowsPerPageOptions}
           component="div"
-          // count={sortedRows.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          // onPageChange={handleChangePage}
           onPageChange={(event, newPage) => {
             setPage(newPage);
             onPageChange?.(newPage, rowsPerPage);
           }}
-          // onRowsPerPageChange={handleChangeRowsPerPage}
           onRowsPerPageChange={(event) => {
             const newLimit = parseInt(event.target.value, 10);
             setRowsPerPage(newLimit);

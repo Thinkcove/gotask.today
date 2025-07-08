@@ -176,6 +176,7 @@
       "title": "Project Management | GoTaskToday",
       "description": " Create, assign, and monitor progress of ongoing projects."
     },
+
     "Stories": {
       "noStoriesFound": "No stories found for this project.",
       "createdat": "Created At",
@@ -217,6 +218,7 @@
       "suffixtoday": "Today",
       "storyTitle": "Story Title *",
       "description": "Description *",
+
       "filters": {
         "status": "Status",
         "all": "All",
@@ -233,6 +235,7 @@
         "clearAll": "Clear All",
         "search": "Search"
       },
+
       "placeholders": {
         "title": "Enter story title",
         "description": "Enter story description",
@@ -505,7 +508,8 @@
     "skills": "Skills",
     "noskillsadded": "No skills added.",
     "proficiency": "Proficiency",
-    "experience": "Experience",
+    "experience": "Experience ( in months )",
+    "experienceview": "Experience",
     "cancel": "Cancel",
     "save": "Save",
     "failedfetch": "Failed to fetch user data",
@@ -547,7 +551,9 @@
       "subtitle": "Add details of Certifications you have achieved/completed",
       "cname": "Please enter your certification name",
       "notesplaceholder": "Add any optional notes",
-      "nocertifications": "No certifications added yet."
+      "nocertifications": "No certifications added yet.",
+      "nameisrequired": "Certificate name is required",
+      "dateisrequired": "Obtained date is required"
     },
 
     "Increment": {
@@ -572,7 +578,9 @@
       "salaryrevisionlog": "Salary Revision Log",
       "short": "short",
       "numeric": "numeric",
-      "description": "View, create, and manage user profiles and credentials."
+      "description": "View, create, and manage user profiles and credentials.",
+      "dateisrequired": "Date is required",
+      "ctcisrequired": "CTC must be greater than 0"
     }
   },
   "Appbar": {
@@ -740,6 +748,7 @@
       }
     }
   },
+
   "Chatbot": {
     "viewname": "Chatbot",
     "title": "Thinkrove Chatbot",

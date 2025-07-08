@@ -5,7 +5,6 @@ import useSWR from "swr";
 import { Box, Typography, TextField, IconButton, Button, Paper, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import { ICertificate } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
@@ -39,6 +38,8 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [nameError, setNameError] = useState(false);
+  const [dateError, setDateError] = useState(false);
 
   const emptyCert: ICertificate = { certificate_id: "", name: "", obtained_date: "", notes: "" };
   const [tempCert, setTempCert] = useState<ICertificate>(emptyCert);
@@ -46,18 +47,19 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
   const openAddDialog = () => {
     setTempCert(emptyCert);
     setEditingId(null);
-    setDialogOpen(true);
-  };
-
-  const openEditDialog = (cert: ICertificate) => {
-    setTempCert({ ...cert });
-    setEditingId(cert.certificate_id ?? null);
+    setNameError(false);
+    setDateError(false);
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
-    if (!tempCert.name || !tempCert.obtained_date) return;
+    const isNameEmpty = !tempCert.name.trim();
+    const isDateEmpty = !tempCert.obtained_date;
 
+    setNameError(isNameEmpty);
+    setDateError(isDateEmpty);
+
+    if (isNameEmpty || isDateEmpty) return;
     if (editingId) {
       await updateUserCertificate(userId, editingId, tempCert);
     } else {
@@ -67,6 +69,8 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
     setDialogOpen(false);
     setTempCert(emptyCert);
     setEditingId(null);
+    setNameError(false);
+    setDateError(false);
     await mutate();
   };
 
@@ -97,8 +101,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
           maxHeight: 400,
           overflow: "auto",
           borderRadius: 2,
-          px: 2,
-          py: 2,
           scrollBehavior: "smooth",
           "&::-webkit-scrollbar": {
             width: "6px",
@@ -116,7 +118,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
         {isLoading ? (
           <Typography>{trans("loading")}</Typography>
         ) : certificates.length === 0 ? (
-          <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
+          <Paper elevation={1} sx={{ color: "text.secondary" }}>
             {transuser("nocertifications")}
           </Paper>
         ) : (
@@ -158,10 +160,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
                   </Box>
 
                   <Box>
-                    <IconButton onClick={() => openEditDialog(cert)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-
                     <IconButton
                       onClick={() => {
                         if (cert.certificate_id) {
@@ -187,6 +185,8 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
           setDialogOpen(false);
           setTempCert(emptyCert);
           setEditingId(null);
+          setNameError(false);
+          setDateError(false);
         }}
         onSubmit={handleSave}
         title={editingId ? transuser("editcertificate") : transuser("addcertificate")}
@@ -205,7 +205,12 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
             <TextField
               placeholder={transuser("cname")}
               value={tempCert.name}
-              onChange={(e) => setTempCert({ ...tempCert, name: e.target.value })}
+              onChange={(e) => {
+                setTempCert({ ...tempCert, name: e.target.value });
+                if (nameError) setNameError(false);
+              }}
+              error={nameError}
+              helperText={nameError ? transuser("nameisrequired") : ""}
               fullWidth
             />
           </Grid>
@@ -221,7 +226,12 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
                   ? new Date(tempCert.obtained_date).toISOString().split("T")[0]
                   : ""
               }
-              onChange={(e) => setTempCert({ ...tempCert, obtained_date: e.target.value })}
+              onChange={(e) => {
+                setTempCert({ ...tempCert, obtained_date: e.target.value });
+                if (dateError) setDateError(false);
+              }}
+              error={dateError}
+              helperText={dateError ? transuser("dateisrequired") : ""}
               fullWidth
             />
           </Grid>
@@ -249,6 +259,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
         title={transInc("confirmdelete")}
         submitLabel={transInc("delete")}
         cancelLabel={transInc("cancel")}
+        submitColor="#b71c1c"
       >
         <Typography>
           {transInc("deleteincrement", {

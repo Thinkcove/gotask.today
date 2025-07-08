@@ -100,14 +100,20 @@ class KpiAssignmentController extends BaseController {
   ) {
     try {
       const assignment_id = requestHelper.getParam("assignment_id");
-      if (!assignment_id) return this.replyError(new Error("Missing assignment ID"));
+      if (!assignment_id) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.ASSIGN_ID));
+      }
 
       const payload = requestHelper.getPayload() as Partial<IKpiAssignment>;
       const authUserId = (payload as any).authUserId;
-      if (!authUserId) return this.replyError(new Error("Missing auth user ID"));
+      if (!authUserId) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.USER_ID));
+      }
 
       const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
-      if (!assignment) return this.replyError(new Error("Assignment not found"));
+      if (!assignment) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.NOT_FOUND));
+      }
 
       // Handle performance update
       if (payload.performance && Array.isArray(payload.performance)) {
@@ -143,7 +149,7 @@ class KpiAssignmentController extends BaseController {
       );
 
       if (!result.success) {
-        return this.replyError(new Error(result.message || "Failed to update assignment"));
+        return this.replyError(new Error(result.message || KpiAssignmentMessages.UPDATE.FAILED));
       }
 
       return this.sendResponse(handler, result.data);

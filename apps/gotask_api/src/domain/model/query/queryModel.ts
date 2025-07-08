@@ -85,7 +85,6 @@ QueryHistorySchema.index({ timestamp: -1 });
 QueryHistorySchema.set("toJSON", {
   transform: function (doc, ret) {
     delete ret._id;
-    delete ret.__v;
   }
 });
 

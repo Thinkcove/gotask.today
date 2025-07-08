@@ -1,9 +1,8 @@
 "use client";
 import React from "react";
-import { Box, Typography, Grid, IconButton, CircularProgress, Paper, Button } from "@mui/material";
+import { Box, Typography, Grid, IconButton, CircularProgress, Paper } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
-import ModuleHeader from "@/app/component/header/moduleHeader";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { useGetLeaveById } from "../../services/leaveAction";
 import { useTranslations } from "next-intl";
@@ -11,7 +10,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 
-const ViewLeave: React.FC = () => {
+const LeaveDetail: React.FC = () => {
   const router = useRouter();
   const { id } = useParams();
   const { data: leave, isLoading } = useGetLeaveById(id as string, true);
@@ -22,7 +21,6 @@ const ViewLeave: React.FC = () => {
   if (isLoading) {
     return (
       <>
-        <ModuleHeader name={transleave("leaves")} />
         <Box
           sx={{
             display: "flex",
@@ -40,7 +38,6 @@ const ViewLeave: React.FC = () => {
   if (!leave) {
     return (
       <>
-        <ModuleHeader name={transleave("leaves")} />
         <Box
           sx={{
             display: "flex",
@@ -59,7 +56,6 @@ const ViewLeave: React.FC = () => {
 
   return (
     <>
-      <ModuleHeader name={transleave("leaves")} />
       <Box
         sx={{
           height: "calc(100vh - 64px)",
@@ -125,21 +121,10 @@ const ViewLeave: React.FC = () => {
               />
             </Grid>
           </Grid>
-
-          {/* Close Button */}
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-            <Button
-              variant="outlined"
-              onClick={handleBack}
-              sx={{ borderRadius: "30px", textTransform: "none" }}
-            >
-              {transleave("close")}
-            </Button>
-          </Box>
         </Paper>
       </Box>
     </>
   );
 };
 
-export default ViewLeave;
+export default LeaveDetail;

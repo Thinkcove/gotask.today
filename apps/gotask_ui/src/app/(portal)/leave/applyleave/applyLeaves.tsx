@@ -6,7 +6,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { createLeave } from "../services/leaveAction";
-import FormHeader from "../../access/components/FormHeader";
+import FormHeader from "../../access/components/formHeader";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LeaveFormField } from "../interface/leaveInterface";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
@@ -72,11 +72,6 @@ const ApplyLeave: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      setSnackbar({
-        open: true,
-        message: transleave("valerr"),
-        severity: SNACKBAR_SEVERITY.ERROR
-      });
       return;
     }
     setIsSubmitting(true);

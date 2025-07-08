@@ -36,7 +36,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
           width: "100%",
           flexWrap: "wrap",
           gap: 2,
-          p:2
+          p: 2
         }}
       >
         {/* Left Section: Arrow + Title */}
@@ -44,12 +44,15 @@ const FormHeader: React.FC<FormHeaderProps> = ({
           sx={{
             display: "flex",
             justifyContent: "flex-start",
-            alignItems: "center"
+            alignItems: "center",
+            gap: 1
           }}
         >
-          <IconButton color="primary" onClick={onCancel}>
-            <ArrowBack />
-          </IconButton>
+          {isEdit && (
+            <IconButton color="primary" onClick={onCancel}>
+              <ArrowBack />
+            </IconButton>
+          )}
           <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
             {isEdit ? edit : create}
           </Typography>

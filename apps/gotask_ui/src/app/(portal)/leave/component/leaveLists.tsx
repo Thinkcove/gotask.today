@@ -2,7 +2,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { Box, Grid, Paper, Typography, CircularProgress } from "@mui/material";
 import Table from "@/app/component/table/table";
-import SearchBar from "@/app/component/searchBar/searchBar";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useRouter } from "next/navigation";
@@ -20,7 +19,6 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 
 const LeaveList: React.FC = () => {
   const router = useRouter();
-  const [searchText, setSearchText] = useState<string>("");
   const [userIdFilter, setUserIdFilter] = useState<string[]>([]);
   const [leaveTypeFilter, setLeaveTypeFilter] = useState<string[]>([]);
   const [fromDateFilter, setFromDateFilter] = useState<string>("");
@@ -136,7 +134,6 @@ const LeaveList: React.FC = () => {
     setLeaveTypeFilter([]);
     setFromDateFilter("");
     setToDateFilter("");
-    setSearchText("");
   };
 
   if (isLoading) {
@@ -157,23 +154,6 @@ const LeaveList: React.FC = () => {
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          gap: 1,
-          px: 2,
-          mt: 2,
-          flexWrap: "nowrap"
-        }}
-      >
-        <Box sx={{ flex: "1 1 auto", maxWidth: "300px" }}>
-          <SearchBar value={searchText} onChange={setSearchText} placeholder="Search Leave" />
-        </Box>
-      </Box>
-
       <Box marginTop={"15px"}>
         <LeaveFilters
           userIdFilter={userIdFilter}

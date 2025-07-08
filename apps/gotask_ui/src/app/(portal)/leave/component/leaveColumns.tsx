@@ -52,17 +52,17 @@ export const getLeaveColumns = ({
     render: (value: string | undefined, row: LeaveEntry) => (
       <Box sx={{ display: "flex", gap: 1 }}>
         <Tooltip title={transleave("viewdetails")}>
-          <IconButton size="small" onClick={() => onViewClick(row)} sx={{ color: "#741B92" }}>
+          <IconButton size="small" color="primary" onClick={() => onViewClick(row)}>
             <Visibility fontSize="small" />
           </IconButton>
         </Tooltip>
         <Tooltip title={transleave("editleave")}>
-          <IconButton size="small" onClick={() => onEditClick(row)} sx={{ color: "#741B92" }}>
+          <IconButton size="small" color="primary" onClick={() => onEditClick(row)}>
             <Edit fontSize="small" />
           </IconButton>
         </Tooltip>
         <Tooltip title={transleave("deleteleave")}>
-          <IconButton size="small" onClick={() => onDeleteClick(row)} sx={{ color: "#741B92" }}>
+          <IconButton size="small" color="error" onClick={() => onDeleteClick(row)}>
             <Delete fontSize="small" />
           </IconButton>
         </Tooltip>

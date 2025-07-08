@@ -25,7 +25,7 @@ const LeaveInputs: React.FC<LeaveInputsProps> = ({
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
         <FormField
-          label={transleave("fromdate")}
+          label={transleave("reqfromdate")}
           type="date"
           placeholder={transleave("dateformat")}
           value={formData.from_date}
@@ -40,7 +40,7 @@ const LeaveInputs: React.FC<LeaveInputsProps> = ({
       </Grid>
       <Grid item xs={12} sm={6}>
         <FormField
-          label={transleave("todate")}
+          label={transleave("reqtodate")}
           type="date"
           placeholder={transleave("dateformat")}
           value={formData.to_date}
@@ -55,7 +55,7 @@ const LeaveInputs: React.FC<LeaveInputsProps> = ({
       </Grid>
       <Grid item xs={12}>
         <FormField
-          label={transleave("leavetype")}
+          label={transleave("reqleavetype")}
           type="select"
           options={Object.values(LEAVE_TYPE).map((s) => s.toUpperCase())}
           required

@@ -114,10 +114,9 @@ const LeaveFilters: React.FC<leaveFilterProps> = ({
           }}
         />
       </Box>
-
-      {/* Clear Filters Link */}
+      {/* Clear All Link - Always visible below filter bar */}
       {appliedFilterCount > 0 && (
-        <Box sx={{ pl: 2, pb: 1 }}>
+        <Box sx={{ pr: 3, display: "flex", justifyContent: "flex-end" }}>
           <Link
             component="button"
             onClick={onClearFilters}
@@ -126,14 +125,11 @@ const LeaveFilters: React.FC<leaveFilterProps> = ({
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              maxWidth: 300,
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "0.875rem"
+              maxWidth: 350,
+              fontWeight: 600
             }}
           >
-            {transleave("clearall")} ({appliedFilterCount})
+            {`Clear All (${appliedFilterCount})`}
           </Link>
         </Box>
       )}

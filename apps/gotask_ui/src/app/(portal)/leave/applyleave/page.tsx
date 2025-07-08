@@ -1,9 +1,9 @@
 // page.tsx
 import React from "react";
-import ApplyLeave from "./applyleave";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import ApplyLeave from "./applyLeaves";
 
 const Page = () => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);

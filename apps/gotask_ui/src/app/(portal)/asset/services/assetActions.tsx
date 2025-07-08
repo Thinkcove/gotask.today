@@ -9,8 +9,8 @@ import { CREATED_AT, DESC } from "../assetConstants";
 export const fetchAllAssets = (
   sortVar = CREATED_AT,
   sortType = DESC,
-  page: number,
-  limit: number
+  page?: number,
+  limit?: number
 ) =>
   withAuth((token) =>
     postData(
@@ -23,8 +23,8 @@ export const fetchAllAssets = (
 export const useAllAssets = (
   sortVar = CREATED_AT,
   sortType = DESC,
-  page: number,
-  limit: number
+  page?: number,
+  limit?: number
 ) => {
   const { data, mutate, isLoading } = useSWR(
     [`fetchallassets`, sortVar, sortType, page, limit],

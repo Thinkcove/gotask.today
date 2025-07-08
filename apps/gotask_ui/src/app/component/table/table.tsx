@@ -11,13 +11,13 @@ import {
   TablePagination,
   useTheme,
   useMediaQuery,
-  TableSortLabel,
-  Skeleton
+  TableSortLabel
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { PAGE_OPTIONS } from "./tableConstants";
 import { ASC, CREATED_AT, DESC } from "@/app/(portal)/asset/assetConstants";
+import TableSkeletonRows from "./row";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -248,30 +248,30 @@ const CustomTable = <T extends object>({
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedRows.map((row, rowIndex) => (
-              <StyledTableRow key={rowIndex}>
-                {columns.map((column) => {
-                  const value = column.id in row ? row[column.id as keyof T] : undefined;
-                  return (
-                    <StyledTableCell
-                      key={String(column.id)}
-                      align={column.align || "left"}
-                      sx={{ minWidth: column.minWidth }}
-                    >
-                      {isLoading ? (
-                        <Skeleton variant="rectangular" height={16} />
-                      ) : column.render ? (
-                        column.render(value, row)
-                      ) : typeof value === "object" && value !== null ? (
-                        JSON.stringify(value)
-                      ) : (
-                        (value as ReactNode)
-                      )}
-                    </StyledTableCell>
-                  );
-                })}
-              </StyledTableRow>
-            ))}
+            {isLoading ? (
+              <TableSkeletonRows columns={columns} rowsPerPage={rowsPerPage} />
+            ) : (
+              paginatedRows.map((row, rowIndex) => (
+                <StyledTableRow key={rowIndex}>
+                  {columns.map((column) => {
+                    const value = column.id in row ? row[column.id as keyof T] : undefined;
+                    return (
+                      <StyledTableCell
+                        key={String(column.id)}
+                        align={column.align || "left"}
+                        sx={{ minWidth: column.minWidth }}
+                      >
+                        {column.render
+                          ? column.render(value, row)
+                          : typeof value === "object" && value !== null
+                            ? JSON.stringify(value)
+                            : (value as ReactNode)}
+                      </StyledTableCell>
+                    );
+                  })}
+                </StyledTableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </FixedHeaderTableContainer>

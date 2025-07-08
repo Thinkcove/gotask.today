@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useRouter, useParams } from "next/navigation";
 import { deletePermission, usePermissionById } from "../../services/permissionAction";
-import PermissionDetails from "../../components/permishionView";
+import PermissionDetails from "../../components/permionView";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";

@@ -317,7 +317,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           }}
         >
           {isLoading ? (
-            <Skeleton variant="rectangular" width="100%" height={43} sx={{ borderRadius: 1 }} />
+            <Skeleton variant="rectangular" sx={{ borderRadius: 1, width: "100%", height: 43 }} />
           ) : (
             <SearchBar
               value={searchText}

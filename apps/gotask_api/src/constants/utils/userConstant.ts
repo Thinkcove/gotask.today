@@ -1,0 +1,3 @@
+export const PROFICIENCY_MAXIMUM = 3;
+export const MINIMUM_EXPERIENCE_REQUIRED = 1;
+export const DEFAULT_PROFICIENCY = 0;

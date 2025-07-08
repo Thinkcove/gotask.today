@@ -171,24 +171,18 @@ const updateKpiAssignment = async (
   try {
     const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
     if (!assignment) {
-      return {
-        success: false,
-        message: KpiAssignmentMessages.UPDATE.NOT_FOUND
-      };
+      return { success: false, message: KpiAssignmentMessages.UPDATE.NOT_FOUND };
     }
 
     const filteredUpdateData = removeRestrictedFields(updateData, restrictedFields);
 
-    // Validate user IDs if provided in update (referencing User.id)
-    if (
-      filteredUpdateData.user_id ||
-      filteredUpdateData.assigned_by ||
-      filteredUpdateData.reviewer_id
-    ) {
-      const userIdsToValidate = [];
-      if (filteredUpdateData.user_id) userIdsToValidate.push(filteredUpdateData.user_id);
-      if (filteredUpdateData.assigned_by) userIdsToValidate.push(filteredUpdateData.assigned_by);
-      if (filteredUpdateData.reviewer_id) userIdsToValidate.push(filteredUpdateData.reviewer_id);
+    // Validate user IDs if present
+    const userIdsToValidate = [];
+    if (filteredUpdateData.user_id) userIdsToValidate.push(filteredUpdateData.user_id);
+    if (filteredUpdateData.assigned_by) userIdsToValidate.push(filteredUpdateData.assigned_by);
+    if (filteredUpdateData.reviewer_id) userIdsToValidate.push(filteredUpdateData.reviewer_id);
+
+    if (userIdsToValidate.length > 0) {
       const users = await User.find({ id: { $in: userIdsToValidate } }).lean();
       const foundUserIds = users.map((u) => u.id);
       const invalidIds = userIdsToValidate.filter((id) => !foundUserIds.includes(id));
@@ -214,15 +208,9 @@ const updateKpiAssignment = async (
       authUserId
     );
 
-    return {
-      success: true,
-      data: updatedAssignment
-    };
+    return { success: true, data: updatedAssignment };
   } catch (error: any) {
-    return {
-      success: false,
-      message: error.message || KpiAssignmentMessages.UPDATE.FAILED
-    };
+    return { success: false, message: error.message || KpiAssignmentMessages.UPDATE.FAILED };
   }
 };
 

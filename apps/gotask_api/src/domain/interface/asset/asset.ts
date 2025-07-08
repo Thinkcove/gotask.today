@@ -23,23 +23,8 @@ const getAssetTypeById = async (id: string): Promise<IAsset | null> => {
   return await AssetType.findOne({ id });
 };
 
-// const getAllAssets = async (
-//   query: Record<string, any> = {},
-//   skip = 1,
-//   limit = 25
-// ): Promise<IAsset[]> => {
-//   return await Asset.find({ active: true, ...query })
-//     .skip(skip)
-//     .limit(limit)
-//     .sort({ createdAt: -1 });
-// };
-
-const getAllAssets = async (
-  query: Record<string, any> = {},
-  skip?: number,
-  limit?: number
-): Promise<IAsset[]> => {
-  let findQuery = Asset.find({ active: true, ...query });
+const getAllAssets = async (skip?: number, limit?: number): Promise<IAsset[]> => {
+  let findQuery = Asset.find({ active: true });
 
   if (typeof skip === "number" && typeof limit === "number") {
     findQuery = findQuery.skip(skip).limit(limit);

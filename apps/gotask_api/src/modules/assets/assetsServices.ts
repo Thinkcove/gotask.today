@@ -206,29 +206,23 @@ class assetService {
   getAllAssets = async ({
     sortType = DESC,
     sortVar = CREATE_AT,
-    filters = {},
     page,
     limit
   }: {
     sortType?: string;
     sortVar?: string;
-    filters?: Record<string, any>;
     page?: number;
     limit?: number;
   }) => {
     try {
-      const query = this.buildAssetFilterQuery(filters);
-      // const total = await Asset.countDocuments(query);
-      // const skip = (page - 1) * limit;
-      // const assets = await getAllAssets(query, skip, limit);
       let assets = [];
-      const total = await Asset.countDocuments(query);
+      const total = await Asset.countDocuments({ active: true });
 
       if (typeof page === "number" && typeof limit === "number") {
         const skip = (page - 1) * limit;
-        assets = await getAllAssets(query, skip, limit);
+        assets = await getAllAssets(skip, limit);
       } else {
-        assets = await getAllAssets(query); // no pagination
+        assets = await getAllAssets();
       }
 
       const tagsData = await Promise.all(

@@ -10,7 +10,7 @@ import FormHeader from "../../access/components/FormHeader";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LeaveFormField } from "../interface/leaveInterface";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
-import LeaveInputs from "../component/leaveinputs";
+import LeaveInputs from "../component/leaveInput";
 
 const ApplyLeave: React.FC = () => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);

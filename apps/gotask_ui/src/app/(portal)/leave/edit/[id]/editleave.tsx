@@ -10,7 +10,7 @@ import FormHeader from "@/app/(portal)/access/components/FormHeader";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
 import { LeaveFormField } from "../../interface/leaveInterface";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import LeaveInputs from "../../component/leaveinputs";
+import LeaveInputs from "../../component/leaveInput";
 
 const EditLeave: React.FC = () => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);

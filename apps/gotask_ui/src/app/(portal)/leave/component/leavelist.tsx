@@ -8,8 +8,8 @@ import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { LeaveEntry } from "../interface/leaveInterface";
-import { useDeleteLeave, useGetAllLeaves } from "../services/leaveAction";
+import { LeaveEntry, LeaveFilters as LeaveFiltersType } from "../interface/leaveInterface";
+import { useDeleteLeave, useGetLeavesWithFilters } from "../services/leaveAction";
 import LeaveFilters from "./leaveFilters";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { getLeaveColumns } from "./leaveColumns";
@@ -33,11 +33,43 @@ const LeaveList: React.FC = () => {
     severity: SNACKBAR_SEVERITY.INFO
   });
 
-  const { data: allLeaves, isLoading } = useGetAllLeaves(true);
-  const { mutate: deleteLeave } = useDeleteLeave();
-  const displayData = useMemo(() => (Array.isArray(allLeaves) ? allLeaves : []), [allLeaves]);
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
 
+  // Define filter payload for the API
+  const filterPayload: LeaveFiltersType = useMemo(
+    () => ({
+      user_id: userIdFilter.length > 0 ? userIdFilter.join(",") : undefined,
+      leave_type: leaveTypeFilter.length > 0 ? leaveTypeFilter.join(",") : undefined,
+      from_date: fromDateFilter || undefined,
+      to_date: toDateFilter || undefined,
+      page: 1,
+      page_size: 10,
+      sort_field: "from_date",
+      sort_order: "ASC"
+    }),
+    [userIdFilter, leaveTypeFilter, fromDateFilter, toDateFilter]
+  );
+
+  // Fetch filtered leaves using the API
+  const { data: filteredLeaves, isLoading, isError } = useGetLeavesWithFilters(filterPayload, true);
+
+  // Extract unique user IDs, usernames, and leave types for filter dropdowns
+  const leaveTypes = useMemo(() => {
+    if (!filteredLeaves || !Array.isArray(filteredLeaves)) return [];
+    return Array.from(new Set(filteredLeaves.map((leave: LeaveEntry) => leave.leave_type)));
+  }, [filteredLeaves]);
+
+  const userIds = useMemo(() => {
+    if (!filteredLeaves || !Array.isArray(filteredLeaves)) return [];
+    return Array.from(new Set(filteredLeaves.map((leave: LeaveEntry) => leave.user_id)));
+  }, [filteredLeaves]);
+
+  const userNames = useMemo(() => {
+    if (!filteredLeaves || !Array.isArray(filteredLeaves)) return [];
+    return Array.from(new Set(filteredLeaves.map((leave: LeaveEntry) => leave.user_name)));
+  }, [filteredLeaves]);
+
+  // Handlers for table actions
   const handleViewClick = useCallback(
     (leave: LeaveEntry) => {
       router.push(`/leave/view/${leave.id}`);
@@ -57,6 +89,8 @@ const LeaveList: React.FC = () => {
     setIsDeleteDialogOpen(true);
   }, []);
 
+  const { mutate: deleteLeave } = useDeleteLeave();
+
   const handleDeleteConfirm = async () => {
     if (!selectedLeave) return;
     try {
@@ -74,8 +108,6 @@ const LeaveList: React.FC = () => {
         message: transleave("faileddelete"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
-    } finally {
-      setTimeout(() => {}, 100);
     }
   };
 
@@ -87,59 +119,6 @@ const LeaveList: React.FC = () => {
   const handleActionClick = () => {
     router.push("/leave/applyleave");
   };
-
-  const leaveTypes = useMemo(() => {
-    if (!allLeaves || !Array.isArray(allLeaves)) return [];
-    return Array.from(new Set(allLeaves.map((leave: LeaveEntry) => leave.leave_type)));
-  }, [allLeaves]);
-
-  const userIds = useMemo(() => {
-    if (!allLeaves || !Array.isArray(allLeaves)) return [];
-    return Array.from(new Set(allLeaves.map((leave: LeaveEntry) => leave.user_id)));
-  }, [allLeaves]);
-
-  const userNames = useMemo(() => {
-    if (!allLeaves || !Array.isArray(allLeaves)) return [];
-    return Array.from(new Set(allLeaves.map((leave: LeaveEntry) => leave.user_name)));
-  }, [allLeaves]);
-
-  const filterLeaves = (
-    leaves: LeaveEntry[],
-    searchText: string,
-    userIdFilter: string[],
-    leaveTypeFilter: string[],
-    fromDateFilter: string,
-    toDateFilter: string
-  ) => {
-    if (!leaves || !Array.isArray(leaves)) return [];
-    return leaves.filter((leave) => {
-      const matchSearch =
-        !searchText ||
-        [leave.user_name, leave.leave_type, leave.from_date, leave.to_date, leave.user_id].some(
-          (field) => field && field.toString().toLowerCase().includes(searchText.toLowerCase())
-        );
-      const matchUserId = userIdFilter.length === 0 || userIdFilter.includes(leave.user_id);
-      const matchLeaveType =
-        leaveTypeFilter.length === 0 || leaveTypeFilter.includes(leave.leave_type);
-      const matchFromDate =
-        !fromDateFilter || new Date(leave.from_date) >= new Date(fromDateFilter);
-      const matchToDate = !toDateFilter || new Date(leave.to_date) <= new Date(toDateFilter);
-      return matchSearch && matchUserId && matchLeaveType && matchFromDate && matchToDate;
-    });
-  };
-
-  const filteredData = useMemo(
-    () =>
-      filterLeaves(
-        displayData,
-        searchText,
-        userIdFilter,
-        leaveTypeFilter,
-        fromDateFilter,
-        toDateFilter
-      ),
-    [displayData, searchText, userIdFilter, leaveTypeFilter, fromDateFilter, toDateFilter]
-  );
 
   const leaveColumns = useMemo(
     () =>
@@ -215,10 +194,13 @@ const LeaveList: React.FC = () => {
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column", overflowY: "auto" }}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            {!displayData || displayData.length === 0 ? (
+            {isError ? (
+              <EmptyState
+                imageSrc={NoAssetsImage}
+                message={transleave("failedfetch") || "Failed to fetch leaves"}
+              />
+            ) : !filteredLeaves || filteredLeaves.length === 0 ? (
               <EmptyState imageSrc={NoAssetsImage} message={transleave("noleave")} />
-            ) : filteredData.length === 0 ? (
-              <EmptyState imageSrc={NoAssetsImage} message={transleave("nodata")} />
             ) : (
               <Paper
                 sx={{
@@ -231,7 +213,7 @@ const LeaveList: React.FC = () => {
               >
                 <Box sx={{ width: "100%", flex: 1 }}>
                   <Box sx={{ minWidth: 800 }}>
-                    <Table<LeaveEntry> columns={leaveColumns} rows={filteredData} />
+                    <Table<LeaveEntry> columns={leaveColumns} rows={filteredLeaves} />
                   </Box>
                 </Box>
               </Paper>

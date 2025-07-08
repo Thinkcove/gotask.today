@@ -103,19 +103,12 @@ export const getLeaveById = async (id: string) => {
   });
 };
 
-// SWR Hooks
 export const useGetAllLeaves = (shouldFetch: boolean) => {
   const { data, error, isLoading, mutate } = useSWR(
     shouldFetch ? ["getAllLeaves"] : null,
     async () => {
       const leaves = await getAllLeaves();
       return leaves as LeaveEntry[];
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      errorRetryCount: 2,
-      errorRetryInterval: 1000
     }
   );
 
@@ -128,12 +121,6 @@ export const useGetLeavesWithFilters = (payload: LeaveFilters, shouldFetch: bool
     async () => {
       const leaves = await getLeavesWithFilters(payload);
       return leaves as LeaveEntry[];
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      errorRetryCount: 2,
-      errorRetryInterval: 1000
     }
   );
 
@@ -146,12 +133,6 @@ export const useGetLeaveById = (id: string, shouldFetch: boolean) => {
     async () => {
       const leave = await getLeaveById(id);
       return leave as LeaveEntry;
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      errorRetryCount: 2,
-      errorRetryInterval: 1000
     }
   );
 

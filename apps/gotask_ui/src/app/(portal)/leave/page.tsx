@@ -7,11 +7,9 @@ import LeaveList from "./component/leavelist";
 
 const LeavePage: React.FC = () => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
-
   return (
     <>
       <ModuleHeader name={transleave("leave")} />
-
       <LeaveList />
     </>
   );

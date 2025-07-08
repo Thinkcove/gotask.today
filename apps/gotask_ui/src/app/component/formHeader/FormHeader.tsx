@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Button, Typography, IconButton } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, History } from "@mui/icons-material";
 
 export interface FormHeaderProps {
   isEdit: boolean;
@@ -13,8 +13,8 @@ export interface FormHeaderProps {
   create?: string;
   cancel?: string;
   update?: string;
-  showhistory?: string;
   createHeading?: string;
+  showhistory?:string;
 }
 
 const FormHeader: React.FC<FormHeaderProps> = ({
@@ -26,7 +26,10 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   create,
   editheading,
   update,
-  createHeading
+  createHeading,
+  hasHistory,
+  onShowHistory,
+  showhistory
 }) => {
   return (
     <>
@@ -45,19 +48,52 @@ const FormHeader: React.FC<FormHeaderProps> = ({
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-start",
-            alignItems: "center"
+            flexDirection: "column"
           }}
         >
-          <IconButton color="primary" onClick={onCancel}>
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {isEdit ? editheading : createHeading}
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center"
+            }}
+          >
+            <IconButton color="primary" onClick={onCancel}>
+              <ArrowBack />
+            </IconButton>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
+              {isEdit ? editheading : createHeading}
+            </Typography>
+          </Box>
+          <Box>
+            {hasHistory && (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  px: 2,
+                  cursor: "pointer",
+                  color: "#741B92",
+                  "&:hover": {
+                    opacity: 0.8
+                  }
+                }}
+                onClick={onShowHistory}
+              >
+                <Typography
+                  sx={{
+                    textDecoration: "underline",
+                    cursor: "inherit"
+                  }}
+                >
+                  {showhistory}
+                </Typography>
+                <History />
+              </Box>
+            )}
+          </Box>
         </Box>
-
-        {/* Right Section: Buttons */}
         <Box
           sx={{
             display: "flex",

@@ -4,7 +4,7 @@ import { ArrowBack } from "@mui/icons-material";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { PermissionDetailsProps } from "../../../interface/interface";
+import { PermissionDetailsProps } from "../interface/interface";
 import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
 import { Delete } from "@mui/icons-material";
 

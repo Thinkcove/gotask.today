@@ -276,6 +276,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     setWarrantyDateTo("");
     setSystemTypeFilter([]);
     setAssetAllocationFilter([]);
+    setAssetTypeFilter([]);
   };
 
   const appliedAnyFilter = () => {

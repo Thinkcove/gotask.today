@@ -26,7 +26,6 @@ export const formatDate = (date: Date) => {
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_PAGE_SIZE = 10;
 
-
 export const calculateKpiScores = (
   allPerformance: IKpiPerformance[],
   reviewerId: string | undefined,
@@ -54,5 +53,3 @@ export const calculateKpiScores = (
     actualValue
   };
 };
-
-

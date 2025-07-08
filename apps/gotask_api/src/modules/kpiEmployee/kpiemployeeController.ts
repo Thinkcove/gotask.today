@@ -8,7 +8,7 @@ import {
   getAllKpiAssignments,
   getKpiAssignmentById,
   getTemplatesByUserId,
-  updateKpiAssignment 
+  updateKpiAssignment
 } from "./kpiemployeeService";
 import { v4 as uuidv4 } from "uuid";
 import { getKpiAssignmentByIdFromDb } from "../../domain/interface/kpiemployee/kpiemployeeInterface";
@@ -93,60 +93,64 @@ class KpiAssignmentController extends BaseController {
   }
 
   // Update KPI Assignment
-async updateKpiAssignment(
-  requestHelper: RequestHelper,
-  handler: any,
-  restrictedFields: string[] = []
-) {
-  try {
-    const assignment_id = requestHelper.getParam("assignment_id");
-    if (!assignment_id) return this.replyError(new Error("Missing assignment ID"));
+  async updateKpiAssignment(
+    requestHelper: RequestHelper,
+    handler: any,
+    restrictedFields: string[] = []
+  ) {
+    try {
+      const assignment_id = requestHelper.getParam("assignment_id");
+      if (!assignment_id) return this.replyError(new Error("Missing assignment ID"));
 
-    const payload = requestHelper.getPayload() as Partial<IKpiAssignment>;
-    const authUserId = (payload as any).authUserId;
-    if (!authUserId) return this.replyError(new Error("Missing auth user ID"));
+      const payload = requestHelper.getPayload() as Partial<IKpiAssignment>;
+      const authUserId = (payload as any).authUserId;
+      if (!authUserId) return this.replyError(new Error("Missing auth user ID"));
 
-    const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
-    if (!assignment) return this.replyError(new Error("Assignment not found"));
+      const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+      if (!assignment) return this.replyError(new Error("Assignment not found"));
 
-    // Handle performance update
-    if (payload.performance && Array.isArray(payload.performance)) {
-      const updatedPerformance = payload.performance.map((entry) => ({
-        ...entry,
-        performance_id: entry.performance_id || uuidv4(),
-        updated_at: new Date(),
-        added_by: assignment.reviewer_id || assignment.assigned_by,
-        notes: entry.notes || []
-      }));
+      // Handle performance update
+      if (payload.performance && Array.isArray(payload.performance)) {
+        const updatedPerformance = payload.performance.map((entry) => ({
+          ...entry,
+          performance_id: entry.performance_id || uuidv4(),
+          updated_at: new Date(),
+          added_by: assignment.reviewer_id || assignment.assigned_by,
+          notes: entry.notes || []
+        }));
 
-      payload.performance = updatedPerformance;
+        payload.performance = updatedPerformance;
 
-      //  Combine old + new for score calculation
-      const allPerformance = [...(assignment.performance || []), ...updatedPerformance];
-      const targetVal = Number(assignment.target_value) || 0;
+        //  Combine old + new for score calculation
+        const allPerformance = [...(assignment.performance || []), ...updatedPerformance];
+        const targetVal = Number(assignment.target_value) || 0;
 
-      const { actualValue } = calculateKpiScores(
-        allPerformance,
-        assignment.reviewer_id,
-        assignment.assigned_by,
-        targetVal
+        const { actualValue } = calculateKpiScores(
+          allPerformance,
+          assignment.reviewer_id,
+          assignment.assigned_by,
+          targetVal
+        );
+
+        payload.actual_value = actualValue.toString();
+      }
+
+      const result = await updateKpiAssignment(
+        assignment_id,
+        payload,
+        authUserId,
+        restrictedFields
       );
 
-      payload.actual_value = actualValue.toString();
+      if (!result.success) {
+        return this.replyError(new Error(result.message || "Failed to update assignment"));
+      }
 
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
     }
-
-    const result = await updateKpiAssignment(assignment_id, payload, authUserId, restrictedFields);
-
-    if (!result.success) {
-      return this.replyError(new Error(result.message || "Failed to update assignment"));
-    }
-
-    return this.sendResponse(handler, result.data);
-  } catch (error) {
-    return this.replyError(error);
   }
-}
 
   // Delete KPI Assignment
   async deleteKpiAssignment(requestHelper: RequestHelper, handler: any) {

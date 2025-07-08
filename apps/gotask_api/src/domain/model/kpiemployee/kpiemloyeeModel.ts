@@ -66,7 +66,7 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
     actual_value: { type: String },
     employee_score: { type: String },
     reviewer_score: { type: String },
-     performance: {
+    performance: {
       type: [KpiPerformanceSchema],
       default: []
     },

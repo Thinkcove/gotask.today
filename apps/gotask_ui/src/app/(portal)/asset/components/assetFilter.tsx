@@ -7,9 +7,7 @@ import { ALLOCATION } from "../assetConstants";
 interface Props {
   modelNameFilter: string[];
   assignedToFilter: string[];
-  allModelNames: string[];
   allUsers: string[];
-  onModelNameChange: (val: string[]) => void;
   onAssignedToChange: (val: string[]) => void;
   onClearFilters: () => void;
   trans: (key: string) => string;
@@ -27,14 +25,15 @@ interface Props {
   onSystemTypeChange?: (val: string[]) => void;
   assetAllocationFilter?: string[];
   onAssetAllocationChange?: (val: string[]) => void;
+  assetTypeFilter?: string[];
+  allAssetTypes?: string[];
+  onAssetTypeChange?: (val: string[]) => void;
 }
 
 const AssetFilters: React.FC<Props> = ({
   modelNameFilter,
   assignedToFilter,
-  allModelNames,
   allUsers,
-  onModelNameChange,
   onAssignedToChange,
   onClearFilters,
   trans,
@@ -50,7 +49,10 @@ const AssetFilters: React.FC<Props> = ({
   allSystemTypes,
   onSystemTypeChange,
   assetAllocationFilter,
-  onAssetAllocationChange
+  onAssetAllocationChange,
+  assetTypeFilter,
+  allAssetTypes,
+  onAssetTypeChange
 }) => {
   const appliedFilterCount =
     (hideModelNameFilter ? 0 : modelNameFilter.length > 0 ? 1 : 0) +
@@ -58,7 +60,8 @@ const AssetFilters: React.FC<Props> = ({
     (systemTypeFilter && systemTypeFilter.length > 0 ? 1 : 0) +
     (dateFrom ? 1 : 0) +
     (dateTo ? 1 : 0) +
-    (assetAllocationFilter && assetAllocationFilter.length > 0 ? 1 : 0);
+    (assetAllocationFilter && assetAllocationFilter.length > 0 ? 1 : 0) +
+    (assetTypeFilter && assetTypeFilter.length > 0 ? 1 : 0);
 
   return (
     <Box>
@@ -74,12 +77,12 @@ const AssetFilters: React.FC<Props> = ({
           "&::-webkit-scrollbar": { display: "none" }
         }}
       >
-        {!hideModelNameFilter && (
+        {allAssetTypes && onAssetTypeChange && (
           <FilterDropdown
-            label={trans("modelname")}
-            options={allModelNames}
-            selected={modelNameFilter}
-            onChange={onModelNameChange}
+            label={trans("assettype")}
+            options={allAssetTypes}
+            selected={assetTypeFilter || []}
+            onChange={onAssetTypeChange}
           />
         )}
         {!hideAssignedToFilter && (

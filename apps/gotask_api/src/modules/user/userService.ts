@@ -19,6 +19,7 @@ import { getById } from "../../domain/interface/asset/asset";
 import { IAsset } from "../../domain/model/asset/asset";
 import { ISkill } from "../../domain/model/user/skills";
 import { ICertificate } from "../../domain/model/user/certificate";
+import { PROFICIENCY_MAXIMUM } from "../../constants/utils/userConstant";
 
 class userService {
   // CREATE USER
@@ -399,11 +400,10 @@ class userService {
     try {
       const user = await User.findOne({ id: id });
       if (!user) {
-        return { success: false, message: UserMessages.SKILL.USER_NOT_FOUND };
+        return { success: false, message: "User not found" };
       }
 
       const existingSkills = user.skills || [];
-
       const skillMap = new Map<string, ISkill>();
       for (const skill of existingSkills) {
         skillMap.set(skill.name.toLowerCase(), skill);
@@ -424,9 +424,9 @@ class userService {
       user.skills = existingSkills;
       await user.save();
 
-      return { success: true, data: existingSkills, message: UserMessages.SKILL.ADD_SUCCESS };
+      return { success: true, data: existingSkills, message: "Skills added successfully" };
     } catch (error: any) {
-      return { success: false, message: error.message || UserMessages.SKILL.UPDATE_FAILED };
+      return { success: false, message: error.message || "Failed to update skill" };
     }
   }
 
@@ -437,30 +437,37 @@ class userService {
   ): Promise<{ success: boolean; data?: ISkill; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
-      if (!user) {
-        return { success: false, message: UserMessages.SKILL.USER_NOT_FOUND };
-      }
-
-      if (!user.skills) {
-        return { success: false, message: UserMessages.SKILL.NO_SKILLS };
-      }
+      if (!user) return { success: false, message: "User not found" };
+      if (!user.skills) return { success: false, message: "User has no skills" };
 
       const skillIndex = user.skills.findIndex((skill) => skill.skill_id === skillId);
-      if (skillIndex === -1) {
-        return { success: false, message: UserMessages.SKILL.NOT_FOUND };
-      }
+      if (skillIndex === -1) return { success: false, message: "Skill not found" };
 
       const skill = user.skills[skillIndex];
 
-      if (updatedSkill.name !== undefined) skill.name = updatedSkill.name;
-      if (updatedSkill.proficiency !== undefined) skill.proficiency = updatedSkill.proficiency;
-      if (updatedSkill.experience !== undefined) skill.experience = updatedSkill.experience;
+      if (updatedSkill.name !== undefined) {
+        skill.name = updatedSkill.name;
+      }
+
+      if (updatedSkill.proficiency !== undefined) {
+        skill.proficiency = updatedSkill.proficiency;
+
+        if (updatedSkill.proficiency < PROFICIENCY_MAXIMUM && "experience" in skill) {
+          skill.experience = undefined;
+        }
+      }
+
+      if (
+        updatedSkill.experience !== undefined &&
+        updatedSkill.proficiency! >= PROFICIENCY_MAXIMUM
+      ) {
+        skill.experience = updatedSkill.experience;
+      }
 
       await user.save();
-
-      return { success: true, data: skill, message: UserMessages.SKILL.UPDATE_SUCCESS };
+      return { success: true, data: skill, message: "Skill updated successfully" };
     } catch (error: any) {
-      return { success: false, message: error.message || UserMessages.SKILL.UPDATE_FAILED };
+      return { success: false, message: error.message || "Failed to update skill" };
     }
   }
 
@@ -470,28 +477,18 @@ class userService {
   ): Promise<{ success: boolean; data?: any; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
-
-      if (!user) {
-        return { success: false, message: UserMessages.SKILL.USER_NOT_FOUND };
-      }
-
-      if (!Array.isArray(user.skills)) {
-        return { success: false, message: UserMessages.SKILL.NO_SKILLS };
-      }
+      if (!user) return { success: false, message: "User not found" };
+      if (!Array.isArray(user.skills)) return { success: false, message: "User has no skills" };
 
       const initialLength = user.skills.length;
-
       user.skills = user.skills.filter((skill) => skill.skill_id !== skillId);
-
-      if (user.skills.length === initialLength) {
-        return { success: false, message: UserMessages.SKILL.NOT_FOUND };
-      }
+      if (user.skills.length === initialLength)
+        return { success: false, message: "Skill not found" };
 
       await user.save();
-
-      return { success: true, message: UserMessages.SKILL.DELETE_SUCCESS };
+      return { success: true, message: "Skill deleted successfully" };
     } catch (error: any) {
-      return { success: false, message: error.message || UserMessages.SKILL.DELETE_FAILED };
+      return { success: false, message: error.message || "Failed to delete skill" };
     }
   }
 
@@ -501,25 +498,15 @@ class userService {
   ): Promise<{ success: boolean; data?: ICertificate[]; message?: string }> {
     try {
       const user = await User.findOne({ id });
-      if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
+      if (!user) return { success: false, message: "User not found" };
 
-      if (!user.certificates) {
-        user.certificates = [];
-      }
-
+      if (!user.certificates) user.certificates = [];
       user.certificates.push(...certificates);
       await user.save();
 
-      return {
-        success: true,
-        data: user.certificates,
-        message: UserMessages.CERTIFICATE.ADD_SUCCESS
-      };
+      return { success: true, data: user.certificates, message: "Certificates added successfully" };
     } catch (error: any) {
-      return {
-        success: false,
-        message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED
-      };
+      return { success: false, message: error.message || "Failed to update certificate" };
     }
   }
 
@@ -531,14 +518,11 @@ class userService {
     try {
       const user = await User.findOne({ id: userId });
       if (!user || !Array.isArray(user.certificates)) {
-        return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+        return { success: false, message: "User or certificate not found" };
       }
 
       const cert = user.certificates.find((c) => c.certificate_id === certificateId);
-
-      if (!cert) {
-        return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
-      }
+      if (!cert) return { success: false, message: "User or certificate not found" };
 
       if (updatedCertificate.name !== undefined) cert.name = updatedCertificate.name;
       if (updatedCertificate.obtained_date !== undefined)
@@ -546,17 +530,9 @@ class userService {
       if (updatedCertificate.notes !== undefined) cert.notes = updatedCertificate.notes;
 
       await user.save();
-
-      return {
-        success: true,
-        data: cert,
-        message: UserMessages.CERTIFICATE.UPDATE_SUCCESS
-      };
+      return { success: true, data: cert, message: "Certificate updated successfully" };
     } catch (error: any) {
-      return {
-        success: false,
-        message: error.message || UserMessages.CERTIFICATE.UPDATE_FAILED
-      };
+      return { success: false, message: error.message || "Failed to update certificate" };
     }
   }
 
@@ -567,27 +543,20 @@ class userService {
     try {
       const user = await User.findOne({ id: userId });
       if (!user || !Array.isArray(user.certificates)) {
-        return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+        return { success: false, message: "User or certificate not found" };
       }
 
       const originalLength = user.certificates.length;
-
       user.certificates = user.certificates.filter((cert) => cert.certificate_id !== certificateId);
 
       if (user.certificates.length === originalLength) {
-        return { success: false, message: UserMessages.CERTIFICATE.NOT_FOUND };
+        return { success: false, message: "User or certificate not found" };
       }
 
       await user.save();
-
-      return { success: true, message: UserMessages.CERTIFICATE.DELETE_SUCCESS };
-    } catch (error: unknown) {
-      let errorMessage = UserMessages.CERTIFICATE.DELETE_FAILED;
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      return { success: false, message: errorMessage };
+      return { success: true, message: "Certificate deleted successfully" };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Failed to delete certificate" };
     }
   }
 
@@ -596,7 +565,7 @@ class userService {
   ): Promise<{ success: boolean; data?: ICertificate[]; message?: string }> {
     try {
       const user = await User.findOne({ id: userId });
-      if (!user) return { success: false, message: UserMessages.FETCH.NOT_FOUND };
+      if (!user) return { success: false, message: "User not found" };
 
       return { success: true, data: user.certificates || [] };
     } catch (error: any) {

@@ -9,14 +9,13 @@ import { CREATED_AT, DESC } from "../assetConstants";
 export const fetchAllAssets = (
   sortVar = CREATED_AT,
   sortType = DESC,
-  filters: AssetFilters = {},
   page: number,
   limit: number
 ) =>
   withAuth((token) =>
     postData(
       `${env.API_BASE_URL}/assets/getAll`,
-      { sort_var: sortVar, sort_type: sortType, filters, page, limit },
+      { sort_var: sortVar, sort_type: sortType, page, limit },
       token
     )
   );
@@ -24,13 +23,12 @@ export const fetchAllAssets = (
 export const useAllAssets = (
   sortVar = CREATED_AT,
   sortType = DESC,
-  filters: AssetFilters = {},
   page: number,
   limit: number
 ) => {
   const { data, mutate, isLoading } = useSWR(
-    [`fetchallassets`, sortVar, sortType, filters, page, limit],
-    () => fetchAllAssets(sortVar, sortType, filters, page, limit),
+    [`fetchallassets`, sortVar, sortType, page, limit],
+    () => fetchAllAssets(sortVar, sortType, page, limit),
     { revalidateOnFocus: false, keepPreviousData: true }
   );
 

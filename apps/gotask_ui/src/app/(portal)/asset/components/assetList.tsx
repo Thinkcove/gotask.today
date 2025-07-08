@@ -62,21 +62,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     isLoading,
     mutate,
     total
-  } = useAllAssets(
-    sortKey,
-    sortOrder,
-    {
-      assignedToFilter,
-      modelNameFilter,
-      warrantyDateFrom,
-      warrantyDateTo,
-      systemTypeFilter,
-      assetAllocationFilter,
-      assetTypeFilter
-    },
-    page + 1,
-    rowsPerPage
-  );
+  } = useAllAssets(sortKey, sortOrder, page + 1, rowsPerPage);
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);

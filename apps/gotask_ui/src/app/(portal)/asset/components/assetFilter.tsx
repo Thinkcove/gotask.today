@@ -88,6 +88,7 @@ const AssetFilters: React.FC<Props> = ({
                 width={220}
                 height={42}
                 sx={{ borderRadius: 1 }}
+                animation="wave"
               />
             ))}
           </>

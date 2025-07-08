@@ -24,7 +24,7 @@ function PremissionForm({
   };
 
   const handleTimeChange = (
-    field: "startTime" | "endTime" | "comment",
+    field: "startTime" | "endTime" | "comments",
     value: string | number | Date | string[]
   ): void => {
     if (typeof value !== "string") return;
@@ -100,8 +100,8 @@ function PremissionForm({
             label={transpermission("labelreson")}
             type="text"
             placeholder={transpermission("comments")}
-            value={formData.comment}
-            onChange={(val) => handleTimeChange("comment", String(val))}
+            value={formData.comments}
+            onChange={(val) => handleTimeChange("comments", String(val))}
             required
             multiline
           />

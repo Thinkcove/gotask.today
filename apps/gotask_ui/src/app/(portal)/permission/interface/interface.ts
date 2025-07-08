@@ -27,7 +27,7 @@ export interface PremissionFormProps {
     startDate: string;
     startTime: string;
     endTime: string;
-    comment: string;
+    comments: string;
   };
   errors: {
     startDate?: string;

@@ -10,8 +10,8 @@ export const fetchAllAssets = (
   sortVar = CREATED_AT,
   sortType = DESC,
   filters: AssetFilters = {},
-  page = 1,
-  limit = 25
+  page: number,
+  limit: number
 ) =>
   withAuth((token) =>
     postData(
@@ -25,8 +25,8 @@ export const useAllAssets = (
   sortVar = CREATED_AT,
   sortType = DESC,
   filters: AssetFilters = {},
-  page = 1,
-  limit = 25
+  page: number,
+  limit: number
 ) => {
   const { data, mutate, isLoading } = useSWR(
     [`fetchallassets`, sortVar, sortType, filters, page, limit],

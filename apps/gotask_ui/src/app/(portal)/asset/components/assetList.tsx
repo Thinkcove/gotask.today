@@ -26,6 +26,7 @@ import { Button } from "@mui/material";
 import { downloadAssetCSV } from "../download/assetcsv";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";
@@ -53,8 +54,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     message: "",
     severity: "success" as "success" | "error" | "info" | "warning"
   });
-  const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(25);
+  const [page, setPage] = useState<number>(PAGE_OPTIONS.ZERO);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(PAGE_OPTIONS.DEFAULT_ROWS_25);
 
   const {
     getAll: allAssets,

@@ -32,7 +32,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   });
   const [dateError, setDateError] = useState(false);
   const [ctcError, setCtcError] = useState(false);
-  const [selectedView, setSelectedView] = useState<string>("Chart");
+  const [selectedView, setSelectedView] = useState<string>("Table");
 
   const {
     data: responseData,

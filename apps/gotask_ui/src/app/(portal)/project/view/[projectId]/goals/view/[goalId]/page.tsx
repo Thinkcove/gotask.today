@@ -88,7 +88,6 @@ const ProjectGoalViewPage = () => {
   ) => {
     try {
       await updateComment(commentId, { comments: [updatedComment.comment] });
-      // Force revalidation to refresh the data
       await mutate();
       showSnackbar(transGoal("goalupdate"), SNACKBAR_SEVERITY.SUCCESS);
     } catch (err) {
@@ -100,7 +99,6 @@ const ProjectGoalViewPage = () => {
   const handleDeleteComment = async (commentId: string | number) => {
     try {
       await deleteComment(commentId);
-      // Force revalidation to refresh the data
       await mutate();
       showSnackbar(transGoal("deletegoal"), SNACKBAR_SEVERITY.SUCCESS);
     } catch (error) {

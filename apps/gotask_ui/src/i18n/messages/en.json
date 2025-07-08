@@ -1030,16 +1030,20 @@
     "data": "Date",
     "filterdate": "Date",
     "deleteconfirm": "Are you sure you want to delete this permission?",
-    "deletetitle":"Delete Permission",
-    "delete":"Delete",
-    "clearall":"Clear All",
-    "filterfrom":"From Date",
-    "filterclear":"Clear",
-    "filterapply":"Apply",
-    "filterto":"To Date",
-    "labelcomment":"Comment",
-    "permissionapplier":"Permission Applier",
-    "deletesuccess":"Permission deleted successfully!",
-    "deletefailed":"Failed to delete permission. Please try again."
+    "deletetitle": "Delete Permission",
+    "delete": "Delete",
+    "clearall": "Clear All",
+    "filterfrom": "From Date",
+    "filterclear": "Clear",
+    "filterapply": "Apply",
+    "filterto": "To Date",
+    "labelcomment": "Comment",
+    "permissionapplier": "Permission Applier",
+    "deletesuccess": "Permission deleted successfully!",
+    "deletefailed": "Failed to delete permission. Please try again.",
+    "meta": {
+      "title": "Permission Requests | GoTaskToday",
+      "description": "Manage employee leaves or short-term permissions"
+    }
   }
 }

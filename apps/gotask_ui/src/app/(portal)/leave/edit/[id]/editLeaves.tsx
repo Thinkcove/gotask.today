@@ -6,7 +6,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { updateLeave, useGetLeaveById } from "../../services/leaveAction";
-import FormHeader from "@/app/(portal)/access/components/formHeader";
+import FormHeader from "@/app/(portal)/access/components/formHeaders";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
 import { LeaveFormField } from "../../interface/leaveInterface";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";

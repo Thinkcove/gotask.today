@@ -23,8 +23,6 @@ import {
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
 import { Asset } from "../../domain/model/asset/asset";
-import { IAssetTag } from "../../domain/model/assetTag/assetTag";
-import { IUser } from "../../domain/model/user/user";
 import { generateAssetHistoryEntry } from "./utils/assetHistory";
 
 class assetService {

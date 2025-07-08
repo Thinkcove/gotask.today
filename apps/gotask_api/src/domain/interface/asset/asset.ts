@@ -1,7 +1,6 @@
 import { Asset, IAsset } from "../../model/asset/asset";
-import { AssetTag, IAssetTag } from "../../model/assetTag/assetTag";
+import { AssetTag } from "../../model/assetTag/assetTag";
 import { AssetType, IAssetType } from "../../model/assetType/assetType";
-import { IUser, User } from "../../model/user/user";
 
 const createAsset = async (assetData: IAsset): Promise<IAsset> => {
   const newAsset = new Asset(assetData);
@@ -35,7 +34,6 @@ const getAllAssets = async (
   warrantyTo?: Date
 ): Promise<IAsset[]> => {
   let assetIds: string[] = [];
-  console.log("typeId", typeId);
   if (userId) {
     const userBasedAssets = await AssetTag.find({ userId });
     assetIds = userBasedAssets.map((tag) => tag.assetId.toString());
@@ -46,7 +44,7 @@ const getAllAssets = async (
   }
 
   // Build base query
-  let query: any = { active: true };
+  const query: any = { active: true };
   if (assetIds.length > 0) {
     query.id = { $in: assetIds };
   }

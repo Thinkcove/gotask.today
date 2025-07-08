@@ -16,7 +16,7 @@ const getAllAssetsTypes = async (): Promise<IAsset[]> => {
 };
 
 const getAssetById = async (id: string): Promise<IAsset | null> => {
-  return await Asset.findOne({ id });
+  return await Asset.findOne({ id, active: true });
 };
 
 const getAssetTypeById = async (id: string): Promise<IAsset | null> => {

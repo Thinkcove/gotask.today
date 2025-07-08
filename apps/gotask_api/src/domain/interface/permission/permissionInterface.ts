@@ -109,24 +109,20 @@ const deleteByPermissionId = async (id: string): Promise<IPermission | null> => 
 };
 
 const createCommentInPermission = async (
-  commentData: IPermissionComment
+  commentData: Omit<IPermissionComment, "id">
 ): Promise<IPermissionComment> => {
-  const { permission_id, user_id, comment, user_name } = commentData;
-
+  const { permission_id } = commentData;
   const permission = await Permission.findOne({ id: permission_id });
-  if (!permission) throw new Error("Permission not found");
+  if (!permission) {
+    throw new Error("Permission not found");
+  }
 
-  // Save the full comment in PermissionComment collection
-  const newComment = new PermissionComment({ permission_id, user_id, comment, user_name });
-  await newComment.save();
+  const newComment = new PermissionComment({
+    ...commentData
+  });
 
-  // Append the comment text to the Permission's comments string
-  permission.comments += (permission.comments ? "\n" : "") + comment;
-  await permission.save();
-
-  return newComment;
+  return await newComment.save();
 };
-
 const updateCommentInPermission = async (
   id: string,
   newCommentText: Partial<IPermissionComment>

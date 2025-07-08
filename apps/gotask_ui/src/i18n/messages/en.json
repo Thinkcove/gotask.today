@@ -1042,6 +1042,7 @@
     "deletesuccess": "Permission deleted successfully!",
     "deletefailed": "Failed to delete permission. Please try again.",
     "permissionon": "Permission On",
+    "filteruser":"User",
     "meta": {
       "title": "Permission Requests | GoTaskToday",
       "description": "Manage employee leaves or short-term permissions"

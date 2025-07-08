@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import PermissionList from "./components/permissionList";
@@ -10,22 +10,24 @@ const Page = () => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        m: 0,
-        p: 0,
-        overflow: "hidden"
-      }}
-    >
-      <ModuleHeader name={transpermission("permission")} />
+    <Suspense fallback={null}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          m: 0,
+          p: 0,
+          overflow: "hidden"
+        }}
+      >
+        <ModuleHeader name={transpermission("permission")} />
 
-      <Box sx={{ flex: 1, overflowY: "auto" }}>
-        <PermissionList />
+        <Box sx={{ flex: 1, overflowY: "auto" }}>
+          <PermissionList />
+        </Box>
       </Box>
-    </Box>
+    </Suspense>
   );
 };
 

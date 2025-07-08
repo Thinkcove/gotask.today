@@ -4,7 +4,7 @@ import useSWR from "swr";
 import { fetchAllgetpermission, deletePermission } from "../services/permissionAction";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PermissionData } from "../interface/interface";
 import { useUser } from "@/app/userContext";
 import { useTranslations } from "next-intl";
@@ -16,13 +16,19 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import { getPermissionColumns } from "./permissionColums";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { User } from "../../user/interfaces/userInterface";
+import { useAllUsers } from "../../task/service/taskAction";
 
 const PermissionList = () => {
+  const searchParams = useSearchParams();
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+  const { getAllUsers: allUsers } = useAllUsers();
+
+  const [userFilter, setUserFilter] = useState<string[]>(searchParams.getAll("user_name"));
+
   const router = useRouter();
   const { user } = useUser();
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
   const [selectedPermission, setSelectedPermission] = useState<PermissionData | null>(null);
@@ -46,10 +52,6 @@ const PermissionList = () => {
 
   const displayData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
 
-  const onSearchChange = (val: string) => {
-    setSearchTerm(val);
-  };
-
   const onDateChange = (from: string, to: string) => {
     setDateFrom(from);
     setDateTo(to);
@@ -66,7 +68,7 @@ const PermissionList = () => {
   };
 
   const handleClearFilters = () => {
-    setSearchTerm("");
+    setUserFilter([]);
     setDateFrom("");
     setDateTo("");
   };
@@ -105,11 +107,15 @@ const PermissionList = () => {
     if (!displayData || !Array.isArray(displayData)) return [];
 
     return displayData.filter((perm: PermissionData) => {
-      const matchesSearch = perm.user_name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesUser =
+        userFilter.length === 0 ||
+        userFilter.some((name) => perm.user_name.toLowerCase().includes(name.toLowerCase()));
+
       const matchesDateRange = isDateInRange(perm.date, dateFrom, dateTo);
-      return matchesSearch && matchesDateRange;
+
+      return matchesUser && matchesDateRange;
     });
-  }, [displayData, searchTerm, dateFrom, dateTo]);
+  }, [displayData, userFilter, dateFrom, dateTo]);
 
   // Use the common column configuration
   const permissionColumns = useMemo(
@@ -131,15 +137,16 @@ const PermissionList = () => {
     [isDeleting, transpermission]
   );
 
-  const hasActiveFilters = Boolean(searchTerm || dateFrom || dateTo);
+  const hasActiveFilters = userFilter.length > 0 || !!dateFrom || !!dateTo;
 
   return (
     <>
       {/* Filter Component */}
       <Box sx={{ pt: 2, pl: 2 }}>
         <PermissionFilter
-          searchTerm={searchTerm}
-          onSearchChange={onSearchChange}
+          userFilter={userFilter}
+          allUsers={allUsers.map((u: User) => u.name)}
+          onUserChange={setUserFilter}
           dateFrom={dateFrom}
           dateTo={dateTo}
           onDateChange={onDateChange}

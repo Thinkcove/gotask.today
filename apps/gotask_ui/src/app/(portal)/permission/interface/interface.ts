@@ -70,15 +70,17 @@ export interface PermissionDetailsProps {
   onBack: () => void;
   handleDeleteClick: () => void;
 }
+
 export interface PermissionFilterProps {
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
+  allUsers: string[];
+  onUserChange: (val: string[]) => void;
   dateFrom: string;
   dateTo: string;
   onDateChange: (from: string, to: string) => void;
   showClear?: boolean;
   clearText?: string;
   onClearFilters?: () => void;
+  userFilter: string[];
 }
 
 export interface PermissionColumnsConfig {

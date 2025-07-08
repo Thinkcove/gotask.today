@@ -1,23 +1,24 @@
 import React from "react";
 import { Box, Divider, Link } from "@mui/material";
-import SearchBar from "@/app/component/searchBar/searchBar";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionFilterProps } from "../interface/interface";
+import FilterDropdown from "@/app/component/input/filterDropDown";
 
 const PermissionFilter: React.FC<PermissionFilterProps> = ({
-  searchTerm,
-  onSearchChange,
+  onUserChange,
   dateFrom,
   dateTo,
   onDateChange,
   showClear = false,
   clearText,
-  onClearFilters
+  onClearFilters,
+  allUsers,
+  userFilter
 }) => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
-  
+
   return (
     <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={2}>
       <Box
@@ -28,25 +29,13 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
         sx={{ width: "100%" }}
       >
         {/* Back + Search */}
-        <Box
-          display="flex"
-          gap={1}
-          alignItems="center"
-          sx={{ width: { xs: "100%", sm: "auto" }, justifyContent: "center" }}
-          flexGrow={1}
-        >
-          <Box
-            sx={{
-              width: { xs: 400, sm: 400 },
-              maxWidth: 400,
-              flexGrow: 1,
-              marginX: { xs: "auto", sm: 0 }
-            }}
-          >
-            <SearchBar
-              value={searchTerm}
-              onChange={onSearchChange}
-              placeholder={transpermission("search")}
+        <Box display="flex" justifyContent={{ xs: "center", sm: "flex-start" }} flexGrow={1}>
+          <Box sx={{ width: { sm: "auto" } }}>
+            <FilterDropdown
+              label={transpermission("filteruser")}
+              options={allUsers}
+              selected={userFilter}
+              onChange={onUserChange}
             />
           </Box>
         </Box>

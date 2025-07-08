@@ -2,7 +2,7 @@ import { getData, postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import useSWR from "swr";
 import env from "@/app/common/env";
-import { AssetFilters, IAssetAttributes, IAssetIssues, IAssetTags } from "../interface/asset";
+import { IAssetAttributes, IAssetIssues, IAssetTags } from "../interface/asset";
 import { CREATED_AT, DESC } from "../assetConstants";
 
 //fetch all assets

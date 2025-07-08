@@ -73,11 +73,9 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       assetAllocationFilter,
       assetTypeFilter
     },
-    page + 1, // API expects 1-based page
+    page + 1,
     rowsPerPage
   );
-
-  console.log("total", total);
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -450,7 +448,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                       onSortChange={(key, order) => {
                         setSortKey(key);
                         setSortOrder(order);
-                        setPage(0); // Reset to first page on sort change
+                        setPage(0);
                       }}
                       isLoading={isLoading}
                       onPageChange={(newPage, newLimit) => {

@@ -1037,10 +1037,11 @@
     "filterclear": "Clear",
     "filterapply": "Apply",
     "filterto": "To Date",
-    "labelcomment": "Comment",
+    "labelreson": "Reson",
     "permissionapplier": "Permission Applier",
     "deletesuccess": "Permission deleted successfully!",
     "deletefailed": "Failed to delete permission. Please try again.",
+    "permissionon": "Permission On",
     "meta": {
       "title": "Permission Requests | GoTaskToday",
       "description": "Manage employee leaves or short-term permissions"

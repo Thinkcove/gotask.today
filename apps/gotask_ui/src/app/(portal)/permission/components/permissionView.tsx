@@ -48,7 +48,10 @@ const PermissionDetails: React.FC<PermissionDetailsProps> = ({
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <LabelValueText label={transpermission("date")} value={formatDate(permission?.date)} />
+          <LabelValueText
+            label={transpermission("permissionon")}
+            value={formatDate(permission?.date)}
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <LabelValueText

@@ -50,7 +50,7 @@ function PremissionForm({
 
         <Grid item xs={12} sm={6}>
           <FormField
-            label={transpermission("startdate")}
+            label={transpermission("permissionon")}
             type="date"
             inputType="date"
             placeholder={transpermission("startdate")}
@@ -97,7 +97,7 @@ function PremissionForm({
         </Grid>
         <Grid item xs={12}>
           <FormField
-            label={transpermission("labelcomment")}
+            label={transpermission("labelreson")}
             type="text"
             placeholder={transpermission("comments")}
             value={formData.comment}

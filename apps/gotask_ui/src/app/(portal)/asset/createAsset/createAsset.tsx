@@ -18,6 +18,7 @@ import { ASSET_TYPE } from "@/app/common/constants/asset";
 import { OFFICE_SYSTEM, systemTypeOptions } from "../assetConstants";
 import AccessInputs from "./accessInput";
 import PrinterInputs from "./printerInputs";
+import FingerprintScannerInputs from "./fingerPrintInputs";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -110,7 +111,8 @@ export const CreateAsset: React.FC = () => {
     const newErrors: { [key: string]: string } = {};
     if (
       selectedAssetType?.name !== ASSET_TYPE.ACCESS_CARDS &&
-      selectedAssetType?.name !== ASSET_TYPE.PRINTER
+      selectedAssetType?.name !== ASSET_TYPE.PRINTER &&
+      selectedAssetType?.name !== ASSET_TYPE.FINGERPRINT_SCANNER
     ) {
       if (!formData.typeId) newErrors.typeId = transasset("typeid");
       if (!formData.deviceName)
@@ -141,7 +143,10 @@ export const CreateAsset: React.FC = () => {
         newErrors.issuedOn = `${transasset("issuedon")} ${transasset("isrequired")}`;
     }
 
-    if (selectedAssetType?.name === ASSET_TYPE.PRINTER) {
+    if (
+      selectedAssetType?.name === ASSET_TYPE.PRINTER &&
+      selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER
+    ) {
       if (!formData.deviceName)
         newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
       if (!formData.modelName)
@@ -298,6 +303,16 @@ export const CreateAsset: React.FC = () => {
           {selectedAssetType?.name === ASSET_TYPE.PRINTER && (
             <Grid item xs={12}>
               <PrinterInputs
+                formData={formData}
+                onChange={handleInputChange}
+                selectedAssetType={selectedAssetType}
+                errors={errors}
+              />
+            </Grid>
+          )}
+          {selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER && (
+            <Grid item xs={12}>
+              <FingerprintScannerInputs
                 formData={formData}
                 onChange={handleInputChange}
                 selectedAssetType={selectedAssetType}

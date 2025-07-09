@@ -739,10 +739,13 @@
     "acquisitiondate": "Acquisition date",
     "location": "Location",
     "connectivity": "Connectivity",
-    "printerType": "Printer Type",
-    "specialFeatures": "Special Features",
-    "supportedPaperSizes": "Supported Paper Sizes",
-    "printerOutputType": "Printer Output Type",
+    "printertype": "Printer Type",
+    "specialfeatures": "Special Features",
+    "supportedpapersizes": "Supported Paper Sizes",
+    "printeroutputtype": "Printer Output Type",
+    "authenticationmodes": "Authentication Modes",
+    "display": "Display",
+    "cloudandappbased": "Cloud And App Based",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."

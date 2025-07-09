@@ -1,19 +1,20 @@
 import React from "react";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, FormControlLabel, Checkbox } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
+import { authenticationModesOptions } from "../assetConstants";
 
-interface PrinterInputsProps {
+interface FingerprintScannerInputsProps {
   formData: IAssetAttributes;
   onChange: <K extends keyof IAssetAttributes>(field: K, value: IAssetAttributes[K]) => void;
   errors?: { [key: string]: string };
   selectedAssetType?: IAssetType;
 }
 
-const PrinterInputs: React.FC<PrinterInputsProps> = ({
+const FingerprintScannerInputs: React.FC<FingerprintScannerInputsProps> = ({
   formData,
   onChange,
   errors,
@@ -21,7 +22,7 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
 }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
 
-  if (selectedAssetType?.name !== ASSET_TYPE.PRINTER) return null;
+  if (selectedAssetType?.name !== ASSET_TYPE.FINGERPRINT_SCANNER) return null;
 
   return (
     <Box>
@@ -37,6 +38,7 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
             required
           />
         </Grid>
+
         <Grid item xs={12} sm={4}>
           <FormField
             label={`${transasset("modelname")} ${transasset("required")}`}
@@ -48,6 +50,38 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
             required
           />
         </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <FormField
+            label={transasset("connectivity")}
+            type="text"
+            value={formData.connectivity}
+            placeholder={transasset("connectivity")}
+            onChange={(val) => onChange("connectivity", String(val))}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <FormField
+            label={transasset("authenticationmodes")}
+            type="select"
+            options={authenticationModesOptions.map((mode) => ({ id: mode, name: mode }))}
+            value={formData.authenticationModes}
+            placeholder={transasset("authenticationmodes")}
+            onChange={(val) => onChange("authenticationModes", String(val))}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <FormField
+            label={transasset("display")}
+            type="text"
+            value={formData.display}
+            placeholder={transasset("display")}
+            onChange={(val) => onChange("display", String(val))}
+          />
+        </Grid>
+
         <Grid item xs={12} sm={4}>
           <FormField
             label={transasset("seller")}
@@ -57,6 +91,7 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
             onChange={(val) => onChange("seller", String(val))}
           />
         </Grid>
+
         <Grid item xs={12} sm={4}>
           <FormField
             label={transasset("dateOfPurchase")}
@@ -71,6 +106,7 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
             }
           />
         </Grid>
+
         <Grid item xs={12} sm={4}>
           <FormField
             label={transasset("warrantyPeriod")}
@@ -80,6 +116,7 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
             onChange={(val) => onChange("warrantyPeriod", String(val))}
           />
         </Grid>
+
         <Grid item xs={12} sm={4}>
           <FormField
             label={transasset("warrantyDate")}
@@ -94,58 +131,16 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
             }
           />
         </Grid>
+
         <Grid item xs={12} sm={4}>
-          <FormField
-            label={transasset("location")}
-            type="text"
-            value={formData.Location}
-            placeholder={transasset("location")}
-            onChange={(val) => onChange("Location", String(val))}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <FormField
-            label={transasset("connectivity")}
-            type="text"
-            value={formData.connectivity}
-            placeholder={transasset("connectivity")}
-            onChange={(val) => onChange("connectivity", String(val))}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <FormField
-            label={transasset("printertype")}
-            type="text"
-            value={formData.printerType}
-            placeholder={transasset("printertype")}
-            onChange={(val) => onChange("printerType", String(val))}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <FormField
-            label={transasset("specialfeatures")}
-            type="text"
-            value={formData.specialFeatures}
-            placeholder={transasset("specialfeatures")}
-            onChange={(val) => onChange("specialFeatures", String(val))}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <FormField
-            label={transasset("printeroutputtype")}
-            type="text"
-            value={formData.printerOutputType}
-            placeholder={transasset("printeroutputtype")}
-            onChange={(val) => onChange("printerOutputType", String(val))}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <FormField
-            label={transasset("supportedpapersizes")}
-            type="text"
-            value={formData.supportedPaperSizes}
-            placeholder={transasset("supportedpapersizes")}
-            onChange={(val) => onChange("supportedPaperSizes", String(val))}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.cloudAndAppBased || false}
+                onChange={(e) => onChange("cloudAndAppBased", e.target.checked)}
+              />
+            }
+            label={transasset("cloudandappbased")}
           />
         </Grid>
       </Grid>
@@ -153,4 +148,4 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
   );
 };
 
-export default PrinterInputs;
+export default FingerprintScannerInputs;

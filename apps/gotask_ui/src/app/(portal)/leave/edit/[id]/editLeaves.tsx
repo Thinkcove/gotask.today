@@ -6,11 +6,11 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { updateLeave, useGetLeaveById } from "../../services/leaveAction";
-import FormHeader from "@/app/(portal)/access/components/formHeaders";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
 import { LeaveFormField } from "../../interface/leaveInterface";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import LeaveInputs from "../../component/leaveInput";
+import FormHeader from "@/app/component/header/formHeader";
 
 const EditLeave: React.FC = () => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
@@ -115,9 +115,9 @@ const EditLeave: React.FC = () => {
         isEdit={true}
         onCancel={() => router.back()}
         onSubmit={handleSubmit}
-        edit={transleave("editleave")}
+        editheading={transleave("editleave")}
         create={transleave("create")}
-        cancle={transleave("cancel")}
+        cancel={transleave("cancel")}
         update={transleave("update")}
         showhistory={""}
         isSubmitting={isSubmitting}

@@ -90,7 +90,7 @@ const EditGoalPage = () => {
         return {
           loginuser_name,
           formatted_history: formattedChanges.join(". "),
-          created_date: item.timestamp || ""
+          created_date: item.createdAt || ""
         };
       }) ?? []
     );

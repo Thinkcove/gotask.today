@@ -47,7 +47,7 @@
     "path": "/report",
     "access": "User Report"
   },
-   {
+  {
     "text": "Work Planned",
     "icon": "BarChartIcon",
     "path": "/workPlanned",
@@ -60,12 +60,19 @@
     "access": "Asset and Resources"
   },
   { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" },
-  {"text":"KPI Template",
-  "icon":"InsightsIcon",
-  "path":"/kpi/template",
-  "access":"KPI System"
-},
-{
+  {
+    "text": "KPI Template",
+    "icon": "InsightsIcon",
+    "path": "/kpi/template",
+    "access": "KPI System"
+  },
+  {
+    "text": "Permission",
+    "icon": "SecurityIcon",
+    "path": "/permission",
+    "access": "Permission"
+  },
+  {
     "text": "Leave",
     "icon": "ManageAccountsIcon",
     "path": "/leave",

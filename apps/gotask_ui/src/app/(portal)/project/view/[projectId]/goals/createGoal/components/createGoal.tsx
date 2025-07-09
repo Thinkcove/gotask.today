@@ -10,7 +10,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import { createWeeklyGoal } from "../../goalservices/projectGoalAction";
 import { useGoalForm } from "../../goalHook/useGoalForm";
-import FormHeader from "@/app/(portal)/access/components/formHeaders";
+import FormHeader from "@/app/component/formHeader/FormHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 
@@ -100,10 +100,9 @@ const CreateGoal = () => {
           onCancel={handleCancel}
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
-          edit={transGoal("editgoal")}
+          createHeading={transGoal("creategoal")}
+          cancel={transGoal("cancel")}
           create={transGoal("create")}
-          cancle={transGoal("cancel")}
-          update={transGoal("update")}
           showhistory={transGoal("showhistory")}
         />
 

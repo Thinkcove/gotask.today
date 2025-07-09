@@ -9,20 +9,12 @@ export interface FormHeaderProps {
   onShowHistory?: () => void;
   isSubmitting?: boolean;
   hasHistory?: boolean;
-<<<<<<<< HEAD:apps/gotask_ui/src/app/(portal)/access/components/formHeaders.tsx
-  edit: string;
-  create: string;
-  cancle: string;
-  update: string;
-  showhistory?: string;
-========
   editheading?: string;
   create?: string;
   cancel?: string;
   update?: string;
   createHeading?: string;
-  showhistory?:string;
->>>>>>>> main:apps/gotask_ui/src/app/component/formHeader/FormHeader.tsx
+  showhistory?: string;
 }
 
 const FormHeader: React.FC<FormHeaderProps> = ({
@@ -56,21 +48,6 @@ const FormHeader: React.FC<FormHeaderProps> = ({
         <Box
           sx={{
             display: "flex",
-<<<<<<<< HEAD:apps/gotask_ui/src/app/(portal)/access/components/formHeaders.tsx
-            justifyContent: "flex-start",
-            alignItems: "center",
-            gap: 1
-          }}
-        >
-          {isEdit && (
-            <IconButton color="primary" onClick={onCancel}>
-              <ArrowBack />
-            </IconButton>
-          )}
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {isEdit ? edit : create}
-          </Typography>
-========
             flexDirection: "column"
           }}
         >
@@ -78,12 +55,15 @@ const FormHeader: React.FC<FormHeaderProps> = ({
             sx={{
               display: "flex",
               flexDirection: "row",
-              alignItems: "center"
+              alignItems: "center",
+              gap: 1
             }}
           >
-            <IconButton color="primary" onClick={onCancel}>
-              <ArrowBack />
-            </IconButton>
+            {isEdit && (
+              <IconButton color="primary" onClick={onCancel}>
+                <ArrowBack />
+              </IconButton>
+            )}
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
               {isEdit ? editheading : createHeading}
             </Typography>
@@ -116,7 +96,6 @@ const FormHeader: React.FC<FormHeaderProps> = ({
               </Box>
             )}
           </Box>
->>>>>>>> main:apps/gotask_ui/src/app/component/formHeader/FormHeader.tsx
         </Box>
         <Box
           sx={{

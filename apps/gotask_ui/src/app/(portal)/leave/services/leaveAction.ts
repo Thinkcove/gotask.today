@@ -151,10 +151,7 @@ export const useUpdateLeave = (
       return leave as LeaveEntry;
     },
     {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      errorRetryCount: 2,
-      errorRetryInterval: 1000
+      revalidateOnFocus: false
     }
   );
 

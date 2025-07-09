@@ -17,7 +17,9 @@ const DateFormats = {
   ISO_DATE_TIME: "YYYY-MM-DDTHH:mm:ssZ", // ISO format with timezone
   // Custom format examples
   SHORT_DATE: "DD/MM/YY", // e.g., 06/06/25
-  COMPACT_DATE_TIME: "DDMMYYYY_HHmmss" // e.g., 06062025_153045
+  COMPACT_DATE_TIME: "DDMMYYYY_HHmmss", // e.g., 06062025_153045
+  DEFAULT_TIME: "12-hour",
+  FALLBACK_VALUE: "-"
 };
 
 export default DateFormats;

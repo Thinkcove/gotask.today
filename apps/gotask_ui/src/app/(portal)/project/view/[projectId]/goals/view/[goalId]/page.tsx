@@ -41,13 +41,11 @@ const ProjectGoalViewPage = () => {
     severity: SNACKBAR_SEVERITY.INFO
   });
 
-  // Use SWR for data fetching
   const {
     data: projectGoalView,
     isLoading,
     mutate
   } = useSWR(goalID ? `goal-${goalID}` : null, () => fetchGoalWithComments(goalID), {
-   
     revalidateOnFocus: false,
     revalidateOnReconnect: false
   });
@@ -64,13 +62,6 @@ const ProjectGoalViewPage = () => {
     });
   };
 
-  // Refresh goal data using SWR mutate
-  const refreshGoalData = async () => {
-    if (!goalID) return;
-    await mutate();
-  };
-
-  // Comment handlers
   const handleSaveComment = async (commentData: {
     goal_id: string;
     comment: string;
@@ -83,7 +74,7 @@ const ProjectGoalViewPage = () => {
         comments: [commentData.comment]
       };
       await createComment(payload);
-      await refreshGoalData();
+      await mutate();
       showSnackbar(transGoal("goalSaved"), SNACKBAR_SEVERITY.SUCCESS);
     } catch (error) {
       showSnackbar(transGoal("goalfiled"), SNACKBAR_SEVERITY.ERROR);
@@ -97,7 +88,7 @@ const ProjectGoalViewPage = () => {
   ) => {
     try {
       await updateComment(commentId, { comments: [updatedComment.comment] });
-      await refreshGoalData();
+      await mutate();
       showSnackbar(transGoal("goalupdate"), SNACKBAR_SEVERITY.SUCCESS);
     } catch (err) {
       showSnackbar(transGoal("goalfiled"), SNACKBAR_SEVERITY.ERROR);
@@ -108,7 +99,7 @@ const ProjectGoalViewPage = () => {
   const handleDeleteComment = async (commentId: string | number) => {
     try {
       await deleteComment(commentId);
-      await refreshGoalData();
+      await mutate();
       showSnackbar(transGoal("deletegoal"), SNACKBAR_SEVERITY.SUCCESS);
     } catch (error) {
       showSnackbar(transGoal("deletegoalfiled"), SNACKBAR_SEVERITY.ERROR);
@@ -157,12 +148,13 @@ const ProjectGoalViewPage = () => {
       <Box sx={{ pt: 2 }}>
         <ProjectGoalView
           goalData={projectGoalView || null}
+          loading={isLoading}
+          user={user}
+          handleBack={handleBack}
+          onEdit={handleEditGoal}
           handleSaveComment={handleSaveComment}
           handleEditComment={handleEditComment}
           handleDeleteComment={handleDeleteComment}
-          handleBack={handleBack}
-          user={user}
-          onEdit={handleEditGoal}
         />
 
         {/* Snackbar */}

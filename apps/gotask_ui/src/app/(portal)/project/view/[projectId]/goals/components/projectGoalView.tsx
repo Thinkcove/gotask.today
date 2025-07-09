@@ -7,23 +7,21 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/project";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { GoalComment, ProjectGoalViewProps } from "../interface/projectGoal";
-import GoalComments from "./goalComments";
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import CommentSection from "@/app/component/comments/commentSection";
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   goalData,
   loading = false,
-  handleSaveComment,
-  handleEditComment,
-  handleDeleteComment,
   user,
   handleBack,
-  onEdit
+  onEdit,
+  handleSaveComment,
+  handleEditComment,
+  handleDeleteComment
 }) => {
-  const comments: GoalComment[] = goalData?.comments || [];
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   if (loading || !goalData) {
@@ -111,7 +109,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
                 value={goalData.createdAt && <FormattedDateTime date={goalData.createdAt} />}
               />
             </Grid>
-      
+
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
                 label={transGoal("startdate")}
@@ -129,18 +127,31 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
           <Divider sx={{ mt: 2, mb: 3 }} />
 
           <Box>
-            <Typography variant="subtitle1" fontWeight={500} mb={1}></Typography>
-            <Box sx={{ display: "flex", gap: 1, color: "#741B92", alignItems: "center" }}>
-              <Typography fontWeight="bold"> {transGoal("comment")}</Typography>
-              <SpeakerNotesOutlined />
-            </Box>
-            <GoalComments
-              comments={comments}
-              onSave={handleSaveComment}
-              onEdit={handleEditComment}
-              onDelete={handleDeleteComment}
-              goalId={goalData.id?.toString() || ""}
-              user={user}
+            <CommentSection
+              comments={(goalData.comments || []).map((goalComment: GoalComment) => ({
+                id: String(goalComment.id),
+                comment: Array.isArray(goalComment.comments)
+                  ? goalComment.comments[0] || ""
+                  : goalComment.comments || goalComment.comments || "",
+                user_id: user?.id || "",
+                user_name: user?.name || "",
+                updatedAt: goalComment.updatedAt
+              }))}
+              onSave={async (html) => {
+                await handleSaveComment({
+                  goal_id: goalData.id,
+                  comment: html,
+                  user_id: user?.id || ""
+                });
+              }}
+              onUpdate={async (comment) => {
+                await handleEditComment(comment.id, {
+                  comment: comment.comment
+                });
+              }}
+              onDelete={async (id) => {
+                await handleDeleteComment(id);
+              }}
             />
           </Box>
         </Box>

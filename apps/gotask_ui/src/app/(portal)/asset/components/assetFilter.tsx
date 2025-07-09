@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Link } from "@mui/material";
+import { Box, Link, Skeleton } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { ALLOCATION } from "../assetConstants";
@@ -7,9 +7,7 @@ import { ALLOCATION } from "../assetConstants";
 interface Props {
   modelNameFilter: string[];
   assignedToFilter: string[];
-  allModelNames: string[];
   allUsers: string[];
-  onModelNameChange: (val: string[]) => void;
   onAssignedToChange: (val: string[]) => void;
   onClearFilters: () => void;
   trans: (key: string) => string;
@@ -27,14 +25,16 @@ interface Props {
   onSystemTypeChange?: (val: string[]) => void;
   assetAllocationFilter?: string[];
   onAssetAllocationChange?: (val: string[]) => void;
+  assetTypeFilter?: string[];
+  allAssetTypes?: string[];
+  onAssetTypeChange?: (val: string[]) => void;
+  loading?: boolean;
 }
 
 const AssetFilters: React.FC<Props> = ({
   modelNameFilter,
   assignedToFilter,
-  allModelNames,
   allUsers,
-  onModelNameChange,
   onAssignedToChange,
   onClearFilters,
   trans,
@@ -50,7 +50,11 @@ const AssetFilters: React.FC<Props> = ({
   allSystemTypes,
   onSystemTypeChange,
   assetAllocationFilter,
-  onAssetAllocationChange
+  onAssetAllocationChange,
+  assetTypeFilter,
+  allAssetTypes,
+  onAssetTypeChange,
+  loading = false
 }) => {
   const appliedFilterCount =
     (hideModelNameFilter ? 0 : modelNameFilter.length > 0 ? 1 : 0) +
@@ -58,7 +62,8 @@ const AssetFilters: React.FC<Props> = ({
     (systemTypeFilter && systemTypeFilter.length > 0 ? 1 : 0) +
     (dateFrom ? 1 : 0) +
     (dateTo ? 1 : 0) +
-    (assetAllocationFilter && assetAllocationFilter.length > 0 ? 1 : 0);
+    (assetAllocationFilter && assetAllocationFilter.length > 0 ? 1 : 0) +
+    (assetTypeFilter && assetTypeFilter.length > 0 ? 1 : 0);
 
   return (
     <Box>
@@ -74,56 +79,71 @@ const AssetFilters: React.FC<Props> = ({
           "&::-webkit-scrollbar": { display: "none" }
         }}
       >
-        {!hideModelNameFilter && (
-          <FilterDropdown
-            label={trans("modelname")}
-            options={allModelNames}
-            selected={modelNameFilter}
-            onChange={onModelNameChange}
-          />
-        )}
-        {!hideAssignedToFilter && (
-          <FilterDropdown
-            label={trans("assignedTo")}
-            options={allUsers}
-            selected={assignedToFilter}
-            onChange={onAssignedToChange}
-          />
-        )}
-        {onDateChange && (
-          <DateDropdown
-            dateFrom={dateFrom || ""}
-            dateTo={dateTo || ""}
-            onDateChange={onDateChange}
-            transtask={trans}
-            placeholder={trans("warranty")}
-          />
-        )}
-        {allSystemTypes && onSystemTypeChange && (
-          <FilterDropdown
-            label={trans("systemtype")}
-            options={allSystemTypes}
-            selected={systemTypeFilter || []}
-            onChange={onSystemTypeChange}
-          />
-        )}
-
-        {allStatuses && onStatusChange && (
-          <FilterDropdown
-            label={trans("status")}
-            options={allStatuses}
-            selected={statusFilter || []}
-            onChange={onStatusChange}
-          />
-        )}
-
-        {onAssetAllocationChange && (
-          <FilterDropdown
-            label={trans("assetallocation")}
-            options={ALLOCATION}
-            selected={assetAllocationFilter || []}
-            onChange={onAssetAllocationChange}
-          />
+        {loading ? (
+          <>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                variant="rectangular"
+                width={220}
+                height={42}
+                sx={{ borderRadius: 1 }}
+                animation="wave"
+              />
+            ))}
+          </>
+        ) : (
+          <>
+            {allAssetTypes && onAssetTypeChange && (
+              <FilterDropdown
+                label={trans("assettype")}
+                options={allAssetTypes}
+                selected={assetTypeFilter || []}
+                onChange={onAssetTypeChange}
+              />
+            )}
+            {!hideAssignedToFilter && (
+              <FilterDropdown
+                label={trans("assignedTo")}
+                options={allUsers}
+                selected={assignedToFilter}
+                onChange={onAssignedToChange}
+              />
+            )}
+            {onDateChange && (
+              <DateDropdown
+                dateFrom={dateFrom || ""}
+                dateTo={dateTo || ""}
+                onDateChange={onDateChange}
+                transtask={trans}
+                placeholder={trans("warranty")}
+              />
+            )}
+            {allSystemTypes && onSystemTypeChange && (
+              <FilterDropdown
+                label={trans("systemtype")}
+                options={allSystemTypes}
+                selected={systemTypeFilter || []}
+                onChange={onSystemTypeChange}
+              />
+            )}
+            {allStatuses && onStatusChange && (
+              <FilterDropdown
+                label={trans("status")}
+                options={allStatuses}
+                selected={statusFilter || []}
+                onChange={onStatusChange}
+              />
+            )}
+            {onAssetAllocationChange && (
+              <FilterDropdown
+                label={trans("assetallocation")}
+                options={ALLOCATION}
+                selected={assetAllocationFilter || []}
+                onChange={onAssetAllocationChange}
+              />
+            )}
+          </>
         )}
       </Box>
 

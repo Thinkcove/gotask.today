@@ -5,3 +5,8 @@ export const getPermissionColor = () => {
 export const getLeaveColor = () => {
   return "red";
 };
+
+export enum LEAVE_TYPE {
+  SICK = "Sick",
+  PERSONAL = "Personal"
+}

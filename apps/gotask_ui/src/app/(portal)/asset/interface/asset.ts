@@ -147,3 +147,13 @@ export interface IIssuesHistories {
   userData?: User;
   previousStatus?: string;
 }
+
+export interface AssetFilters {
+  assignedToFilter?: string[];
+  modelNameFilter?: string[];
+  warrantyDateFrom?: string;
+  warrantyDateTo?: string;
+  systemTypeFilter?: string[];
+  assetAllocationFilter?: string[];
+  assetTypeFilter?: string[];
+}

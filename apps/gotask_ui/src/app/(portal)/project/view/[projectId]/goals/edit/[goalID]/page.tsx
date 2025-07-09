@@ -71,11 +71,11 @@ const EditGoalPage = () => {
           const updatedUser = users?.find((user: User) => user.id === item.user_id);
           const loginuser_name = updatedUser?.first_name || updatedUser?.name || "Unknown";
 
-          // Filter out WeekStart and WeekEnd from formatted_history
           const filteredLines = item.formatted_history
-            ?.split("; ")
-            ?.filter(
-              (line:any) =>
+            ?.toString()
+            .split("; ")
+            .filter(
+              (line) =>
                 !line.toLowerCase().includes("weekstart") && !line.toLowerCase().includes("weekend")
             );
 
@@ -90,8 +90,6 @@ const EditGoalPage = () => {
         .filter(Boolean) ?? []
     );
   }, [projectGoalHistory?.updateHistory, users]);
-  
-  
 
   const handleCancel = () => {
     router.back();

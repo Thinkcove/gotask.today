@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo, useCallback } from "react";
-import { Box, Grid, Paper, Typography, CircularProgress } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import Table from "@/app/component/table/table";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
@@ -135,23 +135,6 @@ const LeaveList: React.FC = () => {
     setFromDateFilter("");
     setToDateFilter("");
   };
-
-  // if (isLoading) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         minHeight: "100vh",
-  //         display: "flex",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //         background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-  //       }}
-  //     >
-  //       <CircularProgress size={50} thickness={4} />
-  //     </Box>
-  //   );
-  // }
-
   return (
     <>
       <Box marginTop={"15px"}>

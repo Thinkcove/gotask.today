@@ -1,6 +1,7 @@
 import { Asset, IAsset } from "../../model/asset/asset";
-import { AssetTag } from "../../model/assetTag/assetTag";
 import { AssetType, IAssetType } from "../../model/assetType/assetType";
+import { User } from "../../model/user/user";
+import { getAssetByUserId } from "../assetTag/assetTag";
 
 const createAsset = async (assetData: IAsset): Promise<IAsset> => {
   const newAsset = new Asset(assetData);
@@ -24,6 +25,10 @@ const getAssetTypeById = async (id: string): Promise<IAsset | null> => {
   return await AssetType.findOne({ id });
 };
 
+const getAssetTypeByName = async (name: string): Promise<IAssetType | null> => {
+  return await AssetType.findOne({ name });
+};
+
 const getAllAssets = async (
   skip?: number,
   limit?: number,
@@ -35,12 +40,16 @@ const getAllAssets = async (
 ): Promise<IAsset[]> => {
   let assetIds: string[] = [];
   if (userId) {
-    const userBasedAssets = await AssetTag.find({ userId });
-    assetIds = userBasedAssets.map((tag) => tag.assetId.toString());
+    const users = await User.find({ name: userId });
+    if (!users) return [];
 
-    if (assetIds.length === 0) {
-      return [];
-    }
+    const userIds = users.map((user) => user.id);
+
+    const allTags = await Promise.all(userIds.map((id) => getAssetByUserId(id)));
+    const tags = allTags.flat();
+
+    assetIds = tags.map((tag) => tag.assetId);
+    if (!assetIds.length) return [];
   }
 
   // Build base query
@@ -48,9 +57,10 @@ const getAllAssets = async (
   if (assetIds.length > 0) {
     query.id = { $in: assetIds };
   }
-
   if (typeId) {
-    query.typeId = typeId;
+    const assetType = await getAssetTypeByName(typeId);
+    if (!assetType) return [];
+    query.typeId = assetType.id;
   }
 
   if (systemType) {

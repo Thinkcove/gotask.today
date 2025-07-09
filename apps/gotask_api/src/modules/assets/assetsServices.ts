@@ -246,7 +246,12 @@ class assetService {
         })
       );
       const sortedData = this.sortData(tagsData, sortVar, sortType);
-      return { success: true, data: sortedData, total };
+      return {
+        success: true,
+        data: sortedData,
+        total,
+        filtered: sortedData.length
+      };
     } catch (error: any) {
       return {
         success: false,

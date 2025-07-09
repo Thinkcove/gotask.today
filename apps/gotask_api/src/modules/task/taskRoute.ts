@@ -98,7 +98,7 @@ TaskRoutes.push({
 
 // Route: Get Task by ID
 TaskRoutes.push({
-  path: API_PATHS.GET_TASK_BY_ID, 
+  path: API_PATHS.GET_TASK_BY_ID,
   method: API_METHODS.GET,
   handler: permission(appName, ACTIONS.VIEW, (request: Request, handler: ResponseToolkit) =>
     taskController.getTaskById(new RequestHelper(request), handler)
@@ -108,11 +108,10 @@ TaskRoutes.push({
     tags,
     auth: {
       strategy: authStrategy.SIMPLE,
-      mode: "try" 
+      mode: "try"
     }
   }
 });
-
 
 // Route: Update Task
 TaskRoutes.push({

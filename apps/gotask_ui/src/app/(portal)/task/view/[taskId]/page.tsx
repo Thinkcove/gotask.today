@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getMessages } from "next-intl/server";
 import ViewAction from "../[taskId]/client";
+import { buildTaskUrl } from "./taskUtils";
 
 type Props = {
   params: Promise<{ taskId: string }>;
@@ -14,7 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = (key: string) => messages.Task?.TaskDetailPage?.[key] ?? key;
 
   try {
-    const res = await fetch(`${baseUrl}/getTaskById/${taskId}?metaOnly=true`, {
+    const url = buildTaskUrl(taskId, true);
+    const res = await fetch(url, {
       cache: "no-store"
     });
 
@@ -38,6 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function Page() {
-  return <ViewAction />;
+export default async function Page({ params }: { params: { taskId: string } }) {
+  const url = buildTaskUrl(params.taskId); 
+  const res = await fetch(url, { cache: "no-store" });
+  const json = await res.json();
+
+  return <ViewAction fallbackTask={json?.data} taskId={params.taskId} />;
 }

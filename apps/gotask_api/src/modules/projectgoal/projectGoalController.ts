@@ -17,7 +17,7 @@ import {
   updateProjectGoalService
 } from "../projectgoal/projectGoalService";
 import { ProjectGoalUpdateHistory } from "../../domain/model/projectGoal/projectGoalUpdateHistory";
-import { generateUpdateHistory } from "./utils/projectGoalHistory";
+import { generateUpdateHistory } from "../../constants/utils/history";
 
 class ProjectGoalController extends BaseController {
   // Create a new Project goal

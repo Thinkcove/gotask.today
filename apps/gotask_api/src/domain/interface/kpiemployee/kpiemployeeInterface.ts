@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { IKpiTemplate, KpiTemplate } from "../../model/kpi/kpiModel";
-import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiemloyeeModel";
 import { KPI_FREQUENCY } from "../../../constants/kpiConstants";
 import { IKpiPerformance } from "../../model/kpiemployee/kpiPerformanceModel";
 import { v4 as uuidv4 } from "uuid";
+import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiEmployeeModel"
 
 // Create a new KPI assignment
 export const createKpiAssignmentInDb = async (
@@ -61,21 +61,18 @@ export const updateKpiAssignmentInDb = async (
       ...entry,
       performance_id: entry.performance_id || uuidv4(),
       updated_at: new Date(),
-      added_by: changedBy // Automatically capture who added it
+      added_by: changedBy
     }));
 
     updatePayload.$push = { performance: { $each: newPerformance } };
 
-    // Merge performance entries with currentAssignment
     const allPerformance = [...(currentAssignment.performance || []), ...newPerformance];
 
-    // Find reviewer score for actual value calculation
     const reviewerEntry = allPerformance.find((entry) => entry.added_by === reviewerId);
 
-    const reviewerScore = reviewerEntry ? Number(reviewerEntry.percentage) : null;
-    const target = currentAssignment.target_value ? Number(currentAssignment.target_value) : null;
-
-    if (reviewerScore !== null && target !== null && !isNaN(reviewerScore) && !isNaN(target)) {
+    if (reviewerEntry?.percentage && currentAssignment.target_value) {
+      const reviewerScore = Number(reviewerEntry.percentage);
+      const target = Number(currentAssignment.target_value);
       updatePayload.actual_value = ((reviewerScore * target) / 100).toFixed(2);
     }
   }

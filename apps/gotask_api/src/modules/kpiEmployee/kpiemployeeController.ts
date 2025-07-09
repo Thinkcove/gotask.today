@@ -1,8 +1,8 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiemloyeeModel";
 import { KpiAssignmentMessages } from "../../constants/apiMessages/kpiemployeeMessages";
 import {
+  calculateKpiScores,
   createKpiAssignment,
   deleteKpiAssignmentById,
   getAllKpiAssignments,
@@ -12,7 +12,9 @@ import {
 } from "./kpiemployeeService";
 import { v4 as uuidv4 } from "uuid";
 import { getKpiAssignmentByIdFromDb } from "../../domain/interface/kpiemployee/kpiemployeeInterface";
-import { calculateKpiScores } from "../../constants/utils/common";
+import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiEmployeeModel";
+
+
 
 class KpiAssignmentController extends BaseController {
   // Create KPI Assignment

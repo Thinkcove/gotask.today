@@ -18,6 +18,8 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { User } from "../../user/interfaces/userInterface";
 import { useAllUsers } from "../../task/service/taskAction";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 
 const PermissionList = () => {
   const searchParams = useSearchParams();
@@ -142,51 +144,67 @@ const PermissionList = () => {
   return (
     <>
       {/* Filter Component */}
-      <Box sx={{ pt: 2, pl: 2 }}>
-        <PermissionFilter
-          userFilter={userFilter}
-          allUsers={allUsers.map((u: User) => u.name)}
-          onUserChange={setUserFilter}
-          dateFrom={dateFrom}
-          dateTo={dateTo}
-          onDateChange={onDateChange}
-          onClearFilters={handleClearFilters}
-          showClear={hasActiveFilters}
-          clearText={transpermission("clearall")}
-        />
-      </Box>
+      {filteredPermissions?.length === 0 ? (
+        <EmptyState imageSrc={NoAssetsImage} message={transpermission("nodatafound")} />
+      ) : (
+        <>
+          {/* Filter Component */}
+          <Box sx={{ pt: 2, pl: 2 }}>
+            <PermissionFilter
+              userFilter={userFilter}
+              allUsers={allUsers.map((u: User) => u.name)}
+              onUserChange={setUserFilter}
+              dateFrom={dateFrom}
+              dateTo={dateTo}
+              onDateChange={onDateChange}
+              onClearFilters={handleClearFilters}
+              showClear={hasActiveFilters}
+              clearText={transpermission("clearall")}
+            />
+          </Box>
 
-      <Box
-        sx={{ width: "100%", display: "flex", flexDirection: "column", overflowY: "auto", mt: 2 }}
-      >
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Paper
-              sx={{
-                p: 2,
-                overflow: "auto",
-                display: "flex",
-                flexDirection: "column",
-                overflowY: "auto"
-              }}
-            >
-              <Box sx={{ width: "100%", flex: 1 }}>
-                <Box sx={{ minWidth: 800 }}>
-                  <Table<PermissionData> columns={permissionColumns} rows={filteredPermissions} />
-                </Box>
-              </Box>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Box>
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "auto",
+              mt: 2
+            }}
+          >
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    overflow: "auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    overflowY: "auto"
+                  }}
+                >
+                  <Box sx={{ width: "100%", flex: 1 }}>
+                    <Box sx={{ minWidth: 800 }}>
+                      <Table<PermissionData>
+                        columns={permissionColumns}
+                        rows={filteredPermissions}
+                      />
+                    </Box>
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Box>
 
-      <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
-        <ActionButton
-          label={transpermission("createpermission")}
-          icon={<AddIcon sx={{ color: "white" }} />}
-          onClick={handleCreatePermission}
-        />
-      </Box>
+          <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
+            <ActionButton
+              label={transpermission("createpermission")}
+              icon={<AddIcon sx={{ color: "white" }} />}
+              onClick={handleCreatePermission}
+            />
+          </Box>
+        </>
+      )}
 
       <CommonDialog
         open={isDeleteDialogOpen}

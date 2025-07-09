@@ -68,9 +68,9 @@ const EditGoalPage = () => {
     const fieldLabelMap: { [key: string]: string } = {
       goalTitle: transGoal("goaltitle"),
       description: transGoal("description"),
-      priority: transGoal("priority"),
+      priority: transGoal("filterpriority"),
       projectId: transGoal("projectname"),
-      status: transGoal("status"),
+      status: transGoal("filterstatus"),
       weekEnd: transGoal("startdate"),
       weekStart: transGoal("enddate")
     };

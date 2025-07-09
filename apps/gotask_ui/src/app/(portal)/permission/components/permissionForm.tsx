@@ -24,18 +24,12 @@ function PremissionForm({
     onFormDataChange(field, value);
   };
 
-  // const handleTimeChange = (
-  //   field: "startTime" | "endTime" | "comments",
-  //   value: string | number | Date | string[]
-  // ): void => {
-  //   if (typeof value !== "string") return;
-  //   onFormDataChange(field, value);
-  // };
   const handleTimeChange = (
-    field: "startTime" | "endTime" | "comments",
+    field: "startTime" | "endTime",
     value: string | number | Date | string[]
   ): void => {
-    onFormDataChange(field, String(value));
+    if (typeof value !== "string") return;
+    onFormDataChange(field, value);
   };
 
   return (
@@ -102,28 +96,18 @@ function PremissionForm({
             disabled={isSubmitting}
           />
         </Grid>
+
         <Grid item xs={12}>
-          {/* <FormField
-            label={transpermission("labelreson")}
-            type="text"
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {transpermission("labelreson")}
+          </Typography>
+          <ReusableEditor
+            content={formData.comments}
+            onChange={(val) => onFormDataChange("comments", val as string)}
             placeholder={transpermission("comments")}
-            value={formData.comments}
-            onChange={(val) => handleTimeChange("comments", String(val))}
-            required
-            multiline
-          /> */}
+            showSaveButton={false}
+          />
         </Grid>
-      </Grid>
-      <Grid item xs={12} sm={4} pt={2}>
-        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-          {transpermission("comments")}{" "}
-        </Typography>
-        <ReusableEditor
-          content={formData.comments}
-          onChange={(val) => handleTimeChange("comments", val)}
-          placeholder={transpermission("comments")}
-          showSaveButton={false}
-        />
       </Grid>
     </Box>
   );

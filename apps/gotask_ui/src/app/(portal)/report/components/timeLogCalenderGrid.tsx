@@ -32,6 +32,7 @@ import DateFormats from "@/app/component/dateTime/dateFormat";
 import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
 import { calculatePermissionDuration } from "@/app/common/utils/leaveCalculate";
 import { fetchAllPermissions } from "../services/reportService";
+import { getDailyLogCellStyle } from "@/app/common/constants/logStyle";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -386,8 +387,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     }
   };
 
- 
-
   return (
     <>
       {singleProjectName && (
@@ -630,7 +629,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
                     )}
 
                     {dateRange.map((date) => {
-                      // FIXED: Ensure consistent date formatting
                       const key = format(date, DateFormats.ISO_DATE);
                       const value = taskEntry.dailyLogs[key];
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
@@ -641,14 +639,16 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
                           key={key}
                           sx={{
                             padding: "10px",
-                            textAlign: "center" as const,
-                            border: "1px solid #eee"
+                            textAlign: "center",
+                            border: "1px solid #eee",
+                            ...getDailyLogCellStyle(value)
                           }}
                         >
                           {renderCellContent(value, leaveForDate, permissionForDate)}
                         </TableCell>
                       );
                     })}
+
                     {(userRowRendered = true)}
                   </TableRow>
                 ))

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Box, Grid, Paper, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
 import { fetchAllgetpermission, deletePermission } from "../services/permissionAction";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -50,7 +50,7 @@ const PermissionList = () => {
       severity: severity as SNACKBAR_SEVERITY
     });
   };
-  const { data, mutate } = useSWR("getpermission", fetchAllgetpermission);
+  const { data, mutate, isLoading } = useSWR("getpermission", fetchAllgetpermission);
 
   const displayData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
 
@@ -141,6 +141,22 @@ const PermissionList = () => {
 
   const hasActiveFilters = userFilter.length > 0 || !!dateFrom || !!dateTo;
 
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+        }}
+      >
+        <CircularProgress size={50} thickness={4} />
+      </Box>
+    );
+  }
+
   return (
     <>
       {/* Filter Component */}
@@ -195,14 +211,6 @@ const PermissionList = () => {
               </Grid>
             </Grid>
           </Box>
-
-          <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
-            <ActionButton
-              label={transpermission("createpermission")}
-              icon={<AddIcon sx={{ color: "white" }} />}
-              onClick={handleCreatePermission}
-            />
-          </Box>
         </>
       )}
 
@@ -223,6 +231,13 @@ const PermissionList = () => {
         severity={snackbar.severity}
         onClose={handleSnackbarClose}
       />
+      <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
+        <ActionButton
+          label={transpermission("createpermission")}
+          icon={<AddIcon sx={{ color: "white" }} />}
+          onClick={handleCreatePermission}
+        />
+      </Box>
     </>
   );
 };

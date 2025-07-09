@@ -11,8 +11,9 @@ import {
 } from "../../domain/interface/kpiemployee/kpiemployeeInterface";
 import { getKpiTemplateByIdFromDb } from "../../domain/interface/kpi/kpiInterface";
 import { IKpiTemplate } from "../../domain/model/kpi/kpiModel";
-import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiemloyeeModel";
 import { User } from "../../domain/model/user/user";
+import { IKpiPerformance } from "../../domain/model/kpiemployee/kpiPerformanceModel";
+import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiEmployeeModel";
 
 // Helper to remove restricted fields from an object
 const removeRestrictedFields = <T extends Record<string, any>>(
@@ -26,6 +27,34 @@ const removeRestrictedFields = <T extends Record<string, any>>(
     }
   }
   return cleanedData as Partial<T>;
+};
+
+export const calculateKpiScores = (
+  allPerformance: IKpiPerformance[],
+  reviewerId: string | undefined,
+  assignedBy: string,
+  targetValue: number
+) => {
+  const employeeEntries = allPerformance.filter((p) => p.added_by === assignedBy);
+
+  const reviewerSourceId = reviewerId || assignedBy;
+  const reviewerEntries = allPerformance.filter((p) => p.added_by === reviewerSourceId);
+
+  const avg = (arr: IKpiPerformance[]) => {
+    if (!arr || arr.length === 0) return 0;
+    const total = arr.reduce((sum, p) => sum + Number(p.percentage || 0), 0);
+    return total / arr.length;
+  };
+
+  const employeeScore = avg(employeeEntries);
+  const reviewerScore = avg(reviewerEntries);
+  const actualValue = (reviewerScore * targetValue) / 100;
+
+  return {
+    employeeScore,
+    reviewerScore,
+    actualValue
+  };
 };
 
 // Create a new KPI assignment
@@ -170,24 +199,18 @@ const updateKpiAssignment = async (
   try {
     const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
     if (!assignment) {
-      return {
-        success: false,
-        message: KpiAssignmentMessages.UPDATE.NOT_FOUND
-      };
+      return { success: false, message: KpiAssignmentMessages.UPDATE.NOT_FOUND };
     }
 
     const filteredUpdateData = removeRestrictedFields(updateData, restrictedFields);
 
-    // Validate user IDs if provided in update (referencing User.id)
-    if (
-      filteredUpdateData.user_id ||
-      filteredUpdateData.assigned_by ||
-      filteredUpdateData.reviewer_id
-    ) {
-      const userIdsToValidate = [];
-      if (filteredUpdateData.user_id) userIdsToValidate.push(filteredUpdateData.user_id);
-      if (filteredUpdateData.assigned_by) userIdsToValidate.push(filteredUpdateData.assigned_by);
-      if (filteredUpdateData.reviewer_id) userIdsToValidate.push(filteredUpdateData.reviewer_id);
+    // Validate user IDs if present
+    const userIdsToValidate = [];
+    if (filteredUpdateData.user_id) userIdsToValidate.push(filteredUpdateData.user_id);
+    if (filteredUpdateData.assigned_by) userIdsToValidate.push(filteredUpdateData.assigned_by);
+    if (filteredUpdateData.reviewer_id) userIdsToValidate.push(filteredUpdateData.reviewer_id);
+
+    if (userIdsToValidate.length > 0) {
       const users = await User.find({ id: { $in: userIdsToValidate } }).lean();
       const foundUserIds = users.map((u) => u.id);
       const invalidIds = userIdsToValidate.filter((id) => !foundUserIds.includes(id));
@@ -213,15 +236,9 @@ const updateKpiAssignment = async (
       authUserId
     );
 
-    return {
-      success: true,
-      data: updatedAssignment
-    };
+    return { success: true, data: updatedAssignment };
   } catch (error: any) {
-    return {
-      success: false,
-      message: error.message || KpiAssignmentMessages.UPDATE.FAILED
-    };
+    return { success: false, message: error.message || KpiAssignmentMessages.UPDATE.FAILED };
   }
 };
 

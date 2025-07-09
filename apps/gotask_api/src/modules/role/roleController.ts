@@ -49,13 +49,23 @@ class RoleController extends BaseController {
   async getRoleById(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
+      const metaOnly = requestHelper.getQueryParam<string>("metaOnly") === "true";
+
       const result = await getRoleByIdService(id);
 
       if (!result.success) {
         return this.replyError(new Error(result.message || roleMessages.FETCH.NOT_FOUND));
       }
 
-      return this.sendResponse(handler, result.data);
+      const role = result.data;
+
+      if (metaOnly) {
+        //  Only return minimal metadata
+        return handler.response({ data: { name: role.name } }).code(200);
+      }
+
+      // Full role data for authenticated clients
+      return this.sendResponse(handler, role);
     } catch (error) {
       return this.replyError(error);
     }

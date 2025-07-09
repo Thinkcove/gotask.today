@@ -293,6 +293,15 @@
     "meta": {
       "title": "Role Management | GoTaskToday",
       "description": "Define user roles and assign permissions within the system."
+    },
+    "RoleDetailPage": {
+      "roleNotFoundTitle": "Role Not Found",
+      "roleNotFoundDescription": "This role does not exist or may have been removed.",
+      "title": "Role Details",
+      "descriptionPrefix": "View and manage access for the",
+      "descriptionSuffix": "role.",
+      "errorTitle": "Error",
+      "errorDescription": "Unable to fetch role details."
     }
   },
   "Task": {

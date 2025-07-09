@@ -24,7 +24,7 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import TaskFilters from "@/app/component/filters/taskFilters";
-import { getStorage, setStorage } from "@/app/(portal)/access/utils/storage";
+import { getStoredObj, setStorage } from "@/app/(portal)/access/utils/storage";
 
 interface TaskListProps {
   initialView?: "projects" | "users";
@@ -45,7 +45,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const scrollFrameRef = useRef<number | null>(null);
 
   // Initialize filter states from localStorage or URL search params
-  const savedFilters = getStorage("taskListFilter") || {};
+  const savedFilters = getStoredObj("taskListFilter") || {};
   const [view, setView] = useState<"projects" | "users">(initialView);
   const [page, setPage] = useState(1);
   const [allTasks, setAllTasks] = useState<IGroup[]>([]);

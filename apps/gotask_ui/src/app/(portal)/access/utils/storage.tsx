@@ -9,18 +9,21 @@ export const setStorage = (key: string, value: any) => {
   }
 };
 
-export const getStorage = (key: string) => {
-  if (localStorage && key) {
+export const getStoredObj = <T = any,>(key: string): T | null => {
+  if (typeof localStorage !== "undefined" && key) {
     const value = localStorage.getItem(key);
-    if (value === null) {
+    try {
+      return value ? JSON.parse(value) : null;
+    } catch {
       return null;
     }
-    try {
-      const obj = JSON.parse(value);
-      return obj;
-    } catch {
-      return value;
-    }
+  }
+  return null;
+};
+
+export const getStored = (key: string): string | null => {
+  if (typeof localStorage !== "undefined" && key) {
+    return localStorage.getItem(key);
   }
   return null;
 };

@@ -84,21 +84,21 @@ class ProjectGoalController extends BaseController {
 
       delete updateData.user_id;
 
-      // 🔍 1. Get old data before update
+      // Get old data before update
       const currentGoal = await getProjectGoalByIdService(id);
       if (!currentGoal || !currentGoal.data) throw new Error("Goal not found");
 
       const oldData = currentGoal.data;
 
-      // 🛠️ 2. Update goal
+      //Update goal
       const updatedGoal = await updateProjectGoalService(id, updateData, userId);
       if (!updatedGoal) throw new Error("Failed to update goal");
 
-      // 🧠 3. Generate history message
+      //Generate history message
       const historyChanges = generateUpdateHistory(oldData, updateData);
       const formatted_history = Object.values(historyChanges).join("; ");
 
-      // 📝 4. Save update history if there are changes
+      //Save update history if there are changes
       if (formatted_history) {
         await ProjectGoalUpdateHistory.create({
           goal_id: id,

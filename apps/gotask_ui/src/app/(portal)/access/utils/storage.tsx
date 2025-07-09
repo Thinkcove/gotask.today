@@ -27,3 +27,9 @@ export const getStored = (key: string): string | null => {
   }
   return null;
 };
+
+export const removeStorage = (key: string) => {
+  if (typeof localStorage !== "undefined" && key) {
+    localStorage.removeItem(key);
+  }
+};

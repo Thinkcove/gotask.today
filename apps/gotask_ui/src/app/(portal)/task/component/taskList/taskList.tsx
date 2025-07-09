@@ -24,7 +24,7 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import TaskFilters from "@/app/component/filters/taskFilters";
-import { getStoredObj, setStorage } from "@/app/(portal)/access/utils/storage";
+import { getStoredObj, removeStorage, setStorage } from "@/app/(portal)/access/utils/storage";
 
 interface TaskListProps {
   initialView?: "projects" | "users";
@@ -416,7 +416,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
           setVariationDays(0);
           setMoreDays(undefined);
           setLessDays(undefined);
-          localStorage.removeItem("taskListFilters");
+          removeStorage("taskListFilter");
         }}
         transtask={transtask}
       />

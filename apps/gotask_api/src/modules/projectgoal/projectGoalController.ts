@@ -17,6 +17,7 @@ import {
   updateProjectGoalService
 } from "../projectgoal/projectGoalService";
 import { ProjectGoalUpdateHistory } from "../../domain/model/projectGoal/projectGoalUpdateHistory";
+import { generateUpdateHistory } from "./utils/projectGoalHistory";
 
 class ProjectGoalController extends BaseController {
   // Create a new Project goal
@@ -74,18 +75,37 @@ class ProjectGoalController extends BaseController {
     }
   }
   // Update a goal by ID
+
   async updateProjectGoal(requestHelper: RequestHelper, handler: any) {
     try {
       const id = requestHelper.getParam("id");
       const updateData = requestHelper.getPayload();
-
       const userId = updateData.user_id || requestHelper.getParam("user_id");
 
       delete updateData.user_id;
 
-      const updatedGoal = await updateProjectGoalService(id, updateData, userId);
+      // 🔍 1. Get old data before update
+      const currentGoal = await getProjectGoalByIdService(id);
+      if (!currentGoal || !currentGoal.data) throw new Error("Goal not found");
 
-      if (!updatedGoal) throw new Error("Goal not found");
+      const oldData = currentGoal.data;
+
+      // 🛠️ 2. Update goal
+      const updatedGoal = await updateProjectGoalService(id, updateData, userId);
+      if (!updatedGoal) throw new Error("Failed to update goal");
+
+      // 🧠 3. Generate history message
+      const historyChanges = generateUpdateHistory(oldData, updateData);
+      const formatted_history = Object.values(historyChanges).join("; ");
+
+      // 📝 4. Save update history if there are changes
+      if (formatted_history) {
+        await ProjectGoalUpdateHistory.create({
+          goal_id: id,
+          user_id: userId,
+          formatted_history
+        });
+      }
 
       return this.sendResponse(handler, updatedGoal);
     } catch (error) {

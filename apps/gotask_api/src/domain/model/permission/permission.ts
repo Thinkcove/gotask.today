@@ -9,7 +9,7 @@ export interface IPermission extends Document {
   date: Date;
   start_time: string;
   end_time?: string;
-  comments: string[];
+  comments: string;
 }
 
 const PermissionSchema = new Schema<IPermission>(
@@ -20,7 +20,7 @@ const PermissionSchema = new Schema<IPermission>(
     date: { type: Date, required: true },
     start_time: { type: String, required: true },
     end_time: { type: String, required: false },
-    comments: { type: [String], default: [] }
+    comments: { type: String, required: false }
   },
   { timestamps: true }
 );

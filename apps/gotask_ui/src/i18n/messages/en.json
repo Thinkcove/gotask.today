@@ -434,6 +434,15 @@
         "title": "Assignee Overview",
         "description": "Assign users to tasks and monitor individual task progress."
       }
+    },
+    "TaskDetailPage": {
+      "taskNotFoundTitle": "Task Not Found",
+      "taskNotFoundDescription": "This task does not exist or may have been removed.",
+      "title": "Task Details",
+      "descriptionPrefix": "View and manage progress for the",
+      "descriptionSuffix": "task.",
+      "errorTitle": "Error",
+      "errorDescription": "Unable to fetch task details."
     }
   },
   "User": {

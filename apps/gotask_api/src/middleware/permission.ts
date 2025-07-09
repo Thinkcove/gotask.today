@@ -3,6 +3,12 @@ import { hasAccess } from "../constants/accessCheck/accessControls";
 
 export function permission(appName: string, action: string, handlerFunc: any) {
   return async (request: Request, h: ResponseToolkit) => {
+    const metaOnly = request.query?.metaOnly === "true";
+
+    if (metaOnly) {
+      return handlerFunc(request, h, null);
+    }
+
     const user = request.auth?.artifacts?.user;
 
     if (!user) {
@@ -15,7 +21,6 @@ export function permission(appName: string, action: string, handlerFunc: any) {
       return h.response({ error: "Access Denied" }).code(403);
     }
 
-    // Pass restrictedFields to handler so it can enforce field-level access control
     return handlerFunc(request, h, restrictedFields);
   };
 }

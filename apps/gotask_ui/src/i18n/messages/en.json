@@ -180,6 +180,7 @@
       "detailTitle": "{name} | Project Detail",
       "detailDescription": "Explore resources and team associated with project {name}."
     },
+
     "Stories": {
       "noStoriesFound": "No stories found for this project.",
       "createdat": "Created At",
@@ -221,6 +222,7 @@
       "suffixtoday": "Today",
       "storyTitle": "Story Title *",
       "description": "Description *",
+
       "filters": {
         "status": "Status",
         "all": "All",
@@ -237,6 +239,7 @@
         "clearAll": "Clear All",
         "search": "Search"
       },
+
       "placeholders": {
         "title": "Enter story title",
         "description": "Enter story description",
@@ -511,7 +514,8 @@
     "skills": "Skills",
     "noskillsadded": "No skills added.",
     "proficiency": "Proficiency",
-    "experience": "Experience",
+    "experience": "Experience ( in months )",
+    "experienceview": "Experience",
     "cancel": "Cancel",
     "save": "Save",
     "failedfetch": "Failed to fetch user data",
@@ -555,7 +559,9 @@
       "subtitle": "Add details of Certifications you have achieved/completed",
       "cname": "Please enter your certification name",
       "notesplaceholder": "Add any optional notes",
-      "nocertifications": "No certifications added yet."
+      "nocertifications": "No certifications added yet.",
+      "nameisrequired": "Certificate name is required",
+      "dateisrequired": "Obtained date is required"
     },
 
     "Increment": {
@@ -580,7 +586,9 @@
       "salaryrevisionlog": "Salary Revision Log",
       "short": "short",
       "numeric": "numeric",
-      "description": "View, create, and manage user profiles and credentials."
+      "description": "View, create, and manage user profiles and credentials.",
+      "dateisrequired": "Date is required",
+      "ctcisrequired": "CTC must be greater than 0"
     }
   },
   "Appbar": {
@@ -748,6 +756,7 @@
       }
     }
   },
+
   "Chatbot": {
     "viewname": "Chatbot",
     "title": "Thinkrove Chatbot",
@@ -891,8 +900,8 @@
     "titleerror": "Title is required",
     "descriptionerror": "Description is required",
     "saveastemplate": "Save as Template",
-    "templatesavesuccess":"Template created Successfully",
-    "saveerror":"Failed to save template",
+    "templatesavesuccess": "Template created Successfully",
+    "saveerror": "Failed to save template",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."
@@ -996,6 +1005,55 @@
     "meta": {
       "title": "File Upload | GoTaskToday",
       "description": "Upload and manage files and documents securely."
+    }
+  },
+  "Permission": {
+    "permission": "Permission",
+    "username": "User Name",
+    "date": "Permission Date",
+    "starttime": "Start Time",
+    "endtime": "End Time",
+    "createdat": "Created Date",
+    "comments": "Permission Comments",
+    "close": "Close",
+    "search": "Search user name",
+    "nodatafound": "No permishion found.",
+    "viewdetails": "View Details",
+    "startdate": "Start Date",
+    "startdaterequired": "Start date is required",
+    "starttimerequired": "Start time is required",
+    "endtimerequired": "End time is required",
+    "starttimebeforeendtime": "Start time must be before end time on the same day",
+    "endtimebeforeendtime": "End time must be after start time on the same day",
+    "successmessage": "Permission request submitted successfully!",
+    "failedmessage": "Failed to submit permission request. Please try again.",
+    "create": "Create",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "update": "Update",
+    "createpermission": "Create Permission",
+    "actions": "Actions",
+    "deletepermission": "Delete Permission",
+    "editpermission": "Edit Permission",
+    "data": "Date",
+    "filterdate": "Date",
+    "deleteconfirm": "Are you sure you want to delete this permission?",
+    "deletetitle": "Delete Permission",
+    "delete": "Delete",
+    "clearall": "Clear All",
+    "filterfrom": "From Date",
+    "filterclear": "Clear",
+    "filterapply": "Apply",
+    "filterto": "To Date",
+    "labelreson": "Reson",
+    "permissionapplier": "Permission Applier",
+    "deletesuccess": "Permission deleted successfully!",
+    "deletefailed": "Failed to delete permission. Please try again.",
+    "permissionon": "Permission On",
+    "filteruser":"User",
+    "meta": {
+      "title": "Permission Requests | GoTaskToday",
+      "description": "Manage employee leaves or short-term permissions"
     }
   }
 }

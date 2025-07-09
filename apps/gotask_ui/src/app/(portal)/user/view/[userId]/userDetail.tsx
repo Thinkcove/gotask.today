@@ -27,6 +27,7 @@ import SkillInput from "../../components/skillInput";
 import CertificateInput from "../../components/certificateInput";
 import MetadataSetter from "@/app/component/meta/MetadataSetter";
 
+import IncrementInput from "../../components/incrementInput";
 
 interface UserDetailProps {
   user: User;
@@ -130,6 +131,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 transuser("general"),
                 transuser("userskill"),
                 transuser("Certificate.certificates"),
+                transuser("Increment.incrementhistory"),
                 transuser("projectdetails"),
                 transasset("assetdetails")
               ]}
@@ -301,13 +303,13 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                                 </Typography>
                                 <Box display="flex" justifyContent="space-between">
                                   <Typography {...labelTextStyle}>
-                                    {transasset("accessCardNo")}:
+                                    {transasset("accesscardno")}:
                                   </Typography>
                                   <EllipsisText text={asset.accessCardNo ?? "-"} maxWidth={160} />
                                 </Box>
                                 <Box display="flex" justifyContent="space-between">
                                   <Typography {...labelTextStyle}>
-                                    {transasset("personalId")}:
+                                    {transasset("personalid")}:
                                   </Typography>
                                   <EllipsisText text={asset.personalId ?? "-"} maxWidth={160} />
                                 </Box>
@@ -396,6 +398,11 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   await mutate();
                 }}
               />
+            </Box>
+          )}
+          {selectedTab === transuser("Increment.incrementhistory") && (
+            <Box>
+              <IncrementInput userId={userID} />
             </Box>
           )}
         </Box>

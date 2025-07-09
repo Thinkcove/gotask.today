@@ -1,10 +1,11 @@
 import React from "react";
 import Grid from "@mui/material/Grid/Grid";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PremissionFormProps } from "../interface/interface";
+import ReusableEditor from "@/app/component/richText/textEditor";
 
 function PremissionForm({
   formData,
@@ -23,12 +24,18 @@ function PremissionForm({
     onFormDataChange(field, value);
   };
 
+  // const handleTimeChange = (
+  //   field: "startTime" | "endTime" | "comments",
+  //   value: string | number | Date | string[]
+  // ): void => {
+  //   if (typeof value !== "string") return;
+  //   onFormDataChange(field, value);
+  // };
   const handleTimeChange = (
     field: "startTime" | "endTime" | "comments",
     value: string | number | Date | string[]
   ): void => {
-    if (typeof value !== "string") return;
-    onFormDataChange(field, value);
+    onFormDataChange(field, String(value));
   };
 
   return (
@@ -96,7 +103,7 @@ function PremissionForm({
           />
         </Grid>
         <Grid item xs={12}>
-          <FormField
+          {/* <FormField
             label={transpermission("labelreson")}
             type="text"
             placeholder={transpermission("comments")}
@@ -104,8 +111,19 @@ function PremissionForm({
             onChange={(val) => handleTimeChange("comments", String(val))}
             required
             multiline
-          />
+          /> */}
         </Grid>
+      </Grid>
+      <Grid item xs={12} sm={4} pt={2}>
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+          {transpermission("comments")}{" "}
+        </Typography>
+        <ReusableEditor
+          content={formData.comments}
+          onChange={(val) => handleTimeChange("comments", val)}
+          placeholder={transpermission("comments")}
+          showSaveButton={false}
+        />
       </Grid>
     </Box>
   );

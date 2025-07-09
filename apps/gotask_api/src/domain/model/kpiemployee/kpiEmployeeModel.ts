@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { KPI_FREQUENCY, STATUS } from "../../../constants/kpiConstants";
+import { IKpiPerformance, KpiPerformanceSchema } from "./kpiPerformanceModel";
 
 export interface IKpiAssignment extends Document {
   assignment_id: string;
@@ -12,6 +13,10 @@ export interface IKpiAssignment extends Document {
   frequency: string;
   weightage: string;
   target_value?: string;
+  actual_value?: string;
+  employee_score?: string;
+  reviewer_score?: string;
+  performance?: IKpiPerformance[];
   assigned_by: string;
   reviewer_id?: string;
   comments?: string[];
@@ -57,6 +62,13 @@ const KpiAssignmentSchema = new Schema<IKpiAssignment>(
     },
     target_value: {
       type: String
+    },
+    actual_value: { type: String },
+    employee_score: { type: String },
+    reviewer_score: { type: String },
+    performance: {
+      type: [KpiPerformanceSchema],
+      default: []
     },
     assigned_by: {
       type: String,

@@ -14,7 +14,7 @@ import ProjectGoalForm from "../../components/projectGoalForm";
 import HistoryDrawer from "../../components/history";
 import { useGoalForm } from "../../goalHook/useGoalForm";
 import { UpdateHistoryItem, User } from "../../interface/projectGoal";
-import FormHeader from "../../../../../../access/components/FormHeader";
+import FormHeader from "../../../../../../../component/header/formHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 
@@ -68,9 +68,9 @@ const EditGoalPage = () => {
     const fieldLabelMap: { [key: string]: string } = {
       goalTitle: transGoal("goaltitle"),
       description: transGoal("description"),
-      priority: transGoal("priority"),
+      priority: transGoal("filterpriority"),
       projectId: transGoal("projectname"),
-      status: transGoal("status"),
+      status: transGoal("filterstatus"),
       weekEnd: transGoal("startdate"),
       weekStart: transGoal("enddate")
     };
@@ -90,7 +90,7 @@ const EditGoalPage = () => {
         return {
           loginuser_name,
           formatted_history: formattedChanges.join(". "),
-          created_date: item.timestamp || ""
+          created_date: item.createdAt || ""
         };
       }) ?? []
     );
@@ -174,9 +174,8 @@ const EditGoalPage = () => {
           onShowHistory={() => setHistory(true)}
           isSubmitting={isSubmitting}
           hasHistory={(projectGoalHistory?.updateHistory ?? []).length > 0}
-          edit={transGoal("editgoal")}
-          create={transGoal("creategoal")}
-          cancle={transGoal("cancel")}
+          editheading={transGoal("editgoal")}
+          cancel={transGoal("cancel")}
           update={transGoal("update")}
           showhistory={transGoal("showhistory")}
         />

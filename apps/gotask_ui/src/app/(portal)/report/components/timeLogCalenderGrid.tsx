@@ -293,7 +293,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           <Typography
             variant="caption"
             sx={{
-              fontSize: "0.5rem",
+              fontSize: "0.7rem",
               fontWeight: 500,
               color: getLeaveColor()
             }}
@@ -303,7 +303,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           <Typography
             variant="caption"
             sx={{
-              fontSize: "0.5rem",
+              fontSize: "0.7rem",
               fontWeight: 500,
               color: "#009688"
             }}
@@ -313,7 +313,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           <Typography
             variant="caption"
             sx={{
-              fontSize: "0.5rem",
+              fontSize: "0.7rem",
               fontWeight: 500,
               color: "#009688"
             }}

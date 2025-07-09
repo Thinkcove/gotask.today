@@ -243,18 +243,11 @@ export const getUserIncrements = async (userId: string): Promise<IIncrementHisto
 export const addUserIncrement = async (userId: string, increment: IIncrementHistory) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/increments/${userId}`;
-    return fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(increment)
-    }).then((res) => res.json());
+    return postData(url, increment as unknown as Record<string, unknown>, token);
   });
 };
 
-// Update increment
+//update
 export const updateUserIncrement = async (
   userId: string,
   index: number,
@@ -262,14 +255,7 @@ export const updateUserIncrement = async (
 ) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/increments/${userId}/${index}`;
-    return fetch(url, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(updated)
-    }).then((res) => res.json());
+    return putData(url, updated as unknown as Record<string, unknown>, token);
   });
 };
 

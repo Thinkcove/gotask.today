@@ -204,6 +204,7 @@ const PermissionList = () => {
                       <Table<PermissionData>
                         columns={permissionColumns}
                         rows={filteredPermissions}
+                        isLoading={isLoading}
                       />
                     </Box>
                   </Box>

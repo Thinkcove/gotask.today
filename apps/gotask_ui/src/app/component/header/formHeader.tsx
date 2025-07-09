@@ -14,7 +14,7 @@ export interface FormHeaderProps {
   cancel?: string;
   update?: string;
   createHeading?: string;
-  showhistory?:string;
+  showhistory?: string;
 }
 
 const FormHeader: React.FC<FormHeaderProps> = ({
@@ -48,7 +48,9 @@ const FormHeader: React.FC<FormHeaderProps> = ({
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 1
           }}
         >
           <Box
@@ -58,9 +60,11 @@ const FormHeader: React.FC<FormHeaderProps> = ({
               alignItems: "center"
             }}
           >
-            <IconButton color="primary" onClick={onCancel}>
-              <ArrowBack />
-            </IconButton>
+            {isEdit && (
+              <IconButton color="primary" onClick={onCancel}>
+                <ArrowBack />
+              </IconButton>
+            )}
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
               {isEdit ? editheading : createHeading}
             </Typography>

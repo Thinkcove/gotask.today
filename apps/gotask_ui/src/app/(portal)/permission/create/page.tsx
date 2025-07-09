@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useUser } from "@/app/userContext";
 import PremissionForm from "../components/permissionForm";
-import FormHeader from "@/app/component/formHeader/FormHeader";
+import FormHeader from "@/app/component/header/formHeader";
 import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";

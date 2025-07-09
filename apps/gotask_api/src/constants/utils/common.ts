@@ -24,3 +24,4 @@ export const formatDate = (date: Date) => {
 // src/constants/paginationConstants.ts
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_PAGE_SIZE = 10;
+

@@ -746,6 +746,8 @@
     "authenticationmodes": "Authentication Modes",
     "display": "Display",
     "cloudandappbased": "Cloud And App Based",
+    "yes": "Yes",
+    "no": "No",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."

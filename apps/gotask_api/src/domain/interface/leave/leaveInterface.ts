@@ -25,30 +25,38 @@ const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> =>
     query.leave_type = filters.leave_type;
   }
 
+  // Updated date filtering logic to match the service
   if (filters.from_date || filters.to_date) {
-    const dateQuery: any = {};
+    const dateConditions: any[] = [];
 
+    // If From Date is selected: show leaves that start on or after that date
     if (filters.from_date) {
-      dateQuery.$gte = new Date(filters.from_date);
+      const fromDate = new Date(filters.from_date);
+      dateConditions.push({
+        from_date: { $gte: fromDate }
+      });
     }
 
+    // If To Date is selected: show leaves that end on or before that date
     if (filters.to_date) {
-      dateQuery.$lte = new Date(filters.to_date);
+      const toDate = new Date(filters.to_date);
+      // Set to end of day to include the entire selected date
+      const endOfDay = new Date(toDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      dateConditions.push({
+        to_date: { $lte: endOfDay }
+      });
     }
 
-    // Apply date query to both from_date and to_date fields for overlapping leaves
-    query.$or = [
-      { from_date: dateQuery },
-      { to_date: dateQuery },
-      ...(filters.from_date && filters.to_date
-        ? [
-            {
-              from_date: { $lte: new Date(filters.from_date) },
-              to_date: { $gte: new Date(filters.to_date) }
-            }
-          ]
-        : [])
-    ];
+    // Combine conditions based on what filters are provided
+    if (dateConditions.length === 1) {
+      // Only one date filter is applied
+      Object.assign(query, dateConditions[0]);
+    } else if (dateConditions.length === 2) {
+      // Both date filters are applied - leaves must satisfy both conditions
+      query.$and = dateConditions;
+    }
   }
 
   const sort: any = {};

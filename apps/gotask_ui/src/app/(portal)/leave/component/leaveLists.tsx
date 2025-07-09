@@ -136,21 +136,21 @@ const LeaveList: React.FC = () => {
     setToDateFilter("");
   };
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-        }}
-      >
-        <CircularProgress size={50} thickness={4} />
-      </Box>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         minHeight: "100vh",
+  //         display: "flex",
+  //         alignItems: "center",
+  //         justifyContent: "center",
+  //         background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+  //       }}
+  //     >
+  //       <CircularProgress size={50} thickness={4} />
+  //     </Box>
+  //   );
+  // }
 
   return (
     <>
@@ -174,14 +174,14 @@ const LeaveList: React.FC = () => {
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column", overflowY: "auto" }}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            {isError ? (
+            {isError && (
               <EmptyState
                 imageSrc={NoAssetsImage}
                 message={transleave("failedfetch") || "Failed to fetch leaves"}
               />
-            ) : !filteredLeaves || filteredLeaves.length === 0 ? (
-              <EmptyState imageSrc={NoAssetsImage} message={transleave("noleave")} />
-            ) : (
+            )}
+
+            {!isError && isLoading && (
               <Paper
                 sx={{
                   p: 2,
@@ -193,7 +193,32 @@ const LeaveList: React.FC = () => {
               >
                 <Box sx={{ width: "100%", flex: 1 }}>
                   <Box sx={{ minWidth: 800 }}>
-                    <Table<LeaveEntry> columns={leaveColumns} rows={filteredLeaves} />
+                    <Table<LeaveEntry>
+                      columns={leaveColumns}
+                      rows={filteredLeaves ? filteredLeaves : []}
+                      isLoading={isLoading}
+                    />
+                  </Box>
+                </Box>
+              </Paper>
+            )}
+            {!isError && !isLoading && (
+              <Paper
+                sx={{
+                  p: 2,
+                  overflow: "auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflowY: "auto"
+                }}
+              >
+                <Box sx={{ width: "100%", flex: 1 }}>
+                  <Box sx={{ minWidth: 800 }}>
+                    <Table<LeaveEntry>
+                      columns={leaveColumns}
+                      rows={filteredLeaves ? filteredLeaves : []}
+                      isLoading={isLoading}
+                    />
                   </Box>
                 </Box>
               </Paper>

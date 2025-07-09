@@ -24,6 +24,7 @@ import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
 import SkillInput from "../../components/skillInput";
 import CertificateInput from "../../components/certificateInput";
+import IncrementInput from "../../components/incrementInput";
 
 interface UserDetailProps {
   user: User;
@@ -122,6 +123,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 transuser("general"),
                 transuser("userskill"),
                 transuser("Certificate.certificates"),
+                transuser("Increment.incrementhistory"),
                 transuser("projectdetails"),
                 transasset("assetdetails")
               ]}
@@ -388,6 +390,11 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   await mutate();
                 }}
               />
+            </Box>
+          )}
+          {selectedTab === transuser("Increment.incrementhistory") && (
+            <Box>
+              <IncrementInput userId={userID} />
             </Box>
           )}
         </Box>

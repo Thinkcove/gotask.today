@@ -9,8 +9,7 @@ import {
   Paper,
   Box,
   Typography,
-  Link,
-  Chip
+  Link
 } from "@mui/material";
 import {
   EnhancedWorkPlannedGridProps,
@@ -591,6 +590,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               </Typography>
                               {taskPermissions.map((perm, permIndex) => (
                                 <Typography
+                                  key={permIndex}
                                   variant="caption"
                                   sx={{
                                     fontSize: "0.7rem",

@@ -14,8 +14,6 @@ import { v4 as uuidv4 } from "uuid";
 import { getKpiAssignmentByIdFromDb } from "../../domain/interface/kpiemployee/kpiemployeeInterface";
 import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiEmployeeModel";
 
-
-
 class KpiAssignmentController extends BaseController {
   // Create KPI Assignment
   async createKpiAssignment(

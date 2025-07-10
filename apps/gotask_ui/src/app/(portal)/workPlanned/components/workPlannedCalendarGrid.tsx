@@ -550,8 +550,8 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             <Box mt={1}>
                               <Typography
                                 sx={{
-                                  fontWeight: 600,
-                                  fontSize: "0.9rem",
+                                  fontWeight: 400,
+                                  // fontSize: "1rem",
                                   color: getLeaveColor(),
                                   mb: 0.5
                                 }}
@@ -561,10 +561,10 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               {taskLeaves.map((taskLeave, leaveIndex) => (
                                 <Typography
                                   key={leaveIndex}
-                                  variant="body2"
+                                  variant="subtitle1"
                                   sx={{
-                                    fontSize: "0.7rem",
-                                    fontWeight: 500,
+                                    // fontSize: "0.7rem",
+                                    // fontWeight: 500,
                                     color: getLeaveColor()
                                   }}
                                 >
@@ -579,8 +579,8 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             <Box mt={1}>
                               <Typography
                                 sx={{
-                                  fontWeight: 600,
-                                  fontSize: "0.9rem",
+                                  fontWeight: 400,
+                                  // fontSize: "1rem",
                                   color: getPermissionColor(),
                                   mb: 0.5,
                                   textTransform: "none"
@@ -591,9 +591,9 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               {taskPermissions.map((perm, permIndex) => (
                                 <Typography
                                   key={permIndex}
-                                  variant="body2"
+                                  variant="subtitle1"
                                   sx={{
-                                    fontSize: "0.7rem",
+                                    // fontSize: "0.7rem",
                                     fontWeight: 500,
                                     color: getPermissionColor()
                                   }}
@@ -609,8 +609,8 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           <Box>
                             <Typography
                               sx={{
-                                fontWeight: 600,
-                                fontSize: "0.9rem",
+                                fontWeight: 400,
+                                // fontSize: "1rem",
                                 color: getLeaveColor(),
                                 mb: 0.5
                               }}
@@ -618,9 +618,9 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               {leave.leave_type ? formatText(transworkplanned("leave")) : ""}
                             </Typography>
                             <Typography
-                              variant="body2"
+                              variant="subtitle1"
                               sx={{
-                                fontSize: "0.7rem",
+                                // fontSize: "0.7rem",
                                 fontWeight: 500,
                                 color: getLeaveColor()
                               }}
@@ -634,8 +634,8 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           <Box>
                             <Typography
                               sx={{
-                                fontWeight: 600,
-                                fontSize: "0.9rem",
+                                fontWeight: 400,
+                                // fontSize: "1rem",
                                 color: getPermissionColor(),
                                 mb: 0.5,
                                 textTransform: "none"
@@ -644,9 +644,9 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               {formatText(transworkplanned("permission"))}
                             </Typography>
                             <Typography
-                              variant="body2"
+                              variant="subtitle1"
                               sx={{
-                                fontSize: "0.7rem",
+                                // fontSize: "0.7rem",
                                 fontWeight: 500,
                                 color: getPermissionColor()
                               }}

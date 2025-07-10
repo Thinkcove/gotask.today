@@ -15,6 +15,7 @@ import { calculateIncrementPercent } from "@/app/common/constants/user";
 import IncrementChart from "./incrementChart";
 import { useIncrementColumns } from "./incrementColumn";
 import Toggle from "@/app/component/toggle/toggle";
+import StarIcon from "@mui/icons-material/Star";
 
 interface IncrementInputProps {
   userId: string;
@@ -24,7 +25,11 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   const trans = useTranslations("User.Increment");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
-  const [formData, setFormData] = useState<IIncrementHistory>({ date: "", ctc: 0 });
+  // const [formData, setFormData] = useState<IIncrementHistory>({ date: "", ctc: 0 });
+  const [formData, setFormData] = useState<{ date: string; ctc: string }>({
+    date: "",
+    ctc: ""
+  });  
   const [dateError, setDateError] = useState(false);
   const [ctcError, setCtcError] = useState(false);
   const [selectedView, setSelectedView] = useState<string>("Table");
@@ -48,10 +53,10 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   );
 
   const resetForm = () => {
-    setFormData({ date: "", ctc: 0 });
+    setFormData({ date: "", ctc: "" });
     setDateError(false);
     setCtcError(false);
-  };
+  };  
 
   const handleAddClick = () => {
     resetForm();
@@ -60,7 +65,8 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
 
   const handleSubmit = async () => {
     const isDateEmpty = !formData.date;
-    const isCtcInvalid = formData.ctc <= 0;
+    const ctcValue = parseFloat(formData.ctc);
+    const isCtcInvalid = isNaN(ctcValue) || ctcValue <= 0;
 
     setDateError(isDateEmpty);
     setCtcError(isCtcInvalid);
@@ -78,7 +84,9 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       return;
     }
 
-    await addUserIncrement(userId, formData);
+    // await addUserIncrement(userId, formData);
+    await addUserIncrement(userId, { ...formData, ctc: ctcValue });
+
     await mutate();
     resetForm();
     setDialogOpen(false);
@@ -139,7 +147,13 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
           startIcon={<AddIcon />}
           variant="contained"
           onClick={handleAddClick}
-          sx={{ textTransform: "none", fontSize: 13 }}
+          sx={{
+            textTransform: "none",
+            fontSize: 13,
+            whiteSpace: "nowrap",
+            minWidth: "auto",
+            px: 2
+          }}
         >
           {trans("addnew")}
         </Button>
@@ -180,9 +194,20 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       >
         <Stack spacing={2}>
           <Box>
-            <Typography fontSize={13} mb={0.5}>
-              {trans("date")}
-            </Typography>
+            <Box position="relative" display="inline-block" mb={0.5}>
+              <Typography fontSize={13} fontWeight={600}>
+                {trans("date")}
+              </Typography>
+              <StarIcon
+                sx={{
+                  color: "red",
+                  position: "absolute",
+                  top: 2,
+                  right: -10,
+                  fontSize: 8
+                }}
+              />
+            </Box>
             <TextField
               type="date"
               fullWidth
@@ -196,16 +221,29 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
             />
           </Box>
           <Box>
-            <Typography fontSize={13} mb={0.5}>
-              {trans("ctc")}
-            </Typography>
+            <Box position="relative" display="inline-block" mb={0.5}>
+              <Typography fontSize={13} fontWeight={600}>
+                {trans("ctc")}
+              </Typography>
+              <StarIcon
+                sx={{
+                  color: "red",
+                  position: "absolute",
+                  top: 2,
+                  right: -10,
+                  fontSize: 8
+                }}
+              />
+            </Box>
             <TextField
               type="number"
               fullWidth
-              value={formData.ctc}
+              value={formData.ctc || ""}
               onChange={(e) => {
-                const value = Math.max(0, +e.target.value);
-                setFormData({ ...formData, ctc: value });
+                const value = Number(e.target.value);
+                if (value >= 0) {
+                  setFormData({ ...formData, ctc: e.target.value });
+                }
                 if (ctcError) setCtcError(false);
               }}
               error={ctcError}

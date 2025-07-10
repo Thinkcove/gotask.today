@@ -1111,6 +1111,12 @@
     "reqtodate": "To Date * : ",
     "reqleavetype": "Leave Type * :",
     "leavedetail": "Leave Detail",
+    "daterange": "Date Range",
+    "filterfrom": "From Date",
+    "filterto": "To Date",
+    "filterclear": "Clear Filter",
+    "filterapply": "Apply Filter",
+    "failedfetch": "Failed to Fetch Leave",
     "meta": {
       "title": "Leave Management | GoTaskToday",
       "description": "Manage employee leave requests"

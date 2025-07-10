@@ -2,6 +2,7 @@ import { ILeave, Leave } from "../../model/leave/leaveModel";
 import { User } from "../../model/user/user";
 import logger from "../../../common/logger";
 import { SORT_ORDER } from "../../../constants/commonConstants/commonConstants";
+import { getStartAndEndOfDay } from "../../../constants/utils/date";
 
 export interface FilterQuery {
   user_id?: string;
@@ -26,41 +27,38 @@ const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> =>
   }
 
   if (filters.from_date || filters.to_date) {
-    const dateQuery: any = {};
+    const dateConditions: any[] = [];
 
     if (filters.from_date) {
-      dateQuery.$gte = new Date(filters.from_date);
+      const { start } = getStartAndEndOfDay(filters.from_date);
+      dateConditions.push({
+        from_date: { $gte: start }
+      });
     }
 
     if (filters.to_date) {
-      dateQuery.$lte = new Date(filters.to_date);
-    }
+      const { end } = getStartAndEndOfDay(filters.to_date);
 
-    // Apply date query to both from_date and to_date fields for overlapping leaves
-    query.$or = [
-      { from_date: dateQuery },
-      { to_date: dateQuery },
-      ...(filters.from_date && filters.to_date
-        ? [
-            {
-              from_date: { $lte: new Date(filters.from_date) },
-              to_date: { $gte: new Date(filters.to_date) }
-            }
-          ]
-        : [])
-    ];
+      dateConditions.push({
+        to_date: { $lte: end }
+      });
+    }
+    if (dateConditions.length === 1) {
+      Object.assign(query, dateConditions[0]);
+    } else if (dateConditions.length === 2) {
+      query.$and = dateConditions;
+    }
   }
 
   const sort: any = {};
   if (filters.sort_field) {
     sort[filters.sort_field] = filters.sort_order === SORT_ORDER.DESC ? -1 : 1;
   } else {
-    sort.created_on = -1; // Default sort
+    sort.created_on = -1;
   }
 
   let queryBuilder = Leave.find(query).sort(sort);
 
-  // Add pagination
   if (filters.page && filters.page_size) {
     const skip = (filters.page - 1) * filters.page_size;
     queryBuilder = queryBuilder.skip(skip).limit(filters.page_size);

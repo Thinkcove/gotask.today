@@ -65,36 +65,31 @@ const EditGoalPage = () => {
   }, [fetchedGoalData?.updateHistory]);
 
   const formattedHistory = useMemo(() => {
-    const fieldLabelMap: { [key: string]: string } = {
-      goalTitle: transGoal("goaltitle"),
-      description: transGoal("description"),
-      priority: transGoal("filterpriority"),
-      projectId: transGoal("projectname"),
-      status: transGoal("filterstatus"),
-      weekEnd: transGoal("startdate"),
-      weekStart: transGoal("enddate")
-    };
-
     return (
-      projectGoalHistory?.updateHistory?.map((item: UpdateHistoryItem) => {
-        const updatedUser = users?.find((user: User) => user.id === item.user_id);
-        const loginuser_name = updatedUser?.first_name || updatedUser?.name || "Unknown";
+      projectGoalHistory?.updateHistory
+        ?.map((item: UpdateHistoryItem) => {
+          const updatedUser = users?.find((user: User) => user.id === item.user_id);
+          const loginuser_name = updatedUser?.first_name || updatedUser?.name || "Unknown";
 
-        const formattedChanges = Object.entries(item.history_data || {})
-          .filter(([key, value]) => value !== "" && key !== "weekStart" && key !== "weekEnd")
-          .map(([key, value]) => {
-            const label = fieldLabelMap[key] || key;
-            return `${label} updated to "${value}"`;
-          });
+          const filteredLines = item.formatted_history
+            ?.toString()
+            .split("; ")
+            .filter(
+              (line) =>
+                !line.toLowerCase().includes("weekstart") && !line.toLowerCase().includes("weekend")
+            );
 
-        return {
-          loginuser_name,
-          formatted_history: formattedChanges.join(". "),
-          created_date: item.createdAt || ""
-        };
-      }) ?? []
+          if (!filteredLines || filteredLines.length === 0) return null;
+
+          return {
+            loginuser_name,
+            formatted_history: filteredLines.join(". "),
+            created_date: item.createdAt || ""
+          };
+        })
+        .filter(Boolean) ?? []
     );
-  }, [projectGoalHistory?.updateHistory, users, transGoal]);
+  }, [projectGoalHistory?.updateHistory, users]);
 
   const handleCancel = () => {
     router.back();

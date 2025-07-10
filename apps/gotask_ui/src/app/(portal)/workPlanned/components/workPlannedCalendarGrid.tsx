@@ -9,8 +9,7 @@ import {
   Paper,
   Box,
   Typography,
-  Link,
-  Chip
+  Link
 } from "@mui/material";
 import {
   EnhancedWorkPlannedGridProps,
@@ -31,8 +30,9 @@ import { fetchAllLeaves } from "../../project/services/projectAction";
 import { PermissionEntry } from "../../report/interface/timeLog";
 import { fetchAllPermissions } from "../../report/services/reportService";
 import {
-  calculatePermissionDuration,
   formatLeaveDuration,
+  formatPermissionDuration,
+  formatText,
   normalizeDate
 } from "@/app/common/utils/leaveCalculate";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
@@ -44,7 +44,8 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   fromDate,
   toDate,
   leaveData,
-  permissionData
+  permissionData,
+  isUserSelected = []
 }) => {
   const transworkplanned = useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
 
@@ -211,13 +212,20 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
     return acc;
   }, {} as GroupedTasks);
+  const checkIfUserIsSelected = (userId: string): boolean => {
+    if (isUserSelected.length === 0) {
+      return true;
+    }
+    return isUserSelected.includes(userId);
+  };
 
-  // Add users who only have leaves but no tasks (within date range)
+  // Add users who only have leaves but no tasks (within date range AND user selection)
   leaves.forEach((leave) => {
     if (
       leave.from_date &&
       leave.to_date &&
-      datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
+      datesOverlap(leave.from_date, leave.to_date, fromDate, toDate) &&
+      checkIfUserIsSelected(leave.user_id)
     ) {
       const userKey = leave.user_id;
       if (!groupedData[userKey]) {
@@ -231,9 +239,13 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     }
   });
 
-  // Add users who only have permissions but no tasks (within date range)
+  // Add users who only have permissions but no tasks (within date range AND user selection)
   permissions.forEach((permission) => {
-    if (permission.date && isPermissionInRange(permission.date)) {
+    if (
+      permission.date &&
+      isPermissionInRange(permission.date) &&
+      checkIfUserIsSelected(permission.user_id)
+    ) {
       const userKey = permission.user_id;
       if (!groupedData[userKey]) {
         groupedData[userKey] = {
@@ -245,7 +257,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
       }
     }
   });
-
   // Check if there's any data to display
   const hasFilteredTasks = filteredData.length > 0;
   const leavesInRange = leaves.filter(
@@ -536,126 +547,100 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
                           {/* Display leaves for this task if they exist on the same date */}
                           {taskLeaves.length > 0 && (
-                            <Box mt={1}>
+                            <Box mt={1} display="flex" alignItems="center" gap={1}>
                               <Typography
                                 sx={{
-                                  fontWeight: 600,
-                                  fontSize: "0.7rem",
-                                  textTransform: "uppercase",
-                                  color: getLeaveColor(),
-                                  mb: 0.5
+                                  fontWeight: 400,
+                                  color: getLeaveColor()
                                 }}
                               >
-                                {transworkplanned("leave")}
+                                {formatText(transworkplanned("leave"))}
                               </Typography>
+                              {"-"}
                               {taskLeaves.map((taskLeave, leaveIndex) => (
-                                <Chip
+                                <Typography
                                   key={leaveIndex}
-                                  label={formatLeaveDuration(
-                                    taskLeave.from_date,
-                                    taskLeave.to_date
-                                  )}
-                                  size="small"
+                                  variant="subtitle1"
                                   sx={{
-                                    backgroundColor: getLeaveColor(),
-                                    color: "#fff",
-                                    fontSize: "0.65rem",
-                                    height: 20,
-                                    borderRadius: "5px",
-                                    mr: 0.5
+                                    color: getLeaveColor()
                                   }}
-                                />
+                                >
+                                  {formatLeaveDuration(taskLeave.from_date, taskLeave.to_date)}{" "}
+                                </Typography>
                               ))}
                             </Box>
                           )}
 
                           {/* Display permissions for this task if they exist on the same date */}
                           {taskPermissions.length > 0 && (
-                            <Box mt={1}>
+                            <Box mt={1} display="flex" alignItems="center">
                               <Typography
                                 sx={{
-                                  fontWeight: 600,
-                                  fontSize: "0.7rem",
-                                  textTransform: "uppercase",
+                                  fontWeight: 400,
                                   color: getPermissionColor(),
-                                  mb: 0.5
+                                  textTransform: "none"
                                 }}
                               >
-                                {transworkplanned("permission")}
+                                {formatText(transworkplanned("permission"))}
                               </Typography>
+                              {"-"}
                               {taskPermissions.map((perm, permIndex) => (
-                                <Chip
+                                <Typography
                                   key={permIndex}
-                                  label={`${calculatePermissionDuration(perm.start_time, perm.end_time)}h`}
-                                  size="small"
+                                  variant="subtitle1"
                                   sx={{
-                                    backgroundColor: getPermissionColor(),
-                                    color: "#fff",
-                                    fontSize: "0.65rem",
-                                    height: 20,
-                                    borderRadius: "5px",
-                                    mr: 0.5
+                                    fontWeight: 500,
+                                    color: getPermissionColor()
                                   }}
-                                />
+                                >
+                                  {`${formatPermissionDuration(perm.start_time, perm.end_time)}`}
+                                </Typography>
                               ))}
                             </Box>
                           )}
                         </Box>
                       ) : leave ? (
-                        <Box display="flex" flexDirection="column" gap={1}>
-                          <Box>
-                            <Typography
-                              sx={{
-                                fontWeight: 600,
-                                fontSize: "0.7rem",
-                                textTransform: "uppercase",
-                                color: getLeaveColor(),
-                                mb: 0.5
-                              }}
-                            >
-                              {leave.leave_type ? transworkplanned("leave") : ""}
-                            </Typography>
-
-                            <Chip
-                              label={formatLeaveDuration(leave.from_date, leave.to_date)}
-                              size="small"
-                              sx={{
-                                backgroundColor: getLeaveColor(),
-                                color: "#fff",
-                                fontSize: "0.65rem",
-                                height: 20,
-                                borderRadius: "5px"
-                              }}
-                            />
-                          </Box>
+                        <Box display="flex" gap={1} alignItems="center">
+                          <Typography
+                            sx={{
+                              fontWeight: 400,
+                              color: getLeaveColor()
+                            }}
+                          >
+                            {leave.leave_type ? formatText(transworkplanned("leave")) : ""}
+                          </Typography>
+                          {"-"}
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              fontWeight: 500,
+                              color: getLeaveColor()
+                            }}
+                          >
+                            {formatLeaveDuration(leave.from_date, leave.to_date)}
+                          </Typography>
                         </Box>
                       ) : permission ? (
-                        <Box display="flex" flexDirection="column" gap={1}>
-                          <Box>
-                            <Typography
-                              sx={{
-                                fontWeight: 600,
-                                fontSize: "0.7rem",
-                                textTransform: "uppercase",
-                                color: getPermissionColor(),
-                                mb: 0.5
-                              }}
-                            >
-                              {transworkplanned("permission")}
-                            </Typography>
-
-                            <Chip
-                              label={`${calculatePermissionDuration(permission.start_time, permission.end_time)}h`}
-                              size="small"
-                              sx={{
-                                backgroundColor: getPermissionColor(),
-                                color: "#fff",
-                                fontSize: "0.65rem",
-                                height: 20,
-                                borderRadius: "5px"
-                              }}
-                            />
-                          </Box>
+                        <Box display="flex" gap={1} alignItems="center">
+                          <Typography
+                            sx={{
+                              fontWeight: 400,
+                              color: getPermissionColor(),
+                              textTransform: "none"
+                            }}
+                          >
+                            {formatText(transworkplanned("permission"))}
+                          </Typography>
+                          {"-"}
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              fontWeight: 500,
+                              color: getPermissionColor()
+                            }}
+                          >
+                            {`${formatPermissionDuration(permission.start_time, permission.end_time)}`}
+                          </Typography>
                         </Box>
                       ) : (
                         "-"

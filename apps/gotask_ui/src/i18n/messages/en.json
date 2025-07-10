@@ -749,6 +749,7 @@
     "yes": "Yes",
     "no": "No",
     "nodatafound": "No Data Found",
+    "capacity": "Capacity",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."

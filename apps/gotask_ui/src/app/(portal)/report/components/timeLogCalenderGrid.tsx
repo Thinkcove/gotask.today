@@ -32,7 +32,7 @@ import DateFormats from "@/app/component/dateTime/dateFormat";
 import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
 import { calculatePermissionDuration } from "@/app/common/utils/leaveCalculate";
 import { fetchAllPermissions } from "../services/reportService";
-import { getDailyLogCellStyle } from "@/app/common/constants/logStyle";
+import { getDailyLogCellStyle } from "./logStyle";
 
 const headerCellStyle = {
   position: "sticky" as const,

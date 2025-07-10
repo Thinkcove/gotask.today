@@ -247,22 +247,21 @@ export const addUserIncrement = async (userId: string, increment: IIncrementHist
   });
 };
 
-//update
+// Update increment using increment_id (UUID)
 export const updateUserIncrement = async (
   userId: string,
-  index: number,
+  incrementId: string,
   updated: IIncrementHistory
-) => {
-  return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/increments/${userId}/${index}`;
+) =>
+  withAuth((token) => {
+    const url = `${env.API_BASE_URL}/increments/${userId}/${incrementId}`;
     return putData(url, updated as unknown as Record<string, unknown>, token);
   });
-};
 
-// Delete increment
-export const deleteUserIncrement = async (userId: string, index: number) => {
+//delete
+export const deleteUserIncrement = async (userId: string, incrementId: string) => {
   return withAuth((token) => {
-    const url = `${env.API_BASE_URL}/increments/${userId}/${index}`;
+    const url = `${env.API_BASE_URL}/increments/${userId}/${incrementId}`;
     return deleteData(url, token);
   });
 };

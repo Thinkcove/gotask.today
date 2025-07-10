@@ -565,6 +565,7 @@
       "date": "Date",
       "ctc": "CTC",
       "addnew": "Add Increment",
+      "actions": "Actions",
       "add": "Add",
       "change": "Salary Growth ( % )",
       "noincrements": "No increments added yet.",
@@ -573,6 +574,7 @@
       "deleteincrement": "Are you sure you want to delete {certificate} ?",
       "errortitle": "Error",
       "duplicateincrementdate": "An increment for this date already exists.",
+      "deleteconfirmtext": "Are you sure you want to delete this increment?",
       "editincrement": "Edit Increment",
       "addincdesc": "Enter the date and updated CTC for this increment.",
       "salaryrevisionlog": "Salary Revision Log",
@@ -1042,7 +1044,7 @@
     "deletesuccess": "Permission deleted successfully!",
     "deletefailed": "Failed to delete permission. Please try again.",
     "permissionon": "Permission On",
-    "filteruser":"User",
+    "filteruser": "User",
     "meta": {
       "title": "Permission Requests | GoTaskToday",
       "description": "Manage employee leaves or short-term permissions"

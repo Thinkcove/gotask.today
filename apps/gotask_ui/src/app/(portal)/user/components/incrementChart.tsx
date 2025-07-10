@@ -11,6 +11,7 @@ import {
   LabelList
 } from "recharts";
 import { Box } from "@mui/material";
+import { LPA_SUFFIX } from "@/app/common/constants/user";
 
 interface IncrementChartProps {
   chartData: {
@@ -50,7 +51,7 @@ const IncrementChart: React.FC<IncrementChartProps> = ({ chartData }) => {
             <LabelList
               dataKey="ctc"
               position="top"
-              formatter={(value: number) => `₹${value} LPA`}
+              formatter={(value: number) => `₹${value} ${LPA_SUFFIX}`}
               style={{ fontSize: 12 }}
             />
           </Line>

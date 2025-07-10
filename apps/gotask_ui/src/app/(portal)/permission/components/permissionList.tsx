@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Box, Grid, Paper, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
 import { fetchAllgetpermission, deletePermission } from "../services/permissionAction";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -18,6 +18,8 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { User } from "../../user/interfaces/userInterface";
 import { useAllUsers } from "../../task/service/taskAction";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 
 const PermissionList = () => {
   const searchParams = useSearchParams();
@@ -48,7 +50,7 @@ const PermissionList = () => {
       severity: severity as SNACKBAR_SEVERITY
     });
   };
-  const { data, mutate } = useSWR("getpermission", fetchAllgetpermission);
+  const { data, mutate, isLoading } = useSWR("getpermission", fetchAllgetpermission);
 
   const displayData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
 
@@ -139,54 +141,79 @@ const PermissionList = () => {
 
   const hasActiveFilters = userFilter.length > 0 || !!dateFrom || !!dateTo;
 
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+        }}
+      >
+        <CircularProgress size={50} thickness={4} />
+      </Box>
+    );
+  }
+
   return (
     <>
       {/* Filter Component */}
-      <Box sx={{ pt: 2, pl: 2 }}>
-        <PermissionFilter
-          userFilter={userFilter}
-          allUsers={allUsers.map((u: User) => u.name)}
-          onUserChange={setUserFilter}
-          dateFrom={dateFrom}
-          dateTo={dateTo}
-          onDateChange={onDateChange}
-          onClearFilters={handleClearFilters}
-          showClear={hasActiveFilters}
-          clearText={transpermission("clearall")}
-        />
-      </Box>
+      {filteredPermissions?.length === 0 ? (
+        <EmptyState imageSrc={NoAssetsImage} message={transpermission("nodatafound")} />
+      ) : (
+        <>
+          {/* Filter Component */}
+          <Box sx={{ pt: 2, pl: 2 }}>
+            <PermissionFilter
+              userFilter={userFilter}
+              allUsers={allUsers.map((u: User) => u.name)}
+              onUserChange={setUserFilter}
+              dateFrom={dateFrom}
+              dateTo={dateTo}
+              onDateChange={onDateChange}
+              onClearFilters={handleClearFilters}
+              showClear={hasActiveFilters}
+              clearText={transpermission("clearall")}
+            />
+          </Box>
 
-      <Box
-        sx={{ width: "100%", display: "flex", flexDirection: "column", overflowY: "auto", mt: 2 }}
-      >
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Paper
-              sx={{
-                p: 2,
-                overflow: "auto",
-                display: "flex",
-                flexDirection: "column",
-                overflowY: "auto"
-              }}
-            >
-              <Box sx={{ width: "100%", flex: 1 }}>
-                <Box sx={{ minWidth: 800 }}>
-                  <Table<PermissionData> columns={permissionColumns} rows={filteredPermissions} />
-                </Box>
-              </Box>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Box>
-
-      <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
-        <ActionButton
-          label={transpermission("createpermission")}
-          icon={<AddIcon sx={{ color: "white" }} />}
-          onClick={handleCreatePermission}
-        />
-      </Box>
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "auto",
+              mt: 2
+            }}
+          >
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    overflow: "auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    overflowY: "auto"
+                  }}
+                >
+                  <Box sx={{ width: "100%", flex: 1 }}>
+                    <Box sx={{ minWidth: 800 }}>
+                      <Table<PermissionData>
+                        columns={permissionColumns}
+                        rows={filteredPermissions}
+                        isLoading={isLoading}
+                      />
+                    </Box>
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Box>
+        </>
+      )}
 
       <CommonDialog
         open={isDeleteDialogOpen}
@@ -205,6 +232,13 @@ const PermissionList = () => {
         severity={snackbar.severity}
         onClose={handleSnackbarClose}
       />
+      <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
+        <ActionButton
+          label={transpermission("createpermission")}
+          icon={<AddIcon sx={{ color: "white" }} />}
+          onClick={handleCreatePermission}
+        />
+      </Box>
     </>
   );
 };

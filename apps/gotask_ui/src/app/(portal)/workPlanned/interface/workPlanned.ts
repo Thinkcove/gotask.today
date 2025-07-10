@@ -52,6 +52,7 @@ export interface WorkPlannedGridProps {
   toDate: string;
   selectedProjects: string[];
   leaveData?: LeaveEntry[];
+  isUserSelected: string[];
 }
 
 export interface LeaveEntry {

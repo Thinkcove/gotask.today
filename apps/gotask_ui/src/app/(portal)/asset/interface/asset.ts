@@ -161,11 +161,8 @@ export interface IIssuesHistories {
 }
 
 export interface AssetFilters {
-  assignedToFilter?: string[];
-  modelNameFilter?: string[];
-  warrantyDateFrom?: string;
-  warrantyDateTo?: string;
-  systemTypeFilter?: string[];
-  assetAllocationFilter?: string[];
-  assetTypeFilter?: string[];
+  warrantyFrom?: string;
+  warrantyTo?: string;
+  systemType?: string[];
+  [key: string]: any;
 }

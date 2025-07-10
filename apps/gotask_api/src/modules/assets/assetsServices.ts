@@ -172,7 +172,8 @@ class assetService {
     typeId,
     systemType,
     warrantyFrom,
-    warrantyTo
+    warrantyTo,
+    searchText
   }: {
     sortType?: string;
     sortVar?: string;
@@ -183,6 +184,7 @@ class assetService {
     systemType?: string;
     warrantyFrom?: Date;
     warrantyTo?: Date;
+    searchText?: string;
   }) => {
     try {
       let assets: IAsset[] = [];
@@ -197,7 +199,8 @@ class assetService {
           typeId,
           systemType,
           warrantyFrom,
-          warrantyTo
+          warrantyTo,
+          searchText
         );
         assets = result.assets;
         total = result.total;

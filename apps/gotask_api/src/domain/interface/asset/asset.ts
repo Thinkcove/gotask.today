@@ -1,3 +1,4 @@
+import { buildContainsRegex } from "../../../constants/utils/regex";
 import { Asset, IAsset } from "../../model/asset/asset";
 import { AssetType, IAssetType } from "../../model/assetType/assetType";
 import { User } from "../../model/user/user";
@@ -36,7 +37,8 @@ const getAllAssets = async (
   typeId?: string,
   systemType?: string,
   warrantyFrom?: Date,
-  warrantyTo?: Date
+  warrantyTo?: Date,
+  searchText?: string
 ): Promise<{ assets: IAsset[]; total: number }> => {
   let assetIds: string[] = [];
   if (userId) {
@@ -67,6 +69,10 @@ const getAllAssets = async (
     query.warrantyDate = {};
     if (warrantyFrom) query.warrantyDate.$gte = warrantyFrom;
     if (warrantyTo) query.warrantyDate.$lte = warrantyTo;
+  }
+  if (searchText) {
+    const regex = buildContainsRegex(searchText);
+    query.$or = [{ modelName: regex }, { deviceName: regex }];
   }
   const total = await Asset.countDocuments(query);
 

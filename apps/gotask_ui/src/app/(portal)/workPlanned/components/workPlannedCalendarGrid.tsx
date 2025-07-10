@@ -547,17 +547,18 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
                           {/* Display leaves for this task if they exist on the same date */}
                           {taskLeaves.length > 0 && (
-                            <Box mt={1}>
+                            <Box mt={1} display="flex" alignItems="center" gap={1}>
                               <Typography
                                 sx={{
                                   fontWeight: 400,
                                   // fontSize: "1rem",
-                                  color: getLeaveColor(),
-                                  mb: 0.5
+                                  color: getLeaveColor()
+                                  // mb: 0.5
                                 }}
                               >
                                 {formatText(transworkplanned("leave"))}
                               </Typography>
+                              {"-"}
                               {taskLeaves.map((taskLeave, leaveIndex) => (
                                 <Typography
                                   key={leaveIndex}
@@ -576,18 +577,19 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
                           {/* Display permissions for this task if they exist on the same date */}
                           {taskPermissions.length > 0 && (
-                            <Box mt={1}>
+                            <Box mt={1} display="flex" alignItems="center">
                               <Typography
                                 sx={{
                                   fontWeight: 400,
                                   // fontSize: "1rem",
                                   color: getPermissionColor(),
-                                  mb: 0.5,
+                                  // mb: 0.5,
                                   textTransform: "none"
                                 }}
                               >
                                 {formatText(transworkplanned("permission"))}
                               </Typography>
+                              {"-"}
                               {taskPermissions.map((perm, permIndex) => (
                                 <Typography
                                   key={permIndex}
@@ -605,55 +607,53 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           )}
                         </Box>
                       ) : leave ? (
-                        <Box display="flex" flexDirection="column" gap={1}>
-                          <Box>
-                            <Typography
-                              sx={{
-                                fontWeight: 400,
-                                // fontSize: "1rem",
-                                color: getLeaveColor(),
-                                mb: 0.5
-                              }}
-                            >
-                              {leave.leave_type ? formatText(transworkplanned("leave")) : ""}
-                            </Typography>
-                            <Typography
-                              variant="subtitle1"
-                              sx={{
-                                // fontSize: "0.7rem",
-                                fontWeight: 500,
-                                color: getLeaveColor()
-                              }}
-                            >
-                              {formatLeaveDuration(leave.from_date, leave.to_date)}
-                            </Typography>
-                          </Box>
+                        <Box display="flex" gap={1} alignItems="center">
+                          <Typography
+                            sx={{
+                              fontWeight: 400,
+                              // fontSize: "1rem",
+                              color: getLeaveColor()
+                              // mb: 0.5
+                            }}
+                          >
+                            {leave.leave_type ? formatText(transworkplanned("leave")) : ""}
+                          </Typography>
+                          {"-"}
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              // fontSize: "0.7rem",
+                              fontWeight: 500,
+                              color: getLeaveColor()
+                            }}
+                          >
+                            {formatLeaveDuration(leave.from_date, leave.to_date)}
+                          </Typography>
                         </Box>
                       ) : permission ? (
-                        <Box display="flex" flexDirection="column" gap={1}>
-                          <Box>
-                            <Typography
-                              sx={{
-                                fontWeight: 400,
-                                // fontSize: "1rem",
-                                color: getPermissionColor(),
-                                mb: 0.5,
-                                textTransform: "none"
-                              }}
-                            >
-                              {formatText(transworkplanned("permission"))}
-                            </Typography>
-                            <Typography
-                              variant="subtitle1"
-                              sx={{
-                                // fontSize: "0.7rem",
-                                fontWeight: 500,
-                                color: getPermissionColor()
-                              }}
-                            >
-                              {`${calculatePermissionDuration(permission.start_time, permission.end_time)} ${calculatePermissionDuration(permission.start_time, permission.end_time) === 1 ? "hour" : "hours"}`}
-                            </Typography>
-                          </Box>
+                        <Box display="flex" gap={1} alignItems="center">
+                          <Typography
+                            sx={{
+                              fontWeight: 400,
+                              // fontSize: "1rem",
+                              color: getPermissionColor(),
+                              // mb: 0.5,
+                              textTransform: "none"
+                            }}
+                          >
+                            {formatText(transworkplanned("permission"))}
+                          </Typography>
+                          {"-"}
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              // fontSize: "0.7rem",
+                              fontWeight: 500,
+                              color: getPermissionColor()
+                            }}
+                          >
+                            {`${calculatePermissionDuration(permission.start_time, permission.end_time)} ${calculatePermissionDuration(permission.start_time, permission.end_time) === 1 ? "hour" : "hours"}`}
+                          </Typography>
                         </Box>
                       ) : (
                         "-"

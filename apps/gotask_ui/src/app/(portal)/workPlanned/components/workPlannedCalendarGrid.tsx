@@ -577,9 +577,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               <Typography
                                 sx={{
                                   fontWeight: 400,
-                                  // fontSize: "1rem",
                                   color: getPermissionColor(),
-                                  // mb: 0.5,
                                   textTransform: "none"
                                 }}
                               >
@@ -591,7 +589,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                   key={permIndex}
                                   variant="subtitle1"
                                   sx={{
-                                    // fontSize: "0.7rem",
                                     fontWeight: 500,
                                     color: getPermissionColor()
                                   }}
@@ -640,7 +637,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           <Typography
                             variant="subtitle1"
                             sx={{
-                              // fontSize: "0.7rem",
                               fontWeight: 500,
                               color: getPermissionColor()
                             }}

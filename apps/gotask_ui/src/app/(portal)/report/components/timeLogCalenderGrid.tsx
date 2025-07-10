@@ -288,38 +288,17 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     permissionForDate: PermissionEntry | null
   ) => {
     if (leaveForDate && permissionForDate) {
-      // Both leave and permission on same date
+      // Both leave and permission on same date - display only leave
       return (
         <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
           <Typography
             variant="caption"
             sx={{
-              fontSize: "0.7rem",
               fontWeight: 500,
               color: getLeaveColor()
             }}
           >
             {leaveForDate.leave_type ? transreport("leave") : ""}
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              fontSize: "0.7rem",
-              fontWeight: 500,
-              color: "#009688"
-            }}
-          >
-            {transreport("permission")}
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              fontSize: "0.7rem",
-              fontWeight: 500,
-              color: "#009688"
-            }}
-          >
-            {calculatePermissionDuration(permissionForDate.start_time, permissionForDate.end_time)}h
           </Typography>
           {value && (
             <Typography
@@ -342,7 +321,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           <Typography
             variant="caption"
             sx={{
-              fontSize: "0.6rem",
               fontWeight: 500,
               color: getLeaveColor()
             }}
@@ -370,9 +348,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           <Typography
             variant="caption"
             sx={{
-              fontSize: "0.6rem",
-              fontWeight: 600,
-              color: getPermissionColor()
+              color: getPermissionColor(),
+              fontWeight: 500,
             }}
           >
             {transreport("permission")}

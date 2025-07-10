@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { Box } from "@mui/material";
 import { LPA_SUFFIX } from "@/app/common/constants/user";
+import { useTranslations } from "next-intl";
 
 interface IncrementChartProps {
   chartData: {
@@ -23,6 +24,7 @@ interface IncrementChartProps {
 
 const IncrementChart: React.FC<IncrementChartProps> = ({ chartData }) => {
   if (!chartData || chartData.length <= 1) return null;
+  const trans = useTranslations("User.Increment");
 
   return (
     <Box px={2} pb={2}>
@@ -38,7 +40,7 @@ const IncrementChart: React.FC<IncrementChartProps> = ({ chartData }) => {
               fontSize={12}
               tickFormatter={(value) => `₹${value}`}
               label={{
-                value: "CTC (Lakh)",
+                value: trans("ctc"),
                 angle: -90,
                 position: "insideLeft",
                 fontSize: 12,

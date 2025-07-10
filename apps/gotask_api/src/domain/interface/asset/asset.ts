@@ -37,53 +37,46 @@ const getAllAssets = async (
   systemType?: string,
   warrantyFrom?: Date,
   warrantyTo?: Date
-): Promise<IAsset[]> => {
+): Promise<{ assets: IAsset[]; total: number }> => {
   let assetIds: string[] = [];
   if (userId) {
     const users = await User.find({ name: userId });
-    if (!users) return [];
+    if (!users) return { assets: [], total: 0 };
 
     const userIds = users.map((user) => user.id);
-
     const allTags = await Promise.all(userIds.map((id) => getAssetByUserId(id)));
     const tags = allTags.flat();
 
     assetIds = tags.map((tag) => tag.assetId);
-    if (!assetIds.length) return [];
+    if (!assetIds.length) return { assets: [], total: 0 };
   }
 
-  // Build base query
   const query: any = { active: true };
   if (assetIds.length > 0) {
     query.id = { $in: assetIds };
   }
   if (typeId) {
     const assetType = await getAssetTypeByName(typeId);
-    if (!assetType) return [];
+    if (!assetType) return { assets: [], total: 0 };
     query.typeId = assetType.id;
   }
-
   if (systemType) {
     query.systemType = systemType;
   }
-
   if (warrantyFrom || warrantyTo) {
     query.warrantyDate = {};
-    if (warrantyFrom) {
-      query.warrantyDate.$gte = warrantyFrom;
-    }
-    if (warrantyTo) {
-      query.warrantyDate.$lte = warrantyTo;
-    }
+    if (warrantyFrom) query.warrantyDate.$gte = warrantyFrom;
+    if (warrantyTo) query.warrantyDate.$lte = warrantyTo;
   }
+  const total = await Asset.countDocuments(query);
 
   let findQuery = Asset.find(query);
-
   if (typeof skip === "number" && typeof limit === "number") {
     findQuery = findQuery.skip(skip).limit(limit);
   }
 
-  return await findQuery.sort({ createdAt: -1 });
+  const assets = await findQuery.sort({ createdAt: -1 });
+  return { assets, total };
 };
 
 export const updateAsset = async (id: string, payload: Partial<IAsset>): Promise<IAsset | null> => {

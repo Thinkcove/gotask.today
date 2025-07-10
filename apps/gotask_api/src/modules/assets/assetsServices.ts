@@ -22,7 +22,7 @@ import {
   updateTag
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
-import { Asset } from "../../domain/model/asset/asset";
+import { IAsset } from "../../domain/model/asset/asset";
 import { generateAssetHistoryEntry } from "./utils/assetHistory";
 
 class assetService {
@@ -185,12 +185,12 @@ class assetService {
     warrantyTo?: Date;
   }) => {
     try {
-      let assets = [];
-      const total = await Asset.countDocuments({ active: true });
+      let assets: IAsset[] = [];
+      let total = 0;
 
       if (typeof page === "number" && typeof limit === "number") {
         const skip = (page - 1) * limit;
-        assets = await getAllAssets(
+        const result = await getAllAssets(
           skip,
           limit,
           userId,
@@ -199,8 +199,12 @@ class assetService {
           warrantyFrom,
           warrantyTo
         );
+        assets = result.assets;
+        total = result.total;
       } else {
-        assets = await getAllAssets();
+        const result = await getAllAssets();
+        assets = result.assets;
+        total = result.total;
       }
 
       const tagsData = await Promise.all(

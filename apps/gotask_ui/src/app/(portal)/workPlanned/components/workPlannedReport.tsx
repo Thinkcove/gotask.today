@@ -166,10 +166,7 @@ const WorkPlannedReport = () => {
             </Grid>
           ) : reportData && reportData.length === 0 ? (
             <Grid item xs={12}>
-              <EmptyState
-                imageSrc={NoSearchResultsImage}
-                message={transworkplanned("nodata")}
-              />
+              <EmptyState imageSrc={NoSearchResultsImage} message={transworkplanned("nodata")} />
             </Grid>
           ) : reportData ? (
             <WorkPlannedCalendarGrid
@@ -177,6 +174,7 @@ const WorkPlannedReport = () => {
               fromDate={filters.fromDate}
               toDate={filters.toDate}
               selectedProjects={filters.projectIds}
+              isUserSelected={filters.userIds}
             />
           ) : null}
         </Grid>

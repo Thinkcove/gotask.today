@@ -12,6 +12,48 @@
     "access": "Project Management"
   },
   {
+    "text": "Task",
+    "icon": "AssignmentIcon",
+    "path": "/task/projects",
+    "access": "Task Management"
+  },
+  {
+    "text": "Work Log",
+    "icon": "BarChartIcon",
+    "path": "/report",
+    "access": "User Report"
+  },
+  {
+    "text": "Work Planned",
+    "icon": "BarChartIcon",
+    "path": "/workPlanned",
+    "access": "User Report"
+  },
+  {
+    "text": "Asset",
+    "icon": "ManageAccountsIcon",
+    "path": "/asset/assets",
+    "access": "Asset and Resources"
+  },
+  {
+    "text": "KPI Template",
+    "icon": "InsightsIcon",
+    "path": "/kpi/template",
+    "access": "KPI System"
+  },
+  {
+    "text": "Permission",
+    "icon": "SecurityIcon",
+    "path": "/permission",
+    "access": "Permission"
+  },
+  {
+    "text": "Leave",
+    "icon": "ManageAccountsIcon",
+    "path": "/leave",
+    "access": "Leave"
+  },
+  {
     "text": "User",
     "icon": "PeopleIcon",
     "path": "/user",
@@ -36,46 +78,9 @@
     "access": "Access Management"
   },
   {
-    "text": "Task",
-    "icon": "AssignmentIcon",
-    "path": "/task/projects",
-    "access": "Task Management"
-  },
-  {
-    "text": "Work Log",
-    "icon": "BarChartIcon",
-    "path": "/report",
-    "access": "User Report"
-  },
-  {
-    "text": "Work Planned",
-    "icon": "BarChartIcon",
-    "path": "/workPlanned",
-    "access": "User Report"
-  },
-  {
-    "text": "Asset",
-    "icon": "ManageAccountsIcon",
-    "path": "/asset/assets",
-    "access": "Asset and Resources"
-  },
-  { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" },
-  {
-    "text": "KPI Template",
-    "icon": "InsightsIcon",
-    "path": "/kpi/template",
-    "access": "KPI System"
-  },
-  {
-    "text": "Permission",
-    "icon": "SecurityIcon",
-    "path": "/permission",
-    "access": "Permission"
-  },
-  {
-    "text": "Leave",
-    "icon": "ManageAccountsIcon",
-    "path": "/leave",
-    "access": "Leave"
+    "text": "Upload",
+    "icon": "UploadIcon",
+    "path": "/upload",
+    "access": "Upload"
   }
 ]

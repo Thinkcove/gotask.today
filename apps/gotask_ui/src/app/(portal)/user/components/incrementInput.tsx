@@ -8,13 +8,13 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import CustomTable from "@/app/component/table/table";
 import { IIncrementHistory } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
-import { getUserIncrements, addUserIncrement, updateUserIncrement } from "../services/userAction";
+import { getUserIncrements, addUserIncrement, deleteUserIncrement } from "../services/userAction";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import moment from "moment";
 import { calculateIncrementPercent } from "@/app/common/constants/user";
 import IncrementChart from "./incrementChart";
 import { useIncrementColumns } from "./incrementColumn";
-import Toggle from "@/app/component/toggle/toggle"; // make sure you import your Toggle component
+import Toggle from "@/app/component/toggle/toggle";
 
 interface IncrementInputProps {
   userId: string;
@@ -22,29 +22,23 @@ interface IncrementInputProps {
 
 const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   const trans = useTranslations("User.Increment");
-  const columns = useIncrementColumns();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<IIncrementHistory>({
-    date: "",
-    ctc: 0
-  });
+  const [formData, setFormData] = useState<IIncrementHistory>({ date: "", ctc: 0 });
   const [dateError, setDateError] = useState(false);
   const [ctcError, setCtcError] = useState(false);
   const [selectedView, setSelectedView] = useState<string>("Table");
-
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const {
     data: responseData,
     mutate,
     isLoading
   } = useSWR<IIncrementHistory[]>(`/user/${userId}/increment`, () => getUserIncrements(userId));
-
   const increment_history = useMemo<IIncrementHistory[]>(
     () => (Array.isArray(responseData) ? responseData : []),
     [responseData]
   );
-
   const sorted = useMemo(
     () =>
       [...increment_history].sort(
@@ -53,11 +47,8 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
     [increment_history]
   );
 
-  if (!userId || isLoading) return null;
-
   const resetForm = () => {
     setFormData({ date: "", ctc: 0 });
-    setEditId(null);
     setDateError(false);
     setCtcError(false);
   };
@@ -79,8 +70,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
     const formattedDate = new Date(formData.date).toISOString().split("T")[0];
 
     const isDuplicate = increment_history.some(
-      (i) =>
-        new Date(i.date).toISOString().split("T")[0] === formattedDate && i.increment_id !== editId
+      (i) => new Date(i.date).toISOString().split("T")[0] === formattedDate
     );
 
     if (isDuplicate) {
@@ -88,15 +78,24 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       return;
     }
 
-    if (editId) {
-      await updateUserIncrement(userId, Number(editId), formData);
-    } else {
-      await addUserIncrement(userId, formData);
-    }
-
+    await addUserIncrement(userId, formData);
     await mutate();
     resetForm();
     setDialogOpen(false);
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setDeleteTargetId(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteTargetId) {
+      await deleteUserIncrement(userId, deleteTargetId);
+      await mutate();
+      setDeleteTargetId(null);
+      setDeleteDialogOpen(false);
+    }
   };
 
   const chartData = sorted.map((item, idx, arr) => {
@@ -117,21 +116,24 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   const rows = [...sorted].reverse().map((inc, idx, arr) => {
     const prev = arr[idx + 1];
     const percent = prev ? calculateIncrementPercent(inc.ctc, prev.ctc)?.toFixed(2) : undefined;
-    return { ...inc, percent };
+
+    return {
+      ...inc,
+      percent
+    };
   });
+
+  const columns = useIncrementColumns({
+    onDelete: handleDeleteClick
+  });
+
+  if (!userId || isLoading) return null;
 
   return (
     <Box>
-      {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} px={2}>
         {rows.length > 0 && (
-          <Box>
-            <Toggle
-              options={["Table", "Chart"]}
-              selected={selectedView}
-              onChange={setSelectedView}
-            />
-          </Box>
+          <Toggle options={["Table", "Chart"]} selected={selectedView} onChange={setSelectedView} />
         )}
         <Button
           startIcon={<AddIcon />}
@@ -143,24 +145,16 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
         </Button>
       </Box>
 
-      {/* Chart / Table View */}
       {rows.length === 0 ? (
-        <Box sx={{ color: "text.secondary" }}>
-          <Typography>{trans("noincrements")}</Typography>
-        </Box>
+        <Typography color="text.secondary">{trans("noincrements")}</Typography>
       ) : (
         <Box
           sx={{
             maxHeight: 400,
             overflow: "auto",
             scrollBehavior: "smooth",
-            "&::-webkit-scrollbar": {
-              width: "6px",
-              height: "6px"
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "#f1f1f1"
-            },
+            "&::-webkit-scrollbar": { width: "6px", height: "6px" },
+            "&::-webkit-scrollbar-track": { background: "#f1f1f1" },
             "&::-webkit-scrollbar-thumb": {
               backgroundColor: "#bbb",
               borderRadius: 8
@@ -170,19 +164,17 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
           {selectedView === "Chart" ? (
             <IncrementChart chartData={chartData} />
           ) : (
-            <Box>
-              <CustomTable columns={columns} rows={rows} />
-            </Box>
+            <CustomTable columns={columns} rows={rows} />
           )}
         </Box>
       )}
 
-      {/* Add/Edit Dialog */}
+      {/* Add Dialog */}
       <CommonDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         onSubmit={handleSubmit}
-        title={editId ? trans("edit") : trans("addnew")}
+        title={trans("addnew")}
         submitLabel={trans("save")}
         cancelLabel={trans("cancel")}
       >
@@ -232,6 +224,19 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
         cancelLabel={trans("cancel")}
       >
         <Typography>{trans("duplicateincrementdate")}</Typography>
+      </CommonDialog>
+
+      {/* Delete Confirmation Dialog */}
+      <CommonDialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onSubmit={confirmDelete}
+        title={trans("confirmdelete")}
+        submitLabel={trans("delete")}
+        cancelLabel={trans("cancel")}
+        submitColor="#b71c1c"
+      >
+        <Typography>{trans("deleteconfirmtext")}</Typography>
       </CommonDialog>
     </Box>
   );

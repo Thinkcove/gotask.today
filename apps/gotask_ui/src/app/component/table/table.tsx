@@ -245,8 +245,14 @@ const CustomTable = <T extends object>({
           <TableBody>
             {isLoading ? (
               <TableSkeletonRows columns={columns} rowsPerPage={rowsPerPage} />
+            ) : sortedRows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center" sx={{ py: 4, color: "#888" }}>
+                  No Data Found
+                </TableCell>
+              </TableRow>
             ) : (
-              rows.map((row, rowIndex) => (
+              sortedRows.map((row, rowIndex) => (
                 <StyledTableRow key={rowIndex}>
                   {columns.map((column) => {
                     const value = column.id in row ? row[column.id as keyof T] : undefined;

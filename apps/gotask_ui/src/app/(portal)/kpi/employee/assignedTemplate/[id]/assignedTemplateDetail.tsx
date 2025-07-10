@@ -2,13 +2,12 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box, IconButton, Grid, TextField, Button, Typography } from "@mui/material";
+import { Box, IconButton, Grid, Button, Typography } from "@mui/material";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
-import { deleteKpiAssignment, updateKpiAssignment } from "../../../service/templateAction";
+import { deleteKpiAssignment } from "../../../service/templateAction";
 import { getUserStatusColor } from "@/app/common/constants/status";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { User, useUser } from "@/app/userContext";
-import EditIcon from "@mui/icons-material/Edit";
+import { User } from "@/app/userContext";
 import { KpiAssignment } from "../../../service/templateInterface";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -34,15 +33,7 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
   const { data: users = [] } = useSWR("fetch-users", fetcherUserList);
-
   const [openDialog, setOpenDialog] = useState(false);
-  const [isEditingComment, setIsEditingComment] = useState(false);
-  const [commentText, setCommentText] = useState(
-    Array.isArray(assignment.comments)
-      ? (assignment.comments[0] ?? "")
-      : (assignment.comments ?? "")
-  );
-  const { user: loginUser } = useUser();
   const [selectedTab, setSelectedTab] = useState<string>(transkpi("general"));
   const [scoreSubTab, setScoreSubTab] = useState<string>(transkpi("previousscores"));
 
@@ -67,15 +58,6 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
       setSnackbarOpen(true);
       setOpenDialog(false);
     }
-  };
-
-  const handleSaveComment = async () => {
-    if (!loginUser?.id) return;
-    await updateKpiAssignment(assignment.assignment_id, {
-      comments: [commentText],
-      authUserId: loginUser.id
-    });
-    setIsEditingComment(false);
   };
 
   return (

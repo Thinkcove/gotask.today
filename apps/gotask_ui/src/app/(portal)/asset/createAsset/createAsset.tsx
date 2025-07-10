@@ -17,6 +17,8 @@ import MobileInputs from "./mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
 import { OFFICE_SYSTEM, systemTypeOptions } from "../assetConstants";
 import AccessInputs from "./accessInput";
+import PrinterInputs from "./printerInputs";
+import FingerprintScannerInputs from "./fingerPrintInputs";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -60,7 +62,19 @@ export const CreateAsset: React.FC = () => {
     accessCardNo: "",
     personalId: "",
     accessCardNo2: "",
-    issuedOn: ""
+    issuedOn: "",
+
+    //printer and scanner
+    Location: "",
+    connectivity: "",
+    printerType: "",
+    specialFeatures: "",
+    printerOutputType: "",
+    supportedPaperSizes: "",
+    capacity: "",
+    authenticationModes: "",
+    display: "",
+    cloudAndAppBased: false
   });
   const [selectedAssetType, setSelectedAssetType] = useState<IAssetType | null>(null);
   const router = useRouter();
@@ -95,7 +109,11 @@ export const CreateAsset: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (selectedAssetType?.name !== ASSET_TYPE.ACCESS_CARDS) {
+    if (
+      selectedAssetType?.name !== ASSET_TYPE.ACCESS_CARDS &&
+      selectedAssetType?.name !== ASSET_TYPE.PRINTER &&
+      selectedAssetType?.name !== ASSET_TYPE.FINGERPRINT_SCANNER
+    ) {
       if (!formData.typeId) newErrors.typeId = transasset("typeid");
       if (!formData.deviceName)
         newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
@@ -123,6 +141,16 @@ export const CreateAsset: React.FC = () => {
         newErrors.accessCardNo2 = `${transasset("accesscardno2")} ${transasset("isrequired")}`;
       if (!formData.issuedOn)
         newErrors.issuedOn = `${transasset("issuedon")} ${transasset("isrequired")}`;
+    }
+
+    if (
+      selectedAssetType?.name === ASSET_TYPE.PRINTER &&
+      selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER
+    ) {
+      if (!formData.deviceName)
+        newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
+      if (!formData.modelName)
+        newErrors.modelName = `${transasset("modelname")} ${transasset("isrequired")}`;
     }
 
     setErrors(newErrors);
@@ -269,6 +297,26 @@ export const CreateAsset: React.FC = () => {
                 onChange={handleInputChange}
                 errors={errors}
                 selectedAssetType={selectedAssetType}
+              />
+            </Grid>
+          )}
+          {selectedAssetType?.name === ASSET_TYPE.PRINTER && (
+            <Grid item xs={12}>
+              <PrinterInputs
+                formData={formData}
+                onChange={handleInputChange}
+                selectedAssetType={selectedAssetType}
+                errors={errors}
+              />
+            </Grid>
+          )}
+          {selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER && (
+            <Grid item xs={12}>
+              <FingerprintScannerInputs
+                formData={formData}
+                onChange={handleInputChange}
+                selectedAssetType={selectedAssetType}
+                errors={errors}
               />
             </Grid>
           )}

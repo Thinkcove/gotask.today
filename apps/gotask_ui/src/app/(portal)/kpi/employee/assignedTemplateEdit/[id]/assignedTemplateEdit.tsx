@@ -105,7 +105,6 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
         errors={errors}
         handleChange={handleChange}
         disabledFields={["assigned_by"]}
-        showCommentsField={false}
         users={users}
       />
 

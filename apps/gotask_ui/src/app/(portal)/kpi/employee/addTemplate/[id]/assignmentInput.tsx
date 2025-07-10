@@ -20,7 +20,6 @@ interface KpiFormFieldsProps {
   ) => void;
   disabledFields?: (keyof KpiAssignment)[];
   showReviewerField?: boolean;
-  showCommentsField?: boolean;
   userId?: string;
   showOnlyPerformanceFields?: boolean;
   isPerformancePage?: boolean;
@@ -33,7 +32,6 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
   handleChange,
   disabledFields = [],
   showReviewerField = false,
-  showCommentsField = true,
   userId,
   showOnlyPerformanceFields = false,
   isPerformancePage
@@ -144,7 +142,7 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
 
       {Array.isArray(form.performance) &&
         form.performance.map((entry, index) => (
-          <Grid container spacing={1} alignItems="center" mb={1}>
+          <Grid key={index} container spacing={1} alignItems="center" mb={1}>
             {/* Start Date */}
             <Grid item xs={12} sm={6} md={6}>
               <FormField

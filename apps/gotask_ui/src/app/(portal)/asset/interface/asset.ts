@@ -95,6 +95,18 @@ export interface IAssetAttributes {
   personalId?: string;
   issuedOn?: string;
   typeData?: IAssetType;
+
+  //Printer
+  Location?: string;
+  connectivity?: string;
+  printerType?: string;
+  specialFeatures?: string;
+  printerOutputType?: string;
+  supportedPaperSizes?: string;
+  capacity?: string;
+  authenticationModes?: string;
+  display?: string;
+  cloudAndAppBased?: boolean;
 }
 
 export interface IAssetTags {
@@ -149,11 +161,8 @@ export interface IIssuesHistories {
 }
 
 export interface AssetFilters {
-  assignedToFilter?: string[];
-  modelNameFilter?: string[];
-  warrantyDateFrom?: string;
-  warrantyDateTo?: string;
-  systemTypeFilter?: string[];
-  assetAllocationFilter?: string[];
-  assetTypeFilter?: string[];
+  warrantyFrom?: string;
+  warrantyTo?: string;
+  systemType?: string[];
+  [key: string]: any;
 }

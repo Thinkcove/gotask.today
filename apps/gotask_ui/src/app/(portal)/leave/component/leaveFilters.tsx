@@ -1,9 +1,10 @@
 import React from "react";
-import { Box, Link, TextField } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import { leaveFilterProps } from "../interface/leaveInterface";
+import DateDropdown from "@/app/component/input/dateDropdown";
 
 const LeaveFilters: React.FC<leaveFilterProps> = ({
   userIdFilter,
@@ -35,6 +36,12 @@ const LeaveFilters: React.FC<leaveFilterProps> = ({
     const index = allUserIds.findIndex((id) => id === userId);
     return index !== -1 ? allUserNames[index] : userId;
   });
+
+  // Handler for date range changes
+  const handleDateChange = (from: string, to: string) => {
+    onFromDateChange(from);
+    onToDateChange(to);
+  };
 
   const appliedFilterCount =
     (userIdFilter.length > 0 ? 1 : 0) +
@@ -71,47 +78,13 @@ const LeaveFilters: React.FC<leaveFilterProps> = ({
           selected={leaveTypeFilter}
           onChange={onLeaveTypeChange}
         />
-
-        {/* From Date Filter */}
-        <TextField
-          label={transleave("fromdate")}
-          type="date"
-          value={fromDate}
-          onChange={(e) => onFromDateChange(e.target.value)}
-          size="small"
-          sx={{ minWidth: 200 }}
-          InputLabelProps={{
-            shrink: true,
-            sx: {
-              fontSize: "1rem"
-            }
-          }}
-          InputProps={{
-            sx: {
-              height: 40
-            }
-          }}
-        />
-
-        {/* To Date Filter */}
-        <TextField
-          label={transleave("todate")}
-          type="date"
-          value={toDate}
-          onChange={(e) => onToDateChange(e.target.value)}
-          size="small"
-          sx={{ minWidth: 200 }}
-          InputLabelProps={{
-            shrink: true,
-            sx: {
-              fontSize: "1rem"
-            }
-          }}
-          InputProps={{
-            sx: {
-              height: 40
-            }
-          }}
+        {/* Date Range Filter using DateDropdown */}
+        <DateDropdown
+          dateFrom={fromDate || ""}
+          dateTo={toDate || ""}
+          onDateChange={handleDateChange}
+          transtask={transleave}
+          placeholder={transleave("daterange")}
         />
       </Box>
       {/* Clear All Link - Always visible below filter bar */}

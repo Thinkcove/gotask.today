@@ -12,6 +12,12 @@
     "access": "Project Management"
   },
   {
+    "text": "User",
+    "icon": "PeopleIcon",
+    "path": "/user",
+    "access": "User Management"
+  },
+  {
     "text": "Task",
     "icon": "AssignmentIcon",
     "path": "/task/projects",
@@ -52,12 +58,6 @@
     "icon": "ManageAccountsIcon",
     "path": "/leave",
     "access": "Leave"
-  },
-  {
-    "text": "User",
-    "icon": "PeopleIcon",
-    "path": "/user",
-    "access": "User Management"
   },
   {
     "text": "Organization",

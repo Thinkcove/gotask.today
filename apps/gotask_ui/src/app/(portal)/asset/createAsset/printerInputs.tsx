@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
+import { connectivityOptions } from "../assetConstants";
 
 interface PrinterInputsProps {
   formData: IAssetAttributes;
@@ -106,10 +107,11 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
         <Grid item xs={12} sm={4}>
           <FormField
             label={transasset("connectivity")}
-            type="text"
-            value={formData.connectivity}
+            type="multiselect"
             placeholder={transasset("connectivity")}
-            onChange={(val) => onChange("connectivity", String(val))}
+            options={connectivityOptions}
+            value={formData.connectivity?.split(",").map((c) => c.trim()) || []}
+            onChange={(val) => onChange("connectivity", (val as string[]).join(", "))}
           />
         </Grid>
         <Grid item xs={12} sm={4}>

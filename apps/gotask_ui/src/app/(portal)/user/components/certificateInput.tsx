@@ -58,7 +58,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
 
-    if (newValue.length > 150) {
+    if (newValue.length > MAX_NOTES_LENGTH) {
       setError(true);
     } else {
       setError(false);
@@ -67,7 +67,6 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
       }
     }
   };
-  
 
   const handleSave = async () => {
     const isNameEmpty = !tempCert.name.trim();

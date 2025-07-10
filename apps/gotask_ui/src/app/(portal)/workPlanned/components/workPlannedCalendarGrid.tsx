@@ -32,6 +32,7 @@ import { fetchAllPermissions } from "../../report/services/reportService";
 import {
   calculatePermissionDuration,
   formatLeaveDuration,
+  formatPermissionDuration,
   formatText,
   normalizeDate
 } from "@/app/common/utils/leaveCalculate";
@@ -593,7 +594,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                     color: getPermissionColor()
                                   }}
                                 >
-                                  {`${calculatePermissionDuration(perm.start_time, perm.end_time)} ${calculatePermissionDuration(perm.start_time, perm.end_time) === 1 ? "hour" : "hours"}`}
+                                  {`${formatPermissionDuration(perm.start_time, perm.end_time)}h`}{" "}
                                 </Typography>
                               ))}
                             </Box>
@@ -641,7 +642,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               color: getPermissionColor()
                             }}
                           >
-                            {`${calculatePermissionDuration(permission.start_time, permission.end_time)} ${calculatePermissionDuration(permission.start_time, permission.end_time) === 1 ? "hour" : "hours"}`}
+                            {`${formatPermissionDuration(permission.start_time, permission.end_time)}`}
                           </Typography>
                         </Box>
                       ) : (

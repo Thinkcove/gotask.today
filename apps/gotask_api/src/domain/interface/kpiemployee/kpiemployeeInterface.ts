@@ -3,7 +3,7 @@ import { IKpiTemplate, KpiTemplate } from "../../model/kpi/kpiModel";
 import { KPI_FREQUENCY } from "../../../constants/kpiConstants";
 import { IKpiPerformance } from "../../model/kpiemployee/kpiPerformanceModel";
 import { v4 as uuidv4 } from "uuid";
-import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiEmployeeModel"
+import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiEmployeeModel";
 
 // Create a new KPI assignment
 export const createKpiAssignmentInDb = async (

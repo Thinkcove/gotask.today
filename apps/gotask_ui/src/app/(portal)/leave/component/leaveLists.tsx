@@ -2,8 +2,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { Box, Grid, Paper, Typography } from "@mui/material";
 import Table from "@/app/component/table/table";
-import EmptyState from "@/app/component/emptyState/emptyState";
-import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -66,7 +64,6 @@ const LeaveList: React.FC = () => {
   const {
     data: filteredLeaves,
     isLoading,
-    isError,
     totalCount,
     mutate
   } = useGetLeavesWithFilters(filterPayload, true);

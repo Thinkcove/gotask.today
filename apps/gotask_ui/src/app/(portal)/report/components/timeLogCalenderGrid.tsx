@@ -30,7 +30,7 @@ import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
-import { calculatePermissionDuration } from "@/app/common/utils/leaveCalculate";
+import { calculatePermissionDuration, formatPermissionDuration } from "@/app/common/utils/leaveCalculate";
 import { fetchAllPermissions } from "../services/reportService";
 import { getDailyLogCellStyle } from "./logStyle";
 
@@ -362,14 +362,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
               color: getPermissionColor()
             }}
           >
-            {`${calculatePermissionDuration(permissionForDate.start_time, permissionForDate.end_time)} ${
-              calculatePermissionDuration(
-                permissionForDate.start_time,
-                permissionForDate.end_time
-              ) === 1
-                ? "hour"
-                : "hours"
-            }`}
+            {formatPermissionDuration(permissionForDate.start_time, permissionForDate.end_time)}
           </Typography>
           {value && (
             <Typography

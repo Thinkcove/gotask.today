@@ -46,3 +46,8 @@ export const formatLeaveDuration = (fromDate: string, toDate: string): string =>
 export const formatText = (text: string): string => {
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 };
+
+export const formatPermissionDuration = (startTime: string, endTime: string): string => {
+  const hours = calculatePermissionDuration(startTime, endTime);
+  return `${hours} hour${hours === 1 ? "" : "s"}`;
+};

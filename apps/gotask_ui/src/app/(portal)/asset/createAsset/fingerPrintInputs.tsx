@@ -53,6 +53,26 @@ const FingerprintScannerInputs: React.FC<FingerprintScannerInputsProps> = ({
 
         <Grid item xs={12} sm={4}>
           <FormField
+            label={transasset("capacity")}
+            type="text"
+            value={formData.capacity}
+            placeholder={transasset("capacity")}
+            onChange={(val) => onChange("capacity", String(val))}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <FormField
+            label={transasset("location")}
+            type="text"
+            value={formData.Location}
+            placeholder={transasset("location")}
+            onChange={(val) => onChange("Location", String(val))}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <FormField
             label={transasset("connectivity")}
             type="text"
             value={formData.connectivity}

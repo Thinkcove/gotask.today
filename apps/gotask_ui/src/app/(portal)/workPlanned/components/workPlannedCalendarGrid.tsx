@@ -44,7 +44,8 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   fromDate,
   toDate,
   leaveData,
-  permissionData
+  permissionData,
+  isUserSelected = []
 }) => {
   const transworkplanned = useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
 
@@ -211,13 +212,20 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
     return acc;
   }, {} as GroupedTasks);
+  const checkIfUserIsSelected = (userId: string): boolean => {
+    if (isUserSelected.length === 0) {
+      return true;
+    }
+    return isUserSelected.includes(userId);
+  };
 
-  // Add users who only have leaves but no tasks (within date range)
+  // Add users who only have leaves but no tasks (within date range AND user selection)
   leaves.forEach((leave) => {
     if (
       leave.from_date &&
       leave.to_date &&
-      datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)
+      datesOverlap(leave.from_date, leave.to_date, fromDate, toDate) &&
+      checkIfUserIsSelected(leave.user_id)
     ) {
       const userKey = leave.user_id;
       if (!groupedData[userKey]) {
@@ -231,9 +239,13 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     }
   });
 
-  // Add users who only have permissions but no tasks (within date range)
+  // Add users who only have permissions but no tasks (within date range AND user selection)
   permissions.forEach((permission) => {
-    if (permission.date && isPermissionInRange(permission.date)) {
+    if (
+      permission.date &&
+      isPermissionInRange(permission.date) &&
+      checkIfUserIsSelected(permission.user_id)
+    ) {
       const userKey = permission.user_id;
       if (!groupedData[userKey]) {
         groupedData[userKey] = {
@@ -245,7 +257,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
       }
     }
   });
-
   // Check if there's any data to display
   const hasFilteredTasks = filteredData.length > 0;
   const leavesInRange = leaves.filter(
@@ -549,22 +560,17 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                 {transworkplanned("leave")}
                               </Typography>
                               {taskLeaves.map((taskLeave, leaveIndex) => (
-                                <Chip
+                                <Typography
                                   key={leaveIndex}
-                                  label={formatLeaveDuration(
-                                    taskLeave.from_date,
-                                    taskLeave.to_date
-                                  )}
-                                  size="small"
+                                  variant="caption"
                                   sx={{
-                                    backgroundColor: getLeaveColor(),
-                                    color: "#fff",
-                                    fontSize: "0.65rem",
-                                    height: 20,
-                                    borderRadius: "5px",
-                                    mr: 0.5
+                                    fontSize: "0.7rem",
+                                    fontWeight: 500,
+                                    color: getLeaveColor()
                                   }}
-                                />
+                                >
+                                  {formatLeaveDuration(taskLeave.from_date, taskLeave.to_date)}{" "}
+                                </Typography>
                               ))}
                             </Box>
                           )}
@@ -584,19 +590,16 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                 {transworkplanned("permission")}
                               </Typography>
                               {taskPermissions.map((perm, permIndex) => (
-                                <Chip
-                                  key={permIndex}
-                                  label={`${calculatePermissionDuration(perm.start_time, perm.end_time)}h`}
-                                  size="small"
+                                <Typography
+                                  variant="caption"
                                   sx={{
-                                    backgroundColor: getPermissionColor(),
-                                    color: "#fff",
-                                    fontSize: "0.65rem",
-                                    height: 20,
-                                    borderRadius: "5px",
-                                    mr: 0.5
+                                    fontSize: "0.7rem",
+                                    fontWeight: 500,
+                                    color: getPermissionColor()
                                   }}
-                                />
+                                >
+                                  {`${calculatePermissionDuration(perm.start_time, perm.end_time)}h`}{" "}
+                                </Typography>
                               ))}
                             </Box>
                           )}
@@ -615,18 +618,16 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             >
                               {leave.leave_type ? transworkplanned("leave") : ""}
                             </Typography>
-
-                            <Chip
-                              label={formatLeaveDuration(leave.from_date, leave.to_date)}
-                              size="small"
+                            <Typography
+                              variant="caption"
                               sx={{
-                                backgroundColor: getLeaveColor(),
-                                color: "#fff",
-                                fontSize: "0.65rem",
-                                height: 20,
-                                borderRadius: "5px"
+                                fontSize: "0.7rem",
+                                fontWeight: 500,
+                                color: getLeaveColor()
                               }}
-                            />
+                            >
+                              {formatLeaveDuration(leave.from_date, leave.to_date)}
+                            </Typography>
                           </Box>
                         </Box>
                       ) : permission ? (
@@ -643,18 +644,16 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             >
                               {transworkplanned("permission")}
                             </Typography>
-
-                            <Chip
-                              label={`${calculatePermissionDuration(permission.start_time, permission.end_time)}h`}
-                              size="small"
+                            <Typography
+                              variant="caption"
                               sx={{
-                                backgroundColor: getPermissionColor(),
-                                color: "#fff",
-                                fontSize: "0.65rem",
-                                height: 20,
-                                borderRadius: "5px"
+                                fontSize: "0.7rem",
+                                fontWeight: 500,
+                                color: getPermissionColor()
                               }}
-                            />
+                            >
+                              {`${calculatePermissionDuration(permission.start_time, permission.end_time)}h`}
+                            </Typography>
                           </Box>
                         </Box>
                       ) : (

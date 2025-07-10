@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useUser } from "@/app/userContext";
-import PremissionForm from "../components/permissionForm";
 import FormHeader from "@/app/component/header/formHeader";
 import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
@@ -13,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionPayload } from "../interface/interface";
 import { createPermission } from "../services/permissionAction";
+import PermissionForm from "../components/permissionForm";
 
 const Page = () => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
@@ -138,7 +138,7 @@ const Page = () => {
           createHeading={transpermission("createpermission")}
         />
         <Box sx={{ flex: 1, overflowY: "auto" }}>
-          <PremissionForm
+          <PermissionForm
             formData={formData}
             errors={errors}
             onFormDataChange={handleFormDataChange}

@@ -4,15 +4,16 @@ import { Box } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { PremissionFormProps } from "../interface/interface";
+import TimePickerField from "@/app/component/header/timePicker";
+import { PermissionFormProps } from "../interface/interface";
 
-function PremissionForm({
+function PermissionForm({
   formData,
   errors,
   onFormDataChange,
   isSubmitting,
   user
-}: PremissionFormProps) {
+}: PermissionFormProps) {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
   const handleDateChange = (
@@ -28,6 +29,10 @@ function PremissionForm({
     value: string | number | Date | string[]
   ): void => {
     if (typeof value !== "string") return;
+    onFormDataChange(field, value);
+  };
+
+  const handleTimePickerChange = (field: "startTime" | "endTime", value: string): void => {
     onFormDataChange(field, value);
   };
 
@@ -65,36 +70,35 @@ function PremissionForm({
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <FormField
+          <TimePickerField
             label={transpermission("starttime")}
-            type="text"
-            inputType="time"
             placeholder={transpermission("starttime")}
             value={formData.startTime}
             error={errors.startTime}
-            onChange={(value: string | number | Date | string[]) =>
-              handleTimeChange("startTime", value)
-            }
+            onChange={(value: string) => handleTimePickerChange("startTime", value)}
             required
             disabled={isSubmitting}
+            ampm={true}
+            ampmInClock={true}
+            minutesStep={1}
           />
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <FormField
+          <TimePickerField
             label={transpermission("endtime")}
-            type="text"
-            inputType="time"
             placeholder={transpermission("endtime")}
             value={formData.endTime}
             error={errors.endTime}
-            onChange={(value: string | number | Date | string[]) =>
-              handleTimeChange("endTime", value)
-            }
+            onChange={(value: string) => handleTimePickerChange("endTime", value)}
             required
             disabled={isSubmitting}
+            ampm={true}
+            ampmInClock={true}
+            minutesStep={1}
           />
         </Grid>
+
         <Grid item xs={12}>
           <FormField
             label={transpermission("labelreson")}
@@ -111,4 +115,4 @@ function PremissionForm({
   );
 }
 
-export default PremissionForm;
+export default PermissionForm;

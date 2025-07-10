@@ -30,7 +30,7 @@ import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
-import { calculatePermissionDuration } from "@/app/common/utils/leaveCalculate";
+import { formatPermissionDuration } from "@/app/common/utils/leaveCalculate";
 import { fetchAllPermissions } from "../services/reportService";
 import { getDailyLogCellStyle } from "./logStyle";
 
@@ -53,7 +53,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
   showTasks,
   selectedProjects = [],
   leaveData,
-  permissionData
+  permissionData,
+  selectedUsers = []
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
 
@@ -109,6 +110,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
 
+  // Get leaves and permissions data
   let leaves: LeaveEntry[] = [];
   if (leaveData && leaveData.length > 0) {
     leaves = leaveData;
@@ -183,7 +185,16 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     return fromTimeLogs || "";
   };
 
-  const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
+  const filteredData = data.filter((entry) => {
+    const projectMatches =
+      selectedProjects.length === 0 ||
+      (entry.project_id && selectedProjects.includes(entry.project_id));
+    const userMatches =
+      selectedUsers.length === 0 || (entry.user_id && selectedUsers.includes(entry.user_id));
+    return projectMatches && userMatches;
+  });
+
+  const grouped = filteredData.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
     const project = entry.project_name || transreport("noproject");
     const task = entry.task_title || transreport("notask");
@@ -214,7 +225,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     if (!groupedByUser[user]) groupedByUser[user] = {};
     if (!groupedByUser[user][project]) groupedByUser[user][project] = [];
 
-    const matchedTask = data.find(
+    const matchedTask = filteredData.find(
       (d) =>
         d.user_name === user &&
         (d.project_name || transreport("noproject")) === project &&
@@ -232,14 +243,23 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     });
   });
 
-  [...leaves, ...permissions].forEach((item) => {
-    const userName = item.user_name;
-    const isInRange =
-      "from_date" in item
-        ? datesOverlap(item.from_date, item.to_date, fromDate, toDate)
-        : datesOverlap(item.date, item.date, fromDate, toDate);
+  // FIXED: Filter leaves and permissions by selected users and date range
+  const filteredLeaves = leaves.filter((leave) => {
+    const userMatches = selectedUsers.length === 0 || selectedUsers.includes(leave.user_id);
+    const dateMatches = datesOverlap(leave.from_date, leave.to_date, fromDate, toDate);
+    return userMatches && dateMatches;
+  });
 
-    if (isInRange && !groupedByUser[userName]) {
+  const filteredPermissions = permissions.filter((permission) => {
+    const userMatches = selectedUsers.length === 0 || selectedUsers.includes(permission.user_id);
+    const dateMatches = datesOverlap(permission.date, permission.date, fromDate, toDate);
+    return userMatches && dateMatches;
+  });
+
+  [...filteredLeaves, ...filteredPermissions].forEach((item) => {
+    const userName = item.user_name;
+
+    if (!groupedByUser[userName]) {
       groupedByUser[userName] = {};
     }
   });
@@ -268,38 +288,17 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     permissionForDate: PermissionEntry | null
   ) => {
     if (leaveForDate && permissionForDate) {
-      // Both leave and permission on same date
+      // Both leave and permission on same date - display only leave
       return (
         <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
           <Typography
             variant="caption"
             sx={{
-              fontSize: "0.5rem",
               fontWeight: 500,
               color: getLeaveColor()
             }}
           >
             {leaveForDate.leave_type ? transreport("leave") : ""}
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              fontSize: "0.5rem",
-              fontWeight: 500,
-              color: "#009688"
-            }}
-          >
-            {transreport("permission")}
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              fontSize: "0.5rem",
-              fontWeight: 500,
-              color: "#009688"
-            }}
-          >
-            {calculatePermissionDuration(permissionForDate.start_time, permissionForDate.end_time)}h
           </Typography>
           {value && (
             <Typography
@@ -322,7 +321,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           <Typography
             variant="caption"
             sx={{
-              fontSize: "0.6rem",
               fontWeight: 500,
               color: getLeaveColor()
             }}
@@ -350,22 +348,20 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           <Typography
             variant="caption"
             sx={{
-              fontSize: "0.6rem",
-              fontWeight: 500,
-              color: getPermissionColor()
+              color: getPermissionColor(),
+              fontWeight: 500
             }}
           >
             {transreport("permission")}
           </Typography>
           <Typography
-            variant="caption"
             sx={{
-              fontSize: "0.6rem",
+              fontSize: "0.8rem",
               fontWeight: 500,
               color: getPermissionColor()
             }}
           >
-            {calculatePermissionDuration(permissionForDate.start_time, permissionForDate.end_time)}h
+            {formatPermissionDuration(permissionForDate.start_time, permissionForDate.end_time)}
           </Typography>
           {value && (
             <Typography

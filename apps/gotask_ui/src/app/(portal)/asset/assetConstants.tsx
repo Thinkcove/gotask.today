@@ -205,3 +205,7 @@ export const ALLOCATION = ["Overutilized", "Not utilized"];
 export const OVERUTILIZED = "Overutilized";
 
 export const NOT_UTILIZED = "Not utilized";
+
+export const authenticationModesOptions = ["Fingerprint", "Card", "Password", "Face Recognition"];
+
+export const connectivityOptions = ["USB", "TCP/IP", "Wi-Fi"];

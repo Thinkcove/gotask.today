@@ -47,13 +47,13 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
       if (!timeString) return null;
       try {
         return parse(timeString, "h:mm a", new Date());
-      } catch (error) {
+      } catch {
         try {
           return parse(timeString, "HH:mm", new Date());
-        } catch (error2) {
+        } catch {
           try {
             return parse(timeString, "hh:mm a", new Date());
-          } catch (error3) {
+          } catch {
             return null;
           }
         }

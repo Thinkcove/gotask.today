@@ -52,6 +52,20 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
     setDateError(false);
     setDialogOpen(true);
   };
+  
+  const [error, setError] = useState(false);
+  const handleChange = (e: any) => {
+    const newValue = e.target.value;
+
+    if (newValue.length > 150) {
+      setError(true);
+    } else {
+      setError(false);
+      if (newValue !== tempCert.notes) {
+        setTempCert((prev) => ({ ...prev, notes: newValue }));
+      }
+    }
+  };
 
   const handleSave = async () => {
     const isNameEmpty = !tempCert.name.trim();
@@ -277,11 +291,15 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
             </Typography>
             <TextField
               placeholder={transuser("notesplaceholder")}
-              value={tempCert.notes}
-              onChange={(e) => setTempCert({ ...tempCert, notes: e.target.value })}
+              value={tempCert.notes ?? ""}
+              onChange={handleChange}
               fullWidth
               multiline
               minRows={3}
+              error={error}
+              helperText={
+                error ? "Character limit exceeded (150)" : `${tempCert.notes?.length || 0}/150`
+              }
             />
           </Grid>
         </Grid>

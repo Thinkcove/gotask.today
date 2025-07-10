@@ -50,26 +50,26 @@ class AssetController extends BaseController {
       const {
         sort_type,
         sort_var,
-        assetType,
-        modelName,
-        assignedTo,
+        page,
+        limit,
+        userId,
+        typeId,
         systemType,
         warrantyFrom,
         warrantyTo,
-        assetAllocationFilter
+        searchText
       } = payload;
       const users = await assetServices.getAllAssets({
         sortType: sort_type || DESC,
         sortVar: sort_var || CREATE_AT,
-        filters: {
-          assetType,
-          modelName,
-          assignedTo,
-          systemType,
-          warrantyFrom,
-          warrantyTo,
-          assetAllocationFilter
-        }
+        page,
+        limit,
+        userId,
+        typeId,
+        systemType,
+        warrantyFrom,
+        warrantyTo,
+        searchText
       });
       return this.sendResponse(handler, users);
     } catch (error) {

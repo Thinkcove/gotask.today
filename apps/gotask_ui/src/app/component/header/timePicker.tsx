@@ -3,8 +3,9 @@ import { FormControl, Box, Typography, FormHelperText } from "@mui/material";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { parse, format } from "date-fns";
+import { parse, format, isValid } from "date-fns";
 import { SxProps, Theme } from "@mui/material/styles";
+import { formats } from "../dateTime/timePicker";
 
 interface TimePickerFieldProps {
   label: string;
@@ -45,29 +46,33 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
   ) {
     const parseTimeValue = (timeString: string): Date | null => {
       if (!timeString) return null;
-      try {
-        return parse(timeString, "h:mm a", new Date());
-      } catch {
-        try {
-          return parse(timeString, "HH:mm", new Date());
-        } catch {
-          try {
-            return parse(timeString, "hh:mm a", new Date());
-          } catch {
-            return null;
-          }
+
+      // Create a base date to work with (today)
+      const baseDate = new Date();
+      const year = baseDate.getFullYear();
+      const month = baseDate.getMonth();
+      const day = baseDate.getDate();
+
+      for (const fmt of formats) {
+        const parsed = parse(timeString, fmt, new Date(year, month, day));
+        if (isValid(parsed)) {
+          return parsed;
         }
       }
+
+      return null;
     };
 
     const handleTimeChange = (newValue: Date | null): void => {
-      if (newValue) {
+      if (newValue && isValid(newValue)) {
         const formattedTime = format(newValue, ampm ? "h:mm a" : "HH:mm");
         onChange?.(formattedTime);
       } else {
         onChange?.("");
       }
     };
+
+    const parsedValue = parseTimeValue(value || "");
 
     return (
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -93,7 +98,7 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
             </Typography>
 
             <MobileTimePicker
-              value={parseTimeValue(value || "")}
+              value={parsedValue}
               onChange={handleTimeChange}
               ampmInClock={ampmInClock}
               ampm={ampm}
@@ -106,7 +111,7 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
                 textField: {
                   inputRef: ref,
                   variant: "standard",
-                  placeholder: placeholder,
+                  placeholder: placeholder || "Select time",
                   fullWidth: true,
                   error: !!error,
                   sx: {
@@ -120,7 +125,6 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
                   },
                   InputProps: {
                     disableUnderline: true
-                    // Removed the InputAdornment with AccessTime icon
                   }
                 },
                 mobilePaper: {

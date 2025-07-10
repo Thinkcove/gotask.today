@@ -551,9 +551,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               <Typography
                                 sx={{
                                   fontWeight: 400,
-                                  // fontSize: "1rem",
                                   color: getLeaveColor()
-                                  // mb: 0.5
                                 }}
                               >
                                 {formatText(transworkplanned("leave"))}
@@ -564,8 +562,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                   key={leaveIndex}
                                   variant="subtitle1"
                                   sx={{
-                                    // fontSize: "0.7rem",
-                                    // fontWeight: 500,
                                     color: getLeaveColor()
                                   }}
                                 >
@@ -611,9 +607,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           <Typography
                             sx={{
                               fontWeight: 400,
-                              // fontSize: "1rem",
                               color: getLeaveColor()
-                              // mb: 0.5
                             }}
                           >
                             {leave.leave_type ? formatText(transworkplanned("leave")) : ""}
@@ -622,7 +616,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           <Typography
                             variant="subtitle1"
                             sx={{
-                              // fontSize: "0.7rem",
                               fontWeight: 500,
                               color: getLeaveColor()
                             }}

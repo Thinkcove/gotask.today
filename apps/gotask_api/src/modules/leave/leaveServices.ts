@@ -9,6 +9,7 @@ import {
   findLeavesWithFilters
 } from "../../domain/interface/leave/leaveInterface";
 import { ILeave, Leave } from "../../domain/model/leave/leaveModel";
+
 const createLeaveService = async (leaveData: Partial<ILeave>) => {
   try {
     if (new Date(leaveData.from_date!) > new Date(leaveData.to_date!)) {
@@ -144,13 +145,11 @@ const getLeavesWithFiltersService = async (filters: {
     }
 
     // Set default pagination values
-    const page = filters.page || parseInt(PAGE.ONE);
+    const page = filters.page || parseInt(PAGE.ONE); // 1-based indexing
     const page_size = filters.page_size || parseInt(PAGE.TEN);
+    const skip = (page - 1) * page_size; // Calculate skip for pagination
 
-    // Fetch filtered leaves
-    const leaves = await findLeavesWithFilters(filters);
-
-    // Calculate total count for pagination
+    // Build query for filtering
     const query: any = {};
     if (filters.user_id) query.user_id = filters.user_id;
     if (filters.leave_type) query.leave_type = filters.leave_type;
@@ -170,29 +169,35 @@ const getLeavesWithFiltersService = async (filters: {
       if (filters.to_date) {
         const { end } = getStartAndEndOfDay(filters.to_date);
         dateConditions.push({
-          to_date: {
-            $lte: end
-          }
+          to_date: { $lte: end }
         });
       }
 
       // Combine conditions based on what filters are provided
       if (dateConditions.length === 1) {
-        // Only one date filter is applied
         Object.assign(query, dateConditions[0]);
       } else if (dateConditions.length === 2) {
-        // Both date filters are applied - leaves must satisfy both conditions
         query.$and = dateConditions;
       }
     }
 
+    // Fetch total count for pagination
     const total_count = await Leave.countDocuments(query);
+
+    // Fetch paginated leaves with sorting
+    const filteredLeaves = await findLeavesWithFilters({
+      ...query,
+      page,
+      page_size,
+      sort_field: filters.sort_field || "from_date",
+      sort_order: filters.sort_order || SORT_ORDER.ASC
+    });
 
     return {
       success: true,
       message: "Leave requests retrieved successfully",
       data: {
-        leaves,
+        leaves: filteredLeaves,
         total_count,
         total_pages: Math.ceil(total_count / page_size),
         current_page: page
@@ -206,11 +211,12 @@ const getLeavesWithFiltersService = async (filters: {
         leaves: [],
         total_count: 0,
         total_pages: 0,
-        current_page: 1
+        current_page: filters.page || 1
       }
     };
   }
 };
+
 export {
   createLeaveService,
   getAllLeavesService,

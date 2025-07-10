@@ -77,14 +77,7 @@ export const getLeavesWithFilters = async (payload: LeaveFilters) => {
     if (!response.success) {
       throw new Error(response.message);
     }
-    const leaveData = response.data;
-    return leaveData && "leaves" in leaveData
-      ? leaveData.leaves
-      : Array.isArray(leaveData)
-        ? leaveData
-        : leaveData
-          ? [leaveData]
-          : [];
+    return response.data; // Expect { leaves, total_count, total_pages, current_page }
   });
 };
 
@@ -109,7 +102,8 @@ export const useGetAllLeaves = (shouldFetch: boolean) => {
     async () => {
       const leaves = await getAllLeaves();
       return leaves as LeaveEntry[];
-    }
+    },
+    { revalidateOnFocus: false, dedupingInterval: 2000 }
   );
 
   return { data, isLoading, isError: !!error, error, mutate };
@@ -119,12 +113,27 @@ export const useGetLeavesWithFilters = (payload: LeaveFilters, shouldFetch: bool
   const { data, error, isLoading, mutate } = useSWR(
     shouldFetch ? ["getLeavesWithFilters", JSON.stringify(payload)] : null,
     async () => {
-      const leaves = await getLeavesWithFilters(payload);
-      return leaves as LeaveEntry[];
-    }
+      const response = await getLeavesWithFilters(payload);
+      return response as {
+        leaves: LeaveEntry[];
+        total_count: number;
+        total_pages: number;
+        current_page: number;
+      };
+    },
+    { revalidateOnFocus: false, dedupingInterval: 2000 }
   );
 
-  return { data, isLoading, isError: !!error, error, mutate };
+  return {
+    data: data?.leaves || [],
+    totalCount: data?.total_count || 0,
+    totalPages: data?.total_pages || 0,
+    currentPage: data?.current_page || 1,
+    isLoading,
+    isError: !!error,
+    error,
+    mutate
+  };
 };
 
 export const useGetLeaveById = (id: string, shouldFetch: boolean) => {
@@ -133,7 +142,8 @@ export const useGetLeaveById = (id: string, shouldFetch: boolean) => {
     async () => {
       const leave = await getLeaveById(id);
       return leave as LeaveEntry;
-    }
+    },
+    { revalidateOnFocus: false, dedupingInterval: 2000 }
   );
 
   return { data, isLoading, isError: !!error, error, mutate };
@@ -150,9 +160,7 @@ export const useUpdateLeave = (
       const leave = await updateLeave(id, payload as LeavePayload);
       return leave as LeaveEntry;
     },
-    {
-      revalidateOnFocus: false
-    }
+    { revalidateOnFocus: false, dedupingInterval: 2000 }
   );
 
   return { data, isLoading, isError: !!error, error, mutate };
@@ -163,9 +171,10 @@ export const useDeleteLeave = () => {
 
   const { trigger, isMutating, error } = useSWRMutation(
     "deleteLeave",
-    async (url, { arg }: { arg: string }) => {
+    async (_url, { arg }: { arg: string }) => {
       const response = await deleteLeave(arg);
       await mutate(["getAllLeaves"]);
+      await mutate(["getLeavesWithFilters"]);
       return response;
     }
   );
@@ -182,9 +191,10 @@ export const useCreateLeave = () => {
 
   const { trigger, isMutating, error } = useSWRMutation(
     "createLeave",
-    async (url, { arg }: { arg: LeavePayload }) => {
+    async (_url, { arg }: { arg: LeavePayload }) => {
       const response = await createLeave(arg);
       await mutate(["getAllLeaves"]);
+      await mutate(["getLeavesWithFilters"]);
       return response;
     }
   );

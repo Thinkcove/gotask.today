@@ -2,6 +2,7 @@ import { ILeave, Leave } from "../../model/leave/leaveModel";
 import { User } from "../../model/user/user";
 import logger from "../../../common/logger";
 import { SORT_ORDER } from "../../../constants/commonConstants/commonConstants";
+import { getStartAndEndOfDay } from "../../../constants/utils/date";
 
 export interface FilterQuery {
   user_id?: string;
@@ -25,36 +26,26 @@ const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> =>
     query.leave_type = filters.leave_type;
   }
 
-  // Updated date filtering logic to match the service
   if (filters.from_date || filters.to_date) {
     const dateConditions: any[] = [];
 
-    // If From Date is selected: show leaves that start on or after that date
     if (filters.from_date) {
-      const fromDate = new Date(filters.from_date);
+      const { start } = getStartAndEndOfDay(filters.from_date);
       dateConditions.push({
-        from_date: { $gte: fromDate }
+        from_date: { $gte: start }
       });
     }
 
-    // If To Date is selected: show leaves that end on or before that date
     if (filters.to_date) {
-      const toDate = new Date(filters.to_date);
-      // Set to end of day to include the entire selected date
-      const endOfDay = new Date(toDate);
-      endOfDay.setHours(23, 59, 59, 999);
+      const { end } = getStartAndEndOfDay(filters.to_date);
 
       dateConditions.push({
-        to_date: { $lte: endOfDay }
+        to_date: { $lte: end }
       });
     }
-
-    // Combine conditions based on what filters are provided
     if (dateConditions.length === 1) {
-      // Only one date filter is applied
       Object.assign(query, dateConditions[0]);
     } else if (dateConditions.length === 2) {
-      // Both date filters are applied - leaves must satisfy both conditions
       query.$and = dateConditions;
     }
   }
@@ -63,12 +54,11 @@ const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> =>
   if (filters.sort_field) {
     sort[filters.sort_field] = filters.sort_order === SORT_ORDER.DESC ? -1 : 1;
   } else {
-    sort.created_on = -1; // Default sort
+    sort.created_on = -1;
   }
 
   let queryBuilder = Leave.find(query).sort(sort);
 
-  // Add pagination
   if (filters.page && filters.page_size) {
     const skip = (filters.page - 1) * filters.page_size;
     queryBuilder = queryBuilder.skip(skip).limit(filters.page_size);

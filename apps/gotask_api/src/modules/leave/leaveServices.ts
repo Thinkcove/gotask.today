@@ -1,4 +1,5 @@
 import { PAGE, SORT_ORDER } from "../../constants/commonConstants/commonConstants";
+import { getStartAndEndOfDay } from "../../constants/utils/date";
 import {
   createNewLeave,
   findAllLeaves,
@@ -160,23 +161,17 @@ const getLeavesWithFiltersService = async (filters: {
 
       // If From Date is selected: show leaves that start on or after that date
       if (filters.from_date) {
-        const fromDate = new Date(filters.from_date);
+        const { start } = getStartAndEndOfDay(filters.from_date);
         dateConditions.push({
-          from_date: { $gte: fromDate }
+          from_date: { $gte: start }
         });
       }
 
       if (filters.to_date) {
-        const toDate = new Date(filters.to_date);
-        const startOfDay = new Date(toDate);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(toDate);
-        endOfDay.setHours(23, 59, 59, 999);
-
+        const { end } = getStartAndEndOfDay(filters.to_date);
         dateConditions.push({
           to_date: {
-            $gte: startOfDay,
-            $lte: endOfDay
+            $lte: end
           }
         });
       }

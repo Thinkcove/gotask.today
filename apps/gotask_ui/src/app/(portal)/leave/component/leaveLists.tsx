@@ -180,13 +180,6 @@ const LeaveList: React.FC = () => {
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column", overflowY: "auto" }}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            {isError && (
-              <EmptyState
-                imageSrc={NoAssetsImage}
-                message={transleave("failedfetch") || "Failed to fetch leaves"}
-              />
-            )}
-
             <Paper
               sx={{
                 p: 2,

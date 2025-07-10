@@ -12,15 +12,19 @@ import {
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
+import { findUserByEmail } from "../../domain/interface/user/userInterface";
 import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
 
 // Create a new task
 const createTask = async (
-  taskData: Partial<ITask>
+  taskData: Partial<ITask>,
+  user: any
 ): Promise<{ success: boolean; data?: ITask; message?: string }> => {
   try {
+    let newTask;
+    const userInfo = await findUserByEmail(user.user_id);
     if (!taskData || !taskData.title || !taskData.project_id) {
       return {
         success: false,
@@ -29,7 +33,9 @@ const createTask = async (
     }
 
     // story_id is optional — no need to validate here
-    const newTask = await createNewTask(taskData);
+    if (taskData && userInfo) {
+      newTask = await createNewTask(taskData, userInfo?.name);
+    }
 
     return {
       success: true,

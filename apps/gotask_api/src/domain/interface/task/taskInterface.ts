@@ -13,7 +13,7 @@ import { ITimeSpentEntry } from "../../model/task/timespent";
 import { TIME_FORMAT_PATTERNS } from "../../../constants/commonConstants/timeConstants";
 
 // Create a new task
-const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
+const createNewTask = async (taskData: Partial<ITask>, user_id: any): Promise<ITask> => {
   const user = await User.findOne({ id: taskData.user_id });
   const project = await Project.findOne({ id: taskData.project_id });
   if (!user || !project) {
@@ -30,7 +30,8 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
     ...taskData,
     user_name: user.name,
     project_name: project.name,
-    estimated_time: taskData.estimated_time || "0d0h0m"
+    estimated_time: taskData.estimated_time || "0d0h0m",
+    created_by: user_id
   });
   return await newTask.save();
 };

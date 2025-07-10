@@ -31,6 +31,7 @@ export interface ITask extends Document {
   time_spent_total: string;
   remaining_time: string;
   variation: string;
+  created_by: string;
 }
 
 const TaskSchema = new Schema<ITask>(
@@ -60,7 +61,7 @@ const TaskSchema = new Schema<ITask>(
     due_date: { type: Date },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
-
+    created_by: { type: String },
     user_estimated: { type: String, default: null },
     estimated_time: { type: String, default: null },
     time_spent: { type: [TimeSpentEntrySchema], default: [] },

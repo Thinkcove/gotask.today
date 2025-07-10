@@ -23,7 +23,8 @@ class TaskController extends BaseController {
   async createTask(requestHelper: RequestHelper, handler: any) {
     try {
       const taskData = requestHelper.getPayload();
-      const newTask = await createTask(taskData);
+      const user = requestHelper.getUser();
+      const newTask = await createTask(taskData, user);
       return this.sendResponse(handler, newTask);
     } catch (error) {
       return this.replyError(error, handler);

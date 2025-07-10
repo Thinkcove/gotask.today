@@ -125,6 +125,12 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
+                  label={transtask("detailcreatedby")}
+                  value={task.created_by || "-"}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
                   label={transtask("detailseverity")}
                   value={task.severity || "-"}
                   sx={{ color: getSeverityColor(task.severity), textTransform: "capitalize" }}

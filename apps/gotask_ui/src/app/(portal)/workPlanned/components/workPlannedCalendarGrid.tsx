@@ -9,7 +9,7 @@ import {
   Paper,
   Box,
   Typography,
-  Link,
+  Link
 } from "@mui/material";
 import {
   EnhancedWorkPlannedGridProps,

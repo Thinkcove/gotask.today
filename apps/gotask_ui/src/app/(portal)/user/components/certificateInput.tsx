@@ -17,6 +17,7 @@ import {
   deleteUserCertificate
 } from "../services/userAction";
 import StarIcon from "@mui/icons-material/Star";
+import { MAX_NOTES_LENGTH } from "@/app/common/constants/user";
 
 interface CertificateInputProps {
   userId: string;
@@ -52,9 +53,9 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
     setDateError(false);
     setDialogOpen(true);
   };
-  
+
   const [error, setError] = useState(false);
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
 
     if (newValue.length > 150) {
@@ -66,6 +67,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
       }
     }
   };
+  
 
   const handleSave = async () => {
     const isNameEmpty = !tempCert.name.trim();
@@ -298,7 +300,9 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
               minRows={3}
               error={error}
               helperText={
-                error ? "Character limit exceeded (150)" : `${tempCert.notes?.length || 0}/150`
+                error
+                  ? trans("charlimiterror")
+                  : `${tempCert.notes?.length || 0}/${MAX_NOTES_LENGTH}`
               }
             />
           </Grid>

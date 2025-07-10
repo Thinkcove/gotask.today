@@ -23,9 +23,8 @@ interface IncrementChartProps {
 }
 
 const IncrementChart: React.FC<IncrementChartProps> = ({ chartData }) => {
-  if (!chartData || chartData.length <= 1) return null;
   const trans = useTranslations("User.Increment");
-
+  if (!chartData || chartData.length <= 1) return null;
   return (
     <Box px={2} pb={2}>
       <ResponsiveContainer width="100%" height={280}>

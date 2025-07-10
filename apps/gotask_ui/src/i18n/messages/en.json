@@ -553,7 +553,8 @@
       "notesplaceholder": "Add any optional notes",
       "nocertifications": "No certifications added yet.",
       "nameisrequired": "Certificate name is required",
-      "dateisrequired": "Obtained date is required"
+      "dateisrequired": "Obtained date is required",
+      "charlimiterror": "Maximum 150 characters allowed"
     },
 
     "Increment": {

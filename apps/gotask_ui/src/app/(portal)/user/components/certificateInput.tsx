@@ -16,6 +16,7 @@ import {
   updateUserCertificate,
   deleteUserCertificate
 } from "../services/userAction";
+import StarIcon from "@mui/icons-material/Star";
 
 interface CertificateInputProps {
   userId: string;
@@ -127,39 +128,51 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
               <Grid item xs={12} sm={6} md={4} key={cert.certificate_id}>
                 <Paper
                   sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
                     p: 2,
                     borderRadius: 2,
-                    border: "1px solid #e0e0e0"
+                    border: "1px solid #e0e0e0",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    overflow: "hidden",
+                    wordBreak: "break-word"
                   }}
                 >
-                  <Box display="flex" gap={2}>
-                    <Box>
-                      <Typography fontSize={14} fontWeight={600}>
-                        {cert.name}
-                      </Typography>
-                      <Typography fontSize={12} color="text.secondary">
-                        {transuser("obtained")}:{" "}
-                        {cert.obtained_date ? (
-                          <FormattedDateTime
-                            date={cert.obtained_date}
-                            format={DateFormats.MONTH_YEAR}
-                          />
-                        ) : (
-                          "N/A"
-                        )}
-                      </Typography>
-                      {cert.notes && (
-                        <Typography fontSize={12} color="text.secondary" mt={0.5}>
-                          {cert.notes}
-                        </Typography>
+                  <Box sx={{ overflow: "hidden" }}>
+                    <Typography fontSize={14} fontWeight={600} sx={{ wordBreak: "break-word" }}>
+                      {cert.name}
+                    </Typography>
+
+                    <Typography fontSize={12} color="text.secondary">
+                      {transuser("obtained")}:{" "}
+                      {cert.obtained_date ? (
+                        <FormattedDateTime
+                          date={cert.obtained_date}
+                          format={DateFormats.MONTH_YEAR}
+                        />
+                      ) : (
+                        "N/A"
                       )}
-                    </Box>
+                    </Typography>
+
+                    {cert.notes && (
+                      <Typography
+                        fontSize={12}
+                        color="text.secondary"
+                        mt={0.5}
+                        sx={{
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word"
+                        }}
+                      >
+                        {cert.notes}
+                      </Typography>
+                    )}
                   </Box>
 
-                  <Box>
+                  <Box display="flex" justifyContent="flex-end" mt={1}>
                     <IconButton
                       onClick={() => {
                         if (cert.certificate_id) {
@@ -199,9 +212,21 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
 
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Typography fontWeight={600} fontSize={14} mb={0.5}>
-              {transuser("certificatename")} <span style={{ color: "red" }}>*</span>
-            </Typography>
+            <Box position="relative" display="inline-block" mb={0.5}>
+              <Typography fontWeight={600} fontSize={14}>
+                {transuser("certificatename")}
+              </Typography>
+              <StarIcon
+                sx={{
+                  color: "red",
+                  position: "absolute",
+                  top: 2,
+                  right: -10,
+                  fontSize: 8
+                }}
+              />
+            </Box>
+
             <TextField
               placeholder={transuser("cname")}
               value={tempCert.name}
@@ -215,9 +240,20 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Typography fontWeight={600} fontSize={14} mb={0.5}>
-              {transuser("obtaineddate")}
-            </Typography>
+            <Box position="relative" display="inline-block" mb={0.5}>
+              <Typography fontWeight={600} fontSize={14}>
+                {transuser("obtaineddate")}
+              </Typography>
+              <StarIcon
+                sx={{
+                  color: "red",
+                  position: "absolute",
+                  top: 2,
+                  right: -10,
+                  fontSize: 8
+                }}
+              />
+            </Box>
             <TextField
               type="date"
               InputLabelProps={{ shrink: true }}

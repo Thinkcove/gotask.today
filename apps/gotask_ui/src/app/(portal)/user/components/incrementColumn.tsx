@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { Typography } from "@mui/material";
+import { Typography, IconButton } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import PercentIcon from "@mui/icons-material/Percent";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Column } from "@/app/component/table/table";
 import { IIncrementHistory } from "../interfaces/userInterface";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
@@ -11,10 +12,16 @@ import DateFormats from "@/app/component/dateTime/dateFormat";
 import formatCTC from "@/app/common/utils/formatCtc";
 import { useTranslations } from "next-intl";
 
-export const useIncrementColumns = (): Column<IIncrementHistory & { percent?: string }>[] => {
+interface UseIncrementColumnOptions {
+  onDelete?: (id: string) => void;
+}
+
+export const useIncrementColumns = (
+  options: UseIncrementColumnOptions = {}
+): Column<IIncrementHistory & { percent?: string }>[] => {
   const trans = useTranslations("User.Increment");
 
-  return [
+  const columns: Column<IIncrementHistory & { percent?: string }>[] = [
     {
       id: "date",
       label: trans("date"),
@@ -44,4 +51,20 @@ export const useIncrementColumns = (): Column<IIncrementHistory & { percent?: st
         )
     }
   ];
+
+  if (options.onDelete) {
+    columns.push({
+      id: "actions",
+      label: "",
+      align: "right",
+      render: (_value, row) =>
+        row.increment_id ? (
+          <IconButton size="small" onClick={() => options.onDelete!(row.increment_id!)}>
+            <DeleteIcon fontSize="small" color="error" />
+          </IconButton>
+        ) : null
+    });
+  }
+
+  return columns;
 };

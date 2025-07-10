@@ -370,7 +370,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
             variant="caption"
             sx={{
               fontSize: "0.6rem",
-              fontWeight: 500,
+              fontWeight: 600,
               color: getPermissionColor()
             }}
           >

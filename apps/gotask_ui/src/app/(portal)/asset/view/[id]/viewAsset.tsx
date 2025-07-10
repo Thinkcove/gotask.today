@@ -320,6 +320,72 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                     </Grid>
                   </>
                 )}
+
+                {/* Printer */}
+                {asset?.type === ASSET_TYPE.PRINTER && (
+                  <>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("printertype")}
+                        value={asset?.printerType || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("printeroutputtype")}
+                        value={asset?.printerOutputType || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("specialfeatures")}
+                        value={asset?.specialFeatures || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("supportedpapersizes")}
+                        value={asset?.supportedPaperSizes || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("connectivity")}
+                        value={asset?.connectivity || "-"}
+                      />
+                    </Grid>
+                  </>
+                )}
+
+                {/* Finger print scanner */}
+                {asset?.type === ASSET_TYPE.FINGERPRINT_SCANNER && (
+                  <>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText label={trans("capacity")} value={asset?.capacity || "-"} />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("authenticationmodes")}
+                        value={asset?.authenticationModes || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText label={trans("display")} value={asset?.display || "-"} />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("connectivity")}
+                        value={asset?.connectivity || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("cloudandappbased")}
+                        value={asset?.cloudAndAppBased ? trans("yes") : trans("no")}
+                      />
+                    </Grid>
+                  </>
+                )}
               </Grid>
             </>
           )}

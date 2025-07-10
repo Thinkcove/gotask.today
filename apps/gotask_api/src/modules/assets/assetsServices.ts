@@ -22,6 +22,7 @@ import {
   updateTag
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
+import { IAsset } from "../../domain/model/asset/asset";
 import { generateAssetHistoryEntry } from "./utils/assetHistory";
 
 class assetService {
@@ -162,50 +163,53 @@ class assetService {
     });
   };
 
-  buildAssetFilterQuery = (filters: any = {}) => {
-    const query: any = { active: true };
-
-    if (filters.assetType) {
-      query["typeId"] = filters.assetType;
-    }
-
-    if (filters.modelName) {
-      query["modelName"] = filters.modelName;
-    }
-
-    if (filters.assignedTo) {
-      query["assignedTo"] = filters.assignedTo;
-    }
-
-    if (filters.assetType) {
-      query["assetType"] = filters.assetType;
-    }
-
-    if (filters.assetAllocationFilter) {
-      query["assetAllocationFilter"] = filters.assetAllocationFilter;
-    }
-
-    if (filters.systemType) {
-      query["systemType"] = filters.systemType;
-    }
-
-    if (filters.warrantyFrom || filters.warrantyTo) {
-      query["warrantyDate"] = {};
-      if (filters.warrantyFrom) {
-        query["warrantyDate"]["$gte"] = new Date(filters.warrantyFrom);
-      }
-      if (filters.warrantyTo) {
-        query["warrantyDate"]["$lte"] = new Date(filters.warrantyTo);
-      }
-    }
-
-    return query;
-  };
-
-  getAllAssets = async ({ sortType = DESC, sortVar = CREATE_AT, filters = {} }) => {
+  getAllAssets = async ({
+    sortType = DESC,
+    sortVar = CREATE_AT,
+    page,
+    limit,
+    userId,
+    typeId,
+    systemType,
+    warrantyFrom,
+    warrantyTo,
+    searchText
+  }: {
+    sortType?: string;
+    sortVar?: string;
+    page?: number;
+    limit?: number;
+    userId?: string;
+    typeId?: string;
+    systemType?: string;
+    warrantyFrom?: Date;
+    warrantyTo?: Date;
+    searchText?: string;
+  }) => {
     try {
-      const query = this.buildAssetFilterQuery(filters);
-      const assets = await getAllAssets(query);
+      let assets: IAsset[] = [];
+      let total = 0;
+
+      if (typeof page === "number" && typeof limit === "number") {
+        const skip = (page - 1) * limit;
+        const result = await getAllAssets(
+          skip,
+          limit,
+          userId,
+          typeId,
+          systemType,
+          warrantyFrom,
+          warrantyTo,
+          searchText
+        );
+        assets = result.assets;
+        total = result.total;
+      } else {
+        const result = await getAllAssets();
+        assets = result.assets;
+        total = result.total;
+      }
+
       const tagsData = await Promise.all(
         assets.map(async (assetDoc) => {
           const asset = assetDoc.toObject();
@@ -249,7 +253,12 @@ class assetService {
         })
       );
       const sortedData = this.sortData(tagsData, sortVar, sortType);
-      return { success: true, data: sortedData };
+      return {
+        success: true,
+        data: sortedData,
+        total,
+        filtered: sortedData.length
+      };
     } catch (error: any) {
       return {
         success: false,

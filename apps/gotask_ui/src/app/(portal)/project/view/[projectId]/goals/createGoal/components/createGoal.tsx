@@ -10,7 +10,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import { createWeeklyGoal } from "../../goalservices/projectGoalAction";
 import { useGoalForm } from "../../goalHook/useGoalForm";
-import FormHeader from "@/app/component/formHeader/FormHeader";
+import FormHeader from "@/app/component/header/formHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 

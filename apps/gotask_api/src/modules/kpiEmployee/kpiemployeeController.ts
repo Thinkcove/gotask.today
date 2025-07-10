@@ -1,8 +1,8 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiemloyeeModel";
 import { KpiAssignmentMessages } from "../../constants/apiMessages/kpiemployeeMessages";
 import {
+  calculateKpiScores,
   createKpiAssignment,
   deleteKpiAssignmentById,
   getAllKpiAssignments,
@@ -10,7 +10,9 @@ import {
   getTemplatesByUserId,
   updateKpiAssignment
 } from "./kpiemployeeService";
+import { v4 as uuidv4 } from "uuid";
 import { getKpiAssignmentByIdFromDb } from "../../domain/interface/kpiemployee/kpiemployeeInterface";
+import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiEmployeeModel";
 
 class KpiAssignmentController extends BaseController {
   // Create KPI Assignment
@@ -103,22 +105,40 @@ class KpiAssignmentController extends BaseController {
       }
 
       const payload = requestHelper.getPayload() as Partial<IKpiAssignment>;
-      const payloadAny = payload as any;
-
-      restrictedFields.forEach((field) => {
-        if (field in payloadAny) {
-          delete payloadAny[field];
-        }
-      });
-
-      const authUserId = payloadAny.authUserId;
+      const authUserId = (payload as any).authUserId;
       if (!authUserId) {
         return this.replyError(new Error(KpiAssignmentMessages.FETCH.USER_ID));
       }
 
-      const currentAssignment = await getKpiAssignmentByIdFromDb(assignment_id);
-      if (!currentAssignment) {
-        return this.replyError(new Error(KpiAssignmentMessages.UPDATE.NOT_FOUND));
+      const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+      if (!assignment) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.NOT_FOUND));
+      }
+
+      // Handle performance update
+      if (payload.performance && Array.isArray(payload.performance)) {
+        const updatedPerformance = payload.performance.map((entry) => ({
+          ...entry,
+          performance_id: entry.performance_id || uuidv4(),
+          updated_at: new Date(),
+          added_by: assignment.reviewer_id || assignment.assigned_by,
+          notes: entry.notes || []
+        }));
+
+        payload.performance = updatedPerformance;
+
+        //  Combine old + new for score calculation
+        const allPerformance = [...(assignment.performance || []), ...updatedPerformance];
+        const targetVal = Number(assignment.target_value) || 0;
+
+        const { actualValue } = calculateKpiScores(
+          allPerformance,
+          assignment.reviewer_id,
+          assignment.assigned_by,
+          targetVal
+        );
+
+        payload.actual_value = actualValue.toString();
       }
 
       const result = await updateKpiAssignment(
@@ -127,6 +147,7 @@ class KpiAssignmentController extends BaseController {
         authUserId,
         restrictedFields
       );
+
       if (!result.success) {
         return this.replyError(new Error(result.message || KpiAssignmentMessages.UPDATE.FAILED));
       }
@@ -169,7 +190,7 @@ class KpiAssignmentController extends BaseController {
         return this.replyError(new Error(result.message));
       }
 
-      return this.sendResponse(handler, result.data); // will return { user, templates }
+      return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);
     }

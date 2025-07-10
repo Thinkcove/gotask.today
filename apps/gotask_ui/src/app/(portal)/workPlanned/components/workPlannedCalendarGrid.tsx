@@ -32,6 +32,7 @@ import { fetchAllPermissions } from "../../report/services/reportService";
 import {
   calculatePermissionDuration,
   formatLeaveDuration,
+  formatText,
   normalizeDate
 } from "@/app/common/utils/leaveCalculate";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
@@ -550,18 +551,17 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               <Typography
                                 sx={{
                                   fontWeight: 600,
-                                  fontSize: "0.7rem",
-                                  textTransform: "uppercase",
+                                  fontSize: "0.9rem",
                                   color: getLeaveColor(),
                                   mb: 0.5
                                 }}
                               >
-                                {transworkplanned("leave")}
+                                {formatText(transworkplanned("leave"))}
                               </Typography>
                               {taskLeaves.map((taskLeave, leaveIndex) => (
                                 <Typography
                                   key={leaveIndex}
-                                  variant="caption"
+                                  variant="body2"
                                   sx={{
                                     fontSize: "0.7rem",
                                     fontWeight: 500,
@@ -580,25 +580,25 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               <Typography
                                 sx={{
                                   fontWeight: 600,
-                                  fontSize: "0.7rem",
-                                  textTransform: "uppercase",
+                                  fontSize: "0.9rem",
                                   color: getPermissionColor(),
-                                  mb: 0.5
+                                  mb: 0.5,
+                                  textTransform: "none"
                                 }}
                               >
-                                {transworkplanned("permission")}
+                                {formatText(transworkplanned("permission"))}
                               </Typography>
                               {taskPermissions.map((perm, permIndex) => (
                                 <Typography
                                   key={permIndex}
-                                  variant="caption"
+                                  variant="body2"
                                   sx={{
                                     fontSize: "0.7rem",
                                     fontWeight: 500,
                                     color: getPermissionColor()
                                   }}
                                 >
-                                  {`${calculatePermissionDuration(perm.start_time, perm.end_time)}h`}{" "}
+                                  {`${calculatePermissionDuration(perm.start_time, perm.end_time)} ${calculatePermissionDuration(perm.start_time, perm.end_time) === 1 ? "hour" : "hours"}`}
                                 </Typography>
                               ))}
                             </Box>
@@ -610,16 +610,15 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             <Typography
                               sx={{
                                 fontWeight: 600,
-                                fontSize: "0.7rem",
-                                textTransform: "uppercase",
+                                fontSize: "0.9rem",
                                 color: getLeaveColor(),
                                 mb: 0.5
                               }}
                             >
-                              {leave.leave_type ? transworkplanned("leave") : ""}
+                              {leave.leave_type ? formatText(transworkplanned("leave")) : ""}
                             </Typography>
                             <Typography
-                              variant="caption"
+                              variant="body2"
                               sx={{
                                 fontSize: "0.7rem",
                                 fontWeight: 500,
@@ -636,23 +635,23 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             <Typography
                               sx={{
                                 fontWeight: 600,
-                                fontSize: "0.7rem",
-                                textTransform: "uppercase",
+                                fontSize: "0.9rem",
                                 color: getPermissionColor(),
-                                mb: 0.5
+                                mb: 0.5,
+                                textTransform: "none"
                               }}
                             >
-                              {transworkplanned("permission")}
+                              {formatText(transworkplanned("permission"))}
                             </Typography>
                             <Typography
-                              variant="caption"
+                              variant="body2"
                               sx={{
                                 fontSize: "0.7rem",
                                 fontWeight: 500,
                                 color: getPermissionColor()
                               }}
                             >
-                              {`${calculatePermissionDuration(permission.start_time, permission.end_time)}h`}
+                              {`${calculatePermissionDuration(permission.start_time, permission.end_time)} ${calculatePermissionDuration(permission.start_time, permission.end_time) === 1 ? "hour" : "hours"}`}
                             </Typography>
                           </Box>
                         </Box>

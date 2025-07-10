@@ -42,3 +42,7 @@ export const formatLeaveDuration = (fromDate: string, toDate: string): string =>
   const days = calculateLeaveDuration(fromDate, toDate);
   return `${days} day${days > 1 ? "s" : ""}`;
 };
+
+export const formatText = (text: string): string => {
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};

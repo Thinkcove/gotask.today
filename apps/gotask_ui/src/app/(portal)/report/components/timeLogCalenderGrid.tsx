@@ -349,20 +349,26 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
             variant="caption"
             sx={{
               color: getPermissionColor(),
-              fontWeight: 500,
+              fontWeight: 500
             }}
           >
             {transreport("permission")}
           </Typography>
           <Typography
-            variant="caption"
             sx={{
-              fontSize: "0.6rem",
+              fontSize: "0.9rem",
               fontWeight: 500,
               color: getPermissionColor()
             }}
           >
-            {calculatePermissionDuration(permissionForDate.start_time, permissionForDate.end_time)}h
+            {`${calculatePermissionDuration(permissionForDate.start_time, permissionForDate.end_time)} ${
+              calculatePermissionDuration(
+                permissionForDate.start_time,
+                permissionForDate.end_time
+              ) === 1
+                ? "hour"
+                : "hours"
+            }`}
           </Typography>
           {value && (
             <Typography

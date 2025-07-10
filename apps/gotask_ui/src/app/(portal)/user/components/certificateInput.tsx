@@ -301,7 +301,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
               error={error}
               helperText={
                 error
-                  ? trans("charlimiterror")
+                  ? transuser("charlimiterror")
                   : `${tempCert.notes?.length || 0}/${MAX_NOTES_LENGTH}`
               }
             />

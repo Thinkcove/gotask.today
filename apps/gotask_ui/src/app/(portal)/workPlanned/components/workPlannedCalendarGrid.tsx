@@ -593,7 +593,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                     color: getPermissionColor()
                                   }}
                                 >
-                                  {`${formatPermissionDuration(perm.start_time, perm.end_time)}h`}{" "}
+                                  {`${formatPermissionDuration(perm.start_time, perm.end_time)}`}
                                 </Typography>
                               ))}
                             </Box>
@@ -625,9 +625,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           <Typography
                             sx={{
                               fontWeight: 400,
-                              // fontSize: "1rem",
                               color: getPermissionColor(),
-                              // mb: 0.5,
                               textTransform: "none"
                             }}
                           >

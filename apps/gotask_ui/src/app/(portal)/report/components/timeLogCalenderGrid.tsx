@@ -355,7 +355,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
             {transreport("permission")}
           </Typography>
           <Typography
-            // variant="subtitle1"
             sx={{
               fontSize: "0.8rem",
               fontWeight: 500,

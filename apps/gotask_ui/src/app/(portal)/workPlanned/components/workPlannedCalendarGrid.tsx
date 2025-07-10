@@ -30,7 +30,6 @@ import { fetchAllLeaves } from "../../project/services/projectAction";
 import { PermissionEntry } from "../../report/interface/timeLog";
 import { fetchAllPermissions } from "../../report/services/reportService";
 import {
-  calculatePermissionDuration,
   formatLeaveDuration,
   formatPermissionDuration,
   formatText,

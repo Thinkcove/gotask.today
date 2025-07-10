@@ -30,7 +30,7 @@ import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
-import { calculatePermissionDuration, formatPermissionDuration } from "@/app/common/utils/leaveCalculate";
+import { formatPermissionDuration } from "@/app/common/utils/leaveCalculate";
 import { fetchAllPermissions } from "../services/reportService";
 import { getDailyLogCellStyle } from "./logStyle";
 

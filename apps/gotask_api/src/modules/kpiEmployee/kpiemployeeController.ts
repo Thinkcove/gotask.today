@@ -95,70 +95,90 @@ class KpiAssignmentController extends BaseController {
   }
 
   // Update KPI Assignment
-  async updateKpiAssignment(
-    requestHelper: RequestHelper,
-    handler: any,
-    restrictedFields: string[] = []
-  ) {
-    try {
-      const assignment_id = requestHelper.getParam("assignment_id");
-      if (!assignment_id) {
-        return this.replyError(new Error(KpiAssignmentMessages.FETCH.ASSIGN_ID));
-      }
-
-      const payload = requestHelper.getPayload() as Partial<IKpiAssignment>;
-      const authUserId = (payload as any).authUserId;
-      if (!authUserId) {
-        return this.replyError(new Error(KpiAssignmentMessages.FETCH.USER_ID));
-      }
-
-      const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
-      if (!assignment) {
-        return this.replyError(new Error(KpiAssignmentMessages.FETCH.NOT_FOUND));
-      }
-
-      // Handle performance update
-      if (payload.performance && Array.isArray(payload.performance)) {
-        const updatedPerformance = payload.performance.map((entry) => ({
-          ...entry,
-          performance_id: entry.performance_id || uuidv4(),
-          updated_at: new Date(),
-          added_by: assignment.reviewer_id || assignment.assigned_by,
-          notes: entry.notes || []
-        }));
-
-        payload.performance = updatedPerformance;
-
-        //  Combine old + new for score calculation
-        const allPerformance = [...(assignment.performance || []), ...updatedPerformance];
-        const targetVal = Number(assignment.target_value) || 0;
-
-        const { actualValue } = calculateKpiScores(
-          allPerformance,
-          assignment.reviewer_id,
-          assignment.assigned_by,
-          targetVal
-        );
-
-        payload.actual_value = actualValue.toString();
-      }
-
-      const result = await updateKpiAssignment(
-        assignment_id,
-        payload,
-        authUserId,
-        restrictedFields
-      );
-
-      if (!result.success) {
-        return this.replyError(new Error(result.message || KpiAssignmentMessages.UPDATE.FAILED));
-      }
-
-      return this.sendResponse(handler, result.data);
-    } catch (error) {
-      return this.replyError(error);
+async updateKpiAssignment(
+  requestHelper: RequestHelper,
+  handler: any,
+  restrictedFields: string[] = []
+) {
+  try {
+    const assignment_id = requestHelper.getParam("assignment_id");
+    if (!assignment_id) {
+      return this.replyError(new Error(KpiAssignmentMessages.FETCH.ASSIGN_ID));
     }
+
+    const payload = requestHelper.getPayload() as Partial<IKpiAssignment>;
+    const authUserId = (payload as any).authUserId;
+    if (!authUserId) {
+      return this.replyError(new Error(KpiAssignmentMessages.FETCH.USER_ID));
+    }
+
+    const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+    if (!assignment) {
+      return this.replyError(new Error(KpiAssignmentMessages.FETCH.NOT_FOUND));
+    }
+
+    // Handle performance update
+    if (payload.performance && Array.isArray(payload.performance)) {
+      const updatedPerformance = payload.performance.map((entry) => ({
+        ...entry,
+        performance_id: entry.performance_id || uuidv4(),
+        updated_at: new Date(),
+        added_by: assignment.reviewer_id || assignment.assigned_by || assignment.user_id,
+        notes: entry.notes || []
+      }));
+
+      // Combine existing and new performance, avoid duplicates by performance_id
+      const combinedMap = new Map<string, any>();
+      [...(assignment.performance || []), ...updatedPerformance].forEach((perf) => {
+        combinedMap.set(perf.performance_id, perf);
+      });
+
+      const allPerformance = Array.from(combinedMap.values());
+      payload.performance = allPerformance;
+
+      // Calculate actual percentage score from matching added_by
+      const targetVal = Number(assignment.target_value) || 0;
+
+      const totalPercentage = allPerformance.reduce((sum, perf) => {
+        const percentage = Number(perf.percentage) || 0;
+
+        const isReviewerMatch = assignment.reviewer_id
+          ? perf.added_by === assignment.reviewer_id
+          : perf.added_by === assignment.assigned_by;
+
+        return isReviewerMatch ? sum + percentage : sum;
+      }, 0);
+
+
+      const { actual_value, employee_score } = calculateKpiScores(
+  allPerformance,
+  assignment.reviewer_id,
+  assignment.assigned_by,
+  targetVal,
+  assignment.user_id
+);
+
+payload.actual_value = actual_value.toString();
+payload.employee_score = employee_score.toString();
+      
+    }
+
+    const result = await updateKpiAssignment(
+      assignment_id,
+      payload,
+      authUserId,
+      restrictedFields
+    );
+
+    if (!result.success) {
+      return this.replyError(new Error(result.message || KpiAssignmentMessages.UPDATE.FAILED));
+    }
+
+    return this.sendResponse(handler, result.data);
+  } catch (error) {
+    return this.replyError(error);
   }
+}
 
   // Delete KPI Assignment
   async deleteKpiAssignment(requestHelper: RequestHelper, handler: any) {

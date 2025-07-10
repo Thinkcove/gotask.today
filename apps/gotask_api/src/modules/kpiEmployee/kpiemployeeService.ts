@@ -30,30 +30,41 @@ const removeRestrictedFields = <T extends Record<string, any>>(
 };
 
 export const calculateKpiScores = (
-  allPerformance: IKpiPerformance[],
+  performances: IKpiPerformance[],
   reviewerId: string | undefined,
-  assignedBy: string,
-  targetValue: number
-) => {
-  const employeeEntries = allPerformance.filter((p) => p.added_by === assignedBy);
+  assignedById: string,
+  targetValue: number,
+  userId: string
+): {
+  actual_value: string;
+  employee_score: string;
+} => {
+  let reviewerScoreSum = 0;
+  let employeeScoreSum = 0;
 
-  const reviewerSourceId = reviewerId || assignedBy;
-  const reviewerEntries = allPerformance.filter((p) => p.added_by === reviewerSourceId);
+  performances.forEach((entry) => {
+    const percentage = Number(entry.percentage) || 0;
 
-  const avg = (arr: IKpiPerformance[]) => {
-    if (!arr || arr.length === 0) return 0;
-    const total = arr.reduce((sum, p) => sum + Number(p.percentage || 0), 0);
-    return total / arr.length;
-  };
+    if (reviewerId && entry.added_by === reviewerId) {
+      reviewerScoreSum += percentage;
+    } else if (!reviewerId && entry.added_by === assignedById) {
+      reviewerScoreSum += percentage;
+    }
 
-  const employeeScore = avg(employeeEntries);
-  const reviewerScore = avg(reviewerEntries);
-  const actualValue = (reviewerScore * targetValue) / 100;
+    if (entry.added_by === userId) {
+      employeeScoreSum += percentage;
+    }
+  });
+
+  const actual_value =
+    targetValue > 0 ? (reviewerScoreSum / targetValue).toFixed(2) : "0";
+
+  const employee_score =
+    targetValue > 0 ? (employeeScoreSum / targetValue).toFixed(2) : "0";
 
   return {
-    employeeScore,
-    reviewerScore,
-    actualValue
+    actual_value,
+    employee_score,
   };
 };
 

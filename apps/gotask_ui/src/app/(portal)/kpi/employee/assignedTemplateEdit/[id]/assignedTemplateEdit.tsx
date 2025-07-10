@@ -20,7 +20,7 @@ interface Props {
 const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate }) => {
   const { user: loginUser } = useUser();
   const router = useRouter();
-  const { data: users = [] } = useSWR("fetch-users", fetcherUserList); // Fetch users for consistency
+  const { data: users = [] } = useSWR("fetch-users", fetcherUserList);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
@@ -44,13 +44,7 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   if (!assignment || !loginUser) return null;
 
-  const handleChange = (
-    key: keyof Omit<
-      KpiAssignment,
-      "assignment_id" | "user_id" | "template_id" | "change_History" | "description"
-    >,
-    value: any
-  ) => {
+  const handleChange = (key: keyof KpiAssignment, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     if (errors[key]) {
       setErrors((prev) => ({ ...prev, [key]: "" }));
@@ -76,7 +70,6 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
     try {
       await updateKpiAssignment(assignment.assignment_id, {
         ...form,
-        measurement_criteria: form.measurement_criteria || "",
         comments: Array.isArray(form.comments)
           ? form.comments
           : form.comments
@@ -101,10 +94,6 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
     }
   };
 
-  const handleCancel = () => {
-    router.back();
-  };
-
   return (
     <Box p={3} sx={{ overflowY: "auto", maxHeight: "calc(100vh - 60px)" }}>
       <Typography variant="h6" fontWeight="bold" mb={3} color="#741B92">
@@ -120,8 +109,18 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
         users={users}
       />
 
+      <Box display="flex" justifyContent="flex-start" mt={3}>
+        <Button
+          variant="outlined"
+          sx={{ borderColor: "#741B92", color: "#741B92" }}
+          onClick={() => router.push(`/kpi/employee/addScore/${assignment.assignment_id}`)}
+        >
+          {transkpi("addperformance")}
+        </Button>
+      </Box>
+
       <Box display="flex" justifyContent="flex-end" gap={2} mt={4}>
-        <Button variant="outlined" onClick={handleCancel}>
+        <Button variant="outlined" onClick={() => router.back()}>
           {transkpi("cancel")}
         </Button>
         <Button variant="contained" sx={{ backgroundColor: "#741B92" }} onClick={handleUpdate}>

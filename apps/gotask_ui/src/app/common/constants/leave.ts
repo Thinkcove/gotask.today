@@ -12,3 +12,5 @@ export enum LEAVE_TYPE {
 }
 
 export const ASC = "asc";
+
+export const DESC = "desc";

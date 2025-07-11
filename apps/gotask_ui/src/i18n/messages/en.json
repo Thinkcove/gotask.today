@@ -616,8 +616,8 @@
     "labelProject": "Project",
     "placeholderUser": "User",
     "placeholderProject": "Project",
-    "leave": "LEAVE",
-    "permission": "PERMISSION",
+    "leave": "Leave",
+    "permission": "Permission",
     "meta": {
       "title": "Work Log | GoTaskToday",
       "description": "Generate and analyze reports across modules for insights and audits."

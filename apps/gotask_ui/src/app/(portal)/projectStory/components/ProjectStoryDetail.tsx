@@ -167,7 +167,6 @@ const ProjectStoryDetail = () => {
           value={<FormattedDateTime date={story.createdAt} />}
         />
 
-        {/* ✅ Reusable Comments */}
         <Divider sx={{ my: 3 }} />
         <CommentSection
           comments={story.comments || []}

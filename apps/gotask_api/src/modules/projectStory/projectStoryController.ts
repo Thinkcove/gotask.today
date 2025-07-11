@@ -161,7 +161,7 @@ class ProjectStoryController extends BaseController {
       const newComment = await createCommentService({
         story_id: storyId,
         user_id: user?.id,
-        user_name: user?.user_id || "Unknown",
+        user_name: user?.user_id,
         comment
       });
 

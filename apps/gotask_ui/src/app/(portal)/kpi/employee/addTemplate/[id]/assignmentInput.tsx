@@ -1,11 +1,15 @@
-import React from "react";
-import { Grid } from "@mui/material";
+import React, { useMemo } from "react";
+import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { KPI_FREQUENCY, STATUS_OPTIONS } from "@/app/common/constants/kpi";
 import { KpiAssignment } from "../../../service/templateInterface";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { User } from "@/app/userContext";
+import ReusableEditor from "@/app/component/richText/textEditor";
+import useSWR from "swr";
+import { fetchUsers } from "@/app/(portal)/user/services/userAction";
+import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 
 interface KpiFormFieldsProps {
   form: Partial<KpiAssignment>;
@@ -37,6 +41,11 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
   isPerformancePage
 }) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
+  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
+
+  const userList = useMemo(() => {
+    return mapUsersToMentions(fetchedUsers || []);
+  }, [fetchedUsers]);
   const assignedByName =
     users.find((u: User) => u.id === form.assigned_by)?.name || form.assigned_by || "";
 
@@ -52,15 +61,6 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
               value={form.kpi_Title || ""}
               onChange={(val) => handleChange("kpi_Title", String(val))}
               error={errors.kpi_Title}
-            />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <FormField
-              label={transkpi("description")}
-              placeholder={transkpi("enterdescription")}
-              type="text"
-              value={form.kpi_Description || ""}
-              onChange={(val) => handleChange("kpi_Description", String(val))}
             />
           </Grid>
           <Grid item xs={12} md={4}>
@@ -137,6 +137,19 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
               />
             </Grid>
           )}
+          <Grid item xs={12}>
+            <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+              {transkpi("description")} {transkpi("required")}
+            </Typography>
+            <ReusableEditor
+              content={form.kpi_Description || ""}
+              onChange={(html) => handleChange("kpi_Description", html)}
+              placeholder={transkpi("enterdescription")}
+              readOnly={disabledFields.includes("kpi_Description")}
+              showSaveButton={false}
+              userList={userList}
+            />
+          </Grid>
         </>
       )}
 

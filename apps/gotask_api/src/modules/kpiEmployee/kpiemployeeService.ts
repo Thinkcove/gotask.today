@@ -56,15 +56,13 @@ export const calculateKpiScores = (
     }
   });
 
-  const actual_value =
-    targetValue > 0 ? (reviewerScoreSum / targetValue).toFixed(2) : "0";
+  const actual_value = targetValue > 0 ? (reviewerScoreSum / targetValue).toFixed(2) : "0";
 
-  const employee_score =
-    targetValue > 0 ? (employeeScoreSum / targetValue).toFixed(2) : "0";
+  const employee_score = targetValue > 0 ? (employeeScoreSum / targetValue).toFixed(2) : "0";
 
   return {
     actual_value,
-    employee_score,
+    employee_score
   };
 };
 

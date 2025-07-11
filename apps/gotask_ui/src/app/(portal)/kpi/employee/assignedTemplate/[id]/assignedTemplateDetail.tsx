@@ -18,6 +18,8 @@ import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import PerformanceChart from "./performanceChart";
 import PerformanceCards from "./performanceCard";
 import Toggle from "@/app/component/toggle/toggle";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 interface Props {
   assignment: KpiAssignment;
@@ -108,9 +110,13 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
           <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
-                <LabelValueText
-                  label={transkpi("description")}
-                  value={assignment.kpi_Description || "N/A"}
+                <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                  {transkpi("description")}
+                </Typography>
+
+                <RichTextReadOnly
+                  content={assignment.kpi_Description || ""}
+                  extensions={getTipTapExtensions()}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>

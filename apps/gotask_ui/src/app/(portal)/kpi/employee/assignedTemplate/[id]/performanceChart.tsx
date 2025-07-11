@@ -13,14 +13,14 @@ import { IKpiPerformance } from "../../../service/templateInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
-interface Props {
+interface PerformanceProps {
   performance: IKpiPerformance[];
   assignedById: string;
   reviewerId: string;
   targetValue: number;
 }
 
-const PerformanceChart: React.FC<Props> = ({
+const PerformanceChart: React.FC<PerformanceProps> = ({
   performance,
   assignedById,
   reviewerId,
@@ -30,10 +30,7 @@ const PerformanceChart: React.FC<Props> = ({
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
 
   const formattedData = performance
-    .filter(
-      (entry) =>
-        entry.percentage && !isNaN(Number(entry.percentage)) && entry.added_by === responsibleId
-    )
+    .filter((entry) => entry.percentage && entry.added_by === responsibleId)
     .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
     .map((entry) => {
       const normalizedActual = targetValue > 0 ? Number(entry.percentage) / targetValue : 0;
@@ -56,7 +53,7 @@ const PerformanceChart: React.FC<Props> = ({
           dataKey="actual_value"
           stroke="#741B92"
           name={transkpi("reviewerscore")}
-          dot={{ r: 4 }}
+          dot={{ r: 2 }}
         />
       </LineChart>
     </ResponsiveContainer>

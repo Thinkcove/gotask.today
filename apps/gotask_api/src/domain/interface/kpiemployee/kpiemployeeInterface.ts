@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { IKpiTemplate, KpiTemplate } from "../../model/kpi/kpiModel";
 import { KPI_FREQUENCY } from "../../../constants/kpiConstants";
-import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiEmployeeModel"
+import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiEmployeeModel";
 
 // Create a new KPI assignment
 export const createKpiAssignmentInDb = async (
@@ -50,7 +50,6 @@ export const updateKpiAssignmentInDb = async (
 
   // Handle performance update
   if (updateData.performance && Array.isArray(updateData.performance)) {
-
     updatePayload.performance = updateData.performance;
   }
 

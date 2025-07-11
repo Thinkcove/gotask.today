@@ -395,6 +395,7 @@
     "taskname": "Task",
     "detaildesc": "Description",
     "detailproject": "Project Name",
+    "detailcreatedby": "Created User",
     "detailuser": "Assignee Name",
     "detailseverity": "Severity",
     "detaildue": "Due Date",

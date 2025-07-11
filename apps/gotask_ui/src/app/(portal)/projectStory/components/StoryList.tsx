@@ -29,7 +29,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
   const [startDate, setStartDate] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const hasSentProjectNameRef = useRef(false); // Track whether projectName has been sent to parent
+  const hasSentProjectNameRef = useRef(false); 
 
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && "data" in previousPageData && !previousPageData.data.length)

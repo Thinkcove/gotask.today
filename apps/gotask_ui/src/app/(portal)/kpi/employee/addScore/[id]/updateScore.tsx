@@ -11,13 +11,13 @@ import { useUser } from "@/app/userContext";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 
-interface Props {
+interface UpdateProps {
   assignment: KpiAssignment;
   mutate: () => void;
   transkpi: (key: string) => string;
 }
 
-const UpdateScorePage: React.FC<Props> = ({ assignment, mutate, transkpi }) => {
+const UpdateScorePage: React.FC<UpdateProps> = ({ assignment, mutate, transkpi }) => {
   const { user: loginUser } = useUser();
   const router = useRouter();
   const { data: users = [] } = useSWR("fetch-users", fetcherUserList);

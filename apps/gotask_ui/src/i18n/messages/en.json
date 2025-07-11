@@ -395,6 +395,7 @@
     "taskname": "Task",
     "detaildesc": "Description",
     "detailproject": "Project Name",
+    "detailcreatedby": "Created By",
     "detailuser": "Assignee Name",
     "detailseverity": "Severity",
     "detaildue": "Due Date",
@@ -869,7 +870,7 @@
     "assigntemplate": "Select Template",
     "entermeasurementcriteria": "Enter Measurement_criteria",
     "enterweightage": "Enter Weightage",
-    "entertargetvalue": "Enetr Target Value",
+    "entertargetvalue": "Enter Target Value",
     "enterassignedby": "Enter Assigned by",
     "enterreviewerid": "Enter Reviewer Id",
     "measurementcriteria": "Measurement Criteria",
@@ -910,6 +911,28 @@
     "saveastemplate": "Save as Template",
     "templatesavesuccess": "Template created Successfully",
     "saveerror": "Failed to save template",
+    "addperformancebutton": "+ Add Performance",
+    "addperformance": "Add Performance",
+    "actualvalue": "Actual Value",
+    "startdate": "Start Date",
+    "performance": "Performance",
+    "enddate": "End Date",
+    "previousscores": "Previous Scores",
+    "score": "Score",
+    "graph": "Graph",
+    "general": "General",
+    "reviewerscore": "Reviewer Score",
+    "employeescore": "Employee Score",
+    "employee": "Employee",
+    "reviewer": "Reviewer",
+    "startdateerror": "Start Date is required",
+    "enddateerror": "End Date is required",
+    "scoreerror": "Score is required",
+    "enternotes": "Enter your Review",
+    "enterstartdate": "Enter Start Date",
+    "enterenddate": "Enter End Date",
+    "enterscore": "Enter Score",
+    "notes": "Review",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."
@@ -1126,5 +1149,8 @@
       "title": "Leave Management | GoTaskToday",
       "description": "Manage employee leave requests"
     }
+  },
+  "Common": {
+    "nodatafound": "No Data Found"
   }
 }

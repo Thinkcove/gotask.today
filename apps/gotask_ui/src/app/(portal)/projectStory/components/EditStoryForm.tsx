@@ -17,6 +17,8 @@ import {
   StoryStatus
 } from "@/app/common/constants/storyStatus";
 import ReusableEditor from "@/app/component/richText/textEditor";
+import { isHtmlContentEmpty } from "@/app/common/constants/regex";
+
 
 const EditStoryForm: React.FC = () => {
   const { storyId, projectId } = useParams();
@@ -67,13 +69,13 @@ const EditStoryForm: React.FC = () => {
     }
 
     // Validate description (strip tags & trim)
-    const plainDesc = description?.replace(/<[^>]*>/g, "").trim();
-    if (!plainDesc) {
+    if (isHtmlContentEmpty(description)) {
       setDescriptionError(t("Stories.errors.descriptionRequired"));
       hasError = true;
     } else {
       setDescriptionError("");
     }
+    
 
     // Validate status transition
     const originalStatus = story?.status as StoryStatus;

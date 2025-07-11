@@ -754,6 +754,11 @@
     "no": "No",
     "nodatafound": "No Data Found",
     "capacity": "Capacity",
+    "actype": "Type",
+    "energyrating": "Energy Rating",
+    "powerconsumption": "Power Consumption",
+    "coolingcoverage": "Cooling Coverage",
+    "invertertype": "Inverter Type",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."

@@ -209,3 +209,11 @@ export const NOT_UTILIZED = "Not utilized";
 export const authenticationModesOptions = ["Fingerprint", "Card", "Password", "Face Recognition"];
 
 export const connectivityOptions = ["USB", "TCP/IP", "Wi-Fi"];
+
+export const locationOptions = ["Main Office", "Branch Office", "Featherlite"];
+
+export const capacityOptions = ["1 Ton", "1.5 Ton", "2 Ton"];
+
+export const typeOptions = ["Split", "Window", "Central", "Cassette", "Portable"];
+
+export const energyRatingOptions = ["3 Star", "5 Star"];

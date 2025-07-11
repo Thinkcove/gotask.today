@@ -10,9 +10,3 @@ export enum LEAVE_TYPE {
   SICK = "Sick",
   PERSONAL = "Personal"
 }
-
-export const ASC = "asc";
-
-export const DESC = "desc";
-
-export const ONE = 1;

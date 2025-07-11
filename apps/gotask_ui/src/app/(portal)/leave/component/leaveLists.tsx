@@ -14,8 +14,7 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import { PAGE_OPTIONS } from "@/app/component/table/tableConstants";
-import { ASC, ONE } from "@/app/common/constants/leave";
+import { ASC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 
 const LeaveList: React.FC = () => {
   const router = useRouter();
@@ -43,7 +42,7 @@ const LeaveList: React.FC = () => {
       leave_type: leaveTypeFilter.length > 0 ? leaveTypeFilter.join(",") : undefined,
       from_date: fromDateFilter || undefined,
       to_date: toDateFilter || undefined,
-      page: page + ONE,
+      page: page + PAGE_OPTIONS.ONE,
       page_size: pageSize,
       sort_field: sortField,
       sort_order: sortOrder

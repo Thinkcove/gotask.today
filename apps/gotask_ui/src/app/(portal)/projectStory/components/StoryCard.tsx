@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
+import { Card, Typography, Box, Stack } from "@mui/material";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowForward } from "@mui/icons-material";
 import { ProjectStory } from "../interfaces/projectStory";
@@ -36,14 +36,13 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
         borderRadius: 3,
         minHeight: 110,
         width: "100%",
-        boxShadow: 2,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         transition: "background-color 0.3s, border-color 0.3s"
       }}
     >
-      <CardContent
+      <Box
         sx={{
           p: 2,
           display: "flex",
@@ -97,7 +96,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           </Typography>
           <ArrowForward fontSize="small" sx={{ color: "#741B92" }} />
         </Box>
-      </CardContent>
+      </Box>
     </Card>
   );
 };

@@ -35,6 +35,12 @@ export interface IAsset extends Document {
   insurancePolicyNumber?: string;
   insuranceExpiry?: Date;
 
+  //Access card fields
+  accessCardNo?: string;
+  personalId?: string;
+  issuedOn?: string;
+  accessCardNo2?: string;
+
   // Laptop-specific fields
   antivirus?: boolean;
   recoveryKey?: string;
@@ -88,7 +94,29 @@ const AssetSchema = new Schema<IAsset>(
     isEncrypted: { type: Boolean, default: false },
     lastServicedDate: { type: Date },
     commentService: { type: String },
-    erk: { type: String }
+    erk: { type: String },
+
+    //Access card fields
+    accessCardNo: { type: String },
+    personalId: { type: String },
+    issuedOn: { type: String },
+    accessCardNo2: { type: String },
+
+    //Common fields for printer and biometric
+    Location: { type: String },
+    connectivity: { type: String },
+
+    //Printer fields
+    printerType: { type: String },
+    specialFeatures: { type: String },
+    printerOutputType: { type: String },
+    supportedPaperSizes: { type: String },
+
+    //Biometric fields
+    capacity: { type: String },
+    authenticationModes: { type: String }, //Eg: Fingerprint, Card, Password
+    display: { type: String },
+    cloudAndAppBased: { type: Boolean }
   },
   {
     timestamps: true

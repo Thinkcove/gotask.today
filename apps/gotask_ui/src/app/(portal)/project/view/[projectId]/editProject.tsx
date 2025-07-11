@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Box } from "@mui/material";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import ProjectInput from "../../components/projectInputs";
@@ -10,7 +10,6 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { IProjectField, Project, PROJECT_STATUS } from "../../interfaces/projectInterface";
-import { RichTextEditorRef } from "mui-tiptap";
 
 interface EditProjectProps {
   data: IProjectField;
@@ -22,7 +21,6 @@ interface EditProjectProps {
 
 const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectID, mutate }) => {
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-  const rteRef = useRef<RichTextEditorRef>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -41,8 +39,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.name.trim()) newErrors.name = transproject("Projecttitle");
-    if (!rteRef.current?.editor?.getHTML?.().trim() && !formData.description.trim())
-      newErrors.description = transproject("description");
+    if (!formData.description) newErrors.description = transproject("description");
     if (!formData.status) newErrors.status = transproject("status");
 
     setErrors(newErrors);
@@ -54,10 +51,9 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
   };
 
   const handleSubmit = async () => {
-    const html = rteRef.current?.editor?.getHTML?.() || "";
     if (!validateForm()) return;
     try {
-      await updateProject(projectID, { ...formData, description: html });
+      await updateProject(projectID, formData);
       await mutate();
       setSnackbar({
         open: true,
@@ -107,7 +103,6 @@ const EditProject: React.FC<EditProjectProps> = ({ data, open, onClose, projectI
           handleChange={handleChange}
           errors={errors}
           readOnlyFields={[]}
-          rteRef={rteRef}
         />
       </CommonDialog>
       <CustomSnackbar

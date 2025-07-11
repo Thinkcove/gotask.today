@@ -24,8 +24,7 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
       unique: true
     },
     description: {
-      type: String,
-      required: true
+      type: String
     },
     measurement_criteria: {
       type: String,
@@ -54,7 +53,6 @@ const KpiTemplateSchema = new Schema<IKpiTemplate>(
 KpiTemplateSchema.set("toJSON", {
   transform: function (doc, ret) {
     delete ret._id;
-    delete ret.__v;
     return ret;
   }
 });

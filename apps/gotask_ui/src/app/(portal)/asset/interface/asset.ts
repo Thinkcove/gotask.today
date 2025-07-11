@@ -88,6 +88,25 @@ export interface IAssetAttributes {
   assignedTo?: string;
   issues?: IAssetIssues[];
   previouslyUsedBy?: string;
+
+  //access card
+  accessCardNo?: string;
+  accessCardNo2?: string;
+  personalId?: string;
+  issuedOn?: string;
+  typeData?: IAssetType;
+
+  //Printer
+  Location?: string;
+  connectivity?: string;
+  printerType?: string;
+  specialFeatures?: string;
+  printerOutputType?: string;
+  supportedPaperSizes?: string;
+  capacity?: string;
+  authenticationModes?: string;
+  display?: string;
+  cloudAndAppBased?: boolean;
 }
 
 export interface IAssetTags {
@@ -139,4 +158,11 @@ export interface IIssuesHistories {
   created_by: string;
   userData?: User;
   previousStatus?: string;
+}
+
+export interface AssetFilters {
+  warrantyFrom?: string;
+  warrantyTo?: string;
+  systemType?: string[];
+  [key: string]: any;
 }

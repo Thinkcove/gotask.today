@@ -1,8 +1,8 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiemloyeeModel";
 import { KpiAssignmentMessages } from "../../constants/apiMessages/kpiemployeeMessages";
 import {
+  calculateKpiScores,
   createKpiAssignment,
   deleteKpiAssignmentById,
   getAllKpiAssignments,
@@ -10,7 +10,9 @@ import {
   getTemplatesByUserId,
   updateKpiAssignment
 } from "./kpiemployeeService";
+import { v4 as uuidv4 } from "uuid";
 import { getKpiAssignmentByIdFromDb } from "../../domain/interface/kpiemployee/kpiemployeeInterface";
+import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiEmployeeModel";
 
 class KpiAssignmentController extends BaseController {
   // Create KPI Assignment
@@ -31,12 +33,10 @@ class KpiAssignmentController extends BaseController {
 
       if (
         !assignmentData.user_id ||
-        !assignmentData.measurement_criteria ||
         !assignmentData.frequency ||
         !assignmentData.weightage ||
         !assignmentData.assigned_by ||
-        (!assignmentData.template_id &&
-          (!assignmentData.kpi_Title || !assignmentData.kpi_Description))
+        (!assignmentData.template_id && !assignmentData.kpi_Title)
       ) {
         return this.replyError(new Error(KpiAssignmentMessages.CREATE.REQUIRED));
       }
@@ -105,22 +105,48 @@ class KpiAssignmentController extends BaseController {
       }
 
       const payload = requestHelper.getPayload() as Partial<IKpiAssignment>;
-      const payloadAny = payload as any;
-
-      restrictedFields.forEach((field) => {
-        if (field in payloadAny) {
-          delete payloadAny[field];
-        }
-      });
-
-      const authUserId = payloadAny.authUserId;
+      const authUserId = (payload as any).authUserId;
       if (!authUserId) {
         return this.replyError(new Error(KpiAssignmentMessages.FETCH.USER_ID));
       }
 
-      const currentAssignment = await getKpiAssignmentByIdFromDb(assignment_id);
-      if (!currentAssignment) {
-        return this.replyError(new Error(KpiAssignmentMessages.UPDATE.NOT_FOUND));
+      const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+      if (!assignment) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.NOT_FOUND));
+      }
+
+      // Handle performance update
+      if (payload.performance && Array.isArray(payload.performance)) {
+        const updatedPerformance = payload.performance.map((entry) => ({
+          ...entry,
+          performance_id: entry.performance_id || uuidv4(),
+          updated_at: new Date(),
+          added_by: assignment.reviewer_id || assignment.assigned_by || assignment.user_id,
+          notes: entry.notes || []
+        }));
+
+        // Combine existing and new performance, avoid duplicates by performance_id
+        const combinedMap = new Map<string, any>();
+        [...(assignment.performance || []), ...updatedPerformance].forEach((perf) => {
+          combinedMap.set(perf.performance_id, perf);
+        });
+
+        const allPerformance = Array.from(combinedMap.values());
+        payload.performance = allPerformance;
+
+        // Calculate actual percentage score from matching added_by
+        const targetVal = Number(assignment.target_value) || 0;
+
+        const { actual_value, employee_score } = calculateKpiScores(
+          allPerformance,
+          assignment.reviewer_id,
+          assignment.assigned_by,
+          targetVal,
+          assignment.user_id
+        );
+
+        payload.actual_value = actual_value.toString();
+        payload.employee_score = employee_score.toString();
       }
 
       const result = await updateKpiAssignment(
@@ -129,6 +155,7 @@ class KpiAssignmentController extends BaseController {
         authUserId,
         restrictedFields
       );
+
       if (!result.success) {
         return this.replyError(new Error(result.message || KpiAssignmentMessages.UPDATE.FAILED));
       }
@@ -171,7 +198,7 @@ class KpiAssignmentController extends BaseController {
         return this.replyError(new Error(result.message));
       }
 
-      return this.sendResponse(handler, result.data); // will return { user, templates }
+      return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);
     }

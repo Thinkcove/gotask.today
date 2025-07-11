@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { IKpiTemplate, KpiTemplate } from "../../model/kpi/kpiModel";
-import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiemloyeeModel";
 import { KPI_FREQUENCY } from "../../../constants/kpiConstants";
+import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiEmployeeModel";
 
 // Create a new KPI assignment
 export const createKpiAssignmentInDb = async (
@@ -35,21 +35,27 @@ export const updateKpiAssignmentInDb = async (
   if (!currentAssignment) return null;
 
   const changes: Record<string, any> = {};
+  const updatePayload: any = {};
+
+  // Handle regular field updates
   for (const key in updateData) {
-    if (
-      key !== "assignment_id" &&
-      key !== "change_history" &&
-      updateData[key as keyof IKpiAssignment] !== undefined
-    ) {
+    if (key !== "assignment_id" && key !== "change_History" && key !== "performance") {
       changes[key] = {
         oldValue: currentAssignment[key as keyof IKpiAssignment],
         newValue: updateData[key as keyof IKpiAssignment]
       };
+      updatePayload[key] = updateData[key as keyof IKpiAssignment];
     }
   }
 
+  // Handle performance update
+  if (updateData.performance && Array.isArray(updateData.performance)) {
+    updatePayload.performance = updateData.performance;
+  }
+
+  // Handle change history
   if (Object.keys(changes).length > 0) {
-    updateData.change_History = [
+    updatePayload.change_History = [
       ...(currentAssignment.change_History || []),
       {
         changedBy,
@@ -59,7 +65,7 @@ export const updateKpiAssignmentInDb = async (
     ];
   }
 
-  return await KpiAssignment.findOneAndUpdate({ assignment_id }, updateData, {
+  return await KpiAssignment.findOneAndUpdate({ assignment_id }, updatePayload, {
     new: true,
     runValidators: true
   });

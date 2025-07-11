@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { Box, Typography, Button, Grid } from "@mui/material";
+import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
 import useSWR from "swr";
 import { useAllAssets, useAllIssues, createAssetIssues } from "../services/assetActions";
 import { fetcherUserList } from "../../user/services/userAction";
@@ -44,7 +44,7 @@ const CreateIssue: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const { data: users } = useSWR("fetch-user", fetcherUserList);
-  const { getAll: assets } = useAllAssets();
+  const { getAll: assets, isLoading } = useAllAssets();
   const { mutate: issuesMutate } = useAllIssues();
 
   const userOptions = useMemo(
@@ -53,7 +53,10 @@ const CreateIssue: React.FC = () => {
   );
 
   const assetOptions = useMemo(
-    () => assets?.map((a: IAssetAttributes) => ({ id: a.id, name: a.deviceName })) || [],
+    () =>
+      assets
+        ?.filter((a: IAssetAttributes) => a.deviceName && a.deviceName.trim() !== "")
+        .map((a: IAssetAttributes) => ({ id: a.id, name: a.deviceName })) || [],
     [assets]
   );
 
@@ -100,6 +103,23 @@ const CreateIssue: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </>
+    );
+  }
 
   return (
     <>

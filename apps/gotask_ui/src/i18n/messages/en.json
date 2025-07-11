@@ -66,7 +66,7 @@
     "emailuppercase": "Capital letters are not allowed in email. Use lowercase only.",
     "meta": {
       "title": "Access Management | GoTaskToday",
-      "description": "Configure user access, permissions, and authorization settings."
+      "description": "Manage user permissions and control access across the system."
     }
   },
   "Dashboard": {
@@ -78,7 +78,7 @@
     "totals": "Total Tasks",
     "meta": {
       "title": "Dashboard | GoTaskToday",
-      "description": "View performance, activity insights, and key metrics in one place."
+      "description": "Get a quick overview of tasks, performance, and system activity."
     }
   },
   "Organization": {
@@ -118,7 +118,7 @@
     "searchplaceholder": "Search Organizations",
     "meta": {
       "title": "Organization | GoTaskToday",
-      "description": "Manage company structure, departments, and details."
+      "description": "Define departments, roles, and reporting structure for the organization."
     }
   },
   "Projects": {
@@ -174,7 +174,7 @@
     "filterapply": "Apply",
     "meta": {
       "title": "Project Management | GoTaskToday",
-      "description": "Manage projects, assign teams, and track progress efficiently."
+      "description": " Create, assign, and monitor progress of ongoing projects."
     },
 
     "Stories": {
@@ -294,7 +294,7 @@
     "searchplaceholder": "Search Roles",
     "meta": {
       "title": "Role Management | GoTaskToday",
-      "description": "Create, update, and manage roles and access control settings."
+      "description": "Define user roles and assign permissions within the system."
     }
   },
   "Task": {
@@ -348,7 +348,7 @@
     "placeholderseverity": "Select Severity Type",
     "labelcreateon": "Created Date * :",
     "placeholdercreatedon": "Select Created Date",
-    "labelduedate": "Due Date * :",
+    "labelduedate": "Due Date :",
     "placeholderduedate": "Select Due Date",
     "labeldescription": "Description :",
     "placeholderdescription": "Enter Description",
@@ -397,6 +397,7 @@
     "taskname": "Task",
     "detaildesc": "Description",
     "detailproject": "Project Name",
+    "detailcreatedby": "Created By",
     "detailuser": "Assignee Name",
     "detailseverity": "Severity",
     "detaildue": "Due Date",
@@ -424,16 +425,17 @@
     "loadinguser": "Loading user mentions...",
     "reuseplaceholder": "Write something here...",
     "saved": "Save",
+    "noupdates": "No updates",
     "Project": {
       "meta": {
         "title": "Task Projects",
-        "description": "Manage all your projects, timelines, and milestones efficiently."
+        "description": "Manage tasks under each project and track their status."
       }
     },
     "Assignees": {
       "meta": {
         "title": "Assignee Overview",
-        "description": "Review and manage users assigned to various project tasks."
+        "description": "Assign users to tasks and monitor individual task progress."
       }
     }
   },
@@ -509,25 +511,82 @@
     "skills": "Skills",
     "noskillsadded": "No skills added.",
     "proficiency": "Proficiency",
-    "experience": "Experience",
+    "experience": "Experience ( in months )",
+    "experienceview": "Experience",
     "cancel": "Cancel",
     "save": "Save",
     "failedfetch": "Failed to fetch user data",
     "userskill": "Skills",
     "general": "General",
     "add": "Add",
-    "addskill": "Select Skill",
+    "selectskill": "Select Skill",
+    "addskill": "Add Skill",
     "remove": "Remove",
     "duplicateskills": "Duplicate skills are not allowed.",
     "proficiencyrequired": "Please select a proficiency level for \"{skill}\".",
     "experiencerequired": "Experience required for \"{skill}\" when proficiency is 3 or 4.",
     "experiencepositive": "Experience must be a positive number for \"{skill}\".",
+    "deleteskill": "Are you sure you want to delete {skill} ?",
     "noskills": "No skills added yet.",
     "noprojects": "No projects assigned yet.",
     "noassets": "No assets assigned yet.",
+    "months": "Months",
+    "editskill": "Edit Skill",
+    "ok": "Okay",
+    "skilldescription": "Add details of Skills you possess along with proficiency and experience",
+    "pleaseselectskillfirst": "Please select or add a skill first.",
+    "pleasechooseproficiency": "Please choose a proficiency level.",
+    "pleaseenterexperience": "Please enter experience in months.",
     "meta": {
       "title": "User Management | GoTaskToday",
       "description": "Plan, assign, and track tasks across projects."
+    },
+
+    "Certificate": {
+      "certificate": "Certificate",
+      "certificates": "Certificates",
+      "certificatename": " Certificate Name",
+      "obtaineddate": "Obtained Date",
+      "obtained": " Obtained  ",
+      "notes": " Notes",
+      "addcertificate": "Add Certificate",
+      "editcertificate": "Edit Certificate",
+      "subtitle": "Add details of Certifications you have achieved/completed",
+      "cname": "Please enter your certification name",
+      "notesplaceholder": "Add any optional notes",
+      "nocertifications": "No certifications added yet.",
+      "nameisrequired": "Certificate name is required",
+      "dateisrequired": "Obtained date is required",
+      "charlimiterror": "Maximum 150 characters allowed"
+    },
+
+    "Increment": {
+      "incrementhistory": "Increment History",
+      "increment": " Increment",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "date": "Date",
+      "ctc": "CTC (LPA)",
+      "addnew": "Add Increment",
+      "actions": "Actions",
+      "add": "Add",
+      "change": "Salary Growth ( % )",
+      "noincrements": "No increments added yet.",
+      "ctcgrowth": "CTC Growth Over Time",
+      "confirmdelete": "Confirm Delete",
+      "deleteincrement": "Are you sure you want to delete {certificate} ?",
+      "errortitle": "Error",
+      "duplicateincrementdate": "An increment for this date already exists.",
+      "deleteconfirmtext": "Are you sure you want to delete this increment?",
+      "editincrement": "Edit Increment",
+      "addincdesc": "Enter the date and updated CTC for this increment.",
+      "salaryrevisionlog": "Salary Revision Log",
+      "short": "short",
+      "numeric": "numeric",
+      "description": "View, create, and manage user profiles and credentials.",
+      "dateisrequired": "Date is required",
+      "ctcisrequired": "CTC must be greater than 0"
     }
   },
   "Appbar": {
@@ -560,9 +619,11 @@
     "labelProject": "Project",
     "placeholderUser": "User",
     "placeholderProject": "Project",
+    "leave": "Leave",
+    "permission": "Permission",
     "meta": {
       "title": "Work Log | GoTaskToday",
-      "description": "View time logs, performance metrics, and summaries."
+      "description": "Generate and analyze reports across modules for insights and audits."
     }
   },
   "Assets": {
@@ -666,14 +727,43 @@
     "assetallocation": "Asset usage",
     "overutilized": "Overutilized",
     "enabled": "Enabled",
+    "accesscardno": "Access card no 1",
+    "personalid": "Personal id",
+    "accesscardno2": "Access card no 2",
+    "accesscarddetails": "Access card details",
+    "download": "Download",
+    "assigned": "Assigned user",
+    "accessno1": "Access No.1",
+    "accessno2": "Access No.2",
+    "issuedon": "Issued on",
+    "assettypes": "Asset type",
+    "warrantyvalidity": "Warranty Validity",
+    "assetid": "Id",
+    "deleteconfirm": "Are you sure you want to delete this asset?",
+    "delete": "Delete",
+    "deleteAsset": "Delete Asset",
+    "acquisitiondate": "Acquisition date",
+    "location": "Location",
+    "connectivity": "Connectivity",
+    "printertype": "Printer Type",
+    "specialfeatures": "Special Features",
+    "supportedpapersizes": "Supported Paper Sizes",
+    "printeroutputtype": "Printer Output Type",
+    "authenticationmodes": "Authentication Modes",
+    "display": "Display",
+    "cloudandappbased": "Cloud And App Based",
+    "yes": "Yes",
+    "no": "No",
+    "nodatafound": "No Data Found",
+    "capacity": "Capacity",
     "meta": {
       "title": "Assets | GoTaskToday",
-      "description": "Track and manage company assets efficiently."
+      "description": "Track and manage all company-owned assets and equipment efficiently."
     },
     "Issues": {
       "meta": {
         "title": "Asset Issues",
-        "description": "Monitor and resolve issues related to assets effectively."
+        "description": "Log, view, and resolve asset-related issues and incidents."
       }
     }
   },
@@ -730,17 +820,18 @@
     "validation": "No valid attendance records processed",
     "meta": {
       "title": "AI Assistant | GoTaskToday",
-      "description": "Interact with your virtual assistant to get quick answers and help."
+      "description": "Ask questions and get automated responses through the chatbot assistant."
     }
   },
   "KPI": {
+    "title": "Title",
     "viewname": "KPI Template",
     "createnewtemplate": " Create new template",
     "searchplaceholder": "Search",
     "validationerror": "Name,Weightage,frequency fields are required",
     "createerror": "Creation failed",
     "fetcherror": "Failled to fetch",
-    "loading": "Loading",
+    "loading": "Loading...",
     "name": "Name",
     "description": "Description",
     "weightage": "Weightage",
@@ -758,7 +849,7 @@
     "locked": "Locked",
     "selectstatus": "Select Status",
     "status": "Status",
-    "entername": "Enter Template Name",
+    "entername": "Enter Template Tittle",
     "enterdescription": "Enter description",
     "templatetitle": "Template Details",
     "deleteTitle": "Delete template",
@@ -773,10 +864,80 @@
     "update": "Update",
     "updatesuccess": "Template updated successfully",
     "templatelabel": "Template",
-    "assigneelabbel": "Assignee",
+    "assigneelabel": "Assignee",
+    "assigneetitle": "Assignee Details",
+    "role": "Role",
+    "assignedtemplates": "Assigned Templates",
+    "notemplatesassigned": "No Assigned Templates",
+    "assigntemplate": "Select Template",
+    "entermeasurementcriteria": "Enter Measurement_criteria",
+    "enterweightage": "Enter Weightage",
+    "entertargetvalue": "Enter Target Value",
+    "enterassignedby": "Enter Assigned by",
+    "enterreviewerid": "Enter Reviewer Id",
+    "measurementcriteria": "Measurement Criteria",
+    "targetvalue": "Target Value",
+    "comments": "Comments",
+    "entercomments": "Enter Comment",
+    "assignedby": "Assigned by",
+    "reviewerid": "Reviewer Id",
+    "assign": "Assign",
+    "assignedbyerror": "Assigned By Id is required",
+    "targetvalueerror": "Target value is required",
+    "measurementerror": "Measurement Crirteria is required",
+    "viewdetails": "View Details",
+    "searchemployees": "Search Employees",
+    "entertemplate": "Enter Template Name",
+    "template": "Template",
+    "assignee": "Employees",
+    "deletesuccess": "Template deleted successfully",
+    "enterstatus": "Enter Status",
+    "enterfrequency": "Enter Frequency",
+    "labeldescription": "Description",
+    "placeholderdescription": "Enter Description",
+    "selecttemplate": "Select Template",
+    "entertitle": "Enter Template title",
+    "editassignment": "Edit Assigned Template",
+    "updatesuccessassignment": "Assigned Template updated successfully",
+    "assignsuccess": "Template assigned successfully",
+    "assignfailed": "Template assign failed",
+    "errorLoadingAssignment": "Error in Loading...",
+    "deletesuccessassignment": "Assignment deleted successfully",
+    "deletefailed": "Delete failed",
+    "assignedtemplateview": "Assigned Template View",
+    "deleteConfirmassignment": "Are you sure you want to delete this assigned template?",
+    "delete": "Delete",
+    "assignatemplate": "Assign a Template",
+    "titleerror": "Title is required",
+    "descriptionerror": "Description is required",
+    "saveastemplate": "Save as Template",
+    "templatesavesuccess": "Template created Successfully",
+    "saveerror": "Failed to save template",
+    "addperformancebutton": "+ Add Performance",
+    "addperformance": "Add Performance",
+    "actualvalue": "Actual Value",
+    "startdate": "Start Date",
+    "performance": "Performance",
+    "enddate": "End Date",
+    "previousscores": "Previous Scores",
+    "score": "Score",
+    "graph": "Graph",
+    "general": "General",
+    "reviewerscore": "Reviewer Score",
+    "employeescore": "Employee Score",
+    "employee": "Employee",
+    "reviewer": "Reviewer",
+    "startdateerror": "Start Date is required",
+    "enddateerror": "End Date is required",
+    "scoreerror": "Score is required",
+    "enternotes": "Enter your Review",
+    "enterstartdate": "Enter Start Date",
+    "enterenddate": "Enter End Date",
+    "enterscore": "Enter Score",
+    "notes": "Review",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
-      "description": "Define, manage, and assign KPI templates to measure performance."
+      "description": "Monitor and evaluate performance metrics for teams and individuals."
     }
   },
   "WorkPlanned": {
@@ -797,25 +958,27 @@
     "idu": "user-ids",
     "labelp": "project-id-label",
     "idp": "project-ids",
+    "leave": "LEAVE",
+    "permission": "PERMISSION",
     "meta": {
       "title": "Work Planned | GoTaskToday",
-      "description": "Monitor planned work, milestones, and schedules."
+      "description": "Schedule and monitor planned work activities and milestones."
     }
   },
   "ProjectGoal": {
     "goal": "Project Goal",
     "goalDesc": "Project Goal Description",
-    "goalDescPlaceholder": "Enter your projrct goal",
+    "goalDescPlaceholder": "Enter project goal",
     "createnewpGoal": "Create New Goal",
     "searchplaceholder": "Search Goal",
     "completion": "Completion",
-    "goaltitle": "Goal Title",
-    "goaltitlePlaceholder": "Enter your goal title",
-    "startdate": "Start Date*",
-    "enddate": "End Date*",
-    "status": "Status*",
+    "goaltitle": "Title",
+    "goaltitlePlaceholder": "Enter goal title",
+    "startdateinput": "Start Date *",
+    "enddateinput": "End Date *",
+    "status": "Status *",
     "statusPlaceholder": "Select Status",
-    "priority": "Priority*",
+    "priority": "Priority *",
     "priorityPlaceholder": "Select Priority",
     "description": "Description",
     "descriptionPlaceholder": "Enter your goal description",
@@ -841,6 +1004,7 @@
     "titlerequired": "Goal title is required",
     "startweekrequired": "Start Week is required",
     "endweekrequired": "Week end date is required",
+    "viewdetails": "View Details",
     "statusrequired": "Status is required",
     "priorityreuired": "Priority is required",
     "filterpriority": "Priority",
@@ -858,7 +1022,10 @@
     "showhistory": "Show History",
     "log": "Log of who performed the updates in the goal",
     "projectgoalhistory": "Goal History",
-    "projectname": "Project Name"
+    "projectname": "Project Name",
+    "clearall": "Clear All",
+    "startdate": "Start Date",
+    "enddate": "End Date"
   },
   "Comments": {
     "comment": "Comments",
@@ -874,10 +1041,122 @@
     "viewMore": "View more",
     "showless": "Show less"
   },
-  "Upload":{
+  "Upload": {
     "meta": {
       "title": "File Upload | GoTaskToday",
-      "description": "Upload documents and assets securely."
+      "description": "Upload and manage files and documents securely."
+    }
+  },
+  "Permission": {
+    "permission": "Permission",
+    "username": "User Name",
+    "date": "Permission Date",
+    "starttime": "Start Time",
+    "endtime": "End Time",
+    "createdat": "Created Date",
+    "comments": "Permission Comments",
+    "close": "Close",
+    "search": "Search user name",
+    "nodatafound": "No data found.",
+    "viewdetails": "View Details",
+    "startdate": "Start Date",
+    "startdaterequired": "Start date is required",
+    "starttimerequired": "Start time is required",
+    "endtimerequired": "End time is required",
+    "starttimebeforeendtime": "Start time must be before end time on the same day",
+    "endtimebeforeendtime": "End time must be after start time on the same day",
+    "successmessage": "Permission request submitted successfully!",
+    "failedmessage": "Failed to submit permission request. Please try again.",
+    "create": "Create",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "update": "Update",
+    "createpermission": "Create Permission",
+    "actions": "Actions",
+    "deletepermission": "Delete Permission",
+    "editpermission": "Edit Permission",
+    "data": "Date",
+    "filterdate": "Date",
+    "deleteconfirm": "Are you sure you want to delete this permission?",
+    "deletetitle": "Delete Permission",
+    "delete": "Delete",
+    "clearall": "Clear All",
+    "filterfrom": "From Date",
+    "filterclear": "Clear",
+    "filterapply": "Apply",
+    "filterto": "To Date",
+    "labelreson": "Reson",
+    "permissionapplier": "Permission Applier",
+    "deletesuccess": "Permission deleted successfully!",
+    "deletefailed": "Failed to delete permission. Please try again.",
+    "permissionon": "Permission On",
+    "filteruser": "User",
+    "meta": {
+      "title": "Permission Requests | GoTaskToday",
+      "description": "Manage employee leaves or short-term permissions"
+    }
+  },
+  "Leave": {
+    "applyleave": "Apply Leave",
+    "cancel": "Cancel",
+    "fromdate": "From Date",
+    "todate": "To Date",
+    "leavetype": "Leave Type",
+    "reason": "Reason:",
+    "selecttype": "Select Leave Type",
+    "enterreason": "Enter the reason for your leave...",
+    "deletetitle": " Delete Leave Request",
+    "deleteconfirm": "Are you sure you want to delete this leave request",
+    "username": "User Name",
+    "clearall": "Clear All Filters: ",
+    "editleave": "Edit Leave",
+    "save": "Save",
+    "leaves": "Leaves",
+    "error": "Error loading leave details",
+    "close": "Close",
+    "actions": "Actions",
+    "viewdetails": "View Details",
+    "deleteleave": "Delete Leave",
+    "loading": "Loading leaves...",
+    "noleave": "No leaves available",
+    "nodata": "No data found matching your filters",
+    "createleave": "Create Leave",
+    "user": "User: ",
+    "leavetype:": "Leave Type: ",
+    "fromdaterequired": "From Date is required",
+    "todaterequired": "To Date is required",
+    "todateearlier": "To Date cannot be earlier than From Date",
+    "leavetyperequired": "Leave Type is required",
+    "reasonrequired": "Reasons field is required",
+    "leaveupdated": "Leave updated successfully",
+    "errorupdate": "Error updating leave",
+    "errorloading": "Error loading leave",
+    "sickc": "SICK",
+    "frompast": "From Date cannot be in the past",
+    "toearlier": "To Date cannot be earlier than From Date",
+    "valerr": "Please fix the validation errors",
+    "leavesubmit": "Leave application submitted successfully",
+    "failedsubmit": "Failed to submit leave application",
+    "create": "Create",
+    "update": "Update",
+    "leave": "Apply Leave",
+    "dateformat": "dd-mm-yyyy",
+    "delete": "Delete",
+    "deletesuccess": "Leave Deleted successfully",
+    "faileddelete": "Failed to delete leave request",
+    "reqfromdate": "From Date * :",
+    "reqtodate": "To Date * : ",
+    "reqleavetype": "Leave Type * :",
+    "leavedetail": "Leave Detail",
+    "daterange": "Date Range",
+    "filterfrom": "From Date",
+    "filterto": "To Date",
+    "filterclear": "Clear Filter",
+    "filterapply": "Apply Filter",
+    "failedfetch": "Failed to Fetch Leave",
+    "meta": {
+      "title": "Leave Management | GoTaskToday",
+      "description": "Manage employee leave requests"
     }
   }
 }

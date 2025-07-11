@@ -17,6 +17,9 @@ import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { PAGE_OPTIONS } from "./tableConstants";
 import { ASC, CREATED_AT, DESC } from "@/app/(portal)/asset/assetConstants";
+import TableSkeletonRows from "./row";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -110,6 +113,7 @@ export interface Column<T> {
   render?: (value: T[keyof T] | undefined, row: T) => ReactNode;
   minWidth?: number;
   sortable?: boolean;
+  isLoading?: boolean;
 }
 
 interface CustomTableProps<T> {
@@ -120,6 +124,9 @@ interface CustomTableProps<T> {
   defaultRowsPerPage?: number;
   maxHeight?: string;
   onSortChange?: (key: string, order: "asc" | "desc") => void;
+  isLoading?: boolean;
+  onPageChange?: (page: number, limit: number) => void;
+  totalCount?: number;
 }
 
 const CustomTable = <T extends object>({
@@ -127,19 +134,22 @@ const CustomTable = <T extends object>({
   rows,
   minWidth = 700,
   rowsPerPageOptions = [
-    PAGE_OPTIONS.DEFAULT_ROWS_5,
-    PAGE_OPTIONS.DEFAULT_ROWS_10,
-    PAGE_OPTIONS.DEFAULT_ROWS_25
+    PAGE_OPTIONS.DEFAULT_ROWS_25,
+    PAGE_OPTIONS.DEFAULT_ROWS_35,
+    PAGE_OPTIONS.DEFAULT_ROWS_45
   ],
-  defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_5,
+  defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_25,
   maxHeight = "60vh",
-  onSortChange
+  onSortChange,
+  isLoading,
+  onPageChange,
+  totalCount
 }: CustomTableProps<T>) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof T | string>("");
-
+  const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -167,13 +177,6 @@ const CustomTable = <T extends object>({
     }
   };
 
-  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const sortedRows = React.useMemo(() => {
     if (onSortChange) return rows;
     if (!orderBy) return rows;
@@ -199,8 +202,6 @@ const CustomTable = <T extends object>({
 
     return [...rows].sort(comparator);
   }, [rows, order, orderBy, onSortChange]);
-
-  const paginatedRows = sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Box
@@ -244,26 +245,36 @@ const CustomTable = <T extends object>({
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedRows.map((row, rowIndex) => (
-              <StyledTableRow key={rowIndex}>
-                {columns.map((column) => {
-                  const value = column.id in row ? row[column.id as keyof T] : undefined;
-                  return (
-                    <StyledTableCell
-                      key={String(column.id)}
-                      align={column.align || "left"}
-                      sx={{ minWidth: column.minWidth }}
-                    >
-                      {column.render
-                        ? column.render(value, row)
-                        : typeof value === "object" && value !== null
-                          ? JSON.stringify(value)
-                          : (value as ReactNode)}
-                    </StyledTableCell>
-                  );
-                })}
-              </StyledTableRow>
-            ))}
+            {isLoading ? (
+              <TableSkeletonRows columns={columns} rowsPerPage={rowsPerPage} />
+            ) : sortedRows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center" sx={{ py: 4, color: "#888" }}>
+                  {transasset("nodatafound")}
+                </TableCell>
+              </TableRow>
+            ) : (
+              sortedRows.map((row, rowIndex) => (
+                <StyledTableRow key={rowIndex}>
+                  {columns.map((column) => {
+                    const value = column.id in row ? row[column.id as keyof T] : undefined;
+                    return (
+                      <StyledTableCell
+                        key={String(column.id)}
+                        align={column.align || "left"}
+                        sx={{ minWidth: column.minWidth }}
+                      >
+                        {column.render
+                          ? column.render(value, row)
+                          : typeof value === "object" && value !== null
+                            ? JSON.stringify(value)
+                            : (value as ReactNode)}
+                      </StyledTableCell>
+                    );
+                  })}
+                </StyledTableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </FixedHeaderTableContainer>
@@ -280,12 +291,20 @@ const CustomTable = <T extends object>({
         <TablePagination
           rowsPerPageOptions={rowsPerPageOptions}
           component="div"
-          count={sortedRows.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          onPageChange={(event, newPage) => {
+            setPage(newPage);
+            onPageChange?.(newPage, rowsPerPage);
+          }}
+          onRowsPerPageChange={(event) => {
+            const newLimit = parseInt(event.target.value, 10);
+            setRowsPerPage(newLimit);
+            setPage(0);
+            onPageChange?.(0, newLimit);
+          }}
           size={isMobile ? "small" : "medium"}
+          count={totalCount ?? sortedRows.length}
         />
       </Box>
     </Box>

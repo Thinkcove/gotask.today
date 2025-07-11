@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "next start -p 3002",
+    "start": "next start",
     "standalone:dev": "PORT=3002 HOSTNAME=localhost node server.js",
     "standalone:test": "PORT=3001 HOSTNAME=localhost node server.js",
-    "build:uat": "env-cmd -f ./.env.uat next build",
+    "standalone:prod": "PORT=3000 HOSTNAME=localhost node server.js",
     "dev": "next dev",
     "build": "next build",
+    "build:dev": "env-cmd -f ./.env.dev next build",
+    "build:uat": "env-cmd -f ./.env.uat next build",
+    "build:prod": "env-cmd -f ./.env.prod next build",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "next lint",
     "lint:fix": "next lint --fix"

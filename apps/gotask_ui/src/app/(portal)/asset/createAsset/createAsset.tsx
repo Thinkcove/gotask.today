@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { Grid, Typography, Paper, Box, Button } from "@mui/material";
+import { Grid, Typography, Box, Button } from "@mui/material";
 import { createAssetAttributes, useAllAssets, useAllTypes } from "../services/assetActions"; // adjust path as needed
 import FormField from "../../../component/input/formField"; // assuming same reusable FormField
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -16,6 +16,9 @@ import { fetcherUserList } from "../../user/services/userAction";
 import MobileInputs from "./mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
 import { OFFICE_SYSTEM, systemTypeOptions } from "../assetConstants";
+import AccessInputs from "./accessInput";
+import PrinterInputs from "./printerInputs";
+import FingerprintScannerInputs from "./fingerPrintInputs";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -53,7 +56,25 @@ export const CreateAsset: React.FC = () => {
     is5GSupported: false,
     insuranceProvider: "",
     insurancePolicyNumber: "",
-    insuranceExpiry: ""
+    insuranceExpiry: "",
+
+    //accesscard
+    accessCardNo: "",
+    personalId: "",
+    accessCardNo2: "",
+    issuedOn: "",
+
+    //printer and scanner
+    Location: "",
+    connectivity: "",
+    printerType: "",
+    specialFeatures: "",
+    printerOutputType: "",
+    supportedPaperSizes: "",
+    capacity: "",
+    authenticationModes: "",
+    display: "",
+    cloudAndAppBased: false
   });
   const [selectedAssetType, setSelectedAssetType] = useState<IAssetType | null>(null);
   const router = useRouter();
@@ -88,22 +109,50 @@ export const CreateAsset: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.typeId) newErrors.typeId = transasset("typeid");
-    if (!formData.deviceName)
-      newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
-    if (!formData.systemType)
-      newErrors.systemType = `${transasset("systemtype")} ${transasset("isrequired")}`;
-    if (!formData.ram) newErrors.ram = `${transasset("ram")} ${transasset("isrequired")}`;
-    if (!formData.modelName)
-      newErrors.modelName = `${transasset("modelname")} ${transasset("isrequired")}`;
-    if (!formData.os) newErrors.os = `${transasset("os")} ${transasset("isrequired")}`;
-    if (!formData.processor)
-      newErrors.processor = `${transasset("processor")} ${transasset("isrequired")}`;
+    if (
+      selectedAssetType?.name !== ASSET_TYPE.ACCESS_CARDS &&
+      selectedAssetType?.name !== ASSET_TYPE.PRINTER &&
+      selectedAssetType?.name !== ASSET_TYPE.FINGERPRINT_SCANNER
+    ) {
+      if (!formData.typeId) newErrors.typeId = transasset("typeid");
+      if (!formData.deviceName)
+        newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
+      if (!formData.systemType)
+        newErrors.systemType = `${transasset("systemtype")} ${transasset("isrequired")}`;
+      if (!formData.ram) newErrors.ram = `${transasset("ram")} ${transasset("isrequired")}`;
+      if (!formData.modelName)
+        newErrors.modelName = `${transasset("modelname")} ${transasset("isrequired")}`;
+      if (!formData.os) newErrors.os = `${transasset("os")} ${transasset("isrequired")}`;
+      if (!formData.processor)
+        newErrors.processor = `${transasset("processor")} ${transasset("isrequired")}`;
+    }
 
     if (selectedAssetType?.name === ASSET_TYPE.MOBILE) {
       if (!formData.imeiNumber)
         newErrors.imeiNumber = `${transasset("imeiNumber")} ${transasset("isrequired")}`;
     }
+
+    if (selectedAssetType?.name === ASSET_TYPE.ACCESS_CARDS) {
+      if (!formData.accessCardNo)
+        newErrors.accessCardNo = `${transasset("accesscardno")} ${transasset("isrequired")}`;
+      if (!formData.personalId)
+        newErrors.personalId = `${transasset("personalid")} ${transasset("isrequired")}`;
+      if (!formData.accessCardNo2)
+        newErrors.accessCardNo2 = `${transasset("accesscardno2")} ${transasset("isrequired")}`;
+      if (!formData.issuedOn)
+        newErrors.issuedOn = `${transasset("issuedon")} ${transasset("isrequired")}`;
+    }
+
+    if (
+      selectedAssetType?.name === ASSET_TYPE.PRINTER &&
+      selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER
+    ) {
+      if (!formData.deviceName)
+        newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
+      if (!formData.modelName)
+        newErrors.modelName = `${transasset("modelname")} ${transasset("isrequired")}`;
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -137,7 +186,7 @@ export const CreateAsset: React.FC = () => {
   };
 
   return (
-    <Paper elevation={2} sx={{ padding: 2 }}>
+    <Box sx={{ padding: 2 }}>
       <Box
         sx={{
           display: "flex",
@@ -149,43 +198,41 @@ export const CreateAsset: React.FC = () => {
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
           {transasset("createasset")}
         </Typography>
-        {selectedAssetType && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Button
-              variant="outlined"
-              sx={{
-                borderRadius: "30px",
-                color: "black",
-                border: "2px solid  #741B92",
-                px: 2,
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.2)"
-                }
-              }}
-              onClick={() => router.back()}
-            >
-              {transasset("cancel")}
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                borderRadius: "30px",
-                backgroundColor: " #741B92",
-                color: "white",
-                px: 2,
-                textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201) 100%)"
-                }
-              }}
-              onClick={handleSubmit}
-            >
-              {transasset("create")}
-            </Button>
-          </Box>
-        )}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Button
+            variant="outlined"
+            sx={{
+              borderRadius: "30px",
+              color: "black",
+              border: "2px solid  #741B92",
+              px: 2,
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.2)"
+              }
+            }}
+            onClick={() => router.back()}
+          >
+            {transasset("cancel")}
+          </Button>
+          <Button
+            variant="contained"
+            sx={{
+              borderRadius: "30px",
+              backgroundColor: " #741B92",
+              color: "white",
+              px: 2,
+              textTransform: "none",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "rgb(202, 187, 201) 100%)"
+              }
+            }}
+            onClick={handleSubmit}
+          >
+            {transasset("create")}
+          </Button>
+        </Box>
       </Box>
       <Box sx={{ maxHeight: "calc(100vh - 180px)", overflowY: "auto", pr: 1 }}>
         <Grid container>
@@ -243,6 +290,36 @@ export const CreateAsset: React.FC = () => {
               />
             </Grid>
           )}
+          {selectedAssetType?.name === ASSET_TYPE.ACCESS_CARDS && (
+            <Grid item xs={12}>
+              <AccessInputs
+                formData={formData}
+                onChange={handleInputChange}
+                errors={errors}
+                selectedAssetType={selectedAssetType}
+              />
+            </Grid>
+          )}
+          {selectedAssetType?.name === ASSET_TYPE.PRINTER && (
+            <Grid item xs={12}>
+              <PrinterInputs
+                formData={formData}
+                onChange={handleInputChange}
+                selectedAssetType={selectedAssetType}
+                errors={errors}
+              />
+            </Grid>
+          )}
+          {selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER && (
+            <Grid item xs={12}>
+              <FingerprintScannerInputs
+                formData={formData}
+                onChange={handleInputChange}
+                selectedAssetType={selectedAssetType}
+                errors={errors}
+              />
+            </Grid>
+          )}
         </Grid>
         <CustomSnackbar
           open={snackbar.open}
@@ -251,7 +328,7 @@ export const CreateAsset: React.FC = () => {
           onClose={() => setSnackbar({ ...snackbar, open: false })}
         />
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

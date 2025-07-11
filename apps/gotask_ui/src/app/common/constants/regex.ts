@@ -24,3 +24,14 @@ export const DURATION_PARSE_FORMAT = "/^(-?\d+)d(?:(\d+)h)?(?:(\d+)m)?$/";
 export const ESTIMATION_FORMAT = /[^\d.]/g;
 
 export const TRAILING_DOTS_REGEX = /\.+$/;
+
+export const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+export const TIME_PERIOD = /\s*(AM|PM)\s*/i;
+export const NUMBER_FORMAT = /\B(?=(\d{2})+(?!\d))/g;
+
+export const TIME_24H = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+
+export const DATE_ISO = /^\d{4}-\d{2}-\d{2}$/;
+
+export const DATETIME_ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;

@@ -1,5 +1,5 @@
 "use client";
-import React, { RefObject, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { IProjectField, PROJECT_WORKFLOW } from "../interfaces/projectInterface";
@@ -7,7 +7,6 @@ import { useAllOrganizations } from "../../organization/services/organizationAct
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import ReusableEditor from "@/app/component/richText/textEditor";
-import { RichTextEditorRef } from "mui-tiptap";
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
 import { mapUsersToMentions } from "@/app/common/utils/textEditor";
@@ -17,15 +16,13 @@ interface IProjectInputProps {
   errors?: { [key: string]: string };
   readOnlyFields?: string[];
   handleChange: (field: keyof IProjectField, value: string) => void;
-  rteRef?: RefObject<RichTextEditorRef | null>;
 }
 
 const ProjectInput = ({
   formData,
   errors,
   readOnlyFields = [],
-  handleChange,
-  rteRef
+  handleChange
 }: IProjectInputProps) => {
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const currentStatus = formData.status;
@@ -53,19 +50,21 @@ const ProjectInput = ({
           placeholder={transproject("placeholdername")}
         />
       </Grid>
+
       <Grid item xs={12}>
         <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
           {transproject("labeldescription")}
         </Typography>
         <ReusableEditor
-          ref={rteRef}
           content={formData.description || ""}
           placeholder={transproject("placeholderdescription")}
           readOnly={isReadOnly("description")}
           showSaveButton={false}
           userList={userList}
+          onChange={(html) => handleChange("description", html)}
         />
       </Grid>
+
       <Grid item xs={12} sm={6}>
         <FormField
           label={transproject("labelstatus")}
@@ -79,6 +78,7 @@ const ProjectInput = ({
           onChange={(value) => handleChange("status", String(value).toLowerCase())}
         />
       </Grid>
+
       <Grid item xs={12} sm={6}>
         <FormField
           label={transproject("labelorganization")}

@@ -1,13 +1,19 @@
 // constants/kpiConstants.ts
-export const MEASUREMENT_CRITERIA_OPTIONS = [1, 2, 3, 4];
+export const MEASUREMENT_CRITERIA_OPTIONS = [
+  { label: "1", value: 1 },
+  { label: "2", value: 2 },
+  { label: "3", value: 3 },
+  { label: "4", value: 4 }
+];
 
 export const KPI_FREQUENCY = {
   MONTHLY: "Monthly",
   QUARTERLY: "Quarterly",
-  ANNUALLY: "Annually"
+  ANNUALLY: "Annually",
+  WEEKLY: "Weekly"
 };
 
-export const STATUS_OPTIONS = ["Active", "Inactive", "Locked"];
+export const STATUS_OPTIONS = { ACTIVE: "Active", INACTIVE: "Inactive" };
 
 export const mildStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -15,8 +21,6 @@ export const mildStatusColor = (status: string) => {
       return "#e8f5e9";
     case "inactive":
       return "#fbe9e7";
-    case "locked":
-      return "#eeeeee";
     default:
       return "rgba(211, 211, 211, 0.3)";
   }

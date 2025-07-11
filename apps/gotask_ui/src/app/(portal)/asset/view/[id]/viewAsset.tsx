@@ -14,6 +14,8 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -65,7 +67,13 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
               </IconButton>
             </Grid>
             <Grid item xs>
-              <Typography variant="h5">{asset?.deviceName}</Typography>
+              <Typography variant="h5">
+                {asset?.deviceName
+                  ? asset.deviceName
+                  : asset?.accessCardNo
+                    ? trans("accesscarddetails")
+                    : "-"}
+              </Typography>
             </Grid>
             <Grid item xs="auto">
               <IconButton color="primary" onClick={() => router.push(`/asset/edit/${asset?.id}`)}>
@@ -74,205 +82,313 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
             </Grid>
           </Grid>
 
-          {/* Description */}
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-              {trans("description")}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{ color: "text.primary", lineHeight: 1.6, whiteSpace: "pre-wrap" }}
-            >
-              {asset?.commentService || "-"}
-            </Typography>
-          </Grid>
-          <Grid container spacing={2} mb={3}>
-            {/* Common Fields */}
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("modelname")} value={asset?.modelName || "-"} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("assignedTo")} value={asset?.assignedTo || "-"} />
-            </Grid>
-            {asset?.tags?.previouslyUsedBy && (
+          {asset?.accessCardNo ? (
+            <>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText label={trans("assignedTo")} value={asset.assignedTo || "-"} />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText label={trans("accesscardno")} value={asset.accessCardNo || "-"} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText
+                    label={trans("accesscardno2")}
+                    value={asset.accessCardNo2 || "-"}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText label={trans("personalid")} value={asset.personalId || "-"} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText
+                    label={trans("issuedon")}
+                    value={asset?.issuedOn ? <FormattedDateTime date={asset?.issuedOn} /> : "-"}
+                  />
+                </Grid>
+              </Grid>
+            </>
+          ) : (
+            <>
               <Grid item xs={12} sm={6} md={4}>
-                <LabelValueText
-                  label={trans("previouslyUsedBy")}
-                  value={asset?.tags?.previouslyUsedBy || "-"}
+                <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                  {trans("description")}
+                </Typography>
+                <RichTextReadOnly
+                  content={asset?.commentService || ""}
+                  extensions={getTipTapExtensions()}
                 />
               </Grid>
-            )}
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("serialnumber")} value={asset?.serialNumber || "-"} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("os")} value={asset?.os || "-"} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("ram")} value={asset?.ram || "-"} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("storage")} value={asset?.storage || "-"} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("processor")} value={asset?.processor || "-"} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label={trans("seller")} value={asset?.seller || "-"} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText
-                label={trans("dateOfPurchase")}
-                value={
-                  asset?.dateOfPurchase ? <FormattedDateTime date={asset?.dateOfPurchase} /> : "-"
-                }
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText
-                label={trans("warrantyPeriod")}
-                value={asset?.warrantyPeriod || "-"}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText
-                label={trans("warrantyDate")}
-                value={asset?.warrantyDate ? <FormattedDateTime date={asset?.warrantyDate} /> : "-"}
-              />
-            </Grid>
-
-            {/* Laptop Fields */}
-            {(asset?.type === ASSET_TYPE.LAPTOP || asset?.type === ASSET_TYPE.DESKTOP) && (
-              <>
+              <Grid container spacing={2} mb={3}>
                 <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText
-                    label={trans("antivirus")}
-                    value={asset.antivirus ? trans("enabled") : "-"}
-                  />
+                  <LabelValueText label={trans("modelname")} value={asset?.modelName || "-"} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                    {trans("recoveryKey")}
-                  </Typography>
-                  <Box display="flex" alignItems="center" flexWrap="nowrap">
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1
-                      }}
-                    >
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          display: "flex",
-                          alignItems: "center"
-                        }}
-                      >
-                        {asset.recoveryKey ? "********" : "-"}
-                      </Typography>
-                      {asset.recoveryKey && (
-                        <IconButton size="small" sx={{ mb: 1 }} onClick={handleOpenRecoveryModal}>
-                          <VisibilityIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                    </Box>
-                  </Box>
+                  <LabelValueText label={trans("assignedTo")} value={asset?.assignedTo || "-"} />
                 </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText
-                    label={trans("lastServicedDate")}
-                    value={
-                      asset.lastServicedDate ? (
-                        <FormattedDateTime date={asset.lastServicedDate} />
-                      ) : (
-                        "-"
-                      )
-                    }
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText
-                    label={trans("isencrypted")}
-                    value={asset.isEncrypted ? trans("enc") : trans("notenc")}
-                  />
-                </Grid>
-                {asset?.erk && (
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                      {trans("encryptedkey")}
-                    </Typography>
-
-                    <Box display="flex" alignItems="center">
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1
-                        }}
-                      >
-                        ********
-                      </Box>
-                      <IconButton size="small" onClick={handleOpenErkModal} sx={{ mb: 1, ml: 1 }}>
-                        <VisibilityIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
+                {asset?.tags?.previouslyUsedBy && (
+                  <Grid item xs={12} sm={6} md={4}>
+                    <LabelValueText
+                      label={trans("previouslyUsedBy")}
+                      value={asset?.tags?.previouslyUsedBy || "-"}
+                    />
                   </Grid>
                 )}
-              </>
-            )}
-
-            {/* Mobile Fields */}
-            {asset?.type === ASSET_TYPE.MOBILE && (
-              <>
-                <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText label={trans("imeiNumber")} value={asset.imeiNumber || "-"} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText label={trans("screenSize")} value={asset.screenSize || "-"} />
-                </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText
-                    label={trans("batteryCapacity")}
-                    value={asset.batteryCapacity || "-"}
+                    label={trans("serialnumber")}
+                    value={asset?.serialNumber || "-"}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText label={trans("cameraSpecs")} value={asset.cameraSpecs || "-"} />
+                  <LabelValueText label={trans("os")} value={asset?.os || "-"} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText label={trans("simType")} value={asset.simType || "-"} />
+                  <LabelValueText label={trans("ram")} value={asset?.ram || "-"} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText
-                    label={trans("insuranceProvider")}
-                    value={asset.insuranceProvider || "-"}
-                  />
+                  <LabelValueText label={trans("storage")} value={asset?.storage || "-"} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <LabelValueText
-                    label={trans("insurancePolicyNumber")}
-                    value={asset.insurancePolicyNumber || "-"}
-                  />
+                  <LabelValueText label={trans("processor")} value={asset?.processor || "-"} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText label={trans("seller")} value={asset?.seller || "-"} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText
-                    label={trans("insuranceExpiry")}
+                    label={trans("dateOfPurchase")}
                     value={
-                      asset.insuranceExpiry ? (
-                        <FormattedDateTime date={asset.insuranceExpiry} />
+                      asset?.dateOfPurchase ? (
+                        <FormattedDateTime date={asset?.dateOfPurchase} />
                       ) : (
                         "-"
                       )
                     }
                   />
                 </Grid>
-              </>
-            )}
-          </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText
+                    label={trans("warrantyPeriod")}
+                    value={asset?.warrantyPeriod || "-"}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <LabelValueText
+                    label={trans("warrantyDate")}
+                    value={
+                      asset?.warrantyDate ? <FormattedDateTime date={asset?.warrantyDate} /> : "-"
+                    }
+                  />
+                </Grid>
+
+                {/* Laptop Fields */}
+                {(asset?.type === ASSET_TYPE.LAPTOP || asset?.type === ASSET_TYPE.DESKTOP) && (
+                  <>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("antivirus")}
+                        value={asset.antivirus ? trans("enabled") : "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("recoveryKey")}
+                        value={
+                          <Box display="flex" alignItems="center">
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                display: "flex",
+                                alignItems: "center"
+                              }}
+                            >
+                              {asset.recoveryKey ? "********" : "-"}
+                            </Typography>
+                            {asset.recoveryKey && (
+                              <IconButton
+                                size="small"
+                                sx={{ ml: 1, mb: 1 }}
+                                onClick={handleOpenRecoveryModal}
+                              >
+                                <VisibilityIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </Box>
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("lastServicedDate")}
+                        value={
+                          asset.lastServicedDate ? (
+                            <FormattedDateTime date={asset.lastServicedDate} />
+                          ) : (
+                            "-"
+                          )
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("isencrypted")}
+                        value={asset.isEncrypted ? trans("enc") : trans("notenc")}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                        {trans("encryptedkey")}
+                      </Typography>
+
+                      <Box display="flex" alignItems="center">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1
+                          }}
+                        >
+                          {asset.erk ? "********" : "-"}
+                        </Box>
+                        {asset.erk && (
+                          <IconButton
+                            size="small"
+                            onClick={handleOpenErkModal}
+                            sx={{ mb: 1, ml: 1 }}
+                          >
+                            <VisibilityIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                      </Box>
+                    </Grid>
+                  </>
+                )}
+
+                {/* Mobile Fields */}
+                {asset?.type === ASSET_TYPE.MOBILE && (
+                  <>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText label={trans("imeiNumber")} value={asset.imeiNumber || "-"} />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText label={trans("screenSize")} value={asset.screenSize || "-"} />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("batteryCapacity")}
+                        value={asset.batteryCapacity || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("cameraSpecs")}
+                        value={asset.cameraSpecs || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText label={trans("simType")} value={asset.simType || "-"} />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("insuranceProvider")}
+                        value={asset.insuranceProvider || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("insurancePolicyNumber")}
+                        value={asset.insurancePolicyNumber || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("insuranceExpiry")}
+                        value={
+                          asset.insuranceExpiry ? (
+                            <FormattedDateTime date={asset.insuranceExpiry} />
+                          ) : (
+                            "-"
+                          )
+                        }
+                      />
+                    </Grid>
+                  </>
+                )}
+
+                {/* Printer */}
+                {asset?.type === ASSET_TYPE.PRINTER && (
+                  <>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("printertype")}
+                        value={asset?.printerType || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("printeroutputtype")}
+                        value={asset?.printerOutputType || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("specialfeatures")}
+                        value={asset?.specialFeatures || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("supportedpapersizes")}
+                        value={asset?.supportedPaperSizes || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("connectivity")}
+                        value={asset?.connectivity || "-"}
+                      />
+                    </Grid>
+                  </>
+                )}
+
+                {/* Finger print scanner */}
+                {asset?.type === ASSET_TYPE.FINGERPRINT_SCANNER && (
+                  <>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText label={trans("capacity")} value={asset?.capacity || "-"} />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("authenticationmodes")}
+                        value={asset?.authenticationModes || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText label={trans("display")} value={asset?.display || "-"} />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("connectivity")}
+                        value={asset?.connectivity || "-"}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText
+                        label={trans("cloudandappbased")}
+                        value={asset?.cloudAndAppBased ? trans("yes") : trans("no")}
+                      />
+                    </Grid>
+                  </>
+                )}
+              </Grid>
+            </>
+          )}
           {asset?.issues && asset.issues.length > 0 && (
             <>
               <Typography variant="h6" mt={4} mb={2}>

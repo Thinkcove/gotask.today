@@ -1,7 +1,10 @@
-import { RichTextEditorRef } from "mui-tiptap";
-import { RefObject } from "react";
+import { SelectOption } from "@/app/component/input/formField";
 
 export interface User {
+  id: string;
+  name: string;
+}
+export interface Project {
   id: string;
   name: string;
 }
@@ -28,13 +31,13 @@ export interface ProjectGoalViewProps {
   ) => Promise<void>;
   handleDeleteComment: (commentId: string | number) => Promise<void>;
   handleBack?: () => void;
+  onEdit: (goal: GoalData) => void;
 }
 export interface CommentPayload {
   comment: string;
 }
 export interface GoalCardProps {
   goal: GoalData;
-  onEdit: (goal: GoalData) => void;
   onClick?: () => void;
 }
 export interface GoalCommentProps {
@@ -51,12 +54,12 @@ export interface ProjectGoalsProps {
   isLoading: boolean;
   error: boolean;
   formatStatus: (status: string) => string;
-  handleEditGoal: (goal: GoalData) => void;
   projectId: string;
   projectGoalView: (goalId: string) => void;
   handleScroll: (e: React.UIEvent<HTMLElement>) => void;
 }
 export interface GoalData {
+  id: string;
   goalTitle: string;
   description: string;
   weekStart: string | Date;
@@ -65,7 +68,6 @@ export interface GoalData {
   priority: string;
   projectId?: string;
   user_id?: string;
-  id?: string;
   createdAt?: string | Date;
   updatedAt?: string | Date;
   comments?: GoalComment[];
@@ -88,5 +90,38 @@ export interface ProjectGoalFormProps {
   setGoalData: React.Dispatch<React.SetStateAction<GoalData>>;
   errors: { [key: string]: string };
   onSubmit?: (payload: GoalDataPayload) => void;
-  rteRef?: RefObject<RichTextEditorRef | null>;
+  currentProjectOptions: SelectOption[];
+  currentProject: Project | undefined;
+}
+
+export interface HistoryData {
+  [key: string]: string;
+}
+
+export interface UpdateHistoryItem {
+  user_id: string;
+  createdAt: string;
+  formatted_history: HistoryData;
+}
+
+export interface ProjectGoalHistory {
+  updateHistory: UpdateHistoryItem[];
+}
+
+export interface GoalFiltersBar {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  onBack: () => void;
+  statusFilter: string[];
+  severityFilter: string[];
+  onStatusChange: (selected: string[]) => void;
+  onSeverityChange: (selected: string[]) => void;
+  onClearFilters: () => void;
+  statusOptions: string[];
+  priorityOptions: string[];
+  showClear: boolean;
+  clearText: string;
+  searchPlaceholder: string;
+  filterpriority: string;
+  filterstatus: string;
 }

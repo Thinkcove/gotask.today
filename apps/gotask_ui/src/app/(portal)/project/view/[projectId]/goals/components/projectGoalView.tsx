@@ -1,28 +1,27 @@
 import React from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Edit } from "@mui/icons-material";
 import LabelValueText from "@/app/component/text/labelValueText";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/project";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { SpeakerNotesOutlined } from "@mui/icons-material";
 import { GoalComment, ProjectGoalViewProps } from "../interface/projectGoal";
-import GoalComments from "./goalComments";
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import CommentSection from "@/app/component/comments/commentSection";
 
 const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   goalData,
   loading = false,
+  user,
+  handleBack,
+  onEdit,
   handleSaveComment,
   handleEditComment,
-  handleDeleteComment,
-  user,
-  handleBack
+  handleDeleteComment
 }) => {
-  const comments: GoalComment[] = goalData?.comments || [];
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
 
   if (loading || !goalData) {
@@ -42,7 +41,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
   }
 
   return (
-    <Box>
+    <Box sx={{ p: 2 }}>
       <Box
         sx={{
           borderRadius: 4,
@@ -62,6 +61,7 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
                 <ArrowBack />
               </IconButton>
             </Grid>
+
             <Grid item xs>
               <Typography
                 variant="h5"
@@ -72,6 +72,16 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
               </Typography>
               <StatusIndicator status={goalData.status} getColor={getStatusColor} />
             </Grid>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(goalData);
+              }}
+              sx={{ ml: "auto" }}
+              color="primary"
+            >
+              <Edit />
+            </IconButton>
           </Grid>
 
           {/* Description */}
@@ -88,29 +98,27 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
           {/* Meta Info */}
           <Grid container spacing={2} mb={3}>
             <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText label="Priority" value={goalData.priority || "-"} />
+              <LabelValueText
+                label={transGoal("filterpriority")}
+                value={goalData.priority || "-"}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Created"
+                label={transGoal("create")}
                 value={goalData.createdAt && <FormattedDateTime date={goalData.createdAt} />}
               />
             </Grid>
+
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Updated"
-                value={goalData.updatedAt && <FormattedDateTime date={goalData.updatedAt} />}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <LabelValueText
-                label="Week Start"
+                label={transGoal("startdate")}
                 value={<FormattedDateTime date={goalData.weekStart} />}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <LabelValueText
-                label="Week End"
+                label={transGoal("enddate")}
                 value={<FormattedDateTime date={goalData.weekEnd} />}
               />
             </Grid>
@@ -119,18 +127,31 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
           <Divider sx={{ mt: 2, mb: 3 }} />
 
           <Box>
-            <Typography variant="subtitle1" fontWeight={500} mb={1}></Typography>
-            <Box sx={{ display: "flex", gap: 1, color: "#741B92", alignItems: "center" }}>
-              <Typography fontWeight="bold"> {transGoal("comment")}</Typography>
-              <SpeakerNotesOutlined />
-            </Box>
-            <GoalComments
-              comments={comments}
-              onSave={handleSaveComment}
-              onEdit={handleEditComment}
-              onDelete={handleDeleteComment}
-              goalId={goalData.id?.toString() || ""}
-              user={user}
+            <CommentSection
+              comments={(goalData.comments || []).map((goalComment: GoalComment) => ({
+                id: String(goalComment.id),
+                comment: Array.isArray(goalComment.comments)
+                  ? goalComment.comments[0] || ""
+                  : goalComment.comments || goalComment.comments || "",
+                user_id: user?.id || "",
+                user_name: user?.name || "",
+                updatedAt: goalComment.updatedAt
+              }))}
+              onSave={async (html) => {
+                await handleSaveComment({
+                  goal_id: goalData.id,
+                  comment: html,
+                  user_id: user?.id || ""
+                });
+              }}
+              onUpdate={async (comment) => {
+                await handleEditComment(comment.id, {
+                  comment: comment.comment
+                });
+              }}
+              onDelete={async (id) => {
+                await handleDeleteComment(id);
+              }}
             />
           </Box>
         </Box>

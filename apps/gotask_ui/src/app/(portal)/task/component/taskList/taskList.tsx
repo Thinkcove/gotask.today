@@ -24,6 +24,7 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import TaskFilters from "@/app/component/filters/taskFilters";
+import { getStoredObj, removeStorage, setStorage } from "@/app/(portal)/access/utils/storage";
 
 interface TaskListProps {
   initialView?: "projects" | "users";
@@ -43,44 +44,59 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const previousView = useRef(initialView);
   const scrollFrameRef = useRef<number | null>(null);
 
+  // Initialize filter states from localStorage or URL search params
+  const savedFilters = getStoredObj("taskListFilter") || {};
   const [view, setView] = useState<"projects" | "users">(initialView);
   const [page, setPage] = useState(1);
   const [allTasks, setAllTasks] = useState<IGroup[]>([]);
   const [hasMoreData, setHasMoreData] = useState(true);
 
   // Filters
-  const [searchText, setSearchText] = useState<string>(searchParams.get("title") || "");
+  const [searchText, setSearchText] = useState<string>(
+    savedFilters.searchText || searchParams.get("title") || ""
+  );
   const [searchParamsObj, setSearchParamsObj] = useState<{
     search_vals?: string[][];
     search_vars?: string[][];
   }>({});
-  const [statusFilter, setStatusFilter] = useState<string[]>(searchParams.getAll("status"));
-  const [severityFilter, setSeverityFilter] = useState<string[]>(searchParams.getAll("severity"));
-  const [projectFilter, setProjectFilter] = useState<string[]>(searchParams.getAll("project_name"));
-  const [userFilter, setUserFilter] = useState<string[]>(searchParams.getAll("user_name"));
-
+  const [statusFilter, setStatusFilter] = useState<string[]>(
+    savedFilters.statusFilter || searchParams.getAll("status") || []
+  );
+  const [severityFilter, setSeverityFilter] = useState<string[]>(
+    savedFilters.severityFilter || searchParams.getAll("severity") || []
+  );
+  const [projectFilter, setProjectFilter] = useState<string[]>(
+    savedFilters.projectFilter || searchParams.getAll("project_name") || []
+  );
+  const [userFilter, setUserFilter] = useState<string[]>(
+    savedFilters.userFilter || searchParams.getAll("user_name") || []
+  );
   const [minDate, setMinDate] = useState<string | undefined>(
-    searchParams.get("minDate") || undefined
+    savedFilters.minDate || searchParams.get("minDate") || undefined
   );
   const [maxDate, setMaxDate] = useState<string | undefined>(
-    searchParams.get("maxDate") || undefined
+    savedFilters.maxDate || searchParams.get("maxDate") || undefined
   );
   const [dateVar] = useState<string>(searchParams.get("dateVar") || "due_date");
   const [moreDays, setMoreDays] = useState<string | undefined>(
-    searchParams.get("moreDays") || undefined
+    savedFilters.moreDays || searchParams.get("moreDays") || undefined
   );
   const [lessDays, setLessDays] = useState<string | undefined>(
-    searchParams.get("lessDays") || undefined
+    savedFilters.lessDays || searchParams.get("lessDays") || undefined
   );
-  const rawVariationType = searchParams.get("variationType");
+  const rawVariationType = savedFilters.variationType || searchParams.get("variationType") || "";
   const [variationType, setVariationType] = useState<"more" | "less" | "">(
     rawVariationType === "more" || rawVariationType === "less" ? rawVariationType : ""
   );
   const [variationDays, setVariationDays] = useState<number>(
-    Number(searchParams.get("variationDays")) || 0
+    Number(savedFilters.variationDays || searchParams.get("variationDays")) || 0
   );
-  const [dateFrom, setDateFrom] = useState<string>(searchParams.get("dateFrom") || "");
-  const [dateTo, setDateTo] = useState<string>(searchParams.get("dateTo") || "");
+  const [dateFrom, setDateFrom] = useState<string>(
+    savedFilters.dateFrom || searchParams.get("dateFrom") || ""
+  );
+  const [dateTo, setDateTo] = useState<string>(
+    savedFilters.dateTo || searchParams.get("dateTo") || ""
+  );
 
   // Memoize filters
   const search_vals = searchParamsObj.search_vals;
@@ -220,6 +236,25 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
     });
 
     setSearchParamsObj({ search_vals, search_vars });
+
+    // Save filters to localStorage
+    const filters = {
+      searchText,
+      statusFilter,
+      severityFilter,
+      projectFilter,
+      userFilter,
+      minDate,
+      maxDate,
+      moreDays,
+      lessDays,
+      variationType,
+      variationDays,
+      dateFrom,
+      dateTo
+    };
+    setStorage("taskListFilter", filters);
+
     const shouldRefresh = searchParams.get("refresh") === "true";
     if (shouldRefresh) {
       resetTaskState();
@@ -269,9 +304,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   };
 
   const handleViewMore = (id: string) => {
-    const params = new URLSearchParams({
-      view
-    });
+    const params = new URLSearchParams();
 
     if (searchText.trim()) params.set("title", searchText);
     if (minDate) params.set("minDate", minDate);
@@ -383,6 +416,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
           setVariationDays(0);
           setMoreDays(undefined);
           setLessDays(undefined);
+          removeStorage("taskListFilter");
         }}
         transtask={transtask}
       />

@@ -553,7 +553,8 @@
       "notesplaceholder": "Add any optional notes",
       "nocertifications": "No certifications added yet.",
       "nameisrequired": "Certificate name is required",
-      "dateisrequired": "Obtained date is required"
+      "dateisrequired": "Obtained date is required",
+      "charlimiterror": "Maximum 150 characters allowed"
     },
 
     "Increment": {
@@ -563,8 +564,9 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "date": "Date",
-      "ctc": "CTC",
+      "ctc": "CTC (LPA)",
       "addnew": "Add Increment",
+      "actions": "Actions",
       "add": "Add",
       "change": "Salary Growth ( % )",
       "noincrements": "No increments added yet.",
@@ -573,6 +575,7 @@
       "deleteincrement": "Are you sure you want to delete {certificate} ?",
       "errortitle": "Error",
       "duplicateincrementdate": "An increment for this date already exists.",
+      "deleteconfirmtext": "Are you sure you want to delete this increment?",
       "editincrement": "Edit Increment",
       "addincdesc": "Enter the date and updated CTC for this increment.",
       "salaryrevisionlog": "Salary Revision Log",
@@ -613,8 +616,8 @@
     "labelProject": "Project",
     "placeholderUser": "User",
     "placeholderProject": "Project",
-    "leave": "LEAVE",
-    "permission": "PERMISSION",
+    "leave": "Leave",
+    "permission": "Permission",
     "meta": {
       "title": "Work Log | GoTaskToday",
       "description": "Generate and analyze reports across modules for insights and audits."

@@ -2,8 +2,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { Box, Grid, Paper, Typography } from "@mui/material";
 import Table from "@/app/component/table/table";
-import EmptyState from "@/app/component/emptyState/emptyState";
-import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -16,9 +14,11 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import { ASC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 
 const LeaveList: React.FC = () => {
   const router = useRouter();
+  const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
   const [userIdFilter, setUserIdFilter] = useState<string[]>([]);
   const [leaveTypeFilter, setLeaveTypeFilter] = useState<string[]>([]);
   const [fromDateFilter, setFromDateFilter] = useState<string>("");
@@ -30,8 +30,10 @@ const LeaveList: React.FC = () => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-
-  const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
+  const [page, setPage] = useState<number>(0); // 0-based for frontend
+  const [pageSize, setPageSize] = useState<number>(PAGE_OPTIONS.DEFAULT_ROWS_25);
+  const [sortField, setSortField] = useState<string>("from_date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(ASC);
 
   // Define filter payload for the API
   const filterPayload: LeaveFiltersType = useMemo(
@@ -40,16 +42,30 @@ const LeaveList: React.FC = () => {
       leave_type: leaveTypeFilter.length > 0 ? leaveTypeFilter.join(",") : undefined,
       from_date: fromDateFilter || undefined,
       to_date: toDateFilter || undefined,
-      page: 1,
-      page_size: 10,
-      sort_field: "from_date",
-      sort_order: "ASC"
+      page: page + PAGE_OPTIONS.ONE,
+      page_size: pageSize,
+      sort_field: sortField,
+      sort_order: sortOrder
     }),
-    [userIdFilter, leaveTypeFilter, fromDateFilter, toDateFilter]
+    [
+      userIdFilter,
+      leaveTypeFilter,
+      fromDateFilter,
+      toDateFilter,
+      page,
+      pageSize,
+      sortField,
+      sortOrder
+    ]
   );
 
   // Fetch filtered leaves using the API
-  const { data: filteredLeaves, isLoading, isError } = useGetLeavesWithFilters(filterPayload, true);
+  const {
+    data: filteredLeaves,
+    isLoading,
+    totalCount,
+    mutate
+  } = useGetLeavesWithFilters(filterPayload, true);
 
   // Extract unique user IDs, usernames, and leave types for filter dropdowns
   const leaveTypes = useMemo(() => {
@@ -67,7 +83,6 @@ const LeaveList: React.FC = () => {
     return Array.from(new Set(filteredLeaves.map((leave: LeaveEntry) => leave.user_name)));
   }, [filteredLeaves]);
 
-  // Handlers for table actions
   const handleViewClick = useCallback(
     (leave: LeaveEntry) => {
       router.push(`/leave/view/${leave.id}`);
@@ -100,6 +115,7 @@ const LeaveList: React.FC = () => {
         message: transleave("deletesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
+      mutate();
     } catch {
       setSnackbar({
         open: true,
@@ -134,7 +150,9 @@ const LeaveList: React.FC = () => {
     setLeaveTypeFilter([]);
     setFromDateFilter("");
     setToDateFilter("");
+    setPage(0);
   };
+
   return (
     <>
       <Box marginTop={"15px"}>
@@ -157,58 +175,45 @@ const LeaveList: React.FC = () => {
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column", overflowY: "auto" }}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            {isError && (
-              <EmptyState
-                imageSrc={NoAssetsImage}
-                message={transleave("failedfetch") || "Failed to fetch leaves"}
-              />
-            )}
-
-            {!isError && isLoading && (
-              <Paper
-                sx={{
-                  p: 2,
-                  overflow: "auto",
-                  display: "flex",
-                  flexDirection: "column",
-                  overflowY: "auto"
-                }}
-              >
-                <Box sx={{ width: "100%", flex: 1 }}>
-                  <Box sx={{ minWidth: 800 }}>
-                    <Table<LeaveEntry>
-                      columns={leaveColumns}
-                      rows={filteredLeaves ? filteredLeaves : []}
-                      isLoading={isLoading}
-                    />
-                  </Box>
+            <Paper
+              sx={{
+                p: 2,
+                overflow: "auto",
+                display: "flex",
+                flexDirection: "column",
+                overflowY: "auto"
+              }}
+            >
+              <Box sx={{ width: "100%", flex: 1 }}>
+                <Box sx={{ minWidth: 800 }}>
+                  <Table<LeaveEntry>
+                    columns={leaveColumns}
+                    rows={filteredLeaves || []}
+                    isLoading={isLoading}
+                    rowsPerPageOptions={[
+                      PAGE_OPTIONS.DEFAULT_ROWS_25,
+                      PAGE_OPTIONS.DEFAULT_ROWS_35,
+                      PAGE_OPTIONS.DEFAULT_ROWS_45
+                    ]}
+                    defaultRowsPerPage={PAGE_OPTIONS.DEFAULT_ROWS_25}
+                    onPageChange={(newPage, newLimit) => {
+                      setPage(newPage);
+                      setPageSize(newLimit);
+                    }}
+                    totalCount={totalCount}
+                    onSortChange={(key, order) => {
+                      setSortField(key);
+                      setSortOrder(order);
+                      setPage(0);
+                    }}
+                  />
                 </Box>
-              </Paper>
-            )}
-            {!isError && !isLoading && (
-              <Paper
-                sx={{
-                  p: 2,
-                  overflow: "auto",
-                  display: "flex",
-                  flexDirection: "column",
-                  overflowY: "auto"
-                }}
-              >
-                <Box sx={{ width: "100%", flex: 1 }}>
-                  <Box sx={{ minWidth: 800 }}>
-                    <Table<LeaveEntry>
-                      columns={leaveColumns}
-                      rows={filteredLeaves ? filteredLeaves : []}
-                      isLoading={isLoading}
-                    />
-                  </Box>
-                </Box>
-              </Paper>
-            )}
+              </Box>
+            </Paper>
           </Grid>
         </Grid>
       </Box>
+
       <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
         <ActionButton
           label={transleave("createleave")}

@@ -37,7 +37,7 @@ const StoryFilters: React.FC<Props> = ({
   const filtersApplied = status.length > 0 || !!startDate || !!searchTerm;
 
   return (
-    <Box px={{ xs: 2, md: 2.5, lg: 2 }} pt={3}>
+    <Box px={2} pt={3}>
       <Box
         display="flex"
         flexDirection={{ xs: "column", md: "row" }}

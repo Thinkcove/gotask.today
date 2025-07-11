@@ -16,6 +16,8 @@ import {
   STORY_STATUS_TRANSITIONS,
   StoryStatus
 } from "@/app/common/constants/storyStatus";
+import ReusableEditor from "@/app/component/richText/textEditor";
+
 
 const CreateStoryForm = () => {
   const { projectId } = useParams();
@@ -51,23 +53,23 @@ const CreateStoryForm = () => {
 
     if (!title.trim()) {
       setTitleError(t("Stories.errors.titleRequired"));
-      setSnackMessage(t("Stories.errors.titleRequiredMessage"));
       hasError = true;
+    } else {
+      setTitleError("");
     }
 
-    if (!description.trim()) {
-      setDescriptionError(t("Stories.errors.descriptionRequired"));
-      if (!hasError) {
-        setSnackMessage(t("Stories.errors.descriptionRequiredMessage"));
-      }
-      hasError = true;
+    const plainDesc = description.replace(/<[^>]*>/g, "").trim();
+if (!plainDesc) {
+  setDescriptionError(t("Stories.errors.descriptionRequired"));
+  hasError = true;
+
+    } else {
+      setDescriptionError("");
     }
 
-    if (hasError) {
-      setSnackSeverity("error");
-      setSnackOpen(true);
-      return;
-    }
+    if (hasError) return;
+    
+    
 
     setTitleError("");
     setDescriptionError("");
@@ -203,19 +205,26 @@ const CreateStoryForm = () => {
           error={titleError}
         />
 
-        <FormField
-          label={t("Stories.description")}
-          type="text"
-          placeholder={t("Stories.placeholders.description")}
-          value={description}
-          onChange={(val) => {
-            setDescription(val as string);
-            setDescriptionError("");
-          }}
-          error={descriptionError}
-          multiline
-          height={180}
-        />
+        <Box>
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {t("Stories.description")}
+          </Typography>
+          <ReusableEditor
+            content={description}
+            onChange={(html) => {
+              setDescription(html);
+              setDescriptionError("");
+            }}
+            placeholder={t("Stories.placeholders.description")}
+            readOnly={false}
+            showSaveButton={false}
+          />
+          {descriptionError && (
+            <Typography variant="caption" color="error">
+              {descriptionError}
+            </Typography>
+          )}
+        </Box>
 
         <FormField
           label={t("Stories.status")}

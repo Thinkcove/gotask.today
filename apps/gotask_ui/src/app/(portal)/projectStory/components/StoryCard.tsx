@@ -9,7 +9,6 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
-import EllipsisText from "../../../component/text/ellipsisText";
 
 interface StoryCardProps {
   story: ProjectStory;
@@ -35,7 +34,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
         backgroundColor: bg,
         border: `1px solid ${border}`,
         borderRadius: 3,
-        height: 180,
+        minHeight: 110, 
         width: "100%",
         boxShadow: 2,
         display: "flex",
@@ -49,44 +48,34 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           p: 2,
           display: "flex",
           flexDirection: "column",
-          height: "100%"
+          gap: 1
         }}
       >
-        {/* Content Section */}
-        <Box sx={{ flex: 1, overflow: "hidden" }}>
-          <Typography
-            variant="h6"
-            fontWeight={600}
-            sx={{
-              textTransform: "capitalize",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis"
-            }}
-            gutterBottom
-          >
-            {story.title}
-          </Typography>
+        <Typography
+          variant="h6"
+          fontWeight={600}
+          gutterBottom
+          sx={{
+            display: "-webkit-box",
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            wordBreak: "break-word",
+            lineHeight: 1.4,
+            textTransform: "capitalize"
+          }}
+        >
+          {story.title}
+        </Typography>
 
-          <Box mb={1} sx={{ maxHeight: 40, overflow: "hidden" }}>
-            <EllipsisText
-              text={story.description || t("Stories.noDescriptionShort")}
-              maxWidth="100%"
-            />
-          </Box>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <StatusIndicator status={status} getColor={(s) => STORY_STATUS_COLOR[s as StoryStatus]} />
+        </Stack>
 
-          <Stack direction="row" spacing={2} alignItems="center" mt={1}>
-            <StatusIndicator
-              status={status}
-              getColor={(s) => STORY_STATUS_COLOR[s as StoryStatus]}
-            />
-          </Stack>
-        </Box>
-
-        {/* View Details */}
+        {/* View Details Link */}
         <Box
           sx={{
-            pt: 1,
             display: "flex",
             justifyContent: "flex-end",
             alignItems: "center"

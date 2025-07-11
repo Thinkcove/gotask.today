@@ -16,6 +16,8 @@ import {
   STORY_STATUS_TRANSITIONS,
   StoryStatus
 } from "@/app/common/constants/storyStatus";
+import ReusableEditor from "@/app/component/richText/textEditor";
+
 
 const EditStoryForm: React.FC = () => {
   const { storyId, projectId } = useParams();
@@ -26,6 +28,7 @@ const EditStoryForm: React.FC = () => {
   const [description, setDescription] = useState<string | undefined>();
   const [status, setStatus] = useState<StoryStatus | undefined>();
   const [titleError, setTitleError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(""); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -53,12 +56,24 @@ const EditStoryForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    let hasError = false;
+
+    // Validate title
     if (!title?.trim()) {
       setTitleError(true);
-      setSnackMessage(t("Stories.errors.titleRequired"));
-      setSnackSeverity("error");
-      setSnackOpen(true);
-      return;
+      hasError = true;
+    } else {
+      setTitleError(false);
+    }
+
+    // Validate description (strip tags & trim)
+    const plainDesc = description?.replace(/<[^>]*>/g, "").trim();
+    if (!plainDesc) {
+      setDescriptionError(t("Stories.errors.descriptionRequired"));
+      hasError = true;
+    } else {
+      setDescriptionError("");
     }
 
     // Validate status transition
@@ -73,12 +88,14 @@ const EditStoryForm: React.FC = () => {
       return;
     }
 
+    if (hasError) return;
+
     setIsSubmitting(true);
     try {
       await updateProjectStory(storyId as string, {
         title,
-        description: description ?? undefined,
-        status: status ?? undefined
+        description,
+        status
       });
       setSnackMessage(t("Stories.success.updated"));
       setSnackSeverity("success");
@@ -112,7 +129,7 @@ const EditStoryForm: React.FC = () => {
     );
   }
 
-  // Filter valid status options (only current + allowed transitions)
+  // Filter valid status options 
   const currentStatus = story.status as StoryStatus;
   const allowedStatuses = [currentStatus, ...(STORY_STATUS_TRANSITIONS[currentStatus] || [])];
   const statusOptions = STORY_STATUS_OPTIONS.filter((opt) => allowedStatuses.includes(opt.id));
@@ -218,15 +235,21 @@ const EditStoryForm: React.FC = () => {
           error={titleError ? t("Stories.errors.titleRequired") : ""}
         />
 
-        <FormField
-          label={t("Stories.description")}
-          type="text"
+        <ReusableEditor
+          content={description ?? ""}
+          onChange={(html) => {
+            setDescription(html);
+            setDescriptionError(""); 
+          }}
           placeholder={t("Stories.placeholders.descriptionUpdate")}
-          multiline
-          height={180}
-          value={description ?? ""}
-          onChange={(val) => setDescription(val as string)}
+          readOnly={false}
+          showSaveButton={false}
         />
+        {descriptionError && (
+          <Typography variant="caption" color="error">
+            {descriptionError}
+          </Typography>
+        )}
 
         <FormField
           label={t("Stories.status")}

@@ -16,11 +16,10 @@ const ProjectGoalUpdateHistorySchema = new Schema<IProjectGoalUpdateHistory>(
     id: { type: String, default: uuidv4 },
     goal_id: { type: String, required: true, ref: "ProjectGoal" },
     user_id: { type: String, required: true, ref: "User" },
-    formatted_history: { type: String, required: true }, // ✅ Add this
+    formatted_history: { type: String, required: true } // ✅ Add this
   },
   { timestamps: true }
 );
-
 
 export const ProjectGoalUpdateHistory = model<IProjectGoalUpdateHistory>(
   "ProjectGoalUpdateHistory",

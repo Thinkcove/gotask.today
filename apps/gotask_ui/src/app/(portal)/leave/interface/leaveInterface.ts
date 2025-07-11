@@ -45,8 +45,8 @@ export interface LeavePayload {
   user_name?: string;
 }
 export interface LeaveFilters {
-  user_id?: string;
-  leave_type?: string;
+  user_id?: string | string[];
+  leave_type?: string | string[];
   from_date?: string;
   to_date?: string;
   page?: number;

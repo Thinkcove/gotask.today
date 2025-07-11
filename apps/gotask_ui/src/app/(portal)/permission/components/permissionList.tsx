@@ -201,7 +201,6 @@ const PermissionList = () => {
                         columns={permissionColumns}
                         rows={filteredPermissions}
                         isLoading={isLoading}
-                        isNoData={transpermission("nodatafound")}
                       />
                     </Box>
                   </Box>

@@ -18,6 +18,8 @@ import { ReactNode } from "react";
 import { PAGE_OPTIONS } from "./tableConstants";
 import { ASC, CREATED_AT, DESC } from "@/app/(portal)/asset/assetConstants";
 import TableSkeletonRows from "./row";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -125,7 +127,6 @@ interface CustomTableProps<T> {
   isLoading?: boolean;
   onPageChange?: (page: number, limit: number) => void;
   totalCount?: number;
-  isNoData?:string;
 }
 
 const CustomTable = <T extends object>({
@@ -142,13 +143,13 @@ const CustomTable = <T extends object>({
   onSortChange,
   isLoading,
   onPageChange,
-  totalCount,
-  isNoData
+  totalCount
 }: CustomTableProps<T>) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof T | string>("");
+  const transasset = useTranslations(LOCALIZATION.TRANSITION.COMMON);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -249,7 +250,7 @@ const CustomTable = <T extends object>({
             ) : sortedRows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center" sx={{ py: 4, color: "#888" }}>
-                  {isNoData}
+                  {transasset("nodatafound")}
                 </TableCell>
               </TableRow>
             ) : (

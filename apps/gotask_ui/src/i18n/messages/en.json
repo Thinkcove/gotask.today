@@ -1149,5 +1149,8 @@
       "title": "Leave Management | GoTaskToday",
       "description": "Manage employee leave requests"
     }
+  },
+  "Common": {
+    "nodatafound": "No Data Found"
   }
 }

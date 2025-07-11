@@ -4,9 +4,20 @@ import logger from "../../../common/logger";
 import { SORT_ORDER } from "../../../constants/commonConstants/commonConstants";
 import { getStartAndEndOfDay } from "../../../constants/utils/date";
 
+export interface LeaveFilters {
+  user_id?: string[];
+  leave_type?: string[];
+  from_date?: string | undefined;
+  to_date?: string | undefined;
+  page?: number;
+  page_size?: number;
+  sort_field?: string;
+  sort_order?: "asc" | "desc";
+}
+
 export interface FilterQuery {
-  user_id?: string;
-  leave_type?: string;
+  user_id?: string | string[];
+  leave_type?: string | string[];
   from_date?: string;
   to_date?: string;
   page?: number;
@@ -19,11 +30,13 @@ const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> =>
   const query: any = {};
 
   if (filters.user_id) {
-    query.user_id = filters.user_id;
+    query.user_id = Array.isArray(filters.user_id) ? { $in: filters.user_id } : filters.user_id;
   }
 
   if (filters.leave_type) {
-    query.leave_type = filters.leave_type;
+    query.leave_type = Array.isArray(filters.leave_type)
+      ? { $in: filters.leave_type }
+      : filters.leave_type;
   }
 
   if (filters.from_date || filters.to_date) {

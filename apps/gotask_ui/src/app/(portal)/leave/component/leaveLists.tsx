@@ -15,6 +15,8 @@ import AddIcon from "@mui/icons-material/Add";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { ASC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
+import { useAllUsers } from "../../task/service/taskAction";
+import { LEAVE_TYPE } from "@/app/common/constants/leave";
 
 const LeaveList: React.FC = () => {
   const router = useRouter();
@@ -30,16 +32,27 @@ const LeaveList: React.FC = () => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
-  const [page, setPage] = useState<number>(0); // 0-based for frontend
+  const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(PAGE_OPTIONS.DEFAULT_ROWS_25);
   const [sortField, setSortField] = useState<string>("from_date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(ASC);
 
-  // Define filter payload for the API
+  const { getAllUsers: allUsers } = useAllUsers();
+  const leaveTypes = useMemo(() => Object.values(LEAVE_TYPE), []);
+
+  const allUserIds = useMemo(
+    () => allUsers.map((user: { id: string; name: string }) => user.id),
+    [allUsers]
+  );
+  const allUserNames = useMemo(
+    () => allUsers.map((user: { id: string; name: string }) => user.name),
+    [allUsers]
+  );
+
   const filterPayload: LeaveFiltersType = useMemo(
     () => ({
-      user_id: userIdFilter.length > 0 ? userIdFilter.join(",") : undefined,
-      leave_type: leaveTypeFilter.length > 0 ? leaveTypeFilter.join(",") : undefined,
+      user_id: userIdFilter.length > 0 ? userIdFilter : undefined,
+      leave_type: leaveTypeFilter.length > 0 ? leaveTypeFilter : undefined,
       from_date: fromDateFilter || undefined,
       to_date: toDateFilter || undefined,
       page: page + PAGE_OPTIONS.ONE,
@@ -59,29 +72,12 @@ const LeaveList: React.FC = () => {
     ]
   );
 
-  // Fetch filtered leaves using the API
   const {
     data: filteredLeaves,
     isLoading,
     totalCount,
     mutate
   } = useGetLeavesWithFilters(filterPayload, true);
-
-  // Extract unique user IDs, usernames, and leave types for filter dropdowns
-  const leaveTypes = useMemo(() => {
-    if (!filteredLeaves || !Array.isArray(filteredLeaves)) return [];
-    return Array.from(new Set(filteredLeaves.map((leave: LeaveEntry) => leave.leave_type)));
-  }, [filteredLeaves]);
-
-  const userIds = useMemo(() => {
-    if (!filteredLeaves || !Array.isArray(filteredLeaves)) return [];
-    return Array.from(new Set(filteredLeaves.map((leave: LeaveEntry) => leave.user_id)));
-  }, [filteredLeaves]);
-
-  const userNames = useMemo(() => {
-    if (!filteredLeaves || !Array.isArray(filteredLeaves)) return [];
-    return Array.from(new Set(filteredLeaves.map((leave: LeaveEntry) => leave.user_name)));
-  }, [filteredLeaves]);
 
   const handleViewClick = useCallback(
     (leave: LeaveEntry) => {
@@ -161,8 +157,8 @@ const LeaveList: React.FC = () => {
           leaveTypeFilter={leaveTypeFilter}
           fromDate={fromDateFilter}
           toDate={toDateFilter}
-          allUserIds={userIds}
-          allUserNames={userNames}
+          allUserIds={allUserIds}
+          allUserNames={allUserNames}
           allLeaveTypes={leaveTypes}
           onUserIdChange={setUserIdFilter}
           onLeaveTypeChange={setLeaveTypeFilter}

@@ -69,6 +69,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     mutate,
     total
   } = useAllAssets(sortKey, sortOrder, page + 1, rowsPerPage, filters);
+  const showInitialSkeleton = isLoading && total === 0;
   const { getAllUsers: allUsers } = useAllUsers();
   const { getAll: allTypes } = useAllTypes();
 
@@ -203,7 +204,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             maxWidth: "300px"
           }}
         >
-          {isLoading ? (
+          {showInitialSkeleton ? (
             <Skeleton variant="rectangular" sx={{ borderRadius: 1, width: "100%", height: 43 }} />
           ) : (
             <SearchBar
@@ -253,7 +254,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               assetTypeFilter={assetTypeFilter}
               allAssetTypes={allTypes.map((u: IAssetType) => u.name)}
               onAssetTypeChange={setAssetTypeFilter}
-              loading={isLoading}
+              loading={showInitialSkeleton}
             />
           ) : (
             <AssetFilters
@@ -268,11 +269,11 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               allStatuses={issueStatuses}
               statusFilter={statusFilter}
               onStatusChange={setStatusFilter}
-              loading={isLoading}
+              loading={showInitialSkeleton}
             />
           )}
         </Box>
-        {initialView === transasset("selectedAsset") && !isLoading && (
+        {initialView === transasset("selectedAsset") && !showInitialSkeleton && (
           <Box
             sx={{
               flexShrink: 0,

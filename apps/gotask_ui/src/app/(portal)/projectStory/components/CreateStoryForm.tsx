@@ -185,7 +185,7 @@ const CreateStoryForm = () => {
           overflowY: "auto",
           display: "flex",
           flexDirection: "column",
-          gap: 2
+          gap: 3
         }}
       >
         <FormField
@@ -201,27 +201,6 @@ const CreateStoryForm = () => {
           error={titleError}
         />
 
-        <Box>
-          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-            {t("Stories.description")}
-          </Typography>
-          <ReusableEditor
-            content={description}
-            onChange={(html) => {
-              setDescription(html);
-              setDescriptionError("");
-            }}
-            placeholder={t("Stories.placeholders.description")}
-            readOnly={false}
-            showSaveButton={false}
-          />
-          {descriptionError && (
-            <Typography variant="caption" color="error">
-              {descriptionError}
-            </Typography>
-          )}
-        </Box>
-
         <FormField
           label={t("Stories.status")}
           type="select"
@@ -229,6 +208,28 @@ const CreateStoryForm = () => {
           value={status}
           disabled
         />
+
+        <Box>
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {t("Stories.description")}
+          </Typography>
+          
+            <ReusableEditor
+              content={description}
+              onChange={(html) => {
+                setDescription(html);
+                setDescriptionError("");
+              }}
+              placeholder={t("Stories.placeholders.description")}
+              readOnly={false}
+              showSaveButton={false}
+            />
+          </Box>
+          {descriptionError && (
+            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+              {descriptionError}
+            </Typography>
+          )}
       </Box>
 
       <CustomSnackbar

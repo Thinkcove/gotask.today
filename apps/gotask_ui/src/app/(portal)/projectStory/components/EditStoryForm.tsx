@@ -234,22 +234,6 @@ const EditStoryForm: React.FC = () => {
           error={titleError ? t("Stories.errors.titleRequired") : ""}
         />
 
-        <ReusableEditor
-          content={description ?? ""}
-          onChange={(html) => {
-            setDescription(html);
-            setDescriptionError("");
-          }}
-          placeholder={t("Stories.placeholders.descriptionUpdate")}
-          readOnly={false}
-          showSaveButton={false}
-        />
-        {descriptionError && (
-          <Typography variant="caption" color="error">
-            {descriptionError}
-          </Typography>
-        )}
-
         <FormField
           label={t("Stories.status")}
           type="select"
@@ -257,6 +241,29 @@ const EditStoryForm: React.FC = () => {
           onChange={(val) => setStatus(val as StoryStatus)}
           options={statusOptions}
         />
+
+        <Box>
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {t("Stories.description")}
+          </Typography>
+
+          <ReusableEditor
+            content={description ?? ""}
+            onChange={(html) => {
+              setDescription(html);
+              setDescriptionError("");
+            }}
+            placeholder={t("Stories.placeholders.descriptionUpdate")}
+            readOnly={false}
+            showSaveButton={false}
+          />
+
+          {descriptionError && (
+            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+              {descriptionError}
+            </Typography>
+          )}
+        </Box>
       </Box>
 
       <CustomSnackbar

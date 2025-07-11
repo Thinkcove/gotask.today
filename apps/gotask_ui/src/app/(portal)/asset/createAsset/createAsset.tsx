@@ -120,7 +120,8 @@ export const CreateAsset: React.FC = () => {
     if (
       selectedAssetType?.name !== ASSET_TYPE.ACCESS_CARDS &&
       selectedAssetType?.name !== ASSET_TYPE.PRINTER &&
-      selectedAssetType?.name !== ASSET_TYPE.FINGERPRINT_SCANNER
+      selectedAssetType?.name !== ASSET_TYPE.FINGERPRINT_SCANNER &&
+      selectedAssetType?.name !== ASSET_TYPE.AIR_CONDITIONER
     ) {
       if (!formData.typeId) newErrors.typeId = transasset("typeid");
       if (!formData.deviceName)

@@ -18,7 +18,6 @@ import {
 } from "@/app/common/constants/storyStatus";
 import ReusableEditor from "@/app/component/richText/textEditor";
 
-
 const CreateStoryForm = () => {
   const { projectId } = useParams();
   const router = useRouter();
@@ -59,17 +58,14 @@ const CreateStoryForm = () => {
     }
 
     const plainDesc = description.replace(/<[^>]*>/g, "").trim();
-if (!plainDesc) {
-  setDescriptionError(t("Stories.errors.descriptionRequired"));
-  hasError = true;
-
+    if (!plainDesc) {
+      setDescriptionError(t("Stories.errors.descriptionRequired"));
+      hasError = true;
     } else {
       setDescriptionError("");
     }
 
     if (hasError) return;
-    
-    
 
     setTitleError("");
     setDescriptionError("");

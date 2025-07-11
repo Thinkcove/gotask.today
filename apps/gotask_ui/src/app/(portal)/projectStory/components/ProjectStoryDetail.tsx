@@ -32,7 +32,6 @@ import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storySta
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
-
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();

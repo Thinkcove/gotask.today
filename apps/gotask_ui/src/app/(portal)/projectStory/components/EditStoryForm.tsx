@@ -18,7 +18,6 @@ import {
 } from "@/app/common/constants/storyStatus";
 import ReusableEditor from "@/app/component/richText/textEditor";
 
-
 const EditStoryForm: React.FC = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
@@ -28,7 +27,7 @@ const EditStoryForm: React.FC = () => {
   const [description, setDescription] = useState<string | undefined>();
   const [status, setStatus] = useState<StoryStatus | undefined>();
   const [titleError, setTitleError] = useState(false);
-  const [descriptionError, setDescriptionError] = useState(""); 
+  const [descriptionError, setDescriptionError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -129,7 +128,7 @@ const EditStoryForm: React.FC = () => {
     );
   }
 
-  // Filter valid status options 
+  // Filter valid status options
   const currentStatus = story.status as StoryStatus;
   const allowedStatuses = [currentStatus, ...(STORY_STATUS_TRANSITIONS[currentStatus] || [])];
   const statusOptions = STORY_STATUS_OPTIONS.filter((opt) => allowedStatuses.includes(opt.id));
@@ -239,7 +238,7 @@ const EditStoryForm: React.FC = () => {
           content={description ?? ""}
           onChange={(html) => {
             setDescription(html);
-            setDescriptionError(""); 
+            setDescriptionError("");
           }}
           placeholder={t("Stories.placeholders.descriptionUpdate")}
           readOnly={false}

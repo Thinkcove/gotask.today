@@ -34,7 +34,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
         backgroundColor: bg,
         border: `1px solid ${border}`,
         borderRadius: 3,
-        minHeight: 110, 
+        minHeight: 110,
         width: "100%",
         boxShadow: 2,
         display: "flex",

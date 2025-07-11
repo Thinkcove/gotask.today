@@ -30,7 +30,8 @@ export const ASSET_TYPE = {
   DESKTOP: "Desktop",
   ACCESS_CARDS: "Access Card",
   PRINTER: "Printer",
-  FINGERPRINT_SCANNER: "Finger Print Scanner"
+  FINGERPRINT_SCANNER: "Finger Print Scanner",
+  AIR_CONDITIONER: "Air Conditioner"
 };
 
 export const MODE = {

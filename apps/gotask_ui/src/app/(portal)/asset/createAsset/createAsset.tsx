@@ -19,6 +19,7 @@ import { OFFICE_SYSTEM, systemTypeOptions } from "../assetConstants";
 import AccessInputs from "./accessInput";
 import PrinterInputs from "./printerInputs";
 import FingerprintScannerInputs from "./fingerPrintInputs";
+import ACInputs from "./acInputs";
 
 export const CreateAsset: React.FC = () => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -74,7 +75,14 @@ export const CreateAsset: React.FC = () => {
     capacity: "",
     authenticationModes: "",
     display: "",
-    cloudAndAppBased: false
+    cloudAndAppBased: false,
+
+    //ac
+    acType: "",
+    energyRating: "",
+    powerConsumption: "",
+    coolingCoverage: "",
+    inverterType: ""
   });
   const [selectedAssetType, setSelectedAssetType] = useState<IAssetType | null>(null);
   const router = useRouter();
@@ -112,7 +120,8 @@ export const CreateAsset: React.FC = () => {
     if (
       selectedAssetType?.name !== ASSET_TYPE.ACCESS_CARDS &&
       selectedAssetType?.name !== ASSET_TYPE.PRINTER &&
-      selectedAssetType?.name !== ASSET_TYPE.FINGERPRINT_SCANNER
+      selectedAssetType?.name !== ASSET_TYPE.FINGERPRINT_SCANNER &&
+      selectedAssetType?.name !== ASSET_TYPE.AIR_CONDITIONER
     ) {
       if (!formData.typeId) newErrors.typeId = transasset("typeid");
       if (!formData.deviceName)
@@ -145,7 +154,8 @@ export const CreateAsset: React.FC = () => {
 
     if (
       selectedAssetType?.name === ASSET_TYPE.PRINTER &&
-      selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER
+      selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER &&
+      selectedAssetType?.name === ASSET_TYPE.AIR_CONDITIONER
     ) {
       if (!formData.deviceName)
         newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
@@ -317,6 +327,16 @@ export const CreateAsset: React.FC = () => {
                 onChange={handleInputChange}
                 selectedAssetType={selectedAssetType}
                 errors={errors}
+              />
+            </Grid>
+          )}
+          {selectedAssetType?.name === ASSET_TYPE.AIR_CONDITIONER && (
+            <Grid item xs={12}>
+              <ACInputs
+                formData={formData}
+                onChange={handleInputChange}
+                errors={errors}
+                selectedAssetType={selectedAssetType}
               />
             </Grid>
           )}

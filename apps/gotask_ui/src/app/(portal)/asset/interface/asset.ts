@@ -107,6 +107,13 @@ export interface IAssetAttributes {
   authenticationModes?: string;
   display?: string;
   cloudAndAppBased?: boolean;
+
+  //AC
+  acType?: string;
+  energyRating?: string;
+  powerConsumption?: string;
+  coolingCoverage?: string;
+  inverterType?: string;
 }
 
 export interface IAssetTags {

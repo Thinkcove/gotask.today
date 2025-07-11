@@ -44,6 +44,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
+  const [savedStatus, setSavedStatus] = useState(formData.status);
+
   const getCurrentUser = useMemo(() => {
     if (!formData.user_id) return null;
 
@@ -173,9 +175,20 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const userOptions = getUserOptions();
   const projectOptions = getProjectOptions();
   const currentStatus = formData.status;
-  const allowedStatuses = TASK_WORKFLOW[currentStatus] || [];
 
-  const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
+  const allowedStatuses =
+    savedStatus && TASK_WORKFLOW[savedStatus] ? TASK_WORKFLOW[savedStatus] : [];
+
+  const uniqueStatuses = Array.from(new Set([savedStatus, ...allowedStatuses].filter(Boolean)));
+
+  const handleStatusChange = (value: string) => {
+    if (value === "") {
+      handleInputChange("status", "");
+    } else {
+      handleInputChange("status", value.toLowerCase());
+      setSavedStatus(value.toLowerCase());
+    }
+  };
 
   return (
     <>
@@ -222,11 +235,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label={transtask("labelstatus")}
             type="select"
-            options={uniqueStatuses.map((s) => s.toUpperCase())}
+            options={["", ...uniqueStatuses.map((s) => s.toUpperCase())]}
             required
             placeholder={transtask("placeholderstatus")}
-            value={currentStatus.toUpperCase()}
-            onChange={(value) => handleInputChange("status", String(value).toLowerCase())}
+            value={currentStatus ? currentStatus.toUpperCase() : ""}
+            onChange={(value) => handleStatusChange(String(value))}
             error={errors.status}
             disabled={isReadOnly("status")}
           />

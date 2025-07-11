@@ -1,5 +1,5 @@
 import env from "@/app/common/env";
-import { Template } from "./templateInterface";
+import { IKpiPerformance, Template } from "./templateInterface";
 import { getData, postData, putData, deleteData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 
@@ -164,7 +164,9 @@ export const fetchAllKpiAssignments = async () => {
         assigned_by: string;
         reviewer_id?: string;
         status: string;
+        actual_value: string;
         comments?: string[];
+        performance?: IKpiPerformance[];
         change_History?: { changedBy: string; changedAt: string; changes: Record<string, any> }[];
       }) => ({
         assignment_id: assignment.assignment_id,
@@ -178,8 +180,10 @@ export const fetchAllKpiAssignments = async () => {
         assigned_by: assignment.assigned_by,
         reviewer_id: assignment.reviewer_id,
         status: assignment.status,
+        actual_value: data.actual_value,
         comments: assignment.comments || [],
-        change_History: assignment.change_History || []
+        change_History: assignment.change_History || [],
+        performance: assignment.performance || []
       })
     );
   });
@@ -203,8 +207,10 @@ export const fetchKpiAssignmentById = async (assignmentId: string) => {
       reviewer_id: data.reviewer_id,
       status: data.status,
       target_value: data.target_value,
+      actual_value: data.actual_value,
       comments: data.comments || [],
-      change_History: data.change_History || []
+      change_History: data.change_History || [],
+      performance: data.performance || []
     };
   });
 };
@@ -226,6 +232,7 @@ export const updateKpiAssignment = async (
     target_value: string;
     comments?: string[];
     authUserId: string;
+    performance?: IKpiPerformance[];
   }>
 ) => {
   return withAuth(async (token) => {
@@ -246,7 +253,8 @@ export const updateKpiAssignment = async (
       status: data.status,
       target_value: data.target_value,
       comments: data.comments || [],
-      change_History: data.change_History || []
+      change_History: data.change_History || [],
+      performance: data.performance || []
     };
   });
 };

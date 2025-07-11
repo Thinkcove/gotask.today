@@ -23,6 +23,7 @@ import { systemTypeOptions } from "../../assetConstants";
 import AccessInputs from "../../createAsset/accessInput";
 import PrinterInputs from "../../createAsset/printerInputs";
 import FingerprintScannerInputs from "../../createAsset/fingerPrintInputs";
+import ACInputs from "../../createAsset/acInputs";
 
 interface EditAssetProps {
   data: IAssetAttributes;
@@ -126,7 +127,8 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
 
       if (
         selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER ||
-        selectedAssetType?.name === ASSET_TYPE.PRINTER
+        selectedAssetType?.name === ASSET_TYPE.PRINTER ||
+        selectedAssetType?.name === ASSET_TYPE.AIR_CONDITIONER
       ) {
         if (!formData.deviceName)
           newErrors.deviceName = `${transasset("devicename")} ${transasset("isrequired")}`;
@@ -415,6 +417,15 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
 
           {selectedAssetType?.name === ASSET_TYPE.FINGERPRINT_SCANNER && (
             <FingerprintScannerInputs
+              formData={formData}
+              onChange={handleChange}
+              errors={errors}
+              selectedAssetType={selectedAssetType}
+            />
+          )}
+
+          {selectedAssetType?.name === ASSET_TYPE.AIR_CONDITIONER && (
+            <ACInputs
               formData={formData}
               onChange={handleChange}
               errors={errors}

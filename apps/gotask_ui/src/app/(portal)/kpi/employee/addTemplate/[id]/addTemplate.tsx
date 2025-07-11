@@ -41,7 +41,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
     target_value: "",
     comments: "",
     status: STATUS_OPTIONS.ACTIVE,
-    assigned_by: loginUser?.name || "",
+    assigned_by: loginUser?.id || "",
     reviewer_id: ""
   });
 

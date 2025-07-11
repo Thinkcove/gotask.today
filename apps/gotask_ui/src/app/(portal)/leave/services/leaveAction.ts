@@ -77,7 +77,7 @@ export const getLeavesWithFilters = async (payload: LeaveFilters) => {
     if (!response.success) {
       throw new Error(response.message);
     }
-    return response.data; // Expect { leaves, total_count, total_pages, current_page }
+    return response.data;
   });
 };
 
@@ -102,8 +102,7 @@ export const useGetAllLeaves = (shouldFetch: boolean) => {
     async () => {
       const leaves = await getAllLeaves();
       return leaves as LeaveEntry[];
-    },
-    { revalidateOnFocus: false, dedupingInterval: 2000 }
+    }
   );
 
   return { data, isLoading, isError: !!error, error, mutate };
@@ -120,8 +119,7 @@ export const useGetLeavesWithFilters = (payload: LeaveFilters, shouldFetch: bool
         total_pages: number;
         current_page: number;
       };
-    },
-    { revalidateOnFocus: false, dedupingInterval: 2000 }
+    }
   );
 
   return {
@@ -142,8 +140,7 @@ export const useGetLeaveById = (id: string, shouldFetch: boolean) => {
     async () => {
       const leave = await getLeaveById(id);
       return leave as LeaveEntry;
-    },
-    { revalidateOnFocus: false, dedupingInterval: 2000 }
+    }
   );
 
   return { data, isLoading, isError: !!error, error, mutate };
@@ -160,7 +157,7 @@ export const useUpdateLeave = (
       const leave = await updateLeave(id, payload as LeavePayload);
       return leave as LeaveEntry;
     },
-    { revalidateOnFocus: false, dedupingInterval: 2000 }
+    { revalidateOnFocus: false }
   );
 
   return { data, isLoading, isError: !!error, error, mutate };
@@ -171,7 +168,7 @@ export const useDeleteLeave = () => {
 
   const { trigger, isMutating, error } = useSWRMutation(
     "deleteLeave",
-    async (_url, { arg }: { arg: string }) => {
+    async (url, { arg }: { arg: string }) => {
       const response = await deleteLeave(arg);
       await mutate(["getAllLeaves"]);
       await mutate(["getLeavesWithFilters"]);
@@ -191,7 +188,7 @@ export const useCreateLeave = () => {
 
   const { trigger, isMutating, error } = useSWRMutation(
     "createLeave",
-    async (_url, { arg }: { arg: LeavePayload }) => {
+    async (url, { arg }: { arg: LeavePayload }) => {
       const response = await createLeave(arg);
       await mutate(["getAllLeaves"]);
       await mutate(["getLeavesWithFilters"]);

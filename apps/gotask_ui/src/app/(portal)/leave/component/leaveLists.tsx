@@ -15,7 +15,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { PAGE_OPTIONS } from "@/app/component/table/tableConstants";
-import { ASC } from "@/app/common/constants/leave";
+import { ASC, ONE } from "@/app/common/constants/leave";
 
 const LeaveList: React.FC = () => {
   const router = useRouter();
@@ -43,7 +43,7 @@ const LeaveList: React.FC = () => {
       leave_type: leaveTypeFilter.length > 0 ? leaveTypeFilter.join(",") : undefined,
       from_date: fromDateFilter || undefined,
       to_date: toDateFilter || undefined,
-      page: page + 1, // Convert to 1-based for backend
+      page: page + ONE,
       page_size: pageSize,
       sort_field: sortField,
       sort_order: sortOrder
@@ -84,7 +84,6 @@ const LeaveList: React.FC = () => {
     return Array.from(new Set(filteredLeaves.map((leave: LeaveEntry) => leave.user_name)));
   }, [filteredLeaves]);
 
-  // Handlers for table actions
   const handleViewClick = useCallback(
     (leave: LeaveEntry) => {
       router.push(`/leave/view/${leave.id}`);
@@ -117,7 +116,7 @@ const LeaveList: React.FC = () => {
         message: transleave("deletesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      mutate(); // Refresh the leave list
+      mutate();
     } catch {
       setSnackbar({
         open: true,
@@ -152,7 +151,7 @@ const LeaveList: React.FC = () => {
     setLeaveTypeFilter([]);
     setFromDateFilter("");
     setToDateFilter("");
-    setPage(0); // Reset page on filter clear
+    setPage(0);
   };
 
   return (
@@ -206,7 +205,7 @@ const LeaveList: React.FC = () => {
                     onSortChange={(key, order) => {
                       setSortField(key);
                       setSortOrder(order);
-                      setPage(0); // Reset to first page on sort
+                      setPage(0);
                     }}
                   />
                 </Box>

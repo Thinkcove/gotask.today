@@ -61,6 +61,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   if (assignedToFilter.length > 0) filters.userId = assignedToFilter;
   if (assetTypeFilter.length > 0) filters.typeId = assetTypeFilter;
   if (searchText.trim()) filters.searchText = searchText.trim();
+  if (assetAllocationFilter) filters.assetUsage = assetAllocationFilter;
 
   const {
     getAll: allAssets,

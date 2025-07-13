@@ -140,9 +140,12 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} px={2}>
-        {rows.length > 0 && (
+        {rows.length > 0 ? (
           <Toggle options={["Table", "Chart"]} selected={selectedView} onChange={setSelectedView} />
+        ) : (
+          <Box /> 
         )}
+
         <Button
           startIcon={<AddIcon />}
           variant="contained"

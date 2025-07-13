@@ -100,7 +100,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     );
 
     if (isDuplicate) {
-      setErrorDialogMessage(trans("skillalreadyexists"));
+      setErrorDialogMessage(trans("duplicateskills"));
       setErrorDialogOpen(true);
       return;
     }

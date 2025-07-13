@@ -13,7 +13,6 @@ import {
   createSkill,
   deleteUserSkill,
   fetchSkills,
-  updateUserSkill,
   addUserSkills
 } from "../services/userAction";
 import CommonDialog from "@/app/component/dialog/commonDialog";

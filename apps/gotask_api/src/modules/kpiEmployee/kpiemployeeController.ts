@@ -121,24 +121,32 @@ class KpiAssignmentController extends BaseController {
           ...entry,
           performance_id: entry.performance_id || uuidv4(),
           updated_at: new Date(),
-          added_by: assignment.reviewer_id || assignment.assigned_by,
+          added_by: assignment.reviewer_id || assignment.assigned_by || assignment.user_id,
           notes: entry.notes || []
         }));
 
-        payload.performance = updatedPerformance;
+        // Combine existing and new performance, avoid duplicates by performance_id
+        const combinedMap = new Map<string, any>();
+        [...(assignment.performance || []), ...updatedPerformance].forEach((perf) => {
+          combinedMap.set(perf.performance_id, perf);
+        });
 
-        //  Combine old + new for score calculation
-        const allPerformance = [...(assignment.performance || []), ...updatedPerformance];
+        const allPerformance = Array.from(combinedMap.values());
+        payload.performance = allPerformance;
+
+        // Calculate actual percentage score from matching added_by
         const targetVal = Number(assignment.target_value) || 0;
 
-        const { actualValue } = calculateKpiScores(
+        const { actual_value, employee_score } = calculateKpiScores(
           allPerformance,
           assignment.reviewer_id,
           assignment.assigned_by,
-          targetVal
+          targetVal,
+          assignment.user_id
         );
 
-        payload.actual_value = actualValue.toString();
+        payload.actual_value = actual_value.toString();
+        payload.employee_score = employee_score.toString();
       }
 
       const result = await updateKpiAssignment(

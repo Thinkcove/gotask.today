@@ -2,10 +2,9 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import useSWRInfinite from "swr/infinite";
-import { Box, Typography, CircularProgress, Grid, IconButton, Fab } from "@mui/material";
+import { Box, Typography, CircularProgress, Grid, Fab } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowBack, Add as AddIcon } from "@mui/icons-material";
-
+import { Add as AddIcon } from "@mui/icons-material";
 import { getStoriesByProject } from "../services/projectStoryActions";
 import { ProjectStory, PaginatedStoryResponse } from "../interfaces/projectStory";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -30,7 +29,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
   const [startDate, setStartDate] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const hasSentProjectNameRef = useRef(false); // Track whether projectName has been sent to parent
+  const hasSentProjectNameRef = useRef(false); 
 
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && "data" in previousPageData && !previousPageData.data.length)
@@ -93,27 +92,6 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
-      {/* Back Button */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: 26,
-          left: 20,
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          flexWrap: "wrap"
-        }}
-      >
-        <IconButton
-          onClick={() => router.push(`/project/view/${projectId}`)}
-          color="primary"
-          size="small"
-        >
-          <ArrowBack />
-        </IconButton>
-      </Box>
-
       {/* Filters */}
       <StoryFilters
         status={status}
@@ -137,10 +115,11 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
           setSearchTerm("");
           setSize(1);
         }}
+        onBack={() => router.push(`/project/view/${projectId}`)} 
       />
 
       {/* Story List */}
-      <Box sx={{ px: 2, pt: 2 }}>
+      <Box sx={{ px: 2, pt: 3 }}>
         {isLoading && size === 1 ? (
           <Box display="flex" justifyContent="center" mt={5}>
             <CircularProgress />

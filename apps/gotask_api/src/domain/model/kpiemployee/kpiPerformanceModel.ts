@@ -7,7 +7,6 @@ export interface IKpiPerformance {
   start_date: string;
   end_date: string;
   percentage: string;
-  status: string;
   notes: string[];
   updated_at: Date;
 }
@@ -23,7 +22,6 @@ export const KpiPerformanceSchema = new Schema({
   start_date: { type: String, required: true },
   end_date: { type: String, required: true },
   percentage: { type: String, required: true },
-  status: { type: String, required: true },
   notes: { type: [String], default: [] },
   updated_at: { type: Date, default: Date.now }
 });

@@ -57,7 +57,8 @@ class AssetController extends BaseController {
         systemType,
         warrantyFrom,
         warrantyTo,
-        searchText
+        searchText,
+        assetUsage
       } = payload;
       const users = await assetServices.getAllAssets({
         sortType: sort_type || DESC,
@@ -69,7 +70,8 @@ class AssetController extends BaseController {
         systemType,
         warrantyFrom,
         warrantyTo,
-        searchText
+        searchText,
+        assetUsage
       });
       return this.sendResponse(handler, users);
     } catch (error) {

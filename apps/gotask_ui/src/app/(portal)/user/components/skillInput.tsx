@@ -296,9 +296,29 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                     ? newValue.replace("__add__", "")
                     : newValue;
 
-                if (name == null) name = "";
+                if (!name) return;
 
-                setTempSkill({ ...tempSkill, name });
+                const trimmed = name.trim().toLowerCase();
+
+                const alreadyAdded = skills.some(
+                  (skill) => skill.name.trim().toLowerCase() === trimmed
+                );
+
+                if (alreadyAdded) {
+                  setErrorDialogMessage(trans("duplicateskills"));
+                  setErrorDialogOpen(true);
+                  return;
+                }
+
+                const isAddOption = typeof newValue === "string" && newValue.startsWith("__add__");
+
+                if (isAddOption) {
+                  setTempSkill({ name: name.trim(), proficiency: 0 });
+                  setCurrentEditIndex(null);
+                  setDialogOpen(true);
+                } else {
+                  setTempSkill({ ...tempSkill, name: name.trim() });
+                }
 
                 setSkillErrors((prev) => ({ ...prev, name: "" }));
               }}

@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
@@ -16,6 +19,9 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import CommentSection from "../../../../component/comments/commentSection";
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import TimeProgressBar from "../timeProgressBar";
+import TimeSpentPopup from "../timeSpentPopup";
+
 interface TaskDetailViewProps {
   task: any;
   loading?: boolean;
@@ -27,7 +33,19 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
   const { user } = useUser();
   const router = useRouter();
   const { canAccess } = useUserPermission();
+
   const handleBack = () => router.back();
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const alreadyExists = task?.time_spent?.some(
+    (entry: any) => entry.date === new Date().toISOString().split("T")[0]
+  );
+
+  const handleProgressClick = () => {
+    if (!alreadyExists) setIsPopupOpen(true);
+  };
+
   if (loading || !task || Object.keys(task).length === 0) {
     return (
       <>
@@ -46,6 +64,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
       </>
     );
   }
+
   return (
     <>
       <ModuleHeader name={transtask("tasks")} />
@@ -112,6 +131,23 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 extensions={getTipTapExtensions()}
               />
             </Box>
+
+            {/* Time Progress Bar */}
+            {task.status !== "to-do" && (
+              <Box mb={3}>
+                <TimeProgressBar
+                  estimatedTime={task.estimated_time || "0h0m"}
+                  timeSpentTotal={task.time_spent_total || "0h0m"}
+                  dueDate={task.user_estimated || "0d0h0m"}
+                  startDate={task.start_date || ""}
+                  timeEntries={task.time_spent || []}
+                  canLogTime={!alreadyExists}
+                  variation={task.variation ? String(task.variation) : "0d0h0m"}
+                  onClick={handleProgressClick}
+                />
+              </Box>
+            )}
+
             {/* Meta Info */}
             <Grid container spacing={2} mb={3}>
               <Grid item xs={4} sm={6} md={4}>
@@ -191,8 +227,22 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 ) : null}
               </Grid>
             </Grid>
+
+            <TimeSpentPopup
+              isOpen={isPopupOpen}
+              onClose={() => setIsPopupOpen(false)}
+              originalEstimate={task.estimated_time || "0d0h0m"}
+              taskId={task.id}
+              dueDate={task.due_date || ""}
+              mutate={async () => {
+                await mutate();
+                return undefined;
+              }}
+            />
+
             <Divider sx={{ mt: 2, mb: 2 }} />
 
+            {/* Comments */}
             <CommentSection
               comments={task.comment}
               onSave={async (html) => {

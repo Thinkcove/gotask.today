@@ -9,7 +9,8 @@ import {
   Paper,
   Box,
   Typography,
-  Link
+  Link,
+  Grid
 } from "@mui/material";
 import {
   EnhancedWorkPlannedGridProps,
@@ -36,6 +37,8 @@ import {
   normalizeDate
 } from "@/app/common/utils/leaveCalculate";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
 
 // Enhanced interface to include permissions
 
@@ -43,7 +46,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   data,
   fromDate,
   toDate,
-  leaveData,
   permissionData,
   isUserSelected = []
 }) => {
@@ -53,7 +55,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
 
-  const leaves: LeaveEntry[] = leaveData && leaveData.length > 0 ? leaveData : leaveResponse || [];
+  const leaves: LeaveEntry[] = leaveResponse || [];
 
   let permissions: PermissionEntry[] = [];
   if (permissionData && permissionData.length > 0) {
@@ -212,6 +214,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
     return acc;
   }, {} as GroupedTasks);
+
   const checkIfUserIsSelected = (userId: string): boolean => {
     if (isUserSelected.length === 0) {
       return true;
@@ -274,14 +277,9 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   if (!hasFilteredTasks && !hasLeavesInRange && !hasPermissionsInRange) {
     return (
       <Box sx={{ p: 4, textAlign: "center" }}>
-        <Typography variant="h6" color="textSecondary">
-          {transworkplanned("nodata")}
-        </Typography>
-        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-          {transworkplanned("date")}
-          <FormattedDateTime date={fromDate} /> {transworkplanned("to")}{" "}
-          <FormattedDateTime date={toDate} />
-        </Typography>
+        <Grid item xs={12}>
+          <EmptyState imageSrc={NoSearchResultsImage} message={transworkplanned("nodata")} />
+        </Grid>
       </Box>
     );
   }

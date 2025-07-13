@@ -25,11 +25,10 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
   const trans = useTranslations("User.Increment");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
-  // const [formData, setFormData] = useState<IIncrementHistory>({ date: "", ctc: 0 });
   const [formData, setFormData] = useState<{ date: string; ctc: string }>({
     date: "",
     ctc: ""
-  });  
+  });
   const [dateError, setDateError] = useState(false);
   const [ctcError, setCtcError] = useState(false);
   const [selectedView, setSelectedView] = useState<string>("Table");
@@ -56,14 +55,14 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
     setFormData({ date: "", ctc: "" });
     setDateError(false);
     setCtcError(false);
-  };  
+  };
 
   const handleAddClick = () => {
     resetForm();
     setDialogOpen(true);
   };
 
-  const handleSubmit = async () => {
+  const isFormValid = (): boolean => {
     const isDateEmpty = !formData.date;
     const ctcValue = parseFloat(formData.ctc);
     const isCtcInvalid = isNaN(ctcValue) || ctcValue <= 0;
@@ -71,27 +70,29 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
     setDateError(isDateEmpty);
     setCtcError(isCtcInvalid);
 
-    if (isDateEmpty || isCtcInvalid) return;
+    return !(isDateEmpty || isCtcInvalid);
+  };
+
+  const isDuplicateDate = (formattedDate: string): boolean =>
+    increment_history.some((i) => new Date(i.date).toISOString().split("T")[0] === formattedDate);
+
+  const handleSubmit = async () => {
+    if (!isFormValid()) return;
 
     const formattedDate = new Date(formData.date).toISOString().split("T")[0];
 
-    const isDuplicate = increment_history.some(
-      (i) => new Date(i.date).toISOString().split("T")[0] === formattedDate
-    );
-
-    if (isDuplicate) {
+    if (isDuplicateDate(formattedDate)) {
       setErrorOpen(true);
       return;
     }
 
-    // await addUserIncrement(userId, formData);
+    const ctcValue = parseFloat(formData.ctc);
     await addUserIncrement(userId, { ...formData, ctc: ctcValue });
-
     await mutate();
     resetForm();
     setDialogOpen(false);
   };
-
+  
   const handleDeleteClick = (id: string) => {
     setDeleteTargetId(id);
     setDeleteDialogOpen(true);
@@ -143,7 +144,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
         {rows.length > 0 ? (
           <Toggle options={["Table", "Chart"]} selected={selectedView} onChange={setSelectedView} />
         ) : (
-          <Box /> 
+          <Box />
         )}
 
         <Button

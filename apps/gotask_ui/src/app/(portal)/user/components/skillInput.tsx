@@ -34,7 +34,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
   const [tempSkill, setTempSkill] = useState<ISkill>({
     name: "",
-    proficiency: 0,
+    proficiency: DEFAULT_PROFICIENCY,
     experience: undefined
   });
 
@@ -49,7 +49,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   );
 
   const openAddDialog = () => {
-    setTempSkill({ name: "", proficiency: 0 });
+    setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
     setDialogOpen(true);
   };
 
@@ -296,7 +296,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 const isAddOption = typeof newValue === "string" && newValue.startsWith("__add__");
 
                 if (isAddOption) {
-                  setTempSkill({ name: name.trim(), proficiency: 0 });
+                  setTempSkill({ name: name.trim(), proficiency: DEFAULT_PROFICIENCY });
                   setDialogOpen(true);
                 } else {
                   setTempSkill({ ...tempSkill, name: name.trim() });

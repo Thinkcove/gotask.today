@@ -291,7 +291,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 setSkillErrors((prev) => ({ ...prev, name: "" }));
               }}
               onChange={(_, newValue) => {
-                let name =
+                const name =
                   typeof newValue === "string" && newValue.startsWith("__add__")
                     ? newValue.replace("__add__", "")
                     : newValue;

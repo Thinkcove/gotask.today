@@ -535,6 +535,7 @@
     "pleaseselectskillfirst": "Please select or add a skill first.",
     "pleasechooseproficiency": "Please choose a proficiency level.",
     "pleaseenterexperience": "Please enter experience in months.",
+    "saveskill": "Failed to save skill. Please try again.",
     "meta": {
       "title": "User Management | GoTaskToday",
       "description": "Plan, assign, and track tasks across projects."

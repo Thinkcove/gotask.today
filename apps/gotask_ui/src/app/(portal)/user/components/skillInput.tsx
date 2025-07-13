@@ -9,12 +9,7 @@ import useSWR from "swr";
 import Autocomplete from "@mui/material/Autocomplete";
 import { ISkill } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
-import {
-  createSkill,
-  deleteUserSkill,
-  fetchSkills,
-  addUserSkills
-} from "../services/userAction";
+import { createSkill, deleteUserSkill, fetchSkills, addUserSkills } from "../services/userAction";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import env from "@/app/common/env";
@@ -127,7 +122,8 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
       setDialogOpen(false);
       setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
     } catch {
-      console.error("Failed to save skill");
+      setErrorDialogMessage(trans("saveskill"));
+      setErrorDialogOpen(true);
     }
   };
 

@@ -25,6 +25,8 @@ import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
 import SkillInput from "../../components/skillInput";
 import CertificateInput from "../../components/certificateInput";
 import IncrementInput from "../../components/incrementInput";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import { RichTextReadOnly } from "mui-tiptap";
 
 interface UserDetailProps {
   user: User;
@@ -245,9 +247,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                           <Typography variant="h4" fontWeight={700} fontSize="1rem">
                             {project.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {project.description}
-                          </Typography>
+                          <RichTextReadOnly
+                            content={project.description}
+                            extensions={getTipTapExtensions()}
+                          />
                           <StatusIndicator status={project.status} getColor={getStatusColor} />
                         </Stack>
                       </Box>

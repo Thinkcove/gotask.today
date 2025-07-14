@@ -144,69 +144,75 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <Grid container spacing={2} mb={1}>
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labelfirst_name")}
+                    label={transuser("labelfirst_name").replace("*", "").trim()}
                     value={user?.first_name || "-"}
                     sx={{ textTransform: "capitalize" }}
                   />
                 </Grid>
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labellast_name")}
+                    label={transuser("labellast_name").replace("*", "").trim()}
                     value={user?.last_name || "-"}
                     sx={{ textTransform: "capitalize" }}
                   />
                 </Grid>
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labeluser")}
+                    label={transuser("labeluser").replace("*", "").trim()}
                     value={user?.name || "-"}
                     sx={{ textTransform: "capitalize" }}
                   />
                 </Grid>
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labelmobile_no")}
+                    label={transuser("labelmobile_no").replace("*", "").trim()}
                     value={user?.mobile_no || "-"}
                   />
                 </Grid>
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labeljoined_date")}
+                    label={transuser("labeljoined_date").replace("*", "").trim()}
                     value={user?.joined_date ? <FormattedDateTime date={user?.joined_date} /> : "-"}
                   />
                 </Grid>
                 <Grid item xs={6} sm={6} md={4}>
-                  <LabelValueText label={transuser("labelemp_id")} value={user?.emp_id || "-"} />
+                  <LabelValueText
+                    label={transuser("labelemp_id").replace("*", "").trim()}
+                    value={user?.emp_id || "-"}
+                  />
                 </Grid>
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("roleid")}
+                    label={transuser("roleid").replace("*", "").trim()}
                     value={user?.roleId.name}
                     sx={{ textTransform: "capitalize" }}
                   />
                 </Grid>
               </Grid>
 
-              <Grid item xs={6} sm={6} md={4}>
-                <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                  {transuser("organization")}
-                </Typography>
-                <Stack direction="row" spacing={1} flexWrap="wrap">
-                  {user.orgDetails && user.orgDetails.length > 0 ? (
-                    user.orgDetails.map((orgId) => (
-                      <Chip
-                        key={orgId.id}
-                        label={orgId.name}
-                        variant="outlined"
-                        sx={{ textTransform: "capitalize" }}
-                      />
-                    ))
-                  ) : (
-                    <Typography variant="body2" color="text.disabled">
-                      {transuser("noorganzationuser")}
-                    </Typography>
-                  )}
-                </Stack>
+              {/* Organization*/}
+              <Grid container spacing={2}>
+                <Grid item xs={6} sm={6} md={4}>
+                  <Typography variant="subtitle2" color="text.secondary" mb={1}>
+                    {transuser("organization")}
+                  </Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap">
+                    {user.orgDetails && user.orgDetails.length > 0 ? (
+                      user.orgDetails.map((orgId) => (
+                        <Chip
+                          key={orgId.id}
+                          label={orgId.name}
+                          variant="outlined"
+                          sx={{ textTransform: "capitalize" }}
+                        />
+                      ))
+                    ) : (
+                      <Typography variant="body2" color="text.disabled">
+                        {transuser("noorganzationuser")}
+                      </Typography>
+                    )}
+                  </Stack>
+                </Grid>
               </Grid>
             </Box>
           )}

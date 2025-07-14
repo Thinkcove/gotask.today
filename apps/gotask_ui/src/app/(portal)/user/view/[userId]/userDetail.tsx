@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, IconButton, Stack, Chip, Grid } from "@mui/material";
+import { Box, Typography, IconButton, Stack, Chip, Grid, Tooltip } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { User } from "../../interfaces/userInterface";
@@ -98,9 +98,21 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <ArrowBack />
             </IconButton>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="h5" fontWeight={700} sx={{ textTransform: "capitalize" }}>
-                {user.name}
-              </Typography>
+              <Tooltip title={user.name || "-"} placement="top-start">
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  sx={{
+                    textTransform: "capitalize",
+                    maxWidth: 240,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}
+                >
+                  {user.name}
+                </Typography>
+              </Tooltip>
               <StatusIndicator
                 status={user.status ? "active" : "inactive"}
                 getColor={(status) => (status === "active" ? "green" : "red")}
@@ -145,27 +157,51 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               </Grid>
 
               <Grid container spacing={2} mb={1}>
+                {/* First Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <LabelValueText
-                    label={transuser("labelfirst_name").replace("*", "").trim()}
-                    value={user?.first_name || "-"}
-                    sx={{ textTransform: "capitalize" }}
-                  />
+                  <Tooltip title={user?.first_name || "-"} placement="top-start">
+                    <Box
+                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                      <LabelValueText
+                        label={transuser("labelfirst_name").replace("*", "").trim()}
+                        value={user?.first_name || "-"}
+                        sx={{ textTransform: "capitalize" }}
+                      />
+                    </Box>
+                  </Tooltip>
                 </Grid>
+
+                {/* Last Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <LabelValueText
-                    label={transuser("labellast_name").replace("*", "").trim()}
-                    value={user?.last_name || "-"}
-                    sx={{ textTransform: "capitalize" }}
-                  />
+                  <Tooltip title={user?.last_name || "-"} placement="top-start">
+                    <Box
+                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                      <LabelValueText
+                        label={transuser("labellast_name").replace("*", "").trim()}
+                        value={user?.last_name || "-"}
+                        sx={{ textTransform: "capitalize" }}
+                      />
+                    </Box>
+                  </Tooltip>
                 </Grid>
+
+                {/* Preferred Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <LabelValueText
-                    label={transuser("labeluser").replace("*", "").trim()}
-                    value={user?.name || "-"}
-                    sx={{ textTransform: "capitalize" }}
-                  />
+                  <Tooltip title={user?.name || "-"} placement="top-start">
+                    <Box
+                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                      <LabelValueText
+                        label={transuser("labeluser").replace("*", "").trim()}
+                        value={user?.name || "-"}
+                        sx={{ textTransform: "capitalize" }}
+                      />
+                    </Box>
+                  </Tooltip>
                 </Grid>
+
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
                     label={transuser("labelmobile_no").replace("*", "").trim()}
@@ -193,7 +229,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 </Grid>
               </Grid>
 
-              {/* Organization*/}
+              {/* Organization */}
               <Grid container spacing={2}>
                 <Grid item xs={6} sm={6} md={4}>
                   <Typography variant="subtitle2" color="text.secondary" mb={1}>
@@ -202,15 +238,16 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   <Stack direction="row" spacing={1} flexWrap="wrap">
                     {user.orgDetails && user.orgDetails.length > 0 ? (
                       user.orgDetails.map((orgId) => (
-                        <Chip
-                          key={orgId.id}
-                          label={orgId.name}
-                          variant="outlined"
-                          sx={{ textTransform: "capitalize" }}
-                        />
+                        <Tooltip title={orgId.name} key={orgId.id} placement="top">
+                          <Chip
+                            label={orgId.name}
+                            variant="outlined"
+                            sx={{ textTransform: "capitalize", maxWidth: 180 }}
+                          />
+                        </Tooltip>
                       ))
                     ) : (
-                      <Typography variant="body2" color="text.disabled">
+                      <Typography variant="body2" color="text.secondary">
                         {transuser("noorganzationuser")}
                       </Typography>
                     )}
@@ -264,9 +301,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   ))}
                 </Grid>
               ) : (
-                <Typography color="text.secondary">
-                  {transuser("noprojects")}
-                </Typography>
+                <Typography color="text.secondary">{transuser("noprojects")}</Typography>
               )}
             </Grid>
           )}
@@ -383,9 +418,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   })}
                 </Box>
               ) : (
-                <Typography color="text.secondary">
-                  {transuser("noassets")}
-                </Typography>
+                <Typography color="text.secondary">{transuser("noassets")}</Typography>
               )}
             </Grid>
           )}

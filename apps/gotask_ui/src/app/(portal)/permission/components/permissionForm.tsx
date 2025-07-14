@@ -5,7 +5,7 @@ import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionFormProps } from "../interface/interface";
-import TimePickerField from "@/app/component/header/timePicker";
+import TimePickerField from "@/app/component/input/timePicker";
 
 function PermissionForm({
   formData,

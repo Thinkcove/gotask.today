@@ -79,10 +79,10 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             p: { xs: 2, sm: 3, md: 4 },
             bgcolor: "#f9fafb",
             border: "1px solid #e0e0e0",
-            maxHeight: { xs: "auto", md: 820 },
             width: "100%",
-            boxSizing: "border-box",
-            overflow: "hidden"
+            height: "calc(100vh - 120px)",
+            overflowY: "auto",
+            boxSizing: "border-box"
           }}
         >
           {/* Header */}
@@ -135,7 +135,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
           )}
 
           {/* Content */}
-          <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
+          <Box sx={{ flex: 1, overflowY: "auto" }}>
             {/* Description */}
             <Box mb={3}>
               <Typography variant="subtitle2" color="text.secondary" mb={0.5}>

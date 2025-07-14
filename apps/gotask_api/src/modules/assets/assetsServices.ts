@@ -173,7 +173,8 @@ class assetService {
     systemType,
     warrantyFrom,
     warrantyTo,
-    searchText
+    searchText,
+    assetUsage
   }: {
     sortType?: string;
     sortVar?: string;
@@ -185,6 +186,7 @@ class assetService {
     warrantyFrom?: Date;
     warrantyTo?: Date;
     searchText?: string;
+    assetUsage?: string;
   }) => {
     try {
       let assets: IAsset[] = [];
@@ -200,7 +202,8 @@ class assetService {
           systemType,
           warrantyFrom,
           warrantyTo,
-          searchText
+          searchText,
+          assetUsage
         );
         assets = result.assets;
         total = result.total;
@@ -237,17 +240,11 @@ class assetService {
             await Promise.all(tagDataRaw.map((tag) => getAssetByUserId(tag.userId)))
           ).flat();
 
-          const accessCards = await Promise.all(assetByUsers.map((a) => getAssetById(a.assetId)));
-          const filteredCount = accessCards.filter(
-            (card) => card && !card.accessCardNo?.trim()
-          ).length;
-
           return {
             ...asset,
             assetType: typeData || null,
             tagData: tagDataWithUsers || null,
             issuesCount: issuesList.length || 0,
-            userAssetCount: filteredCount || 0,
             userAsset: assetByUsers || null
           };
         })

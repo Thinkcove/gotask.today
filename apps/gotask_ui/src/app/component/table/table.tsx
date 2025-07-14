@@ -149,7 +149,7 @@ const CustomTable = <T extends object>({
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof T | string>("");
-  const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
+  const transkey = useTranslations(LOCALIZATION.TRANSITION.COMMON);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -250,7 +250,7 @@ const CustomTable = <T extends object>({
             ) : sortedRows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center" sx={{ py: 4, color: "#888" }}>
-                  {transasset("nodatafound")}
+                  {transkey("nodatafound")}
                 </TableCell>
               </TableRow>
             ) : (

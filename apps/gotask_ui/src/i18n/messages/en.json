@@ -537,6 +537,7 @@
     "pleaseselectskillfirst": "Please select or add a skill first.",
     "pleasechooseproficiency": "Please choose a proficiency level.",
     "pleaseenterexperience": "Please enter experience in months.",
+    "saveskill": "Failed to save skill. Please try again.",
     "meta": {
       "title": "User Management | GoTaskToday",
       "description": "Plan, assign, and track tasks across projects."
@@ -575,7 +576,7 @@
       "noincrements": "No increments added yet.",
       "ctcgrowth": "CTC Growth Over Time",
       "confirmdelete": "Confirm Delete",
-      "deleteincrement": "Are you sure you want to delete {certificate} ?",
+      "deleteincrement": "Are you sure you want to delete \"{certificate}\" ?",
       "errortitle": "Error",
       "duplicateincrementdate": "An increment for this date already exists.",
       "deleteconfirmtext": "Are you sure you want to delete this increment?",
@@ -1158,5 +1159,8 @@
       "title": "Leave Management | GoTaskToday",
       "description": "Manage employee leave requests"
     }
+  },
+  "Common": {
+    "nodatafound": "No Data Found"
   }
 }

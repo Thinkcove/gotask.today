@@ -53,14 +53,16 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const handleDelete = async () => {
     try {
       await deleteUser(userID);
-      await mutate();
+
+      setOpenDeleteDialog(false);
       setSnackbar({
         open: true,
         message: transuser("deletesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setOpenDeleteDialog(false);
-      setTimeout(() => router.back(), 2000);
+      setTimeout(() => {
+        router.push("/user");
+      }, 1500);
     } catch {
       setSnackbar({
         open: true,
@@ -69,6 +71,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
       });
     }
   };
+  
 
   return (
     <>

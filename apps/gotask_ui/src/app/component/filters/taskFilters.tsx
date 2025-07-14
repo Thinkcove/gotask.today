@@ -111,54 +111,66 @@ const TaskFilters: React.FC<Props> = ({
           onMouseEnter={handleMouseEvents}
           onMouseMove={handleMouseEvents}
           sx={{
-            px: 3,
-            pt: 2,
-            pb: 2,
+            py: 2,
+            px: { xs: 2, md: 3 },
             display: "flex",
             gap: 2,
             flexWrap: "nowrap",
             overflowX: "auto",
+            minWidth: 0,
+            width: "100%",
+            flexGrow: 1,
             scrollbarWidth: "none",
             "&::-webkit-scrollbar": {
               display: "none"
             }
           }}
         >
-          <FilterDropdown
-            label={transtask("filterstatus")}
-            options={Object.values(TASK_STATUS)}
-            selected={statusFilter}
-            onChange={onStatusChange}
-          />
-          <FilterDropdown
-            label={transtask("filterseverity")}
-            options={Object.values(TASK_SEVERITY)}
-            selected={severityFilter}
-            onChange={onSeverityChange}
-          />
-          {!hideProjectFilter && (
+          <Box sx={{ minWidth: 150, flexShrink: 0 }}>
             <FilterDropdown
-              label={transtask("filterproject")}
-              options={allProjects}
-              selected={projectFilter}
-              onChange={onProjectChange}
+              label={transtask("filterstatus")}
+              options={Object.values(TASK_STATUS)}
+              selected={statusFilter}
+              onChange={onStatusChange}
             />
+          </Box>
+          <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+            <FilterDropdown
+              label={transtask("filterseverity")}
+              options={Object.values(TASK_SEVERITY)}
+              selected={severityFilter}
+              onChange={onSeverityChange}
+            />
+          </Box>
+          {!hideProjectFilter && (
+            <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+              <FilterDropdown
+                label={transtask("filterproject")}
+                options={allProjects}
+                selected={projectFilter}
+                onChange={onProjectChange}
+              />
+            </Box>
           )}
           {!hideUserFilter && (
-            <FilterDropdown
-              label={transtask("filteruser")}
-              options={allUsers}
-              selected={userFilter}
-              onChange={onUserChange}
-            />
+            <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+              <FilterDropdown
+                label={transtask("filteruser")}
+                options={allUsers}
+                selected={userFilter}
+                onChange={onUserChange}
+              />
+            </Box>
           )}
-          <DateDropdown
-            dateFrom={dateFrom}
-            dateTo={dateTo}
-            onDateChange={onDateChange}
-            transtask={transtask}
-          />
-          <Box ref={variationRef}>
+          <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+            <DateDropdown
+              dateFrom={dateFrom}
+              dateTo={dateTo}
+              onDateChange={onDateChange}
+              transtask={transtask}
+            />
+          </Box>
+          <Box sx={{ minWidth: 150, flexShrink: 0 }} ref={variationRef}>
             <FilterDropdown
               label={transtask("filtervariation")}
               options={["more", "less"]}

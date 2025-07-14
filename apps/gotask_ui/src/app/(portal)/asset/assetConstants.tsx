@@ -209,3 +209,5 @@ export const NOT_UTILIZED = "Not utilized";
 export const authenticationModesOptions = ["Fingerprint", "Card", "Password", "Face Recognition"];
 
 export const connectivityOptions = ["USB", "TCP/IP", "Wi-Fi"];
+
+export const assetListFilters = "assetListFilters";

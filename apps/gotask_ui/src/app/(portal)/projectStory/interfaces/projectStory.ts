@@ -1,21 +1,27 @@
+// Interface for a single comment
 export interface Comment {
-  user_id: string;
+  updatedAt: string;
+  id: string; // UUID from backend
+  user_id: string; // UUID or email of user
+  user_name: string; // Full name or email
   comment: string;
-  created_at: string;
+  createdAt: string;
 }
 
+// Interface for a project story
 export interface ProjectStory {
-  [x: string]: any;
-  status: string;
+  data: any;
   id: string;
   title: string;
   description?: string;
+  status: string;
   project_id: string;
   comments?: Comment[];
   createdAt?: string;
   updatedAt?: string;
 }
 
+// Payload for creating a new story
 export interface CreateStoryPayload {
   title: string;
   description?: string;
@@ -24,17 +30,19 @@ export interface CreateStoryPayload {
   status?: string;
 }
 
+// Payload for updating an existing story
 export interface UpdateStoryPayload {
   title?: string;
   description?: string;
   status?: string;
 }
 
+// Payload for adding a comment to a story (user_id is extracted from token in backend)
 export interface AddCommentPayload {
-  user_id: string;
   comment: string;
 }
 
+// Optional query parameters for fetching stories
 export interface StoryQueryParams {
   status?: string[];
   startDate?: string;
@@ -44,7 +52,7 @@ export interface StoryQueryParams {
   limit?: number;
 }
 
-// Paginated Response
+// Paginated response format for stories
 export interface PaginatedStoryResponse {
   data: ProjectStory[];
   pagination: {

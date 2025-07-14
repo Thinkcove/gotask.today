@@ -13,6 +13,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionPayload } from "../interface/interface";
 import { createPermission } from "../services/permissionAction";
 import PermissionForm from "../components/permissionForm";
+import { parse, isValid } from "date-fns";
+import { formats } from "@/app/component/dateTime/timePicker";
 
 const Page = () => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
@@ -53,6 +55,15 @@ const Page = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
+  const parseTime = (timeStr: string): Date | null => {
+    const baseDate = new Date();
+    for (const fmt of formats) {
+      const parsed = parse(timeStr, fmt, baseDate);
+      if (isValid(parsed)) return parsed;
+    }
+    return null;
+  };
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -60,7 +71,16 @@ const Page = () => {
     if (!formData.startTime) newErrors.startTime = transpermission("starttimerequired");
     if (!formData.endTime) newErrors.endTime = transpermission("endtimerequired");
 
-    if (formData.startTime && formData.endTime && formData.startTime >= formData.endTime) {
+    const startTimeParsed = parseTime(formData.startTime);
+    const endTimeParsed = parseTime(formData.endTime);
+
+    if (
+      startTimeParsed &&
+      endTimeParsed &&
+      isValid(startTimeParsed) &&
+      isValid(endTimeParsed) &&
+      startTimeParsed >= endTimeParsed
+    ) {
       newErrors.startTime = transpermission("starttimebeforeendtime");
       newErrors.endTime = transpermission("endtimebeforeendtime");
     }

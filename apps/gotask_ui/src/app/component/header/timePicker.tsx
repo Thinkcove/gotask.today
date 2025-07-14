@@ -47,7 +47,6 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
     const parseTimeValue = (timeString: string): Date | null => {
       if (!timeString) return null;
 
-      // Create a base date to work with (today)
       const baseDate = new Date();
       const year = baseDate.getFullYear();
       const month = baseDate.getMonth();
@@ -59,13 +58,12 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
           return parsed;
         }
       }
-
       return null;
     };
 
     const handleTimeChange = (newValue: Date | null): void => {
       if (newValue && isValid(newValue)) {
-        const formattedTime = format(newValue, ampm ? "h:mm a" : "HH:mm");
+        const formattedTime = format(newValue, timeFormat);
         onChange?.(formattedTime);
       } else {
         onChange?.("");

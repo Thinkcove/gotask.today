@@ -3,6 +3,10 @@ import { Task } from "../../domain/model/task/task";
 import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
 import { buildStartsWithRegex } from "../../constants/utils/regex";
 import { getStartAndEndOfDay } from "../../constants/utils/date";
+import {
+  ProjectStoryComment,
+  IProjectStoryComment
+} from "../../domain/model/projectStory/projectStoryComment";
 import { Project } from "../../domain/model/project/project";
 
 // CREATE a new story
@@ -74,46 +78,29 @@ export const getStoriesByProjectService = async ({
 };
 
 // GET a story by its UUID
-export const getStoryByIdService = async (storyId: string): Promise<IProjectStory | null> => {
+export const getStoryByIdService = async (
+  storyId: string
+): Promise<(Omit<IProjectStory, keyof Document> & { comments: IProjectStoryComment[] }) | null> => {
   try {
     if (!storyId) {
-      throw new Error(storyMessages.FETCH.NOT_FOUND);
+      throw new Error("Story ID is required");
     }
 
-    return await ProjectStory.findOne({ id: storyId });
-  } catch (error: any) {
-    throw new Error(error.message || storyMessages.FETCH.FAILED);
-  }
-};
+    // Use .lean() to get a plain object
+    const story = await ProjectStory.findOne({ id: storyId }).lean();
 
-// ADD a comment to a story
-export const addCommentToStory = async (
-  storyId: string,
-  commentData: {
-    user_id: string;
-    comment: string;
-  }
-): Promise<IProjectStory | null> => {
-  try {
-    if (!storyId || !commentData.comment) {
-      throw new Error(storyMessages.COMMENT.COMMENT_REQUIRED);
-    }
+    if (!story) return null;
 
-    return await ProjectStory.findOneAndUpdate(
-      { id: storyId },
-      {
-        $push: {
-          comments: {
-            user_id: commentData.user_id,
-            comment: commentData.comment,
-            created_at: new Date()
-          }
-        }
-      },
-      { new: true }
-    );
+    const comments = await ProjectStoryComment.find({ story_id: storyId })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return {
+      ...story,
+      comments
+    };
   } catch (error: any) {
-    throw new Error(error.message || storyMessages.COMMENT.FAILED);
+    throw new Error(error.message || "Failed to fetch story by ID");
   }
 };
 
@@ -127,7 +114,7 @@ export const updateStoryService = async (
   }
 ): Promise<IProjectStory | null> => {
   try {
-    if (!data.title && !data.description) {
+    if (!data.title && !data.description && !data.status) {
       throw new Error(storyMessages.UPDATE.NO_FIELDS);
     }
 
@@ -167,5 +154,75 @@ export const getTasksByStoryId = async (storyId: string) => {
     return tasks;
   } catch (error: any) {
     throw new Error(error.message || storyMessages.TASK.FETCH_FAILED);
+  }
+};
+
+// COMMENT: Create a new comment
+export const createCommentService = async (data: {
+  story_id: string;
+  user_id: string;
+  user_name?: string;
+  comment: string;
+}): Promise<IProjectStoryComment> => {
+  try {
+    if (!data.story_id || !data.comment) {
+      throw new Error(storyMessages.COMMENT.COMMENT_REQUIRED);
+    }
+
+    const newComment = new ProjectStoryComment({
+      story_id: data.story_id,
+      user_id: data.user_id,
+      user_name: data.user_name,
+      comment: data.comment
+    });
+
+    return await newComment.save();
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.COMMENT.FAILED);
+  }
+};
+
+//  Update comment by ID
+export const updateCommentService = async (
+  commentId: string,
+  updateData: { comment: string }
+): Promise<IProjectStoryComment | null> => {
+  try {
+    if (!commentId || !updateData.comment) {
+      throw new Error(storyMessages.COMMENT.COMMENT_REQUIRED);
+    }
+
+    const updated = await ProjectStoryComment.findOneAndUpdate(
+      { id: commentId },
+      { $set: { comment: updateData.comment, updatedAt: new Date() } },
+      { new: true }
+    );
+
+    return updated;
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.COMMENT.UPDATE_FAILED);
+  }
+};
+
+// COMMENT: Delete comment by ID
+export const deleteCommentService = async (
+  commentId: string
+): Promise<IProjectStoryComment | null> => {
+  try {
+    const deleted = await ProjectStoryComment.findOneAndDelete({ id: commentId });
+    return deleted;
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.COMMENT.DELETE_FAILED);
+  }
+};
+
+// COMMENT: Get all comments for a story
+export const getCommentsByStoryIdService = async (
+  storyId: string
+): Promise<IProjectStoryComment[]> => {
+  try {
+    return await ProjectStoryComment.find({ story_id: storyId }).sort({ createdAt: -1 });
+  } catch (error: any) {
+    throw new Error(error.message || storyMessages.COMMENT.FETCH_FAILED);
   }
 };

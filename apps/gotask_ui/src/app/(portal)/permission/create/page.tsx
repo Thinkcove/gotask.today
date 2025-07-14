@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Box } from "@mui/material";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useUser } from "@/app/userContext";
+import PermissionForm from "../components/permissionForm";
 import FormHeader from "@/app/component/header/formHeader";
 import { useRouter } from "next/navigation";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";

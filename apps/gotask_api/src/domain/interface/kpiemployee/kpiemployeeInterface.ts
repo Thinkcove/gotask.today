@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
 import { IKpiTemplate, KpiTemplate } from "../../model/kpi/kpiModel";
 import { KPI_FREQUENCY } from "../../../constants/kpiConstants";
-import { IKpiPerformance } from "../../model/kpiemployee/kpiPerformanceModel";
-import { v4 as uuidv4 } from "uuid";
-import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiEmployeeModel"
+import { IKpiAssignment, KpiAssignment } from "../../model/kpiemployee/kpiEmployeeModel";
 
 // Create a new KPI assignment
 export const createKpiAssignmentInDb = async (
@@ -52,29 +50,7 @@ export const updateKpiAssignmentInDb = async (
 
   // Handle performance update
   if (updateData.performance && Array.isArray(updateData.performance)) {
-    const reviewerId =
-      currentAssignment.reviewer_id && currentAssignment.reviewer_id.trim() !== ""
-        ? currentAssignment.reviewer_id
-        : currentAssignment.assigned_by;
-
-    const newPerformance = updateData.performance.map((entry: IKpiPerformance) => ({
-      ...entry,
-      performance_id: entry.performance_id || uuidv4(),
-      updated_at: new Date(),
-      added_by: changedBy
-    }));
-
-    updatePayload.$push = { performance: { $each: newPerformance } };
-
-    const allPerformance = [...(currentAssignment.performance || []), ...newPerformance];
-
-    const reviewerEntry = allPerformance.find((entry) => entry.added_by === reviewerId);
-
-    if (reviewerEntry?.percentage && currentAssignment.target_value) {
-      const reviewerScore = Number(reviewerEntry.percentage);
-      const target = Number(currentAssignment.target_value);
-      updatePayload.actual_value = ((reviewerScore * target) / 100).toFixed(2);
-    }
+    updatePayload.performance = updateData.performance;
   }
 
   // Handle change history

@@ -22,7 +22,7 @@ import {
   updateTag
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
-import { Asset } from "../../domain/model/asset/asset";
+import { IAsset } from "../../domain/model/asset/asset";
 import { generateAssetHistoryEntry } from "./utils/assetHistory";
 
 class assetService {
@@ -172,7 +172,9 @@ class assetService {
     typeId,
     systemType,
     warrantyFrom,
-    warrantyTo
+    warrantyTo,
+    searchText,
+    assetUsage
   }: {
     sortType?: string;
     sortVar?: string;
@@ -183,24 +185,32 @@ class assetService {
     systemType?: string;
     warrantyFrom?: Date;
     warrantyTo?: Date;
+    searchText?: string;
+    assetUsage?: string;
   }) => {
     try {
-      let assets = [];
-      const total = await Asset.countDocuments({ active: true });
+      let assets: IAsset[] = [];
+      let total = 0;
 
       if (typeof page === "number" && typeof limit === "number") {
         const skip = (page - 1) * limit;
-        assets = await getAllAssets(
+        const result = await getAllAssets(
           skip,
           limit,
           userId,
           typeId,
           systemType,
           warrantyFrom,
-          warrantyTo
+          warrantyTo,
+          searchText,
+          assetUsage
         );
+        assets = result.assets;
+        total = result.total;
       } else {
-        assets = await getAllAssets();
+        const result = await getAllAssets();
+        assets = result.assets;
+        total = result.total;
       }
 
       const tagsData = await Promise.all(
@@ -230,17 +240,11 @@ class assetService {
             await Promise.all(tagDataRaw.map((tag) => getAssetByUserId(tag.userId)))
           ).flat();
 
-          const accessCards = await Promise.all(assetByUsers.map((a) => getAssetById(a.assetId)));
-          const filteredCount = accessCards.filter(
-            (card) => card && !card.accessCardNo?.trim()
-          ).length;
-
           return {
             ...asset,
             assetType: typeData || null,
             tagData: tagDataWithUsers || null,
             issuesCount: issuesList.length || 0,
-            userAssetCount: filteredCount || 0,
             userAsset: assetByUsers || null
           };
         })

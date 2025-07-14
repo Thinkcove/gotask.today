@@ -622,6 +622,7 @@
     "placeholderProject": "Project",
     "leave": "Leave",
     "permission": "Permission",
+    "nodata": "No data found",
     "meta": {
       "title": "Work Log | GoTaskToday",
       "description": "Generate and analyze reports across modules for insights and audits."
@@ -1086,7 +1087,7 @@
     "filterclear": "Clear",
     "filterapply": "Apply",
     "filterto": "To Date",
-    "labelreson": "Reson",
+    "labelreson": "Reason",
     "permissionapplier": "Permission Applier",
     "deletesuccess": "Permission deleted successfully!",
     "deletefailed": "Failed to delete permission. Please try again.",

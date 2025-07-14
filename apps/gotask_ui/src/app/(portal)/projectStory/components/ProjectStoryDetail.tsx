@@ -14,7 +14,6 @@ import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useTranslations } from "next-intl";
-
 import {
   getProjectStoryById,
   deleteProjectStory,
@@ -34,6 +33,8 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
 import CommentSection from "@/app/component/comments/commentSection"; 
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
@@ -132,9 +133,7 @@ const ProjectStoryDetail = () => {
         <Box display="flex" gap={1}>
           <Tooltip title={t("Stories.editStory")}>
             <IconButton
-              onClick={() =>
-                router.push(`/project/view/${projectId}/stories/edit/${storyId}`)
-              }
+              onClick={() => router.push(`/project/view/${projectId}/stories/edit/${storyId}`)}
               color="primary"
             >
               <Edit />
@@ -158,9 +157,14 @@ const ProjectStoryDetail = () => {
           <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
             {t("Stories.descriptionLabel")}
           </Typography>
-          <Typography variant="body1" color="text.primary" sx={{ whiteSpace: "pre-line" }}>
-            {story.description || t("Stories.noDescription")}
-          </Typography>
+
+          {story.description ? (
+            <RichTextReadOnly content={story.description} extensions={getTipTapExtensions()} />
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              {t("Stories.noDescription")}
+            </Typography>
+          )}
         </Box>
         <LabelValueText
           label={t("Stories.createdAt")}

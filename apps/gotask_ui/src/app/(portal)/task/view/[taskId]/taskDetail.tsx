@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
@@ -118,6 +116,24 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
             )}
           </Grid>
 
+          {/* Progress Bar Centered between Title and Description */}
+          {task.status !== "to-do" && (
+            <Box mb={3} display="flex" justifyContent="center" width="100%">
+              <Box maxWidth={600} width="100%">
+                <TimeProgressBar
+                  estimatedTime={task.estimated_time || "0h0m"}
+                  timeSpentTotal={task.time_spent_total || "0h0m"}
+                  dueDate={task.user_estimated || "0d0h0m"}
+                  startDate={task.start_date || ""}
+                  timeEntries={task.time_spent || []}
+                  canLogTime={!alreadyExists}
+                  variation={task.variation ? String(task.variation) : "0d0h0m"}
+                  onClick={handleProgressClick}
+                />
+              </Box>
+            </Box>
+          )}
+
           {/* Content */}
           <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
             {/* Description */}
@@ -131,22 +147,6 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 extensions={getTipTapExtensions()}
               />
             </Box>
-
-            {/* Time Progress Bar */}
-            {task.status !== "to-do" && (
-              <Box mb={3}>
-                <TimeProgressBar
-                  estimatedTime={task.estimated_time || "0h0m"}
-                  timeSpentTotal={task.time_spent_total || "0h0m"}
-                  dueDate={task.user_estimated || "0d0h0m"}
-                  startDate={task.start_date || ""}
-                  timeEntries={task.time_spent || []}
-                  canLogTime={!alreadyExists}
-                  variation={task.variation ? String(task.variation) : "0d0h0m"}
-                  onClick={handleProgressClick}
-                />
-              </Box>
-            )}
 
             {/* Meta Info */}
             <Grid container spacing={2} mb={3}>

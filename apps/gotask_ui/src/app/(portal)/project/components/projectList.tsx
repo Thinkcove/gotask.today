@@ -22,9 +22,14 @@ const ProjectList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { data: projects, mutate: ProjectUpdate } = useSWR("fetch-projects", fetcher);
 
-  const filteredProjects =
-    projects?.filter((pro: Project) => pro.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    null;
+  const filteredProjects = !projects
+    ? null
+    : searchTerm === ""
+      ? projects
+      : projects.filter((pro: Project) => {
+          const projectName = pro.name?.toLowerCase?.();
+          return projectName?.includes(searchTerm.toLowerCase());
+        });
 
   return (
     <Box

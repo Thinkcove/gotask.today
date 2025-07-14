@@ -23,7 +23,6 @@ function PermissionForm({
     if (typeof value !== "string") return;
     onFormDataChange(field, value);
   };
-  
 
   const handleTimeChange = (field: "comments", value: string): void => {
     onFormDataChange(field, value);
@@ -105,7 +104,6 @@ function PermissionForm({
             onChange={(val) => handleTimeChange("comments", String(val))}
             required
             multiline
-            disabled={isSubmitting}
           />
         </Grid>
       </Grid>

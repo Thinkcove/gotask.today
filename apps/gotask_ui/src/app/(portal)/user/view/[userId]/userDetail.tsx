@@ -261,7 +261,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   ))}
                 </Grid>
               ) : (
-                <Typography color="text.secondary" fontStyle="italic">
+                <Typography color="text.secondary">
                   {transuser("noprojects")}
                 </Typography>
               )}
@@ -380,7 +380,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   })}
                 </Box>
               ) : (
-                <Typography color="text.secondary" fontStyle="italic">
+                <Typography color="text.secondary">
                   {transuser("noassets")}
                 </Typography>
               )}

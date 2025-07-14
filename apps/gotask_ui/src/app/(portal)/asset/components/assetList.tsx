@@ -43,11 +43,11 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     setter: React.Dispatch<React.SetStateAction<T>>
   ) => {
     setter(value);
-    const current = getStoredObj<Record<string, any>>(FILTERS_STORAGE_KEY) || {};
+    const current = getStoredObj(FILTERS_STORAGE_KEY) || {};
     current[key] = value;
     setStorage(FILTERS_STORAGE_KEY, current);
   };
-  const savedFilters = getStoredObj<Record<string, any>>(FILTERS_STORAGE_KEY) || {};
+  const savedFilters = getStoredObj(FILTERS_STORAGE_KEY) || {};
 
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [view, setView] = useState<"assets" | "issues">(initialView);

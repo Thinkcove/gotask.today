@@ -203,7 +203,7 @@
       "delete": "Delete",
       "backToStories": "Back to Stories",
       "noDescription": "No description provided.",
-      "status": "Status",
+      "status": "Status *",
       "na": "N/A",
       "taskSectionTitle": "Associated Tasks",
       "createTask": "+ Create Task",

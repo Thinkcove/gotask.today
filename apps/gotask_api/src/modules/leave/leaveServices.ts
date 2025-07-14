@@ -147,7 +147,6 @@ const getLeavesWithFiltersService = async (filters: {
     // Set default pagination values
     const page = filters.page || parseInt(PAGE.ONE); // 1-based indexing
     const page_size = filters.page_size || parseInt(PAGE.TEN);
-    const skip = (page - 1) * page_size; // Calculate skip for pagination
 
     // Build query for filtering
     const query: any = {};

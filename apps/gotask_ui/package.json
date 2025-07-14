@@ -8,7 +8,6 @@
     "standalone:test": "PORT=3001 HOSTNAME=localhost node server.js",
     "standalone:prod": "PORT=3000 HOSTNAME=localhost node server.js",
     "dev": "next dev",
-     "fast": "next dev --turbopack",
     "build": "next build",
     "build:dev": "env-cmd -f ./.env.dev next build",
     "build:uat": "env-cmd -f ./.env.uat next build",

@@ -24,8 +24,7 @@ function PermissionForm({
     onFormDataChange(field, value);
   };
 
-  const handleTimeChange = (field: "comments", value: string | number | Date | string[]): void => {
-    if (typeof value !== "string") return;
+  const handleTimeChange = (field: "comments", value: string): void => {
     onFormDataChange(field, value);
   };
 

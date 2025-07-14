@@ -63,7 +63,7 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
 
     const handleTimeChange = (newValue: Date | null): void => {
       if (newValue && isValid(newValue)) {
-        onChange?.(format(newValue, "HH:mm:ss")); 
+        onChange?.(format(newValue, "HH:mm:ss"));
       } else {
         onChange?.("");
       }
@@ -108,38 +108,11 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
                 textField: {
                   inputRef: ref,
                   variant: "standard",
-                  placeholder: placeholder || "Select time",
+                  placeholder: placeholder,
                   fullWidth: true,
                   error: !!error,
-                  sx: {
-                    "& .MuiInputBase-input::placeholder": {
-                      color: "#9C8585",
-                      opacity: 1
-                    },
-                    "& .MuiInputBase-input": {
-                      color: value ? "inherit" : "#9C8585"
-                    }
-                  },
                   InputProps: {
                     disableUnderline: true
-                  }
-                },
-                mobilePaper: {
-                  sx: {
-                    "& .MuiPickersLayout-root": {
-                      "& .MuiTimeClock-root": {
-                        "& .MuiClockNumber-root": {
-                          "&:hover": {
-                            backgroundColor: "#741B92",
-                            color: "#fff"
-                          },
-                          "&.Mui-selected": {
-                            backgroundColor: "#741B92",
-                            color: "#fff"
-                          }
-                        }
-                      }
-                    }
                   }
                 }
               }}

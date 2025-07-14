@@ -14,8 +14,8 @@ const ProjectStorySchema = new Schema<IProjectStory>(
   {
     id: { type: String, default: uuidv4, unique: true },
     project_id: { type: String, required: true, ref: "Project", index: true },
-    title: { type: String, required: true, maxlength: 200 },
-    description: { type: String, required: true, maxlength: 2000 },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
     status: {
       type: String,
       enum: Object.values(PROJECT_STORY_STATUS),

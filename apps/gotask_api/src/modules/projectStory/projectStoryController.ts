@@ -4,10 +4,13 @@ import {
   createStoryService,
   getStoriesByProjectService,
   getStoryByIdService,
-  addCommentToStory,
   updateStoryService,
   deleteStoryService,
-  getTasksByStoryId
+  getTasksByStoryId,
+  getCommentsByStoryIdService,
+  deleteCommentService,
+  updateCommentService,
+  createCommentService
 } from "./projectStoryService";
 import { storyMessages } from "../../constants/apiMessages/projectStoryMessages";
 
@@ -82,31 +85,6 @@ class ProjectStoryController extends BaseController {
     }
   }
 
-  async addComment(requestHelper: RequestHelper, handler: any) {
-    try {
-      const { comment } = requestHelper.getPayload();
-      const { storyId } = requestHelper.getAllParams();
-      const user = requestHelper.getUser();
-      const userId = user?.id;
-
-      if (!comment) {
-        return this.replyError(new Error(storyMessages.COMMENT.COMMENT_REQUIRED));
-      }
-
-      const updatedStory = await addCommentToStory(storyId, {
-        user_id: userId,
-        comment
-      });
-
-      return this.sendResponse(handler, {
-        message: storyMessages.COMMENT.SUCCESS,
-        data: updatedStory
-      });
-    } catch (err: any) {
-      return this.replyError(err);
-    }
-  }
-
   async updateStory(requestHelper: RequestHelper, handler: any) {
     try {
       const { storyId } = requestHelper.getAllParams();
@@ -164,6 +142,93 @@ class ProjectStoryController extends BaseController {
       return this.sendResponse(handler, {
         message: storyMessages.TASK.FETCH_SUCCESS,
         data: tasks
+      });
+    } catch (err: any) {
+      return this.replyError(err, handler);
+    }
+  }
+  // Add comment
+  async addComment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { comment } = requestHelper.getPayload();
+      const { storyId } = requestHelper.getAllParams();
+      const user = requestHelper.getUser();
+
+      if (!comment) {
+        return this.replyError(new Error(storyMessages.COMMENT.COMMENT_REQUIRED));
+      }
+
+      const newComment = await createCommentService({
+        story_id: storyId,
+        user_id: user?.id,
+        user_name: user?.user_id,
+        comment
+      });
+
+      return this.sendResponse(handler, {
+        message: storyMessages.COMMENT.SUCCESS,
+        data: newComment
+      });
+    } catch (err: any) {
+      return this.replyError(err);
+    }
+  }
+
+  // Update comment
+  async updateComment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { commentId } = requestHelper.getAllParams();
+      const { comment } = requestHelper.getPayload();
+
+      if (!comment) {
+        return this.replyError(new Error(storyMessages.COMMENT.COMMENT_REQUIRED));
+      }
+
+      const updated = await updateCommentService(commentId, { comment });
+
+      if (!updated) {
+        return this.replyError(new Error(storyMessages.COMMENT.NOT_FOUND));
+      }
+
+      return this.sendResponse(handler, {
+        message: storyMessages.COMMENT.UPDATE_SUCCESS,
+        data: updated
+      });
+    } catch (err: any) {
+      return this.replyError(err, handler);
+    }
+  }
+
+  // Delete comment
+  async deleteComment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { commentId } = requestHelper.getAllParams();
+
+      const deleted = await deleteCommentService(commentId);
+
+      if (!deleted) {
+        return this.replyError(new Error(storyMessages.COMMENT.NOT_FOUND));
+      }
+
+      return this.sendResponse(handler, {
+        message: storyMessages.COMMENT.DELETE_SUCCESS,
+        data: deleted
+      });
+    } catch (err: any) {
+      return this.replyError(err, handler);
+    }
+  }
+
+  // Get all comments
+  async getCommentsByStoryId(requestHelper: RequestHelper, handler: any) {
+    try {
+      const { storyId } = requestHelper.getAllParams();
+
+      const comments = await getCommentsByStoryIdService(storyId);
+
+      return this.sendResponse(handler, {
+        message: storyMessages.COMMENT.FETCH_SUCCESS,
+        data: comments
       });
     } catch (err: any) {
       return this.replyError(err, handler);

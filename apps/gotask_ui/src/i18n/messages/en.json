@@ -203,7 +203,7 @@
       "delete": "Delete",
       "backToStories": "Back to Stories",
       "noDescription": "No description provided.",
-      "status": "Status",
+      "status": "Status *",
       "na": "N/A",
       "taskSectionTitle": "Associated Tasks",
       "createTask": "+ Create Task",
@@ -218,6 +218,8 @@
       "suffixtoday": "Today",
       "storyTitle": "Story Title *",
       "description": "Description *",
+      "commentSectionTitle": "Comments",
+      "loadinguser": "Loading users...",
 
       "filters": {
         "status": "Status",
@@ -535,6 +537,7 @@
     "pleaseselectskillfirst": "Please select or add a skill first.",
     "pleasechooseproficiency": "Please choose a proficiency level.",
     "pleaseenterexperience": "Please enter experience in months.",
+    "saveskill": "Failed to save skill. Please try again.",
     "meta": {
       "title": "User Management | GoTaskToday",
       "description": "Plan, assign, and track tasks across projects."
@@ -573,7 +576,7 @@
       "noincrements": "No increments added yet.",
       "ctcgrowth": "CTC Growth Over Time",
       "confirmdelete": "Confirm Delete",
-      "deleteincrement": "Are you sure you want to delete {certificate} ?",
+      "deleteincrement": "Are you sure you want to delete \"{certificate}\" ?",
       "errortitle": "Error",
       "duplicateincrementdate": "An increment for this date already exists.",
       "deleteconfirmtext": "Are you sure you want to delete this increment?",
@@ -1030,7 +1033,14 @@
     "addcomment": "Add Comment",
     "placeholder": "Write your content here...",
     "submit": "Submit",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "commentedit": "Edit",
+    "deletecomment": "Delete",
+    "deletetitle": "Delete Comment",
+    "cancelcomments": "Cancel",
+    "commmentmessage": "Are you sure you want to delete this comment?",
+    "viewMore": "View more",
+    "showless": "Show less"
   },
   "Upload": {
     "meta": {

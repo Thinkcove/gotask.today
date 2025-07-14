@@ -19,7 +19,7 @@ export const createProjectStory = async (formData: CreateStoryPayload) => {
   });
 };
 
-//  Update a Project Story
+// Update a Project Story
 export const updateProjectStory = async (storyId: string, updatedFields: UpdateStoryPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/update/${storyId}`;
@@ -27,7 +27,7 @@ export const updateProjectStory = async (storyId: string, updatedFields: UpdateS
   });
 };
 
-//  Delete a Project Story
+// Delete a Project Story
 export const deleteProjectStory = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/delete/${storyId}`;
@@ -35,11 +35,30 @@ export const deleteProjectStory = async (storyId: string) => {
   });
 };
 
-//  Add Comment to a Story
+// Add Comment to a Story
 export const addCommentToProjectStory = async (storyId: string, payload: AddCommentPayload) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/comment/${storyId}`;
     return postData(url, payload as unknown as Record<string, unknown>, token);
+  });
+};
+
+// Update a Comment by Comment IDAdd commentMore actions
+export const updateCommentOnProjectStory = async (
+  commentId: string,
+  payload: AddCommentPayload
+) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/story/comment/${commentId}`;
+    return putData(url, payload as unknown as Record<string, unknown>, token);
+  });
+};
+
+// Delete a Comment by Comment ID
+export const deleteCommentFromProjectStory = async (commentId: string) => {
+  return withAuth((token) => {
+    const url = `${env.API_BASE_URL}/story/comment/${commentId}`;
+    return deleteData(url, token);
   });
 };
 
@@ -90,7 +109,7 @@ export const getProjectStoryById = async (storyId: string) => {
   });
 };
 
-//  Get Tasks by Story ID
+// Get Tasks by Story ID
 export const getTasksByStory = async (storyId: string) => {
   return withAuth((token) => {
     const url = `${env.API_BASE_URL}/story/${storyId}/tasks`;

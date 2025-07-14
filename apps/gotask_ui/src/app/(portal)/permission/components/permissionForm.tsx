@@ -23,6 +23,7 @@ function PermissionForm({
     if (typeof value !== "string") return;
     onFormDataChange(field, value);
   };
+  
 
   const handleTimeChange = (field: "comments", value: string): void => {
     onFormDataChange(field, value);

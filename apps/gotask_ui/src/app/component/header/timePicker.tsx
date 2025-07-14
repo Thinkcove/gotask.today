@@ -63,8 +63,7 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
 
     const handleTimeChange = (newValue: Date | null): void => {
       if (newValue && isValid(newValue)) {
-        const formattedTime = format(newValue, timeFormat);
-        onChange?.(formattedTime);
+        onChange?.(format(newValue, "HH:mm:ss")); 
       } else {
         onChange?.("");
       }

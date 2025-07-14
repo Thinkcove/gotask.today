@@ -95,7 +95,11 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
       ? formatDate(dateFrom)
       : dateFrom && dateTo
         ? `${formatDate(dateFrom)} – ${formatDate(dateTo)}`
-        : placeholder || transtask("filterduedate");
+        : dateFrom
+          ? formatDate(dateFrom)
+          : dateTo
+            ? formatDate(dateTo)
+            : placeholder || transtask("filterduedate");
 
   return (
     <>
@@ -109,7 +113,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
           sx={{
             flexGrow: 1,
             textAlign: "left",
-            color: dateFrom ? "text.primary" : "text.secondary"
+            color: dateFrom || dateTo ? "text.primary" : "text.secondary"
           }}
         >
           {formattedLabel}

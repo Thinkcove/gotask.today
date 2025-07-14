@@ -18,6 +18,16 @@ export interface Template {
   actual_value?: number;
 }
 
+export interface IKpiPerformance {
+  performance_id: string;
+  start_date: string;
+  end_date: string;
+  percentage: string;
+  notes: string[];
+  added_by: string;
+  updated_at: string;
+}
+
 export interface KpiAssignment {
   assignment_id: string;
   user_id: string;
@@ -35,4 +45,5 @@ export interface KpiAssignment {
   status: string;
   comments: string[] | string;
   change_History?: string[] | string;
+  performance?: IKpiPerformance[];
 }

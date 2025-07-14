@@ -171,6 +171,7 @@ const TimeLogReport = () => {
               toDate={filters.toDate}
               showTasks={filters.showTasks}
               selectedProjects={filters.projectIds}
+              selectedUsers={filters.userIds}
             />
           ) : null}
         </Grid>

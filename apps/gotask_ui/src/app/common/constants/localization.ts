@@ -19,6 +19,7 @@ export const LOCALIZATION = {
     PROJECTGOAL: "ProjectGoal",
     COMMENTS: "Comments",
     PERMISSION: "Permission",
-    LEAVE: "Leave"
+    LEAVE: "Leave",
+    COMMON: "Common"
   }
 };

@@ -22,7 +22,7 @@ export interface CommonGridListProps<T> {
   maxHeight?: string;
 }
 
-export interface PremissionFormProps {
+export interface PermissionFormProps {
   formData: {
     startDate: string;
     startTime: string;

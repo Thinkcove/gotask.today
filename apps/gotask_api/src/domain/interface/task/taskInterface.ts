@@ -45,9 +45,14 @@ const deleteByTaskId = async (id: string): Promise<ITask | null> => {
   return await Task.findOneAndDelete({ id });
 };
 
-// Find a task by ID
-const findTaskById = async (id: string): Promise<ITask | null> => {
-  return await Task.findOne({ id });
+const findTaskById = async (id: string): Promise<any> => {
+  const task = await Task.findOne({ id }).lean();
+  if (!task) return null;
+  const user = await User.findOne({ id: task.created_by }).lean();
+  return {
+    ...task,
+    created_by_name: user?.name || null
+  };
 };
 
 // Find tasks by project with pagination and filters

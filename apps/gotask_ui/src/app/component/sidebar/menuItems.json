@@ -18,24 +18,6 @@
     "access": "User Management"
   },
   {
-    "text": "Organization",
-    "icon": "BusinessIcon",
-    "path": "/organization",
-    "access": "Organization Management"
-  },
-  {
-    "text": "Role",
-    "icon": "SecurityIcon",
-    "path": "/role",
-    "access": "Role Management"
-  },
-  {
-    "text": "Access",
-    "icon": "VpnKeyIcon",
-    "path": "/access",
-    "access": "Access Management"
-  },
-  {
     "text": "Task",
     "icon": "AssignmentIcon",
     "path": "/task/projects",
@@ -59,7 +41,6 @@
     "path": "/asset/assets",
     "access": "Asset and Resources"
   },
-  { "text": "Upload", "icon": "UploadIcon", "path": "/upload", "access": "Upload" },
   {
     "text": "KPI Template",
     "icon": "InsightsIcon",
@@ -77,5 +58,29 @@
     "icon": "ManageAccountsIcon",
     "path": "/leave",
     "access": "Leave"
+  },
+  {
+    "text": "Organization",
+    "icon": "BusinessIcon",
+    "path": "/organization",
+    "access": "Organization Management"
+  },
+  {
+    "text": "Role",
+    "icon": "SecurityIcon",
+    "path": "/role",
+    "access": "Role Management"
+  },
+  {
+    "text": "Access",
+    "icon": "VpnKeyIcon",
+    "path": "/access",
+    "access": "Access Management"
+  },
+  {
+    "text": "Upload",
+    "icon": "UploadIcon",
+    "path": "/upload",
+    "access": "Upload"
   }
 ]

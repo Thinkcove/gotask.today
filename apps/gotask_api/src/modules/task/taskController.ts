@@ -22,7 +22,13 @@ class TaskController extends BaseController {
   // Create Task
   async createTask(requestHelper: RequestHelper, handler: any) {
     try {
-      const taskData = requestHelper.getPayload();
+      const taskData = requestHelper.getPayload<Partial<ITask>>() || {};
+      const loginUser = requestHelper.getUser();
+
+      if (loginUser?.id) {
+        taskData.created_by = loginUser.id;
+      }
+
       const newTask = await createTask(taskData);
       return this.sendResponse(handler, newTask);
     } catch (error) {

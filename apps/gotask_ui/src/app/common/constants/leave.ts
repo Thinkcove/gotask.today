@@ -3,7 +3,7 @@ export const getPermissionColor = () => {
 };
 
 export const getLeaveColor = () => {
-  return "red";
+  return "#ff0000";
 };
 
 export enum LEAVE_TYPE {

@@ -14,11 +14,13 @@ import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useTranslations } from "next-intl";
-
 import {
   getProjectStoryById,
   deleteProjectStory,
-  getTasksByStory
+  getTasksByStory,
+  addCommentToProjectStory,
+  updateCommentOnProjectStory,
+  deleteCommentFromProjectStory
 } from "@/app/(portal)/projectStory/services/projectStoryActions";
 
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -30,13 +32,21 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
+import CommentSection from "@/app/component/comments/commentSection"; 
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  
 
-  const { data: story, isLoading } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
+  const {
+    data: story,
+    isLoading,
+    mutate
+  } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
     getProjectStoryById(storyId as string).then((res) => res?.data)
   );
 
@@ -54,7 +64,6 @@ const ProjectStoryDetail = () => {
       setIsDeleting(true);
       const response = await deleteProjectStory(storyId as string);
       const message = response?.message || t("Stories.success.deleted");
-
       setSnackbar({ open: true, message, severity: "success" });
 
       setTimeout(() => router.push(`/project/view/${projectId}/stories`), 500);
@@ -111,7 +120,6 @@ const ProjectStoryDetail = () => {
               <ArrowBack />
             </IconButton>
           </Tooltip>
-
           <Box>
             <Typography variant="h5" fontWeight={600} textTransform="capitalize">
               {story.title}
@@ -122,14 +130,10 @@ const ProjectStoryDetail = () => {
             />
           </Box>
         </Box>
-
-        {/* Right Section: Edit/Delete buttons */}
         <Box display="flex" gap={1}>
           <Tooltip title={t("Stories.editStory")}>
             <IconButton
-              onClick={() =>
-                router.push(`/project/view/${projectId}/stories/edit/${storyId}`)
-              }
+              onClick={() => router.push(`/project/view/${projectId}/stories/edit/${storyId}`)}
               color="primary"
             >
               <Edit />
@@ -153,18 +157,39 @@ const ProjectStoryDetail = () => {
           <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
             {t("Stories.descriptionLabel")}
           </Typography>
-          <Typography variant="body1" color="text.primary" sx={{ whiteSpace: "pre-line" }}>
-            {story.description || t("Stories.noDescription")}
-          </Typography>
-        </Box>
 
+          {story.description ? (
+            <RichTextReadOnly content={story.description} extensions={getTipTapExtensions()} />
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              {t("Stories.noDescription")}
+            </Typography>
+          )}
+        </Box>
         <LabelValueText
           label={t("Stories.createdAt")}
           value={<FormattedDateTime date={story.createdAt} />}
         />
-        <Divider sx={{ my: 3 }} />
 
-        {/* Tasks Section */}
+        <Divider sx={{ my: 3 }} />
+        <CommentSection
+          comments={story.comments || []}
+          onSave={async (html) => {
+            await addCommentToProjectStory(storyId as string, { comment: html });
+            await mutate();
+          }}
+          onUpdate={async (comment) => {
+            await updateCommentOnProjectStory(comment.id, { comment: comment.comment });
+            await mutate();
+          }}
+          onDelete={async (id) => {
+            await deleteCommentFromProjectStory(id);
+            await mutate();
+          }}
+        />
+
+        {/* Tasks */}
+        <Divider sx={{ my: 3 }} />
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h6" fontWeight={600}>
@@ -178,7 +203,6 @@ const ProjectStoryDetail = () => {
               {t("Stories.createTask")}
             </Button>
           </Box>
-
           {isTasksLoading ? (
             <CircularProgress size={24} />
           ) : tasks?.length > 0 ? (
@@ -212,7 +236,7 @@ const ProjectStoryDetail = () => {
         </Box>
       </Box>
 
-      {/* Delete Dialog */}
+      {/* Dialogs */}
       <CommonDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
@@ -225,7 +249,6 @@ const ProjectStoryDetail = () => {
         </Typography>
       </CommonDialog>
 
-      {/* Snackbar */}
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

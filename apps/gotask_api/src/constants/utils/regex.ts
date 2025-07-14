@@ -8,3 +8,8 @@ export const buildStartsWithRegex = (text: string) => {
 };
 
 export const dateRegex = /^\d{4}[-/]\d{2}[-/]\d{2}/;
+
+export const buildContainsRegex = (text: string): RegExp => {
+  const escaped = text.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
+  return new RegExp(escaped, "i");
+};

@@ -28,7 +28,9 @@ export const ASSET_TYPE = {
   LAPTOP: "Laptop",
   MOBILE: "Mobile",
   DESKTOP: "Desktop",
-  ACCESS_CARDS: "Access Card"
+  ACCESS_CARDS: "Access Card",
+  PRINTER: "Printer",
+  FINGERPRINT_SCANNER: "Finger Print Scanner"
 };
 
 export const MODE = {

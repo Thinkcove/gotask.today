@@ -50,6 +50,7 @@ const PermissionList = () => {
       severity: severity as SNACKBAR_SEVERITY
     });
   };
+
   const { data, mutate, isLoading } = useSWR("getpermission", fetchAllgetpermission);
 
   const displayData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
@@ -61,12 +62,17 @@ const PermissionList = () => {
 
   const handleCreatePermission = () => {
     if (user && user?.id) {
-      router.push(`/permission/create`);
+      router.push("/permission/create");
     }
   };
 
   const handleViewClick = (permission: PermissionData) => {
     router.push(`/permission/view/${permission.id}`);
+  };
+
+  const handleDeleteClick = (permission: PermissionData) => {
+    setSelectedPermission(permission);
+    setIsDeleteDialogOpen(true);
   };
 
   const handleClearFilters = () => {
@@ -75,14 +81,10 @@ const PermissionList = () => {
     setDateTo("");
   };
 
-  const handleDeleteClick = (permission: PermissionData) => {
-    setSelectedPermission(permission);
-    setIsDeleteDialogOpen(true);
-  };
-
   const handleSnackbarClose = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
+
   const handleDeleteConfirm = async () => {
     if (!selectedPermission) return;
 
@@ -119,25 +121,21 @@ const PermissionList = () => {
     });
   }, [displayData, userFilter, dateFrom, dateTo]);
 
-  // Use the common column configuration
-  const permissionColumns = useMemo(
-    () =>
-      getPermissionColumns({
-        onViewClick: handleViewClick,
-        onDeleteClick: handleDeleteClick,
-        isDeleting,
-        translations: {
-          username: transpermission("username"),
-          date: transpermission("date"),
-          starttime: transpermission("starttime"),
-          endtime: transpermission("endtime"),
-          actions: transpermission("actions"),
-          viewdetails: transpermission("viewdetails"),
-          deletepermission: transpermission("deletepermission")
-        }
-      }),
-    [isDeleting, transpermission]
-  );
+  // This is fine if getPermissionColumns is not expensive
+  const permissionColumns = getPermissionColumns({
+    onViewClick: handleViewClick,
+    onDeleteClick: handleDeleteClick,
+    isDeleting,
+    translations: {
+      username: transpermission("username"),
+      date: transpermission("date"),
+      starttime: transpermission("starttime"),
+      endtime: transpermission("endtime"),
+      actions: transpermission("actions"),
+      viewdetails: transpermission("viewdetails"),
+      deletepermission: transpermission("deletepermission")
+    }
+  });
 
   const hasActiveFilters = userFilter.length > 0 || !!dateFrom || !!dateTo;
 
@@ -159,12 +157,10 @@ const PermissionList = () => {
 
   return (
     <>
-      {/* Filter Component */}
-      {filteredPermissions?.length === 0 ? (
+      {!hasActiveFilters && filteredPermissions?.length === 0 ? (
         <EmptyState imageSrc={NoAssetsImage} message={transpermission("nodatafound")} />
       ) : (
         <>
-          {/* Filter Component */}
           <Box sx={{ pt: 2, pl: 2 }}>
             <PermissionFilter
               userFilter={userFilter}
@@ -226,12 +222,14 @@ const PermissionList = () => {
       >
         <Typography sx={{ pt: 2 }}>{transpermission("deleteconfirm")}</Typography>
       </CommonDialog>
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}
         severity={snackbar.severity}
         onClose={handleSnackbarClose}
       />
+
       <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
         <ActionButton
           label={transpermission("createpermission")}

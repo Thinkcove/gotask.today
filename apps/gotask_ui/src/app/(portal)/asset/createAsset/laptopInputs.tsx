@@ -1,11 +1,12 @@
 // LaptopInputs.tsx
 import React from "react";
-import { Box, Checkbox, FormControlLabel, Grid } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
+import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface LaptopInputsProps {
   formData: IAssetAttributes;
@@ -198,15 +199,6 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <FormField
-                  label={transasset("description")}
-                  type="text"
-                  placeholder={transasset("description")}
-                  value={formData.commentService}
-                  onChange={(val) => onChange("commentService", String(val))}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -226,6 +218,18 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                     />
                   }
                   label={transasset("antivirus")}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+                  {transasset("description")}
+                </Typography>
+                <ReusableEditor
+                  content={formData.commentService || ""}
+                  onChange={(html) => onChange("commentService", html)}
+                  placeholder={transasset("description")}
+                  readOnly={false}
+                  showSaveButton={false}
                 />
               </Grid>
             </>

@@ -280,7 +280,7 @@ UserRoutes.push({
 
 // Delete specific increment record by increment_id
 UserRoutes.push({
-  path: `/increments/{id}/{increment_id}`,
+  path: `/increments/{id}/{incrementId}`,
   method: API_METHODS.DELETE,
   handler: (request: Request, handler: ResponseToolkit) =>
     userController.deleteUserIncrement(new RequestHelper(request), handler),

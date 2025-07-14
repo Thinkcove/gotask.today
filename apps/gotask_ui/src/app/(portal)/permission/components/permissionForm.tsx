@@ -4,16 +4,16 @@ import { Box, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { PremissionFormProps } from "../interface/interface";
+import { PermissionFormProps } from "../interface/interface";
 import ReusableEditor from "@/app/component/richText/textEditor";
 
-function PremissionForm({
+function PermissionForm({
   formData,
   errors,
   onFormDataChange,
   isSubmitting,
   user
-}: PremissionFormProps) {
+}: PermissionFormProps) {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
   const handleDateChange = (
@@ -113,4 +113,4 @@ function PremissionForm({
   );
 }
 
-export default PremissionForm;
+export default PermissionForm;

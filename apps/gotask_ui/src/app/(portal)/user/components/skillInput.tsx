@@ -9,13 +9,7 @@ import useSWR from "swr";
 import Autocomplete from "@mui/material/Autocomplete";
 import { ISkill } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
-import {
-  createSkill,
-  deleteUserSkill,
-  fetchSkills,
-  updateUserSkill,
-  addUserSkills
-} from "../services/userAction";
+import { createSkill, deleteUserSkill, fetchSkills, addUserSkills } from "../services/userAction";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import env from "@/app/common/env";
@@ -37,11 +31,10 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
-  const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
 
   const [tempSkill, setTempSkill] = useState<ISkill>({
     name: "",
-    proficiency: 0,
+    proficiency: DEFAULT_PROFICIENCY,
     experience: undefined
   });
 
@@ -56,8 +49,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   );
 
   const openAddDialog = () => {
-    setTempSkill({ name: "", proficiency: 0 });
-    setCurrentEditIndex(null);
+    setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
     setDialogOpen(true);
   };
 
@@ -95,12 +87,10 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     if (!trimmed || !tempSkill.proficiency) return;
 
     const isDuplicate = skills.some(
-      (skill, idx) =>
-        skill.name.trim().toLowerCase() === trimmed.toLowerCase() && idx !== currentEditIndex
+      (skill) => skill.name.trim().toLowerCase() === trimmed.toLowerCase()
     );
-
     if (isDuplicate) {
-      setErrorDialogMessage(trans("skillalreadyexists"));
+      setErrorDialogMessage(trans("duplicateskills"));
       setErrorDialogOpen(true);
       return;
     }
@@ -113,33 +103,27 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     };
 
     try {
-      if (currentEditIndex !== null) {
-        const existing = updated[currentEditIndex];
-        Object.assign(existing, skillData);
-        if (existing.skill_id) await updateUserSkill(userId, existing.skill_id, existing);
-      } else {
-        const isNewToMaster = !options.some(
-          (option) => option.trim().toLowerCase() === trimmed.toLowerCase()
-        );
+      const isNewToMaster = !options.some(
+        (option) => option.trim().toLowerCase() === trimmed.toLowerCase()
+      );
 
-        if (isNewToMaster) {
-          await createSkill(trimmed);
-          await mutate();
-        }
+      if (isNewToMaster) {
+        await createSkill(trimmed);
+        await mutate();
+      }
 
-        const added = await addUserSkills(userId, [skillData]);
+      const added = await addUserSkills(userId, [skillData]);
 
-        if (added?.length) {
-          updated.unshift({ ...skillData, skill_id: added[0].skill_id });
-        }
+      if (added?.length) {
+        updated.unshift({ ...skillData, skill_id: added[0].skill_id });
       }
 
       onChange(updated);
       setDialogOpen(false);
       setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
-      setCurrentEditIndex(null);
     } catch {
-      console.error("Failed to save skill");
+      setErrorDialogMessage(trans("saveskill"));
+      setErrorDialogOpen(true);
     }
   };
 
@@ -156,7 +140,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   const resetDialogState = () => {
     setDialogOpen(false);
     setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
-    setCurrentEditIndex(null);
     setSkillErrors({});
   };
 
@@ -246,7 +229,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         open={dialogOpen}
         onClose={resetDialogState}
         onSubmit={handleSave}
-        title={currentEditIndex !== null ? trans("editskill") : trans("addskill")}
+        title={trans("addskill")}
         submitLabel={trans("save")}
         cancelLabel={trans("cancel")}
       >
@@ -291,14 +274,33 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 setSkillErrors((prev) => ({ ...prev, name: "" }));
               }}
               onChange={(_, newValue) => {
-                let name =
+                const name =
                   typeof newValue === "string" && newValue.startsWith("__add__")
                     ? newValue.replace("__add__", "")
                     : newValue;
 
-                if (name == null) name = "";
+                if (!name) return;
 
-                setTempSkill({ ...tempSkill, name });
+                const trimmed = name.trim().toLowerCase();
+
+                const alreadyAdded = skills.some(
+                  (skill) => skill.name.trim().toLowerCase() === trimmed
+                );
+
+                if (alreadyAdded) {
+                  setErrorDialogMessage(trans("duplicateskills"));
+                  setErrorDialogOpen(true);
+                  return;
+                }
+
+                const isAddOption = typeof newValue === "string" && newValue.startsWith("__add__");
+
+                if (isAddOption) {
+                  setTempSkill({ name: name.trim(), proficiency: DEFAULT_PROFICIENCY });
+                  setDialogOpen(true);
+                } else {
+                  setTempSkill({ ...tempSkill, name: name.trim() });
+                }
 
                 setSkillErrors((prev) => ({ ...prev, name: "" }));
               }}

@@ -16,6 +16,7 @@ export interface TimeLogGridProps {
   toDate: string;
   showTasks: boolean;
   selectedProjects: string[];
+  selectedUsers: string[];
 }
 
 export interface User {

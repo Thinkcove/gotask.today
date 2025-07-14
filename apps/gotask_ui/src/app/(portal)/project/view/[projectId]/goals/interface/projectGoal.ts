@@ -101,7 +101,7 @@ export interface HistoryData {
 export interface UpdateHistoryItem {
   user_id: string;
   createdAt: string;
-  history_data: HistoryData;
+  formatted_history: HistoryData;
 }
 
 export interface ProjectGoalHistory {

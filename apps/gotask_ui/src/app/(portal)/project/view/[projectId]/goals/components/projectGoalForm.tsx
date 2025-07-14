@@ -23,7 +23,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
         <Grid container spacing={3}>
           <Grid item xs={12} sm={4}>
             <FormField
-              label={transGoal("goaltitle")}
+              label={`${transGoal("goaltitle")} ${transGoal("required")}`}
               placeholder={transGoal("goaltitlePlaceholder")}
               type="text"
               value={goalData.goalTitle}
@@ -33,7 +33,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormField
-              label={transGoal("startdateinput")}
+              label={`${transGoal("startdateinput")}  ${transGoal("required")}`}
               type="date"
               inputType="date"
               placeholder={transGoal("startdateinput")}
@@ -47,12 +47,11 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
                   }
                 }
               }}
-              required
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormField
-              label={transGoal("enddateinput")}
+              label={`${transGoal("enddateinput")} ${transGoal("required")}`}
               type="date"
               inputType="date"
               placeholder={transGoal("enddateinput")}
@@ -66,13 +65,12 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
                   }
                 }
               }}
-              required
             />
           </Grid>
 
           <Grid item xs={12} sm={4}>
             <FormField
-              label={transGoal("status")}
+              label={`${transGoal("status")}  ${transGoal("required")}`}
               type="select"
               placeholder={transGoal("statusPlaceholder")}
               options={statusOptions}
@@ -83,7 +81,7 @@ const ProjectGoalForm: React.FC<ProjectGoalFormProps> = ({
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormField
-              label={transGoal("priority")}
+              label={`${transGoal("priority")}  ${transGoal("required")}`}
               type="select"
               placeholder={transGoal("priorityPlaceholder")}
               options={priorityOptions}

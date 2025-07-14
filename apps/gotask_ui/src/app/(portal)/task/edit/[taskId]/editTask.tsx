@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { ArrowBack, History } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
-import TimeSpentPopup from "../timeSpentPopup";
 import HistoryDrawer from "../taskHistory";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -20,7 +19,6 @@ import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import { IFormField, ITask, Project, User } from "../../interface/taskInterface";
 import { KeyedMutator } from "swr";
 import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields";
-import TimeProgressBar from "../timeProgressBar";
 
 interface EditTaskProps {
   data: ITask;
@@ -53,7 +51,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   });
 
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handleInputChange = (name: string, value: string | Project[] | User[]) => {
     if (!isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, name)) {
@@ -64,14 +61,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         }));
       }
     }
-  };
-
-  const alreadyExists = data?.time_spent?.some(
-    (entry) => entry.date === new Date().toISOString().split("T")[0]
-  );
-
-  const handleProgressClick = () => {
-    if (!alreadyExists) setIsPopupOpen(true);
   };
 
   const handleSubmit = async () => {
@@ -211,19 +200,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           </Box>
         )}
 
-        {data.status !== TASK_STATUS.TO_DO && (
-          <TimeProgressBar
-            estimatedTime={data.estimated_time || "0h0m"}
-            timeSpentTotal={data.time_spent_total || "0h0m"}
-            dueDate={data.user_estimated || "0d0h0m"}
-            startDate={data.start_date || ""}
-            timeEntries={data.time_spent || []}
-            canLogTime={!alreadyExists}
-            variation={data.variation ? String(data.variation) : "0d0h0m"}
-            onClick={handleProgressClick}
-          />
-        )}
-
         <Box sx={{ px: 2, pb: 2, maxHeight: "calc(100vh - 250px)", overflowY: "auto" }}>
           <TaskInput
             formData={formData}
@@ -234,15 +210,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             isStartDateLocked={!!data.start_date}
           />
         </Box>
-
-        <TimeSpentPopup
-          isOpen={isPopupOpen}
-          onClose={() => setIsPopupOpen(false)}
-          originalEstimate={data.estimated_time || "0d0h0m"}
-          taskId={data.id}
-          dueDate={data.due_date || ""}
-          mutate={mutate}
-        />
 
         <CustomSnackbar
           open={snackbar.open}

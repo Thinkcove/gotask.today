@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+"use client";
+import React, { useState, useRef, Suspense } from "react";
 import {
   Drawer,
   List,
@@ -20,17 +21,19 @@ import SecurityIcon from "@mui/icons-material/Security";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import menuItemsData from "./menuItems.json";
-import { useRouter, usePathname } from "next/navigation";
-import { Theme } from "@mui/material/styles";
-import UserInfoCard from "../header/userMenu";
-import { useUser } from "@/app/userContext";
-import { hasPermission } from "@/app/common/utils/userPermission";
-import { ACTIONS, ActionType, ApplicationName } from "@/app/common/utils/permission";
 import ChatIcon from "@mui/icons-material/Chat";
-import { UploadFileOutlined } from "../../../../node_modules/@mui/icons-material/index";
+import { UploadFileOutlined } from "@mui/icons-material";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import InsightsIcon from "@mui/icons-material/Insights";
+import { Theme } from "@mui/material/styles";
+import { useRouter, usePathname } from "next/navigation";
+import { useUser } from "@/app/userContext";
+import { hasPermission } from "@/app/common/utils/userPermission";
+import { ACTIONS, ApplicationName, ActionType } from "@/app/common/utils/permission";
+import menuItemsData from "./menuItems.json";
+
+// Lazy load user info
+const UserInfoCard = React.lazy(() => import("../header/userMenu"));
 
 const iconMap: Record<string, React.ReactNode> = {
   DashboardIcon: <GridViewIcon />,
@@ -57,6 +60,7 @@ const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const drawerRef = useRef<HTMLDivElement>(null);
+
   const accessDetails = (user?.role?.accessDetails ?? []) as {
     id: string;
     name: string;
@@ -67,13 +71,18 @@ const Sidebar: React.FC = () => {
     }[];
   }[];
 
-  // Only include menu items the user has READ access to
-  const filteredMenuItems = menuItemsData.filter((item) => {
-    if (!item.access) return true; // Allow items like Dashboard
-    return hasPermission(accessDetails, item.access as ApplicationName, ACTIONS.READ);
-  });
+  // Filter menu items only when Sidebar renders
+  const filteredMenuItems = [];
+  for (const item of menuItemsData) {
+    if (
+      !item.access ||
+      hasPermission(accessDetails, item.access as ApplicationName, ACTIONS.READ)
+    ) {
+      filteredMenuItems.push(item);
+    }
+  }
 
-  const selectedIndex = menuItemsData.findIndex((item) => pathname === item.path);
+  const selectedIndex = filteredMenuItems.findIndex((item) => pathname === item.path);
 
   const handleListItemClick = (index: number, path: string) => {
     router.push(path);
@@ -84,12 +93,12 @@ const Sidebar: React.FC = () => {
     setOpen((prev) => !prev);
   };
 
-  // Smooth hover logic
+  // Hover logic
   let closeTimeout: NodeJS.Timeout;
 
   const handleMouseLeave = () => {
     if (!isMobile) {
-      closeTimeout = setTimeout(() => setOpen(false), 200); // small delay
+      closeTimeout = setTimeout(() => setOpen(false), 200);
     }
   };
 
@@ -102,7 +111,6 @@ const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Desktop Menu Icon */}
       {!open && (
         <IconButton
           onClick={toggleSidebar}
@@ -120,7 +128,6 @@ const Sidebar: React.FC = () => {
         </IconButton>
       )}
 
-      {/* Sidebar Drawer */}
       <Drawer
         variant={isMobile ? "temporary" : "persistent"}
         open={open}
@@ -197,9 +204,10 @@ const Sidebar: React.FC = () => {
             </List>
           </Box>
 
-          {/* User Info Card */}
           <Box sx={{ marginTop: "auto" }}>
-            <UserInfoCard />
+            <Suspense fallback={null}>
+              <UserInfoCard />
+            </Suspense>
           </Box>
         </div>
       </Drawer>

@@ -201,7 +201,6 @@ export const CreateAsset: React.FC = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button
             variant="outlined"
-            disabled={!selectedAssetType}
             sx={{
               borderRadius: "30px",
               color: "black",

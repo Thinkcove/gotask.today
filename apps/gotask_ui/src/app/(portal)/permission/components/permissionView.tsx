@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Grid, IconButton, Paper } from "@mui/material";
+import { Typography, Grid, IconButton, Paper, Box } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import LabelValueText from "@/app/component/text/labelValueText";
 import { useTranslations } from "next-intl";
@@ -7,6 +7,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionDetailsProps } from "../interface/interface";
 import { formatDate, formatTime } from "@/app/common/utils/dateTimeUtils";
 import { Delete } from "@mui/icons-material";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import { RichTextReadOnly } from "mui-tiptap";
 
 const PermissionDetails: React.FC<PermissionDetailsProps> = ({
   permission,
@@ -14,6 +16,7 @@ const PermissionDetails: React.FC<PermissionDetailsProps> = ({
   handleDeleteClick
 }) => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
+
   return (
     <Paper sx={{ p: 4, pb: 8, borderRadius: 4, border: "1px solid #e0e0e0" }}>
       {/* Header */}
@@ -32,7 +35,18 @@ const PermissionDetails: React.FC<PermissionDetailsProps> = ({
           </IconButton>
         </Grid>
       </Grid>
+      {permission.comments && (
+        <Box mb={3}>
+          <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+            {transpermission("labelreson")}
+          </Typography>
 
+          <RichTextReadOnly
+            content={permission.comments || ""}
+            extensions={getTipTapExtensions()}
+          />
+        </Box>
+      )}
       {/* Permission Details */}
       <Grid container spacing={2} mb={3}>
         <Grid item xs={12} sm={6} md={4}>

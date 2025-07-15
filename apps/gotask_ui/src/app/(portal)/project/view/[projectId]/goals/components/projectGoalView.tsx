@@ -128,15 +128,20 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
 
           <Box>
             <CommentSection
-              comments={(goalData.comments || []).map((goalComment: GoalComment, index) => ({
-                id: goalComment.id ? String(goalComment.id) : `temp${index}`,
-                comment: Array.isArray(goalComment.comments)
-                  ? goalComment.comments[0] || ""
-                  : goalComment.comments || "",
-                user_id: user?.id || "",
-                user_name: user?.name || "",
-                updatedAt: goalComment.updatedAt
-              }))}
+              comments={(goalData.comments || [])
+                .filter(
+                  (goalComment: GoalComment) =>
+                    goalComment.id !== undefined && goalComment.id !== null
+                )
+                .map((goalComment: GoalComment) => ({
+                  id: String(goalComment.id),
+                  comment: Array.isArray(goalComment.comments)
+                    ? goalComment.comments[0] || ""
+                    : goalComment.comments || "",
+                  user_id: user?.id || "",
+                  user_name: user?.name || "",
+                  updatedAt: goalComment.updatedAt
+                }))}
               onSave={async (html) => {
                 await handleSaveComment({
                   goal_id: goalData.id,

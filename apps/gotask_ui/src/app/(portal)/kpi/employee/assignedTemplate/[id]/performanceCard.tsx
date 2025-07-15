@@ -4,23 +4,38 @@ import React from "react";
 import { Grid, Box, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useRouter } from "next/navigation";
 import { KpiAssignment } from "../../../service/templateInterface";
 
 interface PerformanceCardsProps {
   performance: KpiAssignment["performance"];
-  assignmentId: string;
 }
 
 const PerformanceCards: React.FC<PerformanceCardsProps> = ({ performance }) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
+  const router = useRouter();
 
   if (!Array.isArray(performance) || performance.length === 0) return null;
+
+  const handleCardClick = (id: string | undefined) => {
+    if (id) {
+      router.push(`/kpi/employee/performance/${id}`);
+    }
+  };
 
   return (
     <Grid item xs={12}>
       <Grid container spacing={2}>
         {performance.map((entry, idx) => (
-          <Grid item xs={12} sm={6} md={3} key={idx}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={3}
+            key={entry.performance_id ?? idx}
+            onClick={() => handleCardClick(entry.performance_id)}
+            sx={{ cursor: entry.performance_id ? "pointer" : "default" }}
+          >
             <Box
               sx={{
                 p: 2,

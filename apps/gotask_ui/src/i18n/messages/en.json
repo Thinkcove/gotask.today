@@ -1063,7 +1063,7 @@
     "nodatafound": "No data found.",
     "viewdetails": "View Details",
     "startdate": "Start Date",
-    "startdaterequired": "Start date is required",
+    "startdaterequired": "Permission on is required",
     "starttimerequired": "Start time is required",
     "endtimerequired": "End time is required",
     "starttimebeforeendtime": "Start time must be before end time on the same day",

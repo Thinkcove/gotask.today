@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { KpiAssignment, IKpiPerformance } from "../../../service/templateInterface";
 import KpiFormFields from "../../addTemplate/[id]/assignmentInput";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import { updateKpiAssignment } from "../../../service/templateAction";
+import { addPerformanceToAssignment } from "../../../service/templateAction";
 import { useUser } from "@/app/userContext";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
@@ -63,11 +63,11 @@ const UpdateScorePage: React.FC<UpdateProps> = ({ assignment, mutate, transkpi }
   const handleUpdate = async () => {
     if (!validateForm()) return;
     try {
-      await updateKpiAssignment(assignment.assignment_id, {
-        ...form,
-        comments: typeof form.comments === "string" ? [form.comments] : form.comments,
-        authUserId: loginUser?.id
-      });
+      await addPerformanceToAssignment(
+        assignment.assignment_id,
+        form.performance ?? [],
+        loginUser?.id || ""
+      );
 
       mutate();
       setSnackbarMessage(transkpi("updatesuccessassignment"));
@@ -104,7 +104,7 @@ const UpdateScorePage: React.FC<UpdateProps> = ({ assignment, mutate, transkpi }
           {transkpi("cancel")}
         </Button>
         <Button variant="contained" sx={{ backgroundColor: "#741B92" }} onClick={handleUpdate}>
-          {transkpi("update")}
+          {transkpi("add")}
         </Button>
       </Box>
 

@@ -180,7 +180,7 @@ export const fetchAllKpiAssignments = async () => {
         assigned_by: assignment.assigned_by,
         reviewer_id: assignment.reviewer_id,
         status: assignment.status,
-        actual_value: data.actual_value,
+        actual_value: assignment.actual_value,
         comments: assignment.comments || [],
         change_History: assignment.change_History || [],
         performance: assignment.performance || []
@@ -211,6 +211,26 @@ export const fetchKpiAssignmentById = async (assignmentId: string) => {
       comments: data.comments || [],
       change_History: data.change_History || [],
       performance: data.performance || []
+    };
+  });
+};
+
+// Fetch Performance by ID
+export const fetchPerformanceById = async (performanceId: string) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/getPerformance/${performanceId}`;
+    const response = await getData(url, token);
+    const data = response.data || response;
+
+    return {
+      performance_id: data.performance?.performance_id,
+      percentage: data.performance?.percentage,
+      start_date: data.performance?.start_date,
+      end_date: data.performance?.end_date,
+      added_by: data.performance?.added_by,
+      comment: data.performance?.comment || "",
+      signature: data.performance?.signature || "",
+      assignment: data.assignment || null
     };
   });
 };
@@ -283,7 +303,20 @@ export const fetchTemplatesByUserId = async (userId: string) => {
   });
 };
 
-// SWR-compatible fetcher
+// Add performance by assignment id
+export const addPerformanceToAssignment = async (
+  assignment_id: string,
+  performance: IKpiPerformance[],
+  authUserId: string
+) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/addPerformance/${assignment_id}`;
+    const payload = { performance, authUserId };
+    const response = await putData(url, payload, token);
+    return response.data || response;
+  });
+};
+
 export const fetcher = async () => {
   return fetchTemplates();
 };

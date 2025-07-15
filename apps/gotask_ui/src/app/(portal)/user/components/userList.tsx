@@ -16,25 +16,52 @@ import { User } from "../interfaces/userInterface";
 import UserStatusFilter from "@/app/component/filters/userFilter";
 import { STATUS_CONFIG, getUserStatusColor } from "@/app/common/constants/status";
 import { useRouter } from "next/navigation";
+import { getStoredObj, removeStorage, setStorage } from "../../access/utils/storage";
 
 const UserList = () => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [userStatusFilter, setUserStatusFilter] = useState<string[]>(["All"]);
-  const { data: users } = useSWR("fetch-user", fetcherUserList);
   const router = useRouter();
+
+  const savedFilters = getStoredObj("userListFilter") || {};
+
+  const [searchTerm, _setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
+  const [userStatusFilter, _setUserStatusFilter] = useState<string[]>(
+    savedFilters.userStatusFilter || ["All"]
+  );
+
+  //single helper to save current filters
+  const saveFilters = (filters: { searchTerm?: string; userStatusFilter?: string[] }) => {
+    setStorage("userListFilter", {
+      searchTerm: filters.searchTerm ?? searchTerm,
+      userStatusFilter: filters.userStatusFilter ?? userStatusFilter
+    });
+  };
+
+  //shorter wrapped setters
+  const setSearchTerm = (val: string) => {
+    _setSearchTerm(val);
+    saveFilters({ searchTerm: val });
+  };
+
+  const setUserStatusFilter = (val: string[]) => {
+    _setUserStatusFilter(val);
+    saveFilters({ userStatusFilter: val });
+  };
+
+  const { data: users } = useSWR("fetch-user", fetcherUserList);
 
   const filteredUsers =
     users
-      ?.filter((user: User) => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      ?.filter((user: User) => user.name?.toLowerCase().includes(searchTerm.toLowerCase()))
       ?.filter((user: User) => {
-        if (userStatusFilter.length === 0 || userStatusFilter.includes(STATUS_CONFIG.ALL_STATUS))
+        if (userStatusFilter.length === 0 || userStatusFilter.includes(STATUS_CONFIG.ALL_STATUS)) {
           return true;
-        return userStatusFilter.includes(
-          user.status ? STATUS_CONFIG.STATUS_OPTIONS[0].id : STATUS_CONFIG.STATUS_OPTIONS[1].id
-        );
+        }
+        const userStatusId = user.status
+          ? STATUS_CONFIG.STATUS_OPTIONS[0].id
+          : STATUS_CONFIG.STATUS_OPTIONS[1].id;
+        return userStatusFilter.includes(userStatusId);
       }) || null;
 
   return (
@@ -76,7 +103,11 @@ const UserList = () => {
               setUserStatusFilter(newValue.filter((val) => val !== "All"));
             }
           }}
-          onClearStatus={() => setUserStatusFilter(["All"])}
+          onClearStatus={() => {
+            setUserStatusFilter(["All"]);
+            setSearchTerm("");
+            removeStorage("userListFilter");
+          }}
           transuser={transuser}
         />
       </Box>

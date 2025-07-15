@@ -76,7 +76,7 @@ const EditStoryForm: React.FC = () => {
       setDescriptionError("");
     }
     
-
+    
     // Validate status transition
     const originalStatus = story?.status as StoryStatus;
     const allowedNextStatuses = STORY_STATUS_TRANSITIONS[originalStatus] || [];
@@ -242,6 +242,7 @@ const EditStoryForm: React.FC = () => {
           value={status ?? STORY_STATUS.TO_DO}
           onChange={(val) => setStatus(val as StoryStatus)}
           options={statusOptions}
+          disableClearable={true} 
         />
 
         <Box>

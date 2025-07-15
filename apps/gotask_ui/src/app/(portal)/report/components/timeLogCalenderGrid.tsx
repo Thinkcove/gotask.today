@@ -9,7 +9,8 @@ import {
   Paper,
   Link,
   Box,
-  Typography
+  Typography,
+  Grid
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 import {
@@ -33,6 +34,8 @@ import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
 import { formatPermissionDuration } from "@/app/common/utils/leaveCalculate";
 import { fetchAllPermissions } from "../services/reportService";
 import { getDailyLogCellStyle } from "./logStyle";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -382,7 +385,18 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
       return value ? `${value}h` : "";
     }
   };
+  const hasData =
+    filteredData.length > 0 || filteredLeaves.length > 0 || filteredPermissions.length > 0;
 
+  if (!hasData) {
+    return (
+      <Box sx={{ p: 4, textAlign: "center" }}>
+        <Grid item xs={12}>
+          <EmptyState imageSrc={NoSearchResultsImage} message={transreport("nodata")} />
+        </Grid>
+      </Box>
+    );
+  }
   return (
     <>
       {singleProjectName && (

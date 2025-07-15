@@ -39,6 +39,7 @@ interface FormFieldProps {
   sx?: SxProps<Theme>;
   min?: number;
   max?: number;
+  disableClearable?: boolean;
 }
 
 const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function FormField(
@@ -60,7 +61,8 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
     inputProps,
     sx,
     min,
-    max
+    max,
+    disableClearable = false
   },
   ref
 ) {
@@ -208,6 +210,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(function Fo
             }}
             isOptionEqualToValue={(option, val) => option.id === val.id}
             disabled={disabled}
+            disableClearable={disableClearable}
             ListboxProps={{
               style: { maxHeight: 200, overflowY: "auto" }
             }}

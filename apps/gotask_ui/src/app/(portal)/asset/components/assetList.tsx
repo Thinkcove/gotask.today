@@ -10,7 +10,12 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
-import { getAssetColumns, IAssetDisplayRow, issueStatuses } from "../assetConstants";
+import {
+  assetListFilters,
+  getAssetColumns,
+  IAssetDisplayRow,
+  issueStatuses
+} from "../assetConstants";
 import AssetIssueCards from "../createIssues/issuesCard";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
@@ -23,35 +28,67 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 import { useAllUsers } from "../../task/service/taskAction";
 import { User } from "../../task/interface/taskInterface";
+import { getStoredObj, removeStorage, setStorage } from "@/app/(portal)/access/utils/storage";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";
 }
 
 export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) => {
+  const FILTERS_STORAGE_KEY = assetListFilters;
+
+  const updateFilter = <T,>(
+    key: string,
+    value: T,
+    setter: React.Dispatch<React.SetStateAction<T>>
+  ) => {
+    setter(value);
+    const current = getStoredObj(FILTERS_STORAGE_KEY) || {};
+    current[key] = value;
+    setStorage(FILTERS_STORAGE_KEY, current);
+  };
+  const savedFilters = getStoredObj(FILTERS_STORAGE_KEY) || {};
+
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [view, setView] = useState<"assets" | "issues">(initialView);
-  const [assignedToFilter, setAssignedToFilter] = useState<string[]>([]);
-  const [modelNameFilter, setModelNameFilter] = useState<string[]>([]);
-  const [searchText, setSearchText] = useState<string>("");
   const router = useRouter();
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [warrantyDateFrom, setWarrantyDateFrom] = useState<string>("");
-  const [warrantyDateTo, setWarrantyDateTo] = useState<string>("");
-  const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>([]);
-  const [sortKey, setSortKey] = useState("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(SortOrder.DESC);
-  const [assetAllocationFilter, setAssetAllocationFilter] = useState<string[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
-  const [assetTypeFilter, setAssetTypeFilter] = useState<string[]>([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success" as "success" | "error" | "info" | "warning"
   });
-  const [page, setPage] = useState<number>(PAGE_OPTIONS.ZERO);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(PAGE_OPTIONS.DEFAULT_ROWS_25);
+
+  const [assignedToFilter, setAssignedToFilter] = useState<string[]>(
+    savedFilters.assignedToFilter || []
+  );
+  const [modelNameFilter, setModelNameFilter] = useState<string[]>(
+    savedFilters.modelNameFilter || []
+  );
+  const [searchText, setSearchText] = useState<string>(savedFilters.searchText || "");
+  const [warrantyDateFrom, setWarrantyDateFrom] = useState<string>(
+    savedFilters.warrantyDateFrom || ""
+  );
+  const [warrantyDateTo, setWarrantyDateTo] = useState<string>(savedFilters.warrantyDateTo || "");
+  const [systemTypeFilter, setSystemTypeFilter] = useState<string[]>(
+    savedFilters.systemTypeFilter || []
+  );
+  const [assetAllocationFilter, setAssetAllocationFilter] = useState<string[]>(
+    savedFilters.assetAllocationFilter || []
+  );
+  const [assetTypeFilter, setAssetTypeFilter] = useState<string[]>(
+    savedFilters.assetTypeFilter || []
+  );
+  const [sortKey, setSortKey] = useState<string>(savedFilters.sortKey || "createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    savedFilters.sortOrder || SortOrder.DESC
+  );
+  const [page, setPage] = useState<number>(savedFilters.page || 0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(
+    savedFilters.rowsPerPage || PAGE_OPTIONS.DEFAULT_ROWS_25
+  );
 
   const filters: Record<string, unknown> = {};
 
@@ -176,6 +213,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     setSystemTypeFilter([]);
     setAssetAllocationFilter([]);
     setAssetTypeFilter([]);
+    removeStorage(FILTERS_STORAGE_KEY);
   };
 
   const handleDownload = () => {
@@ -209,7 +247,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           ) : (
             <SearchBar
               value={searchText}
-              onChange={setSearchText}
+              onChange={(val) => updateFilter("searchText", val, setSearchText)}
               placeholder={transasset("searchAsset")}
             />
           )}
@@ -237,24 +275,30 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               modelNameFilter={modelNameFilter}
               assignedToFilter={assignedToFilter}
               allUsers={allUsers.map((u: User) => u.name)}
-              onAssignedToChange={setAssignedToFilter}
               onClearFilters={clearAssetFilters}
               trans={transasset}
               dateFrom={warrantyDateFrom}
               dateTo={warrantyDateTo}
-              onDateChange={(from, to) => {
-                setWarrantyDateFrom(from);
-                setWarrantyDateTo(to);
-              }}
               systemTypeFilter={systemTypeFilter}
               allSystemTypes={allSystemTypes}
-              onSystemTypeChange={setSystemTypeFilter}
               assetAllocationFilter={assetAllocationFilter}
-              onAssetAllocationChange={setAssetAllocationFilter}
               assetTypeFilter={assetTypeFilter}
               allAssetTypes={allTypes.map((u: IAssetType) => u.name)}
-              onAssetTypeChange={setAssetTypeFilter}
               loading={showInitialSkeleton}
+              onAssignedToChange={(val) =>
+                updateFilter("assignedToFilter", val, setAssignedToFilter)
+              }
+              onSystemTypeChange={(val) =>
+                updateFilter("systemTypeFilter", val, setSystemTypeFilter)
+              }
+              onAssetTypeChange={(val) => updateFilter("assetTypeFilter", val, setAssetTypeFilter)}
+              onAssetAllocationChange={(val) =>
+                updateFilter("assetAllocationFilter", val, setAssetAllocationFilter)
+              }
+              onDateChange={(from, to) => {
+                updateFilter("warrantyDateFrom", from, setWarrantyDateFrom);
+                updateFilter("warrantyDateTo", to, setWarrantyDateTo);
+              }}
             />
           ) : (
             <AssetFilters

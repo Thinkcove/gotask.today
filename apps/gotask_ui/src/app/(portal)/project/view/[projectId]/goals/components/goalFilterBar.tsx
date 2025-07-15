@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Divider, IconButton, Link } from "@mui/material";
+import { Box, IconButton, Link } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import SearchBar from "@/app/component/searchBar/searchBar";
@@ -22,17 +22,22 @@ const GoalFilterBar: React.FC<GoalFiltersBar> = ({
   filterpriority,
   filterstatus
 }) => {
+  const filtersApplied =
+    (statusFilter && statusFilter.length > 0) ||
+    (severityFilter && severityFilter.length > 0) ||
+    !!searchTerm;
+
   return (
-    <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={2}>
+    <Box px={2} pt={3}>
       <Box
         display="flex"
-        gap={{ xs: 0.5, sm: 1 }}
-        flexDirection={{ xs: "column", sm: "row" }}
-        alignItems={{ xs: "stretch", sm: "center" }}
-        sx={{ width: "100%" }}
+        flexDirection={{ xs: "column", md: "row" }}
+        alignItems={{ xs: "stretch", md: "center" }}
+        justifyContent="flex-start"
+        gap={2}
       >
         {/* Back + Search */}
-        <Box display="flex" gap={1} alignItems="center" sx={{ width: { xs: "100%", sm: "auto" } }}>
+        <Box display="flex" flexDirection="row" alignItems="center" gap={1} width="100%">
           <IconButton color="primary" onClick={onBack}>
             <ArrowBack />
           </IconButton>
@@ -51,40 +56,48 @@ const GoalFilterBar: React.FC<GoalFiltersBar> = ({
             />
           </Box>
         </Box>
-        <Divider orientation="vertical" sx={{ pr: 2, height: 30 }} />
 
-        {/* Filters */}
+        {/* Filters Row - horizontal scroll */}
         <Box
           display="flex"
-          alignItems="center"
-          gap={{ xs: 1, sm: 2 }}
-          px={{ xs: 8, sm: 2 }}
-          py={{ xs: 1, sm: 1 }}
-          justifyContent="flex-start"
-          flexWrap="wrap"
-          mt={{ xs: 1, sm: 0 }}
+          flexDirection="row"
+          flexWrap="nowrap"
+          overflow="auto"
+          gap={2}
           sx={{
-            width: "100%",
-            "& .MuiFormControl-root": {
-              minWidth: { xs: "auto", sm: "120px" },
-              maxWidth: { xs: "auto", sm: "none" }
-            }
+            flexGrow: 1,
+            minWidth: 0,
+            mt: { xs: 1, md: 0 },
+            "&::-webkit-scrollbar": { display: "none" },
+            scrollbarWidth: "none"
           }}
         >
-          <FilterDropdown
-            label={filterstatus}
-            options={statusOptions}
-            selected={statusFilter}
-            onChange={onStatusChange}
-          />
-          <FilterDropdown
-            label={filterpriority}
-            options={priorityOptions}
-            selected={severityFilter}
-            onChange={onSeverityChange}
-          />
-          {showClear && (
-            <Box sx={{ flexShrink: 0 }}>
+          <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+            <FilterDropdown
+              label={filterstatus}
+              options={statusOptions}
+              selected={statusFilter}
+              onChange={onStatusChange}
+            />
+          </Box>
+          <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+            <FilterDropdown
+              label={filterpriority}
+              options={priorityOptions}
+              selected={severityFilter}
+              onChange={onSeverityChange}
+            />
+          </Box>
+
+          {showClear && filtersApplied && (
+            <Box
+              sx={{
+                flexShrink: 0,
+                display: { xs: "none", md: "flex" },
+                alignItems: "center",
+                pl: 1
+              }}
+            >
               <Link
                 component="button"
                 onClick={onClearFilters}
@@ -100,6 +113,32 @@ const GoalFilterBar: React.FC<GoalFiltersBar> = ({
             </Box>
           )}
         </Box>
+
+        {/* Clear All - visible separately on mobile */}
+        {showClear && filtersApplied && (
+          <Box
+            sx={{
+              mt: 1,
+              mb: 1,
+              display: { xs: "flex", md: "none" },
+              justifyContent: "flex-end",
+              width: "100%"
+            }}
+          >
+            <Link
+              component="button"
+              onClick={onClearFilters}
+              underline="always"
+              sx={{
+                fontSize: "1rem",
+                color: "primary.main",
+                whiteSpace: "nowrap"
+              }}
+            >
+              {clearText}
+            </Link>
+          </Box>
+        )}
       </Box>
     </Box>
   );

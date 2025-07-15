@@ -153,10 +153,7 @@ const CreateIssue: React.FC = () => {
                 color: "white",
                 px: 2,
                 textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201)"
-                }
+                fontWeight: "bold"
               }}
               onClick={handleSubmit}
             >

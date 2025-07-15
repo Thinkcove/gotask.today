@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Link, Skeleton } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
-import { ALLOCATION } from "../assetConstants";
+import { ALLOCATION, NOT_UTILIZED } from "../assetConstants";
 
 interface Props {
   modelNameFilter: string[];
@@ -56,6 +56,8 @@ const AssetFilters: React.FC<Props> = ({
   onAssetTypeChange,
   loading = false
 }) => {
+  const disableAssignedToFilter = assetAllocationFilter?.includes(NOT_UTILIZED);
+
   const appliedFilterCount =
     (hideModelNameFilter ? 0 : modelNameFilter.length > 0 ? 1 : 0) +
     (hideAssignedToFilter ? 0 : assignedToFilter.length > 0 ? 1 : 0) +
@@ -103,12 +105,30 @@ const AssetFilters: React.FC<Props> = ({
               />
             )}
             {!hideAssignedToFilter && (
-              <FilterDropdown
-                label={trans("assignedTo")}
-                options={allUsers}
-                selected={assignedToFilter}
-                onChange={onAssignedToChange}
-              />
+              <Box sx={{ position: "relative", width: "220px" }}>
+                <FilterDropdown
+                  label={trans("assignedTo")}
+                  options={allUsers}
+                  selected={assignedToFilter}
+                  onChange={onAssignedToChange}
+                />
+
+                {disableAssignedToFilter && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: 1,
+                      backgroundColor: "rgba(255, 255, 255, 0.6)",
+                      zIndex: 2,
+                      cursor: "not-allowed"
+                    }}
+                  />
+                )}
+              </Box>
             )}
             {onDateChange && (
               <DateDropdown

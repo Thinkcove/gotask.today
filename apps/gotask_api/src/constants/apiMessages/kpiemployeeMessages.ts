@@ -7,7 +7,10 @@ export const KpiAssignmentMessages = {
     EMPLOYEE_SELF_ASSIGN_ONLY: "Employees can only assign KPIs to themselves",
     FAILED: "Failed to create KPI assignment",
     SUCCESS: "KPI assignment created successfully",
-    INVALID_USER_IDS: "One or more user IDs not found"
+    INVALID_USER_IDS: "One or more user IDs not found",
+    ASSIGNMENT_ID_REQUIRED: "assignment_id is required in params",
+    PERFORMANCE_ID: "performance array is required in payload",
+    USER_ID: "authUserId is required in payload"
   },
   FETCH: {
     REQUIRED: "Employee ID is required to fetch KPI assignments",
@@ -20,7 +23,9 @@ export const KpiAssignmentMessages = {
     REVIEWER_NOT_UPDATABLE: "Reviewer cannot be updated once assigned.",
     FAILED: "Failed to fetch templates for user.",
     ASSIGN_ID: "assignment_id is required in path",
-    USER_ID: "authUserId is required in payload"
+    USER_ID: "authUserId is required in payload",
+    PERFORMANCE_ID: "Performance id is required",
+    FETCH_FAILED: "Failed to fetch the performance"
   },
   UPDATE: {
     EMPLOYEE_OWN_ONLY: "Employees can only update their own KPI assignments",
@@ -28,7 +33,8 @@ export const KpiAssignmentMessages = {
     NOT_FOUND: "KPI assignment not found for update",
     FAILED: "Failed to update KPI assignment",
     SUCCESS: "KPI assignment updated successfully",
-    INVALID_USER_IDS: "One or more user IDs not found"
+    INVALID_USER_IDS: "One or more user IDs not found",
+    INVALID_PERFORMANCE: "Invalid Performance Id"
   },
   DELETE: {
     EMPLOYEE_NOT_ALLOWED: "Employees are not allowed to delete KPI assignments",

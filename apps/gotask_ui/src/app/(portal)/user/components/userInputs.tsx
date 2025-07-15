@@ -23,9 +23,8 @@ const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUse
   const { getRoles } = useAllRoles();
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
-  // Initialize selectedOrganizationIds directly from formData.organization
   const [selectedOrganizationIds, setSelectedOrganizationIds] = useState<string[]>(
-    formData.organization || [] // Initialize with the formData.organization value
+    formData.organization || []
   );
 
   return (
@@ -121,7 +120,7 @@ const UserInput = ({ formData, handleChange, errors, readOnlyFields = [] }: IUse
             }
           }}
           required
-          error={errors?.joinDate}
+          error={errors?.joined_date} 
           disabled={isReadOnly("joined_date")}
           placeholder={transuser("placeholderjoined_date")}
         />

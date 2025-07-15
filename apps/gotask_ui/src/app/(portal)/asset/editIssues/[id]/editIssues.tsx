@@ -177,7 +177,7 @@ const EditIssue: React.FC = () => {
                       color: "#741B92",
                       cursor: "pointer",
                       textDecoration: "underline",
-                      pl: { xs: 3, sm: 6 } // aligns with title text
+                      pl: { xs: 3, sm: 6 }
                     }}
                   >
                     <Typography

@@ -213,77 +213,93 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           </Box>
 
           {/* Assignee List */}
-          <Grid container spacing={3} sx={{ maxHeight: "500px", overflowY: "auto" }}>
-            {project.users.length > 0 ? (
-              project.users.map((user) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
-                  <Box
-                    sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      bgcolor: "#ffffff",
-                      border: "1px solid #e0e0e0"
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      spacing={2}
-                      alignItems="center"
-                      sx={{ minWidth: 0, flex: 1 }}
+          <Box
+            sx={{
+              height: "calc(100vh - 360px)",
+              overflowY: "auto",
+              pr: 1,
+              scrollBehavior: "smooth",
+              "&::-webkit-scrollbar": {
+                width: "8px"
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#ccc",
+                borderRadius: "8px"
+              }
+            }}
+          >
+            <Grid container spacing={3}>
+              {project.users.length > 0 ? (
+                project.users.map((user) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        borderRadius: 3,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        bgcolor: "#ffffff",
+                        border: "1px solid #e0e0e0"
+                      }}
                     >
-                      <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
-                      <Box sx={{ minWidth: 0 }}>
-                        <Typography
-                          fontWeight={600}
-                          fontSize="1rem"
-                          sx={{
-                            textTransform: "capitalize",
-                            wordBreak: "break-word",
-                            maxWidth: 200
-                          }}
-                        >
-                          {user.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ wordBreak: "break-word", maxWidth: 200 }}
-                        >
-                          {user.user_id}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                    {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
-                      <Box sx={{ flexShrink: 0 }}>
-                        <IconButton
-                          color="error"
-                          onClick={() => {
-                            setSelectedUserId(user.id);
-                            setOpenDeleteDialog(true);
-                          }}
-                          sx={{
-                            transition: "0.2s ease",
-                            "&:hover": {
-                              transform: "scale(1.1)"
-                            }
-                          }}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Box>
-                    )}
-                  </Box>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                        sx={{ minWidth: 0, flex: 1 }}
+                      >
+                        <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography
+                            fontWeight={600}
+                            fontSize="1rem"
+                            sx={{
+                              textTransform: "capitalize",
+                              wordBreak: "break-word",
+                              maxWidth: 200
+                            }}
+                          >
+                            {user.name}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ wordBreak: "break-word", maxWidth: 200 }}
+                          >
+                            {user.user_id}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
+                        <Box sx={{ flexShrink: 0 }}>
+                          <IconButton
+                            color="error"
+                            onClick={() => {
+                              setSelectedUserId(user.id);
+                              setOpenDeleteDialog(true);
+                            }}
+                            sx={{
+                              transition: "0.2s ease",
+                              "&:hover": {
+                                transform: "scale(1.1)"
+                              }
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Box>
+                      )}
+                    </Box>
+                  </Grid>
+                ))
+              ) : (
+                <Grid item xs={12}>
+                  <Typography color="text.secondary">{transproject("detailnouser")}</Typography>
                 </Grid>
-              ))
-            ) : (
-              <Grid item xs={12}>
-                <Typography color="text.secondary">{transproject("detailnouser")}</Typography>
-              </Grid>
-            )}
-          </Grid>
+              )}
+            </Grid>
+          </Box>
         </Box>
 
         {/* Dialogs */}

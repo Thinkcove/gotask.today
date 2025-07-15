@@ -146,42 +146,46 @@ function ProjectGoalList() {
       </Box>
     );
   }
-
+  const noGoalsForProject =
+    filteredGoals?.length === 0 ||
+    allGoals.filter((goal) => goal.projectId === projectID).length === 0;
   return (
     <Box>
-      <GoalFilterBar
-        searchTerm={searchTerm}
-        onSearchChange={(value) => {
-          setSearchTerm(value);
-          setPage(1);
-        }}
-        onBack={handleGoBack}
-        statusFilter={statusFilter}
-        severityFilter={severityFilter}
-        onStatusChange={onStatusChange}
-        onSeverityChange={onSeverityChange}
-        onClearFilters={onClearFilters}
-        statusOptions={Object.values(statusOptions)}
-        priorityOptions={Object.values(priorityOptions)}
-        showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
-        clearText={transGoal("clearall")}
-        searchPlaceholder={transGoal("searchplaceholder")}
-        filterpriority={transGoal("filterpriority")}
-        filterstatus={transGoal("filterstatus")}
-      />
-
-      {filteredGoals?.length === 0 ? (
+      {noGoalsForProject ? (
         <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
       ) : (
-        <ProjectGoals
-          projectGoals={filteredGoals}
-          isLoading={isLoading}
-          error={!!error}
-          formatStatus={formatStatus}
-          projectId={projectID}
-          projectGoalView={handleProjectGoalView}
-          handleScroll={handleScroll}
-        />
+        <>
+          <GoalFilterBar
+            searchTerm={searchTerm}
+            onSearchChange={(value) => {
+              setSearchTerm(value);
+              setPage(1);
+            }}
+            onBack={handleGoBack}
+            statusFilter={statusFilter}
+            severityFilter={severityFilter}
+            onStatusChange={onStatusChange}
+            onSeverityChange={onSeverityChange}
+            onClearFilters={onClearFilters}
+            statusOptions={Object.values(statusOptions)}
+            priorityOptions={Object.values(priorityOptions)}
+            showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
+            clearText={transGoal("clearall")}
+            searchPlaceholder={transGoal("searchplaceholder")}
+            filterpriority={transGoal("filterpriority")}
+            filterstatus={transGoal("filterstatus")}
+          />
+
+          <ProjectGoals
+            projectGoals={filteredGoals}
+            isLoading={isLoading}
+            error={!!error}
+            formatStatus={formatStatus}
+            projectId={projectID}
+            projectGoalView={handleProjectGoalView}
+            handleScroll={handleScroll}
+          />
+        </>
       )}
 
       {/* Snackbar */}

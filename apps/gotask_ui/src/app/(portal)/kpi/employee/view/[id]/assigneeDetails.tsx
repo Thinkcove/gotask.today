@@ -115,8 +115,8 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
                       border: `1px solid ${getUserStatusColor(status)}`,
                       transition: "transform 0.3s ease",
                       "&:hover": {
-                        transform: "scale(1.02)",
-                        cursor: "pointer"
+                        cursor: "pointer",
+                        boxShadow: "none"
                       }
                     }}
                     onClick={() => router.push(`/kpi/employee/assignedTemplate/${assignmentId}`)}

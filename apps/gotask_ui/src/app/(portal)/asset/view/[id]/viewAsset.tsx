@@ -117,7 +117,7 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                   {trans("description")}
                 </Typography>
                 <RichTextReadOnly
-                  content={asset?.commentService || ""}
+                  content={asset?.commentService || "-"}
                   extensions={getTipTapExtensions()}
                 />
               </Grid>

@@ -1,11 +1,12 @@
 import React from "react";
-import { Box, Grid, FormControlLabel, Checkbox } from "@mui/material";
+import { Box, Grid, FormControlLabel, Checkbox, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
 import { authenticationModesOptions } from "../assetConstants";
+import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface FingerprintScannerInputsProps {
   formData: IAssetAttributes;
@@ -161,6 +162,18 @@ const FingerprintScannerInputs: React.FC<FingerprintScannerInputsProps> = ({
               />
             }
             label={transasset("cloudandappbased")}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {transasset("description")}
+          </Typography>
+          <ReusableEditor
+            content={formData.commentService || ""}
+            onChange={(html) => onChange("commentService", html)}
+            placeholder={transasset("description")}
+            readOnly={false}
+            showSaveButton={false}
           />
         </Grid>
       </Grid>

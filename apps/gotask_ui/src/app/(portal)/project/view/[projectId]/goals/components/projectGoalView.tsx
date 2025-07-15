@@ -128,11 +128,11 @@ const ProjectGoalView: React.FC<ProjectGoalViewProps> = ({
 
           <Box>
             <CommentSection
-              comments={(goalData.comments || []).map((goalComment: GoalComment) => ({
-                id: String(goalComment.id),
+              comments={(goalData.comments || []).map((goalComment: GoalComment, index) => ({
+                id: goalComment.id ? String(goalComment.id) : `temp${index}`,
                 comment: Array.isArray(goalComment.comments)
                   ? goalComment.comments[0] || ""
-                  : goalComment.comments || goalComment.comments || "",
+                  : goalComment.comments || "",
                 user_id: user?.id || "",
                 user_name: user?.name || "",
                 updatedAt: goalComment.updatedAt

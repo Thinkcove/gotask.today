@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import useSWR from "swr";
 import { Box, CircularProgress } from "@mui/material";
@@ -15,6 +16,7 @@ import { fetchWeeklyGoals } from "../goalservices/projectGoalAction";
 import { GoalData } from "../interface/projectGoal";
 import ProjectGoals from "./projectGoals";
 import GoalFilterBar from "./goalFilterBar";
+import { getStoredObj, removeStorage, setStorage } from "@/app/(portal)/access/utils/storage";
 
 function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -23,7 +25,6 @@ function ProjectGoalList() {
 
   const projectID = projectId as string;
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -37,14 +38,46 @@ function ProjectGoalList() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [allGoals, setAllGoals] = useState<GoalData[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [severityFilter, setSeverityFilter] = useState<string[]>([]);
 
-  // Create a unique SWR key that includes projectID
-  const swrKey = `weekly-goals-${projectID}-${page}-${statusFilter.join(",")}-${severityFilter.join(",")}-${searchTerm}`;
+  const savedFilters = getStoredObj("projectGoalListFilter") || {};
+
+  const [searchTerm, _setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
+
+  const [statusFilter, _setStatusFilter] = useState<string[]>(savedFilters.statusFilter || []);
+
+  const [severityFilter, _setSeverityFilter] = useState<string[]>(
+    savedFilters.severityFilter || []
+  );
+
+  const saveFilters = (filters: {
+    searchTerm?: string;
+    statusFilter?: string[];
+    severityFilter?: string[];
+  }) => {
+    setStorage("projectGoalListFilter", {
+      searchTerm: filters.searchTerm ?? searchTerm,
+      statusFilter: filters.statusFilter ?? statusFilter,
+      severityFilter: filters.severityFilter ?? severityFilter
+    });
+  };
+
+  const setSearchTerm = (val: string) => {
+    _setSearchTerm(val);
+    saveFilters({ searchTerm: val });
+  };
+
+  const setStatusFilter = (val: string[]) => {
+    _setStatusFilter(val);
+    saveFilters({ statusFilter: val });
+  };
+
+  const setSeverityFilter = (val: string[]) => {
+    _setSeverityFilter(val);
+    saveFilters({ severityFilter: val });
+  };
 
   const { isLoading, error } = useSWR(
-    swrKey,
+    `weekly-goals-${projectID}-${page}-${statusFilter.join(",")}-${severityFilter.join(",")}-${searchTerm}`,
     () =>
       fetchWeeklyGoals({
         projectId: projectID,
@@ -119,6 +152,7 @@ function ProjectGoalList() {
     setSeverityFilter([]);
     setSearchTerm("");
     setPage(1);
+    removeStorage("projectGoalListFilter");
   };
 
   // Filter goals based on search and filters (client-side filtering as backup)

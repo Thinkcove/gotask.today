@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
 import StoryFilters from "../components/StoryFilters";
+import { getStoredObj, removeStorage, setStorage } from "../../access/utils/storage";
 
 const limit = 12;
 
@@ -25,11 +26,43 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  const [status, setStatus] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const savedFilters = getStoredObj("storyListFilters") || {};
 
-  const hasSentProjectNameRef = useRef(false); 
+  const [status, _setStatus] = useState<string[]>(savedFilters.status || []);
+  const [startDate, _setStartDate] = useState<string>(savedFilters.startDate || "");
+  const [searchTerm, _setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
+
+  const saveFilters = (filters: { status?: string[]; startDate?: string; searchTerm?: string }) => {
+    setStorage("storyListFilters", {
+      status: filters.status ?? status,
+      startDate: filters.startDate ?? startDate,
+      searchTerm: filters.searchTerm ?? searchTerm
+    });
+  };
+
+  const setStatus = (val: string[]) => {
+    _setStatus(val);
+    saveFilters({ status: val });
+  };
+
+  const setStartDate = (val: string) => {
+    _setStartDate(val);
+    saveFilters({ startDate: val });
+  };
+
+  const setSearchTerm = (val: string) => {
+    _setSearchTerm(val);
+    saveFilters({ searchTerm: val });
+  };
+
+  const clearFilters = () => {
+    _setStatus([]);
+    _setStartDate("");
+    _setSearchTerm("");
+    removeStorage("storyListFilters");
+  };
+
+  const hasSentProjectNameRef = useRef(false);
 
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && "data" in previousPageData && !previousPageData.data.length)
@@ -47,7 +80,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
       limit
     });
 
-    // Send projectName to parent once (not inside render)
+    // Send projectName to parent once
     if (
       !hasSentProjectNameRef.current &&
       "meta" in result &&
@@ -110,12 +143,10 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
           setSize(1);
         }}
         onClearFilters={() => {
-          setStatus([]);
-          setStartDate("");
-          setSearchTerm("");
+          clearFilters();
           setSize(1);
         }}
-        onBack={() => router.push(`/project/view/${projectId}`)} 
+        onBack={() => router.push(`/project/view/${projectId}`)}
       />
 
       {/* Story List */}

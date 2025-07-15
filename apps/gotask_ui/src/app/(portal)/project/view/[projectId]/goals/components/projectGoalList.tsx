@@ -107,6 +107,11 @@ function ProjectGoalList() {
     setPage(1);
   };
 
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setPage(1);
+  };
+
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
 
@@ -158,8 +163,7 @@ function ProjectGoalList() {
           <GoalFilterBar
             searchTerm={searchTerm}
             onSearchChange={(value) => {
-              setSearchTerm(value);
-              setPage(1);
+              handleSearch(value);
             }}
             onBack={handleGoBack}
             statusFilter={statusFilter}

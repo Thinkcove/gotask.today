@@ -16,7 +16,7 @@ import { User } from "../interfaces/userInterface";
 import UserStatusFilter from "@/app/component/filters/userFilter";
 import { STATUS_CONFIG, getUserStatusColor } from "@/app/common/constants/status";
 import { useRouter } from "next/navigation";
-import { getStoredObj, removeStorage, setStorage } from "../../access/utils/storage";
+import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
 
 const UserList = () => {
   const { canAccess } = useUserPermission();

@@ -73,7 +73,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
       });
     }
   };
-  
 
   return (
     <>
@@ -150,6 +149,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           </Box>
 
           {/* General Info */}
+          {/* General Info */}
           {selectedTab === transuser("general") && (
             <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
               <Grid container spacing={2} flexDirection="column" mb={2}>
@@ -166,7 +166,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                       sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
                     >
                       <LabelValueText
-                        label={transuser("labelfirst_name").replace("*", "").trim()}
+                        label={transuser("labelfirst_name_view")}
                         value={user?.first_name || "-"}
                         sx={{ textTransform: "capitalize" }}
                       />
@@ -181,7 +181,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                       sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
                     >
                       <LabelValueText
-                        label={transuser("labellast_name").replace("*", "").trim()}
+                        label={transuser("labellast_name_view")}
                         value={user?.last_name || "-"}
                         sx={{ textTransform: "capitalize" }}
                       />
@@ -196,7 +196,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                       sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
                     >
                       <LabelValueText
-                        label={transuser("labeluser").replace("*", "").trim()}
+                        label={transuser("labeluser_view")}
                         value={user?.name || "-"}
                         sx={{ textTransform: "capitalize" }}
                       />
@@ -204,27 +204,34 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   </Tooltip>
                 </Grid>
 
+                {/* Mobile No */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labelmobile_no").replace("*", "").trim()}
+                    label={transuser("labelmobile_no_view")}
                     value={user?.mobile_no || "-"}
                   />
                 </Grid>
+
+                {/* Join Date */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labeljoined_date").replace("*", "").trim()}
+                    label={transuser("labeljoined_date_view")}
                     value={user?.joined_date ? <FormattedDateTime date={user?.joined_date} /> : "-"}
                   />
                 </Grid>
+
+                {/* Emp ID */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labelemp_id").replace("*", "").trim()}
+                    label={transuser("labelemp_id_view")}
                     value={user?.emp_id || "-"}
                   />
                 </Grid>
+
+                {/* Role */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("roleid").replace("*", "").trim()}
+                    label={transuser("roleid_view")}
                     value={user?.roleId.name}
                     sx={{ textTransform: "capitalize" }}
                   />

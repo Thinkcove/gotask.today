@@ -456,27 +456,44 @@
     "nouser": "No Users available.",
     "noorganzationuser": " No Organization for this user",
     "viewdetails": "View Details",
+
     "labelfirst_name": "First Name *",
-    "placeholderfirst_name": "Enter First Name",
+    "labelfirst_name_view": "First Name",
+
     "labellast_name": "Last Name *",
-    "placeholderlast_name": "Enter Last Name",
+    "labellast_name_view": "Last Name",
+
     "labeluser": "Preferred Name *",
-    "placeholderuser": "Enter preferred name",
+    "labeluser_view": "Preferred Name",
+
     "labelemp_id": "Emp Id",
-    "placeholderemp_id": "Enter Employee ID",
+    "labelemp_id_view": "Emp Id",
+
     "labelemail": "Email *",
-    "placeholderemail": "Enter email",
     "labelmobile_no": "Mobile Number *",
+    "labelmobile_no_view": "Mobile Number",
+
+    "labeljoined_date": "Join Date *",
+    "labeljoined_date_view": "Join Date",
+
+    "labelrole": "Role *",
+    "roleid_view": "Role",
+
+    "placeholderfirst_name": "Enter First Name",
+    "placeholderlast_name": "Enter Last Name",
+    "placeholderuser": "Enter preferred name",
+    "placeholderemp_id": "Enter Employee ID",
+    "placeholderemail": "Enter email",
     "placeholdermobile_no": "Enter Mobile Number",
     "joineddate": "Joined Date is required",
-    "labeljoined_date": "Join Date *",
     "placeholderjoined_date": "Enter Join Date",
-    "labelrole": "Role *",
     "placeholderrole": "Select Role",
+
     "labelorganization": "Organization",
     "placeholderorganization": "Select Organization",
     "labelpassword": "Password",
     "placeholderpassword": "Enter password",
+
     "createusernew": "Create New User",
     "cancelUser": "Cancel",
     "createUser": "Create",
@@ -539,11 +556,11 @@
     "pleasechooseproficiency": "Please choose a proficiency level.",
     "pleaseenterexperience": "Please enter experience in months.",
     "saveskill": "Failed to save skill. Please try again.",
+
     "meta": {
       "title": "User Management | GoTaskToday",
       "description": "Plan, assign, and track tasks across projects."
     },
-
     "Certificate": {
       "certificate": "Certificate",
       "certificates": "Certificates",
@@ -591,6 +608,7 @@
       "ctcisrequired": "CTC must be greater than 0"
     }
   },
+
   "Appbar": {
     "logout": "Logout"
   },

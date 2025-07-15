@@ -937,6 +937,9 @@
     "enterenddate": "Enter End Date",
     "enterscore": "Enter Score",
     "notes": "Review",
+    "addedby":"Added By",
+    "nocomment":"-",
+    "add":"Add",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."

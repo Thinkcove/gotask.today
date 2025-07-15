@@ -25,10 +25,6 @@ function PermissionForm({
     onFormDataChange(field, value);
   };
 
-  const handleTimeChange = (field: "comments", value: string): void => {
-    onFormDataChange(field, value);
-  };
-
   const handleTimePickerChange = (field: "startTime" | "endTime", value: string): void => {
     onFormDataChange(field, value);
   };

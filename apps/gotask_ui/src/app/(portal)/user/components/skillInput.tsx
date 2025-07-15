@@ -1,7 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Typography, TextField, Grid, Stack, IconButton, Paper, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Grid,
+  Stack,
+  IconButton,
+  Paper,
+  Button,
+  Tooltip
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import StarIcon from "@mui/icons-material/Star";
@@ -195,9 +205,66 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 >
                   <Box display="flex" gap={2}>
                     <Box>
-                      <Typography fontSize={14} fontWeight={600}>
-                        {skill.name}
-                      </Typography>
+                      <Box
+                        sx={{
+                          display: {
+                            xs: "block",
+                            sm: "none"
+                          }
+                        }}
+                      >
+                        <Typography
+                          fontSize={14}
+                          fontWeight={600}
+                          sx={{
+                            whiteSpace: "normal",
+                            wordBreak: "break-word"
+                          }}
+                        >
+                          {skill.name}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: {
+                            xs: "none",
+                            sm: "block"
+                          }
+                        }}
+                      >
+                        <Tooltip
+                          title={skill.name}
+                          placement="bottom-start"
+                          arrow
+                          PopperProps={{
+                            modifiers: [
+                              {
+                                name: "offset",
+                                options: {
+                                  offset: [10, 10]
+                                }
+                              }
+                            ]
+                          }}
+                        >
+                          <Typography
+                            fontSize={14}
+                            fontWeight={600}
+                            sx={{
+                              display: "block",
+                              maxWidth: "180px",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              cursor: "pointer"
+                            }}
+                          >
+                            {skill.name}
+                          </Typography>
+                        </Tooltip>
+                      </Box>
+
                       <Typography fontSize={12} color="text.secondary">
                         {trans("proficiency")}: {PROFICIENCY_DESCRIPTIONS[skill.proficiency]}
                       </Typography>
@@ -437,7 +504,13 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         cancelLabel={transInc("cancel")}
         submitColor="#b71c1c"
       >
-        <Typography>
+        <Typography
+          fontSize={14}
+          sx={{
+            whiteSpace: "normal",
+            wordBreak: "break-word"
+          }}
+        >
           {trans("deleteskill", { skill: `"${skills[deleteIndex!]?.name || ""}"` })}
         </Typography>
       </CommonDialog>

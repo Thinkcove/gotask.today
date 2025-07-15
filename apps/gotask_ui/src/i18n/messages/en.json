@@ -1057,7 +1057,7 @@
     "starttime": "Start Time",
     "endtime": "End Time",
     "createdat": "Created Date",
-    "comments": "Permission Comments",
+    "comments": "Permission Reason",
     "close": "Close",
     "search": "Search user name",
     "nodatafound": "No data found.",

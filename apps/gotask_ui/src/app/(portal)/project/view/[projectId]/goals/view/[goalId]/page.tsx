@@ -76,9 +76,8 @@ const ProjectGoalViewPage = () => {
       await createComment(payload);
       await mutate();
       showSnackbar(transGoal("goalSaved"), SNACKBAR_SEVERITY.SUCCESS);
-    } catch (error) {
+    } catch {
       showSnackbar(transGoal("goalfiled"), SNACKBAR_SEVERITY.ERROR);
-      console.error(error);
     }
   };
 
@@ -90,9 +89,8 @@ const ProjectGoalViewPage = () => {
       await updateComment(commentId, { comments: [updatedComment.comment] });
       await mutate();
       showSnackbar(transGoal("goalupdate"), SNACKBAR_SEVERITY.SUCCESS);
-    } catch (err) {
+    } catch {
       showSnackbar(transGoal("goalfiled"), SNACKBAR_SEVERITY.ERROR);
-      console.error(err);
     }
   };
 
@@ -101,9 +99,8 @@ const ProjectGoalViewPage = () => {
       await deleteComment(commentId);
       await mutate();
       showSnackbar(transGoal("deletegoal"), SNACKBAR_SEVERITY.SUCCESS);
-    } catch (error) {
+    } catch {
       showSnackbar(transGoal("deletegoalfiled"), SNACKBAR_SEVERITY.ERROR);
-      console.error(error);
     }
   };
 

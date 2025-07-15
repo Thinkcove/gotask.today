@@ -72,7 +72,7 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
       </IconButton>
 
       {/* Header */}
-      <DialogTitle sx={{ background: "#f5f7fa", py: 2, px: 3 }}>{title}</DialogTitle>
+      <DialogTitle sx={{ background: "#f2e9f9", py: 2, px: 2 }}>{title}</DialogTitle>
 
       {/* Content */}
       <DialogContent sx={{ p: 2 }}>{children}</DialogContent>

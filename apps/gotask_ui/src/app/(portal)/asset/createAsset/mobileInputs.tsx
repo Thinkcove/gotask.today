@@ -1,10 +1,11 @@
 // MobileInputs.tsx
 import React from "react";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes } from "../interface/asset";
+import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface MobileInputsProps {
   formData: IAssetAttributes;
@@ -107,6 +108,18 @@ const MobileInputs: React.FC<MobileInputsProps> = ({
           placeholder={transasset("insuranceExpiry")}
           value={formData.insuranceExpiry}
           onChange={(val) => onChange("insuranceExpiry", new Date(val as string))}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+          {transasset("description")}
+        </Typography>
+        <ReusableEditor
+          content={formData.commentService || ""}
+          onChange={(html) => onChange("commentService", html)}
+          placeholder={transasset("description")}
+          readOnly={false}
+          showSaveButton={false}
         />
       </Grid>
     </Grid>

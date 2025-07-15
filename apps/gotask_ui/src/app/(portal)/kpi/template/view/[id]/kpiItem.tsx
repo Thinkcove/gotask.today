@@ -47,7 +47,6 @@ const KpiItem: React.FC<TemplateCardsProps> = ({ templates, onView }) => {
                 transition: "transform 0.3s ease, box-shadow 0.3s ease",
                 boxShadow: "none",
                 "&:hover": {
-                  transform: "scale(1.03)",
                   boxShadow: "none"
                 }
               }}

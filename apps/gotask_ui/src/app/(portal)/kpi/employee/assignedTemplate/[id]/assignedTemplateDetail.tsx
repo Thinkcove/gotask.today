@@ -190,10 +190,7 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
             </Box>
             {scoreSubTab === transkpi("previousscores") && (
               <Grid item xs={12}>
-                <PerformanceCards
-                  performance={assignment.performance ?? []}
-                  assignmentId={assignment.assignment_id}
-                />
+                <PerformanceCards performance={assignment.performance ?? []} />
               </Grid>
             )}
             {scoreSubTab === transkpi("graph") && (

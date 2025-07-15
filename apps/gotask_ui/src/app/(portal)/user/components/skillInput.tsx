@@ -1,7 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Typography, TextField, Grid, Stack, IconButton, Paper, Button, Tooltip } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Grid,
+  Stack,
+  IconButton,
+  Paper,
+  Button,
+  Tooltip
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import StarIcon from "@mui/icons-material/Star";
@@ -198,8 +208,8 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                       <Box
                         sx={{
                           display: {
-                            xs: "block", // Show plain text on small screens
-                            sm: "none" // Hide plain text on larger screens
+                            xs: "block",
+                            sm: "none"
                           }
                         }}
                       >
@@ -218,8 +228,8 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                       <Box
                         sx={{
                           display: {
-                            xs: "none", 
-                            sm: "block" 
+                            xs: "none",
+                            sm: "block"
                           }
                         }}
                       >

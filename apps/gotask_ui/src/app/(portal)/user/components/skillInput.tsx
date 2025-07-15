@@ -504,7 +504,13 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         cancelLabel={transInc("cancel")}
         submitColor="#b71c1c"
       >
-        <Typography>
+        <Typography
+          fontSize={14}
+          sx={{
+            whiteSpace: "normal",
+            wordBreak: "break-word"
+          }}
+        >
           {trans("deleteskill", { skill: `"${skills[deleteIndex!]?.name || ""}"` })}
         </Typography>
       </CommonDialog>

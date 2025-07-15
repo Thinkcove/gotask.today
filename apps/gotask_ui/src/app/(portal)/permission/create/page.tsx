@@ -14,7 +14,7 @@ import { PermissionPayload } from "../interface/interface";
 import { createPermission } from "../services/permissionAction";
 import PermissionForm from "../components/permissionForm";
 import { parse, isValid } from "date-fns";
-import { formats } from "@/app/component/dateTime/timePicker";
+import { timeformats } from "@/app/component/dateTime/timePicker";
 
 const Page = () => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
@@ -57,7 +57,7 @@ const Page = () => {
 
   const parseTime = (timeStr: string): Date | null => {
     const baseDate = new Date();
-    for (const fmt of formats) {
+    for (const fmt of timeformats) {
       const parsed = parse(timeStr, fmt, baseDate);
       if (isValid(parsed)) return parsed;
     }

@@ -5,7 +5,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { parse, format, isValid } from "date-fns";
 import { SxProps, Theme } from "@mui/material/styles";
-import { formats } from "../dateTime/timePicker";
+import { timeformats } from "../dateTime/timePicker";
 
 interface TimePickerFieldProps {
   label: string;
@@ -52,7 +52,7 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
       const month = baseDate.getMonth();
       const day = baseDate.getDate();
 
-      for (const fmt of formats) {
+      for (const fmt of timeformats) {
         const parsed = parse(timeString, fmt, new Date(year, month, day));
         if (isValid(parsed)) {
           return parsed;

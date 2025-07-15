@@ -65,7 +65,7 @@ function PermissionForm({
 
         <Grid item xs={12} sm={6}>
           <TimePickerField
-            label={transpermission("starttime")}
+            label={transpermission("labelstarttime")}
             placeholder={transpermission("starttime")}
             value={formData.startTime}
             error={errors.startTime}
@@ -79,7 +79,7 @@ function PermissionForm({
 
         <Grid item xs={12} sm={6}>
           <TimePickerField
-            label={transpermission("endtime")}
+            label={transpermission("labelendtime")}
             placeholder={transpermission("endtime")}
             value={formData.endTime}
             error={errors.endTime}

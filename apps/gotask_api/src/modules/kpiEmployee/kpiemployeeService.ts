@@ -7,7 +7,9 @@ import {
   getKpiAssignmentByIdFromDb,
   getKpiAssignmentsByUserIdFromDb,
   saveKpiAsTemplateInDb,
-  updateKpiAssignmentInDb
+  updateKpiAssignmentInDb,
+  addPerformanceToKpiAssignmentInDb,
+  getPerformanceByIdFromDb
 } from "../../domain/interface/kpiemployee/kpiemployeeInterface";
 import { getKpiTemplateByIdFromDb } from "../../domain/interface/kpi/kpiInterface";
 import { IKpiTemplate } from "../../domain/model/kpi/kpiModel";
@@ -64,6 +66,89 @@ export const calculateKpiScores = (
     actual_value,
     employee_score
   };
+};
+
+// Add performance to KPI assignment
+const addPerformanceToKpiAssignment = async (
+  assignment_id: string,
+  performanceData: IKpiPerformance[],
+  authUserId: string
+): Promise<{ success: boolean; data?: IKpiAssignment | null; message?: string }> => {
+  try {
+    const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+    if (!assignment) {
+      return { success: false, message: KpiAssignmentMessages.UPDATE.NOT_FOUND };
+    }
+
+    // Process new performance entries
+    const updatedPerformance = performanceData.map((entry) => ({
+      ...entry,
+      performance_id: entry.performance_id || uuidv4(),
+      updated_at: new Date(),
+      added_by: assignment.reviewer_id || assignment.assigned_by || assignment.user_id,
+      notes: entry.notes || []
+    }));
+
+    // Combine existing and new performance, avoid duplicates by performance_id
+    const combinedMap = new Map<string, any>();
+    [...(assignment.performance || []), ...updatedPerformance].forEach((perf) => {
+      combinedMap.set(perf.performance_id, perf);
+    });
+
+    const allPerformance = Array.from(combinedMap.values());
+
+    // Calculate scores
+    const targetVal = Number(assignment.target_value) || 0;
+    const { actual_value, employee_score } = calculateKpiScores(
+      allPerformance,
+      assignment.reviewer_id,
+      assignment.assigned_by,
+      targetVal,
+      assignment.user_id
+    );
+
+    const updatePayload: Partial<IKpiAssignment> = {
+      performance: allPerformance,
+      actual_value,
+      employee_score
+    };
+
+    // Update the assignment
+    const updatedAssignment = await addPerformanceToKpiAssignmentInDb(
+      assignment_id,
+      updatePayload,
+      authUserId
+    );
+
+    return { success: true, data: updatedAssignment };
+  } catch (error: any) {
+    return { success: false, message: error.message || KpiAssignmentMessages.UPDATE.FAILED };
+  }
+};
+
+// Get performance by performance_id within a specific assignment
+const getPerformanceById = async (
+  performance_id: string
+): Promise<{ success: boolean; data?: any; message?: string }> => {
+  try {
+    const result = await getPerformanceByIdFromDb(performance_id);
+    if (!result) {
+      return {
+        success: false,
+        message: `Performance ID ${performance_id} not found in any assignment`
+      };
+    }
+
+    return {
+      success: true,
+      data: result
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || KpiAssignmentMessages.FETCH.FETCH_FAILED
+    };
+  }
 };
 
 // Create a new KPI assignment
@@ -151,6 +236,7 @@ const createKpiAssignment = async (
     };
   }
 };
+
 // Get all KPI assignments for a user
 const getAllKpiAssignments = async (): Promise<{
   success: boolean;
@@ -352,11 +438,44 @@ async function getTemplatesByUserId(user_id: string): Promise<{
   }
 }
 
+const getPerformancesByAssignmentId = async (
+  assignment_id: string
+): Promise<{
+  success: boolean;
+  data?: IKpiPerformance[];
+  message?: string;
+}> => {
+  try {
+    const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+    if (!assignment) {
+      return {
+        success: false,
+        message: `Assignment ID ${assignment_id} not found`
+      };
+    }
+
+    const performances = assignment.performance || [];
+
+    return {
+      success: true,
+      data: performances
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || KpiAssignmentMessages.FETCH.FETCH_FAILED
+    };
+  }
+};
+
 export {
   createKpiAssignment,
   getAllKpiAssignments,
   getKpiAssignmentById,
   updateKpiAssignment,
   deleteKpiAssignmentById,
-  getTemplatesByUserId
+  getTemplatesByUserId,
+  addPerformanceToKpiAssignment,
+  getPerformanceById,
+  getPerformancesByAssignmentId
 };

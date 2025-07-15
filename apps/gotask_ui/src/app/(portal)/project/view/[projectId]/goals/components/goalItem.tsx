@@ -25,10 +25,7 @@ const GoalItem: React.FC<GoalCardProps> = ({ goal, onClick }) => {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        justifyContent: "space-between",
-        "&:hover": {
-          boxShadow: `0 0 6px ${color}66`
-        }
+        justifyContent: "space-between"
       }}
     >
       {/* Goal Title */}

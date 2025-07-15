@@ -182,7 +182,7 @@ function ProjectGoalList() {
   }
 
   return (
-    <Box sx={{ pt: 2 }}>
+    <Box>
       <GoalFilterBar
         searchTerm={searchTerm}
         onSearchChange={(value) => {

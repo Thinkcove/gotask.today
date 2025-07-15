@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, IconButton, Stack, Chip, Grid } from "@mui/material";
+import { Box, Typography, IconButton, Stack, Chip, Grid, Tooltip } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { User } from "../../interfaces/userInterface";
@@ -55,14 +55,16 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const handleDelete = async () => {
     try {
       await deleteUser(userID);
-      await mutate();
+
+      setOpenDeleteDialog(false);
       setSnackbar({
         open: true,
         message: transuser("deletesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setOpenDeleteDialog(false);
-      setTimeout(() => router.back(), 2000);
+      setTimeout(() => {
+        router.push("/user");
+      }, 1500);
     } catch {
       setSnackbar({
         open: true,
@@ -97,9 +99,21 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <ArrowBack />
             </IconButton>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="h5" fontWeight={700} sx={{ textTransform: "capitalize" }}>
-                {user.name}
-              </Typography>
+              <Tooltip title={user.name || "-"} placement="top-start">
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  sx={{
+                    textTransform: "capitalize",
+                    maxWidth: 240,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}
+                >
+                  {user.name}
+                </Typography>
+              </Tooltip>
               <StatusIndicator
                 status={user.status ? "active" : "inactive"}
                 getColor={(status) => (status === "active" ? "green" : "red")}
@@ -135,6 +149,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           </Box>
 
           {/* General Info */}
+          {/* General Info */}
           {selectedTab === transuser("general") && (
             <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
               <Grid container spacing={2} flexDirection="column" mb={2}>
@@ -144,71 +159,109 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               </Grid>
 
               <Grid container spacing={2} mb={1}>
+                {/* First Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <LabelValueText
-                    label={transuser("labelfirst_name")}
-                    value={user?.first_name || "-"}
-                    sx={{ textTransform: "capitalize" }}
-                  />
+                  <Tooltip title={user?.first_name || "-"} placement="top-start">
+                    <Box
+                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                      <LabelValueText
+                        label={transuser("labelfirst_name_view")}
+                        value={user?.first_name || "-"}
+                        sx={{ textTransform: "capitalize" }}
+                      />
+                    </Box>
+                  </Tooltip>
                 </Grid>
+
+                {/* Last Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <LabelValueText
-                    label={transuser("labellast_name")}
-                    value={user?.last_name || "-"}
-                    sx={{ textTransform: "capitalize" }}
-                  />
+                  <Tooltip title={user?.last_name || "-"} placement="top-start">
+                    <Box
+                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                      <LabelValueText
+                        label={transuser("labellast_name_view")}
+                        value={user?.last_name || "-"}
+                        sx={{ textTransform: "capitalize" }}
+                      />
+                    </Box>
+                  </Tooltip>
                 </Grid>
+
+                {/* Preferred Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <LabelValueText
-                    label={transuser("labeluser")}
-                    value={user?.name || "-"}
-                    sx={{ textTransform: "capitalize" }}
-                  />
+                  <Tooltip title={user?.name || "-"} placement="top-start">
+                    <Box
+                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                      <LabelValueText
+                        label={transuser("labeluser_view")}
+                        value={user?.name || "-"}
+                        sx={{ textTransform: "capitalize" }}
+                      />
+                    </Box>
+                  </Tooltip>
                 </Grid>
+
+                {/* Mobile No */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labelmobile_no")}
+                    label={transuser("labelmobile_no_view")}
                     value={user?.mobile_no || "-"}
                   />
                 </Grid>
+
+                {/* Join Date */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labeljoined_date")}
+                    label={transuser("labeljoined_date_view")}
                     value={user?.joined_date ? <FormattedDateTime date={user?.joined_date} /> : "-"}
                   />
                 </Grid>
-                <Grid item xs={6} sm={6} md={4}>
-                  <LabelValueText label={transuser("labelemp_id")} value={user?.emp_id || "-"} />
-                </Grid>
+
+                {/* Emp ID */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("roleid")}
+                    label={transuser("labelemp_id_view")}
+                    value={user?.emp_id || "-"}
+                  />
+                </Grid>
+
+                {/* Role */}
+                <Grid item xs={6} sm={6} md={4}>
+                  <LabelValueText
+                    label={transuser("roleid_view")}
                     value={user?.roleId.name}
                     sx={{ textTransform: "capitalize" }}
                   />
                 </Grid>
               </Grid>
 
-              <Grid item xs={6} sm={6} md={4}>
-                <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                  {transuser("organization")}
-                </Typography>
-                <Stack direction="row" spacing={1} flexWrap="wrap">
-                  {user.orgDetails && user.orgDetails.length > 0 ? (
-                    user.orgDetails.map((orgId) => (
-                      <Chip
-                        key={orgId.id}
-                        label={orgId.name}
-                        variant="outlined"
-                        sx={{ textTransform: "capitalize" }}
-                      />
-                    ))
-                  ) : (
-                    <Typography variant="body2" color="text.disabled">
-                      {transuser("noorganzationuser")}
-                    </Typography>
-                  )}
-                </Stack>
+              {/* Organization */}
+              <Grid container spacing={2}>
+                <Grid item xs={6} sm={6} md={4}>
+                  <Typography variant="subtitle2" color="text.secondary" mb={1}>
+                    {transuser("organization")}
+                  </Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap">
+                    {user.orgDetails && user.orgDetails.length > 0 ? (
+                      user.orgDetails.map((orgId) => (
+                        <Tooltip title={orgId.name} key={orgId.id} placement="top">
+                          <Chip
+                            label={orgId.name}
+                            variant="outlined"
+                            sx={{ textTransform: "capitalize", maxWidth: 180 }}
+                          />
+                        </Tooltip>
+                      ))
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        {transuser("noorganzationuser")}
+                      </Typography>
+                    )}
+                  </Stack>
+                </Grid>
               </Grid>
             </Box>
           )}
@@ -258,9 +311,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   ))}
                 </Grid>
               ) : (
-                <Typography color="text.secondary" fontStyle="italic">
-                  {transuser("noprojects")}
-                </Typography>
+                <Typography color="text.secondary">{transuser("noprojects")}</Typography>
               )}
             </Grid>
           )}
@@ -377,9 +428,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   })}
                 </Box>
               ) : (
-                <Typography color="text.secondary" fontStyle="italic">
-                  {transuser("noassets")}
-                </Typography>
+                <Typography color="text.secondary">{transuser("noassets")}</Typography>
               )}
             </Grid>
           )}

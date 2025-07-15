@@ -55,8 +55,9 @@ export const useIncrementColumns = (
   if (options.onDelete) {
     columns.push({
       id: "actions",
-      label: "",
+      label: trans("actions"),
       align: "right",
+      sortable: false,
       render: (_value, row) =>
         row.increment_id ? (
           <IconButton size="small" onClick={() => options.onDelete!(row.increment_id!)}>

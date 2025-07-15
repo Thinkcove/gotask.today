@@ -1,9 +1,10 @@
 import React from "react";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
+import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface AccessInputsProps {
   formData: IAssetAttributes;
@@ -63,6 +64,18 @@ const AccessInputs: React.FC<AccessInputsProps> = ({ formData, onChange, errors 
               val instanceof Date ? val.toISOString().split("T")[0] : String(val)
             )
           }
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+          {transasset("description")}
+        </Typography>
+        <ReusableEditor
+          content={formData.commentService || ""}
+          onChange={(html) => onChange("commentService", html)}
+          placeholder={transasset("description")}
+          readOnly={false}
+          showSaveButton={false}
         />
       </Grid>
     </Grid>

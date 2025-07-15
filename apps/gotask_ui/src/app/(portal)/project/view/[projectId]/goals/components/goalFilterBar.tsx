@@ -37,7 +37,7 @@ const GoalFilterBar: React.FC<GoalFiltersBar> = ({
         gap={2}
       >
         {/* Back + Search */}
-        <Box display="flex" flexDirection="row" alignItems="center" gap={1} width="100%">
+        <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
           <IconButton color="primary" onClick={onBack}>
             <ArrowBack />
           </IconButton>

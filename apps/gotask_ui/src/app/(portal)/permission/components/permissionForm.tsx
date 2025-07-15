@@ -43,7 +43,6 @@ function PermissionForm({
               inputType="text"
               placeholder={transpermission("username")}
               value={user}
-              required
               disabled={true}
             />
           </Grid>
@@ -60,7 +59,6 @@ function PermissionForm({
             onChange={(value: string | number | Date | string[]) =>
               handleDateChange("startDate", value)
             }
-            required
             disabled={isSubmitting}
           />
         </Grid>
@@ -72,7 +70,6 @@ function PermissionForm({
             value={formData.startTime}
             error={errors.startTime}
             onChange={(value: string) => handleTimePickerChange("startTime", value)}
-            required
             disabled={isSubmitting}
             ampm={true}
             ampmInClock={true}
@@ -87,7 +84,6 @@ function PermissionForm({
             value={formData.endTime}
             error={errors.endTime}
             onChange={(value: string) => handleTimePickerChange("endTime", value)}
-            required
             disabled={isSubmitting}
             ampm={true}
             ampmInClock={true}
@@ -102,7 +98,6 @@ function PermissionForm({
             placeholder={transpermission("comments")}
             value={formData.comments}
             onChange={(val) => handleTimeChange("comments", String(val))}
-            required
             multiline
           />
         </Grid>

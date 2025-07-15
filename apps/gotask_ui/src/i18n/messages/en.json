@@ -593,7 +593,7 @@
       "change": "Salary Growth ( % )",
       "noincrements": "No increments added yet.",
       "ctcgrowth": "CTC Growth Over Time",
-      "confirmdelete": "Confirm Delete",
+      "confirmdelete": "Delete Confirmation",
       "deleteincrement": "Are you sure you want to delete \"{certificate}\" ?",
       "errortitle": "Error",
       "duplicateincrementdate": "An increment for this date already exists.",

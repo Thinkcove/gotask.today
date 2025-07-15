@@ -36,7 +36,7 @@ const TimePickerField = React.forwardRef<HTMLInputElement, TimePickerFieldProps>
       disabled = false,
       onFocus,
       sx,
-      format: timeFormat = "hh:mm a",
+      format: timeFormat,
       minutesStep = 1,
       ampm = true,
       ampmInClock = true,

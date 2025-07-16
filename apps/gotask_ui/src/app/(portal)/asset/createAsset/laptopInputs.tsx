@@ -5,7 +5,7 @@ import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
-import { ASSET_TYPE } from "@/app/common/constants/asset";
+import { ASSET_TYPE, calculateWarrantyDate } from "@/app/common/constants/asset";
 import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface LaptopInputsProps {
@@ -25,6 +25,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
   systemTypeOptions
 }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
+
   return (
     <>
       <Box>
@@ -125,15 +126,33 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                   }
                 />
               </Grid>
+
               <Grid item xs={12} sm={4}>
                 <FormField
                   label={transasset("warrantyPeriod")}
-                  type="text"
+                  type="number"
                   placeholder={transasset("warrantyPeriod")}
                   value={formData.warrantyPeriod}
-                  onChange={(val) => onChange("warrantyPeriod", String(val))}
+                  onChange={(val) => {
+                    const stringValue = String(val);
+                    onChange("warrantyPeriod", stringValue);
+
+                    // Calculate and set warrantyDate if dateOfPurchase exists
+                    if (formData.dateOfPurchase && stringValue) {
+                      const purchaseDateStr =
+                        formData.dateOfPurchase instanceof Date
+                          ? formData.dateOfPurchase.toISOString().split("T")[0]
+                          : String(formData.dateOfPurchase);
+
+                      const newWarrantyDate = calculateWarrantyDate(purchaseDateStr, stringValue);
+                      if (newWarrantyDate) {
+                        onChange("warrantyDate", newWarrantyDate);
+                      }
+                    }
+                  }}
                 />
               </Grid>
+
               <Grid item xs={12} sm={4}>
                 <FormField
                   label={transasset("warrantyDate")}

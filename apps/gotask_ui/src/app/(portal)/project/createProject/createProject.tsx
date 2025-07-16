@@ -11,6 +11,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { KeyedMutator } from "swr";
 import { User } from "../../user/interfaces/userInterface";
+import FormHeader from "@/app/component/header/formHeader";
 
 interface CreateProjectProps {
   mutate?: KeyedMutator<Project>;
@@ -72,53 +73,23 @@ const CreateProject = ({ mutate }: CreateProjectProps) => {
       });
     }
   };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const handleCancel = () => {
+    router.back();
+  };
   return (
     <Box sx={{ maxWidth: "1400px", mx: "auto", display: "flex", flexDirection: "column" }}>
       {/* Sticky Header */}
-      <Box sx={{ position: "sticky", top: 0, px: 2, py: 2, zIndex: 1000, backgroundColor: "#fff" }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {transproject("createnew")}
-          </Typography>
-
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Button
-              variant="outlined"
-              sx={{
-                borderRadius: "30px",
-                color: "black",
-                border: "2px solid #741B92",
-                px: 2,
-                textTransform: "none",
-                "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" }
-              }}
-              onClick={() => router.back()}
-            >
-              {transproject("cancelproject")}
-            </Button>
-
-            <Button
-              variant="contained"
-              sx={{
-                borderRadius: "30px",
-                backgroundColor: "#741B92",
-                color: "white",
-                px: 2,
-                textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201)"
-                }
-              }}
-              onClick={handleSubmit}
-            >
-              {transproject("submitproject")}
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-
+      <FormHeader
+        isEdit={false} 
+        onCancel={handleCancel}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        cancel={transproject("cancelproject")}
+        create={transproject("submitproject")}
+        createHeading={transproject("createnew")}
+      />
       {/* Input Form */}
       <Box
         sx={{

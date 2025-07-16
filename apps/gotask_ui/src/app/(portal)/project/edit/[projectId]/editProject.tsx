@@ -74,7 +74,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
         severity: SNACKBAR_SEVERITY.ERROR
       });
     } finally {
-      setIsSubmitting(false); // <--- reset after submit
+      setIsSubmitting(false); 
     }
   };
 

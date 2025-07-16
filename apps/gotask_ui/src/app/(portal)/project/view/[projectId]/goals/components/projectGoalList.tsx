@@ -16,7 +16,7 @@ import { fetchWeeklyGoals } from "../goalservices/projectGoalAction";
 import { GoalData } from "../interface/projectGoal";
 import ProjectGoals from "./projectGoals";
 import GoalFilterBar from "./goalFilterBar";
-import { getStoredObj, removeStorage, setStorage } from "@/app/(portal)/access/utils/storage";
+import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
 
 function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -139,6 +139,10 @@ function ProjectGoalList() {
     handleSeverityFilterChange(selected);
     setPage(1);
   };
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setPage(1);
+  };
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
@@ -180,51 +184,58 @@ function ProjectGoalList() {
       </Box>
     );
   }
-
+  const noGoalsForProject =
+    filteredGoals?.length === 0 ||
+    allGoals.filter((goal) => goal.projectId === projectID).length === 0;
   return (
     <Box>
-      <GoalFilterBar
-        searchTerm={searchTerm}
-        onSearchChange={(value) => {
-          handleSearchTermChange(value);
-          setPage(1);
-        }}
-        onBack={handleGoBack}
-        statusFilter={statusFilter}
-        severityFilter={severityFilter}
-        onStatusChange={onStatusChange}
-        onSeverityChange={onSeverityChange}
-        onClearFilters={onClearFilters}
-        statusOptions={Object.values(statusOptions)}
-        priorityOptions={Object.values(priorityOptions)}
-        showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
-        clearText={transGoal("clearall")}
-        searchPlaceholder={transGoal("searchplaceholder")}
-        filterpriority={transGoal("filterpriority")}
-        filterstatus={transGoal("filterstatus")}
-      />
-
-      {filteredGoals?.length === 0 ? (
+      {noGoalsForProject ? (
         <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
       ) : (
-        <ProjectGoals
-          projectGoals={filteredGoals}
-          isLoading={isLoading}
-          error={!!error}
-          formatStatus={formatStatus}
-          projectId={projectID}
-          projectGoalView={handleProjectGoalView}
-          handleScroll={handleScroll}
-        />
-      )}
+        <>
+          <GoalFilterBar
+            searchTerm={searchTerm}
+            onSearchChange={(value) => {
+              handleSearch(value);
+            }}
+            onBack={handleGoBack}
+            statusFilter={statusFilter}
+            severityFilter={severityFilter}
+            onStatusChange={onStatusChange}
+            onSeverityChange={onSeverityChange}
+            onClearFilters={onClearFilters}
+            statusOptions={Object.values(statusOptions)}
+            priorityOptions={Object.values(priorityOptions)}
+            showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
+            clearText={transGoal("clearall")}
+            searchPlaceholder={transGoal("searchplaceholder")}
+            filterpriority={transGoal("filterpriority")}
+            filterstatus={transGoal("filterstatus")}
+          />
 
-      {/* Snackbar */}
-      <CustomSnackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={handleSnackbarClose}
-      />
+          {filteredGoals?.length === 0 ? (
+            <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
+          ) : (
+            <ProjectGoals
+              projectGoals={filteredGoals}
+              isLoading={isLoading}
+              error={!!error}
+              formatStatus={formatStatus}
+              projectId={projectID}
+              projectGoalView={handleProjectGoalView}
+              handleScroll={handleScroll}
+            />
+          )}
+
+          {/* Snackbar */}
+          <CustomSnackbar
+            open={snackbar.open}
+            message={snackbar.message}
+            severity={snackbar.severity}
+            onClose={handleSnackbarClose}
+          />
+        </>
+      )}
 
       {/* Floating Action Button */}
       <ActionButton

@@ -140,7 +140,7 @@
     "placeholderdescription": "Enter project description",
     "placeholderstatus": "Enter project Status",
     "placeholderorganization": "Select organization",
-    "createnewproject": "Create New Projet",
+    "createnewproject": "Create New Project",
     "viewname": "Project",
     "erroradd": "Error while adding assignee",
     "errorremove": "Error while removing assignee",
@@ -172,6 +172,8 @@
     "filterduedate": "Select Due Date",
     "filterclear": "Clear",
     "filterapply": "Apply",
+    "cancelproject": "Cancel",
+    "submitproject": "Submit",
     "meta": {
       "title": "Project Management | GoTaskToday",
       "description": " Create, assign, and monitor progress of ongoing projects."

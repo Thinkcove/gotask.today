@@ -13,7 +13,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
 import StoryFilters from "../components/StoryFilters";
-import { getStoredObj, removeStorage, setStorage } from "../../access/utils/storage";
+import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
 
 const limit = 12;
 

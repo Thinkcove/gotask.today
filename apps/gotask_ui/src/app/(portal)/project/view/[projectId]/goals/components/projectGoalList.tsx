@@ -151,20 +151,21 @@ function ProjectGoalList() {
       </Box>
     );
   }
-  const noGoalsForProject =
-    filteredGoals?.length === 0 ||
-    allGoals.filter((goal) => goal.projectId === projectID).length === 0;
+
+  const noGoalsAtAll = allGoals.filter((goal) => goal.projectId === projectID).length === 0;
+  const noFilteredResults = filteredGoals?.length === 0;
+  const isFilterActive =
+    statusFilter.length > 0 || severityFilter.length > 0 || searchTerm.trim() !== "";
+
   return (
     <Box>
-      {noGoalsForProject ? (
+      {noGoalsAtAll && !isFilterActive ? (
         <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
       ) : (
         <>
           <GoalFilterBar
             searchTerm={searchTerm}
-            onSearchChange={(value) => {
-              handleSearch(value);
-            }}
+            onSearchChange={handleSearch}
             onBack={handleGoBack}
             statusFilter={statusFilter}
             severityFilter={severityFilter}
@@ -173,22 +174,26 @@ function ProjectGoalList() {
             onClearFilters={onClearFilters}
             statusOptions={Object.values(statusOptions)}
             priorityOptions={Object.values(priorityOptions)}
-            showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
+            showClear={isFilterActive}
             clearText={transGoal("clearall")}
             searchPlaceholder={transGoal("searchplaceholder")}
             filterpriority={transGoal("filterpriority")}
             filterstatus={transGoal("filterstatus")}
           />
 
-          <ProjectGoals
-            projectGoals={filteredGoals}
-            isLoading={isLoading}
-            error={!!error}
-            formatStatus={formatStatus}
-            projectId={projectID}
-            projectGoalView={handleProjectGoalView}
-            handleScroll={handleScroll}
-          />
+          {noFilteredResults ? (
+            <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
+          ) : (
+            <ProjectGoals
+              projectGoals={filteredGoals}
+              isLoading={isLoading}
+              error={!!error}
+              formatStatus={formatStatus}
+              projectId={projectID}
+              projectGoalView={handleProjectGoalView}
+              handleScroll={handleScroll}
+            />
+          )}
         </>
       )}
 

@@ -114,8 +114,6 @@ class resourceService {
       if (payload.id) {
         const existingIssue = await getAssetIssueById(payload.id);
         if (existingIssue) {
-          // Get previously assigned user's name
-
           const editableFields: (keyof IAssetIssue)[] = [
             editstatus,
             description,
@@ -123,7 +121,6 @@ class resourceService {
             assignedTo
           ];
 
-          // Process each field change
           const changePromises = editableFields.map(async (key) => {
             const oldValue = existingIssue[key];
             const newValue = payload[key];
@@ -132,7 +129,6 @@ class resourceService {
               let oldDisplayValue = oldValue ?? "-";
               let newDisplayValue = newValue ?? "-";
 
-              // Special handling for assignedTo field - convert IDs to names
               if (key === assignedTo) {
                 if (oldValue) {
                   const oldUser = await findUser(oldValue);
@@ -154,14 +150,12 @@ class resourceService {
 
           const formatted_history = changes.length ? changes.join(" | ") : "No changes detected";
 
-          // Update the issue
           result = await updateAssetIssue(payload.id, {
             ...payload,
             updatedBy: userInfo.user_id,
             updatedAt: new Date()
           });
 
-          // Save to history
           await createIssuesHistory({
             issuesId: payload.id,
             userId: userInfo.id,
@@ -173,7 +167,6 @@ class resourceService {
         }
       }
 
-      // Create new issue if no ID exists
       result = await createAssetIssues({
         ...payload,
         updatedBy: userInfo.user_id

@@ -17,3 +17,7 @@ export const ASC = "asc";
 export const CREATE_AT = "createdAt";
 export const OVERUTILIZED = "Overutilized";
 export const NOT_UTILIZED = "Not utilized";
+export const editstatus = "status";
+export const description = "description";
+export const issueType = "issueType";
+export const assignedTo = "assignedTo";

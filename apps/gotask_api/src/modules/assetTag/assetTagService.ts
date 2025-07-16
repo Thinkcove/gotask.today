@@ -1,5 +1,6 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { assignedTo, description, editstatus, issueType } from "../../constants/assetConstant";
 import { getAssetById } from "../../domain/interface/asset/asset";
 import {
   createIssuesHistory,
@@ -114,17 +115,12 @@ class resourceService {
         const existingIssue = await getAssetIssueById(payload.id);
         if (existingIssue) {
           // Get previously assigned user's name
-          const previousAssignedUser = existingIssue.assignedTo
-            ? await findUser(existingIssue.assignedTo)
-            : null;
-          console.log("previousAssignedUser", previousAssignedUser);
 
-          // Prepare human-readable change history
           const editableFields: (keyof IAssetIssue)[] = [
-            "status",
-            "description",
-            "issueType",
-            "assignedTo"
+            editstatus,
+            description,
+            issueType,
+            assignedTo
           ];
 
           // Process each field change
@@ -137,7 +133,7 @@ class resourceService {
               let newDisplayValue = newValue ?? "-";
 
               // Special handling for assignedTo field - convert IDs to names
-              if (key === "assignedTo") {
+              if (key === assignedTo) {
                 if (oldValue) {
                   const oldUser = await findUser(oldValue);
                   oldDisplayValue = oldUser?.name ?? oldValue;

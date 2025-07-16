@@ -21,7 +21,6 @@ import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { DESC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 
-// Define the expected type for filterPayload
 interface FilterPayload {
   user_id?: string[];
   from_date?: string;
@@ -39,7 +38,7 @@ const PermissionList = () => {
 
   const [userFilter, setUserFilter] = useState<string[]>(searchParams.getAll("user_name"));
   const [page, setPage] = useState(0);
-  const pageSize = 25; // Changed to constant to fix lint error
+  const pageSize = 25;
   const router = useRouter();
   const { user } = useUser();
 
@@ -75,7 +74,7 @@ const PermissionList = () => {
       from_date: dateFrom || undefined,
       to_date: dateTo || undefined,
       page: page + PAGE_OPTIONS.ONE,
-      page_size: pageSize, // Use the constant pageSize (number)
+      page_size: pageSize,
       sort_field: "created_on",
       sort_order: DESC
     }),

@@ -17,6 +17,7 @@ import {
   updateTag
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
+import { IAssetIssue } from "../../domain/model/assetIssues/assetIssues";
 import { IAssetTag } from "../../domain/model/assetTag/assetTag";
 
 class resourceService {
@@ -112,22 +113,74 @@ class resourceService {
       if (payload.id) {
         const existingIssue = await getAssetIssueById(payload.id);
         if (existingIssue) {
+          // Get previously assigned user's name
+          const previousAssignedUser = existingIssue.assignedTo
+            ? await findUser(existingIssue.assignedTo)
+            : null;
+          console.log("previousAssignedUser", previousAssignedUser);
+
+          // Prepare human-readable change history
+          const editableFields: (keyof IAssetIssue)[] = [
+            "status",
+            "description",
+            "issueType",
+            "assignedTo"
+          ];
+
+          // Process each field change
+          const changePromises = editableFields.map(async (key) => {
+            const oldValue = existingIssue[key];
+            const newValue = payload[key];
+
+            if (oldValue !== newValue) {
+              let oldDisplayValue = oldValue ?? "-";
+              let newDisplayValue = newValue ?? "-";
+
+              // Special handling for assignedTo field - convert IDs to names
+              if (key === "assignedTo") {
+                if (oldValue) {
+                  const oldUser = await findUser(oldValue);
+                  oldDisplayValue = oldUser?.name ?? oldValue;
+                }
+                if (newValue) {
+                  const newUser = await findUser(newValue);
+                  newDisplayValue = newUser?.name ?? newValue;
+                }
+              }
+
+              return `${key} has been updated from '${oldDisplayValue}' to '${newDisplayValue}'`;
+            }
+            return null;
+          });
+
+          const changeResults = await Promise.all(changePromises);
+          const changes = changeResults.filter((change) => change !== null);
+
+          const formatted_history = changes.length ? changes.join(" | ") : "No changes detected";
+
+          // Update the issue
           result = await updateAssetIssue(payload.id, {
             ...payload,
             updatedBy: userInfo.user_id,
             updatedAt: new Date()
           });
+
+          // Save to history
           await createIssuesHistory({
             issuesId: payload.id,
             userId: userInfo.id,
-            formatted_history: payload.status,
-            previousStatus: payload.previousStatus
+            formatted_history,
+            previousStatus: existingIssue.status
           });
+
           return { success: true, data: result };
         }
       }
+
+      // Create new issue if no ID exists
       result = await createAssetIssues({
-        ...payload
+        ...payload,
+        updatedBy: userInfo.user_id
       });
 
       return { success: true, data: result };

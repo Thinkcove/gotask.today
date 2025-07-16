@@ -78,13 +78,16 @@ const EditIssue: React.FC = () => {
     try {
       const updatedFields: Partial<IAssetIssues> = {};
 
-      const compareAndUpdate = <K extends keyof IAssetIssues>(key: K) => {
+      const editableKeys: (keyof Pick<
+        IAssetIssues,
+        "status" | "description" | "issueType" | "assignedTo"
+      >)[] = ["status", "description", "issueType", "assignedTo"];
+
+      editableKeys.forEach((key) => {
         if (formData[key] !== issueById?.[key]) {
           updatedFields[key] = formData[key];
         }
-      };
-
-      compareAndUpdate("status");
+      });
 
       if (Object.keys(updatedFields).length === 0) {
         setSnackbar({
@@ -250,7 +253,7 @@ const EditIssue: React.FC = () => {
           assetOptions={assetOptions}
           statusOptions={statusOptions}
           errors={fieldErrors}
-          disabledFields={["assetId", "reportedBy", "issueType", "description", "assignedTo"]}
+          disabledFields={["assetId", "reportedBy"]}
         />
       </Grid>
       {openHistoryDrawer && issueById?.issuesHistory && selectedIssueId && (

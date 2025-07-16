@@ -72,7 +72,6 @@ const IssueInput: React.FC<IssueInputProps> = ({
             value={formData.issueType}
             error={errors?.issueType}
             onChange={(val) => onChange("issueType", String(val))}
-            disabled={disabledFields?.includes("issueType")}
           />
         </Grid>
 
@@ -83,7 +82,6 @@ const IssueInput: React.FC<IssueInputProps> = ({
             placeholder={transasset("description")}
             value={formData.description}
             onChange={(val) => onChange("description", String(val))}
-            disabled={disabledFields?.includes("description")}
           />
         </Grid>
 
@@ -96,7 +94,6 @@ const IssueInput: React.FC<IssueInputProps> = ({
             value={formData.status}
             error={errors?.status}
             onChange={(val) => onChange("status", String(val))}
-            disabled={disabledFields?.includes("status")}
           />
         </Grid>
 
@@ -109,7 +106,6 @@ const IssueInput: React.FC<IssueInputProps> = ({
             value={formData.assignedTo}
             error={errors?.assignedTo}
             onChange={(val) => onChange("assignedTo", String(val))}
-            disabled={disabledFields?.includes("assignedTo")}
           />
         </Grid>
       </Grid>

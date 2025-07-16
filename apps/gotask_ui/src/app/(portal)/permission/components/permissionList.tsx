@@ -99,11 +99,6 @@ const PermissionList = () => {
     return data?.data?.total_count || data?.total_count || PAGE_OPTIONS.ZERO;
   }, [data]);
 
-  // Calculate total pages
-  const totalPages = useMemo(() => {
-    return Math.ceil(totalCount / PAGE_OPTIONS.DEFAULT_ROWS_25);
-  }, [totalCount]);
-
   const onDateChange = (from: string, to: string) => {
     setDateFrom(from);
     setDateTo(to);

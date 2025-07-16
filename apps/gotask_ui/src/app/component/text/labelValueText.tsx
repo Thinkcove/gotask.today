@@ -13,7 +13,15 @@ const LabelValueText = ({ label, value, sx }: LabelValueTextProps) => {
       <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
         {label}
       </Typography>
-      <Typography variant="body1">{value}</Typography>
+      <Typography
+        variant="body1"
+        sx={{
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word"
+        }}
+      >
+        {value}
+      </Typography>
     </Box>
   );
 };

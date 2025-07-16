@@ -77,7 +77,8 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
     if (!form.status) newErrors.status = transkpi("statuserror");
     if (!form.weightage) newErrors.weightage = transkpi("weightageerror");
     if (!form.assigned_by) newErrors.assigned_by = transkpi("assignedbyerror");
-    if (!form.target_value) newErrors.target_value = transkpi("targetvalue");
+    if (!form.target_value) newErrors.target_value = transkpi("targetvalueerror");
+    if (!form.kpi_Description) newErrors.kpi_Description = transkpi("descriptionerror");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -85,6 +86,8 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
   const handleSubmit = async () => {
     if (!validateForm()) return;
     try {
+      const assignedByUser = users.find((u: User) => u.name === form.assigned_by);
+      const reviewerUser = users.find((u: User) => u.name === form.reviewer_id);
       const payload = {
         user_id: userId,
         template_id: form.template_id,
@@ -96,9 +99,8 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         target_value: form.target_value || "",
         comments: Array.isArray(form.comments) ? form.comments : [form.comments || ""],
         status: form.status || STATUS_OPTIONS.ACTIVE,
-        assigned_by:
-          users.find((u: User) => u.name === form.assigned_by)?.id || loginUser?.id || "",
-        reviewer_id: users.find((u: User) => u.name === form.reviewer_id)?.name || undefined
+        assigned_by: assignedByUser?.id || loginUser?.id || "",
+        reviewer_id: reviewerUser?.id || undefined
       };
       await createKpiAssignment(payload);
       setSnackbarMessage(transkpi("assignsuccess"));
@@ -225,9 +227,15 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
           flexWrap: "wrap"
         }}
       >
-        <Button variant="contained" color="primary" onClick={handleSaveAsTemplate}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSaveAsTemplate}
+          disabled={Boolean(selectedTemplateId)}
+        >
           {transkpi("saveastemplate")}
         </Button>
+
         <Box display="flex" gap={2} mt={{ xs: 2, sm: 0 }}>
           <Button variant="outlined" onClick={() => router.back()}>
             {transkpi("cancel")}

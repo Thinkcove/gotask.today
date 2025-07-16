@@ -1,7 +1,11 @@
 import React, { useMemo } from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
-import { KPI_FREQUENCY, STATUS_OPTIONS } from "@/app/common/constants/kpi";
+import {
+  KPI_FREQUENCY,
+  MEASUREMENT_CRITERIA_OPTIONS,
+  STATUS_OPTIONS
+} from "@/app/common/constants/kpi";
 import { KpiAssignment } from "../../../service/templateInterface";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -77,9 +81,14 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
           <Grid item xs={12} md={4}>
             <FormField
               label={`${transkpi("weightage")} ${transkpi("required")}`}
+              type="select"
               placeholder={transkpi("enterweightage")}
-              type="text"
-              value={form.weightage || ""}
+              options={MEASUREMENT_CRITERIA_OPTIONS.map((opt) => ({
+                id: String(opt.value),
+                name: opt.label
+              }))}
+              required
+              value={String(form.weightage)}
               onChange={(val) => handleChange("weightage", String(val))}
               error={errors.weightage}
             />
@@ -149,6 +158,11 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
               showSaveButton={false}
               userList={userList}
             />
+            {errors.kpi_Description && (
+              <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                {errors.kpi_Description}
+              </Typography>
+            )}
           </Grid>
         </>
       )}

@@ -99,6 +99,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
           </Box>
 
           {/* Description Section */}
+
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
               <LabelValueText

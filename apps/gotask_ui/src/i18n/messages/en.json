@@ -940,6 +940,8 @@
     "addedby":"Added By",
     "nocomment":"-",
     "add":"Add",
+    "createsuccess":"Template created successfully",
+    "createfailed":"Template Name already exists",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."

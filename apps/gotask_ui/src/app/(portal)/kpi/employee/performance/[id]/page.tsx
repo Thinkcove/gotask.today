@@ -17,6 +17,7 @@ interface PerformanceEntry {
   end_date?: string;
   added_by?: string;
   comment?: string;
+  notes?: string[];
 }
 
 const Page = () => {

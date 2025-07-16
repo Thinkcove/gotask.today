@@ -83,17 +83,19 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
               {assignment.kpi_Title}
             </Typography>
           </Box>
-          <Box>
-            <IconButton
-              color="primary"
-              onClick={() => router.push(`/kpi/employee/assignedTemplateEdit/${assignmentId}`)}
-            >
-              <Edit />
-            </IconButton>
-            <IconButton color="error" onClick={() => setOpenDialog(true)}>
-              <Delete />
-            </IconButton>
-          </Box>
+          {selectedTab === transkpi("general") && (
+            <Box>
+              <IconButton
+                color="primary"
+                onClick={() => router.push(`/kpi/employee/assignedTemplateEdit/${assignmentId}`)}
+              >
+                <Edit />
+              </IconButton>
+              <IconButton color="error" onClick={() => setOpenDialog(true)}>
+                <Delete />
+              </IconButton>
+            </Box>
+          )}
         </Box>
 
         {/* Main Tabs */}

@@ -228,7 +228,7 @@ export const fetchPerformanceById = async (performanceId: string) => {
       start_date: data.performance?.start_date,
       end_date: data.performance?.end_date,
       added_by: data.performance?.added_by,
-      comment: data.performance?.comment || "",
+      notes: data.performance?.notes || "",
       signature: data.performance?.signature || "",
       assignment: data.assignment || null
     };

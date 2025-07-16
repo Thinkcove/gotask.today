@@ -56,7 +56,7 @@ const CreateProject = ({ mutate }: CreateProjectProps) => {
 
   const handleSubmit = async () => {
     if (!validateForm(formData)) return;
-    setIsSubmitting(true); // Start loading
+    setIsSubmitting(true);
     try {
       await createProject(formData);
       if (mutate) await mutate();
@@ -73,10 +73,10 @@ const CreateProject = ({ mutate }: CreateProjectProps) => {
         severity: SNACKBAR_SEVERITY.ERROR
       });
     } finally {
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   };
-  
+
   const handleCancel = () => {
     router.back();
   };
@@ -84,7 +84,7 @@ const CreateProject = ({ mutate }: CreateProjectProps) => {
     <Box sx={{ maxWidth: "1400px", mx: "auto", display: "flex", flexDirection: "column" }}>
       {/* Sticky Header */}
       <FormHeader
-        isEdit={false} 
+        isEdit={false}
         onCancel={handleCancel}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}

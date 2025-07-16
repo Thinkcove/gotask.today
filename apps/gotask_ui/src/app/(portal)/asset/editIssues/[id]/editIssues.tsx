@@ -13,7 +13,15 @@ import {
 import IssueInput from "../../createIssues/issuesInput";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import { statusOptions } from "../../assetConstants";
+import {
+  assetId,
+  assignedTo,
+  description,
+  editstatus,
+  issueType,
+  reportedBy,
+  statusOptions
+} from "../../assetConstants";
 import { fetcherUserList } from "../../../user/services/userAction";
 import useSWR from "swr";
 import { IAssetAttributes, IAssetIssues } from "../../interface/asset";
@@ -78,13 +86,16 @@ const EditIssue: React.FC = () => {
     try {
       const updatedFields: Partial<IAssetIssues> = {};
 
-      const compareAndUpdate = <K extends keyof IAssetIssues>(key: K) => {
+      const editableKeys: (keyof Pick<
+        IAssetIssues,
+        "status" | "description" | "issueType" | "assignedTo"
+      >)[] = [editstatus, description, issueType, assignedTo];
+
+      editableKeys.forEach((key) => {
         if (formData[key] !== issueById?.[key]) {
           updatedFields[key] = formData[key];
         }
-      };
-
-      compareAndUpdate("status");
+      });
 
       if (Object.keys(updatedFields).length === 0) {
         setSnackbar({
@@ -250,7 +261,7 @@ const EditIssue: React.FC = () => {
           assetOptions={assetOptions}
           statusOptions={statusOptions}
           errors={fieldErrors}
-          disabledFields={["assetId", "reportedBy", "issueType", "description", "assignedTo"]}
+          disabledFields={[assetId, reportedBy]}
         />
       </Grid>
       {openHistoryDrawer && issueById?.issuesHistory && selectedIssueId && (

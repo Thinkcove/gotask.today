@@ -1,5 +1,6 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
+import { assignedTo, description, editstatus, issueType } from "../../constants/assetConstant";
 import { getAssetById } from "../../domain/interface/asset/asset";
 import {
   createIssuesHistory,
@@ -17,6 +18,7 @@ import {
   updateTag
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
+import { IAssetIssue } from "../../domain/model/assetIssues/assetIssues";
 import { IAssetTag } from "../../domain/model/assetTag/assetTag";
 
 class resourceService {
@@ -99,6 +101,39 @@ class resourceService {
     }
   };
 
+  generateChangeHistory = async (existingIssue: IAssetIssue, payload: any): Promise<string> => {
+    const editableFields: (keyof IAssetIssue)[] = [editstatus, description, issueType, assignedTo];
+
+    const changePromises = editableFields.map(async (key) => {
+      const oldValue = existingIssue[key];
+      const newValue = payload[key];
+
+      if (oldValue !== newValue) {
+        let oldDisplayValue = oldValue ?? "-";
+        let newDisplayValue = newValue ?? "-";
+
+        if (key === assignedTo) {
+          if (oldValue) {
+            const oldUser = await findUser(oldValue);
+            oldDisplayValue = oldUser?.name ?? oldValue;
+          }
+          if (newValue) {
+            const newUser = await findUser(newValue);
+            newDisplayValue = newUser?.name ?? newValue;
+          }
+        }
+
+        return `${key} has been updated from '${oldDisplayValue}' to '${newDisplayValue}'`;
+      }
+      return null;
+    });
+
+    const changeResults = await Promise.all(changePromises);
+    const changes = changeResults.filter((change) => change !== null);
+
+    return changes.length ? changes.join(" | ") : "No changes detected";
+  };
+
   createOrUpdateAssetIssues = async (payload: any, user: any): Promise<any> => {
     const userInfo = await findUserByEmail(user.user_id);
     if (!userInfo) {
@@ -107,27 +142,34 @@ class resourceService {
     if (!payload) {
       return { success: false, error: AssetMessages.CREATE.INVALID_PAYLOAD };
     }
+
     try {
       let result;
       if (payload.id) {
         const existingIssue = await getAssetIssueById(payload.id);
         if (existingIssue) {
+          const formatted_history = await this.generateChangeHistory(existingIssue, payload);
+
           result = await updateAssetIssue(payload.id, {
             ...payload,
             updatedBy: userInfo.user_id,
             updatedAt: new Date()
           });
+
           await createIssuesHistory({
             issuesId: payload.id,
             userId: userInfo.id,
-            formatted_history: payload.status,
-            previousStatus: payload.previousStatus
+            formatted_history,
+            previousStatus: existingIssue.status
           });
+
           return { success: true, data: result };
         }
       }
+
       result = await createAssetIssues({
-        ...payload
+        ...payload,
+        updatedBy: userInfo.user_id
       });
 
       return { success: true, data: result };

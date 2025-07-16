@@ -11,6 +11,22 @@ export const fetchAllgetpermission = async () => {
     return data || [];
   });
 };
+export const fetchPermissionsWithFilters = async (filters: {
+  user_id?: string | string[];
+  date?: string;
+  from_date?: string;
+  to_date?: string;
+  page?: number;
+  page_size?: number;
+  sort_field?: string;
+  sort_order?: string;
+}) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/permissionfilters`;
+    const { data } = await postData(url, filters as unknown as Record<string, unknown>, token);
+    return data || { permissions: [], total_count: 0, total_pages: 0, current_page: 1 };
+  });
+};
 
 export const createPermission = async (formData: PermissionPayload) => {
   return withAuth((token) => {

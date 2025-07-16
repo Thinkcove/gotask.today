@@ -5,7 +5,7 @@ import { IPermissionComment, PermissionComment } from "../../model/permission/pe
 import { SORT_ORDER } from "../../../constants/commonConstants/commonConstants";
 
 export interface FilterQuery {
-  user_id?: string;
+  user_id?: string | string[];
   date?: string;
   from_date?: string;
   to_date?: string;
@@ -19,7 +19,11 @@ const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermis
   const query: any = {};
 
   if (filters.user_id) {
-    query.user_id = filters.user_id;
+    if (Array.isArray(filters.user_id)) {
+      query.user_id = { $in: filters.user_id };
+    } else {
+      query.user_id = filters.user_id;
+    }
   }
 
   if (filters.date) {

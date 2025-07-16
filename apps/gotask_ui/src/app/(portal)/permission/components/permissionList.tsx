@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
-import { fetchAllgetpermission, deletePermission } from "../services/permissionAction";
+import { fetchPermissionsWithFilters, deletePermission } from "../services/permissionAction";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,7 +10,6 @@ import { useUser } from "@/app/userContext";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import Table from "@/app/component/table/table";
-import { isDateInRange } from "@/app/common/utils/dateTimeUtils";
 import PermissionFilter from "./permissionFilter";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { getPermissionColumns } from "./permissionColums";
@@ -20,6 +19,18 @@ import { User } from "../../user/interfaces/userInterface";
 import { useAllUsers } from "../../task/service/taskAction";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+import { DESC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
+
+// Define the expected type for filterPayload
+interface FilterPayload {
+  user_id?: string[];
+  from_date?: string;
+  to_date?: string;
+  page?: number;
+  page_size?: number;
+  sort_field?: string;
+  sort_order?: string;
+}
 
 const PermissionList = () => {
   const searchParams = useSearchParams();
@@ -27,7 +38,8 @@ const PermissionList = () => {
   const { getAllUsers: allUsers } = useAllUsers();
 
   const [userFilter, setUserFilter] = useState<string[]>(searchParams.getAll("user_name"));
-
+  const [page, setPage] = useState(0);
+  const pageSize = 25; // Changed to constant to fix lint error
   const router = useRouter();
   const { user } = useUser();
 
@@ -51,13 +63,50 @@ const PermissionList = () => {
     });
   };
 
-  const { data, mutate, isLoading } = useSWR("getpermission", fetchAllgetpermission);
+  const userIds = useMemo(() => {
+    return userFilter
+      .map((name) => allUsers.find((u: User) => u.name === name)?.id)
+      .filter((id): id is string => !!id);
+  }, [userFilter, allUsers]);
 
-  const displayData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
+  const filterPayload: FilterPayload = useMemo(
+    () => ({
+      user_id: userIds.length > 0 ? userIds : undefined,
+      from_date: dateFrom || undefined,
+      to_date: dateTo || undefined,
+      page: page + PAGE_OPTIONS.ONE,
+      page_size: pageSize, // Use the constant pageSize (number)
+      sort_field: "created_on",
+      sort_order: DESC
+    }),
+    [userIds, dateFrom, dateTo, page, pageSize]
+  );
+
+  const { data, mutate, isLoading } = useSWR(
+    ["permissionsWithFilters", filterPayload],
+    () => fetchPermissionsWithFilters(filterPayload),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false
+    }
+  );
+
+  const displayData = useMemo(() => {
+    return data?.data?.permissions || data?.permissions || [];
+  }, [data]);
+
+  const totalCount = useMemo(() => {
+    return data?.data?.total_count || data?.total_count || 0;
+  }, [data]);
 
   const onDateChange = (from: string, to: string) => {
     setDateFrom(from);
     setDateTo(to);
+    setPage(0);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
 
   const handleCreatePermission = () => {
@@ -79,6 +128,7 @@ const PermissionList = () => {
     setUserFilter([]);
     setDateFrom("");
     setDateTo("");
+    setPage(0);
   };
 
   const handleSnackbarClose = () => {
@@ -108,20 +158,9 @@ const PermissionList = () => {
   };
 
   const filteredPermissions = useMemo(() => {
-    if (!displayData || !Array.isArray(displayData)) return [];
+    return displayData;
+  }, [displayData]);
 
-    return displayData.filter((perm: PermissionData) => {
-      const matchesUser =
-        userFilter.length === 0 ||
-        userFilter.some((name) => perm.user_name.toLowerCase().includes(name.toLowerCase()));
-
-      const matchesDateRange = isDateInRange(perm.date, dateFrom, dateTo);
-
-      return matchesUser && matchesDateRange;
-    });
-  }, [displayData, userFilter, dateFrom, dateTo]);
-
-  // This is fine if getPermissionColumns is not expensive
   const permissionColumns = getPermissionColumns({
     onViewClick: handleViewClick,
     onDeleteClick: handleDeleteClick,
@@ -201,6 +240,8 @@ const PermissionList = () => {
                         columns={permissionColumns}
                         rows={filteredPermissions}
                         isLoading={isLoading}
+                        totalCount={totalCount}
+                        onPageChange={handlePageChange}
                       />
                     </Box>
                   </Box>

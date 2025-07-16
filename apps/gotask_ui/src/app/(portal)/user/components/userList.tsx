@@ -25,12 +25,13 @@ const UserList = () => {
 
   const savedFilters = getStoredObj("userListFilter") || {};
 
-  const [searchTerm, _setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
-  const [userStatusFilter, _setUserStatusFilter] = useState<string[]>(
+  const [searchTerm, setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
+
+  const [userStatusFilter, setUserStatusFilterRaw] = useState<string[]>(
     savedFilters.userStatusFilter || ["All"]
   );
 
-  //single helper to save current filters
+  // single helper to save current filters
   const saveFilters = (filters: { searchTerm?: string; userStatusFilter?: string[] }) => {
     setStorage("userListFilter", {
       searchTerm: filters.searchTerm ?? searchTerm,
@@ -38,14 +39,13 @@ const UserList = () => {
     });
   };
 
-  //shorter wrapped setters
-  const setSearchTerm = (val: string) => {
-    _setSearchTerm(val);
+  const handleSearchTermChange = (val: string) => {
+    setSearchTerm(val);
     saveFilters({ searchTerm: val });
   };
 
   const setUserStatusFilter = (val: string[]) => {
-    _setUserStatusFilter(val);
+    setUserStatusFilterRaw(val);
     saveFilters({ userStatusFilter: val });
   };
 
@@ -79,7 +79,7 @@ const UserList = () => {
         <Box mb={2} maxWidth={400}>
           <SearchBar
             value={searchTerm}
-            onChange={setSearchTerm}
+            onChange={handleSearchTermChange}
             sx={{ width: "100%" }}
             placeholder={transuser("searchplaceholder")}
           />

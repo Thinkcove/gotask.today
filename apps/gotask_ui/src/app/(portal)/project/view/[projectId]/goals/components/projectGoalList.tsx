@@ -151,7 +151,7 @@ function ProjectGoalList() {
       </Box>
     );
   }
-  
+
   const noGoalsAtAll = allGoals.filter((goal) => goal.projectId === projectID).length === 0;
   const noFilteredResults = filteredGoals?.length === 0;
   const isFilterActive =

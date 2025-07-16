@@ -108,16 +108,6 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
         users={users}
       />
 
-      <Box display="flex" justifyContent="flex-start" mt={3}>
-        <Button
-          variant="outlined"
-          sx={{ borderColor: "#741B92", color: "#741B92" }}
-          onClick={() => router.push(`/kpi/employee/addScore/${assignment.assignment_id}`)}
-        >
-          {transkpi("addperformance")}
-        </Button>
-      </Box>
-
       <Box display="flex" justifyContent="flex-end" gap={2} mt={4}>
         <Button variant="outlined" onClick={() => router.back()}>
           {transkpi("cancel")}

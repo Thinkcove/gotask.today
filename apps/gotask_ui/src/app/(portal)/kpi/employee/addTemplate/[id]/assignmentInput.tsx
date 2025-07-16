@@ -46,6 +46,12 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
 }) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
+  const weightageOptions = () => {
+    return MEASUREMENT_CRITERIA_OPTIONS.map((opt) => ({
+      id: String(opt.value),
+      name: opt.label
+    }));
+  };
 
   const userList = useMemo(() => {
     return mapUsersToMentions(fetchedUsers || []);
@@ -83,10 +89,7 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
               label={`${transkpi("weightage")} ${transkpi("required")}`}
               type="select"
               placeholder={transkpi("enterweightage")}
-              options={MEASUREMENT_CRITERIA_OPTIONS.map((opt) => ({
-                id: String(opt.value),
-                name: opt.label
-              }))}
+              options={weightageOptions()}
               required
               value={String(form.weightage)}
               onChange={(val) => handleChange("weightage", String(val))}

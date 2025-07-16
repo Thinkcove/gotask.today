@@ -1,20 +1,20 @@
 "use client";
 import React, { useState } from "react";
-import { IProjectField, Project, PROJECT_STATUS } from "../interfaces/projectInterface";
-import { createProject } from "../services/projectAction";
-import ProjectInput from "./projectInputs";
-import { KeyedMutator } from "swr";
-import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import CustomSnackbar from "@/app/component/snackBar/snackbar";
-import CommonDialog from "@/app/component/dialog/commonDialog";
-import { LOCALIZATION } from "@/app/common/constants/localization";
+import { Box, Button, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { IProjectField, PROJECT_STATUS, Project } from "../interfaces/projectInterface";
+import { createProject } from "../services/projectAction";
+import ProjectInput from "../components/projectInputs";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { KeyedMutator } from "swr";
 import { User } from "../../user/interfaces/userInterface";
+import FormHeader from "@/app/component/header/formHeader";
 
 interface CreateProjectProps {
-  open: boolean;
-  onClose: () => void;
-  mutate: KeyedMutator<Project>;
+  mutate?: KeyedMutator<Project>;
 }
 
 const initialFormState: IProjectField = {
@@ -24,8 +24,9 @@ const initialFormState: IProjectField = {
   organization_id: ""
 };
 
-const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
+const CreateProject = ({ mutate }: CreateProjectProps) => {
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const router = useRouter();
 
   const [formData, setFormData] = useState<IProjectField>(initialFormState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -51,41 +52,54 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (!validateForm(formData)) return;
-
+    setIsSubmitting(true);
     try {
       await createProject(formData);
-      await mutate();
+      if (mutate) await mutate();
       setSnackbar({
         open: true,
         message: transproject("successmessage"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      handleClose();
+      router.push("/project");
     } catch {
       setSnackbar({
         open: true,
         message: transproject("errormessage"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleClose = () => {
-    setFormData(initialFormState);
-    setErrors({});
-    onClose();
+  const handleCancel = () => {
+    router.back();
   };
-
   return (
-    <>
-      <CommonDialog
-        open={open}
-        onClose={handleClose}
+    <Box sx={{ maxWidth: "1400px", mx: "auto", display: "flex", flexDirection: "column" }}>
+      {/* Sticky Header */}
+      <FormHeader
+        isEdit={false}
+        onCancel={handleCancel}
         onSubmit={handleSubmit}
-        title={transproject("createnew")}
+        isSubmitting={isSubmitting}
+        cancel={transproject("cancelproject")}
+        create={transproject("submitproject")}
+        createHeading={transproject("createnew")}
+      />
+      {/* Input Form */}
+      <Box
+        sx={{
+          px: 2,
+          pb: 2,
+          maxHeight: "calc(100vh - 150px)",
+          overflowY: "auto"
+        }}
       >
         <ProjectInput
           formData={formData}
@@ -93,14 +107,16 @@ const CreateProject = ({ open, onClose, mutate }: CreateProjectProps) => {
           errors={errors}
           readOnlyFields={["status"]}
         />
-      </CommonDialog>
+      </Box>
+
+      {/* Snackbar */}
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}
         severity={snackbar.severity}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       />
-    </>
+    </Box>
   );
 };
 

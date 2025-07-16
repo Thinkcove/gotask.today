@@ -55,7 +55,14 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
     >
       {/* Header */}
       <Box display="flex" alignItems="center" justifyContent="space-between" gap={2} mb={2}>
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={2}
+          sx={{
+            position: "sticky"
+          }}
+        >
           <ArrowBackIcon
             sx={{ cursor: "pointer", color: "#741B92" }}
             onClick={() => router.push("/kpi/employee")}

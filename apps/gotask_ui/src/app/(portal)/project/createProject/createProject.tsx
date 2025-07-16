@@ -52,10 +52,11 @@ const CreateProject = ({ mutate }: CreateProjectProps) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (!validateForm(formData)) return;
-
+    setIsSubmitting(true); // Start loading
     try {
       await createProject(formData);
       if (mutate) await mutate();
@@ -71,10 +72,11 @@ const CreateProject = ({ mutate }: CreateProjectProps) => {
         message: transproject("errormessage"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
+    } finally {
+      setIsSubmitting(false); 
     }
   };
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  
   const handleCancel = () => {
     router.back();
   };

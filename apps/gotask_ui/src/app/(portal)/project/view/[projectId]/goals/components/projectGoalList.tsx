@@ -10,6 +10,8 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { formatStatus, priorityOptions, statusOptions } from "@/app/common/constants/project";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { fetchWeeklyGoals } from "../goalservices/projectGoalAction";
 import { GoalData } from "../interface/projectGoal";
 import ProjectGoals from "./projectGoals";
@@ -22,6 +24,16 @@ function ProjectGoalList() {
   const router = useRouter();
 
   const projectID = projectId as string;
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
+
+  const handleSnackbarClose = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -207,6 +219,13 @@ function ProjectGoalList() {
         label={transGoal("creategoal")}
         icon={<AddIcon sx={{ color: "white" }} />}
         onClick={handleCreateGoal}
+      />
+
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleSnackbarClose}
       />
     </Box>
   );

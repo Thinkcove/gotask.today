@@ -24,7 +24,7 @@ export const fetchPermissionsWithFilters = async (filters: {
   return withAuth(async (token) => {
     const url = `${env.API_BASE_URL}/permissionfilters`;
     const { data } = await postData(url, filters as unknown as Record<string, unknown>, token);
-    return data || { permissions: [], total_count: 0, total_pages: 0, current_page: 1 };
+    return data || [];
   });
 };
 

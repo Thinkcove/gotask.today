@@ -35,19 +35,15 @@ const PermissionList = () => {
   const searchParams = useSearchParams();
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
   const { getAllUsers: allUsers } = useAllUsers();
-
   const [userFilter, setUserFilter] = useState<string[]>(searchParams.getAll("user_name"));
-  const [page, setPage] = useState(0);
-  const pageSize = 25;
   const router = useRouter();
   const { user } = useUser();
-
+  const [page, setPage] = useState(0);
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
   const [selectedPermission, setSelectedPermission] = useState<PermissionData | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
-
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -62,6 +58,11 @@ const PermissionList = () => {
     });
   };
 
+  const onUserChange = (newUserFilter: string[]) => {
+    setUserFilter(newUserFilter);
+    setPage(0);
+  };
+
   const userIds = useMemo(() => {
     return userFilter
       .map((name) => allUsers.find((u: User) => u.name === name)?.id)
@@ -74,11 +75,11 @@ const PermissionList = () => {
       from_date: dateFrom || undefined,
       to_date: dateTo || undefined,
       page: page + PAGE_OPTIONS.ONE,
-      page_size: pageSize,
+      page_size: PAGE_OPTIONS.DEFAULT_ROWS_25,
       sort_field: "created_on",
       sort_order: DESC
     }),
-    [userIds, dateFrom, dateTo, page, pageSize]
+    [userIds, dateFrom, dateTo, page]
   );
 
   const { data, mutate, isLoading } = useSWR(
@@ -95,17 +96,26 @@ const PermissionList = () => {
   }, [data]);
 
   const totalCount = useMemo(() => {
-    return data?.data?.total_count || data?.total_count || 0;
+    return data?.data?.total_count || data?.total_count || PAGE_OPTIONS.ZERO;
   }, [data]);
+
+  // Calculate total pages
+  const totalPages = useMemo(() => {
+    return Math.ceil(totalCount / PAGE_OPTIONS.DEFAULT_ROWS_25);
+  }, [totalCount]);
 
   const onDateChange = (from: string, to: string) => {
     setDateFrom(from);
     setDateTo(to);
-    setPage(0);
+    setPage(0); // Reset page when date filter changes
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
+  const handlePageChange = (newPage: number, limit: number) => {
+    // Validate the new page before setting it
+    const newTotalPages = Math.ceil(totalCount / limit);
+    if (newPage >= 0 && newPage < newTotalPages) {
+      setPage(newPage);
+    }
   };
 
   const handleCreatePermission = () => {
@@ -127,7 +137,7 @@ const PermissionList = () => {
     setUserFilter([]);
     setDateFrom("");
     setDateTo("");
-    setPage(0);
+    setPage(0); // Reset page when filters are cleared
   };
 
   const handleSnackbarClose = () => {
@@ -136,7 +146,6 @@ const PermissionList = () => {
 
   const handleDeleteConfirm = async () => {
     if (!selectedPermission) return;
-
     setIsDeleting(true);
     try {
       await deletePermission(selectedPermission.id);
@@ -144,6 +153,13 @@ const PermissionList = () => {
       setSelectedPermission(null);
       mutate();
       showSnackbar(transpermission("deletesuccess"), SNACKBAR_SEVERITY.SUCCESS);
+
+      // Check if current page is now empty and adjust if necessary
+      const newTotalCount = totalCount - PAGE_OPTIONS.ONE;
+      const newTotalPages = Math.ceil(newTotalCount / PAGE_OPTIONS.DEFAULT_ROWS_25);
+      if (page >= newTotalPages && newTotalPages > PAGE_OPTIONS.ZERO) {
+        setPage(newTotalPages - PAGE_OPTIONS.ONE);
+      }
     } catch {
       showSnackbar(transpermission("deletefailed"), SNACKBAR_SEVERITY.ERROR);
     } finally {
@@ -203,7 +219,7 @@ const PermissionList = () => {
             <PermissionFilter
               userFilter={userFilter}
               allUsers={allUsers.map((u: User) => u.name)}
-              onUserChange={setUserFilter}
+              onUserChange={onUserChange}
               dateFrom={dateFrom}
               dateTo={dateTo}
               onDateChange={onDateChange}
@@ -212,7 +228,6 @@ const PermissionList = () => {
               clearText={transpermission("clearall")}
             />
           </Box>
-
           <Box
             sx={{
               width: "100%",
@@ -250,7 +265,6 @@ const PermissionList = () => {
           </Box>
         </>
       )}
-
       <CommonDialog
         open={isDeleteDialogOpen}
         onClose={handleDeleteCancel}
@@ -262,14 +276,12 @@ const PermissionList = () => {
       >
         <Typography sx={{ pt: 2 }}>{transpermission("deleteconfirm")}</Typography>
       </CommonDialog>
-
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}
         severity={snackbar.severity}
         onClose={handleSnackbarClose}
       />
-
       <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
         <ActionButton
           label={transpermission("createpermission")}

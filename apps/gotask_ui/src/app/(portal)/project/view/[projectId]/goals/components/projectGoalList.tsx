@@ -107,6 +107,11 @@ function ProjectGoalList() {
     setPage(1);
   };
 
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setPage(1);
+  };
+
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
 
@@ -146,42 +151,45 @@ function ProjectGoalList() {
       </Box>
     );
   }
-
+  const noGoalsForProject =
+    filteredGoals?.length === 0 ||
+    allGoals.filter((goal) => goal.projectId === projectID).length === 0;
   return (
-    <Box sx={{ pt: 2 }}>
-      <GoalFilterBar
-        searchTerm={searchTerm}
-        onSearchChange={(value) => {
-          setSearchTerm(value);
-          setPage(1);
-        }}
-        onBack={handleGoBack}
-        statusFilter={statusFilter}
-        severityFilter={severityFilter}
-        onStatusChange={onStatusChange}
-        onSeverityChange={onSeverityChange}
-        onClearFilters={onClearFilters}
-        statusOptions={Object.values(statusOptions)}
-        priorityOptions={Object.values(priorityOptions)}
-        showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
-        clearText={transGoal("clearall")}
-        searchPlaceholder={transGoal("searchplaceholder")}
-        filterpriority={transGoal("filterpriority")}
-        filterstatus={transGoal("filterstatus")}
-      />
-
-      {filteredGoals?.length === 0 ? (
+    <Box>
+      {noGoalsForProject ? (
         <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
       ) : (
-        <ProjectGoals
-          projectGoals={filteredGoals}
-          isLoading={isLoading}
-          error={!!error}
-          formatStatus={formatStatus}
-          projectId={projectID}
-          projectGoalView={handleProjectGoalView}
-          handleScroll={handleScroll}
-        />
+        <>
+          <GoalFilterBar
+            searchTerm={searchTerm}
+            onSearchChange={(value) => {
+              handleSearch(value);
+            }}
+            onBack={handleGoBack}
+            statusFilter={statusFilter}
+            severityFilter={severityFilter}
+            onStatusChange={onStatusChange}
+            onSeverityChange={onSeverityChange}
+            onClearFilters={onClearFilters}
+            statusOptions={Object.values(statusOptions)}
+            priorityOptions={Object.values(priorityOptions)}
+            showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
+            clearText={transGoal("clearall")}
+            searchPlaceholder={transGoal("searchplaceholder")}
+            filterpriority={transGoal("filterpriority")}
+            filterstatus={transGoal("filterstatus")}
+          />
+
+          <ProjectGoals
+            projectGoals={filteredGoals}
+            isLoading={isLoading}
+            error={!!error}
+            formatStatus={formatStatus}
+            projectId={projectID}
+            projectGoalView={handleProjectGoalView}
+            handleScroll={handleScroll}
+          />
+        </>
       )}
 
       {/* Snackbar */}

@@ -24,7 +24,7 @@ import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import TaskFilters from "@/app/component/filters/taskFilters";
-import { getStoredObj, removeStorage, setStorage } from "@/app/(portal)/access/utils/storage";
+import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
 
 interface TaskListProps {
   initialView?: "projects" | "users";

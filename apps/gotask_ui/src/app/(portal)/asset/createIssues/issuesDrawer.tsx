@@ -128,18 +128,33 @@ const IssueHistoryDrawer: React.FC<IssueHistoryDrawerProps> = ({
                     ? item.formatted_history
                         .split(" | ")
                         .filter((entry) => !entry.toLowerCase().includes("tag"))
-                        .map((entry, index) => (
-                          <Box key={index} sx={{ mb: 1.5 }}>
-                            <Typography variant="body2" sx={{ ml: 2 }}>
-                              {entry.trim().replace(TRAILING_DOTS_REGEX, "")}
-                            </Typography>
-                          </Box>
-                        ))
+                        .map((entry, index) => {
+                          const [field, ...rest] = entry.trim().split(" ");
+                          const restOfSentence = rest.join(" ").trim();
+                          const formattedField = field.charAt(0).toUpperCase() + field.slice(1);
+
+                          return (
+                            <Box key={index} sx={{ mb: 1.5 }}>
+                              <Typography variant="body2" sx={{ ml: 2 }}>
+                                {formattedField} {restOfSentence.replace(TRAILING_DOTS_REGEX, "")}
+                              </Typography>
+                            </Box>
+                          );
+                        })
                     : !item.formatted_history.toLowerCase().includes("tag") && (
-                        <Typography variant="body2" sx={{ ml: 2, mb: 1.5 }}>
-                          {transasset("statusupdated")} {item?.previousStatus || "-"}{" "}
-                          {transasset("to")} {item.formatted_history}
-                        </Typography>
+                        <>
+                          {item.formatted_history.split(" | ").map((entry, index) => {
+                            const cleanedEntry = entry.trim().replace(TRAILING_DOTS_REGEX, "");
+                            const capitalizedEntry =
+                              cleanedEntry.charAt(0).toUpperCase() + cleanedEntry.slice(1);
+
+                            return (
+                              <Typography key={index} variant="body2" sx={{ ml: 2, mb: 1 }}>
+                                {capitalizedEntry}
+                              </Typography>
+                            );
+                          })}
+                        </>
                       )}
                   <Box sx={{ textAlign: "right", width: "100%", mt: 1 }}>
                     <Typography variant="caption" color="text.secondary">

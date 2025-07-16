@@ -28,7 +28,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 import { useAllUsers } from "../../task/service/taskAction";
 import { User } from "../../task/interface/taskInterface";
-import { getStoredObj, removeStorage, setStorage } from "@/app/(portal)/access/utils/storage";
+import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";

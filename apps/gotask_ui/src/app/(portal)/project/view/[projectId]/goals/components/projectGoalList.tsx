@@ -41,13 +41,11 @@ function ProjectGoalList() {
 
   const savedFilters = getStoredObj("projectGoalListFilter") || {};
 
-  const [searchTerm, _setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
+  const [searchTerm, setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
 
-  const [statusFilter, _setStatusFilter] = useState<string[]>(savedFilters.statusFilter || []);
+  const [statusFilter, setStatusFilter] = useState<string[]>(savedFilters.statusFilter || []);
 
-  const [severityFilter, _setSeverityFilter] = useState<string[]>(
-    savedFilters.severityFilter || []
-  );
+  const [severityFilter, setSeverityFilter] = useState<string[]>(savedFilters.severityFilter || []);
 
   const saveFilters = (filters: {
     searchTerm?: string;
@@ -61,23 +59,25 @@ function ProjectGoalList() {
     });
   };
 
-  const setSearchTerm = (val: string) => {
-    _setSearchTerm(val);
+  const handleSearchTermChange = (val: string) => {
+    setSearchTerm(val);
     saveFilters({ searchTerm: val });
   };
 
-  const setStatusFilter = (val: string[]) => {
-    _setStatusFilter(val);
+  const handleStatusFilterChange = (val: string[]) => {
+    setStatusFilter(val);
     saveFilters({ statusFilter: val });
   };
 
-  const setSeverityFilter = (val: string[]) => {
-    _setSeverityFilter(val);
+  const handleSeverityFilterChange = (val: string[]) => {
+    setSeverityFilter(val);
     saveFilters({ severityFilter: val });
   };
 
+  const swrKey = `weekly-goals-${projectID}-${page}-${statusFilter.join(",")}-${severityFilter.join(",")}-${searchTerm}`;
+
   const { isLoading, error } = useSWR(
-    `weekly-goals-${projectID}-${page}-${statusFilter.join(",")}-${severityFilter.join(",")}-${searchTerm}`,
+    swrKey,
     () =>
       fetchWeeklyGoals({
         projectId: projectID,
@@ -131,12 +131,12 @@ function ProjectGoalList() {
 
   // Filter handlers
   const onStatusChange = (selected: string[]) => {
-    setStatusFilter(selected);
+    handleStatusFilterChange(selected);
     setPage(1);
   };
 
   const onSeverityChange = (selected: string[]) => {
-    setSeverityFilter(selected);
+    handleSeverityFilterChange(selected);
     setPage(1);
   };
 
@@ -186,7 +186,7 @@ function ProjectGoalList() {
       <GoalFilterBar
         searchTerm={searchTerm}
         onSearchChange={(value) => {
-          setSearchTerm(value);
+          handleSearchTermChange(value);
           setPage(1);
         }}
         onBack={handleGoBack}

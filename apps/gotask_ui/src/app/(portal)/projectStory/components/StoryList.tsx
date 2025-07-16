@@ -28,9 +28,9 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
   const savedFilters = getStoredObj("storyListFilters") || {};
 
-  const [status, _setStatus] = useState<string[]>(savedFilters.status || []);
-  const [startDate, _setStartDate] = useState<string>(savedFilters.startDate || "");
-  const [searchTerm, _setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
+  const [status, setStatus] = useState<string[]>(savedFilters.status || []);
+  const [startDate, setStartDate] = useState<string>(savedFilters.startDate || "");
+  const [searchTerm, setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
 
   const saveFilters = (filters: { status?: string[]; startDate?: string; searchTerm?: string }) => {
     setStorage("storyListFilters", {
@@ -40,25 +40,25 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
     });
   };
 
-  const setStatus = (val: string[]) => {
-    _setStatus(val);
+  const handleStatusChange = (val: string[]) => {
+    setStatus(val);
     saveFilters({ status: val });
   };
 
-  const setStartDate = (val: string) => {
-    _setStartDate(val);
+  const handleStartDateChange = (val: string) => {
+    setStartDate(val);
     saveFilters({ startDate: val });
   };
 
-  const setSearchTerm = (val: string) => {
-    _setSearchTerm(val);
+  const handleSearchTermChange = (val: string) => {
+    setSearchTerm(val);
     saveFilters({ searchTerm: val });
   };
 
   const clearFilters = () => {
-    _setStatus([]);
-    _setStartDate("");
-    _setSearchTerm("");
+    setStatus([]);
+    setStartDate("");
+    setSearchTerm("");
     removeStorage("storyListFilters");
   };
 
@@ -131,15 +131,15 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
         startDate={startDate}
         searchTerm={searchTerm}
         onStatusChange={(val) => {
-          setStatus(val);
+          handleStatusChange(val);
           setSize(1);
         }}
         onStartDateChange={(val) => {
-          setStartDate(val);
+          handleStartDateChange(val);
           setSize(1);
         }}
         onSearchChange={(val) => {
-          setSearchTerm(val);
+          handleSearchTermChange(val);
           setSize(1);
         }}
         onClearFilters={() => {

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Button, IconButton, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import ProjectInput from "../../components/projectInputs";
 import { updateProject } from "../../services/projectAction";
@@ -10,7 +10,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { IProjectField, Project, PROJECT_STATUS } from "../../interfaces/projectInterface";
-import { ArrowBack } from "@mui/icons-material";
+import FormHeader from "@/app/component/header/formHeader";
 
 interface EditProjectProps {
   data: IProjectField;
@@ -50,9 +50,12 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
   const handleChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
+
+    setIsSubmitting(true);
     try {
       await updateProject(projectID, formData);
       await mutate();
@@ -62,7 +65,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       setTimeout(() => {
-        router.push("/project"); // redirect to project list
+        router.push("/project");
       }, 1500);
     } catch {
       setSnackbar({
@@ -70,7 +73,13 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
         message: transproject("updateerror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
+    } finally {
+      setIsSubmitting(false); // <--- reset after submit
     }
+  };
+
+  const handleCancel = () => {
+    router.back();
   };
 
   return (
@@ -86,29 +95,16 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
       }}
     >
       {/* Sticky Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton color="primary" onClick={() => router.back()}>
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {transproject("edittitle")}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <Button variant="outlined" onClick={() => router.back()} sx={{ borderRadius: 30 }}>
-            {transproject("cancelproject")}
-          </Button>
 
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            sx={{ borderRadius: 30, backgroundColor: "#741B92", fontWeight: "bold" }}
-          >
-            {transproject("submitproject")}
-          </Button>
-        </Box>
-      </Box>
+      <FormHeader
+        isEdit={true}
+        onCancel={handleCancel}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        editheading={transproject("edittitle")} // instead of hardcoded "Edit Something"
+        cancel={transproject("cancelproject")}
+        update={transproject("submitproject")}
+      />
 
       {/* Form Section */}
       <Box

@@ -19,7 +19,7 @@ const ProjectList = () => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: projects, mutate: ProjectUpdate } = useSWR("fetch-projects", fetcher);
+  const { data: projects } = useSWR("fetch-projects", fetcher);
   const router = useRouter();
   const filteredProjects = !projects
     ? null

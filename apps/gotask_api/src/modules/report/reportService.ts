@@ -20,6 +20,25 @@ const getUserTimeReportService = async (
   }
 
   pipeline.push({ $match: userMatch });
+
+  pipeline.push({
+    $lookup: {
+      from: "users", // name of your users collection
+      localField: "user_id", // field in Task
+      foreignField: "id", // field in User
+      as: "user"
+    }
+  });
+
+  pipeline.push({ $unwind: "$user" });
+
+  pipeline.push({
+    $addFields: {
+      user_name: "$user.name"
+    }
+  });
+
+  // Now continue as before
   pipeline.push({ $unwind: "$time_spent" });
 
   pipeline.push({

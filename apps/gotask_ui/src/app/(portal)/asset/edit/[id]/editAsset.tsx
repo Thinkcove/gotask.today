@@ -284,7 +284,8 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
                       alignItems: "center",
                       gap: 0.5,
                       color: "#741B92",
-                      cursor: "pointer"
+                      cursor: "pointer",
+                      pl: 5
                     }}
                   >
                     <Typography variant="body2" sx={{ textDecoration: "underline" }}>

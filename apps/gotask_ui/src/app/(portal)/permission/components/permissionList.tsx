@@ -73,13 +73,8 @@ const PermissionList = () => {
     [userIds, dateFrom, dateTo, page, pageSize, sortField, sortOrder]
   );
 
-  const { data, mutate, isLoading } = useSWR(
-    ["permissionsWithFilters", filterPayload],
-    () => fetchPermissionsWithFilters(filterPayload),
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false
-    }
+  const { data, mutate, isLoading } = useSWR(["permissionsWithFilters", filterPayload], () =>
+    fetchPermissionsWithFilters(filterPayload)
   );
 
   const displayData = useMemo(() => {
@@ -122,6 +117,17 @@ const PermissionList = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
+  const handlePageChange = (newPage: number, newLimit: number) => {
+    setPage(newPage);
+    setPageSize(newLimit);
+  };
+
+  const handleSortChange = (key: string, order: "asc" | "desc") => {
+    setSortField(key);
+    setSortOrder(order);
+    setPage(0); // Reset to first page when sorting changes
+  };
+
   const handleDeleteConfirm = async () => {
     if (!selectedPermission) return;
     setIsDeleting(true);
@@ -132,7 +138,6 @@ const PermissionList = () => {
       mutate();
       showSnackbar(transpermission("deletesuccess"), SNACKBAR_SEVERITY.SUCCESS);
 
-      // Check if current page is now empty and adjust if necessary
       const newTotalCount = totalCount - PAGE_OPTIONS.ONE;
       const newTotalPages = Math.ceil(newTotalCount / PAGE_OPTIONS.DEFAULT_ROWS_25);
       if (page >= newTotalPages && newTotalPages > PAGE_OPTIONS.ZERO) {
@@ -219,16 +224,9 @@ const PermissionList = () => {
                         PAGE_OPTIONS.DEFAULT_ROWS_45
                       ]}
                       defaultRowsPerPage={PAGE_OPTIONS.DEFAULT_ROWS_25}
-                      onPageChange={(newPage, newLimit) => {
-                        setPage(newPage);
-                        setPageSize(newLimit);
-                      }}
+                      onPageChange={handlePageChange}
                       totalCount={totalCount}
-                      onSortChange={(key, order) => {
-                        setSortField(key);
-                        setSortOrder(order);
-                        setPage(0);
-                      }}
+                      onSortChange={handleSortChange}
                     />
                   </Box>
                 </Box>

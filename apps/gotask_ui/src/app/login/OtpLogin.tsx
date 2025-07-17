@@ -25,6 +25,8 @@ const OtpLogin = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
 
+  console.log("otp", otp);
+
   const startCountdown = (count: number) => {
     setResendTimer(count);
 
@@ -76,6 +78,7 @@ const OtpLogin = () => {
       if (res.ok && data.success) {
         setOtpSent(true);
         startCountdown(60);
+        setOtp("");
       } else {
         setError(data.error || data.message || translogin("otpfail"));
       }

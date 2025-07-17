@@ -1,9 +1,9 @@
 "use client";
 
+import { useEffect, useState, useCallback } from "react";
 import { RichTextEditor, LinkBubbleMenu, TableBubbleMenu, MenuButton } from "mui-tiptap";
 import { Box, Button, Stack } from "@mui/material";
 import { Lock, LockOpen, TextFields } from "@mui/icons-material";
-import { useState, useCallback } from "react";
 import type { EditorOptions } from "@tiptap/core";
 import type { Editor } from "@tiptap/react";
 import useExtensions from "./useExtensions";
@@ -35,9 +35,14 @@ const ReusableEditor = ({
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const extensions = useExtensions({ placeholder, userList });
 
+  const [isMounted, setIsMounted] = useState(false);
   const [isEditable, setIsEditable] = useState(!readOnly);
   const [showMenuBar, setShowMenuBar] = useState(true);
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const insertImageAsBase64 = useCallback(
     (file: File) => {
@@ -89,6 +94,8 @@ const ReusableEditor = ({
       onSave(editorInstance.getHTML().trim());
     }
   };
+
+  if (!isMounted) return null;
 
   return (
     <Box>

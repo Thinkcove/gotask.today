@@ -14,7 +14,7 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import { ASC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
+import { DESC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 import { useAllUsers } from "../../task/service/taskAction";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
 
@@ -34,8 +34,8 @@ const LeaveList: React.FC = () => {
   });
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(PAGE_OPTIONS.DEFAULT_ROWS_25);
-  const [sortField, setSortField] = useState<string>("from_date");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(ASC);
+  const [sortField, setSortField] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(DESC);
 
   const { getAllUsers: allUsers } = useAllUsers();
   const leaveTypes = useMemo(() => Object.values(LEAVE_TYPE), []);

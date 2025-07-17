@@ -67,7 +67,7 @@ const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> =>
   if (filters.sort_field) {
     sort[filters.sort_field] = filters.sort_order === SORT_ORDER.DESC ? -1 : 1;
   } else {
-    sort.created_on = -1;
+    sort.createdAt = -1;
   }
 
   let queryBuilder = Leave.find(query).sort(sort);
@@ -96,7 +96,7 @@ const createNewLeave = async (leaveData: Partial<ILeave>): Promise<ILeave> => {
 };
 
 const findAllLeaves = async (): Promise<ILeave[]> => {
-  return await Leave.find().sort({ created_on: -1 });
+  return await Leave.find().sort({ createdAt: -1 });
 };
 
 const findLeaveById = async (id: string): Promise<ILeave | null> => {
@@ -116,7 +116,7 @@ const updateALeave = async (id: string, updateData: Partial<ILeave>): Promise<IL
 
     const updatedLeave = await Leave.findOneAndUpdate(
       { id },
-      { ...updateData, updated_on: new Date() },
+      { ...updateData, updatedAt: new Date() },
       { new: true }
     );
 

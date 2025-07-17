@@ -188,8 +188,8 @@ const getLeavesWithFiltersService = async (filters: {
       ...query,
       page,
       page_size,
-      sort_field: filters.sort_field || "from_date",
-      sort_order: filters.sort_order || SORT_ORDER.ASC
+      sort_field: filters.sort_field || "createdAt",
+      sort_order: filters.sort_order || SORT_ORDER.DESC
     });
 
     return {

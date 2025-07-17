@@ -261,15 +261,13 @@ const TaskInput: React.FC<TaskInputProps> = ({
             label={transtask("labelproject")}
             type="select"
             options={projectOptions}
-            required
             placeholder={transtask("placeholderproject")}
-            value={formData.project_id}
-            onChange={(value) => handleProjectChange(String(value))}
-            error={errors.project_id}
-            disabled={isReadOnly("project_id")}
+            value={formData.story_id}
+            onChange={(value) => handleInputChange("story_id", String(value))}
+            error={errors.story_id}
+            disabled={isReadOnly("story_id")}
           />
         </Grid>
-
         <Grid item xs={12} sm={4}>
           <FormField
             label={transtask("labelprojectstories")}

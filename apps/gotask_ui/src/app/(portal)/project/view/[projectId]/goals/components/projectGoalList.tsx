@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import useSWR from "swr";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, IconButton } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -17,6 +17,7 @@ import { GoalData } from "../interface/projectGoal";
 import ProjectGoals from "./projectGoals";
 import GoalFilterBar from "./goalFilterBar";
 import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
+import { ArrowBack } from "@mui/icons-material";
 
 function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -178,7 +179,14 @@ function ProjectGoalList() {
   return (
     <Box>
       {noGoalsAtAll && !isFilterActive ? (
-        <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
+        <>
+          <Box sx={{ pl: 2, pt: 2 }}>
+            <IconButton color="primary" onClick={handleGoBack}>
+              <ArrowBack />
+            </IconButton>
+          </Box>
+          <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
+        </>
       ) : (
         <>
           <GoalFilterBar

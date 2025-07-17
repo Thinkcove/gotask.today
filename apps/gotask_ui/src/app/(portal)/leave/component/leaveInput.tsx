@@ -1,10 +1,10 @@
-import React from "react";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
 import { LeaveFormField } from "../interface/leaveInterface";
+import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface LeaveInputsProps {
   formData: LeaveFormField;
@@ -72,15 +72,14 @@ const LeaveInputs: React.FC<LeaveInputsProps> = ({
       </Grid>
       {showReasons && (
         <Grid item xs={12}>
-          <FormField
-            label={transleave("reason")}
-            type="text"
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {transleave("reason")}
+          </Typography>
+          <ReusableEditor
+            content={formData.reasons || ""}
+            onChange={(html) => onInputChange("reasons", html)}
             placeholder={transleave("enterreason")}
-            value={formData.reasons}
-            onChange={(val) => onInputChange("reasons", String(val))}
-            error={errors.reasons}
-            required
-            multiline
+            showSaveButton={false}
           />
         </Grid>
       )}

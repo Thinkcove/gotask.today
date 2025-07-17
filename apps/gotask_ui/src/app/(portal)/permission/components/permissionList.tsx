@@ -1,16 +1,15 @@
 import React, { useState, useMemo } from "react";
-import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
-import { fetchAllgetpermission, deletePermission } from "../services/permissionAction";
+import { fetchPermissionsWithFilters, deletePermission } from "../services/permissionAction";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PermissionData } from "../interface/interface";
+import { FilterPayload, PermissionData } from "../interface/interface";
 import { useUser } from "@/app/userContext";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import Table from "@/app/component/table/table";
-import { isDateInRange } from "@/app/common/utils/dateTimeUtils";
 import PermissionFilter from "./permissionFilter";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { getPermissionColumns } from "./permissionColums";
@@ -18,25 +17,24 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { User } from "../../user/interfaces/userInterface";
 import { useAllUsers } from "../../task/service/taskAction";
-import EmptyState from "@/app/component/emptyState/emptyState";
-import NoAssetsImage from "@assets/placeholderImages/notask.svg";
+import { ASC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 
 const PermissionList = () => {
   const searchParams = useSearchParams();
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
   const { getAllUsers: allUsers } = useAllUsers();
-
   const [userFilter, setUserFilter] = useState<string[]>(searchParams.getAll("user_name"));
-
   const router = useRouter();
   const { user } = useUser();
-
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState<number>(PAGE_OPTIONS.DEFAULT_ROWS_25);
+  const [sortField, setSortField] = useState<string>("from_date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(ASC);
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
   const [selectedPermission, setSelectedPermission] = useState<PermissionData | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
-
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -51,13 +49,46 @@ const PermissionList = () => {
     });
   };
 
-  const { data, mutate, isLoading } = useSWR("getpermission", fetchAllgetpermission);
+  const onUserChange = (newUserFilter: string[]) => {
+    setUserFilter(newUserFilter);
+    setPage(0);
+  };
 
-  const displayData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
+  const userIds = useMemo(() => {
+    return userFilter
+      .map((name) => allUsers.find((u: User) => u.name === name)?.id)
+      .filter((id): id is string => !!id);
+  }, [userFilter, allUsers]);
+
+  const filterPayload: FilterPayload = useMemo(
+    () => ({
+      user_id: userIds.length > 0 ? userIds : undefined,
+      from_date: dateFrom || undefined,
+      to_date: dateTo || undefined,
+      page: page + PAGE_OPTIONS.ONE,
+      page_size: pageSize,
+      sort_field: sortField,
+      sort_order: sortOrder
+    }),
+    [userIds, dateFrom, dateTo, page, pageSize, sortField, sortOrder]
+  );
+
+  const { data, mutate, isLoading } = useSWR(["permissionsWithFilters", filterPayload], () =>
+    fetchPermissionsWithFilters(filterPayload)
+  );
+
+  const displayData = useMemo(() => {
+    return data?.data?.permissions || data?.permissions || [];
+  }, [data]);
+
+  const totalCount = useMemo(() => {
+    return data?.data?.total_count || data?.total_count || PAGE_OPTIONS.ZERO;
+  }, [data]);
 
   const onDateChange = (from: string, to: string) => {
     setDateFrom(from);
     setDateTo(to);
+    setPage(0);
   };
 
   const handleCreatePermission = () => {
@@ -79,15 +110,26 @@ const PermissionList = () => {
     setUserFilter([]);
     setDateFrom("");
     setDateTo("");
+    setPage(0);
   };
 
   const handleSnackbarClose = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
+  const handlePageChange = (newPage: number, newLimit: number) => {
+    setPage(newPage);
+    setPageSize(newLimit);
+  };
+
+  const handleSortChange = (key: string, order: "asc" | "desc") => {
+    setSortField(key);
+    setSortOrder(order);
+    setPage(0); // Reset to first page when sorting changes
+  };
+
   const handleDeleteConfirm = async () => {
     if (!selectedPermission) return;
-
     setIsDeleting(true);
     try {
       await deletePermission(selectedPermission.id);
@@ -95,6 +137,12 @@ const PermissionList = () => {
       setSelectedPermission(null);
       mutate();
       showSnackbar(transpermission("deletesuccess"), SNACKBAR_SEVERITY.SUCCESS);
+
+      const newTotalCount = totalCount - PAGE_OPTIONS.ONE;
+      const newTotalPages = Math.ceil(newTotalCount / PAGE_OPTIONS.DEFAULT_ROWS_25);
+      if (page >= newTotalPages && newTotalPages > PAGE_OPTIONS.ZERO) {
+        setPage(newTotalPages - PAGE_OPTIONS.ONE);
+      }
     } catch {
       showSnackbar(transpermission("deletefailed"), SNACKBAR_SEVERITY.ERROR);
     } finally {
@@ -108,20 +156,9 @@ const PermissionList = () => {
   };
 
   const filteredPermissions = useMemo(() => {
-    if (!displayData || !Array.isArray(displayData)) return [];
+    return displayData;
+  }, [displayData]);
 
-    return displayData.filter((perm: PermissionData) => {
-      const matchesUser =
-        userFilter.length === 0 ||
-        userFilter.some((name) => perm.user_name.toLowerCase().includes(name.toLowerCase()));
-
-      const matchesDateRange = isDateInRange(perm.date, dateFrom, dateTo);
-
-      return matchesUser && matchesDateRange;
-    });
-  }, [displayData, userFilter, dateFrom, dateTo]);
-
-  // This is fine if getPermissionColumns is not expensive
   const permissionColumns = getPermissionColumns({
     onViewClick: handleViewClick,
     onDeleteClick: handleDeleteClick,
@@ -139,78 +176,65 @@ const PermissionList = () => {
 
   const hasActiveFilters = userFilter.length > 0 || !!dateFrom || !!dateTo;
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-        }}
-      >
-        <CircularProgress size={50} thickness={4} />
-      </Box>
-    );
-  }
-
   return (
     <>
-      {!hasActiveFilters && filteredPermissions?.length === 0 ? (
-        <EmptyState imageSrc={NoAssetsImage} message={transpermission("nodatafound")} />
-      ) : (
-        <>
-          <Box sx={{ pt: 2, pl: 2 }}>
-            <PermissionFilter
-              userFilter={userFilter}
-              allUsers={allUsers.map((u: User) => u.name)}
-              onUserChange={setUserFilter}
-              dateFrom={dateFrom}
-              dateTo={dateTo}
-              onDateChange={onDateChange}
-              onClearFilters={handleClearFilters}
-              showClear={hasActiveFilters}
-              clearText={transpermission("clearall")}
-            />
-          </Box>
-
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              overflowY: "auto",
-              mt: 2
-            }}
-          >
-            <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    overflow: "auto",
-                    display: "flex",
-                    flexDirection: "column",
-                    overflowY: "auto"
-                  }}
-                >
-                  <Box sx={{ width: "100%", flex: 1 }}>
-                    <Box sx={{ minWidth: 800 }}>
-                      <Table<PermissionData>
-                        columns={permissionColumns}
-                        rows={filteredPermissions}
-                        isLoading={isLoading}
-                      />
-                    </Box>
+      <>
+        <Box sx={{ pt: 2, pl: 2 }}>
+          <PermissionFilter
+            userFilter={userFilter}
+            allUsers={allUsers.map((u: User) => u.name)}
+            onUserChange={onUserChange}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            onDateChange={onDateChange}
+            onClearFilters={handleClearFilters}
+            showClear={hasActiveFilters}
+            clearText={transpermission("clearall")}
+          />
+        </Box>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            mt: 2
+          }}
+        >
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <Paper
+                sx={{
+                  p: 2,
+                  overflow: "auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflowY: "auto"
+                }}
+              >
+                <Box sx={{ width: "100%", flex: 1 }}>
+                  <Box sx={{ minWidth: 800 }}>
+                    <Table<PermissionData>
+                      columns={permissionColumns}
+                      rows={filteredPermissions || []}
+                      isLoading={isLoading}
+                      rowsPerPageOptions={[
+                        PAGE_OPTIONS.DEFAULT_ROWS_25,
+                        PAGE_OPTIONS.DEFAULT_ROWS_35,
+                        PAGE_OPTIONS.DEFAULT_ROWS_45
+                      ]}
+                      defaultRowsPerPage={PAGE_OPTIONS.DEFAULT_ROWS_25}
+                      onPageChange={handlePageChange}
+                      totalCount={totalCount}
+                      onSortChange={handleSortChange}
+                    />
                   </Box>
-                </Paper>
-              </Grid>
+                </Box>
+              </Paper>
             </Grid>
-          </Box>
-        </>
-      )}
-
+          </Grid>
+        </Box>
+      </>
       <CommonDialog
         open={isDeleteDialogOpen}
         onClose={handleDeleteCancel}
@@ -222,14 +246,12 @@ const PermissionList = () => {
       >
         <Typography sx={{ pt: 2 }}>{transpermission("deleteconfirm")}</Typography>
       </CommonDialog>
-
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}
         severity={snackbar.severity}
         onClose={handleSnackbarClose}
       />
-
       <Box sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1300 }}>
         <ActionButton
           label={transpermission("createpermission")}

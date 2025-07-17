@@ -14,7 +14,6 @@ import { Template } from "../../service/templateInterface";
 import ReusableEditor from "@/app/component/richText/textEditor";
 import { fetchUsers } from "@/app/(portal)/user/services/userAction";
 import useSWR from "swr";
-import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 
 interface TemplateInputProps {
   formData: Partial<Template>;
@@ -33,9 +32,6 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
   const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
-  const userList = useMemo(() => {
-    return mapUsersToMentions(fetchedUsers || []);
-  }, [fetchedUsers]);
 
   return (
     <>
@@ -102,7 +98,6 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
             placeholder={transkpi("enterdescription")}
             readOnly={isReadOnly("description")}
             showSaveButton={false}
-            userList={userList}
           />
           {errors.description && (
             <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>

@@ -9,6 +9,8 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 const LeaveDetail: React.FC = () => {
   const router = useRouter();
@@ -117,7 +119,9 @@ const LeaveDetail: React.FC = () => {
             <Grid item xs={12}>
               <LabelValueText
                 label={transleave("reason")}
-                value={<div dangerouslySetInnerHTML={{ __html: leave.reasons || "-" }} />}
+                value={
+                  <RichTextReadOnly content={leave.reasons} extensions={getTipTapExtensions()} />
+                }
               />
             </Grid>
           </Grid>

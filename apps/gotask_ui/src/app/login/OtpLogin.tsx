@@ -179,7 +179,7 @@ const OtpLogin = () => {
           sx={{ mt: 1 }}
         >
           <Button onClick={sendOtp} disabled={loading || resendTimer > 0} sx={{ minWidth: 100 }}>
-            {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend"}
+            {resendTimer > 0 ? `${translogin("resendin")} ${resendTimer}s` : translogin("resend")}
           </Button>
 
           <Box display="flex" alignItems="center">

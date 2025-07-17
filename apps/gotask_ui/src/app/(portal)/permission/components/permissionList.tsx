@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from "react";
-import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
 import { fetchPermissionsWithFilters, deletePermission } from "../services/permissionAction";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PermissionData } from "../interface/interface";
+import { FilterPayload, PermissionData } from "../interface/interface";
 import { useUser } from "@/app/userContext";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -17,19 +17,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { User } from "../../user/interfaces/userInterface";
 import { useAllUsers } from "../../task/service/taskAction";
-import EmptyState from "@/app/component/emptyState/emptyState";
-import NoAssetsImage from "@assets/placeholderImages/notask.svg";
-import { DESC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
-
-interface FilterPayload {
-  user_id?: string[];
-  from_date?: string;
-  to_date?: string;
-  page?: number;
-  page_size?: number;
-  sort_field?: string;
-  sort_order?: string;
-}
+import { ASC, PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 
 const PermissionList = () => {
   const searchParams = useSearchParams();
@@ -39,6 +27,9 @@ const PermissionList = () => {
   const router = useRouter();
   const { user } = useUser();
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState<number>(PAGE_OPTIONS.DEFAULT_ROWS_25);
+  const [sortField, setSortField] = useState<string>("from_date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(ASC);
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
   const [selectedPermission, setSelectedPermission] = useState<PermissionData | null>(null);
@@ -75,11 +66,11 @@ const PermissionList = () => {
       from_date: dateFrom || undefined,
       to_date: dateTo || undefined,
       page: page + PAGE_OPTIONS.ONE,
-      page_size: PAGE_OPTIONS.DEFAULT_ROWS_25,
-      sort_field: "created_on",
-      sort_order: DESC
+      page_size: pageSize,
+      sort_field: sortField,
+      sort_order: sortOrder
     }),
-    [userIds, dateFrom, dateTo, page]
+    [userIds, dateFrom, dateTo, page, pageSize, sortField, sortOrder]
   );
 
   const { data, mutate, isLoading } = useSWR(
@@ -102,15 +93,7 @@ const PermissionList = () => {
   const onDateChange = (from: string, to: string) => {
     setDateFrom(from);
     setDateTo(to);
-    setPage(0); // Reset page when date filter changes
-  };
-
-  const handlePageChange = (newPage: number, limit: number) => {
-    // Validate the new page before setting it
-    const newTotalPages = Math.ceil(totalCount / limit);
-    if (newPage >= 0 && newPage < newTotalPages) {
-      setPage(newPage);
-    }
+    setPage(0);
   };
 
   const handleCreatePermission = () => {
@@ -132,7 +115,7 @@ const PermissionList = () => {
     setUserFilter([]);
     setDateFrom("");
     setDateTo("");
-    setPage(0); // Reset page when filters are cleared
+    setPage(0);
   };
 
   const handleSnackbarClose = () => {
@@ -188,78 +171,72 @@ const PermissionList = () => {
 
   const hasActiveFilters = userFilter.length > 0 || !!dateFrom || !!dateTo;
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-        }}
-      >
-        <CircularProgress size={50} thickness={4} />
-      </Box>
-    );
-  }
-
   return (
     <>
-      {!hasActiveFilters && filteredPermissions?.length === 0 ? (
-        <EmptyState imageSrc={NoAssetsImage} message={transpermission("nodatafound")} />
-      ) : (
-        <>
-          <Box sx={{ pt: 2, pl: 2 }}>
-            <PermissionFilter
-              userFilter={userFilter}
-              allUsers={allUsers.map((u: User) => u.name)}
-              onUserChange={onUserChange}
-              dateFrom={dateFrom}
-              dateTo={dateTo}
-              onDateChange={onDateChange}
-              onClearFilters={handleClearFilters}
-              showClear={hasActiveFilters}
-              clearText={transpermission("clearall")}
-            />
-          </Box>
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              overflowY: "auto",
-              mt: 2
-            }}
-          >
-            <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    overflow: "auto",
-                    display: "flex",
-                    flexDirection: "column",
-                    overflowY: "auto"
-                  }}
-                >
-                  <Box sx={{ width: "100%", flex: 1 }}>
-                    <Box sx={{ minWidth: 800 }}>
-                      <Table<PermissionData>
-                        columns={permissionColumns}
-                        rows={filteredPermissions}
-                        isLoading={isLoading}
-                        totalCount={totalCount}
-                        onPageChange={handlePageChange}
-                      />
-                    </Box>
+      <>
+        <Box sx={{ pt: 2, pl: 2 }}>
+          <PermissionFilter
+            userFilter={userFilter}
+            allUsers={allUsers.map((u: User) => u.name)}
+            onUserChange={onUserChange}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            onDateChange={onDateChange}
+            onClearFilters={handleClearFilters}
+            showClear={hasActiveFilters}
+            clearText={transpermission("clearall")}
+          />
+        </Box>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            mt: 2
+          }}
+        >
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <Paper
+                sx={{
+                  p: 2,
+                  overflow: "auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflowY: "auto"
+                }}
+              >
+                <Box sx={{ width: "100%", flex: 1 }}>
+                  <Box sx={{ minWidth: 800 }}>
+                    <Table<PermissionData>
+                      columns={permissionColumns}
+                      rows={filteredPermissions || []}
+                      isLoading={isLoading}
+                      rowsPerPageOptions={[
+                        PAGE_OPTIONS.DEFAULT_ROWS_25,
+                        PAGE_OPTIONS.DEFAULT_ROWS_35,
+                        PAGE_OPTIONS.DEFAULT_ROWS_45
+                      ]}
+                      defaultRowsPerPage={PAGE_OPTIONS.DEFAULT_ROWS_25}
+                      onPageChange={(newPage, newLimit) => {
+                        setPage(newPage);
+                        setPageSize(newLimit);
+                      }}
+                      totalCount={totalCount}
+                      onSortChange={(key, order) => {
+                        setSortField(key);
+                        setSortOrder(order);
+                        setPage(0);
+                      }}
+                    />
                   </Box>
-                </Paper>
-              </Grid>
+                </Box>
+              </Paper>
             </Grid>
-          </Box>
-        </>
-      )}
+          </Grid>
+        </Box>
+      </>
       <CommonDialog
         open={isDeleteDialogOpen}
         onClose={handleDeleteCancel}

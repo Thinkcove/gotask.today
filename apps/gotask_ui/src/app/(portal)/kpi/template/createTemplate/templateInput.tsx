@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import {
@@ -12,8 +12,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { Template } from "../../service/templateInterface";
 import ReusableEditor from "@/app/component/richText/textEditor";
-import { fetchUsers } from "@/app/(portal)/user/services/userAction";
-import useSWR from "swr";
 
 interface TemplateInputProps {
   formData: Partial<Template>;

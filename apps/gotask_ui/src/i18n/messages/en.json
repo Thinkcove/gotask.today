@@ -428,6 +428,7 @@
     "reuseplaceholder": "Write something here...",
     "saved": "Save",
     "noupdates": "No updates",
+    "todo": "TO-DO",
     "Project": {
       "meta": {
         "title": "Task Projects",
@@ -958,11 +959,11 @@
     "enterenddate": "Enter End Date",
     "enterscore": "Enter Score",
     "notes": "Review",
-    "addedby":"Added By",
-    "nocomment":"-",
-    "add":"Add",
-    "createsuccess":"Template created successfully",
-    "createfailed":"Template Name already exists",
+    "addedby": "Added By",
+    "nocomment": "-",
+    "add": "Add",
+    "createsuccess": "Template created successfully",
+    "createfailed": "Template Name already exists",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."

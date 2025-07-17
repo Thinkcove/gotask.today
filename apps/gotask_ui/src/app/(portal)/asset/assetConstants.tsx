@@ -211,3 +211,10 @@ export const authenticationModesOptions = ["Fingerprint", "Card", "Password", "F
 export const connectivityOptions = ["USB", "TCP/IP", "Wi-Fi"];
 
 export const assetListFilters = "assetListFilters";
+
+export const editstatus = "status";
+export const description = "description";
+export const issueType = "issueType";
+export const assignedTo = "assignedTo";
+export const assetId = "assetId";
+export const reportedBy = "reportedBy";

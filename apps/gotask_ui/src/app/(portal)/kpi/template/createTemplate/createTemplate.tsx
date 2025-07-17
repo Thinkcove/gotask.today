@@ -8,6 +8,7 @@ import TemplateInput from "./templateInput";
 import { Template } from "../../service/templateInterface";
 import { createTemplate } from "../../service/templateAction";
 import { STATUS_OPTIONS } from "@/app/common/constants/kpi";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
 
 interface CreateTemplateProps {
   mutate?: () => void;
@@ -16,6 +17,9 @@ interface CreateTemplateProps {
 const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const [formData, setFormData] = useState<Partial<Template>>({
     title: "",
@@ -58,10 +62,17 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     try {
       const payload = updatedData;
       await createTemplate(payload);
-      router.back();
+      setSnackbarMessage(transkpi("createsuccess"));
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      setTimeout(() => {
+        router.back();
+      }, 500);
     } catch (err: any) {
       console.error("Error creating template:", err);
-      setErrors({ general: err.message || transkpi("createFailed") });
+      setSnackbarMessage(transkpi("createfailed"));
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
@@ -133,10 +144,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
                 color: "white",
                 px: 2,
                 textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201)"
-                }
+                fontWeight: "bold"
               }}
               onClick={handleCreate}
             >
@@ -167,6 +175,12 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
           </Typography>
         )}
       </Box>
+      <CustomSnackbar
+        open={snackbarOpen}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+      />
     </Box>
   );
 };

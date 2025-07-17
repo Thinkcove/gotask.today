@@ -140,7 +140,7 @@
     "placeholderdescription": "Enter project description",
     "placeholderstatus": "Enter project Status",
     "placeholderorganization": "Select organization",
-    "createnewproject": "Create New Projet",
+    "createnewproject": "Create New Project",
     "viewname": "Project",
     "erroradd": "Error while adding assignee",
     "errorremove": "Error while removing assignee",
@@ -172,6 +172,8 @@
     "filterduedate": "Select Due Date",
     "filterclear": "Clear",
     "filterapply": "Apply",
+    "cancelproject": "Cancel",
+    "submitproject": "Submit",
     "meta": {
       "title": "Project Management | GoTaskToday",
       "description": " Create, assign, and monitor progress of ongoing projects."
@@ -669,7 +671,7 @@
     "warrantyPeriod": "Warranty Period",
     "warrantyDate": "Warranty Date",
     "antivirus": "Antivirus",
-    "recoveryKey": "Recovery Key",
+    "recoveryKey": "Encrypted Key",
     "lastServicedDate": "Last Serviced Date",
     "commentService": "Comment Service",
     "cancel": "Cancel",
@@ -692,7 +694,7 @@
     "submitting": "Submitting....",
     "submit": "Submit",
     "open": "open",
-    "encryptedkey": "Encrypted Key",
+    "encryptedkey": "Identifier Key",
     "close": "Close",
     "updateasset": "Update asset",
     "update": "Update",
@@ -959,6 +961,8 @@
     "addedby":"Added By",
     "nocomment":"-",
     "add":"Add",
+    "createsuccess":"Template created successfully",
+    "createfailed":"Template Name already exists",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."

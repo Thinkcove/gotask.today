@@ -1,7 +1,4 @@
-"use client";
-
 import React, { useState, useCallback, startTransition } from "react";
-import dynamic from "next/dynamic";
 import { Button, Box, Typography } from "@mui/material";
 import { createTask } from "../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
@@ -12,11 +9,7 @@ import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import moment from "moment-timezone";
-
-const TaskInput = dynamic(() => import("@/app/(portal)/task/createTask/taskInput"), {
-  ssr: false,
-  loading: () => <div>Loading Task Input...</div>
-});
+import TaskInput from "./taskInput";
 
 const CreateTask: React.FC = () => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);

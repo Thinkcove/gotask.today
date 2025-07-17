@@ -10,6 +10,8 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import { useIssuesById } from "../../services/assetActions";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getIssuesStatusColor } from "@/app/common/constants/asset";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 const ViewIssue: React.FC<{ id: string }> = ({ id }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
@@ -93,12 +95,10 @@ const ViewIssue: React.FC<{ id: string }> = ({ id }) => {
             <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
               {trans("description")}
             </Typography>
-            <Typography
-              variant="body1"
-              sx={{ color: "text.primary", lineHeight: 1.6, whiteSpace: "pre-wrap" }}
-            >
-              {issue.description || "-"}
-            </Typography>
+            <RichTextReadOnly
+              content={issue.description || "-"}
+              extensions={getTipTapExtensions()}
+            />
           </Grid>
 
           {/* Fields */}

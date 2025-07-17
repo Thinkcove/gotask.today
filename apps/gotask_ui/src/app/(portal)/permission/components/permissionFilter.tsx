@@ -1,5 +1,5 @@
 import React from "react";
-import { Box,  Link } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -40,7 +40,6 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
           </Box>
         </Box>
 
-       
         {/* Filters */}
         <Box
           display="flex"

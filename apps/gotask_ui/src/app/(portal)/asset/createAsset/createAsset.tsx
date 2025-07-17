@@ -15,7 +15,7 @@ import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
 import MobileInputs from "./mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
-import { OFFICE_SYSTEM, systemTypeOptions } from "../assetConstants";
+import { systemTypeOptions } from "../assetConstants";
 import AccessInputs from "./accessInput";
 import PrinterInputs from "./printerInputs";
 import FingerprintScannerInputs from "./fingerPrintInputs";
@@ -29,7 +29,7 @@ export const CreateAsset: React.FC = () => {
     typeId: "",
     userId: "",
     deviceName: "",
-    systemType: OFFICE_SYSTEM,
+    systemType: undefined,
     serialNumber: "",
     modelName: "",
     os: "",

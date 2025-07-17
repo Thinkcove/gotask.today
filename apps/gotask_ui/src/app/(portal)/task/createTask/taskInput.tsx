@@ -237,11 +237,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
             <FormField
               label={transtask("labelstatus")}
               type="select"
-              options={["TO-DO"]}
+              options={[transtask("labelstatus")]}
               required
               placeholder={transtask("placeholderstatus")}
-              value="TO-DO"
-              onChange={() => {}} // No-op since it's disabled
+              value={transtask("labelstatus")}
               error={errors.status}
               disabled={true}
             />

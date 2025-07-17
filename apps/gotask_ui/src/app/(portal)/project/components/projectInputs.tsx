@@ -76,7 +76,7 @@ const ProjectInput = ({
           placeholder={transproject("placeholderorganization")}
         />
       </Grid>
-      
+
       <Grid item xs={12}>
         <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
           {transproject("labeldescription")}

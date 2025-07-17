@@ -31,7 +31,6 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
 }) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
-  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
 
   return (
     <>

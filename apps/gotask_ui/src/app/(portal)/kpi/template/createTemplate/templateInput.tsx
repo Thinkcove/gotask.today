@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import {
   KPI_FREQUENCY,
@@ -11,6 +11,7 @@ import {
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { Template } from "../../service/templateInterface";
+import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface TemplateInputProps {
   formData: Partial<Template>;
@@ -85,16 +86,21 @@ const TemplateInput: React.FC<TemplateInputProps> = ({
         </Grid>
 
         <Grid item xs={12}>
-          <FormField
-            label={`${transkpi("labeldescription")} ${transkpi("required")}`}
-            type="text"
-            placeholder={transkpi("placeholderdescription")}
-            value={formData.description}
-            onChange={(val) => handleChange("description", String(val))}
-            error={errors.description}
-            disabled={isReadOnly("description")}
-            multiline
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {transkpi("description")} {transkpi("required")}
+          </Typography>
+          <ReusableEditor
+            content={formData.description || ""}
+            onChange={(html) => handleChange("description", html)}
+            placeholder={transkpi("enterdescription")}
+            readOnly={isReadOnly("description")}
+            showSaveButton={false}
           />
+          {errors.description && (
+            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+              {errors.description}
+            </Typography>
+          )}
         </Grid>
       </Grid>
     </>

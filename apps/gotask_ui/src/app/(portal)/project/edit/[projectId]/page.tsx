@@ -4,7 +4,6 @@ import React from "react";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
 import { Box, CircularProgress } from "@mui/material";
-
 import EditProject from "./editProject";
 import { getProjectById } from "../../services/projectAction";
 import { Project } from "../../interfaces/projectInterface";

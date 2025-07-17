@@ -74,7 +74,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
         severity: SNACKBAR_SEVERITY.ERROR
       });
     } finally {
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   };
 
@@ -94,13 +94,12 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
         minHeight: "100vh"
       }}
     >
-
       <FormHeader
         isEdit={true}
         onCancel={handleCancel}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
-        editheading={transproject("edittitle")} 
+        editheading={transproject("edittitle")}
         cancel={transproject("cancelproject")}
         update={transproject("submitproject")}
       />

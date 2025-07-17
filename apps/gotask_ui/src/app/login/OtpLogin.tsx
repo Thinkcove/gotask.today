@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Typography, Box, CircularProgress } from "@mui/material";
+import { Typography, Box, CircularProgress, Button } from "@mui/material";
 import { StyledTextField, StyledButton } from "./style";
 import { useUser } from "../userContext";
 import env from "../common/env";
@@ -23,6 +23,22 @@ const OtpLogin = () => {
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+
+  const startCountdown = (count: number) => {
+    setResendTimer(count);
+
+    const tick = (remaining: number) => {
+      if (remaining > 0) {
+        setTimeout(() => {
+          setResendTimer(remaining - 1);
+          tick(remaining - 1); // recursive call
+        }, 1000);
+      }
+    };
+
+    tick(count);
+  };
 
   useEffect(() => {
     const token = fetchToken();
@@ -59,6 +75,7 @@ const OtpLogin = () => {
 
       if (res.ok && data.success) {
         setOtpSent(true);
+        startCountdown(60);
       } else {
         setError(data.error || data.message || translogin("otpfail"));
       }
@@ -154,16 +171,30 @@ const OtpLogin = () => {
       )}
 
       {otpSent && (
-        <Box display="flex" alignItems="center" sx={{ mt: 1 }}>
-          <input
-            type="checkbox"
-            id="rememberMe"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-            style={{ marginRight: 8 }}
-            disabled={loading}
-          />
-          <label htmlFor="rememberMe">{translogin("rememberme")}</label>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          flexDirection="row-reverse"
+          alignItems="center"
+          sx={{ mt: 1 }}
+        >
+          <Button onClick={sendOtp} disabled={loading || resendTimer > 0} sx={{ minWidth: 100 }}>
+            {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend"}
+          </Button>
+
+          <Box display="flex" alignItems="center">
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{ marginLeft: 8 }}
+              disabled={loading}
+            />
+            <label htmlFor="rememberMe" style={{ marginLeft: 4 }}>
+              {translogin("rememberme")}
+            </label>
+          </Box>
         </Box>
       )}
 
@@ -177,9 +208,7 @@ const OtpLogin = () => {
         fullWidth
         variant="contained"
         type="submit"
-        disabled={
-          loading || hasSubmitted || (otpSent ? otp.trim() === "" : email.trim() === "")
-        }
+        disabled={loading || hasSubmitted || (otpSent ? otp.trim() === "" : email.trim() === "")}
         sx={{
           opacity: loading ? 0.7 : 1,
           pointerEvents: loading ? "none" : "auto"

@@ -207,7 +207,7 @@
       "noDescription": "No description provided.",
       "status": "Status *",
       "na": "N/A",
-      "taskSectionTitle": "Associated Tasks",
+      "taskSectionTitle": "Tasks",
       "createTask": "+ Create Task",
       "noTasks": "No tasks linked to this story yet.",
       "confirmDelete": "Are you sure you want to delete this story?",

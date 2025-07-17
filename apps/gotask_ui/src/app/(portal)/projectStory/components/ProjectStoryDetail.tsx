@@ -22,7 +22,6 @@ import {
   updateCommentOnProjectStory,
   deleteCommentFromProjectStory
 } from "@/app/(portal)/projectStory/services/projectStoryActions";
-
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import TaskItem from "../../task/component/taskLayout/taskItem";
@@ -32,16 +31,25 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
-import CommentSection from "@/app/component/comments/commentSection"; 
+import CommentSection from "@/app/component/comments/commentSection";
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import CommonTabs from "@/app/component/tabs/commonTabs";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-  
+  const [tabIndex, setTabIndex] = React.useState(0);
 
+  const tabs = [
+    { label: t("Stories.commentSectionTitle"), value: 0 },
+    { label: t("Stories.taskSectionTitle"), value: 1 }
+  ];
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
   const {
     data: story,
     isLoading,
@@ -101,7 +109,7 @@ const ProjectStoryDetail = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "87vh",
+        height: "89vh",
         bgcolor: "white",
         borderRadius: 2,
         boxShadow: 3,
@@ -172,66 +180,73 @@ const ProjectStoryDetail = () => {
         />
 
         <Divider sx={{ my: 3 }} />
-        <CommentSection
-          comments={story.comments || []}
-          onSave={async (html) => {
-            await addCommentToProjectStory(storyId as string, { comment: html });
-            await mutate();
-          }}
-          onUpdate={async (comment) => {
-            await updateCommentOnProjectStory(comment.id, { comment: comment.comment });
-            await mutate();
-          }}
-          onDelete={async (id) => {
-            await deleteCommentFromProjectStory(id);
-            await mutate();
-          }}
-        />
 
-        {/* Tasks */}
-        <Divider sx={{ my: 3 }} />
-        <Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h6" fontWeight={600}>
-              {t("Stories.taskSectionTitle")}
-            </Typography>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: "#741B92", textTransform: "none", borderRadius: 2 }}
-              onClick={() => router.push(`/task/createTask?storyId=${storyId}`)}
-            >
-              {t("Stories.createTask")}
-            </Button>
-          </Box>
-          {isTasksLoading ? (
-            <CircularProgress size={24} />
-          ) : tasks?.length > 0 ? (
-            <Box sx={{ flexGrow: 1 }}>
-              <Box
-                display="grid"
-                gridTemplateColumns={{
-                  xs: "1fr",
-                  sm: "repeat(2, 1fr)",
-                  md: "repeat(3, 1fr)",
-                  lg: "repeat(4, 1fr)"
-                }}
-                gap={2}
-              >
-                {tasks.map((task: any) => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    onTaskClick={handleTaskClick}
-                    view="stories"
-                    getStatusColor={getStatusColor}
-                  />
-                ))}
+        <CommonTabs tabIndex={tabIndex} onChange={handleTabChange} tabs={tabs} />
+
+        <Box mt={2}>
+          {tabIndex === 0 && (
+            <CommentSection
+              comments={story.comments || []}
+              onSave={async (html) => {
+                await addCommentToProjectStory(storyId as string, { comment: html });
+                await mutate();
+              }}
+              onUpdate={async (comment) => {
+                await updateCommentOnProjectStory(comment.id, { comment: comment.comment });
+                await mutate();
+              }}
+              onDelete={async (id) => {
+                await deleteCommentFromProjectStory(id);
+                await mutate();
+              }}
+            />
+          )}
+
+          {tabIndex === 1 && (
+            <Box>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6" fontWeight={600}>
+                  {t("Stories.taskSectionTitle")}
+                </Typography>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "#741B92", textTransform: "none", borderRadius: 2 }}
+                  onClick={() => router.push(`/task/createTask?storyId=${storyId}`)}
+                >
+                  {t("Stories.createTask")}
+                </Button>
               </Box>
+              {isTasksLoading ? (
+                <CircularProgress size={24} />
+              ) : tasks?.length > 0 ? (
+                <Box sx={{ flexGrow: 1 }}>
+                  <Box
+                    display="grid"
+                    gridTemplateColumns={{
+                      xs: "1fr",
+                      sm: "repeat(2, 1fr)",
+                      md: "repeat(3, 1fr)",
+                      lg: "repeat(4, 1fr)"
+                    }}
+                    gap={2}
+                  >
+                    {tasks.map((task: any) => (
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        onTaskClick={handleTaskClick}
+                        view="stories"
+                        getStatusColor={getStatusColor}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  {t("Stories.noTasks")}
+                </Typography>
+              )}
             </Box>
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              {t("Stories.noTasks")}
-            </Typography>
           )}
         </Box>
       </Box>

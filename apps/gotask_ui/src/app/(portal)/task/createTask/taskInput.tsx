@@ -25,7 +25,7 @@ interface TaskInputProps {
   readOnlyFields?: string[];
   isUserEstimatedLocked?: boolean;
   isStartDateLocked?: boolean;
-  initialStatus: string;
+  initialStatus?: string;
 }
 
 const TaskInput: React.FC<TaskInputProps> = ({
@@ -234,7 +234,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label={transtask("labelstatus")}
             type="select"
-            options={["", ...uniqueStatuses.map((s) => s.toUpperCase())]}
+            options={["", ...uniqueStatuses.map((s:any) => s.toUpperCase())]}
             required
             placeholder={transtask("placeholderstatus")}
             value={currentStatus ? currentStatus.toUpperCase() : ""}

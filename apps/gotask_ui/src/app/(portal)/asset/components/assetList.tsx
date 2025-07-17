@@ -249,7 +249,9 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               value={searchText}
               onChange={(val) => updateFilter("searchText", val, setSearchText)}
               placeholder={
-                view === "issues" ? transasset("searchissues") : transasset("searchAsset")
+                view === transasset("searchissues")
+                  ? transasset("searchissues")
+                  : transasset("searchAsset")
               }
             />
           )}

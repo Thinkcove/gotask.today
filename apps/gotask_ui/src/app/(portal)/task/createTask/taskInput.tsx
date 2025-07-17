@@ -213,7 +213,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
         options={
           !initialStatus
             ? [transtask("todo")]
-            : ["", ...uniqueStatuses.map((s: any) => s.toUpperCase())]
+            : [
+                "",
+                ...uniqueStatuses.filter((s): s is string => s != null).map((s) => s.toUpperCase())
+              ]
         }
         required
         placeholder={transtask("placeholderstatus")}

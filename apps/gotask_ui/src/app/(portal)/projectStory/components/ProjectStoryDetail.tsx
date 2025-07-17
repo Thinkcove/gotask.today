@@ -181,7 +181,7 @@ const ProjectStoryDetail = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <CommonTabs tabIndex={tabIndex} onChange={handleTabChange} tabs={tabs} />
+        <CommonTabs tabIndex={tabIndex} onChange={handleTabChange} tabs={tabs} centered={false} />
 
         <Box mt={2}>
           {tabIndex === 0 && (
@@ -204,10 +204,7 @@ const ProjectStoryDetail = () => {
 
           {tabIndex === 1 && (
             <Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h6" fontWeight={600}>
-                  {t("Stories.taskSectionTitle")}
-                </Typography>
+              <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
                 <Button
                   variant="contained"
                   sx={{ backgroundColor: "#741B92", textTransform: "none", borderRadius: 2 }}

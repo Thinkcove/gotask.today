@@ -86,6 +86,19 @@ const createNewLeave = async (leaveData: Partial<ILeave>): Promise<ILeave> => {
   if (!user) {
     throw new Error("Invalid user_id");
   }
+  // Check for overlapping leaves for the same user
+  const existingLeave = await Leave.findOne({
+    user_id: leaveData.user_id,
+    $or: [
+      {
+        from_date: { $lte: leaveData.to_date },
+        to_date: { $gte: leaveData.from_date }
+      }
+    ]
+  });
+  if (existingLeave) {
+    throw new Error("A leave request already exists for the specified date range");
+  }
 
   const newLeave = new Leave({
     ...leaveData,
@@ -113,6 +126,25 @@ const updateALeave = async (id: string, updateData: Partial<ILeave>): Promise<IL
       if (!user) throw new Error("Invalid user_id");
       updateData.user_name = user.name;
     }
+    // Check for overlapping leaves if dates are being updated
+    if (updateData.from_date || updateData.to_date) {
+      const checkFromDate = updateData.from_date || existingLeave.from_date;
+      const checkToDate = updateData.to_date || existingLeave.to_date;
+      const checkUserId = updateData.user_id || existingLeave.user_id;
+      const overlappingLeave = await Leave.findOne({
+        user_id: checkUserId,
+        id: { $ne: id }, // Exclude the leave being updated
+        $or: [
+          {
+            from_date: { $lte: checkToDate },
+            to_date: { $gte: checkFromDate }
+          }
+        ]
+      });
+      if (overlappingLeave) {
+        throw new Error("A leave request already exists for the specified date range");
+      }
+    }
 
     const updatedLeave = await Leave.findOneAndUpdate(
       { id },
@@ -123,7 +155,7 @@ const updateALeave = async (id: string, updateData: Partial<ILeave>): Promise<IL
     return updatedLeave;
   } catch (error) {
     logger.error(error);
-    throw new Error("Failed to update leave request");
+    throw error;
   }
 };
 

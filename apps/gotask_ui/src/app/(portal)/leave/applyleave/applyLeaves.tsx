@@ -85,12 +85,25 @@ const ApplyLeave: React.FC = () => {
       setTimeout(() => {
         router.push("/leave");
       }, 1000);
-    } catch {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error &&
+        error.message === "A leave request already exists for the specified date range"
+          ? transleave("overlaperror")
+          : transleave("failedsubmit");
       setSnackbar({
         open: true,
-        message: transleave("failedsubmit"),
+        message: errorMessage,
         severity: SNACKBAR_SEVERITY.ERROR
       });
+      if (
+        error instanceof Error &&
+        error.message === "A leave request already exists for the specified date range"
+      ) {
+        setTimeout(() => {
+          router.push("/leave");
+        }, 1000);
+      }
     } finally {
       setIsSubmitting(false);
     }

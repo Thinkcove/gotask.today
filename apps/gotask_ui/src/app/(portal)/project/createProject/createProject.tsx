@@ -1,6 +1,5 @@
-"use client";
 import React, { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { IProjectField, PROJECT_STATUS, Project } from "../interfaces/projectInterface";
@@ -9,13 +8,8 @@ import ProjectInput from "../components/projectInputs";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { KeyedMutator } from "swr";
 import { User } from "../../user/interfaces/userInterface";
 import FormHeader from "@/app/component/header/formHeader";
-
-interface CreateProjectProps {
-  mutate?: KeyedMutator<Project>;
-}
 
 const initialFormState: IProjectField = {
   name: "",
@@ -24,7 +18,7 @@ const initialFormState: IProjectField = {
   organization_id: ""
 };
 
-const CreateProject = ({ mutate }: CreateProjectProps) => {
+const CreateProject: React.FC = () => {
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const router = useRouter();
 
@@ -59,7 +53,9 @@ const CreateProject = ({ mutate }: CreateProjectProps) => {
     setIsSubmitting(true);
     try {
       await createProject(formData);
-      if (mutate) await mutate();
+      setTimeout(() => {
+        router.push("/project");
+      }, 1500);
       setSnackbar({
         open: true,
         message: transproject("successmessage"),

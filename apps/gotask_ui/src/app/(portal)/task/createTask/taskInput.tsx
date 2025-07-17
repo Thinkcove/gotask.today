@@ -188,6 +188,41 @@ const TaskInput: React.FC<TaskInputProps> = ({
       handleInputChange("status", value.toLowerCase());
     }
   };
+  const renderStatusField = () => {
+    if (!initialStatus) {
+      // Create mode - hardcoded TO-DO
+      return (
+        <Grid item xs={12} sm={6}>
+          <FormField
+            label={transtask("labelstatus")}
+            type="select"
+            options={[transtask("todo")]}
+            required
+            placeholder={transtask("placeholderstatus")}
+            value={transtask("todo")}
+            error={errors.status}
+            disabled={true}
+          />
+        </Grid>
+      );
+    } else {
+      return (
+        <Grid item xs={12} sm={6}>
+          <FormField
+            label={transtask("labelstatus")}
+            type="select"
+            options={["", ...uniqueStatuses.map((s: any) => s.toUpperCase())]}
+            required
+            placeholder={transtask("placeholderstatus")}
+            value={currentStatus ? currentStatus.toUpperCase() : ""}
+            onChange={(value) => handleStatusChange(String(value))}
+            error={errors.status}
+            disabled={isReadOnly("status")}
+          />
+        </Grid>
+      );
+    }
+  };
 
   return (
     <>
@@ -231,35 +266,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
           />
         </Grid>
 
-        {!initialStatus ? (
-          // Create mode - hardcoded TO-DO
-          <Grid item xs={12} sm={6}>
-            <FormField
-              label={transtask("labelstatus")}
-              type="select"
-              options={[transtask("todo")]}
-              required
-              placeholder={transtask("placeholderstatus")}
-              value={transtask("todo")}
-              error={errors.status}
-              disabled={true}
-            />
-          </Grid>
-        ) : (
-          <Grid item xs={12} sm={6}>
-            <FormField
-              label={transtask("labelstatus")}
-              type="select"
-              options={["", ...uniqueStatuses.map((s: any) => s.toUpperCase())]}
-              required
-              placeholder={transtask("placeholderstatus")}
-              value={currentStatus ? currentStatus.toUpperCase() : ""}
-              onChange={(value) => handleStatusChange(String(value))}
-              error={errors.status}
-              disabled={isReadOnly("status")}
-            />
-          </Grid>
-        )}
+        {renderStatusField()}
+
         <Grid item xs={12} sm={6}>
           <FormField
             label={transtask("labelseverity")}

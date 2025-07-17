@@ -34,7 +34,7 @@ const LeaveList: React.FC = () => {
   });
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(PAGE_OPTIONS.DEFAULT_ROWS_25);
-  const [sortField, setSortField] = useState<string>("createdAt");
+  const [sortField, setSortField] = useState<string>("updatedAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(DESC);
 
   const { getAllUsers: allUsers } = useAllUsers();

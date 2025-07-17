@@ -94,14 +94,13 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
         minHeight: "100vh"
       }}
     >
-      {/* Sticky Header */}
 
       <FormHeader
         isEdit={true}
         onCancel={handleCancel}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
-        editheading={transproject("edittitle")} // instead of hardcoded "Edit Something"
+        editheading={transproject("edittitle")} 
         cancel={transproject("cancelproject")}
         update={transproject("submitproject")}
       />

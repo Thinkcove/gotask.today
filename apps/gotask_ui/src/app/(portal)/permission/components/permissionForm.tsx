@@ -1,4 +1,3 @@
-import React, { useMemo } from "react";
 import Grid from "@mui/material/Grid/Grid";
 import { Box, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
@@ -6,9 +5,6 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionFormProps } from "../interface/interface";
 import TimePickerField from "@/app/component/input/timePicker";
-import useSWR from "swr";
-import { fetchUsers } from "../../user/services/userAction";
-import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 import ReusableEditor from "@/app/component/richText/textEditor";
 
 function PermissionForm({
@@ -19,10 +15,6 @@ function PermissionForm({
   user
 }: PermissionFormProps) {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
-  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
-  const userList = useMemo(() => {
-    return mapUsersToMentions(fetchedUsers || []);
-  }, [fetchedUsers]);
 
   const handleDateChange = (
     field: "startDate" | "endDate",
@@ -108,7 +100,6 @@ function PermissionForm({
             onChange={(html) => handleTimeChange("comments", html)}
             placeholder={transpermission("comments")}
             showSaveButton={false}
-            userList={userList}
           />
         </Grid>
       </Grid>

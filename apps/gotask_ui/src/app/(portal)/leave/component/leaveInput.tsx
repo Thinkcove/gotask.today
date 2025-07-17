@@ -1,13 +1,9 @@
-import React, { useMemo } from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { LEAVE_TYPE } from "@/app/common/constants/leave";
 import { LeaveFormField } from "../interface/leaveInterface";
-import useSWR from "swr";
-import { fetchUsers } from "../../user/services/userAction";
-import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface LeaveInputsProps {
@@ -24,11 +20,6 @@ const LeaveInputs: React.FC<LeaveInputsProps> = ({
   showReasons = true
 }) => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
-
-  const { data: fetchedUsers = [] } = useSWR("userList", fetchUsers);
-  const userList = useMemo(() => {
-    return mapUsersToMentions(fetchedUsers || []);
-  }, [fetchedUsers]);
 
   return (
     <Grid container spacing={2}>
@@ -89,7 +80,6 @@ const LeaveInputs: React.FC<LeaveInputsProps> = ({
             onChange={(html) => onInputChange("reasons", html)}
             placeholder={transleave("enterreason")}
             showSaveButton={false}
-            userList={userList}
           />
         </Grid>
       )}

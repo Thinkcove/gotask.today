@@ -10,13 +10,20 @@ import {
   getProjectIdsAndNames,
   getUsersByProjectId
 } from "../service/taskAction";
-import { IFormField, Project, User } from "../interface/taskInterface";
+import {
+  IFormField,
+  Project,
+  StoryOption,
+  StoryResponseWithData,
+  User
+} from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import ReusableEditor from "@/app/component/richText/textEditor";
 import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
+import { getStoriesByProject } from "../../projectStory/services/projectStoryActions";
 
 interface TaskInputProps {
   formData: IFormField;
@@ -44,6 +51,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
 
+  const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
   const getCurrentUser = useMemo(() => {
@@ -116,7 +124,15 @@ const TaskInput: React.FC<TaskInputProps> = ({
       handleInputChange("users", getAllUsers || []);
       return;
     }
+    const result = await getStoriesByProject(projectId);
 
+    const storyOptions = ((result as StoryResponseWithData)?.data || []).map(
+      (story: { id: string; title: string }) => ({
+        id: story.id,
+        name: story.title
+      })
+    );
+    setProjectStories(storyOptions);
     try {
       const users = await getUsersByProjectId(projectId);
       setFilteredUsers(users);
@@ -224,7 +240,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
         />
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <FormField
             label={transtask("labelassignee")}
             type="select"
@@ -237,7 +253,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("user_id")}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <FormField
             label={transtask("labelproject")}
             type="select"
@@ -251,6 +267,19 @@ const TaskInput: React.FC<TaskInputProps> = ({
           />
         </Grid>
 
+        <Grid item xs={12} sm={4}>
+          <FormField
+            label={transtask("labelprojectstories")}
+            type="select"
+            options={projectStories}
+            required
+            placeholder={transtask("placeholderprojectstories")}
+            value={formData.project_id}
+            onChange={(value) => handleProjectChange(String(value))}
+            error={errors.project_id}
+            disabled={isReadOnly("project_id")}
+          />
+        </Grid>
         {renderStatusField()}
 
         <Grid item xs={12} sm={6}>

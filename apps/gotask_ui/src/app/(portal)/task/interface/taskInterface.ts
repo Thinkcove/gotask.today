@@ -132,3 +132,11 @@ export interface IComment {
   comment: string;
   updatedAt?: string;
 }
+
+export interface StoryOption {
+  id: string;
+  name: string;
+}
+export interface StoryResponseWithData {
+  data?: Array<{ id: string; title: string }>;
+}

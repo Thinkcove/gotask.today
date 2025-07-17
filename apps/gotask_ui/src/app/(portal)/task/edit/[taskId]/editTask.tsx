@@ -208,7 +208,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             readOnlyFields={readOnlyFields}
             isUserEstimatedLocked={!!data.user_estimated}
             isStartDateLocked={!!data.start_date}
-            initialStatus={formData.status}
+            initialStatus={data.status} 
           />
         </Box>
 

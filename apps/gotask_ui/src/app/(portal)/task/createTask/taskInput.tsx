@@ -230,19 +230,37 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("project_id")}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <FormField
-            label={transtask("labelstatus")}
-            type="select"
-            options={["", ...uniqueStatuses.map((s:any) => s.toUpperCase())]}
-            required
-            placeholder={transtask("placeholderstatus")}
-            value={currentStatus ? currentStatus.toUpperCase() : ""}
-            onChange={(value) => handleStatusChange(String(value))}
-            error={errors.status}
-            disabled={isReadOnly("status")}
-          />
-        </Grid>
+
+        {!initialStatus ? (
+          // Create mode - hardcoded TO-DO
+          <Grid item xs={12} sm={6}>
+            <FormField
+              label={transtask("labelstatus")}
+              type="select"
+              options={["TO-DO"]}
+              required
+              placeholder={transtask("placeholderstatus")}
+              value="TO-DO"
+              onChange={() => {}} // No-op since it's disabled
+              error={errors.status}
+              disabled={true}
+            />
+          </Grid>
+        ) : (
+          <Grid item xs={12} sm={6}>
+            <FormField
+              label={transtask("labelstatus")}
+              type="select"
+              options={["", ...uniqueStatuses.map((s: any) => s.toUpperCase())]}
+              required
+              placeholder={transtask("placeholderstatus")}
+              value={currentStatus ? currentStatus.toUpperCase() : ""}
+              onChange={(value) => handleStatusChange(String(value))}
+              error={errors.status}
+              disabled={isReadOnly("status")}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} sm={6}>
           <FormField
             label={transtask("labelseverity")}

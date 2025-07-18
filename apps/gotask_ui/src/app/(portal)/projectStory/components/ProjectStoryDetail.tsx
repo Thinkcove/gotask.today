@@ -32,7 +32,7 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
-import CommentSection from "@/app/component/comments/commentSection"; 
+import CommentSection from "@/app/component/comments/commentSection";
 import { RichTextReadOnly } from "mui-tiptap";
 import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
@@ -40,7 +40,6 @@ const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-  
 
   const {
     data: story,
@@ -243,6 +242,7 @@ const ProjectStoryDetail = () => {
         onSubmit={handleDelete}
         title={t("Stories.deleteStory")}
         submitLabel={t("Stories.delete")}
+        submitColor="#b71c1c"
       >
         <Typography variant="body1" color="text.secondary">
           {t("Stories.confirmDelete")}

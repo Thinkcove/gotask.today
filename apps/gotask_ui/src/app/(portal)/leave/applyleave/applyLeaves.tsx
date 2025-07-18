@@ -103,9 +103,9 @@ const ApplyLeave: React.FC = () => {
     <>
       <FormHeader
         isEdit={false}
+        createHeading={transleave("applyleave")}
         onCancel={() => router.back()}
         onSubmit={handleSubmit}
-        editheading={transleave("editleave")}
         create={transleave("create")}
         cancel={transleave("cancel")}
         update={transleave("update")}

@@ -130,6 +130,8 @@ const LeaveList: React.FC = () => {
     router.push("/leave/applyleave");
   };
 
+  const skeletonloading = isLoading && totalCount === 0;
+
   const leaveColumns = useMemo(
     () =>
       getLeaveColumns({
@@ -165,6 +167,7 @@ const LeaveList: React.FC = () => {
           onFromDateChange={setFromDateFilter}
           onToDateChange={setToDateFilter}
           onClearFilters={handleClearFilters}
+          loading={skeletonloading}
         />
       </Box>
 

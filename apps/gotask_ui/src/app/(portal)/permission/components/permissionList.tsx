@@ -155,6 +155,8 @@ const PermissionList = () => {
     setSelectedPermission(null);
   };
 
+  const skeletonloading = isLoading && totalCount === 0;
+
   const filteredPermissions = useMemo(() => {
     return displayData;
   }, [displayData]);
@@ -190,6 +192,7 @@ const PermissionList = () => {
             onClearFilters={handleClearFilters}
             showClear={hasActiveFilters}
             clearText={transpermission("clearall")}
+            loading={skeletonloading}
           />
         </Box>
         <Box

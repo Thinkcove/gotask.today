@@ -97,3 +97,13 @@ export interface PermissionColumnsConfig {
     deletepermission: string;
   };
 }
+
+export interface FilterPayload {
+  user_id?: string[];
+  from_date?: string;
+  to_date?: string;
+  page?: number;
+  page_size?: number;
+  sort_field?: string;
+  sort_order?: string;
+}

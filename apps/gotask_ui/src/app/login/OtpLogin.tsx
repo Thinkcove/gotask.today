@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex";
 import { storeToken, isTokenExpired, fetchToken } from "../common/utils/authToken";
+import { DECREMENT, SECONDS } from "../common/utils/login";
 
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
@@ -31,8 +32,8 @@ const OtpLogin = () => {
     const tick = (remaining: number) => {
       if (remaining > 0) {
         setTimeout(() => {
-          setResendTimer(remaining - 1);
-          tick(remaining - 1); // recursive call
+          setResendTimer(remaining + DECREMENT);
+          tick(remaining + DECREMENT); // recursive call
         }, 1000);
       }
     };
@@ -75,7 +76,7 @@ const OtpLogin = () => {
 
       if (res.ok && data.success) {
         setOtpSent(true);
-        startCountdown(30);
+        startCountdown(SECONDS);
         setOtp("");
       } else {
         setError(data.error || data.message || translogin("otpfail"));

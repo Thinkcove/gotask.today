@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo,} from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "../../../component/input/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
@@ -54,6 +54,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
   const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
   console.log("Story options:", projectStories);
+
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
   const getCurrentUser = useMemo(() => {
@@ -150,7 +151,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
     }
   };
 
-
   const getUserOptions = () => {
     let options: User[] = [];
 
@@ -234,6 +234,20 @@ const TaskInput: React.FC<TaskInputProps> = ({
       />
     </Grid>
   );
+  const [lastLoadedProjectId, setLastLoadedProjectId] = useState("");
+
+  if (formData.project_id && formData.project_id !== lastLoadedProjectId) {
+    getStoriesByProject(formData.project_id).then((result) => {
+      const storyOptions = ((result as StoryResponseWithData)?.data || []).map(
+        (story: { id: string; title: string }) => ({
+          id: story.id,
+          name: story.title
+        })
+      );
+      setProjectStories(storyOptions);
+      setLastLoadedProjectId(formData.project_id);
+    });
+  }
 
   return (
     <>

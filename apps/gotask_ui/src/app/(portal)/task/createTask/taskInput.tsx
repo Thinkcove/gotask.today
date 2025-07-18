@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo,} from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "../../../component/input/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
@@ -47,12 +47,13 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers();
   const { getAllProjects } = useAllProjects();
+  console.log("formData", formData);
 
   const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
 
   const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
-
+  console.log("Story options:", projectStories);
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
   const getCurrentUser = useMemo(() => {
@@ -148,6 +149,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
       handleInputChange("users", getAllUsers || []);
     }
   };
+
 
   const getUserOptions = () => {
     let options: User[] = [];

@@ -92,7 +92,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
     return result;
   };
 
-  const { data, setSize, isLoading, isValidating, error } = useSWRInfinite(getKey, fetcher);
+  const { data, size, setSize, isLoading, isValidating, error } = useSWRInfinite(getKey, fetcher);
 
   const allStories: ProjectStory[] = data
     ? data
@@ -122,22 +122,6 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
     [isLoading, isValidating, hasMore, setSize]
   );
 
-  // initial loading
-  if (isLoading && allStories.length === 0) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
-        }}
-      >
-        <CircularProgress size={50} thickness={4} />
-      </Box>
-    );
-  }
   const applyStatusFilter = (val: string[]) => {
     handleStatusChange(val);
     setSize(1);
@@ -157,7 +141,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
     clearFilters();
     setSize(1);
   };
-  
+
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
       {allStories.length === 0 && !status.length && !startDate && !searchTerm ? (
@@ -194,7 +178,11 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
           {/* Story List */}
           <Box sx={{ px: 2, pt: 3 }}>
-            {error ? (
+            {isLoading && size === 1 ? (
+              <Box display="flex" justifyContent="center" mt={5}>
+                <CircularProgress />
+              </Box>
+            ) : error ? (
               <Typography color="error" textAlign="center">
                 {t("Stories.fetchError")}
               </Typography>

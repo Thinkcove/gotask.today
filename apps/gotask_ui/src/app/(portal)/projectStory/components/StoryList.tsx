@@ -26,10 +26,12 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
   const { projectId } = useParams();
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+
   const savedFilters = getStoredObj("storyListFilters") || {};
   const [status, setStatus] = useState<string[]>(savedFilters.status || []);
   const [startDate, setStartDate] = useState<string>(savedFilters.startDate || "");
   const [searchTerm, setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
+
   const saveFilters = (filters: { status?: string[]; startDate?: string; searchTerm?: string }) => {
     setStorage("storyListFilters", {
       status: filters.status ?? status,
@@ -78,7 +80,6 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
       limit
     });
 
-    // Send projectName to parent once
     if (
       !hasSentProjectNameRef.current &&
       "meta" in result &&
@@ -120,6 +121,23 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
     },
     [isLoading, isValidating, hasMore]
   );
+
+  // initial loading
+  if (isLoading && allStories.length === 0) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
+        }}
+      >
+        <CircularProgress size={50} thickness={4} />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
@@ -169,11 +187,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
           {/* Story List */}
           <Box sx={{ px: 2, pt: 3 }}>
-            {isLoading && size === 1 ? (
-              <Box display="flex" justifyContent="center" mt={5}>
-                <CircularProgress />
-              </Box>
-            ) : error ? (
+            {error ? (
               <Typography color="error" textAlign="center">
                 {t("Stories.fetchError")}
               </Typography>
@@ -196,6 +210,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
                 ))}
               </Grid>
             )}
+
             {isValidating && hasMore && (
               <Box display="flex" justifyContent="center" mt={3}>
                 <CircularProgress />

@@ -99,21 +99,18 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <ArrowBack />
             </IconButton>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Tooltip title={user.name || "-"} placement="top-start">
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
-                  sx={{
-                    textTransform: "capitalize",
-                    maxWidth: 240,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                  }}
-                >
-                  {user.name}
-                </Typography>
-              </Tooltip>
+              <Typography
+                variant="h5"
+                fontWeight={700}
+                sx={{
+                  textTransform: "capitalize",
+                  whiteSpace: "normal",
+                  wordBreak: "break-word"
+                }}
+              >
+                {user.name}
+              </Typography>
+
               <StatusIndicator
                 status={user.status ? "active" : "inactive"}
                 getColor={(status) => (status === "active" ? "green" : "red")}
@@ -149,7 +146,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           </Box>
 
           {/* General Info */}
-          {/* General Info */}
           {selectedTab === transuser("general") && (
             <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
               <Grid container spacing={2} flexDirection="column" mb={2}>
@@ -161,47 +157,47 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <Grid container spacing={2} mb={1}>
                 {/* First Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <Tooltip title={user?.first_name || "-"} placement="top-start">
-                    <Box
-                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
-                    >
-                      <LabelValueText
-                        label={transuser("labelfirst_name_view")}
-                        value={user?.first_name || "-"}
-                        sx={{ textTransform: "capitalize" }}
-                      />
-                    </Box>
-                  </Tooltip>
+                  <Box sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <LabelValueText
+                      label={transuser("labelfirst_name_view")}
+                      value={user?.first_name || "-"}
+                      sx={{
+                        textTransform: "capitalize",
+                        whiteSpace: "normal",
+                        wordBreak: "break-word"
+                      }}
+                    />
+                  </Box>
                 </Grid>
 
                 {/* Last Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <Tooltip title={user?.last_name || "-"} placement="top-start">
-                    <Box
-                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
-                    >
-                      <LabelValueText
-                        label={transuser("labellast_name_view")}
-                        value={user?.last_name || "-"}
-                        sx={{ textTransform: "capitalize" }}
-                      />
-                    </Box>
-                  </Tooltip>
+                  <Box sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <LabelValueText
+                      label={transuser("labellast_name_view")}
+                      value={user?.last_name || "-"}
+                      sx={{
+                        textTransform: "capitalize",
+                        whiteSpace: "normal",
+                        wordBreak: "break-word"
+                      }}
+                    />
+                  </Box>
                 </Grid>
 
                 {/* Preferred Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <Tooltip title={user?.name || "-"} placement="top-start">
-                    <Box
-                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
-                    >
-                      <LabelValueText
-                        label={transuser("labeluser_view")}
-                        value={user?.name || "-"}
-                        sx={{ textTransform: "capitalize" }}
-                      />
-                    </Box>
-                  </Tooltip>
+                  <Box sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <LabelValueText
+                      label={transuser("labeluser_view")}
+                      value={user?.name || "-"}
+                      sx={{
+                        textTransform: "capitalize",
+                        whiteSpace: "normal",
+                        wordBreak: "break-word"
+                      }}
+                    />
+                  </Box>
                 </Grid>
 
                 {/* Mobile No */}

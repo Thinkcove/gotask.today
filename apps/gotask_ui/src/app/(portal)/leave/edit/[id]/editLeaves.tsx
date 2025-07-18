@@ -31,6 +31,7 @@ const EditLeave: React.FC = () => {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  // Initialize formData with fetched leave data
   if (
     leave &&
     formData.from_date === "" &&
@@ -39,8 +40,8 @@ const EditLeave: React.FC = () => {
     formData.reasons === ""
   ) {
     setFormData({
-      from_date: leave.from_date,
-      to_date: leave.to_date,
+      from_date: leave.from_date ? new Date(leave.from_date).toISOString().split("T")[0] : "",
+      to_date: leave.to_date ? new Date(leave.to_date).toISOString().split("T")[0] : "",
       leave_type: leave.leave_type,
       reasons: leave.reasons || ""
     });
@@ -63,8 +64,10 @@ const EditLeave: React.FC = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.from_date) newErrors.from_date = transleave("fromdaterequired");
     if (!formData.to_date) newErrors.to_date = transleave("todaterequired");
-    if (new Date(formData.from_date) > new Date(formData.to_date)) {
-      newErrors.to_date = transleave("todateearlier");
+    if (formData.from_date && formData.to_date) {
+      if (new Date(formData.from_date) > new Date(formData.to_date)) {
+        newErrors.to_date = transleave("todateearlier");
+      }
     }
     if (!formData.leave_type) newErrors.leave_type = transleave("leavetyperequired");
     setErrors(newErrors);
@@ -81,18 +84,33 @@ const EditLeave: React.FC = () => {
         message: transleave("leaveupdated"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      router.push("/leave");
-    } catch {
+      setTimeout(() => {
+        router.push("/leave");
+      }, 1000);
+    } catch (error: unknown) {
+      // Type narrowing to ensure error has a message property
+      const errorMessage =
+        error instanceof Error &&
+        error.message === "A leave request already exists for the specified date range"
+          ? transleave("overlaperror")
+          : transleave("errorupdate");
       setSnackbar({
         open: true,
-        message: transleave("errorupdate"),
+        message: errorMessage,
         severity: SNACKBAR_SEVERITY.ERROR
       });
+      if (
+        error instanceof Error &&
+        error.message === "A leave request already exists for the specified date range"
+      ) {
+        setTimeout(() => {
+          router.push("/leave");
+        }, 1000);
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
-
   if (isLoading) {
     return (
       <Box

@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Link, Skeleton } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
-import { ALLOCATION, NOT_UTILIZED } from "../assetConstants";
+import { ALLOCATION, NOT_UTILIZED, OVERUTILIZED, systemTypeOptions } from "../assetConstants";
 
 interface Props {
   modelNameFilter: string[];
@@ -56,7 +56,8 @@ const AssetFilters: React.FC<Props> = ({
   onAssetTypeChange,
   loading = false
 }) => {
-  const disableAssignedToFilter = assetAllocationFilter?.includes(NOT_UTILIZED);
+  const disableAssignedToFilter =
+    assetAllocationFilter?.includes(NOT_UTILIZED) && !assetAllocationFilter?.includes(OVERUTILIZED);
 
   const appliedFilterCount =
     (hideModelNameFilter ? 0 : modelNameFilter.length > 0 ? 1 : 0) +
@@ -142,7 +143,7 @@ const AssetFilters: React.FC<Props> = ({
             {allSystemTypes && onSystemTypeChange && (
               <FilterDropdown
                 label={trans("systemtype")}
-                options={allSystemTypes}
+                options={systemTypeOptions}
                 selected={systemTypeFilter || []}
                 onChange={onSystemTypeChange}
               />

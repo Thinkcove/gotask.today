@@ -27,7 +27,9 @@
     "genericerror": "Something went wrong. Please try again.",
     "otpfail": "Failed to send OTP. Please try again.",
     "loading": "Loading...",
-    "rememberme": "Remember Me"
+    "rememberme": "Remember Me",
+    "resendin":"Resend in",
+    "resend":"Resend"
   },
   "Access": {
     "access": "Access",
@@ -228,7 +230,9 @@
         "all": "All",
         "toDo": "To Do",
         "inProgress": "In Progress",
-        "done": "Done",
+        "needInfo": "Need Info",
+        "hold": "Hold",
+        "completed": "Completed",
         "startDate": "Start Date",
         "endDate": "End Date",
         "clearFilters": "Clear Filters",
@@ -715,14 +719,14 @@
     "noissues": "Issues not found",
     "assetdetails": "Assets",
     "modelName": "Model:",
-    "searchAsset": "Search Asset",
+    "searchAsset": "Search Type / Id",
     "selectedAsset": "assets",
     "selectedIssues": "issues",
     "edit": "edit",
     "editstatus": "Update status",
     "showhistory": "Show History",
     "issueshistory": "Issues history",
-    "issuestypes": "Issue Type:",
+    "issuestypes": "Issue Type",
     "assetslog": "Log of who performed the updates in the assets",
     "isueslog": "Log of who performed the updates in the status",
     "issuesupdated": "Issues updated successfully",
@@ -782,6 +786,7 @@
     "no": "No",
     "nodatafound": "No Data Found",
     "capacity": "Capacity",
+    "searchissues": "Search Issue Type",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."
@@ -1188,6 +1193,7 @@
     "filterclear": "Clear Filter",
     "filterapply": "Apply Filter",
     "failedfetch": "Failed to Fetch Leave",
+    "overlaperror": "A leave request already exists for the specified date range",
     "meta": {
       "title": "Leave Management | GoTaskToday",
       "description": "Manage employee leave requests"

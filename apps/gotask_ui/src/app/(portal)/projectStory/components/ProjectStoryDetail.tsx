@@ -257,6 +257,7 @@ const ProjectStoryDetail = () => {
         onSubmit={handleDelete}
         title={t("Stories.deleteStory")}
         submitLabel={t("Stories.delete")}
+        submitColor="#b71c1c"
       >
         <Typography variant="body1" color="text.secondary">
           {t("Stories.confirmDelete")}

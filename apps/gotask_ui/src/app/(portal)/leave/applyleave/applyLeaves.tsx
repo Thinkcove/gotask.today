@@ -69,7 +69,6 @@ const ApplyLeave: React.FC = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSubmit = async () => {
     if (!validateForm()) {
       return;
@@ -85,17 +84,21 @@ const ApplyLeave: React.FC = () => {
       setTimeout(() => {
         router.push("/leave");
       }, 1000);
-    } catch {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error &&
+        error.message === "A leave request already exists for the specified date range"
+          ? transleave("overlaperror")
+          : transleave("failedsubmit");
       setSnackbar({
         open: true,
-        message: transleave("failedsubmit"),
+        message: errorMessage,
         severity: SNACKBAR_SEVERITY.ERROR
       });
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <>
       <FormHeader

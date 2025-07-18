@@ -157,47 +157,47 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <Grid container spacing={2} mb={1}>
                 {/* First Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <Box sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    <LabelValueText
-                      label={transuser("labelfirst_name_view")}
-                      value={user?.first_name || "-"}
-                      sx={{
-                        textTransform: "capitalize",
-                        whiteSpace: "normal",
-                        wordBreak: "break-word"
-                      }}
-                    />
-                  </Box>
+                  <LabelValueText
+                    label={transuser("labelfirst_name_view")}
+                    value={user?.first_name || "-"}
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden"
+                    }}
+                  />
                 </Grid>
 
                 {/* Last Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <Box sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    <LabelValueText
-                      label={transuser("labellast_name_view")}
-                      value={user?.last_name || "-"}
-                      sx={{
-                        textTransform: "capitalize",
-                        whiteSpace: "normal",
-                        wordBreak: "break-word"
-                      }}
-                    />
-                  </Box>
+                  <LabelValueText
+                    label={transuser("labellast_name_view")}
+                    value={user?.last_name || "-"}
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}
+                  />
                 </Grid>
 
                 {/* Preferred Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <Box sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    <LabelValueText
-                      label={transuser("labeluser_view")}
-                      value={user?.name || "-"}
-                      sx={{
-                        textTransform: "capitalize",
-                        whiteSpace: "normal",
-                        wordBreak: "break-word"
-                      }}
-                    />
-                  </Box>
+                  <LabelValueText
+                    label={transuser("labeluser_view")}
+                    value={user?.name || "-"}
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden"
+                    }}
+                  />
                 </Grid>
 
                 {/* Mobile No */}

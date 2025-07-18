@@ -168,6 +168,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
     if (currentUser && !options.find((u: User) => u.id === currentUser.id)) {
       options.unshift(currentUser);
     }
+console.log("currentUser", options);
 
     return options;
   };
@@ -198,6 +199,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const userOptions = getUserOptions();
   const projectOptions = getProjectOptions();
   const currentStatus = formData.status;
+  console.log("userOptions", userOptions);
 
   const allowedStatuses =
     initialStatus && TASK_WORKFLOW[initialStatus] ? TASK_WORKFLOW[initialStatus] : [];
@@ -214,7 +216,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
   const handleProjectStoriesChange = (storyId: string) => {
     console.log("storyId", storyId);
-    
+
     handleInputChange("story_id", storyId);
   };
 

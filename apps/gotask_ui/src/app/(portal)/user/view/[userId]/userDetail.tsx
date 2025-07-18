@@ -90,7 +90,11 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             borderRadius: 4,
             p: 4,
             backgroundColor: "#fff",
-            border: "1px solid #e0e0e0"
+            border: "1px solid #e0e0e0",
+            width: "100%",
+            height: "calc(100vh - 120px)",
+            overflowY: "auto",
+            boxSizing: "border-box"
           }}
         >
           {/* Header */}
@@ -147,7 +151,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {/* General Info */}
           {selectedTab === transuser("general") && (
-            <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
+            <>
               <Grid container spacing={2} flexDirection="column" mb={2}>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText label={transuser("uesrid")} value={user.user_id} />
@@ -259,7 +263,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   </Stack>
                 </Grid>
               </Grid>
-            </Box>
+            </>
           )}
 
           {/* Skills */}

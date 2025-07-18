@@ -155,8 +155,6 @@ const PermissionList = () => {
     setSelectedPermission(null);
   };
 
-  const skeletonloading = isLoading && totalCount === 0;
-
   const filteredPermissions = useMemo(() => {
     return displayData;
   }, [displayData]);
@@ -177,6 +175,7 @@ const PermissionList = () => {
   });
 
   const hasActiveFilters = userFilter.length > 0 || !!dateFrom || !!dateTo;
+  const skeletonloading = isLoading && totalCount === 0 && !hasActiveFilters;
 
   return (
     <>

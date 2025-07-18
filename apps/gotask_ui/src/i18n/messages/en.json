@@ -28,8 +28,8 @@
     "otpfail": "Failed to send OTP. Please try again.",
     "loading": "Loading...",
     "rememberme": "Remember Me",
-    "resendin":"Resend in",
-    "resend":"Resend"
+    "resendin": "Resend in",
+    "resend": "Resend"
   },
   "Access": {
     "access": "Access",
@@ -1176,7 +1176,7 @@
     "failedsubmit": "Failed to submit leave application",
     "create": "Create",
     "update": "Update",
-    "leave": "Apply Leave",
+    "leave": "Leave",
     "dateformat": "dd-mm-yyyy",
     "delete": "Delete",
     "deletesuccess": "Leave Deleted successfully",

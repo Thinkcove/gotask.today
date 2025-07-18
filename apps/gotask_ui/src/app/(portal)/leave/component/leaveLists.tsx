@@ -130,7 +130,9 @@ const LeaveList: React.FC = () => {
     router.push("/leave/applyleave");
   };
 
-  const skeletonloading = isLoading && totalCount === 0;
+  const hasFiltersApplied =
+    userIdFilter.length > 0 || leaveTypeFilter.length > 0 || fromDateFilter || toDateFilter;
+  const skeletonloading = isLoading && totalCount === 0 && !hasFiltersApplied;
 
   const leaveColumns = useMemo(
     () =>

@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { EMAIL_UPPERCASE_REGEX } from "../common/constants/regex";
 import { storeToken, isTokenExpired, fetchToken } from "../common/utils/authToken";
-import { DECREMENT, SECONDS } from "../common/utils/login";
+import { DECREMENT, RESEND_OTP_SECONDS, } from "../common/utils/login";
 
 const OtpLogin = () => {
   const translogin = useTranslations(LOCALIZATION.TRANSITION.LOGINCARD);
@@ -76,7 +76,7 @@ const OtpLogin = () => {
 
       if (res.ok && data.success) {
         setOtpSent(true);
-        startCountdown(SECONDS);
+        startCountdown(RESEND_OTP_SECONDS);
         setOtp("");
       } else {
         setError(data.error || data.message || translogin("otpfail"));

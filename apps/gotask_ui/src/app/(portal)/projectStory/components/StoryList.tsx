@@ -14,7 +14,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
 import StoryFilters from "../components/StoryFilters";
 import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
-import { DEFAULT_STORY_PAGE_SIZE } from "@/app/common/constants/user";
+import { DEFAULT_STORY_PAGE_SIZE } from "@/app/common/constants/project";
 
 const limit = DEFAULT_STORY_PAGE_SIZE;
 
@@ -138,7 +138,26 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
       </Box>
     );
   }
+  const applyStatusFilter = (val: string[]) => {
+    handleStatusChange(val);
+    setSize(1);
+  };
 
+  const applyStartDateFilter = (val: string) => {
+    handleStartDateChange(val);
+    setSize(1);
+  };
+
+  const applySearchTermFilter = (val: string) => {
+    handleSearchTermChange(val);
+    setSize(1);
+  };
+
+  const resetAllFilters = () => {
+    clearFilters();
+    setSize(1);
+  };
+  
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
       {allStories.length === 0 && !status.length && !startDate && !searchTerm ? (
@@ -166,22 +185,10 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
             status={status}
             startDate={startDate}
             searchTerm={searchTerm}
-            onStatusChange={(val) => {
-              handleStatusChange(val);
-              setSize(1);
-            }}
-            onStartDateChange={(val) => {
-              handleStartDateChange(val);
-              setSize(1);
-            }}
-            onSearchChange={(val) => {
-              handleSearchTermChange(val);
-              setSize(1);
-            }}
-            onClearFilters={() => {
-              clearFilters();
-              setSize(1);
-            }}
+            onStatusChange={applyStatusFilter}
+            onStartDateChange={applyStartDateFilter}
+            onSearchChange={applySearchTermFilter}
+            onClearFilters={resetAllFilters}
             onBack={() => router.push(`/project/view/${projectId}`)}
           />
 

@@ -43,3 +43,5 @@ export const GOAL_STATUS = {
   IN_PROGRESS: "in-progress",
   TO_DO: "to-do"
 } as const;
+
+export const DEFAULT_STORY_PAGE_SIZE = 12;

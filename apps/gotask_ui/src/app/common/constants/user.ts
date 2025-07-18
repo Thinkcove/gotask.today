@@ -12,7 +12,6 @@ export const MINIMUM_EXPERIENCE_REQUIRED = 1;
 export const DEFAULT_PROFICIENCY = 0;
 export const LPA_SUFFIX = "LPA";
 export const MAX_NOTES_LENGTH = 150;
-export const DEFAULT_STORY_PAGE_SIZE = 12;
 
 export function calculateIncrementPercent(current: number, previous: number): number | null {
   if (!previous || previous === 0) return null;

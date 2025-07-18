@@ -33,6 +33,8 @@ interface TaskInputProps {
   isUserEstimatedLocked?: boolean;
   isStartDateLocked?: boolean;
   initialStatus?: string;
+  isProjectLocked?: boolean;
+  isStoryLocked?: boolean;
 }
 
 const TaskInput: React.FC<TaskInputProps> = ({
@@ -42,7 +44,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
   readOnlyFields = [],
   isUserEstimatedLocked,
   isStartDateLocked,
-  initialStatus
+  initialStatus,
+  isProjectLocked = false,
+  isStoryLocked = false
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers();
@@ -286,7 +290,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             value={formData.project_id}
             onChange={(value) => handleProjectChange(String(value))}
             error={errors.project_id}
-            disabled={isReadOnly("project_id")}
+            disabled={isReadOnly("project_id") || isProjectLocked}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -299,7 +303,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             value={formData.story_id}
             onChange={(value) => handleProjectStoriesChange(String(value))}
             error={errors.story_id}
-            disabled={isReadOnly("project_id")}
+            disabled={isReadOnly("story_id") || isStoryLocked}
           />
         </Grid>
         {renderStatusField()}

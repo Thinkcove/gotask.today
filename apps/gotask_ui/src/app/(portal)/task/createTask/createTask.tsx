@@ -164,6 +164,8 @@ const CreateTask: React.FC = () => {
           handleInputChange={handleInputChange}
           errors={errors}
           readOnlyFields={storyId ? ["status"] : ["status"]}
+          isProjectLocked={!!projectId} 
+          isStoryLocked={!!storyId}
         />
       </Box>
 

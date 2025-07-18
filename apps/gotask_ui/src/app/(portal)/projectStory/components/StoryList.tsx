@@ -14,8 +14,9 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
 import StoryFilters from "../components/StoryFilters";
 import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
+import { DEFAULT_STORY_PAGE_SIZE } from "@/app/common/constants/user";
 
-const limit = 12;
+const limit = DEFAULT_STORY_PAGE_SIZE;
 
 interface StoryListProps {
   onProjectNameLoad?: (name: string) => void;
@@ -25,13 +26,10 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
   const { projectId } = useParams();
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
-
   const savedFilters = getStoredObj("storyListFilters") || {};
-
   const [status, setStatus] = useState<string[]>(savedFilters.status || []);
   const [startDate, setStartDate] = useState<string>(savedFilters.startDate || "");
   const [searchTerm, setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
-
   const saveFilters = (filters: { status?: string[]; startDate?: string; searchTerm?: string }) => {
     setStorage("storyListFilters", {
       status: filters.status ?? status,
@@ -179,6 +177,8 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
               <Typography color="error" textAlign="center">
                 {t("Stories.fetchError")}
               </Typography>
+            ) : allStories.length === 0 ? (
+              <EmptyState imageSrc={NoSearchResultsImage} message={t("Stories.noStoriesFound")} />
             ) : (
               <Grid container spacing={2}>
                 {allStories.map((story, index) => (

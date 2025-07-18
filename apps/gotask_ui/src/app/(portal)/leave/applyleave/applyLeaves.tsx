@@ -69,7 +69,6 @@ const ApplyLeave: React.FC = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSubmit = async () => {
     if (!validateForm()) {
       return;
@@ -96,19 +95,10 @@ const ApplyLeave: React.FC = () => {
         message: errorMessage,
         severity: SNACKBAR_SEVERITY.ERROR
       });
-      if (
-        error instanceof Error &&
-        error.message === "A leave request already exists for the specified date range"
-      ) {
-        setTimeout(() => {
-          router.push("/leave");
-        }, 1000);
-      }
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <>
       <FormHeader

@@ -90,7 +90,11 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             borderRadius: 4,
             p: 4,
             backgroundColor: "#fff",
-            border: "1px solid #e0e0e0"
+            border: "1px solid #e0e0e0",
+            width: "100%",
+            height: "calc(100vh - 120px)",
+            overflowY: "auto",
+            boxSizing: "border-box"
           }}
         >
           {/* Header */}
@@ -99,21 +103,18 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <ArrowBack />
             </IconButton>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Tooltip title={user.name || "-"} placement="top-start">
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
-                  sx={{
-                    textTransform: "capitalize",
-                    maxWidth: 240,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                  }}
-                >
-                  {user.name}
-                </Typography>
-              </Tooltip>
+              <Typography
+                variant="h5"
+                fontWeight={700}
+                sx={{
+                  textTransform: "capitalize",
+                  whiteSpace: "normal",
+                  wordBreak: "break-word"
+                }}
+              >
+                {user.name}
+              </Typography>
+
               <StatusIndicator
                 status={user.status ? "active" : "inactive"}
                 getColor={(status) => (status === "active" ? "green" : "red")}
@@ -149,9 +150,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           </Box>
 
           {/* General Info */}
-          {/* General Info */}
           {selectedTab === transuser("general") && (
-            <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
+            <>
               <Grid container spacing={2} flexDirection="column" mb={2}>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText label={transuser("uesrid")} value={user.user_id} />
@@ -161,47 +161,47 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <Grid container spacing={2} mb={1}>
                 {/* First Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <Tooltip title={user?.first_name || "-"} placement="top-start">
-                    <Box
-                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
-                    >
-                      <LabelValueText
-                        label={transuser("labelfirst_name_view")}
-                        value={user?.first_name || "-"}
-                        sx={{ textTransform: "capitalize" }}
-                      />
-                    </Box>
-                  </Tooltip>
+                  <LabelValueText
+                    label={transuser("labelfirst_name_view")}
+                    value={user?.first_name || "-"}
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden"
+                    }}
+                  />
                 </Grid>
 
                 {/* Last Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <Tooltip title={user?.last_name || "-"} placement="top-start">
-                    <Box
-                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
-                    >
-                      <LabelValueText
-                        label={transuser("labellast_name_view")}
-                        value={user?.last_name || "-"}
-                        sx={{ textTransform: "capitalize" }}
-                      />
-                    </Box>
-                  </Tooltip>
+                  <LabelValueText
+                    label={transuser("labellast_name_view")}
+                    value={user?.last_name || "-"}
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}
+                  />
                 </Grid>
 
                 {/* Preferred Name */}
                 <Grid item xs={6} sm={6} md={4}>
-                  <Tooltip title={user?.name || "-"} placement="top-start">
-                    <Box
-                      sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
-                    >
-                      <LabelValueText
-                        label={transuser("labeluser_view")}
-                        value={user?.name || "-"}
-                        sx={{ textTransform: "capitalize" }}
-                      />
-                    </Box>
-                  </Tooltip>
+                  <LabelValueText
+                    label={transuser("labeluser_view")}
+                    value={user?.name || "-"}
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden"
+                    }}
+                  />
                 </Grid>
 
                 {/* Mobile No */}
@@ -263,7 +263,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   </Stack>
                 </Grid>
               </Grid>
-            </Box>
+            </>
           )}
 
           {/* Skills */}

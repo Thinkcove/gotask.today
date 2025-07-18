@@ -213,6 +213,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
   };
 
   const handleProjectStoriesChange = (storyId: string) => {
+    console.log("storyId", storyId);
+    
     handleInputChange("story_id", storyId);
   };
 

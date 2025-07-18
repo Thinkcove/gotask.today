@@ -52,7 +52,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
 
   const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
-  console.log("projectStories", projectStories);
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
@@ -206,7 +205,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
       handleInputChange("status", value.toLowerCase());
     }
   };
-  
+
   const handleProjectStoriesChange = (storyId: string) => {
     handleInputChange("story_id", storyId);
   };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Grid, CircularProgress, Box, Stack, Divider, Tooltip } from "@mui/material";
+import { Typography, Grid, CircularProgress, Box, Stack, Divider} from "@mui/material";
 import { Business, ArrowForward, Email } from "@mui/icons-material";
 import CardComponent from "@/app/component/card/cardComponent";
 import { User } from "../interfaces/userInterface";
@@ -46,21 +46,19 @@ const UserCards: React.FC<UserCardProps> = ({ users, getUserStatusColor }) => {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
                   <Box>
-                    <Tooltip title={user.name || "-"} placement="top-start">
-                      <Typography
-                        variant="h6"
-                        fontWeight={600}
-                        sx={{
-                          textTransform: "capitalize",
-                          maxWidth: 180,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap"
-                        }}
-                      >
-                        {user.name}
-                      </Typography>
-                    </Tooltip>
+                    <Typography
+                      variant="h6"
+                      fontWeight={600}
+                      sx={{
+                        textTransform: "capitalize",
+                        maxWidth: 180,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap"
+                      }}
+                    >
+                      {user.name}
+                    </Typography>
 
                     {/* Role and Status with Divider */}
                     <Stack direction="row" alignItems="center" spacing={1}>

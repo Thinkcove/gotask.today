@@ -1187,6 +1187,7 @@
     "filterclear": "Clear Filter",
     "filterapply": "Apply Filter",
     "failedfetch": "Failed to Fetch Leave",
+    "overlaperror": "A leave request already exists for the specified date range",
     "meta": {
       "title": "Leave Management | GoTaskToday",
       "description": "Manage employee leave requests"

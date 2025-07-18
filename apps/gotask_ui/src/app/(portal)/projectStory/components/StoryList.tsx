@@ -64,7 +64,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
   const hasSentProjectNameRef = useRef(false);
 
-  const getKey = (pageIndex: number, previousPageData: any) => {
+  const getKey = (pageIndex: number, previousPageData?: PaginatedStoryResponse | null) => {
     if (previousPageData && "data" in previousPageData && !previousPageData.data.length)
       return null;
     return `stories-${projectId}-${status.join(",")}-${startDate}-${searchTerm}-page-${pageIndex + 1}`;
@@ -92,7 +92,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
     return result;
   };
 
-  const { data, size, setSize, isLoading, isValidating, error } = useSWRInfinite(getKey, fetcher);
+  const { data, setSize, isLoading, isValidating, error } = useSWRInfinite(getKey, fetcher);
 
   const allStories: ProjectStory[] = data
     ? data
@@ -119,7 +119,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
       observerRef.current.observe(node);
     },
-    [isLoading, isValidating, hasMore]
+    [isLoading, isValidating, hasMore, setSize]
   );
 
   // initial loading

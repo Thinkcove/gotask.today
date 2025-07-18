@@ -16,6 +16,7 @@ const CreateTask: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const storyId = searchParams.get("storyId");
+  const projectId = searchParams.get("projectId");
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -29,7 +30,7 @@ const CreateTask: React.FC = () => {
     status: TASK_STATUS.TO_DO,
     severity: TASK_SEVERITY.LOW,
     user_id: "",
-    project_id: "",
+    project_id: projectId || "",
     created_on: moment().format("YYYY-MM-DD"),
     due_date: "",
     start_date: "",

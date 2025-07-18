@@ -25,6 +25,7 @@ interface TaskInputProps {
   readOnlyFields?: string[];
   isUserEstimatedLocked?: boolean;
   isStartDateLocked?: boolean;
+  initialStatus?: string;
 }
 
 const TaskInput: React.FC<TaskInputProps> = ({
@@ -33,7 +34,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
   errors,
   readOnlyFields = [],
   isUserEstimatedLocked,
-  isStartDateLocked
+  isStartDateLocked,
+  initialStatus
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers();
@@ -43,8 +45,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
-
-  const [savedStatus, setSavedStatus] = useState(formData.status);
 
   const getCurrentUser = useMemo(() => {
     if (!formData.user_id) return null;
@@ -177,18 +177,37 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const currentStatus = formData.status;
 
   const allowedStatuses =
-    savedStatus && TASK_WORKFLOW[savedStatus] ? TASK_WORKFLOW[savedStatus] : [];
+    initialStatus && TASK_WORKFLOW[initialStatus] ? TASK_WORKFLOW[initialStatus] : [];
 
-  const uniqueStatuses = Array.from(new Set([savedStatus, ...allowedStatuses].filter(Boolean)));
+  const uniqueStatuses = Array.from(new Set([initialStatus, ...allowedStatuses].filter(Boolean)));
 
   const handleStatusChange = (value: string) => {
     if (value === "") {
       handleInputChange("status", "");
     } else {
       handleInputChange("status", value.toLowerCase());
-      setSavedStatus(value.toLowerCase());
     }
   };
+
+  const renderStatusField = () => (
+    <Grid item xs={12} sm={6}>
+      <FormField
+        label={transtask("labelstatus")}
+        type="select"
+        options={
+          !initialStatus
+            ? [transtask("todo")]
+            : ["", ...uniqueStatuses.map((s: any) => s.toUpperCase())]
+        }
+        required
+        placeholder={transtask("placeholderstatus")}
+        value={!initialStatus ? transtask("todo") : currentStatus?.toUpperCase() || ""}
+        onChange={!initialStatus ? undefined : (value) => handleStatusChange(String(value))}
+        error={errors.status}
+        disabled={!initialStatus || isReadOnly("status")}
+      />
+    </Grid>
+  );
 
   return (
     <>
@@ -231,19 +250,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("project_id")}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <FormField
-            label={transtask("labelstatus")}
-            type="select"
-            options={["", ...uniqueStatuses.map((s) => s.toUpperCase())]}
-            required
-            placeholder={transtask("placeholderstatus")}
-            value={currentStatus ? currentStatus.toUpperCase() : ""}
-            onChange={(value) => handleStatusChange(String(value))}
-            error={errors.status}
-            disabled={isReadOnly("status")}
-          />
-        </Grid>
+
+        {renderStatusField()}
+
         <Grid item xs={12} sm={6}>
           <FormField
             label={transtask("labelseverity")}

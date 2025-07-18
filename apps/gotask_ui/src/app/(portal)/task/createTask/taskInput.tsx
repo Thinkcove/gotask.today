@@ -52,6 +52,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
 
   const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
+  console.log("projectStories", projectStories);
+
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
   const getCurrentUser = useMemo(() => {
@@ -204,6 +206,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
       handleInputChange("status", value.toLowerCase());
     }
   };
+  
+  const handleProjectStoriesChange = (storyId: string) => {
+    handleInputChange("story_id", storyId);
+  };
 
   const renderStatusField = () => (
     <Grid item xs={12} sm={6}>
@@ -262,10 +268,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
             type="select"
             options={projectOptions}
             placeholder={transtask("placeholderproject")}
-            value={formData.story_id}
-            onChange={(value) => handleInputChange("story_id", String(value))}
-            error={errors.story_id}
-            disabled={isReadOnly("story_id")}
+            value={formData.project_id}
+            onChange={(value) => handleProjectChange(String(value))}
+            error={errors.project_id}
+            disabled={isReadOnly("project_id")}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -275,9 +281,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
             options={projectStories}
             required
             placeholder={transtask("placeholderprojectstories")}
-            value={formData.project_id}
-            onChange={(value) => handleProjectChange(String(value))}
-            error={errors.project_id}
+            value={formData.story_id}
+            onChange={(value) => handleProjectStoriesChange(String(value))}
+            error={errors.story_id}
             disabled={isReadOnly("project_id")}
           />
         </Grid>

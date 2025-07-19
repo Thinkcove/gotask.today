@@ -5,8 +5,7 @@ import {
   findAllLeaves,
   findLeaveById,
   updateALeave,
-  deleteByLeaveId,
-  findLeavesWithFilters
+  deleteByLeaveId
 } from "../../domain/interface/leave/leaveInterface";
 import { ILeave, Leave } from "../../domain/model/leave/leaveModel";
 

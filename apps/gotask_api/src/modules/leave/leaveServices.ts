@@ -207,12 +207,20 @@ const getLeavesWithFiltersService = async (filters: {
       sort_field: filters.sort_field || "updatedAt",
       sort_order: filters.sort_order || SORT_ORDER.DESC
     });
-
+    const enrichedLeaves = await Promise.all(
+      filteredLeaves.map(async (leave: any) => {
+        const user = await User.findOne({ id: leave.user_id });
+        return {
+          ...leave.toObject(),
+          user_name: user?.name || null
+        };
+      })
+    );
     return {
       success: true,
       message: "Leave requests retrieved successfully",
       data: {
-        leaves: filteredLeaves,
+        leaves: enrichedLeaves,
         total_count,
         total_pages: Math.ceil(total_count / page_size),
         current_page: page

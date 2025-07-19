@@ -239,6 +239,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
           onSubmit={handleDelete}
           title={transrole("delete")}
           submitLabel="Delete"
+          submitColor="#b71c1c"
         >
           <Typography>
             {transrole("removeaccess")}

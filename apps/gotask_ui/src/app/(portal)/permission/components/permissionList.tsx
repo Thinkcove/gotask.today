@@ -175,6 +175,7 @@ const PermissionList = () => {
   });
 
   const hasActiveFilters = userFilter.length > 0 || !!dateFrom || !!dateTo;
+  const skeletonloading = isLoading && totalCount === 0 && !hasActiveFilters;
 
   return (
     <>
@@ -190,6 +191,7 @@ const PermissionList = () => {
             onClearFilters={handleClearFilters}
             showClear={hasActiveFilters}
             clearText={transpermission("clearall")}
+            loading={skeletonloading}
           />
         </Box>
         <Box

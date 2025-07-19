@@ -80,4 +80,5 @@ export interface leaveFilterProps {
   onFromDateChange: (val: string) => void;
   onToDateChange: (val: string) => void;
   onClearFilters: () => void;
+  loading?: boolean;
 }

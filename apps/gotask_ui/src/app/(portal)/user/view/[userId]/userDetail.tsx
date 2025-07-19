@@ -92,7 +92,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             backgroundColor: "#fff",
             border: "1px solid #e0e0e0",
             width: "100%",
-            height: "calc(100vh - 120px)",
+            height: "calc(100vh - 100px)",
             overflowY: "auto",
             boxSizing: "border-box"
           }}
@@ -459,6 +459,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           onSubmit={handleDelete}
           title={transuser("deleteuser")}
           submitLabel="Delete"
+          submitColor="#b71c1c"
         >
           <Typography>{transuser("deleteornot")}</Typography>
         </CommonDialog>

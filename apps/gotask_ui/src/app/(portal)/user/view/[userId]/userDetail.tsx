@@ -92,7 +92,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             backgroundColor: "#fff",
             border: "1px solid #e0e0e0",
             width: "100%",
-            height: "calc(100vh - 120px)",
+            height: "calc(100vh - 100px)",
             overflowY: "auto",
             boxSizing: "border-box"
           }}
@@ -240,27 +240,29 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
               {/* Organization */}
               <Grid container spacing={2}>
-                <Grid item xs={6} sm={6} md={4}>
+                <Grid item xs={12} sm={6} md={4}>
+                  
                   <Typography variant="subtitle2" color="text.secondary" mb={1}>
                     {transuser("organization")}
                   </Typography>
-                  <Stack direction="row" spacing={1} flexWrap="wrap">
-                    {user.orgDetails && user.orgDetails.length > 0 ? (
-                      user.orgDetails.map((orgId) => (
-                        <Tooltip title={orgId.name} key={orgId.id} placement="top">
-                          <Chip
-                            label={orgId.name}
-                            variant="outlined"
-                            sx={{ textTransform: "capitalize", maxWidth: 180 }}
-                          />
-                        </Tooltip>
-                      ))
-                    ) : (
-                      <Typography variant="body2" color="text.secondary">
-                        {transuser("noorganzationuser")}
-                      </Typography>
-                    )}
-                  </Stack>
+                  {user.orgDetails && user.orgDetails.length > 0 ? (
+                    <ul style={{ paddingLeft: "1rem", margin: 0 }}>
+                      {user.orgDetails.map((orgId) => (
+                        <li key={orgId.id}>
+                          <Typography
+                            variant="body2"
+                            sx={{ textTransform: "capitalize"}}
+                          >
+                            {orgId.name}
+                          </Typography>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      {transuser("noorganzationuser")}
+                    </Typography>
+                  )}
                 </Grid>
               </Grid>
             </>
@@ -457,6 +459,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           onSubmit={handleDelete}
           title={transuser("deleteuser")}
           submitLabel="Delete"
+          submitColor="#b71c1c"
         >
           <Typography>{transuser("deleteornot")}</Typography>
         </CommonDialog>

@@ -24,6 +24,7 @@ export interface IGroup {
   tasks: [];
 }
 export interface ITask {
+  story_id: string;
   variation?: string;
   id: string;
   title: string;
@@ -131,4 +132,12 @@ export interface IComment {
   user_name: string;
   comment: string;
   updatedAt?: string;
+}
+
+export interface StoryOption {
+  id: string;
+  name: string;
+}
+export interface StoryResponseWithData {
+  data?: Array<{ id: string; title: string }>;
 }

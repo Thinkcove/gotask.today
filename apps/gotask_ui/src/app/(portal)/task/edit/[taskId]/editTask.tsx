@@ -41,7 +41,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     created_on: data?.created_on?.split("T")[0] || "",
     due_date: data?.due_date?.split("T")[0] || "",
     start_date: data?.start_date?.split("T")[0] || "",
-    user_estimated: data?.user_estimated || ""
+    user_estimated: data?.user_estimated || "",
+    story_id: data?.story_id || ""
   });
 
   const [snackbar, setSnackbar] = useState({
@@ -208,7 +209,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             readOnlyFields={readOnlyFields}
             isUserEstimatedLocked={!!data.user_estimated}
             isStartDateLocked={!!data.start_date}
-            initialStatus={data.status} 
+            initialStatus={data.status}
           />
         </Box>
 

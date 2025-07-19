@@ -233,7 +233,6 @@ export const CreateAsset: React.FC = () => {
               </Grid>
             </Grid>
 
-            {/* Laptop Inputs below if type is Laptop */}
             {(selectedAssetType?.name === ASSET_TYPE.LAPTOP ||
               selectedAssetType?.name === ASSET_TYPE.DESKTOP ||
               selectedAssetType?.name === ASSET_TYPE.MOBILE) && (

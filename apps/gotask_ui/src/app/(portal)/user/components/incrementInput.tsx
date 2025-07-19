@@ -92,7 +92,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
     resetForm();
     setDialogOpen(false);
   };
-  
+
   const handleDeleteClick = (id: string) => {
     setDeleteTargetId(id);
     setDeleteDialogOpen(true);

@@ -22,11 +22,17 @@ import TimeSpentPopup from "../timeSpentPopup";
 
 interface TaskDetailViewProps {
   task: any;
+  storyName?: string; // Story name passed from parent
   loading?: boolean;
   mutate: () => Promise<void>;
 }
 
-const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
+const TaskDetailView: React.FC<TaskDetailViewProps> = ({
+  task,
+  storyName = "-", // Default value
+  loading = false,
+  mutate
+}) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { user } = useUser();
   const router = useRouter();
@@ -157,6 +163,12 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 <LabelValueText
                   label={transtask("detailproject")}
                   value={task.project_name || "-"}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("labelprojectstories")}
+                  value={storyName || "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>

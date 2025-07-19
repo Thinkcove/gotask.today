@@ -51,10 +51,12 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers();
   const { getAllProjects } = useAllProjects();
-  console.log("formData", formData);
+  console.log("getAllProjects", getAllProjects);
+  console.log("getAllUsers", getAllUsers);
 
   const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
+  console.log("filteredUsers", filteredUsers);
 
   const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
   console.log("Story options:", projectStories);
@@ -110,6 +112,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
     try {
       const projects = await getProjectIdsAndNames(userId);
+      console.log("projects--", projects);
+
       setFilteredProjects(projects);
       handleInputChange("projects", projects);
 
@@ -142,6 +146,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
     setProjectStories(storyOptions);
     try {
       const users = await getUsersByProjectId(projectId);
+      console.log("users", users);
+
       setFilteredUsers(users);
       handleInputChange("users", users);
 
@@ -168,7 +174,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
     if (currentUser && !options.find((u: User) => u.id === currentUser.id)) {
       options.unshift(currentUser);
     }
-console.log("currentUser", options);
+    console.log("currentUser", options);
 
     return options;
   };
@@ -229,9 +235,9 @@ console.log("currentUser", options);
           !initialStatus
             ? [transtask("todo")]
             : [
-                "",
-                ...uniqueStatuses.filter((s): s is string => s != null).map((s) => s.toUpperCase())
-              ]
+              "",
+              ...uniqueStatuses.filter((s): s is string => s != null).map((s) => s.toUpperCase())
+            ]
         }
         required
         placeholder={transtask("placeholderstatus")}
@@ -242,9 +248,11 @@ console.log("currentUser", options);
       />
     </Grid>
   );
+  
   const [lastLoadedProjectId, setLastLoadedProjectId] = useState("");
 
   if (formData.project_id && formData.project_id !== lastLoadedProjectId) {
+    // Load project stories
     getStoriesByProject(formData.project_id).then((result) => {
       const storyOptions = ((result as StoryResponseWithData)?.data || []).map(
         (story: { id: string; title: string }) => ({
@@ -253,8 +261,20 @@ console.log("currentUser", options);
         })
       );
       setProjectStories(storyOptions);
-      setLastLoadedProjectId(formData.project_id);
     });
+
+    // Load users for the project
+    getUsersByProjectId(formData.project_id).then((users) => {
+      console.log("Users for project:", users);
+      setFilteredUsers(users);
+      handleInputChange("users", users);
+    }).catch((error) => {
+      console.error("Error fetching users for project:", error);
+      setFilteredUsers(getAllUsers || []);
+      handleInputChange("users", getAllUsers || []);
+    });
+
+    setLastLoadedProjectId(formData.project_id);
   }
 
   return (

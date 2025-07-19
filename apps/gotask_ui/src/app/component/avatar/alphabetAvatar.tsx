@@ -12,20 +12,28 @@ interface AlphabetAvatarProps {
   userName?: string;
   size?: number;
   fontSize?: number;
+  showTooltip?: boolean;
 }
 
 const AlphabetAvatar: React.FC<AlphabetAvatarProps> = ({
   userName = "",
   size = 24,
-  fontSize = 12
+  fontSize = 12,
+  showTooltip = false
 }) => {
   const letter = userName.charAt(0).toUpperCase() || "-";
   const bgColor = getColorByLetter(letter);
 
-  return (
+  const avatar = (
+    <Avatar sx={{ height: size, width: size, fontSize, bgcolor: bgColor }}>{letter}</Avatar>
+  );
+
+  return showTooltip ? (
     <Tooltip title={userName} arrow>
-      <Avatar sx={{ height: size, width: size, fontSize, bgcolor: bgColor }}>{letter}</Avatar>
+      {avatar}
     </Tooltip>
+  ) : (
+    avatar
   );
 };
 

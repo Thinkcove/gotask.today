@@ -9,6 +9,7 @@ import {
   findLeavesWithFilters
 } from "../../domain/interface/leave/leaveInterface";
 import { ILeave, Leave } from "../../domain/model/leave/leaveModel";
+import { User } from "../../domain/model/user/user";
 
 const createLeaveService = async (leaveData: Partial<ILeave>) => {
   try {
@@ -33,11 +34,26 @@ const createLeaveService = async (leaveData: Partial<ILeave>) => {
 
 const getAllLeavesService = async () => {
   try {
-    const leaves = await findAllLeaves();
+    const leaves = await Leave.find();
+    console.log("leaves", leaves);
+
+    const enrichedLeaves = await Promise.all(
+      leaves.map(async (leave) => {
+        const user = await User.findOne({ id: leave.user_id });
+        console.log("leave.user_id:", leave.user_id);
+        console.log("user", user?.name);
+        return {
+          ...leave.toObject(),
+          user_name: user?.name || null
+        };
+      })
+    );
+    console.log("leaves enrichedLeaves", enrichedLeaves);
+
     return {
       success: true,
       message: "Leave requests retrieved successfully",
-      data: leaves
+      data: enrichedLeaves
     };
   } catch (error: any) {
     return {

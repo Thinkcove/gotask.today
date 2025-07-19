@@ -1,10 +1,10 @@
 import React from "react";
-import { Box, Link } from "@mui/material";
+import { Box, Link, Skeleton } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FilterDropdown from "@/app/component/input/filterDropDown";
-import { leaveFilterProps } from "../interface/leaveInterface";
 import DateDropdown from "@/app/component/input/dateDropdown";
+import { leaveFilterProps } from "../interface/leaveInterface";
 
 const LeaveFilters: React.FC<leaveFilterProps> = ({
   userIdFilter,
@@ -18,7 +18,8 @@ const LeaveFilters: React.FC<leaveFilterProps> = ({
   onLeaveTypeChange,
   onFromDateChange,
   onToDateChange,
-  onClearFilters
+  onClearFilters,
+  loading = false
 }) => {
   const transleave = useTranslations(LOCALIZATION.TRANSITION.LEAVE);
 
@@ -63,29 +64,46 @@ const LeaveFilters: React.FC<leaveFilterProps> = ({
           "&::-webkit-scrollbar": { display: "none" }
         }}
       >
-        {/* User Name Filter (displaying usernames, filtering by user_id) */}
-        <FilterDropdown
-          label={transleave("username")}
-          options={allUserNames}
-          selected={selectedUsernames}
-          onChange={handleUserChange}
-        />
+        {loading ? (
+          <>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                variant="rectangular"
+                width={220}
+                height={42}
+                sx={{ borderRadius: 1 }}
+                animation="wave"
+              />
+            ))}
+          </>
+        ) : (
+          <>
+            {/* User Name Filter (displaying usernames, filtering by user_id) */}
+            <FilterDropdown
+              label={transleave("username")}
+              options={allUserNames}
+              selected={selectedUsernames}
+              onChange={handleUserChange}
+            />
 
-        {/* Leave Type Filter */}
-        <FilterDropdown
-          label={transleave("leavetype")}
-          options={allLeaveTypes}
-          selected={leaveTypeFilter}
-          onChange={onLeaveTypeChange}
-        />
-        {/* Date Range Filter using DateDropdown */}
-        <DateDropdown
-          dateFrom={fromDate || ""}
-          dateTo={toDate || ""}
-          onDateChange={handleDateChange}
-          transtask={transleave}
-          placeholder={transleave("daterange")}
-        />
+            {/* Leave Type Filter */}
+            <FilterDropdown
+              label={transleave("leavetype")}
+              options={allLeaveTypes}
+              selected={leaveTypeFilter}
+              onChange={onLeaveTypeChange}
+            />
+            {/* Date Range Filter using DateDropdown */}
+            <DateDropdown
+              dateFrom={fromDate || ""}
+              dateTo={toDate || ""}
+              onDateChange={handleDateChange}
+              transtask={transleave}
+              placeholder={transleave("daterange")}
+            />
+          </>
+        )}
       </Box>
       {/* Clear All Link - Always visible below filter bar */}
       {appliedFilterCount > 0 && (

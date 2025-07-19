@@ -81,6 +81,7 @@ export interface PermissionFilterProps {
   clearText?: string;
   onClearFilters?: () => void;
   userFilter: string[];
+  loading?: boolean;
 }
 
 export interface PermissionColumnsConfig {

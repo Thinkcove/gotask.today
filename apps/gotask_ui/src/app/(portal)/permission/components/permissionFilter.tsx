@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Link } from "@mui/material";
+import { Box, Link, Skeleton } from "@mui/material";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -15,7 +15,8 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
   clearText,
   onClearFilters,
   allUsers,
-  userFilter
+  userFilter,
+  loading = false
 }) => {
   const transpermission = useTranslations(LOCALIZATION.TRANSITION.PERMISSION);
 
@@ -31,12 +32,22 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
         {/* Back + Search */}
         <Box display="flex" justifyContent={{ xs: "center", sm: "flex-start" }} flexGrow={1}>
           <Box sx={{ width: { sm: "auto" } }}>
-            <FilterDropdown
-              label={transpermission("filteruser")}
-              options={allUsers}
-              selected={userFilter}
-              onChange={onUserChange}
-            />
+            {loading ? (
+              <Skeleton
+                variant="rectangular"
+                width={220}
+                height={42}
+                sx={{ borderRadius: 1 }}
+                animation="wave"
+              />
+            ) : (
+              <FilterDropdown
+                label={transpermission("filteruser")}
+                options={allUsers}
+                selected={userFilter}
+                onChange={onUserChange}
+              />
+            )}
           </Box>
         </Box>
 
@@ -58,13 +69,23 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
             }
           }}
         >
-          <DateDropdown
-            dateFrom={dateFrom}
-            dateTo={dateTo}
-            onDateChange={onDateChange}
-            transtask={transpermission}
-            placeholder={transpermission("filterdate")}
-          />
+          {loading ? (
+            <Skeleton
+              variant="rectangular"
+              width={220}
+              height={42}
+              sx={{ borderRadius: 1 }}
+              animation="wave"
+            />
+          ) : (
+            <DateDropdown
+              dateFrom={dateFrom}
+              dateTo={dateTo}
+              onDateChange={onDateChange}
+              transtask={transpermission}
+              placeholder={transpermission("filterdate")}
+            />
+          )}
           {showClear && onClearFilters && (
             <Box sx={{ flexShrink: 0 }}>
               <Link

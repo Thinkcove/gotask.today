@@ -1,11 +1,11 @@
-import React from "react";
 import Grid from "@mui/material/Grid/Grid";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionFormProps } from "../interface/interface";
 import TimePickerField from "@/app/component/input/timePicker";
+import ReusableEditor from "@/app/component/richText/textEditor";
 
 function PermissionForm({
   formData,
@@ -92,13 +92,14 @@ function PermissionForm({
         </Grid>
 
         <Grid item xs={12}>
-          <FormField
-            label={transpermission("labelreson")}
-            type="text"
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            {transpermission("labelreson")}
+          </Typography>
+          <ReusableEditor
+            content={formData.comments || ""}
+            onChange={(html) => handleTimeChange("comments", html)}
             placeholder={transpermission("comments")}
-            value={formData.comments}
-            onChange={(val) => handleTimeChange("comments", String(val))}
-            multiline
+            showSaveButton={false}
           />
         </Grid>
       </Grid>

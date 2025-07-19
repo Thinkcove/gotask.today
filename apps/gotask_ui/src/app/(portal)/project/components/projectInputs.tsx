@@ -50,21 +50,6 @@ const ProjectInput = ({
           placeholder={transproject("placeholdername")}
         />
       </Grid>
-
-      <Grid item xs={12}>
-        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-          {transproject("labeldescription")}
-        </Typography>
-        <ReusableEditor
-          content={formData.description || ""}
-          placeholder={transproject("placeholderdescription")}
-          readOnly={isReadOnly("description")}
-          showSaveButton={false}
-          userList={userList}
-          onChange={(html) => handleChange("description", html)}
-        />
-      </Grid>
-
       <Grid item xs={12} sm={6}>
         <FormField
           label={transproject("labelstatus")}
@@ -89,6 +74,20 @@ const ProjectInput = ({
           required
           disabled={isReadOnly("organization_id")}
           placeholder={transproject("placeholderorganization")}
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+          {transproject("labeldescription")}
+        </Typography>
+        <ReusableEditor
+          content={formData.description || ""}
+          placeholder={transproject("placeholderdescription")}
+          readOnly={isReadOnly("description")}
+          showSaveButton={false}
+          userList={userList}
+          onChange={(html) => handleChange("description", html)}
         />
       </Grid>
     </Grid>

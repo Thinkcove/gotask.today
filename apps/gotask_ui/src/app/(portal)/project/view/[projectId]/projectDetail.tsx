@@ -14,7 +14,6 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
-import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
@@ -33,11 +32,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
-
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const router = useRouter();
-  const [editOpen, setEditOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -134,9 +131,19 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               }}
             >
               <Box>
-                <Typography variant="h5" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  sx={{
+                    textTransform: "capitalize",
+                    wordBreak: "break-word",
+                    overflow: "hidden",
+                    whiteSpace: "normal"
+                  }}
+                >
                   {project.name}
                 </Typography>
+
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
               </Box>
               <Box
@@ -145,7 +152,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 }}
               >
                 {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
-                  <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+                  // NEW: Navigate to edit route
+                  <IconButton
+                    edge="start"
+                    color="primary"
+                    onClick={() => router.push(`/project/edit/${projectID}`)}
+                  >
                     <Edit />
                   </IconButton>
                 )}
@@ -319,14 +331,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
             onChange={(ids) => setSelectedUserIds(ids as string[])}
           />
         </CommonDialog>
-
-        <EditProject
-          open={editOpen}
-          onClose={() => setEditOpen(false)}
-          data={project}
-          mutate={mutate}
-          projectID={projectID}
-        />
 
         <CommonDialog
           open={openDeleteDialog}

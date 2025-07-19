@@ -27,7 +27,9 @@
     "genericerror": "Something went wrong. Please try again.",
     "otpfail": "Failed to send OTP. Please try again.",
     "loading": "Loading...",
-    "rememberme": "Remember Me"
+    "rememberme": "Remember Me",
+    "resendin":"Resend in",
+    "resend":"Resend"
   },
   "Access": {
     "access": "Access",
@@ -140,7 +142,7 @@
     "placeholderdescription": "Enter project description",
     "placeholderstatus": "Enter project Status",
     "placeholderorganization": "Select organization",
-    "createnewproject": "Create New Projet",
+    "createnewproject": "Create New Project",
     "viewname": "Project",
     "erroradd": "Error while adding assignee",
     "errorremove": "Error while removing assignee",
@@ -172,6 +174,8 @@
     "filterduedate": "Select Due Date",
     "filterclear": "Clear",
     "filterapply": "Apply",
+    "cancelproject": "Cancel",
+    "submitproject": "Submit",
     "meta": {
       "title": "Project Management | GoTaskToday",
       "description": " Create, assign, and monitor progress of ongoing projects."
@@ -205,7 +209,7 @@
       "noDescription": "No description provided.",
       "status": "Status *",
       "na": "N/A",
-      "taskSectionTitle": "Associated Tasks",
+      "taskSectionTitle": "Tasks",
       "createTask": "+ Create Task",
       "noTasks": "No tasks linked to this story yet.",
       "confirmDelete": "Are you sure you want to delete this story?",
@@ -226,7 +230,9 @@
         "all": "All",
         "toDo": "To Do",
         "inProgress": "In Progress",
-        "done": "Done",
+        "needInfo": "Need Info",
+        "hold": "Hold",
+        "completed": "Completed",
         "startDate": "Start Date",
         "endDate": "End Date",
         "clearFilters": "Clear Filters",
@@ -426,6 +432,7 @@
     "reuseplaceholder": "Write something here...",
     "saved": "Save",
     "noupdates": "No updates",
+    "todo": "TO-DO",
     "Project": {
       "meta": {
         "title": "Task Projects",
@@ -669,7 +676,7 @@
     "warrantyPeriod": "Warranty Period",
     "warrantyDate": "Warranty Date",
     "antivirus": "Antivirus",
-    "recoveryKey": "Recovery Key",
+    "recoveryKey": "Encrypted Key",
     "lastServicedDate": "Last Serviced Date",
     "commentService": "Comment Service",
     "cancel": "Cancel",
@@ -692,7 +699,7 @@
     "submitting": "Submitting....",
     "submit": "Submit",
     "open": "open",
-    "encryptedkey": "Encrypted Key",
+    "encryptedkey": "Identifier Key",
     "close": "Close",
     "updateasset": "Update asset",
     "update": "Update",
@@ -710,14 +717,14 @@
     "noissues": "Issues not found",
     "assetdetails": "Assets",
     "modelName": "Model:",
-    "searchAsset": "Search Asset",
+    "searchAsset": "Search Type / Id",
     "selectedAsset": "assets",
     "selectedIssues": "issues",
     "edit": "edit",
     "editstatus": "Update status",
     "showhistory": "Show History",
     "issueshistory": "Issues history",
-    "issuestypes": "Issue Type:",
+    "issuestypes": "Issue Type",
     "assetslog": "Log of who performed the updates in the assets",
     "isueslog": "Log of who performed the updates in the status",
     "issuesupdated": "Issues updated successfully",
@@ -777,6 +784,7 @@
     "no": "No",
     "nodatafound": "No Data Found",
     "capacity": "Capacity",
+    "searchissues": "Search Issue Type",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."
@@ -956,9 +964,11 @@
     "enterenddate": "Enter End Date",
     "enterscore": "Enter Score",
     "notes": "Review",
-    "addedby":"Added By",
-    "nocomment":"-",
-    "add":"Add",
+    "addedby": "Added By",
+    "nocomment": "-",
+    "add": "Add",
+    "createsuccess": "Template created successfully",
+    "createfailed": "Template Name already exists",
     "meta": {
       "title": "KPI Templates | GoTaskToday",
       "description": "Monitor and evaluate performance metrics for teams and individuals."
@@ -1181,6 +1191,7 @@
     "filterclear": "Clear Filter",
     "filterapply": "Apply Filter",
     "failedfetch": "Failed to Fetch Leave",
+    "overlaperror": "A leave request already exists for the specified date range",
     "meta": {
       "title": "Leave Management | GoTaskToday",
       "description": "Manage employee leave requests"

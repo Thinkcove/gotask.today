@@ -11,6 +11,8 @@ import LabelValueText from "@/app/component/text/labelValueText";
 import { getUserStatusColor } from "@/app/common/constants/status";
 import { Template } from "../../../service/templateInterface";
 import { deleteTemplate } from "../../../service/templateAction";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 interface TemplateDetailProps {
   template: Template;
@@ -99,11 +101,16 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
           </Box>
 
           {/* Description Section */}
+
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
-              <LabelValueText
-                label={transkpi("description")}
-                value={template.description || transkpi("nodescription")}
+              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                {transkpi("description")}
+              </Typography>
+
+              <RichTextReadOnly
+                content={template.description || ""}
+                extensions={getTipTapExtensions()}
               />
             </Grid>
           </Grid>

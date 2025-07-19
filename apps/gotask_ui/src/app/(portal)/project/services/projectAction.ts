@@ -182,3 +182,12 @@ export const fetchAllLeaves = async () => {
     return data || [];
   });
 };
+
+// Get Project by ID
+export const getProjectById = async (projectId: string) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/getProjectById/${projectId}`;
+    const { data } = await getData(url, token);
+    return data;
+  });
+};

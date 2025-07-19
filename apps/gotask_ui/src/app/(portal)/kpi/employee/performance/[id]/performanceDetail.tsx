@@ -15,7 +15,6 @@ interface PerformanceEntry {
   start_date?: string;
   end_date?: string;
   added_by?: string;
-  comment?: string;
   signature?: string;
   notes?: any[];
   updated_at?: string;
@@ -85,7 +84,7 @@ const PerformanceDetail: React.FC<PerformanceDetailProps> = ({ performance, tran
           <Grid item xs={12}>
             <LabelValueText
               label={transkpi("comments")}
-              value={performance.comment || transkpi("nocomment")}
+              value={performance.notes || transkpi("nocomment")}
             />
           </Grid>
         </Grid>

@@ -59,9 +59,7 @@ const AssetSchema = new Schema<IAsset>(
     deviceName: { type: String },
     systemType: {
       type: String,
-      enum: SYSTEM_TYPES,
-      default: "Office System",
-      required: true
+      enum: SYSTEM_TYPES
     },
     serialNumber: { type: String },
     modelName: { type: String },

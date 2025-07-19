@@ -127,7 +127,7 @@ const deletePermissionService = async (id: string) => {
 };
 
 const getPermissionsWithFiltersService = async (filters: {
-  user_id?: string;
+  user_id?: string | string[];
   date?: string;
   from_date?: string;
   to_date?: string;
@@ -153,8 +153,16 @@ const getPermissionsWithFiltersService = async (filters: {
 
     // Calculate total count for pagination
     const query: any = {};
-    if (filters.user_id) query.user_id = filters.user_id;
-    if (filters.date) query.date = new Date(filters.date);
+    if (filters.user_id) {
+      if (Array.isArray(filters.user_id)) {
+        query.user_id = { $in: filters.user_id };
+      } else {
+        query.user_id = filters.user_id;
+      }
+    }
+    if (filters.date) {
+      query.date = new Date(filters.date);
+    }
     if (filters.from_date || filters.to_date) {
       const dateQuery: any = {};
       if (filters.from_date) {

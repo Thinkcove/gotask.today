@@ -155,6 +155,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
         onSubmit={handleDeleteConfirm}
         title={transkpi("deleteTitle")}
         submitLabel={transkpi("delete")}
+        submitColor="#b71c1c"
       >
         <Typography variant="body1" color="text.secondary">
           {transkpi("deleteConfirm")}

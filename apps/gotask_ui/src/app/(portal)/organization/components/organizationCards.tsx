@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Grid, CircularProgress, Box, Stack } from "@mui/material";
+import { Typography, Grid, CircularProgress, Box, Stack, Tooltip } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import PlaceIcon from "@mui/icons-material/Place";
 import { Organization } from "../interfaces/organizatioinInterface";
@@ -49,9 +49,21 @@ const OrganizationCards: React.FC<OrganizationCardProps> = ({ organizations }) =
                   <Business sx={{ fontSize: 40, color: "#741B92", mr: 1 }} />
 
                   <Box>
-                    <Typography variant="h6" fontWeight={700} sx={{ textTransform: "capitalize" }}>
-                      {organization.name.trim()}
-                    </Typography>
+                    <Tooltip title={organization.name} placement="bottom-start" arrow>
+                      <Typography
+                        variant="h6"
+                        fontWeight={700}
+                        sx={{
+                          textTransform: "capitalize",
+                          textOverflow: "ellipsis",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          maxWidth: 200
+                        }}
+                      >
+                        {organization.name.trim()}
+                      </Typography>
+                    </Tooltip>
                   </Box>
                 </Stack>
 

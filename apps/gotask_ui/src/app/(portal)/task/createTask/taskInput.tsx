@@ -51,15 +51,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers();
   const { getAllProjects } = useAllProjects();
-  console.log("getAllProjects", getAllProjects);
-  console.log("getAllUsers", getAllUsers);
 
   const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
-  console.log("filteredUsers", filteredUsers);
 
   const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
-  console.log("Story options:", projectStories);
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
@@ -112,7 +108,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
     try {
       const projects = await getProjectIdsAndNames(userId);
-      console.log("projects--", projects);
 
       setFilteredProjects(projects);
       handleInputChange("projects", projects);
@@ -146,7 +141,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
     setProjectStories(storyOptions);
     try {
       const users = await getUsersByProjectId(projectId);
-      console.log("users", users);
 
       setFilteredUsers(users);
       handleInputChange("users", users);
@@ -174,7 +168,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
     if (currentUser && !options.find((u: User) => u.id === currentUser.id)) {
       options.unshift(currentUser);
     }
-    console.log("currentUser", options);
 
     return options;
   };
@@ -205,7 +198,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const userOptions = getUserOptions();
   const projectOptions = getProjectOptions();
   const currentStatus = formData.status;
-  console.log("userOptions", userOptions);
 
   const allowedStatuses =
     initialStatus && TASK_WORKFLOW[initialStatus] ? TASK_WORKFLOW[initialStatus] : [];
@@ -221,8 +213,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
   };
 
   const handleProjectStoriesChange = (storyId: string) => {
-    console.log("storyId", storyId);
-
     handleInputChange("story_id", storyId);
   };
 
@@ -248,11 +238,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
       />
     </Grid>
   );
-  
+
   const [lastLoadedProjectId, setLastLoadedProjectId] = useState("");
 
   if (formData.project_id && formData.project_id !== lastLoadedProjectId) {
-    // Load project stories
+
     getStoriesByProject(formData.project_id).then((result) => {
       const storyOptions = ((result as StoryResponseWithData)?.data || []).map(
         (story: { id: string; title: string }) => ({
@@ -263,9 +253,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
       setProjectStories(storyOptions);
     });
 
-    // Load users for the project
     getUsersByProjectId(formData.project_id).then((users) => {
-      console.log("Users for project:", users);
       setFilteredUsers(users);
       handleInputChange("users", users);
     }).catch((error) => {

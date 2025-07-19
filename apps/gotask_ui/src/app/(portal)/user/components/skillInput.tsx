@@ -162,6 +162,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
           overflow: "auto",
           borderRadius: 2,
           scrollBehavior: "smooth",
+          pb: 2,
           "&::-webkit-scrollbar": {
             width: "6px",
             height: "6px"

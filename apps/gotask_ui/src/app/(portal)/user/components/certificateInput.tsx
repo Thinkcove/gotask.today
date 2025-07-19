@@ -118,6 +118,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
           overflow: "auto",
           borderRadius: 2,
           scrollBehavior: "smooth",
+          pb: 2,
           "&::-webkit-scrollbar": {
             width: "6px",
             height: "6px"
@@ -143,15 +144,12 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
               <Grid item xs={12} sm={6} md={4} key={cert.certificate_id}>
                 <Paper
                   sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
                     p: 2,
                     borderRadius: 2,
-                    border: "1px solid #e0e0e0",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    overflow: "hidden",
-                    wordBreak: "break-word"
+                    border: "1px solid #e0e0e0"
                   }}
                 >
                   <Box sx={{ overflow: "hidden" }}>

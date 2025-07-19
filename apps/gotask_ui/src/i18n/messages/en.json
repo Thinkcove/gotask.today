@@ -298,6 +298,7 @@
     "role": "Role",
     "noaccess": "No access mapped to this role",
     "searchplaceholder": "Search Roles",
+    "deletebtn": "Delete",
     "meta": {
       "title": "Role Management | GoTaskToday",
       "description": "Define user roles and assign permissions within the system."

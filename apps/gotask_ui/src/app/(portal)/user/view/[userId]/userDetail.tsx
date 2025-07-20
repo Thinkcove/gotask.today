@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, IconButton, Stack, Chip, Grid, Tooltip } from "@mui/material";
+import { Box, Typography, IconButton, Stack, Grid } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { User } from "../../interfaces/userInterface";

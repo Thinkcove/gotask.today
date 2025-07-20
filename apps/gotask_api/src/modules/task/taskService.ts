@@ -12,6 +12,7 @@ import {
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
+import { ProjectStory } from "../../domain/model/projectStory/projectStory";
 import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
@@ -429,7 +430,8 @@ const getTasksByUser = async (
     ];
 
     const result = await Task.aggregate(pipeline);
-
+  
+    
     const taskbyusers = result[0]?.paginatedResults || [];
     const total_count = result[0]?.total[0]?.count || 0;
     const total_pages = Math.ceil(total_count / pageSize);
@@ -475,18 +477,29 @@ const getTaskCountByStatus = async (): Promise<{
 // Get a task by ID
 const getTaskById = async (
   id: string
-): Promise<{ success: boolean; data?: ITask | null; message?: string }> => {
+): Promise<{ success: boolean; data?: ITask | any | null; message?: string }> => {
   try {
     const task = await findTaskById(id);
+
     if (!task) {
       return {
         success: false,
         message: TaskMessages.FETCH.NOT_FOUND
       };
     }
+
+    // Fetch story name from ProjectStory
+    const projectStory = await ProjectStory.findOne({ id: task.story_id });
+
+    // Enrich task with story_name
+    const enrichedTask = {
+      ...task,
+      story_name: projectStory?.title || null
+    };
+
     return {
       success: true,
-      data: task
+      data: enrichedTask
     };
   } catch (error: any) {
     return {

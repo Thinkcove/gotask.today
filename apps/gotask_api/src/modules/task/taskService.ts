@@ -430,7 +430,6 @@ const getTasksByUser = async (
     ];
 
     const result = await Task.aggregate(pipeline);
-  
     
     const taskbyusers = result[0]?.paginatedResults || [];
     const total_count = result[0]?.total[0]?.count || 0;

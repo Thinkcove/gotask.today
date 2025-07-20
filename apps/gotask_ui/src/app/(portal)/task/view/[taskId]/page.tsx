@@ -57,7 +57,6 @@ const ViewAction: React.FC = () => {
   return selectedTask && (
     <TaskDetail
       task={selectedTask}
-      storyName={storyName || "-"}
       mutate={mutate}
     />
   );

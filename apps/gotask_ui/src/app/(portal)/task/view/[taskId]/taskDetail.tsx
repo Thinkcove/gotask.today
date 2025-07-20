@@ -22,14 +22,12 @@ import TimeSpentPopup from "../timeSpentPopup";
 
 interface TaskDetailViewProps {
   task: any;
-  storyName?: string; // Story name passed from parent
   loading?: boolean;
   mutate: () => Promise<void>;
 }
 
 const TaskDetailView: React.FC<TaskDetailViewProps> = ({
   task,
-  storyName = "-", // Default value
   loading = false,
   mutate
 }) => {
@@ -168,7 +166,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("labelprojectstories")}
-                  value={storyName || "-"}
+                  value={task.story_name || "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>

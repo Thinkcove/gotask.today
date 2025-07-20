@@ -435,6 +435,8 @@
     "todo": "TO-DO",
     "labelprojectstories": "Project Stories",
     "placeholderprojectstories": "Select Project Stories",
+    "storiestitle": "Stories Title",
+
     "Project": {
       "meta": {
         "title": "Task Projects",

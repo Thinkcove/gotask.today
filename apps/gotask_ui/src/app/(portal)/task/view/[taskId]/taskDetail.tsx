@@ -165,7 +165,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
-                  label={transtask("labelprojectstories")}
+                  label={transtask("storiestitle")}
                   value={task.story_name || "-"}
                 />
               </Grid>

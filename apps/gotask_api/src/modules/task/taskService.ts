@@ -430,7 +430,7 @@ const getTasksByUser = async (
     ];
 
     const result = await Task.aggregate(pipeline);
-    
+
     const taskbyusers = result[0]?.paginatedResults || [];
     const total_count = result[0]?.total[0]?.count || 0;
     const total_pages = Math.ceil(total_count / pageSize);
@@ -476,7 +476,7 @@ const getTaskCountByStatus = async (): Promise<{
 // Get a task by ID
 const getTaskById = async (
   id: string
-): Promise<{ success: boolean; data?: ITask | any | null; message?: string }> => {
+): Promise<{ success: boolean; data?: ITask | null; message?: string }> => {
   try {
     const task = await findTaskById(id);
 

@@ -136,19 +136,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                   onChange={(val) => {
                     const stringValue = String(val);
                     onChange("warrantyPeriod", stringValue);
-
-                    // Calculate and set warrantyDate if dateOfPurchase exists
-                    if (formData.dateOfPurchase && stringValue) {
-                      const purchaseDateStr =
-                        formData.dateOfPurchase instanceof Date
-                          ? formData.dateOfPurchase.toISOString().split("T")[0]
-                          : String(formData.dateOfPurchase);
-
-                      const newWarrantyDate = calculateWarrantyDate(purchaseDateStr, stringValue);
-                      if (newWarrantyDate) {
-                        onChange("warrantyDate", newWarrantyDate);
-                      }
-                    }
+                    formData.warrantyPeriod = String(val);
                   }}
                 />
               </Grid>

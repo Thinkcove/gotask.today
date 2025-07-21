@@ -230,22 +230,13 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     if (searchText.trim()) filters.searchText = searchText.trim();
     if (assetAllocationFilter.length > 0) filters.assetUsage = assetAllocationFilter;
 
-    try {
-      const res = await fetchAllAssets(sortKey, sortOrder, 1, 10000, filters);
-      if (res?.success) {
-        dataToDownload = res.data;
-      } else {
-        setSnackbar({
-          open: true,
-          message: res?.message,
-          severity: SNACKBAR_SEVERITY.ERROR
-        });
-        return;
-      }
-    } catch {
+    const res = await fetchAllAssets(sortKey, sortOrder, 1, 10000, filters);
+    if (res?.success) {
+      dataToDownload = res.data;
+    } else {
       setSnackbar({
         open: true,
-        message: transasset("errordownloading"),
+        message: res?.message,
         severity: SNACKBAR_SEVERITY.ERROR
       });
       return;

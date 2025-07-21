@@ -789,7 +789,6 @@
     "no": "No",
     "nodatafound": "No Data Found",
     "capacity": "Capacity",
-    "errordownloading": "Error while fetching data for download",
     "searchissues": "Search Issue Type",
     "meta": {
       "title": "Assets | GoTaskToday",

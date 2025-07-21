@@ -4,7 +4,7 @@ import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { deleteAsset, useAllAssets, useAllTypes } from "../services/assetActions";
+import { deleteAsset, fetchAllAssets, useAllAssets, useAllTypes } from "../services/assetActions";
 import Table from "../../../component/table/table";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -216,8 +216,40 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     removeStorage(FILTERS_STORAGE_KEY);
   };
 
-  const handleDownload = () => {
-    const dataToDownload = allAssets;
+  const handleDownload = async () => {
+    let dataToDownload = allAssets;
+
+    const filters: Record<string, unknown> = {};
+
+    if (warrantyDateFrom) filters.warrantyFrom = warrantyDateFrom;
+    if (warrantyDateTo) filters.warrantyTo = warrantyDateTo;
+    if (systemTypeFilter.length > 0) filters.systemType = systemTypeFilter;
+    if (assignedToFilter.length > 0) filters.userId = assignedToFilter;
+    if (assetTypeFilter.length > 0) filters.typeId = assetTypeFilter;
+    if (searchText.trim()) filters.searchText = searchText.trim();
+    if (assetAllocationFilter.length > 0) filters.assetUsage = assetAllocationFilter;
+
+    try {
+      const res = await fetchAllAssets(sortKey, sortOrder, 1, 10000, filters);
+      if (res?.success) {
+        dataToDownload = res.data;
+      } else {
+        setSnackbar({
+          open: true,
+          message: res?.message || "Download failed",
+          severity: "error"
+        });
+        return;
+      }
+    } catch {
+      setSnackbar({
+        open: true,
+        message: "Error while fetching data for download",
+        severity: "error"
+      });
+      return;
+    }
+
     downloadAssetCSV(dataToDownload, transasset);
   };
 

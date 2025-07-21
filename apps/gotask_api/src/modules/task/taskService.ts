@@ -244,7 +244,9 @@ const getTasksByProject = async (
               variation: "$variation",
               updated_on: "$updated_on",
               createdAt: "$createdAt",
-              updatedAt: "$updatedAt"
+              updatedAt: "$updatedAt",
+              planned_start_date: "$planned_start_date",
+              planned_end_date: "$planned_end_date"
             }
           }
         }
@@ -414,7 +416,9 @@ const getTasksByUser = async (
               variation: "$variation",
               updated_on: "$updated_on",
               createdAt: "$createdAt",
-              updatedAt: "$updatedAt"
+              updatedAt: "$updatedAt",
+              planned_start_date: "$planned_start_date",
+              planned_end_date: "$planned_end_date"
             }
           }
         }

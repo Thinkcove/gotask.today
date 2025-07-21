@@ -29,6 +29,7 @@ import { PAGE_OPTIONS } from "@/app/component/table/tableConstants";
 import { useAllUsers } from "../../task/service/taskAction";
 import { User } from "../../task/interface/taskInterface";
 import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";
@@ -236,16 +237,16 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       } else {
         setSnackbar({
           open: true,
-          message: res?.message || "Download failed",
-          severity: "error"
+          message: res?.message,
+          severity: SNACKBAR_SEVERITY.ERROR
         });
         return;
       }
     } catch {
       setSnackbar({
         open: true,
-        message: "Error while fetching data for download",
-        severity: "error"
+        message: transasset("errordownloading"),
+        severity: SNACKBAR_SEVERITY.ERROR
       });
       return;
     }

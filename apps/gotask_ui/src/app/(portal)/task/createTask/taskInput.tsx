@@ -216,7 +216,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
   };
 
   const renderStatusField = () => (
-    <Grid item xs={12} sm={6}>
+    <Grid item xs={12} sm={6} md={3}>
       <FormField
         label={transtask("labelstatus")}
         type="select"
@@ -319,7 +319,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
         </Grid>
         {renderStatusField()}
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6} md={3}>
           <FormField
             label={transtask("labelseverity")}
             type="select"
@@ -331,6 +331,43 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("severity")}
           />
         </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <FormField
+            label={transtask("labelplannedstartdate")}
+            type="date"
+            required
+            placeholder={transtask("placeholderplannedstartdate")}
+            value={formData.planned_start_date || ""}
+            onChange={(value) =>
+              handleInputChange(
+                "planned_start_date",
+                value instanceof Date ? value.toISOString().split("T")[0] : String(value)
+              )
+            }
+            error={errors.planned_start_date}
+            disabled={isReadOnly("planned_start_date")}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <FormField
+            label={transtask("labelplannedenddate")}
+            type="date"
+            required
+            placeholder={transtask("placeholderplannedenddate")}
+            value={formData.planned_end_date || ""}
+            onChange={(value) =>
+              handleInputChange(
+                "planned_end_date",
+                value instanceof Date ? value.toISOString().split("T")[0] : String(value)
+              )
+            }
+            error={errors.planned_end_date}
+            disabled={isReadOnly("planned_end_date")}
+          />
+        </Grid>
+
         <Grid item xs={12} sm={6} md={3}>
           <FormField
             label={transtask("labelstartdate")}

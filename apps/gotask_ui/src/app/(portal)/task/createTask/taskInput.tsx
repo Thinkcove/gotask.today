@@ -224,9 +224,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
           !initialStatus
             ? [transtask("todo")]
             : [
-              "",
-              ...uniqueStatuses.filter((s): s is string => s != null).map((s) => s.toUpperCase())
-            ]
+                "",
+                ...uniqueStatuses.filter((s): s is string => s != null).map((s) => s.toUpperCase())
+              ]
         }
         required
         placeholder={transtask("placeholderstatus")}
@@ -241,7 +241,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const [lastLoadedProjectId, setLastLoadedProjectId] = useState("");
 
   if (formData.project_id && formData.project_id !== lastLoadedProjectId) {
-
     getStoriesByProject(formData.project_id).then((result) => {
       const storyOptions = ((result as StoryResponseWithData)?.data || []).map(
         (story: { id: string; title: string }) => ({
@@ -252,14 +251,16 @@ const TaskInput: React.FC<TaskInputProps> = ({
       setProjectStories(storyOptions);
     });
 
-    getUsersByProjectId(formData.project_id).then((users) => {
-      setFilteredUsers(users);
-      handleInputChange("users", users);
-    }).catch((error) => {
-      console.error("Error fetching users for project:", error);
-      setFilteredUsers(getAllUsers || []);
-      handleInputChange("users", getAllUsers || []);
-    });
+    getUsersByProjectId(formData.project_id)
+      .then((users) => {
+        setFilteredUsers(users);
+        handleInputChange("users", users);
+      })
+      .catch((error) => {
+        console.error("Error fetching users for project:", error);
+        setFilteredUsers(getAllUsers || []);
+        handleInputChange("users", getAllUsers || []);
+      });
 
     setLastLoadedProjectId(formData.project_id);
   }

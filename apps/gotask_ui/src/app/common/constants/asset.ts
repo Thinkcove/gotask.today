@@ -36,15 +36,3 @@ export const ASSET_TYPE = {
 export const MODE = {
   ASSET: "asset"
 };
-
-export const calculateWarrantyDate = (
-  purchaseDate: string,
-  warrantyPeriod: string
-): string | null => {
-  const warrantyMonths = parseInt(warrantyPeriod);
-  if (!purchaseDate || isNaN(warrantyMonths)) return null;
-
-  const date = new Date(purchaseDate);
-  date.setMonth(date.getMonth() + warrantyMonths);
-  return date.toISOString().split("T")[0];
-};

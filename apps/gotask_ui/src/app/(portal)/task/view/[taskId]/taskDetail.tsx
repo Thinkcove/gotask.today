@@ -26,7 +26,11 @@ interface TaskDetailViewProps {
   mutate: () => Promise<void>;
 }
 
-const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
+const TaskDetailView: React.FC<TaskDetailViewProps> = ({
+  task,
+  loading = false,
+  mutate
+}) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { user } = useUser();
   const router = useRouter();
@@ -157,6 +161,12 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
                 <LabelValueText
                   label={transtask("detailproject")}
                   value={task.project_name || "-"}
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("storiestitle")}
+                  value={task.story_name || "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>

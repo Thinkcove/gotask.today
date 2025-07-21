@@ -27,8 +27,6 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import TaskItem from "../../task/component/taskLayout/taskItem";
 import { getStatusColor } from "@/app/common/constants/task";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
-import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
 import CommentSection from "@/app/component/comments/commentSection";
@@ -43,8 +41,8 @@ const ProjectStoryDetail = () => {
   const [tabIndex, setTabIndex] = React.useState(0);
 
   const tabs = [
-    { label: t("Stories.commentSectionTitle"), value: 0 },
-    { label: t("Stories.taskSectionTitle"), value: 1 }
+    { label: t("Stories.taskSectionTitle"), value: 0 },
+    { label: t("Stories.commentSectionTitle"), value: 1 }
   ];
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -109,11 +107,11 @@ const ProjectStoryDetail = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "89vh",
         bgcolor: "white",
         borderRadius: 2,
         boxShadow: 3,
         p: 3,
+        height: "calc(100vh - 100px)",
         overflow: "hidden"
       }}
     >
@@ -129,7 +127,15 @@ const ProjectStoryDetail = () => {
             </IconButton>
           </Tooltip>
           <Box>
-            <Typography variant="h5" fontWeight={600} textTransform="capitalize">
+            <Typography
+              variant="h5"
+              fontWeight={600}
+              sx={{
+                textTransform: "capitalize",
+                whiteSpace: "normal",
+                wordBreak: "break-word"
+              }}
+            >
               {story.title}
             </Typography>
             <StatusIndicator
@@ -174,10 +180,6 @@ const ProjectStoryDetail = () => {
             </Typography>
           )}
         </Box>
-        <LabelValueText
-          label={t("Stories.createdAt")}
-          value={<FormattedDateTime date={story.createdAt} />}
-        />
 
         <Divider sx={{ my: 3 }} />
 
@@ -185,24 +187,6 @@ const ProjectStoryDetail = () => {
 
         <Box mt={2}>
           {tabIndex === 0 && (
-            <CommentSection
-              comments={story.comments || []}
-              onSave={async (html) => {
-                await addCommentToProjectStory(storyId as string, { comment: html });
-                await mutate();
-              }}
-              onUpdate={async (comment) => {
-                await updateCommentOnProjectStory(comment.id, { comment: comment.comment });
-                await mutate();
-              }}
-              onDelete={async (id) => {
-                await deleteCommentFromProjectStory(id);
-                await mutate();
-              }}
-            />
-          )}
-
-          {tabIndex === 1 && (
             <Box>
               <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
                 <Button
@@ -246,6 +230,23 @@ const ProjectStoryDetail = () => {
                 </Typography>
               )}
             </Box>
+          )}
+          {tabIndex === 1 && (
+            <CommentSection
+              comments={story.comments || []}
+              onSave={async (html) => {
+                await addCommentToProjectStory(storyId as string, { comment: html });
+                await mutate();
+              }}
+              onUpdate={async (comment) => {
+                await updateCommentOnProjectStory(comment.id, { comment: comment.comment });
+                await mutate();
+              }}
+              onDelete={async (id) => {
+                await deleteCommentFromProjectStory(id);
+                await mutate();
+              }}
+            />
           )}
         </Box>
       </Box>

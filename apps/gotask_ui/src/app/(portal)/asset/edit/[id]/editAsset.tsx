@@ -19,7 +19,7 @@ import { ASSET_TYPE } from "@/app/common/constants/asset";
 import HistoryIcon from "@mui/icons-material/History";
 import IssueHistoryDrawer from "../../createIssues/issuesDrawer";
 import { ArrowBack } from "@mui/icons-material";
-import { systemTypeOptions } from "../../assetConstants";
+import { calculateWarrantyDate, systemTypeOptions } from "../../assetConstants";
 import AccessInputs from "../../createAsset/accessInput";
 import PrinterInputs from "../../createAsset/printerInputs";
 import FingerprintScannerInputs from "../../createAsset/fingerPrintInputs";
@@ -140,18 +140,42 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
   };
 
   const handleChange = <K extends keyof IAssetAttributes>(field: K, value: IAssetAttributes[K]) => {
+    const newFormData = { ...formData, [field]: value };
+
     if (field === "userId" && value !== formData.userId) {
       const prevUser = userOptions.find((u: IAssetTags) => u.id === formData.userId);
-      if (prevUser) {
-        setPreviousUserName(prevUser.name);
-      }
-      if (value !== data.tags?.userId) {
-        setIsAssignedToUpdated(true);
-      } else {
-        setIsAssignedToUpdated(false);
+      if (prevUser) setPreviousUserName(prevUser.name);
+      setIsAssignedToUpdated(value !== data.tags?.userId);
+    }
+
+    // Auto-update warrantyDate if warrantyPeriod is changed
+    if (field === "warrantyPeriod") {
+      const purchaseDateStr =
+        newFormData.dateOfPurchase instanceof Date
+          ? newFormData.dateOfPurchase.toISOString().split("T")[0]
+          : String(newFormData.dateOfPurchase);
+
+      const newWarrantyDate = calculateWarrantyDate(purchaseDateStr, String(value));
+      if (newWarrantyDate) {
+        newFormData.warrantyDate = newWarrantyDate;
       }
     }
-    setFormData({ ...formData, [field]: value });
+
+    // Auto-update warrantyDate if dateOfPurchase is changed
+    if (field === "dateOfPurchase") {
+      const purchaseDateStr =
+        value instanceof Date ? value.toISOString().split("T")[0] : String(value);
+
+      const newWarrantyDate = calculateWarrantyDate(
+        purchaseDateStr,
+        String(formData.warrantyPeriod)
+      );
+      if (newWarrantyDate) {
+        newFormData.warrantyDate = newWarrantyDate;
+      }
+    }
+
+    setFormData(newFormData);
   };
 
   const userOptions = useMemo(() => {

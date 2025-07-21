@@ -15,7 +15,7 @@ import useSWR from "swr";
 import { fetcherUserList } from "../../user/services/userAction";
 import MobileInputs from "./mobileInputs";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
-import { systemTypeOptions } from "../assetConstants";
+import { calculateWarrantyDate, systemTypeOptions } from "../assetConstants";
 import AccessInputs from "./accessInput";
 import PrinterInputs from "./printerInputs";
 import FingerprintScannerInputs from "./fingerPrintInputs";
@@ -106,6 +106,17 @@ export const CreateAsset: React.FC = () => {
     field: K,
     value: IAssetAttributes[K]
   ) => {
+    if (field === "warrantyPeriod") {
+      const purchaseDateStr =
+        formData.dateOfPurchase instanceof Date
+          ? formData.dateOfPurchase.toISOString().split("T")[0]
+          : String(formData.dateOfPurchase);
+
+      const newWarrantyDate = calculateWarrantyDate(purchaseDateStr, String(value));
+      if (newWarrantyDate) {
+        formData.warrantyDate = newWarrantyDate;
+      }
+    }
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 

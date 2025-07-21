@@ -59,7 +59,15 @@ const CreateTask: React.FC = () => {
     if (!formData.project_id) newErrors.project_id = transtask("projectname");
     if (!formData.status) newErrors.status = transtask("status");
     if (!formData.severity) newErrors.severity = transtask("severity");
-
+    if (!formData.planned_start_date) newErrors.planned_start_date = transtask("plannedstartdate");
+    if (!formData.planned_end_date) newErrors.planned_end_date = transtask("plannedenddate");
+    if (formData.planned_start_date && formData.planned_end_date) {
+      const start = new Date(formData.planned_start_date);
+      const end = new Date(formData.planned_end_date);
+      if (start > end) {
+        newErrors.planned_end_date = transtask("plannedEndAfterStart");
+      }
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData, transtask]);
@@ -164,7 +172,7 @@ const CreateTask: React.FC = () => {
           handleInputChange={handleInputChange}
           errors={errors}
           readOnlyFields={storyId ? ["status"] : ["status"]}
-          isProjectLocked={!!projectId} 
+          isProjectLocked={!!projectId}
           isStoryLocked={!!storyId}
         />
       </Box>

@@ -5,8 +5,7 @@ import {
   findAllLeaves,
   findLeaveById,
   updateALeave,
-  deleteByLeaveId,
-  findLeavesWithFilters
+  deleteByLeaveId
 } from "../../domain/interface/leave/leaveInterface";
 import { ILeave, Leave } from "../../domain/model/leave/leaveModel";
 
@@ -145,19 +144,19 @@ const getLeavesWithFiltersService = async (filters: {
     }
 
     // Set default pagination values
-    const page = filters.page || parseInt(PAGE.ONE); // 1-based indexing
+    const page = filters.page || parseInt(PAGE.ONE);
     const page_size = filters.page_size || parseInt(PAGE.TEN);
 
     // Build query for filtering
     const query: any = {};
+
     if (filters.user_id) query.user_id = filters.user_id;
     if (filters.leave_type) query.leave_type = filters.leave_type;
 
-    // Updated date filtering logic
+    // Process date filtering logic here
     if (filters.from_date || filters.to_date) {
       const dateConditions: any[] = [];
 
-      // If From Date is selected: show leaves that start on or after that date
       if (filters.from_date) {
         const { start } = getStartAndEndOfDay(filters.from_date);
         dateConditions.push({
@@ -172,7 +171,6 @@ const getLeavesWithFiltersService = async (filters: {
         });
       }
 
-      // Combine conditions based on what filters are provided
       if (dateConditions.length === 1) {
         Object.assign(query, dateConditions[0]);
       } else if (dateConditions.length === 2) {
@@ -183,14 +181,23 @@ const getLeavesWithFiltersService = async (filters: {
     // Fetch total count for pagination
     const total_count = await Leave.countDocuments(query);
 
-    // Fetch paginated leaves with sorting
-    const filteredLeaves = await findLeavesWithFilters({
-      ...query,
-      page,
-      page_size,
-      sort_field: filters.sort_field || "updatedAt",
-      sort_order: filters.sort_order || SORT_ORDER.DESC
-    });
+    // Set up sorting
+    const sort: any = {};
+    if (filters.sort_field) {
+      sort[filters.sort_field] = filters.sort_order === SORT_ORDER.DESC ? -1 : 1;
+    } else {
+      sort.updatedAt = -1;
+    }
+
+    // Build query with pagination and sorting
+    let queryBuilder = Leave.find(query).sort(sort);
+
+    if (page && page_size) {
+      const skip = (page - 1) * page_size;
+      queryBuilder = queryBuilder.skip(skip).limit(page_size);
+    }
+
+    const filteredLeaves = await queryBuilder.exec();
 
     return {
       success: true,

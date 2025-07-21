@@ -28,8 +28,8 @@
     "otpfail": "Failed to send OTP. Please try again.",
     "loading": "Loading...",
     "rememberme": "Remember Me",
-    "resendin":"Resend in",
-    "resend":"Resend"
+    "resendin": "Resend in",
+    "resend": "Resend"
   },
   "Access": {
     "access": "Access",
@@ -298,6 +298,7 @@
     "role": "Role",
     "noaccess": "No access mapped to this role",
     "searchplaceholder": "Search Roles",
+    "deletebtn": "Delete",
     "meta": {
       "title": "Role Management | GoTaskToday",
       "description": "Define user roles and assign permissions within the system."
@@ -1180,7 +1181,7 @@
     "failedsubmit": "Failed to submit leave application",
     "create": "Create",
     "update": "Update",
-    "leave": "Apply Leave",
+    "leave": "Leave",
     "dateformat": "dd-mm-yyyy",
     "delete": "Delete",
     "deletesuccess": "Leave Deleted successfully",

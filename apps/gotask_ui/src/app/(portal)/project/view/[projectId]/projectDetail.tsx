@@ -131,9 +131,19 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               }}
             >
               <Box>
-                <Typography variant="h5" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  sx={{
+                    textTransform: "capitalize",
+                    wordBreak: "break-word",
+                    overflow: "hidden",
+                    whiteSpace: "normal"
+                  }}
+                >
                   {project.name}
                 </Typography>
+
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
               </Box>
               <Box
@@ -328,6 +338,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           onSubmit={handleDelete}
           title={transproject("titledelete")}
           submitLabel={transproject("labeldelete")}
+          submitColor="#b71c1c"
         >
           <Typography>
             {transproject("removeuserconfirmation")}

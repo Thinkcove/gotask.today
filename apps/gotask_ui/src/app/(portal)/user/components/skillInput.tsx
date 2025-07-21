@@ -1,17 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Grid,
-  Stack,
-  IconButton,
-  Paper,
-  Button,
-  Tooltip
-} from "@mui/material";
+import { Box, Typography, TextField, Grid, Stack, IconButton, Paper, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import StarIcon from "@mui/icons-material/Star";
@@ -172,6 +162,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
           overflow: "auto",
           borderRadius: 2,
           scrollBehavior: "smooth",
+          pb: 2,
           "&::-webkit-scrollbar": {
             width: "6px",
             height: "6px"
@@ -233,36 +224,15 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                           }
                         }}
                       >
-                        <Tooltip
-                          title={skill.name}
-                          placement="bottom-start"
-                          arrow
-                          PopperProps={{
-                            modifiers: [
-                              {
-                                name: "offset",
-                                options: {
-                                  offset: [10, 10]
-                                }
-                              }
-                            ]
+                        <Typography
+                          fontSize={14}
+                          fontWeight={600}
+                          sx={{
+                            wordBreak: "break-word"
                           }}
                         >
-                          <Typography
-                            fontSize={14}
-                            fontWeight={600}
-                            sx={{
-                              display: "block",
-                              maxWidth: "180px",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              cursor: "pointer"
-                            }}
-                          >
-                            {skill.name}
-                          </Typography>
-                        </Tooltip>
+                          {skill.name}
+                        </Typography>
                       </Box>
 
                       <Typography fontSize={12} color="text.secondary">

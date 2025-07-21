@@ -22,6 +22,8 @@ export interface Task {
   time_spent_total: string;
   remaining_time: string;
   severity: string;
+  planned_start_date?: string;
+  planned_end_date?: string;
 }
 
 interface TaskItemProps {

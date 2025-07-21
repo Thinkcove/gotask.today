@@ -54,7 +54,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
   const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
-
   const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
@@ -420,5 +419,4 @@ const TaskInput: React.FC<TaskInputProps> = ({
     </>
   );
 };
-
 export default TaskInput;

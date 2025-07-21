@@ -129,7 +129,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
 
               <Grid item xs={12} sm={4}>
                 <FormField
-                  label={transasset("warrantyPeriod")}
+                  label={`${transasset("warrantyPeriod")} ${transasset("inmonths")}`}
                   type="number"
                   placeholder={transasset("warrantyPeriod")}
                   value={formData.warrantyPeriod}

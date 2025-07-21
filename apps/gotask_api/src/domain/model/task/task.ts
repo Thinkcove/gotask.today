@@ -32,6 +32,8 @@ export interface ITask extends Document {
   remaining_time: string;
   variation: string;
   created_by?: string;
+  actual_start_date?: Date;
+  actual_end_date?: Date;
 }
 
 const TaskSchema = new Schema<ITask>(
@@ -67,7 +69,9 @@ const TaskSchema = new Schema<ITask>(
     remaining_time: { type: String, default: null },
     variation: { type: String, default: "0d0h" },
     comment: { type: [TaskCommentSchema] },
-    history: { type: [TaskHistorySchema] }
+    history: { type: [TaskHistorySchema] },
+    actual_start_date: { type: Date },
+    actual_end_date: { type: Date }
   },
   { timestamps: true }
 );

@@ -12,7 +12,6 @@ import {
   updateATask,
   updateCommentInTask
 } from "../../domain/interface/task/taskInterface";
-import { ProjectStory } from "../../domain/model/projectStory/projectStory";
 import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";

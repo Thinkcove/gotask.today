@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, RefObject } from "react";
+import React, { useState, useMemo } from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "../../../component/input/formField";
 import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
@@ -14,7 +14,6 @@ import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import ReusableEditor from "@/app/component/richText/textEditor";
-import { RichTextEditorRef } from "mui-tiptap";
 import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
@@ -26,8 +25,7 @@ interface TaskInputProps {
   readOnlyFields?: string[];
   isUserEstimatedLocked?: boolean;
   isStartDateLocked?: boolean;
-  onDescriptionSave?: () => void;
-  rteRef?: RefObject<RichTextEditorRef | null>;
+  initialStatus?: string;
 }
 
 const TaskInput: React.FC<TaskInputProps> = ({
@@ -37,8 +35,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
   readOnlyFields = [],
   isUserEstimatedLocked,
   isStartDateLocked,
-  onDescriptionSave,
-  rteRef
+  initialStatus
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers();
@@ -175,19 +172,42 @@ const TaskInput: React.FC<TaskInputProps> = ({
     return mapUsersToMentions(fetchedUsers || []);
   }, [fetchedUsers]);
 
-  const handleDescriptionSave = (html: string) => {
-    handleInputChange("description", html);
-    if (onDescriptionSave) {
-      onDescriptionSave();
-    }
-  };
-
   const userOptions = getUserOptions();
   const projectOptions = getProjectOptions();
   const currentStatus = formData.status;
-  const allowedStatuses = TASK_WORKFLOW[currentStatus] || [];
 
-  const uniqueStatuses = Array.from(new Set([currentStatus, ...allowedStatuses]));
+  const allowedStatuses =
+    initialStatus && TASK_WORKFLOW[initialStatus] ? TASK_WORKFLOW[initialStatus] : [];
+
+  const uniqueStatuses = Array.from(new Set([initialStatus, ...allowedStatuses].filter(Boolean)));
+
+  const handleStatusChange = (value: string) => {
+    if (value === "") {
+      handleInputChange("status", "");
+    } else {
+      handleInputChange("status", value.toLowerCase());
+    }
+  };
+
+  const renderStatusField = () => (
+    <Grid item xs={12} sm={6}>
+      <FormField
+        label={transtask("labelstatus")}
+        type="select"
+        options={
+          !initialStatus
+            ? [transtask("todo")]
+            : ["", ...uniqueStatuses.map((s: any) => s.toUpperCase())]
+        }
+        required
+        placeholder={transtask("placeholderstatus")}
+        value={!initialStatus ? transtask("todo") : currentStatus?.toUpperCase() || ""}
+        onChange={!initialStatus ? undefined : (value) => handleStatusChange(String(value))}
+        error={errors.status}
+        disabled={!initialStatus || isReadOnly("status")}
+      />
+    </Grid>
+  );
 
   return (
     <>
@@ -230,19 +250,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("project_id")}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <FormField
-            label={transtask("labelstatus")}
-            type="select"
-            options={uniqueStatuses.map((s) => s.toUpperCase())}
-            required
-            placeholder={transtask("placeholderstatus")}
-            value={currentStatus.toUpperCase()}
-            onChange={(value) => handleInputChange("status", String(value).toLowerCase())}
-            error={errors.status}
-            disabled={isReadOnly("status")}
-          />
-        </Grid>
+
+        {renderStatusField()}
+
         <Grid item xs={12} sm={6}>
           <FormField
             label={transtask("labelseverity")}
@@ -331,9 +341,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
             {transtask("labeldescription")}
           </Typography>
           <ReusableEditor
-            ref={rteRef}
             content={formData.description || ""}
-            onSave={handleDescriptionSave}
+            onChange={(html) => handleInputChange("description", html)}
             placeholder={transtask("placeholderdescription")}
             readOnly={isReadOnly("description")}
             showSaveButton={false}

@@ -10,7 +10,7 @@ import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import ProjectGoalForm from "../../components/projectGoalForm";
 import { createWeeklyGoal } from "../../goalservices/projectGoalAction";
 import { useGoalForm } from "../../goalHook/useGoalForm";
-import FormHeader from "@/app/(portal)/access/components/FormHeader";
+import FormHeader from "@/app/component/header/formHeader";
 import { useAllProjects } from "@/app/(portal)/task/service/taskAction";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 
@@ -36,7 +36,6 @@ const CreateGoal = () => {
     setGoalData,
     errors,
     snackbar,
-    rteRef,
     validateForm,
     handleSnackbarClose,
     showSnackbar
@@ -51,7 +50,6 @@ const CreateGoal = () => {
 
     setIsSubmitting(true);
     try {
-      const editorContent = rteRef.current?.editor?.getHTML() || goalData.description;
       const payload = {
         projectId: projectID,
         goalTitle: goalData.goalTitle,
@@ -62,7 +60,7 @@ const CreateGoal = () => {
         weekEnd:
           typeof goalData.weekEnd === "string" ? goalData.weekEnd : goalData.weekEnd.toISOString(),
         status: goalData.status,
-        description: editorContent,
+        description: goalData.description,
         priority: goalData.priority,
         user_id: user?.id ?? ""
       };
@@ -102,15 +100,13 @@ const CreateGoal = () => {
           onCancel={handleCancel}
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
-          edit={transGoal("editgoal")}
+          createHeading={transGoal("creategoal")}
+          cancel={transGoal("cancel")}
           create={transGoal("create")}
-          cancle={transGoal("cancel")}
-          update={transGoal("update")}
           showhistory={transGoal("showhistory")}
         />
 
         <ProjectGoalForm
-          rteRef={rteRef}
           goalData={goalData}
           setGoalData={setGoalData}
           errors={errors}

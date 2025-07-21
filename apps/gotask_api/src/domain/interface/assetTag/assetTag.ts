@@ -63,7 +63,7 @@ const updateTag = async (id: string, payload: Partial<IAssetTag>): Promise<IAsse
 };
 
 const getAssetByUserId = async (userId: string): Promise<IAssetTag[]> => {
-  return await AssetTag.find({ userId });
+  return await AssetTag.find({ userId, active: true });
 };
 
 const getIssuesByUserId = async (reportedBy: string, assetId: string): Promise<IAssetIssue[]> => {

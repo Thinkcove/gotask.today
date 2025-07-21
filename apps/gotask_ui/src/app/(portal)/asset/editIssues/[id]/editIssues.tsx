@@ -13,7 +13,15 @@ import {
 import IssueInput from "../../createIssues/issuesInput";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
-import { statusOptions } from "../../assetConstants";
+import {
+  assetId,
+  assignedTo,
+  description,
+  editstatus,
+  issueType,
+  reportedBy,
+  statusOptions
+} from "../../assetConstants";
 import { fetcherUserList } from "../../../user/services/userAction";
 import useSWR from "swr";
 import { IAssetAttributes, IAssetIssues } from "../../interface/asset";
@@ -78,13 +86,16 @@ const EditIssue: React.FC = () => {
     try {
       const updatedFields: Partial<IAssetIssues> = {};
 
-      const compareAndUpdate = <K extends keyof IAssetIssues>(key: K) => {
+      const editableKeys: (keyof Pick<
+        IAssetIssues,
+        "status" | "description" | "issueType" | "assignedTo"
+      >)[] = [editstatus, description, issueType, assignedTo];
+
+      editableKeys.forEach((key) => {
         if (formData[key] !== issueById?.[key]) {
           updatedFields[key] = formData[key];
         }
-      };
-
-      compareAndUpdate("status");
+      });
 
       if (Object.keys(updatedFields).length === 0) {
         setSnackbar({
@@ -147,25 +158,63 @@ const EditIssue: React.FC = () => {
     <>
       <Grid item xs={12}>
         <Box sx={{ mb: 3 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 2
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton color="primary" onClick={() => router.back()}>
-                <ArrowBack />
-              </IconButton>
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#741B92", mr: 2 }}>
-                {transasset("editissue")}
-              </Typography>
-            </Box>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={6}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: { xs: "center", sm: "flex-start" },
+                  gap: 0.5
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <IconButton color="primary" onClick={() => router.back()}>
+                    <ArrowBack sx={{ color: "#741B92" }} />
+                  </IconButton>
+                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "#741B92" }}>
+                    {transasset("editissue")}
+                  </Typography>
+                </Box>
 
-            <Box sx={{ display: "flex", gap: 2 }}>
+                {/* Show History */}
+                {!!issueById?.issuesHistory?.length && (
+                  <Box
+                    onClick={() => handleShowHistory(issueById.id!)}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      color: "#741B92",
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      pl: { xs: 3, sm: 6 }
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 500, textDecoration: "underline" }}
+                    >
+                      {transasset("showhistory")}
+                    </Typography>
+                    <HistoryIcon fontSize="small" />
+                  </Box>
+                )}
+              </Box>
+            </Grid>
+
+            {/* Buttons */}
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={{
+                display: "flex",
+                justifyContent: { xs: "center", sm: "flex-end" },
+                gap: 2,
+                mt: { xs: 1, sm: 0 }
+              }}
+            >
               <Button
                 variant="outlined"
                 sx={{
@@ -197,27 +246,8 @@ const EditIssue: React.FC = () => {
               >
                 {transasset("update")}
               </Button>
-            </Box>
-          </Box>
-
-          {!!issueById?.issuesHistory?.length && (
-            <Box
-              onClick={() => handleShowHistory(issueById.id!)}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 0.5,
-                color: "#741B92",
-                cursor: "pointer",
-                textDecoration: "underline"
-              }}
-            >
-              <Typography variant="body2" sx={{ fontWeight: 500, textDecoration: "underline" }}>
-                {transasset("showhistory")}
-              </Typography>
-              <HistoryIcon fontSize="small" />
-            </Box>
-          )}
+            </Grid>
+          </Grid>
         </Box>
       </Grid>
 
@@ -231,7 +261,7 @@ const EditIssue: React.FC = () => {
           assetOptions={assetOptions}
           statusOptions={statusOptions}
           errors={fieldErrors}
-          disabledFields={["assetId", "reportedBy", "issueType", "description", "assignedTo"]}
+          disabledFields={[assetId, reportedBy]}
         />
       </Grid>
       {openHistoryDrawer && issueById?.issuesHistory && selectedIssueId && (

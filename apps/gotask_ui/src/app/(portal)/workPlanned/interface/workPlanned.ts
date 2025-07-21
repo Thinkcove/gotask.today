@@ -52,6 +52,7 @@ export interface WorkPlannedGridProps {
   toDate: string;
   selectedProjects: string[];
   leaveData?: LeaveEntry[];
+  isUserSelected: string[];
 }
 
 export interface LeaveEntry {
@@ -75,4 +76,22 @@ export interface GroupedTasks {
     totalEstimation: number;
     leaves: LeaveEntry[];
   };
+}
+
+export interface PermissionEntry {
+  _id: string;
+  user_id: string;
+  user_name: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  comments: string[];
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface EnhancedWorkPlannedGridProps extends WorkPlannedGridProps {
+  permissionData?: PermissionEntry[];
 }

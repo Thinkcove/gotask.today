@@ -14,7 +14,6 @@ import CommonDialog from "@/app/component/dialog/commonDialog";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { getStatusColor } from "@/app/common/constants/task";
-import EditProject from "./editProject";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
@@ -33,11 +32,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [open, setOpen] = useState(false);
-
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const router = useRouter();
-  const [editOpen, setEditOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -134,9 +131,19 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
               }}
             >
               <Box>
-                <Typography variant="h5" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  sx={{
+                    textTransform: "capitalize",
+                    wordBreak: "break-word",
+                    overflow: "hidden",
+                    whiteSpace: "normal"
+                  }}
+                >
                   {project.name}
                 </Typography>
+
                 <StatusIndicator status={project.status} getColor={getStatusColor} />
               </Box>
               <Box
@@ -145,7 +152,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
                 }}
               >
                 {canAccess(APPLICATIONS.PROJECT, ACTIONS.UPDATE) && (
-                  <IconButton edge="start" color="primary" onClick={() => setEditOpen(true)}>
+                  // NEW: Navigate to edit route
+                  <IconButton
+                    edge="start"
+                    color="primary"
+                    onClick={() => router.push(`/project/edit/${projectID}`)}
+                  >
                     <Edit />
                   </IconButton>
                 )}
@@ -213,77 +225,93 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           </Box>
 
           {/* Assignee List */}
-          <Grid container spacing={3} sx={{ maxHeight: "500px", overflowY: "auto" }}>
-            {project.users.length > 0 ? (
-              project.users.map((user) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
-                  <Box
-                    sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      bgcolor: "#ffffff",
-                      border: "1px solid #e0e0e0"
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      spacing={2}
-                      alignItems="center"
-                      sx={{ minWidth: 0, flex: 1 }}
+          <Box
+            sx={{
+              height: "calc(100vh - 360px)",
+              overflowY: "auto",
+              pr: 1,
+              scrollBehavior: "smooth",
+              "&::-webkit-scrollbar": {
+                width: "8px"
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#ccc",
+                borderRadius: "8px"
+              }
+            }}
+          >
+            <Grid container spacing={3}>
+              {project.users.length > 0 ? (
+                project.users.map((user) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        borderRadius: 3,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        bgcolor: "#ffffff",
+                        border: "1px solid #e0e0e0"
+                      }}
                     >
-                      <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
-                      <Box sx={{ minWidth: 0 }}>
-                        <Typography
-                          fontWeight={600}
-                          fontSize="1rem"
-                          sx={{
-                            textTransform: "capitalize",
-                            wordBreak: "break-word",
-                            maxWidth: 200
-                          }}
-                        >
-                          {user.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ wordBreak: "break-word", maxWidth: 200 }}
-                        >
-                          {user.user_id}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                    {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
-                      <Box sx={{ flexShrink: 0 }}>
-                        <IconButton
-                          color="error"
-                          onClick={() => {
-                            setSelectedUserId(user.id);
-                            setOpenDeleteDialog(true);
-                          }}
-                          sx={{
-                            transition: "0.2s ease",
-                            "&:hover": {
-                              transform: "scale(1.1)"
-                            }
-                          }}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Box>
-                    )}
-                  </Box>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                        sx={{ minWidth: 0, flex: 1 }}
+                      >
+                        <AlphabetAvatar userName={user.name} size={44} fontSize={16} />
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography
+                            fontWeight={600}
+                            fontSize="1rem"
+                            sx={{
+                              textTransform: "capitalize",
+                              wordBreak: "break-word",
+                              maxWidth: 200
+                            }}
+                          >
+                            {user.name}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ wordBreak: "break-word", maxWidth: 200 }}
+                          >
+                            {user.user_id}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      {canAccess(APPLICATIONS.PROJECT, ACTIONS.UNASSIGN) && (
+                        <Box sx={{ flexShrink: 0 }}>
+                          <IconButton
+                            color="error"
+                            onClick={() => {
+                              setSelectedUserId(user.id);
+                              setOpenDeleteDialog(true);
+                            }}
+                            sx={{
+                              transition: "0.2s ease",
+                              "&:hover": {
+                                transform: "scale(1.1)"
+                              }
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Box>
+                      )}
+                    </Box>
+                  </Grid>
+                ))
+              ) : (
+                <Grid item xs={12}>
+                  <Typography color="text.secondary">{transproject("detailnouser")}</Typography>
                 </Grid>
-              ))
-            ) : (
-              <Grid item xs={12}>
-                <Typography color="text.secondary">{transproject("detailnouser")}</Typography>
-              </Grid>
-            )}
-          </Grid>
+              )}
+            </Grid>
+          </Box>
         </Box>
 
         {/* Dialogs */}
@@ -304,20 +332,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           />
         </CommonDialog>
 
-        <EditProject
-          open={editOpen}
-          onClose={() => setEditOpen(false)}
-          data={project}
-          mutate={mutate}
-          projectID={projectID}
-        />
-
         <CommonDialog
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
           onSubmit={handleDelete}
           title={transproject("titledelete")}
           submitLabel={transproject("labeldelete")}
+          submitColor="#b71c1c"
         >
           <Typography>
             {transproject("removeuserconfirmation")}

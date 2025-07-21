@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Grid, Typography, Stack, Avatar, IconButton } from "@mui/material";
+import { Box, Grid, Typography, Stack, Avatar, IconButton, CircularProgress } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import CardComponent from "@/app/component/card/cardComponent";
@@ -26,7 +26,7 @@ const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFilter }) => {
   const trans = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const router = useRouter();
-  const { getAll: allissues } = useAllIssues();
+  const { getAll: allissues, isLoading } = useAllIssues();
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -40,14 +40,29 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
 
   const filteredIssues = allissues.filter((issue: IAssetIssues) => {
     const matchesSearch =
-      searchText.trim() === "" ||
-      issue.status?.toLowerCase().includes(searchText.toLowerCase()) ||
-      issue.issueType?.toLowerCase().includes(searchText.toLowerCase());
+      searchText.trim() === "" || issue.issueType?.toLowerCase().includes(searchText.toLowerCase());
 
     const matchesStatus = statusFilter.length === 0 || statusFilter.includes(issue.status);
 
     return matchesSearch && matchesStatus;
   });
+
+  if (isLoading) {
+    return (
+      <>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </>
+    );
+  }
 
   return (
     <Box
@@ -87,82 +102,127 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
                     flexWrap="wrap"
                     rowGap={1}
                   >
-                    <Stack direction="row" alignItems="center" spacing={1.5}>
+                    <Stack direction="row" spacing={1.5} alignItems="flex-start">
                       <Avatar sx={{ bgcolor: "#ff9800", width: 40, height: 40 }}>
                         {getInitial(String(issue?.reportedDetails?.user_id))}
                       </Avatar>
-                      <Typography
-                        variant="subtitle2"
-                        fontWeight={600}
-                        sx={{
-                          fontSize: { xs: "0.85rem", sm: "1rem" },
-                          wordBreak: "break-word"
-                        }}
-                      >
-                        {issue.reportedDetails?.user_id}
-                      </Typography>
-                    </Stack>
-
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      spacing={0.5}
-                      sx={{ mt: { xs: 0.5, sm: 0 }, ml: "auto" }}
-                    >
-                      <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />
-                      <Tooltip title={trans("edit")}>
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          onClick={() => handleEditClick(issue)}
+                      <Box>
+                        <Typography
+                          variant="subtitle2"
+                          fontWeight={600}
+                          sx={{
+                            fontSize: { xs: "0.85rem", sm: "1rem" },
+                            wordBreak: "break-word"
+                          }}
                         >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
+                          {issue.reportedDetails?.user_id}
+                        </Typography>
+
+                        <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
+                          <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />
+                          <Tooltip title={trans("edit")}>
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              onClick={() => handleEditClick(issue)}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      </Box>
                     </Stack>
                   </Stack>
 
                   <Box sx={{ p: 1.5, borderRadius: 2 }}>
-                    <Typography variant="body2" fontWeight={500}>
-                      {trans("issuestypes")}{" "}
-                      <Typography component="span" fontWeight={400} color="text.secondary">
+                    <Box sx={{ display: "flex", mb: 0.5 }}>
+                      <Box sx={{ width: "110px" }}>
+                        <Typography variant="body2" fontWeight={500}>
+                          {trans("issuestypes")}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ width: "10px" }}>
+                        <Typography variant="body2" fontWeight={500}>
+                          :
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                      >
                         {issue.issueType || "-"}
                       </Typography>
-                    </Typography>
+                    </Box>
 
-                    <Typography variant="body2" fontWeight={500}>
-                      {trans("model")}{" "}
-                      <Typography component="span" fontWeight={400} color="text.secondary">
+                    <Box sx={{ display: "flex", mb: 0.5 }}>
+                      <Box sx={{ width: "110px" }}>
+                        <Typography variant="body2" fontWeight={500}>
+                          {trans("model")}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ width: "10px" }}>
+                        <Typography variant="body2" fontWeight={500}>
+                          :
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                      >
                         {issue.assetDetails?.modelName || "-"}
                       </Typography>
-                    </Typography>
+                    </Box>
 
-                    <Typography variant="body2" fontWeight={500}>
-                      {trans("assignedTo")}:{" "}
-                      <Typography component="span" fontWeight={400} color="text.secondary">
+                    <Box sx={{ display: "flex", mb: 0.5 }}>
+                      <Box sx={{ width: "110px" }}>
+                        <Typography variant="body2" fontWeight={500}>
+                          {trans("assignedTo")}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ width: "10px" }}>
+                        <Typography variant="body2" fontWeight={500}>
+                          :
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                      >
                         {issue.assigned?.user_id || "-"}
                       </Typography>
-                    </Typography>
+                    </Box>
 
-                    <Typography
-                      variant="body2"
-                      fontWeight={500}
-                      sx={{ display: "flex", alignItems: "center" }}
-                    >
-                      {trans("description")}:{" "}
-                      <Tooltip title={issue.description || "-"} placement="top" arrow>
-                        <Typography
-                          component="span"
-                          fontWeight={400}
-                          color="text.secondary"
-                          noWrap
-                          sx={{ maxWidth: "180px", ml: 0.5 }}
-                        >
-                          {issue.description || "-"}
+                    <Box sx={{ display: "flex", mb: 0.5, alignItems: "center" }}>
+                      <Box sx={{ width: "110px" }}>
+                        <Typography variant="body2" fontWeight={500}>
+                          {trans("description")}
                         </Typography>
-                      </Tooltip>
-                    </Typography>
-                    <Box display="flex" justifyContent="flex-end">
+                      </Box>
+
+                      <Box sx={{ width: "10px" }}>
+                        <Typography variant="body2" fontWeight={500}>
+                          :
+                        </Typography>
+                      </Box>
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        noWrap
+                        sx={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: "180px"
+                        }}
+                      >
+                        {issue.description || "-"}
+                      </Typography>
+                    </Box>
+
+                    <Box display="flex" justifyContent="flex-end" mt={1}>
                       <Box
                         sx={{
                           display: "flex",

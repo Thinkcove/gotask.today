@@ -1,6 +1,5 @@
 import RequestHelper from "../../helpers/requestHelper";
 import BaseController from "../../common/baseController";
-import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiemloyeeModel";
 import { KpiAssignmentMessages } from "../../constants/apiMessages/kpiemployeeMessages";
 import {
   createKpiAssignment,
@@ -8,9 +7,14 @@ import {
   getAllKpiAssignments,
   getKpiAssignmentById,
   getTemplatesByUserId,
-  updateKpiAssignment
+  updateKpiAssignment,
+  addPerformanceToKpiAssignment,
+  getPerformanceById,
+  getPerformancesByAssignmentId
 } from "./kpiemployeeService";
 import { getKpiAssignmentByIdFromDb } from "../../domain/interface/kpiemployee/kpiemployeeInterface";
+import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiEmployeeModel";
+import { IKpiPerformance } from "../../domain/model/kpiemployee/kpiPerformanceModel";
 
 class KpiAssignmentController extends BaseController {
   // Create KPI Assignment
@@ -103,22 +107,14 @@ class KpiAssignmentController extends BaseController {
       }
 
       const payload = requestHelper.getPayload() as Partial<IKpiAssignment>;
-      const payloadAny = payload as any;
-
-      restrictedFields.forEach((field) => {
-        if (field in payloadAny) {
-          delete payloadAny[field];
-        }
-      });
-
-      const authUserId = payloadAny.authUserId;
+      const authUserId = (payload as any).authUserId;
       if (!authUserId) {
         return this.replyError(new Error(KpiAssignmentMessages.FETCH.USER_ID));
       }
 
-      const currentAssignment = await getKpiAssignmentByIdFromDb(assignment_id);
-      if (!currentAssignment) {
-        return this.replyError(new Error(KpiAssignmentMessages.UPDATE.NOT_FOUND));
+      const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+      if (!assignment) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.NOT_FOUND));
       }
 
       const result = await updateKpiAssignment(
@@ -127,8 +123,70 @@ class KpiAssignmentController extends BaseController {
         authUserId,
         restrictedFields
       );
+
       if (!result.success) {
         return this.replyError(new Error(result.message || KpiAssignmentMessages.UPDATE.FAILED));
+      }
+
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Add Performance to KPI Assignment
+  async addPerformanceToKpiAssignment(requestHelper: RequestHelper, handler: any) {
+    try {
+      const assignment_id = requestHelper.getParam("assignment_id");
+      if (!assignment_id) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.ASSIGN_ID));
+      }
+
+      const payload = requestHelper.getPayload() as { performance: IKpiPerformance[] };
+      const authUserId = (payload as any).authUserId;
+      if (!authUserId) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.USER_ID));
+      }
+
+      if (!payload.performance || !Array.isArray(payload.performance)) {
+        return this.replyError(new Error(KpiAssignmentMessages.UPDATE.INVALID_PERFORMANCE));
+      }
+
+      const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+      if (!assignment) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.NOT_FOUND));
+      }
+
+      const result = await addPerformanceToKpiAssignment(
+        assignment_id,
+        payload.performance,
+        authUserId
+      );
+
+      if (!result.success) {
+        return this.replyError(new Error(result.message || KpiAssignmentMessages.UPDATE.FAILED));
+      }
+
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  // Get Performance by performance_id within a specific assignment
+  async getPerformanceById(requestHelper: RequestHelper, handler: any) {
+    try {
+      const performance_id = requestHelper.getParam("performance_id");
+
+      if (!performance_id) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.PERFORMANCE_ID));
+      }
+
+      const result = await getPerformanceById(performance_id);
+      if (!result.success) {
+        return this.replyError(
+          new Error(result.message || KpiAssignmentMessages.FETCH.FETCH_FAILED)
+        );
       }
 
       return this.sendResponse(handler, result.data);
@@ -169,7 +227,29 @@ class KpiAssignmentController extends BaseController {
         return this.replyError(new Error(result.message));
       }
 
-      return this.sendResponse(handler, result.data); // will return { user, templates }
+      return this.sendResponse(handler, result.data);
+    } catch (error) {
+      return this.replyError(error);
+    }
+  }
+
+  async getPerformancesByAssignmentId(requestHelper: RequestHelper, handler: any) {
+    try {
+      const assignment_id = requestHelper.getParam("assignment_id");
+
+      if (!assignment_id) {
+        return this.replyError(new Error(KpiAssignmentMessages.FETCH.ASSIGN_ID));
+      }
+
+      const result = await getPerformancesByAssignmentId(assignment_id);
+
+      if (!result.success) {
+        return this.replyError(
+          new Error(result.message || KpiAssignmentMessages.FETCH.FETCH_FAILED)
+        );
+      }
+
+      return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);
     }

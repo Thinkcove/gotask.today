@@ -55,7 +55,14 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
     >
       {/* Header */}
       <Box display="flex" alignItems="center" justifyContent="space-between" gap={2} mb={2}>
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={2}
+          sx={{
+            position: "sticky"
+          }}
+        >
           <ArrowBackIcon
             sx={{ cursor: "pointer", color: "#741B92" }}
             onClick={() => router.push("/kpi/employee")}
@@ -115,8 +122,8 @@ const AssigneeDetail: React.FC<AssigneeDetailProps> = ({ user, assignedTemplates
                       border: `1px solid ${getUserStatusColor(status)}`,
                       transition: "transform 0.3s ease",
                       "&:hover": {
-                        transform: "scale(1.02)",
-                        cursor: "pointer"
+                        cursor: "pointer",
+                        boxShadow: "none"
                       }
                     }}
                     onClick={() => router.push(`/kpi/employee/assignedTemplate/${assignmentId}`)}

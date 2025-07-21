@@ -19,28 +19,19 @@ class KpiTemplateController extends BaseController {
     restrictedFields: string[] = []
   ) {
     try {
-      const templateData = requestHelper.getPayload() as Partial<IKpiTemplate>;
+      const templateData = requestHelper.getPayload();
 
-      // Cast to any to allow dynamic delete without TS error
       const templateDataAny = templateData as any;
-
-      // Remove restricted fields from templateData
       restrictedFields.forEach((field) => {
         if (field in templateDataAny) {
           delete templateDataAny[field];
         }
       });
 
-      if (!templateData.title || !templateData.description || !templateData.measurement_criteria) {
-        return this.replyError(new Error(KpiTemplateMessages.CREATE.REQUIRED));
-      }
+      const result = await createKpiTemplate(templateData, restrictedFields);
+      if (!result.success) throw new Error(result.message);
 
-      const newTemplate = await createKpiTemplate(templateData);
-      if (!newTemplate.success) {
-        return this.replyError(new Error(newTemplate.message || KpiTemplateMessages.CREATE.FAILED));
-      }
-
-      return this.sendResponse(handler, newTemplate.data);
+      return this.sendResponse(handler, result.data);
     } catch (error) {
       return this.replyError(error);
     }

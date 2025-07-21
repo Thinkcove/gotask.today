@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { Box, Typography, Button, Grid } from "@mui/material";
+import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
 import useSWR from "swr";
 import { useAllAssets, useAllIssues, createAssetIssues } from "../services/assetActions";
 import { fetcherUserList } from "../../user/services/userAction";
@@ -44,7 +44,7 @@ const CreateIssue: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const { data: users } = useSWR("fetch-user", fetcherUserList);
-  const { getAll: assets } = useAllAssets();
+  const { getAll: assets, isLoading } = useAllAssets();
   const { mutate: issuesMutate } = useAllIssues();
 
   const userOptions = useMemo(
@@ -104,6 +104,23 @@ const CreateIssue: React.FC = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </>
+    );
+  }
+
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
@@ -136,10 +153,7 @@ const CreateIssue: React.FC = () => {
                 color: "white",
                 px: 2,
                 textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201)"
-                }
+                fontWeight: "bold"
               }}
               onClick={handleSubmit}
             >

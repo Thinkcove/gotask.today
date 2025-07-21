@@ -1,5 +1,5 @@
 import env from "@/app/common/env";
-import { Template } from "./templateInterface";
+import { IKpiPerformance, Template } from "./templateInterface";
 import { getData, postData, putData, deleteData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 
@@ -111,10 +111,11 @@ export const createKpiAssignment = async (payload: {
   kpi_Description?: string;
   measurement_criteria: string;
   frequency: string;
-  weightage: number;
+  weightage: string;
   assigned_by: string;
   reviewer_id?: string;
   status?: string;
+  target_value?: string;
   saveAs_Template?: boolean;
   authUserId?: string;
 }) => {
@@ -137,6 +138,7 @@ export const createKpiAssignment = async (payload: {
       assigned_by: data.assigned_by,
       reviewer_id: data.reviewer_id,
       status: data.status,
+      target_value: data.target_value,
       saveAs_Template: data.saveAs_Template,
       comments: data.comments || [],
       change_History: data.change_History || []
@@ -158,11 +160,13 @@ export const fetchAllKpiAssignments = async () => {
         kpi_Description: string;
         measurement_criteria: string;
         frequency: string;
-        weightage: number;
+        weightage: string;
         assigned_by: string;
         reviewer_id?: string;
         status: string;
+        actual_value: string;
         comments?: string[];
+        performance?: IKpiPerformance[];
         change_History?: { changedBy: string; changedAt: string; changes: Record<string, any> }[];
       }) => ({
         assignment_id: assignment.assignment_id,
@@ -176,8 +180,10 @@ export const fetchAllKpiAssignments = async () => {
         assigned_by: assignment.assigned_by,
         reviewer_id: assignment.reviewer_id,
         status: assignment.status,
+        actual_value: assignment.actual_value,
         comments: assignment.comments || [],
-        change_History: assignment.change_History || []
+        change_History: assignment.change_History || [],
+        performance: assignment.performance || []
       })
     );
   });
@@ -200,8 +206,31 @@ export const fetchKpiAssignmentById = async (assignmentId: string) => {
       assigned_by: data.assigned_by,
       reviewer_id: data.reviewer_id,
       status: data.status,
+      target_value: data.target_value,
+      actual_value: data.actual_value,
       comments: data.comments || [],
-      change_History: data.change_History || []
+      change_History: data.change_History || [],
+      performance: data.performance || []
+    };
+  });
+};
+
+// Fetch Performance by ID
+export const fetchPerformanceById = async (performanceId: string) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/getPerformance/${performanceId}`;
+    const response = await getData(url, token);
+    const data = response.data || response;
+
+    return {
+      performance_id: data.performance?.performance_id,
+      percentage: data.performance?.percentage,
+      start_date: data.performance?.start_date,
+      end_date: data.performance?.end_date,
+      added_by: data.performance?.added_by,
+      notes: data.performance?.notes || "",
+      signature: data.performance?.signature || "",
+      assignment: data.assignment || null
     };
   });
 };
@@ -216,12 +245,14 @@ export const updateKpiAssignment = async (
     kpi_Description?: string;
     measurement_criteria: string;
     frequency: string;
-    weightage: number;
+    weightage: string;
     assigned_by: string;
     reviewer_id?: string;
     status?: string;
+    target_value: string;
     comments?: string[];
     authUserId: string;
+    performance?: IKpiPerformance[];
   }>
 ) => {
   return withAuth(async (token) => {
@@ -240,8 +271,10 @@ export const updateKpiAssignment = async (
       assigned_by: data.assigned_by,
       reviewer_id: data.reviewer_id,
       status: data.status,
+      target_value: data.target_value,
       comments: data.comments || [],
-      change_History: data.change_History || []
+      change_History: data.change_History || [],
+      performance: data.performance || []
     };
   });
 };
@@ -270,7 +303,20 @@ export const fetchTemplatesByUserId = async (userId: string) => {
   });
 };
 
-// SWR-compatible fetcher
+// Add performance by assignment id
+export const addPerformanceToAssignment = async (
+  assignment_id: string,
+  performance: IKpiPerformance[],
+  authUserId: string
+) => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/addPerformance/${assignment_id}`;
+    const payload = { performance, authUserId };
+    const response = await putData(url, payload, token);
+    return response.data || response;
+  });
+};
+
 export const fetcher = async () => {
   return fetchTemplates();
 };

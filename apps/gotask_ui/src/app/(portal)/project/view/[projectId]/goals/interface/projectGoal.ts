@@ -1,6 +1,4 @@
 import { SelectOption } from "@/app/component/input/formField";
-import { RichTextEditorRef } from "mui-tiptap";
-import { RefObject } from "react";
 
 export interface User {
   id: string;
@@ -92,7 +90,6 @@ export interface ProjectGoalFormProps {
   setGoalData: React.Dispatch<React.SetStateAction<GoalData>>;
   errors: { [key: string]: string };
   onSubmit?: (payload: GoalDataPayload) => void;
-  rteRef?: RefObject<RichTextEditorRef | null>;
   currentProjectOptions: SelectOption[];
   currentProject: Project | undefined;
 }
@@ -103,8 +100,8 @@ export interface HistoryData {
 
 export interface UpdateHistoryItem {
   user_id: string;
-  timestamp: string;
-  history_data: HistoryData;
+  createdAt: string;
+  formatted_history: HistoryData;
 }
 
 export interface ProjectGoalHistory {

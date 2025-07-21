@@ -14,13 +14,14 @@ import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useTranslations } from "next-intl";
-
 import {
   getProjectStoryById,
   deleteProjectStory,
-  getTasksByStory
+  getTasksByStory,
+  addCommentToProjectStory,
+  updateCommentOnProjectStory,
+  deleteCommentFromProjectStory
 } from "@/app/(portal)/projectStory/services/projectStoryActions";
-
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import TaskItem from "../../task/component/taskLayout/taskItem";
@@ -30,13 +31,30 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import LabelValueText from "@/app/component/text/labelValueText";
 import StatusIndicator from "@/app/component/status/statusIndicator";
 import { STORY_STATUS_COLOR, StoryStatus } from "@/app/common/constants/storyStatus";
+import CommentSection from "@/app/component/comments/commentSection";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import CommonTabs from "@/app/component/tabs/commonTabs";
 
 const ProjectStoryDetail = () => {
   const { storyId, projectId } = useParams();
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const [tabIndex, setTabIndex] = React.useState(0);
 
-  const { data: story, isLoading } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
+  const tabs = [
+    { label: t("Stories.commentSectionTitle"), value: 0 },
+    { label: t("Stories.taskSectionTitle"), value: 1 }
+  ];
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
+  const {
+    data: story,
+    isLoading,
+    mutate
+  } = useSWR(storyId ? ["projectStory", storyId] : null, () =>
     getProjectStoryById(storyId as string).then((res) => res?.data)
   );
 
@@ -54,7 +72,6 @@ const ProjectStoryDetail = () => {
       setIsDeleting(true);
       const response = await deleteProjectStory(storyId as string);
       const message = response?.message || t("Stories.success.deleted");
-
       setSnackbar({ open: true, message, severity: "success" });
 
       setTimeout(() => router.push(`/project/view/${projectId}/stories`), 500);
@@ -92,7 +109,7 @@ const ProjectStoryDetail = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "87vh",
+        height: "89vh",
         bgcolor: "white",
         borderRadius: 2,
         boxShadow: 3,
@@ -111,7 +128,6 @@ const ProjectStoryDetail = () => {
               <ArrowBack />
             </IconButton>
           </Tooltip>
-
           <Box>
             <Typography variant="h5" fontWeight={600} textTransform="capitalize">
               {story.title}
@@ -122,14 +138,10 @@ const ProjectStoryDetail = () => {
             />
           </Box>
         </Box>
-
-        {/* Right Section: Edit/Delete buttons */}
         <Box display="flex" gap={1}>
           <Tooltip title={t("Stories.editStory")}>
             <IconButton
-              onClick={() =>
-                router.push(`/project/view/${projectId}/stories/edit/${storyId}`)
-              }
+              onClick={() => router.push(`/project/view/${projectId}/stories/edit/${storyId}`)}
               color="primary"
             >
               <Edit />
@@ -153,79 +165,103 @@ const ProjectStoryDetail = () => {
           <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
             {t("Stories.descriptionLabel")}
           </Typography>
-          <Typography variant="body1" color="text.primary" sx={{ whiteSpace: "pre-line" }}>
-            {story.description || t("Stories.noDescription")}
-          </Typography>
-        </Box>
 
+          {story.description ? (
+            <RichTextReadOnly content={story.description} extensions={getTipTapExtensions()} />
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              {t("Stories.noDescription")}
+            </Typography>
+          )}
+        </Box>
         <LabelValueText
           label={t("Stories.createdAt")}
           value={<FormattedDateTime date={story.createdAt} />}
         />
+
         <Divider sx={{ my: 3 }} />
 
-        {/* Tasks Section */}
-        <Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h6" fontWeight={600}>
-              {t("Stories.taskSectionTitle")}
-            </Typography>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: "#741B92", textTransform: "none", borderRadius: 2 }}
-              onClick={() => router.push(`/task/createTask?storyId=${storyId}`)}
-            >
-              {t("Stories.createTask")}
-            </Button>
-          </Box>
+        <CommonTabs tabIndex={tabIndex} onChange={handleTabChange} tabs={tabs} centered={false} />
 
-          {isTasksLoading ? (
-            <CircularProgress size={24} />
-          ) : tasks?.length > 0 ? (
-            <Box sx={{ flexGrow: 1 }}>
-              <Box
-                display="grid"
-                gridTemplateColumns={{
-                  xs: "1fr",
-                  sm: "repeat(2, 1fr)",
-                  md: "repeat(3, 1fr)",
-                  lg: "repeat(4, 1fr)"
-                }}
-                gap={2}
-              >
-                {tasks.map((task: any) => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    onTaskClick={handleTaskClick}
-                    view="stories"
-                    getStatusColor={getStatusColor}
-                  />
-                ))}
+        <Box mt={2}>
+          {tabIndex === 0 && (
+            <CommentSection
+              comments={story.comments || []}
+              onSave={async (html) => {
+                await addCommentToProjectStory(storyId as string, { comment: html });
+                await mutate();
+              }}
+              onUpdate={async (comment) => {
+                await updateCommentOnProjectStory(comment.id, { comment: comment.comment });
+                await mutate();
+              }}
+              onDelete={async (id) => {
+                await deleteCommentFromProjectStory(id);
+                await mutate();
+              }}
+            />
+          )}
+
+          {tabIndex === 1 && (
+            <Box>
+              <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "#741B92", textTransform: "none", borderRadius: 2 }}
+                  onClick={() => router.push(`/task/createTask?storyId=${storyId}`)}
+                >
+                  {t("Stories.createTask")}
+                </Button>
               </Box>
+              {isTasksLoading ? (
+                <CircularProgress size={24} />
+              ) : tasks?.length > 0 ? (
+                <Box sx={{ flexGrow: 1 }}>
+                  <Box
+                    display="grid"
+                    gridTemplateColumns={{
+                      xs: "1fr",
+                      sm: "repeat(2, 1fr)",
+                      md: "repeat(3, 1fr)",
+                      lg: "repeat(4, 1fr)"
+                    }}
+                    gap={2}
+                  >
+                    {tasks.map((task: any) => (
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        onTaskClick={handleTaskClick}
+                        view="stories"
+                        getStatusColor={getStatusColor}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  {t("Stories.noTasks")}
+                </Typography>
+              )}
             </Box>
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              {t("Stories.noTasks")}
-            </Typography>
           )}
         </Box>
       </Box>
 
-      {/* Delete Dialog */}
+      {/* Dialogs */}
       <CommonDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
         onSubmit={handleDelete}
         title={t("Stories.deleteStory")}
         submitLabel={t("Stories.delete")}
+        submitColor="#b71c1c"
       >
         <Typography variant="body1" color="text.secondary">
           {t("Stories.confirmDelete")}
         </Typography>
       </CommonDialog>
 
-      {/* Snackbar */}
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}

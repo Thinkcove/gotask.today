@@ -1,8 +1,5 @@
-"use client";
-
-import React, { useRef, useState, useCallback } from "react";
+import React, { useState, useCallback, startTransition } from "react";
 import { Button, Box, Typography } from "@mui/material";
-import TaskInput from "@/app/(portal)/task/createTask/taskInput";
 import { createTask } from "../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,10 +9,9 @@ import { IFormField, Project, User } from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import moment from "moment-timezone";
-import { RichTextEditorRef } from "mui-tiptap";
+import TaskInput from "./taskInput";
 
 const CreateTask: React.FC = () => {
-  const rteRef = useRef<RichTextEditorRef>(null);
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,18 +39,18 @@ const CreateTask: React.FC = () => {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  // Handle input changes
   const handleInputChange = useCallback(
     (name: string, value: string | Date | Project[] | User[]) => {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value instanceof Date ? value.toISOString().split("T")[0] : value
-      }));
+      startTransition(() => {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value instanceof Date ? value.toISOString().split("T")[0] : value
+        }));
+      });
     },
     []
   );
 
-  // Validate form fields
   const validateForm = useCallback(() => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.title) newErrors.title = transtask("tasktitle");
@@ -67,7 +63,6 @@ const CreateTask: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   }, [formData, transtask]);
 
-  // Remove unwanted fields before sending
   const getCleanedPayload = useCallback((data: IFormField) => {
     const cleaned = { ...data };
     delete cleaned.users;
@@ -78,16 +73,10 @@ const CreateTask: React.FC = () => {
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    const html = rteRef.current?.editor?.getHTML?.() || "";
-    const updatedFormData = {
-      ...formData,
-      description: html
-    };
-
     if (!validateForm()) return;
 
     try {
-      const payload = getCleanedPayload(updatedFormData);
+      const payload = getCleanedPayload(formData);
       await createTask(payload);
 
       setSnackbar({
@@ -117,15 +106,7 @@ const CreateTask: React.FC = () => {
         flexDirection: "column"
       }}
     >
-      <Box
-        sx={{
-          position: "sticky",
-          top: 0,
-          px: 2,
-          py: 2,
-          zIndex: 1000
-        }}
-      >
+      <Box sx={{ position: "sticky", top: 0, px: 2, py: 2, zIndex: 1000 }}>
         <Box
           sx={{
             display: "flex",
@@ -165,7 +146,7 @@ const CreateTask: React.FC = () => {
                 textTransform: "none",
                 fontWeight: "bold",
                 "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201)100%)"
+                  backgroundColor: "rgb(202, 187, 201)"
                 }
               }}
               onClick={handleSubmit}
@@ -176,20 +157,12 @@ const CreateTask: React.FC = () => {
         </Box>
       </Box>
 
-      <Box
-        sx={{
-          px: 2,
-          pb: 2,
-          maxHeight: "calc(100vh - 150px)",
-          overflowY: "auto"
-        }}
-      >
+      <Box sx={{ px: 2, pb: 2, maxHeight: "calc(100vh - 150px)", overflowY: "auto" }}>
         <TaskInput
           formData={formData}
           handleInputChange={handleInputChange}
           errors={errors}
           readOnlyFields={storyId ? ["status"] : ["status"]}
-          rteRef={rteRef}
         />
       </Box>
 

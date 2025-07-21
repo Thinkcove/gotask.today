@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, IconButton, Stack, Chip, Grid } from "@mui/material";
+import { Box, Typography, IconButton, Stack, Grid } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { User } from "../../interfaces/userInterface";
@@ -23,6 +23,10 @@ import EllipsisText from "@/app/component/text/ellipsisText";
 import CardComponent from "@/app/component/card/cardComponent";
 import { labelTextStyle } from "@/app/(portal)/asset/styles/styles";
 import SkillInput from "../../components/skillInput";
+import CertificateInput from "../../components/certificateInput";
+import IncrementInput from "../../components/incrementInput";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
+import { RichTextReadOnly } from "mui-tiptap";
 
 interface UserDetailProps {
   user: User;
@@ -51,14 +55,16 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
   const handleDelete = async () => {
     try {
       await deleteUser(userID);
-      await mutate();
+
+      setOpenDeleteDialog(false);
       setSnackbar({
         open: true,
         message: transuser("deletesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setOpenDeleteDialog(false);
-      setTimeout(() => router.back(), 2000);
+      setTimeout(() => {
+        router.push("/user");
+      }, 1500);
     } catch {
       setSnackbar({
         open: true,
@@ -84,7 +90,11 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
             borderRadius: 4,
             p: 4,
             backgroundColor: "#fff",
-            border: "1px solid #e0e0e0"
+            border: "1px solid #e0e0e0",
+            width: "100%",
+            height: "calc(100vh - 100px)",
+            overflowY: "auto",
+            boxSizing: "border-box"
           }}
         >
           {/* Header */}
@@ -93,9 +103,18 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               <ArrowBack />
             </IconButton>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="h5" fontWeight={700} sx={{ textTransform: "capitalize" }}>
+              <Typography
+                variant="h5"
+                fontWeight={700}
+                sx={{
+                  textTransform: "capitalize",
+                  whiteSpace: "normal",
+                  wordBreak: "break-word"
+                }}
+              >
                 {user.name}
               </Typography>
+
               <StatusIndicator
                 status={user.status ? "active" : "inactive"}
                 getColor={(status) => (status === "active" ? "green" : "red")}
@@ -120,6 +139,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               options={[
                 transuser("general"),
                 transuser("userskill"),
+                transuser("Certificate.certificates"),
+                transuser("Increment.incrementhistory"),
                 transuser("projectdetails"),
                 transasset("assetdetails")
               ]}
@@ -130,7 +151,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
 
           {/* General Info */}
           {selectedTab === transuser("general") && (
-            <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
+            <>
               <Grid container spacing={2} flexDirection="column" mb={2}>
                 <Grid item xs={12} sm={6} md={4}>
                   <LabelValueText label={transuser("uesrid")} value={user.user_id} />
@@ -138,73 +159,109 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               </Grid>
 
               <Grid container spacing={2} mb={1}>
+                {/* First Name */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labelfirst_name")}
+                    label={transuser("labelfirst_name_view")}
                     value={user?.first_name || "-"}
-                    sx={{ textTransform: "capitalize" }}
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden"
+                    }}
                   />
                 </Grid>
+
+                {/* Last Name */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labellast_name")}
+                    label={transuser("labellast_name_view")}
                     value={user?.last_name || "-"}
-                    sx={{ textTransform: "capitalize" }}
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}
                   />
                 </Grid>
+
+                {/* Preferred Name */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labeluser")}
+                    label={transuser("labeluser_view")}
                     value={user?.name || "-"}
-                    sx={{ textTransform: "capitalize" }}
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden"
+                    }}
                   />
                 </Grid>
+
+                {/* Mobile No */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labelmobile_no")}
+                    label={transuser("labelmobile_no_view")}
                     value={user?.mobile_no || "-"}
                   />
                 </Grid>
+
+                {/* Join Date */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("labeljoined_date")}
+                    label={transuser("labeljoined_date_view")}
                     value={user?.joined_date ? <FormattedDateTime date={user?.joined_date} /> : "-"}
                   />
                 </Grid>
-                <Grid item xs={6} sm={6} md={4}>
-                  <LabelValueText label={transuser("labelemp_id")} value={user?.emp_id || "-"} />
-                </Grid>
+
+                {/* Emp ID */}
                 <Grid item xs={6} sm={6} md={4}>
                   <LabelValueText
-                    label={transuser("roleid")}
+                    label={transuser("labelemp_id_view")}
+                    value={user?.emp_id || "-"}
+                  />
+                </Grid>
+
+                {/* Role */}
+                <Grid item xs={6} sm={6} md={4}>
+                  <LabelValueText
+                    label={transuser("roleid_view")}
                     value={user?.roleId.name}
                     sx={{ textTransform: "capitalize" }}
                   />
                 </Grid>
               </Grid>
 
-              <Grid item xs={6} sm={6} md={4}>
-                <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                  {transuser("organization")}
-                </Typography>
-                <Stack direction="row" spacing={1} flexWrap="wrap">
+              {/* Organization */}
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" color="text.secondary" mb={1}>
+                    {transuser("organization")}
+                  </Typography>
                   {user.orgDetails && user.orgDetails.length > 0 ? (
-                    user.orgDetails.map((orgId) => (
-                      <Chip
-                        key={orgId.id}
-                        label={orgId.name}
-                        variant="outlined"
-                        sx={{ textTransform: "capitalize" }}
-                      />
-                    ))
+                    <ul style={{ paddingLeft: "1rem", margin: 0 }}>
+                      {user.orgDetails.map((orgId) => (
+                        <li key={orgId.id}>
+                          <Typography variant="body2" sx={{ textTransform: "capitalize" }}>
+                            {orgId.name}
+                          </Typography>
+                        </li>
+                      ))}
+                    </ul>
                   ) : (
-                    <Typography variant="body2" color="text.disabled">
+                    <Typography variant="body2" color="text.secondary">
                       {transuser("noorganzationuser")}
                     </Typography>
                   )}
-                </Stack>
+                </Grid>
               </Grid>
-            </Box>
+            </>
           )}
 
           {/* Skills */}
@@ -241,9 +298,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                           <Typography variant="h4" fontWeight={700} fontSize="1rem">
                             {project.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {project.description}
-                          </Typography>
+                          <RichTextReadOnly
+                            content={project.description}
+                            extensions={getTipTapExtensions()}
+                          />
                           <StatusIndicator status={project.status} getColor={getStatusColor} />
                         </Stack>
                       </Box>
@@ -251,13 +309,12 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   ))}
                 </Grid>
               ) : (
-                <Typography color="text.secondary" fontStyle="italic">
-                  {transuser("noprojects")}
-                </Typography>
+                <Typography color="text.secondary">{transuser("noprojects")}</Typography>
               )}
             </Grid>
           )}
 
+          {/* Assets */}
           {selectedTab === transasset("assetdetails") && (
             <Grid item xs={12}>
               {user.assetDetails && user.assetDetails.length > 0 ? (
@@ -369,11 +426,26 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                   })}
                 </Box>
               ) : (
-                <Typography color="text.secondary" fontStyle="italic">
-                  {transuser("noassets")}
-                </Typography>
+                <Typography color="text.secondary">{transuser("noassets")}</Typography>
               )}
             </Grid>
+          )}
+
+          {selectedTab === transuser("Certificate.certificates") && (
+            <Box>
+              <CertificateInput
+                userId={userID}
+                certificates={user?.certificates || []}
+                onChange={async () => {
+                  await mutate();
+                }}
+              />
+            </Box>
+          )}
+          {selectedTab === transuser("Increment.incrementhistory") && (
+            <Box>
+              <IncrementInput userId={userID} />
+            </Box>
           )}
         </Box>
 
@@ -383,6 +455,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
           onSubmit={handleDelete}
           title={transuser("deleteuser")}
           submitLabel="Delete"
+          submitColor="#b71c1c"
         >
           <Typography>{transuser("deleteornot")}</Typography>
         </CommonDialog>

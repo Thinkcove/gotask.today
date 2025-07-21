@@ -9,13 +9,15 @@ import {
   Paper,
   Link,
   Box,
-  Typography
+  Typography,
+  Grid
 } from "@mui/material";
 import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 import {
-  EnhancedTimeLogGridProps,
+  EnhancedTimeLogGridPropsWithPermissions,
   GroupedLogs,
   LeaveEntry,
+  PermissionEntry,
   TaskLog,
   TimeLogEntry
 } from "../interface/timeLog";
@@ -26,8 +28,14 @@ import StatusIndicator from "@/app/component/status/statusIndicator";
 import { getStatusColor } from "@/app/common/constants/task";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
-import { getLeaveTypeColor, LeaveBackgroundColor } from "@/app/common/constants/leave";
+import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import DateFormats from "@/app/component/dateTime/dateFormat";
+import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
+import { formatPermissionDuration } from "@/app/common/utils/leaveCalculate";
+import { fetchAllPermissions } from "../services/reportService";
+import { getDailyLogCellStyle } from "./logStyle";
+import EmptyState from "@/app/component/emptyState/emptyState";
+import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -41,27 +49,83 @@ const headerCellStyle = {
   color: "#333"
 };
 
-const getDateRange = (from: string, to: string) =>
-  eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
-
-const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
+const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = ({
   data,
   fromDate,
   toDate,
   showTasks,
   selectedProjects = [],
-  leaveData
+  leaveData,
+  permissionData,
+  selectedUsers = []
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
+
+  const getDateRange = (from: string, to: string) =>
+    eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
+
+  const normalizeDate = (date: string): string => {
+    if (!date) return date;
+
+    // If already in YYYY-MM-DD format, return as-is
+    if (ISO_DATE_REGEX.test(date)) {
+      return date;
+    }
+
+    // If contains 'T', it's likely an ISO string with time
+    if (date.includes("T")) {
+      const parsed = parseISO(date);
+      if (isValid(parsed)) {
+        return format(parsed, DateFormats.ISO_DATE);
+      }
+    }
+
+    // Fallback parse for any other format
+    const parsed = parseISO(date);
+    if (isValid(parsed)) {
+      return format(parsed, DateFormats.ISO_DATE);
+    }
+
+    // If parsing fails, return original input
+    return date;
+  };
+
+  const extractDateFromTimeLog = (entry: TimeLogEntry): string | null => {
+    if (!entry?.date || typeof entry.date !== "string") {
+      return null;
+    }
+
+    // Return directly if it's already in YYYY-MM-DD format
+    if (ISO_DATE_REGEX.test(entry.date)) {
+      return entry.date;
+    }
+
+    const parsedDate = parseISO(entry.date);
+    if (isValid(parsedDate)) {
+      return format(parsedDate, DateFormats.ISO_DATE);
+    }
+
+    return null;
+  };
+
   const dateRange = getDateRange(fromDate, toDate);
 
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
-  // Handle leave data properly
+  const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
+
+  // Get leaves and permissions data
   let leaves: LeaveEntry[] = [];
   if (leaveData && leaveData.length > 0) {
     leaves = leaveData;
   } else if (leaveResponse) {
     leaves = leaveResponse.data || leaveResponse;
+  }
+
+  let permissions: PermissionEntry[] = [];
+  if (permissionData && permissionData.length > 0) {
+    permissions = permissionData;
+  } else if (permissionResponse) {
+    permissions = permissionResponse.data || permissionResponse;
   }
 
   const datesOverlap = (
@@ -70,20 +134,27 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
     secondLeaveStart: string,
     secondLeaveEnd: string
   ): boolean => {
-    const firstStart = firstLeaveStart.split("T")[0];
-    const firstEnd = firstLeaveEnd.split("T")[0];
-    const secondStart = secondLeaveStart.split("T")[0];
-    const secondEnd = secondLeaveEnd.split("T")[0];
+    const firstStart = normalizeDate(firstLeaveStart);
+    const firstEnd = normalizeDate(firstLeaveEnd);
+    const secondStart = normalizeDate(secondLeaveStart);
+    const secondEnd = normalizeDate(secondLeaveEnd);
 
     return firstStart <= secondEnd && secondStart <= firstEnd;
   };
 
   const isDateInLeave = (date: string, leaveFromDate: string, leaveToDate: string): boolean => {
-    const checkDate = date.split("T")[0];
-    const fromDate = leaveFromDate.split("T")[0];
-    const toDate = leaveToDate.split("T")[0];
+    const checkDate = normalizeDate(date);
+    const fromDate = normalizeDate(leaveFromDate);
+    const toDate = normalizeDate(leaveToDate);
 
     return checkDate >= fromDate && checkDate <= toDate;
+  };
+
+  const isDateInPermission = (date: string, permissionDate: string): boolean => {
+    const checkDate = normalizeDate(date);
+    const permDate = normalizeDate(permissionDate);
+
+    return checkDate === permDate;
   };
 
   const getLeaveForUserAndDate = (userId: string, date: string): LeaveEntry | null => {
@@ -96,31 +167,55 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
     return leave || null;
   };
 
+  const getPermissionForUserAndDate = (userId: string, date: string): PermissionEntry | null => {
+    const permission = permissions.find((permission) => {
+      const userMatches = permission.user_id === userId;
+      const dateMatches = isDateInPermission(date, permission.date);
+      return userMatches && dateMatches;
+    });
+
+    return permission || null;
+  };
+
   const getUserId = (userName: string): string => {
     const fromLeaves = leaves.find((l) => l.user_name === userName)?.user_id;
     if (fromLeaves) return fromLeaves;
+
+    const fromPermissions = permissions.find((p) => p.user_name === userName)?.user_id;
+    if (fromPermissions) return fromPermissions;
 
     const fromTimeLogs = data.find((d) => d.user_name === userName)?.user_id;
     return fromTimeLogs || "";
   };
 
-  // FIXED: Ensure consistent date formatting throughout
-  const grouped = data.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
+  const filteredData = data.filter((entry) => {
+    const projectMatches =
+      selectedProjects.length === 0 ||
+      (entry.project_id && selectedProjects.includes(entry.project_id));
+    const userMatches =
+      selectedUsers.length === 0 || (entry.user_id && selectedUsers.includes(entry.user_id));
+    return projectMatches && userMatches;
+  });
+
+  const grouped = filteredData.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
     const user = entry.user_name;
     const project = entry.project_name || transreport("noproject");
     const task = entry.task_title || transreport("notask");
 
-    // Use consistent date format
-    const date = isValid(parseISO(entry.date))
-      ? format(parseISO(entry.date), DateFormats.ISO_DATE)
-      : null;
-    if (!date) return acc;
+    const date = extractDateFromTimeLog(entry);
+    if (!date) {
+      return acc;
+    }
 
     const timeLogged = extractHours(entry.total_time_logged || []);
     const key = [user, project, task].join("|");
 
     if (!acc[key]) acc[key] = {};
-    acc[key][date] = (acc[key][date] || 0) + timeLogged;
+
+    if (!acc[key][date]) {
+      acc[key][date] = 0;
+    }
+    acc[key][date] += timeLogged;
 
     return acc;
   }, {});
@@ -133,7 +228,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
     if (!groupedByUser[user]) groupedByUser[user] = {};
     if (!groupedByUser[user][project]) groupedByUser[user][project] = [];
 
-    const matchedTask = data.find(
+    const matchedTask = filteredData.find(
       (d) =>
         d.user_name === user &&
         (d.project_name || transreport("noproject")) === project &&
@@ -151,13 +246,24 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
     });
   });
 
-  // Add users who have leaves but no time logs
-  leaves.forEach((leave) => {
-    if (datesOverlap(leave.from_date, leave.to_date, fromDate, toDate)) {
-      const userName = leave.user_name;
-      if (!groupedByUser[userName]) {
-        groupedByUser[userName] = {};
-      }
+  // FIXED: Filter leaves and permissions by selected users and date range
+  const filteredLeaves = leaves.filter((leave) => {
+    const userMatches = selectedUsers.length === 0 || selectedUsers.includes(leave.user_id);
+    const dateMatches = datesOverlap(leave.from_date, leave.to_date, fromDate, toDate);
+    return userMatches && dateMatches;
+  });
+
+  const filteredPermissions = permissions.filter((permission) => {
+    const userMatches = selectedUsers.length === 0 || selectedUsers.includes(permission.user_id);
+    const dateMatches = datesOverlap(permission.date, permission.date, fromDate, toDate);
+    return userMatches && dateMatches;
+  });
+
+  [...filteredLeaves, ...filteredPermissions].forEach((item) => {
+    const userName = item.user_name;
+
+    if (!groupedByUser[userName]) {
+      groupedByUser[userName] = {};
     }
   });
 
@@ -179,6 +285,118 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
         transreport("noproject")
       : null;
 
+  const renderCellContent = (
+    value: number | undefined,
+    leaveForDate: LeaveEntry | null,
+    permissionForDate: PermissionEntry | null
+  ) => {
+    if (leaveForDate && permissionForDate) {
+      // Both leave and permission on same date - display only leave
+      return (
+        <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
+          <Typography
+            variant="caption"
+            sx={{
+              fontWeight: 500,
+              color: getLeaveColor()
+            }}
+          >
+            {leaveForDate.leave_type ? transreport("leave") : ""}
+          </Typography>
+          {value && (
+            <Typography
+              variant="caption"
+              sx={{
+                fontSize: "0.7rem",
+                fontWeight: 600,
+                color: "#333"
+              }}
+            >
+              {value}h
+            </Typography>
+          )}
+        </Box>
+      );
+    } else if (leaveForDate) {
+      // Only leave
+      return (
+        <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
+          <Typography
+            variant="caption"
+            sx={{
+              fontWeight: 500,
+              color: getLeaveColor()
+            }}
+          >
+            {leaveForDate.leave_type ? transreport("leave") : ""}
+          </Typography>
+          {value && (
+            <Typography
+              variant="caption"
+              sx={{
+                fontSize: "0.7rem",
+                fontWeight: 600,
+                color: "#333"
+              }}
+            >
+              {value}h
+            </Typography>
+          )}
+        </Box>
+      );
+    } else if (permissionForDate) {
+      // Only permission
+      return (
+        <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: getPermissionColor(),
+              fontWeight: 500
+            }}
+          >
+            {transreport("permission")}
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: "0.8rem",
+              fontWeight: 500,
+              color: getPermissionColor()
+            }}
+          >
+            {formatPermissionDuration(permissionForDate.start_time, permissionForDate.end_time)}
+          </Typography>
+          {value && (
+            <Typography
+              variant="caption"
+              sx={{
+                fontSize: "0.7rem",
+                fontWeight: 600,
+                color: "#333"
+              }}
+            >
+              {value}h
+            </Typography>
+          )}
+        </Box>
+      );
+    } else {
+      // Only time log
+      return value ? `${value}h` : "";
+    }
+  };
+  const hasData =
+    filteredData.length > 0 || filteredLeaves.length > 0 || filteredPermissions.length > 0;
+
+  if (!hasData) {
+    return (
+      <Box sx={{ p: 4, textAlign: "center" }}>
+        <Grid item xs={12}>
+          <EmptyState imageSrc={NoSearchResultsImage} message={transreport("nodata")} />
+        </Grid>
+      </Box>
+    );
+  }
   return (
     <>
       {singleProjectName && (
@@ -272,7 +490,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
               let userRowRendered = false;
 
               if (projectEntries.length === 0) {
-                // User has no tasks but has leaves
+                // User has no tasks but has leaves or permissions
                 return (
                   <TableRow key={`${user}-no-tasks`}>
                     <TableCell
@@ -323,6 +541,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                     {dateRange.map((date) => {
                       const key = format(date, DateFormats.ISO_DATE);
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
+                      const permissionForDate = getPermissionForUserAndDate(userId, key);
 
                       return (
                         <TableCell
@@ -330,34 +549,10 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                           sx={{
                             padding: "10px",
                             textAlign: "center" as const,
-                            border: "1px solid #eee",
-                            backgroundColor: leaveForDate
-                              ? getLeaveTypeColor(leaveForDate.leave_type) +
-                                LeaveBackgroundColor.num
-                              : "transparent"
+                            border: "1px solid #eee"
                           }}
                         >
-                          {leaveForDate ? (
-                            <Box
-                              display="flex"
-                              flexDirection="column"
-                              alignItems="center"
-                              gap={0.5}
-                            >
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  fontSize: "0.6rem",
-                                  fontWeight: 500,
-                                  color: getLeaveTypeColor(leaveForDate.leave_type)
-                                }}
-                              >
-                                {leaveForDate.leave_type.toUpperCase()}
-                              </Typography>
-                            </Box>
-                          ) : (
-                            ""
-                          )}
+                          {renderCellContent(undefined, leaveForDate, permissionForDate)}
                         </TableCell>
                       );
                     })}
@@ -444,62 +639,26 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridProps> = ({
                     )}
 
                     {dateRange.map((date) => {
-                      // FIXED: Consistent date formatting
                       const key = format(date, DateFormats.ISO_DATE);
                       const value = taskEntry.dailyLogs[key];
                       const leaveForDate = getLeaveForUserAndDate(userId, key);
+                      const permissionForDate = getPermissionForUserAndDate(userId, key);
 
                       return (
                         <TableCell
                           key={key}
                           sx={{
                             padding: "10px",
-                            textAlign: "center" as const,
+                            textAlign: "center",
                             border: "1px solid #eee",
-                            backgroundColor: leaveForDate
-                              ? getLeaveTypeColor(leaveForDate.leave_type) +
-                                LeaveBackgroundColor.num
-                              : "transparent"
+                            ...getDailyLogCellStyle(value)
                           }}
                         >
-                          {leaveForDate ? (
-                            <Box
-                              display="flex"
-                              flexDirection="column"
-                              alignItems="center"
-                              gap={0.5}
-                            >
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  fontSize: "0.6rem",
-                                  fontWeight: 500,
-                                  color: getLeaveTypeColor(leaveForDate.leave_type)
-                                }}
-                              >
-                                {leaveForDate.leave_type.toUpperCase()}
-                              </Typography>
-                              {value && (
-                                <Typography
-                                  variant="caption"
-                                  sx={{
-                                    fontSize: "0.7rem",
-                                    fontWeight: 600,
-                                    color: "#333"
-                                  }}
-                                >
-                                  {value}h
-                                </Typography>
-                              )}
-                            </Box>
-                          ) : value ? (
-                            `${value}h`
-                          ) : (
-                            ""
-                          )}
+                          {renderCellContent(value, leaveForDate, permissionForDate)}
                         </TableCell>
                       );
                     })}
+
                     {(userRowRendered = true)}
                   </TableRow>
                 ))

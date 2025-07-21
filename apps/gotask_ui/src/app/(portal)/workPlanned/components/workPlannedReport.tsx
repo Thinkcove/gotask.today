@@ -5,7 +5,6 @@ import { useWorkPlannedReport } from "../services/workPlannedServices";
 import { fetchProject, fetchUser } from "../../task/service/taskAction";
 import useSWR from "swr";
 import EmptyState from "@/app/component/emptyState/emptyState";
-import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
 import NoReportImage from "@assets/placeholderImages/noreportlog.svg";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -41,7 +40,6 @@ const getInitialFilters = (): Filters => {
 
 const WorkPlannedReport = () => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
-  const transworkplanned = useTranslations(LOCALIZATION.TRANSITION.WORKPLANNED);
   const [filters, setFilters] = useState<Filters>(getInitialFilters);
   const isClient = typeof window !== "undefined";
 
@@ -164,19 +162,13 @@ const WorkPlannedReport = () => {
             <Grid item xs={12}>
               <EmptyState imageSrc={NoReportImage} message={transreport("loghelper")} />
             </Grid>
-          ) : reportData && reportData.length === 0 ? (
-            <Grid item xs={12}>
-              <EmptyState
-                imageSrc={NoSearchResultsImage}
-                message={transworkplanned("nodata")}
-              />
-            </Grid>
           ) : reportData ? (
             <WorkPlannedCalendarGrid
               data={reportData}
               fromDate={filters.fromDate}
               toDate={filters.toDate}
               selectedProjects={filters.projectIds}
+              isUserSelected={filters.userIds}
             />
           ) : null}
         </Grid>

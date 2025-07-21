@@ -18,7 +18,7 @@ interface CommonDialogProps extends DialogProps {
   children: React.ReactNode;
   submitLabel?: string;
   cancelLabel?: string;
-  submitColor?: string; // New prop for dynamic color
+  submitColor?: string;
   hideCancelButton?: boolean;
 }
 
@@ -72,7 +72,7 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
       </IconButton>
 
       {/* Header */}
-      <DialogTitle sx={{ background: "#f5f7fa", py: 2, px: 3 }}>{title}</DialogTitle>
+      <DialogTitle sx={{ background: "#f2e9f9", py: 2, px: 2 }}>{title}</DialogTitle>
 
       {/* Content */}
       <DialogContent sx={{ p: 2 }}>{children}</DialogContent>
@@ -88,7 +88,9 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
               textTransform: "none",
               borderRadius: 3,
               px: 3,
-              py: 1.2
+              py: 1.2,
+              height: 40,
+              width: 90
             }}
           >
             {cancelLabel}
@@ -103,6 +105,8 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
               borderRadius: 3,
               px: 3,
               py: 1.2,
+              height: 40,
+              width: 90,
               backgroundColor: submitColor || "#741B92",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
               "&:hover": {

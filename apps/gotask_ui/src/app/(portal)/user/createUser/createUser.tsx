@@ -51,6 +51,10 @@ const CreateUser = () => {
     } else if (!validateEmail(formData.user_id)) {
       newErrors.user_id = transuser("validmail");
     }
+    if (!formData.joined_date) {
+      newErrors.joined_date = transuser("joineddate");
+    }
+
     if (formData.emp_id && !ALPHANUMERIC_REGEX.test(formData.emp_id)) {
       newErrors.emp_id = transuser("empid");
     }

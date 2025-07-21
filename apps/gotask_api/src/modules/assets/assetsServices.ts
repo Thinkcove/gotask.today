@@ -163,59 +163,88 @@ class assetService {
     });
   };
 
-  getAllAssets = async (sortType: string = DESC, sortVar: string = CREATE_AT): Promise<any> => {
+  getAllAssets = async ({
+    sortType = DESC,
+    sortVar = CREATE_AT,
+    page,
+    limit,
+    userId,
+    typeId,
+    systemType,
+    warrantyFrom,
+    warrantyTo,
+    searchText,
+    assetUsage
+  }: {
+    sortType?: string;
+    sortVar?: string;
+    page?: number;
+    limit?: number;
+    userId?: string;
+    typeId?: string;
+    systemType?: string;
+    warrantyFrom?: Date;
+    warrantyTo?: Date;
+    searchText?: string;
+    assetUsage?: string;
+  }) => {
     try {
-      const assets = await getAllAssets();
-      const tagsData = await Promise.all(
-        assets.map(async (tagDoc: IAsset) => {
-          const tag = tagDoc.toObject();
+      let assets: IAsset[] = [];
+      let total = 0;
 
-          const [asset, tagData] = await Promise.all([
-            getAssetTypeById(tag.typeId),
-            getTagsByTypeId(tag.id)
+      if (typeof page === "number" && typeof limit === "number") {
+        const skip = (page - 1) * limit;
+        const result = await getAllAssets(
+          skip,
+          limit,
+          userId,
+          typeId,
+          systemType,
+          warrantyFrom,
+          warrantyTo,
+          searchText,
+          assetUsage
+        );
+        assets = result.assets;
+        total = result.total;
+      } else {
+        const result = await getAllAssets();
+        assets = result.assets;
+        total = result.total;
+      }
+
+      const tagsData = await Promise.all(
+        assets.map(async (assetDoc) => {
+          const asset = assetDoc.toObject();
+          const [typeData, tagDataRaw] = await Promise.all([
+            getAssetTypeById(asset.typeId),
+            getTagsByTypeId(asset.id)
           ]);
 
-          const assetByUsers = (
-            await Promise.all(tagData.map((tag) => getAssetByUserId(tag.userId)))
-          ).flat();
-
-          const accessCards = await Promise.all(
-            assetByUsers.map((asset) => getAssetById(asset.assetId))
+          const tagDataWithUsers = await Promise.all(
+            tagDataRaw.map(async (tag) => ({
+              ...tag.toObject(),
+              user: tag.userId ? await findUser(tag.userId) : null
+            }))
           );
-          const filteredCount = accessCards.filter(
-            (card) => card && !card.accessCardNo?.trim()
-          ).length;
 
           const issuesList = (
             await Promise.all(
-              tagData
+              tagDataRaw
                 .filter((tag) => tag.userId && tag.assetId)
                 .map((tag) => getIssuesByUserId(tag.userId, tag.assetId))
             )
           ).flat();
 
-          const tagDataWithUsers = await Promise.all(
-            (tagData || []).map(async (item: any) => {
-              const tagItem = item.toObject ? item.toObject() : item;
-              let user = null;
-
-              if (tagItem.userId) {
-                user = await findUser(item.userId);
-              }
-
-              return {
-                ...tagItem,
-                user: user || null
-              };
-            })
-          );
+          const assetByUsers = (
+            await Promise.all(tagDataRaw.map((tag) => getAssetByUserId(tag.userId)))
+          ).flat();
 
           return {
-            ...tag,
-            assetType: asset || null,
+            ...asset,
+            assetType: typeData || null,
             tagData: tagDataWithUsers || null,
             issuesCount: issuesList.length || 0,
-            userAssetCount: filteredCount || 0,
             userAsset: assetByUsers || null
           };
         })
@@ -223,7 +252,9 @@ class assetService {
       const sortedData = this.sortData(tagsData, sortVar, sortType);
       return {
         success: true,
-        data: sortedData
+        data: sortedData,
+        total,
+        filtered: sortedData.length
       };
     } catch (error: any) {
       return {

@@ -8,6 +8,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import Tooltip from "@mui/material/Tooltip";
 import LayersIcon from "@mui/icons-material/Layers";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export interface IAssetDisplayRow {
   id?: string;
@@ -26,7 +27,8 @@ export interface IAssetDisplayRow {
 export const getAssetColumns = (
   transasset: (key: string) => string,
   onEdit: (row: IAssetDisplayRow) => void,
-  onView: (row: IAssetDisplayRow) => void
+  onView: (row: IAssetDisplayRow) => void,
+  onDelete: (row: IAssetDisplayRow) => void
 ): Column<IAssetDisplayRow>[] => [
   {
     id: "assetType",
@@ -42,8 +44,13 @@ export const getAssetColumns = (
     render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
   },
   {
+    id: "modelName",
+    label: transasset("assetid"),
+    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
+  },
+  {
     id: "warrantyDate",
-    label: transasset("warrantyDate"),
+    label: transasset("warrantyvalidity"),
     render: (value: string | boolean | undefined) => {
       if (typeof value === "string" && !isNaN(Date.parse(value))) {
         const warrantyDate = new Date(value);
@@ -94,13 +101,8 @@ export const getAssetColumns = (
     }
   },
   {
-    id: "modelName",
-    label: transasset("model"),
-    render: (value: string | boolean | undefined) => (typeof value === "string" ? value : "-")
-  },
-  {
     id: "purchaseDate",
-    label: transasset("purchaseDate"),
+    label: transasset("acquisitiondate"),
     render: (value: string | boolean | undefined) =>
       typeof value === "string" && !isNaN(Date.parse(value)) ? (
         <FormattedDateTime date={value} />
@@ -154,6 +156,9 @@ export const getAssetColumns = (
         <IconButton onClick={() => onView(row)} color="primary" aria-label="view">
           <VisibilityIcon />
         </IconButton>
+        <IconButton onClick={() => onDelete(row)} color="error" aria-label="delete">
+          <DeleteIcon />
+        </IconButton>
       </>
     )
   }
@@ -200,3 +205,16 @@ export const ALLOCATION = ["Overutilized", "Not utilized"];
 export const OVERUTILIZED = "Overutilized";
 
 export const NOT_UTILIZED = "Not utilized";
+
+export const authenticationModesOptions = ["Fingerprint", "Card", "Password", "Face Recognition"];
+
+export const connectivityOptions = ["USB", "TCP/IP", "Wi-Fi"];
+
+export const assetListFilters = "assetListFilters";
+
+export const editstatus = "status";
+export const description = "description";
+export const issueType = "issueType";
+export const assignedTo = "assignedTo";
+export const assetId = "assetId";
+export const reportedBy = "reportedBy";

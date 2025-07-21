@@ -5,7 +5,7 @@ import { IPermissionComment, PermissionComment } from "../../model/permission/pe
 import { SORT_ORDER } from "../../../constants/commonConstants/commonConstants";
 
 export interface FilterQuery {
-  user_id?: string;
+  user_id?: string | string[];
   date?: string;
   from_date?: string;
   to_date?: string;
@@ -19,7 +19,11 @@ const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermis
   const query: any = {};
 
   if (filters.user_id) {
-    query.user_id = filters.user_id;
+    if (Array.isArray(filters.user_id)) {
+      query.user_id = { $in: filters.user_id };
+    } else {
+      query.user_id = filters.user_id;
+    }
   }
 
   if (filters.date) {
@@ -109,26 +113,20 @@ const deleteByPermissionId = async (id: string): Promise<IPermission | null> => 
 };
 
 const createCommentInPermission = async (
-  commentData: IPermissionComment
+  commentData: Omit<IPermissionComment, "id">
 ): Promise<IPermissionComment> => {
-  const { permission_id, user_id, comment, user_name } = commentData;
+  const { permission_id } = commentData;
   const permission = await Permission.findOne({ id: permission_id });
-  if (!permission) throw new Error("Permission not found");
-
-  // Save the full comment in PermissionComment collection
-  const newComment = new PermissionComment({ permission_id, user_id, comment, user_name });
-  await newComment.save();
-
-  // Add only the comment text to the Permission's comments array
-  if (!permission.comments) {
-    permission.comments = [];
+  if (!permission) {
+    throw new Error("Permission not found");
   }
-  permission.comments.unshift(comment); // Store only the comment string
-  await permission.save();
 
-  return newComment;
+  const newComment = new PermissionComment({
+    ...commentData
+  });
+
+  return await newComment.save();
 };
-
 const updateCommentInPermission = async (
   id: string,
   newCommentText: Partial<IPermissionComment>
@@ -166,7 +164,7 @@ const updateCommentInPermission = async (
     const commentIndex = permission.comments.indexOf(existingComment.comment);
     if (commentIndex !== -1 && newCommentText.comment) {
       // Replace the old comment text with the new one
-      permission.comments[commentIndex] = newCommentText.comment;
+      permission.comments = newCommentText.comment;
       await permission.save();
       logger.info(
         `Updated comment in Permission document ${permission.id} at index ${commentIndex}`

@@ -26,7 +26,22 @@ const getWorkPlannedService = async (
   }
 
   pipeline.push({ $match: initialMatch });
+  pipeline.push({
+    $lookup: {
+      from: "users",
+      localField: "user_id",
+      foreignField: "id",
+      as: "user"
+    }
+  });
 
+  pipeline.push({ $unwind: "$user" });
+
+  pipeline.push({
+    $addFields: {
+      user_name: "$user.name"
+    }
+  });
   // Project stage - get required fields
   const projectStage: Record<string, any> = {
     user_id: 1,

@@ -1,5 +1,5 @@
 import env from "@/app/common/env";
-import { postData } from "@/app/common/utils/apiData";
+import { getData, postData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import useSWR from "swr";
 
@@ -34,4 +34,12 @@ export const useUserTimeLogReport = (
     isLoading,
     isError: !!error
   };
+};
+
+export const fetchAllPermissions = async () => {
+  return withAuth(async (token) => {
+    const url = `${env.API_BASE_URL}/getpermission`;
+    const { data } = await getData(url, token);
+    return data || [];
+  });
 };

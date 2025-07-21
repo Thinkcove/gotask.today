@@ -3,6 +3,7 @@ import { API, API_METHODS } from "../../constants/api/apiMethods";
 import RequestHelper from "../../helpers/requestHelper";
 import authStrategy from "../../constants/auth/authStrategy";
 import KpiAssignmentController from "./kpiemployeeController";
+import { KpiAssignmentMessages } from "../../constants/apiMessages/kpiemployeeMessages";
 
 const kpiAssignmentController = new KpiAssignmentController();
 const tags = [API, "KpiAssignment"];
@@ -84,6 +85,61 @@ KpiAssignmentRoutes.push({
   }
 });
 
+// Route: Add Performance to KPI Assignment
+KpiAssignmentRoutes.push({
+  path: "/addPerformance/{assignment_id}",
+  method: API_METHODS.PUT,
+  handler: (request: Request, h: ResponseToolkit) =>
+    kpiAssignmentController.addPerformanceToKpiAssignment(new RequestHelper(request), h),
+  config: {
+    notes: "Add performance entries to a KPI assignment",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    },
+    validate: {
+      params: (params: any) => {
+        if (!params.assignment_id) {
+          throw new Error(KpiAssignmentMessages.CREATE.ASSIGNMENT_ID_REQUIRED);
+        }
+        return params;
+      },
+      payload: (payload: any) => {
+        if (!payload.performance || !Array.isArray(payload.performance)) {
+          throw new Error(KpiAssignmentMessages.CREATE.PERFORMANCE_ID);
+        }
+        if (!payload.authUserId) {
+          throw new Error(KpiAssignmentMessages.CREATE.USER_ID);
+        }
+        return payload;
+      }
+    }
+  }
+});
+
+// Route: Get Performance by performance_id within a specific assignment
+KpiAssignmentRoutes.push({
+  path: "/getPerformance/{performance_id}",
+  method: API_METHODS.GET,
+  handler: (request: Request, h: ResponseToolkit) =>
+    kpiAssignmentController.getPerformanceById(new RequestHelper(request), h),
+  config: {
+    notes: "Get performance entry by performance_id and return assignment as well",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    },
+    validate: {
+      params: (params: any) => {
+        if (!params.performance_id) {
+          throw new Error(KpiAssignmentMessages.CREATE.PERFORMANCE_ID);
+        }
+        return params;
+      }
+    }
+  }
+});
+
 // Route: Delete KPI Assignment
 KpiAssignmentRoutes.push({
   path: "/deleteAssignment/{assignment_id}",
@@ -99,14 +155,28 @@ KpiAssignmentRoutes.push({
   }
 });
 
+// Route: Get Templates by user_id
 KpiAssignmentRoutes.push({
   path: "/getTemplatesByUserId/{user_id}",
   method: API_METHODS.GET,
   handler: (request: Request, h: ResponseToolkit) =>
     kpiAssignmentController.getTemplatesByUserId(new RequestHelper(request), h),
-
   config: {
     notes: "Get all KPI templates associated with a user",
+    tags,
+    auth: {
+      strategy: authStrategy.SIMPLE
+    }
+  }
+});
+
+KpiAssignmentRoutes.push({
+  path: "/performance/{assignment_id}",
+  method: API_METHODS.GET,
+  handler: (request: Request, h: ResponseToolkit) =>
+    kpiAssignmentController.getPerformancesByAssignmentId(new RequestHelper(request), h),
+  config: {
+    notes: "Get all performance entries under a KPI assignment using assignment_id",
     tags,
     auth: {
       strategy: authStrategy.SIMPLE

@@ -4,24 +4,20 @@ import { useState } from "react";
 import { Box, Typography, TextField, Grid, Stack, IconButton, Paper, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import StarIcon from "@mui/icons-material/Star";
 import useSWR from "swr";
 import Autocomplete from "@mui/material/Autocomplete";
 import { ISkill } from "../interfaces/userInterface";
 import { useTranslations } from "next-intl";
-import {
-  createSkill,
-  deleteUserSkill,
-  fetchSkills,
-  updateUserSkill,
-  addUserSkills
-} from "../services/userAction";
+import { createSkill, deleteUserSkill, fetchSkills, addUserSkills } from "../services/userAction";
 import CommonDialog from "@/app/component/dialog/commonDialog";
 import { PROFICIENCY_DESCRIPTIONS } from "@/app/common/constants/skills";
 import env from "@/app/common/env";
-import { PROFICIENCY_MAXIMUM } from "@/app/common/constants/user";
-import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
+import {
+  DEFAULT_PROFICIENCY,
+  MINIMUM_EXPERIENCE_REQUIRED,
+  PROFICIENCY_MAXIMUM
+} from "@/app/common/constants/user";
 
 interface SkillInputProps {
   userId: string;
@@ -35,11 +31,10 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
-  const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
 
   const [tempSkill, setTempSkill] = useState<ISkill>({
     name: "",
-    proficiency: 0,
+    proficiency: DEFAULT_PROFICIENCY,
     experience: undefined
   });
 
@@ -54,30 +49,48 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
   );
 
   const openAddDialog = () => {
-    setTempSkill({ name: "", proficiency: 0 });
-    setCurrentEditIndex(null);
+    setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
     setDialogOpen(true);
   };
 
-  const openEditDialog = (index: number) => {
-    setTempSkill({ ...skills[index] });
-    setCurrentEditIndex(index);
-    setDialogOpen(true);
-  };
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
   const [errorDialogMessage, setErrorDialogMessage] = useState("");
+  const [skillErrors, setSkillErrors] = useState<{ [key: string]: string }>({});
+
+  const validateSkillForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!tempSkill.name.trim()) {
+      newErrors.name = trans("pleaseselectskillfirst");
+    }
+
+    if (!tempSkill.proficiency) {
+      newErrors.proficiency = trans("pleasechooseproficiency");
+    }
+
+    if (
+      tempSkill.proficiency >= PROFICIENCY_MAXIMUM &&
+      (!tempSkill.experience || tempSkill.experience < MINIMUM_EXPERIENCE_REQUIRED)
+    ) {
+      newErrors.experience = trans("pleaseenterexperience");
+    }
+
+    setSkillErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSave = async () => {
+    const isValid = validateSkillForm();
+    if (!isValid) return;
+
     const trimmed = tempSkill.name.trim();
     if (!trimmed || !tempSkill.proficiency) return;
 
     const isDuplicate = skills.some(
-      (skill, idx) =>
-        skill.name.trim().toLowerCase() === trimmed.toLowerCase() && idx !== currentEditIndex
+      (skill) => skill.name.trim().toLowerCase() === trimmed.toLowerCase()
     );
-
     if (isDuplicate) {
-      setErrorDialogMessage(trans("skillalreadyexists"));
+      setErrorDialogMessage(trans("duplicateskills"));
       setErrorDialogOpen(true);
       return;
     }
@@ -90,25 +103,27 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     };
 
     try {
-      if (currentEditIndex !== null) {
-        const existing = updated[currentEditIndex];
-        Object.assign(existing, skillData);
-        if (existing.skill_id) await updateUserSkill(userId, existing.skill_id, existing);
-      } else {
+      const isNewToMaster = !options.some(
+        (option) => option.trim().toLowerCase() === trimmed.toLowerCase()
+      );
+
+      if (isNewToMaster) {
         await createSkill(trimmed);
         await mutate();
-        const added = await addUserSkills(userId, [skillData]);
-        if (added?.length) {
-          updated.unshift({ ...skillData, skill_id: added[0].skill_id });
-        }
+      }
+
+      const added = await addUserSkills(userId, [skillData]);
+
+      if (added?.length) {
+        updated.unshift({ ...skillData, skill_id: added[0].skill_id });
       }
 
       onChange(updated);
       setDialogOpen(false);
-      setTempSkill({ name: "", proficiency: 0 });
-      setCurrentEditIndex(null);
-    } catch (err) {
-      console.error("Save skill failed:", err);
+      setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
+    } catch {
+      setErrorDialogMessage(trans("saveskill"));
+      setErrorDialogOpen(true);
     }
   };
 
@@ -121,15 +136,15 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     setConfirmOpen(false);
     setDeleteIndex(null);
   };
+
   const resetDialogState = () => {
     setDialogOpen(false);
-    setTempSkill({ name: "", proficiency: 0 });
-    setCurrentEditIndex(null);
+    setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
+    setSkillErrors({});
   };
 
   return (
     <Box mt={3}>
-      {/* Add Button */}
       <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
         <Button
           variant="contained"
@@ -140,14 +155,14 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
           {trans("addskill")}
         </Button>
       </Box>
+
       <Box
         sx={{
           maxHeight: 400,
           overflow: "auto",
           borderRadius: 2,
-          px: 2,
-          py: 2,
           scrollBehavior: "smooth",
+          pb: 2,
           "&::-webkit-scrollbar": {
             width: "6px",
             height: "6px"
@@ -161,9 +176,8 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
           }
         }}
       >
-        {/* Skill List */}
         {skills.length === 0 ? (
-          <Paper elevation={1} sx={{ p: 3, textAlign: "center", color: "text.secondary" }}>
+          <Paper elevation={1} sx={{ color: "text.secondary" }}>
             {trans("noskills")}
           </Paper>
         ) : (
@@ -181,39 +195,57 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                   }}
                 >
                   <Box display="flex" gap={2}>
-                    <Box
-                      sx={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: 1,
-                        backgroundColor: "#f0f0f0",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 24
-                      }}
-                    >
-                      <WorkspacePremiumIcon fontSize="inherit" sx={{ color: "#741B92" }} />
-                    </Box>
-
                     <Box>
-                      <Typography fontSize={14} fontWeight={600}>
-                        {skill.name}
-                      </Typography>
+                      <Box
+                        sx={{
+                          display: {
+                            xs: "block",
+                            sm: "none"
+                          }
+                        }}
+                      >
+                        <Typography
+                          fontSize={14}
+                          fontWeight={600}
+                          sx={{
+                            whiteSpace: "normal",
+                            wordBreak: "break-word"
+                          }}
+                        >
+                          {skill.name}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: {
+                            xs: "none",
+                            sm: "block"
+                          }
+                        }}
+                      >
+                        <Typography
+                          fontSize={14}
+                          fontWeight={600}
+                          sx={{
+                            wordBreak: "break-word"
+                          }}
+                        >
+                          {skill.name}
+                        </Typography>
+                      </Box>
+
                       <Typography fontSize={12} color="text.secondary">
                         {trans("proficiency")}: {PROFICIENCY_DESCRIPTIONS[skill.proficiency]}
                       </Typography>
-                      {skill.experience && skill.proficiency >= 3 && (
+                      {skill.experience && skill.proficiency >= PROFICIENCY_MAXIMUM && (
                         <Typography fontSize={12} color="text.secondary">
-                          {trans("experience")}: {skill.experience} {trans("months")}
+                          {trans("experienceview")}: {skill.experience} {trans("months")}
                         </Typography>
                       )}
                     </Box>
                   </Box>
                   <Box>
-                    <IconButton onClick={() => openEditDialog(index)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
                     <IconButton
                       onClick={() => {
                         setDeleteIndex(index);
@@ -229,13 +261,12 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
           </Grid>
         )}
       </Box>
-      {/* Dialogs (Add/Edit & Delete) */}
 
       <CommonDialog
         open={dialogOpen}
         onClose={resetDialogState}
         onSubmit={handleSave}
-        title={currentEditIndex !== null ? trans("editskill") : trans("addskill")}
+        title={trans("addskill")}
         submitLabel={trans("save")}
         cancelLabel={trans("cancel")}
       >
@@ -267,39 +298,62 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 const input = state.inputValue.trim().toLowerCase();
                 const filtered = opts.filter((opt) => opt.toLowerCase().includes(input));
                 const isExisting = opts.some((opt) => opt.toLowerCase() === input);
-                if (input !== "" && !isExisting) {
-                  filtered.push(`__add__${state.inputValue}`);
-                }
+                if (input !== "" && !isExisting) filtered.push(`__add__${state.inputValue}`);
                 return filtered;
               }}
               options={availableOptions}
               inputValue={tempSkill.name}
-              onInputChange={(_, newInput, reason) => {
-                if (reason === "input" || reason === "clear") {
-                  const cleaned = newInput.startsWith("__add__")
-                    ? newInput.replace("__add__", "")
-                    : newInput;
-                  setTempSkill({ ...tempSkill, name: cleaned });
-                }
+              onInputChange={(_, newInput) => {
+                const cleaned = newInput.startsWith("__add__")
+                  ? newInput.replace("__add__", "")
+                  : newInput;
+                setTempSkill({ ...tempSkill, name: cleaned });
+                setSkillErrors((prev) => ({ ...prev, name: "" }));
               }}
               onChange={(_, newValue) => {
-                if (!newValue) return;
-
                 const name =
                   typeof newValue === "string" && newValue.startsWith("__add__")
                     ? newValue.replace("__add__", "")
                     : newValue;
 
-                setTempSkill({ ...tempSkill, name });
+                if (!name) return;
+
+                const trimmed = name.trim().toLowerCase();
+
+                const alreadyAdded = skills.some(
+                  (skill) => skill.name.trim().toLowerCase() === trimmed
+                );
+
+                if (alreadyAdded) {
+                  setErrorDialogMessage(trans("duplicateskills"));
+                  setErrorDialogOpen(true);
+                  return;
+                }
+
+                const isAddOption = typeof newValue === "string" && newValue.startsWith("__add__");
+
+                if (isAddOption) {
+                  setTempSkill({ name: name.trim(), proficiency: DEFAULT_PROFICIENCY });
+                  setDialogOpen(true);
+                } else {
+                  setTempSkill({ ...tempSkill, name: name.trim() });
+                }
+
+                setSkillErrors((prev) => ({ ...prev, name: "" }));
               }}
               renderInput={(params) => (
-                <TextField {...params} placeholder={trans("selectskill")} fullWidth />
+                <TextField
+                  {...params}
+                  placeholder={trans("selectskill")}
+                  fullWidth
+                  error={!!skillErrors.name}
+                  helperText={skillErrors.name}
+                />
               )}
               renderOption={(props, option) => {
                 const isAddOption = typeof option === "string" && option.startsWith("__add__");
                 const skillName = isAddOption ? option.replace("__add__", "") : option;
                 const { key, ...rest } = props;
-
                 return (
                   <li key={key} {...rest}>
                     {isAddOption ? (
@@ -340,7 +394,17 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                     key={level}
                     display="flex"
                     alignItems="center"
-                    onClick={() => setTempSkill({ ...tempSkill, proficiency: level })}
+                    onClick={() => {
+                      if (!tempSkill.name.trim()) {
+                        setSkillErrors((prev) => ({
+                          ...prev,
+                          name: trans("pleaseselectskillfirst")
+                        }));
+                        return;
+                      }
+                      setTempSkill({ ...tempSkill, proficiency: level });
+                      setSkillErrors((prev) => ({ ...prev, proficiency: "" }));
+                    }}
                     sx={{
                       cursor: "pointer",
                       px: 1,
@@ -357,6 +421,11 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 );
               })}
             </Stack>
+            {skillErrors.proficiency && (
+              <Typography color="error" fontSize={12} mt={0.5}>
+                {skillErrors.proficiency}
+              </Typography>
+            )}
           </Grid>
 
           {tempSkill.proficiency >= PROFICIENCY_MAXIMUM && (
@@ -388,6 +457,8 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
                 }
                 fullWidth
                 inputProps={{ min: 1 }}
+                error={!!skillErrors.experience}
+                helperText={skillErrors.experience}
               />
             </Grid>
           )}
@@ -401,8 +472,17 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         title={transInc("confirmdelete")}
         submitLabel={transInc("delete")}
         cancelLabel={transInc("cancel")}
+        submitColor="#b71c1c"
       >
-        <Typography>{transInc("deleteincrement")}</Typography>
+        <Typography
+          fontSize={14}
+          sx={{
+            whiteSpace: "normal",
+            wordBreak: "break-word"
+          }}
+        >
+          {trans("deleteskill", { skill: `"${skills[deleteIndex!]?.name || ""}"` })}
+        </Typography>
       </CommonDialog>
 
       <CommonDialog
@@ -417,4 +497,5 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     </Box>
   );
 };
+
 export default SkillInput;

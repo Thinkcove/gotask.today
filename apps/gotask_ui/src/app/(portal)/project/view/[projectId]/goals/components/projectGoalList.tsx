@@ -1,6 +1,7 @@
+"use client";
 import React, { useState } from "react";
 import useSWR from "swr";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, IconButton } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -15,6 +16,8 @@ import { fetchWeeklyGoals } from "../goalservices/projectGoalAction";
 import { GoalData } from "../interface/projectGoal";
 import ProjectGoals from "./projectGoals";
 import GoalFilterBar from "./goalFilterBar";
+import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
+import { ArrowBack } from "@mui/icons-material";
 
 function ProjectGoalList() {
   const transGoal = useTranslations(LOCALIZATION.TRANSITION.PROJECTGOAL);
@@ -23,7 +26,6 @@ function ProjectGoalList() {
 
   const projectID = projectId as string;
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -37,10 +39,35 @@ function ProjectGoalList() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [allGoals, setAllGoals] = useState<GoalData[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [severityFilter, setSeverityFilter] = useState<string[]>([]);
 
-  // Create a unique SWR key that includes projectID
+  const savedFilters = getStoredObj("projectGoalListFilter") || {};
+
+  const [searchTerm, setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
+  const [statusFilter, setStatusFilter] = useState<string[]>(savedFilters.statusFilter || []);
+  const [severityFilter, setSeverityFilter] = useState<string[]>(savedFilters.severityFilter || []);
+
+  const saveFilters = (filters: {
+    searchTerm?: string;
+    statusFilter?: string[];
+    severityFilter?: string[];
+  }) => {
+    setStorage("projectGoalListFilter", {
+      searchTerm: filters.searchTerm ?? searchTerm,
+      statusFilter: filters.statusFilter ?? statusFilter,
+      severityFilter: filters.severityFilter ?? severityFilter
+    });
+  };
+
+  const handleStatusFilterChange = (val: string[]) => {
+    setStatusFilter(val);
+    saveFilters({ statusFilter: val });
+  };
+
+  const handleSeverityFilterChange = (val: string[]) => {
+    setSeverityFilter(val);
+    saveFilters({ severityFilter: val });
+  };
+
   const swrKey = `weekly-goals-${projectID}-${page}-${statusFilter.join(",")}-${severityFilter.join(",")}-${searchTerm}`;
 
   const { isLoading, error } = useSWR(
@@ -61,24 +88,17 @@ function ProjectGoalList() {
           setHasMore(false);
         }
 
-        // Reset goals when it's the first page or filters changed
         if (page === 1) {
           setAllGoals(res?.goals || []);
         } else {
-          // Append new goals for pagination
-          setAllGoals((prev) => {
-            const existingIds = new Set(prev.map((goal) => goal.id));
-            const newGoals = (res?.goals || []).filter(
-              (goal: GoalData) => !existingIds.has(goal.id)
-            );
-            return [...prev, ...newGoals];
-          });
+          const existingIds = new Set(allGoals.map((goal) => goal.id));
+          const newGoals = (res?.goals || []).filter((goal: GoalData) => !existingIds.has(goal.id));
+          setAllGoals((prev) => [...prev, ...newGoals]);
         }
       }
     }
   );
 
-  // Navigation handlers
   const handleCreateGoal = () => {
     router.push(`/project/view/${projectID}/goals/createGoal`);
   };
@@ -87,7 +107,6 @@ function ProjectGoalList() {
     setTimeout(() => router.back(), 200);
   };
 
-  // Updated view handler to use router navigation
   const handleProjectGoalView = (goalId: string) => {
     if (!goalId) {
       console.error("Goal ID is missing");
@@ -96,32 +115,37 @@ function ProjectGoalList() {
     router.push(`/project/view/${projectID}/goals/view/${goalId}`);
   };
 
-  // Filter handlers
   const onStatusChange = (selected: string[]) => {
-    setStatusFilter(selected);
+    handleStatusFilterChange(selected);
     setPage(1);
   };
 
   const onSeverityChange = (selected: string[]) => {
-    setSeverityFilter(selected);
+    handleSeverityFilterChange(selected);
+    setPage(1);
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    saveFilters({ searchTerm: value });
     setPage(1);
   };
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-
     if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
       setPage((prev) => prev + 1);
     }
   };
+
   const onClearFilters = () => {
     setStatusFilter([]);
     setSeverityFilter([]);
     setSearchTerm("");
     setPage(1);
+    removeStorage("projectGoalListFilter");
   };
 
-  // Filter goals based on search and filters (client-side filtering as backup)
   const filteredGoals = allGoals?.filter((goal) => {
     const matchesSearchTerm =
       goal.goalTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -147,56 +171,69 @@ function ProjectGoalList() {
     );
   }
 
-  return (
-    <Box sx={{ pt: 2 }}>
-      <GoalFilterBar
-        searchTerm={searchTerm}
-        onSearchChange={(value) => {
-          setSearchTerm(value);
-          setPage(1);
-        }}
-        onBack={handleGoBack}
-        statusFilter={statusFilter}
-        severityFilter={severityFilter}
-        onStatusChange={onStatusChange}
-        onSeverityChange={onSeverityChange}
-        onClearFilters={onClearFilters}
-        statusOptions={Object.values(statusOptions)}
-        priorityOptions={Object.values(priorityOptions)}
-        showClear={statusFilter.length > 0 || severityFilter.length > 0 || searchTerm !== ""}
-        clearText={transGoal("clearall")}
-        searchPlaceholder={transGoal("searchplaceholder")}
-        filterpriority={transGoal("filterpriority")}
-        filterstatus={transGoal("filterstatus")}
-      />
+  const noGoalsAtAll = allGoals.filter((goal) => goal.projectId === projectID).length === 0;
+  const noFilteredResults = filteredGoals?.length === 0;
+  const isFilterActive =
+    statusFilter.length > 0 || severityFilter.length > 0 || searchTerm.trim() !== "";
 
-      {filteredGoals?.length === 0 ? (
-        <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
+  return (
+    <Box>
+      {noGoalsAtAll && !isFilterActive ? (
+        <>
+          <Box sx={{ pl: 2, pt: 2 }}>
+            <IconButton color="primary" onClick={handleGoBack}>
+              <ArrowBack />
+            </IconButton>
+          </Box>
+          <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
+        </>
       ) : (
-        <ProjectGoals
-          projectGoals={filteredGoals}
-          isLoading={isLoading}
-          error={!!error}
-          formatStatus={formatStatus}
-          projectId={projectID}
-          projectGoalView={handleProjectGoalView}
-          handleScroll={handleScroll}
-        />
+        <>
+          <GoalFilterBar
+            searchTerm={searchTerm}
+            onSearchChange={handleSearch}
+            onBack={handleGoBack}
+            statusFilter={statusFilter}
+            severityFilter={severityFilter}
+            onStatusChange={onStatusChange}
+            onSeverityChange={onSeverityChange}
+            onClearFilters={onClearFilters}
+            statusOptions={Object.values(statusOptions)}
+            priorityOptions={Object.values(priorityOptions)}
+            showClear={isFilterActive}
+            clearText={transGoal("clearall")}
+            searchPlaceholder={transGoal("searchplaceholder")}
+            filterpriority={transGoal("filterpriority")}
+            filterstatus={transGoal("filterstatus")}
+          />
+
+          {noFilteredResults ? (
+            <EmptyState imageSrc={NoAssetsImage} message={transGoal("nodatafound")} />
+          ) : (
+            <ProjectGoals
+              projectGoals={filteredGoals}
+              isLoading={isLoading}
+              error={!!error}
+              formatStatus={formatStatus}
+              projectId={projectID}
+              projectGoalView={handleProjectGoalView}
+              handleScroll={handleScroll}
+            />
+          )}
+        </>
       )}
 
-      {/* Snackbar */}
+      <ActionButton
+        label={transGoal("creategoal")}
+        icon={<AddIcon sx={{ color: "white" }} />}
+        onClick={handleCreateGoal}
+      />
+
       <CustomSnackbar
         open={snackbar.open}
         message={snackbar.message}
         severity={snackbar.severity}
         onClose={handleSnackbarClose}
-      />
-
-      {/* Floating Action Button */}
-      <ActionButton
-        label={transGoal("creategoal")}
-        icon={<AddIcon sx={{ color: "white" }} />}
-        onClick={handleCreateGoal}
       />
     </Box>
   );

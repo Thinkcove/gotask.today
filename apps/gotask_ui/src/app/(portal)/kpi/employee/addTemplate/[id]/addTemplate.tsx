@@ -1,21 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Grid, Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import FormField from "@/app/component/input/formField";
-import { KPI_FREQUENCY, STATUS_OPTIONS } from "@/app/common/constants/kpi";
-import { createKpiAssignment } from "../../../service/templateAction";
+import { STATUS_OPTIONS } from "@/app/common/constants/kpi";
+import { createKpiAssignment, createTemplate } from "../../../service/templateAction";
 import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import { User, useUser } from "@/app/userContext";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AlphabetAvatar from "@/app/component/avatar/alphabetAvatar";
-import { Template } from "../../../service/templateInterface";
+import { Template, KpiAssignment } from "../../../service/templateInterface";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import CommonDialog from "@/app/component/dialog/commonDialog";
+import FormField from "@/app/component/input/formField";
+import KpiFormFields from "./assignmentInput";
 
 interface AddTemplateProps {
   templates: Template[];
@@ -30,17 +31,18 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
   const { data: users = [] } = useSWR("fetch-users", fetcherUserList);
   const { user: loginUser } = useUser();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<Partial<KpiAssignment> & { actual_value?: string | number }>({
     template_id: "",
-    title: "",
+    kpi_Title: "",
+    kpi_Description: "",
+    measurement_criteria: "",
     frequency: "",
-    weightage: 0,
-    target_Value: 0,
+    weightage: "",
+    target_value: "",
     comments: "",
-    status: "",
-    assigned_by: loginUser?.name || "",
-    reviewer_id: "",
-    saveAs_Template: false
+    status: STATUS_OPTIONS.ACTIVE,
+    assigned_by: loginUser?.id || "",
+    reviewer_id: ""
   });
 
   const [openDialog, setOpenDialog] = useState(false);
@@ -56,9 +58,11 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
       setForm((prev) => ({
         ...prev,
         template_id: template.id,
-        title: template.title || "",
+        kpi_Title: template.title || "",
+        kpi_Description: template.kpi_Description || template.description || "",
         frequency: template.frequency || "",
-        weightage: template.measurement_criteria || 0,
+        measurement_criteria: template.measurement_criteria || "",
+        weightage: template.measurement_criteria || "",
         comments: template.comments || "",
         status: template.status || ""
       }));
@@ -68,12 +72,13 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!form.title) newErrors.title = transkpi("titleerror");
+    if (!form.kpi_Title) newErrors.kpi_Title = transkpi("titleerror");
     if (!form.frequency) newErrors.frequency = transkpi("frequencyerror");
     if (!form.status) newErrors.status = transkpi("statuserror");
     if (!form.weightage) newErrors.weightage = transkpi("weightageerror");
     if (!form.assigned_by) newErrors.assigned_by = transkpi("assignedbyerror");
-    if (!form.target_Value) newErrors.target_Value = transkpi("targetvalue");
+    if (!form.target_value) newErrors.target_value = transkpi("targetvalueerror");
+    if (!form.kpi_Description) newErrors.kpi_Description = transkpi("descriptionerror");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -81,13 +86,21 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
   const handleSubmit = async () => {
     if (!validateForm()) return;
     try {
+      const assignedByUser = users.find((u: User) => u.name === form.assigned_by);
+      const reviewerUser = users.find((u: User) => u.name === form.reviewer_id);
       const payload = {
         user_id: userId,
-        ...form,
-        measurement_criteria: String(form.weightage),
-        ...(form.template_id ? { template_id: form.template_id } : { kpi_Title: form.title }),
-        assigned_by: users.find((u: User) => u.name === form.assigned_by)?.id,
-        reviewer_id: users.find((u: User) => u.name === form.reviewer_id)?.id || undefined
+        template_id: form.template_id,
+        kpi_Title: form.kpi_Title,
+        kpi_Description: form.kpi_Description?.trim(),
+        frequency: form.frequency || "",
+        measurement_criteria: form.weightage || "",
+        weightage: form.weightage || "",
+        target_value: form.target_value || "",
+        comments: Array.isArray(form.comments) ? form.comments : [form.comments || ""],
+        status: form.status || STATUS_OPTIONS.ACTIVE,
+        assigned_by: assignedByUser?.id || loginUser?.id || "",
+        reviewer_id: reviewerUser?.id || undefined
       };
       await createKpiAssignment(payload);
       setSnackbarMessage(transkpi("assignsuccess"));
@@ -95,141 +108,145 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
       setSnackbarOpen(true);
       mutate();
       router.push(`/kpi/employee/view/${userId}`);
-    } catch (err: any) {
-      setSnackbarMessage(err.message || transkpi("assignfailed"));
+    } catch (err) {
+      console.error("Failed to assign template:", err);
+      setSnackbarMessage(transkpi("assignfailed"));
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
 
+  const handleSaveAsTemplate = async () => {
+    if (!validateForm()) return;
+    try {
+      const payload: Partial<Template> = {
+        title: form.kpi_Title,
+        description: form.kpi_Description?.trim(),
+        frequency: form.frequency || "",
+        measurement_criteria: form.weightage || "",
+        comments: Array.isArray(form.comments) ? form.comments[0] || "" : form.comments || "",
+        status: form.status,
+        kpi_Title: form.kpi_Title,
+        target_value: form.target_value,
+        reviewer_id: form.reviewer_id,
+        assigned_by: form.assigned_by
+      };
+
+      await createTemplate(payload);
+      setSnackbarMessage(transkpi("templatesavesuccess"));
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (err) {
+      console.error("Failed to save the template:", err);
+      setSnackbarMessage(transkpi("saveerror"));
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleChange = (
+    key: keyof Omit<KpiAssignment, "assignment_id" | "user_id" | "change_History">,
+    value: any
+  ) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    if (errors[key]) {
+      setErrors((prev) => ({ ...prev, [key]: "" }));
+    }
+  };
+
   return (
-    <Box sx={{ p: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Box display="flex" alignItems="center" gap={2}>
-          <ArrowBackIcon
-            sx={{ cursor: "pointer", color: "#741B92" }}
-            onClick={() => history.back()}
-          />
-          <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
-          <Box>
-            <Typography variant="h6">{user.name}</Typography>
-            {user.role?.name && (
-              <Typography variant="body2" color="textSecondary">
-                {user.role.name}
-              </Typography>
-            )}
+    <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Sticky Header */}
+      <Box
+        sx={{
+          px: 4,
+          py: 2,
+          position: "sticky",
+          top: 0,
+          zIndex: 100
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box display="flex" alignItems="center" gap={2}>
+            <ArrowBackIcon
+              sx={{ cursor: "pointer", color: "#741B92" }}
+              onClick={() => router.back()}
+            />
+            <AlphabetAvatar userName={user.name} size={48} fontSize={18} />
+            <Box>
+              <Typography variant="h6">{user.name}</Typography>
+              {user.role?.name && (
+                <Typography variant="body2" color="textSecondary">
+                  {user.role.name}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+          <Box display="flex" gap={2}>
+            <Button variant="outlined" onClick={() => setOpenDialog(true)}>
+              {transkpi("assigntemplate")}
+            </Button>
           </Box>
         </Box>
-        <Box display="flex" gap={2}>
-          <Button variant="outlined" onClick={() => setOpenDialog(true)}>
-            {transkpi("assigntemplate")}
+      </Box>
+
+      {/* Scrollable Form Content */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          px: 4,
+          py: 2,
+          pb: 16
+        }}
+      >
+        <KpiFormFields
+          form={form}
+          errors={errors}
+          users={users}
+          handleChange={handleChange}
+          showReviewerField={true}
+          userId={userId}
+        />
+      </Box>
+
+      {/* Fixed Footer Buttons */}
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          backgroundColor: "#fff",
+          borderTop: "1px solid #ddd",
+          px: 4,
+          py: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          zIndex: 200,
+          flexWrap: "wrap"
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSaveAsTemplate}
+          disabled={Boolean(selectedTemplateId)}
+        >
+          {transkpi("saveastemplate")}
+        </Button>
+
+        <Box display="flex" gap={2} mt={{ xs: 2, sm: 0 }}>
+          <Button variant="outlined" onClick={() => router.back()}>
+            {transkpi("cancel")}
           </Button>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#741B92" }}
-            onClick={() => router.push("/kpi/template/createTemplate")}
-          >
-            {transkpi("createnewtemplate")}
+          <Button variant="contained" sx={{ backgroundColor: "#741B92" }} onClick={handleSubmit}>
+            {transkpi("assign")}
           </Button>
         </Box>
       </Box>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("title")} ${transkpi("required")}`}
-            placeholder={transkpi("entertitle")}
-            type="text"
-            value={form.title}
-            onChange={(val) => setForm({ ...form, title: String(val) })}
-            error={errors.title}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("frequency")} ${transkpi("required")}`}
-            placeholder={transkpi("enterfrequency")}
-            type="select"
-            options={Object.values(KPI_FREQUENCY)}
-            value={form.frequency}
-            onChange={(val) => setForm({ ...form, frequency: String(val) })}
-            error={errors.frequency}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("weightage")} ${transkpi("required")}`}
-            placeholder={transkpi("enterweightage")}
-            type="number"
-            value={form.weightage}
-            onChange={(val) => setForm({ ...form, weightage: +val })}
-            error={errors.weightage}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("targetvalue")} ${transkpi("required")}`}
-            placeholder={transkpi("entertargetvalue")}
-            type="number"
-            value={form.target_Value}
-            onChange={(val) => setForm({ ...form, target_Value: +val })}
-            error={errors.target_Value}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("assignedby")} ${transkpi("required")}`}
-            type="select"
-            options={users.map((u: User) => ({ id: u.name, name: u.name }))}
-            value={form.assigned_by}
-            onChange={(val) => setForm({ ...form, assigned_by: String(val) })}
-            error={errors.assigned_by}
-            disabled
-          />
-        </Grid>
-        {userId === form.assigned_by && (
-          <Grid item xs={12} md={4}>
-            <FormField
-              label={transkpi("reviewerid")}
-              type="select"
-              options={users.map((u: User) => ({ id: u.name, name: u.name }))}
-              value={form.reviewer_id}
-              onChange={(val) => setForm({ ...form, reviewer_id: String(val) })}
-            />
-          </Grid>
-        )}
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={`${transkpi("status")} ${transkpi("required")}`}
-            placeholder={transkpi("enterstatus")}
-            type="select"
-            options={Object.values(STATUS_OPTIONS)}
-            value={form.status}
-            onChange={(val) => setForm({ ...form, status: String(val) })}
-            error={errors.status}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormField
-            label={transkpi("comments")}
-            placeholder={transkpi("entercomments")}
-            type="text"
-            value={form.comments}
-            onChange={(val) => setForm({ ...form, comments: String(val) })}
-          />
-        </Grid>
-      </Grid>
-
-      <Box display="flex" justifyContent="flex-end" gap={2} mt={4}>
-        <Button variant="outlined" onClick={() => router.back()}>
-          {transkpi("cancel")}
-        </Button>
-        <Button variant="contained" sx={{ backgroundColor: "#741B92" }} onClick={handleSubmit}>
-          {transkpi("assign")}
-        </Button>
-      </Box>
-
-      {/*  CommonDialog Integration */}
+      {/* Dialog */}
       <CommonDialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
@@ -252,6 +269,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ templates, userId, mutate, us
         />
       </CommonDialog>
 
+      {/* Snackbar */}
       <CustomSnackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}

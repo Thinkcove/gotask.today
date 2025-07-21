@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Grid, CircularProgress, Box } from "@mui/material";
+import { Typography, Grid, CircularProgress, Box, Tooltip } from "@mui/material";
 import { ArrowForward, Group } from "@mui/icons-material";
 import { getStatusColor } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
@@ -54,12 +54,22 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
           return (
             <Grid item xs={12} sm={6} md={3} key={project.id}>
               <CardComponent>
-                <Box
-                  sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-                >
-                  <Typography variant="h6" fontWeight={600} sx={{ textTransform: "capitalize" }}>
-                    {filteredProject.name}
-                  </Typography>
+                <Box>
+                  <Tooltip title={filteredProject.name} placement="bottom-start" arrow>
+                    <Typography
+                      variant="h6"
+                      fontWeight={600}
+                      sx={{
+                        textTransform: "capitalize",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: "100%"
+                      }}
+                    >
+                      {filteredProject.name}
+                    </Typography>
+                  </Tooltip>
                 </Box>
 
                 <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
@@ -68,7 +78,9 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                     {filteredProject.users?.length ? (
                       filteredProject.users
                         .slice(0, 3)
-                        .map((user, index) => <AlphabetAvatar userName={user.name} key={index} />)
+                        .map((user, index) => (
+                          <AlphabetAvatar userName={user.name} key={index} showTooltip={true} />
+                        ))
                     ) : (
                       <Typography variant="body2" color="text.secondary">
                         {transproject("nouser")}

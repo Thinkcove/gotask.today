@@ -2,10 +2,9 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import useSWRInfinite from "swr/infinite";
-import { Box, Typography, CircularProgress, Grid, IconButton, Fab } from "@mui/material";
+import { Box, Typography, CircularProgress, Grid, Fab, IconButton } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowBack, Add as AddIcon } from "@mui/icons-material";
-
+import { Add as AddIcon, ArrowBack } from "@mui/icons-material";
 import { getStoriesByProject } from "../services/projectStoryActions";
 import { ProjectStory, PaginatedStoryResponse } from "../interfaces/projectStory";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -14,8 +13,10 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import StoryCard from "../components/StoryCard";
 import StoryFilters from "../components/StoryFilters";
+import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
+import { DEFAULT_STORY_PAGE_SIZE } from "@/app/common/constants/project";
 
-const limit = 12;
+const limit = DEFAULT_STORY_PAGE_SIZE;
 
 interface StoryListProps {
   onProjectNameLoad?: (name: string) => void;
@@ -26,13 +27,44 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
   const router = useRouter();
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  const [status, setStatus] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const savedFilters = getStoredObj("storyListFilters") || {};
+  const [status, setStatus] = useState<string[]>(savedFilters.status || []);
+  const [startDate, setStartDate] = useState<string>(savedFilters.startDate || "");
+  const [searchTerm, setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
 
-  const hasSentProjectNameRef = useRef(false); // Track whether projectName has been sent to parent
+  const saveFilters = (filters: { status?: string[]; startDate?: string; searchTerm?: string }) => {
+    setStorage("storyListFilters", {
+      status: filters.status ?? status,
+      startDate: filters.startDate ?? startDate,
+      searchTerm: filters.searchTerm ?? searchTerm
+    });
+  };
 
-  const getKey = (pageIndex: number, previousPageData: any) => {
+  const handleStatusChange = (val: string[]) => {
+    setStatus(val);
+    saveFilters({ status: val });
+  };
+
+  const handleStartDateChange = (val: string) => {
+    setStartDate(val);
+    saveFilters({ startDate: val });
+  };
+
+  const handleSearchTermChange = (val: string) => {
+    setSearchTerm(val);
+    saveFilters({ searchTerm: val });
+  };
+
+  const clearFilters = () => {
+    setStatus([]);
+    setStartDate("");
+    setSearchTerm("");
+    removeStorage("storyListFilters");
+  };
+
+  const hasSentProjectNameRef = useRef(false);
+
+  const getKey = (pageIndex: number, previousPageData?: PaginatedStoryResponse | null) => {
     if (previousPageData && "data" in previousPageData && !previousPageData.data.length)
       return null;
     return `stories-${projectId}-${status.join(",")}-${startDate}-${searchTerm}-page-${pageIndex + 1}`;
@@ -48,7 +80,6 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
       limit
     });
 
-    // Send projectName to parent once (not inside render)
     if (
       !hasSentProjectNameRef.current &&
       "meta" in result &&
@@ -88,101 +119,110 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
 
       observerRef.current.observe(node);
     },
-    [isLoading, isValidating, hasMore]
+    [isLoading, isValidating, hasMore, setSize]
   );
+
+  const applyStatusFilter = (val: string[]) => {
+    handleStatusChange(val);
+    setSize(1);
+  };
+
+  const applyStartDateFilter = (val: string) => {
+    handleStartDateChange(val);
+    setSize(1);
+  };
+
+  const applySearchTermFilter = (val: string) => {
+    handleSearchTermChange(val);
+    setSize(1);
+  };
+
+  const resetAllFilters = () => {
+    clearFilters();
+    setSize(1);
+  };
 
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
-      {/* Back Button */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: 26,
-          left: 20,
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          flexWrap: "wrap"
-        }}
-      >
-        <IconButton
-          onClick={() => router.push(`/project/view/${projectId}`)}
-          color="primary"
-          size="small"
-        >
-          <ArrowBack />
-        </IconButton>
-      </Box>
-
-      {/* Filters */}
-      <StoryFilters
-        status={status}
-        startDate={startDate}
-        searchTerm={searchTerm}
-        onStatusChange={(val) => {
-          setStatus(val);
-          setSize(1);
-        }}
-        onStartDateChange={(val) => {
-          setStartDate(val);
-          setSize(1);
-        }}
-        onSearchChange={(val) => {
-          setSearchTerm(val);
-          setSize(1);
-        }}
-        onClearFilters={() => {
-          setStatus([]);
-          setStartDate("");
-          setSearchTerm("");
-          setSize(1);
-        }}
-      />
-
-      {/* Story List */}
-      <Box sx={{ px: 2, pt: 2 }}>
-        {isLoading && size === 1 ? (
-          <Box display="flex" justifyContent="center" mt={5}>
-            <CircularProgress />
+      {allStories.length === 0 && !status.length && !startDate && !searchTerm ? (
+        <>
+          <Box sx={{ pl: 2, pt: 2 }}>
+            <IconButton color="primary" onClick={() => router.push(`/project/view/${projectId}`)}>
+              <ArrowBack />
+            </IconButton>
           </Box>
-        ) : error ? (
-          <Typography color="error" textAlign="center">
-            {t("Stories.fetchError")}
-          </Typography>
-        ) : allStories.length === 0 ? (
+
           <EmptyState imageSrc={NoSearchResultsImage} message={t("Stories.noStoriesFound")} />
-        ) : (
-          <Grid container spacing={2}>
-            {allStories.map((story, index) => (
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
-                lg={3}
-                key={story.id}
-                ref={index === allStories.length - 1 ? lastStoryRef : null}
-              >
-                <StoryCard story={story} />
-              </Grid>
-            ))}
-          </Grid>
-        )}
-        {isValidating && hasMore && (
-          <Box display="flex" justifyContent="center" mt={3}>
-            <CircularProgress />
-          </Box>
-        )}
-      </Box>
 
-      {/* Add Story FAB */}
-      <Fab
-        color="primary"
-        onClick={() => router.push(`/project/view/${projectId}/stories/create`)}
-        sx={{ position: "fixed", bottom: 35, right: 35, zIndex: 1000 }}
-      >
-        <AddIcon />
-      </Fab>
+          <Fab
+            color="primary"
+            onClick={() => router.push(`/project/view/${projectId}/stories/create`)}
+            sx={{ position: "fixed", bottom: 35, right: 35, zIndex: 1000 }}
+          >
+            <AddIcon />
+          </Fab>
+        </>
+      ) : (
+        <>
+          {/* Filters */}
+          <StoryFilters
+            status={status}
+            startDate={startDate}
+            searchTerm={searchTerm}
+            onStatusChange={applyStatusFilter}
+            onStartDateChange={applyStartDateFilter}
+            onSearchChange={applySearchTermFilter}
+            onClearFilters={resetAllFilters}
+            onBack={() => router.push(`/project/view/${projectId}`)}
+          />
+
+          {/* Story List */}
+          <Box sx={{ px: 2, pt: 3 }}>
+            {isLoading && size === 1 ? (
+              <Box display="flex" justifyContent="center" mt={5}>
+                <CircularProgress />
+              </Box>
+            ) : error ? (
+              <Typography color="error" textAlign="center">
+                {t("Stories.fetchError")}
+              </Typography>
+            ) : allStories.length === 0 ? (
+              <EmptyState imageSrc={NoSearchResultsImage} message={t("Stories.noStoriesFound")} />
+            ) : (
+              <Grid container spacing={2}>
+                {allStories.map((story, index) => (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                    key={story.id}
+                    ref={index === allStories.length - 1 ? lastStoryRef : null}
+                  >
+                    <StoryCard story={story} />
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+
+            {isValidating && hasMore && (
+              <Box display="flex" justifyContent="center" mt={3}>
+                <CircularProgress />
+              </Box>
+            )}
+          </Box>
+
+          {/* Add Story FAB */}
+          <Fab
+            color="primary"
+            onClick={() => router.push(`/project/view/${projectId}/stories/create`)}
+            sx={{ position: "fixed", bottom: 35, right: 35, zIndex: 1000 }}
+          >
+            <AddIcon />
+          </Fab>
+        </>
+      )}
     </Box>
   );
 };

@@ -1,13 +1,14 @@
 import { PAGE, SORT_ORDER } from "../../constants/commonConstants/commonConstants";
+import { getStartAndEndOfDay } from "../../constants/utils/date";
 import {
   createNewLeave,
   findAllLeaves,
   findLeaveById,
   updateALeave,
-  deleteByLeaveId,
-  findLeavesWithFilters
+  deleteByLeaveId
 } from "../../domain/interface/leave/leaveInterface";
 import { ILeave, Leave } from "../../domain/model/leave/leaveModel";
+
 const createLeaveService = async (leaveData: Partial<ILeave>) => {
   try {
     if (new Date(leaveData.from_date!) > new Date(leaveData.to_date!)) {
@@ -146,45 +147,63 @@ const getLeavesWithFiltersService = async (filters: {
     const page = filters.page || parseInt(PAGE.ONE);
     const page_size = filters.page_size || parseInt(PAGE.TEN);
 
-    // Fetch filtered leaves
-    const leaves = await findLeavesWithFilters(filters);
-
-    // Calculate total count for pagination
+    // Build query for filtering
     const query: any = {};
+
     if (filters.user_id) query.user_id = filters.user_id;
     if (filters.leave_type) query.leave_type = filters.leave_type;
+
+    // Process date filtering logic here
     if (filters.from_date || filters.to_date) {
-      const dateQuery: any = {};
+      const dateConditions: any[] = [];
 
       if (filters.from_date) {
-        dateQuery.$gte = new Date(filters.from_date);
+        const { start } = getStartAndEndOfDay(filters.from_date);
+        dateConditions.push({
+          from_date: { $gte: start }
+        });
       }
 
       if (filters.to_date) {
-        dateQuery.$lte = new Date(filters.to_date);
+        const { end } = getStartAndEndOfDay(filters.to_date);
+        dateConditions.push({
+          to_date: { $lte: end }
+        });
       }
 
-      query.$or = [
-        { from_date: dateQuery },
-        { to_date: dateQuery },
-        ...(filters.from_date && filters.to_date
-          ? [
-              {
-                from_date: { $lte: new Date(filters.from_date) },
-                to_date: { $gte: new Date(filters.to_date) }
-              }
-            ]
-          : [])
-      ];
+      if (dateConditions.length === 1) {
+        Object.assign(query, dateConditions[0]);
+      } else if (dateConditions.length === 2) {
+        query.$and = dateConditions;
+      }
     }
 
+    // Fetch total count for pagination
     const total_count = await Leave.countDocuments(query);
+
+    // Set up sorting
+    const sort: any = {};
+    if (filters.sort_field) {
+      sort[filters.sort_field] = filters.sort_order === SORT_ORDER.DESC ? -1 : 1;
+    } else {
+      sort.updatedAt = -1;
+    }
+
+    // Build query with pagination and sorting
+    let queryBuilder = Leave.find(query).sort(sort);
+
+    if (page && page_size) {
+      const skip = (page - 1) * page_size;
+      queryBuilder = queryBuilder.skip(skip).limit(page_size);
+    }
+
+    const filteredLeaves = await queryBuilder.exec();
 
     return {
       success: true,
       message: "Leave requests retrieved successfully",
       data: {
-        leaves,
+        leaves: filteredLeaves,
         total_count,
         total_pages: Math.ceil(total_count / page_size),
         current_page: page
@@ -198,7 +217,7 @@ const getLeavesWithFiltersService = async (filters: {
         leaves: [],
         total_count: 0,
         total_pages: 0,
-        current_page: 1
+        current_page: filters.page || 1
       }
     };
   }

@@ -7,12 +7,15 @@ import {
   getKpiAssignmentByIdFromDb,
   getKpiAssignmentsByUserIdFromDb,
   saveKpiAsTemplateInDb,
-  updateKpiAssignmentInDb
+  updateKpiAssignmentInDb,
+  addPerformanceToKpiAssignmentInDb,
+  getPerformanceByIdFromDb
 } from "../../domain/interface/kpiemployee/kpiemployeeInterface";
 import { getKpiTemplateByIdFromDb } from "../../domain/interface/kpi/kpiInterface";
 import { IKpiTemplate } from "../../domain/model/kpi/kpiModel";
-import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiemloyeeModel";
 import { User } from "../../domain/model/user/user";
+import { IKpiPerformance } from "../../domain/model/kpiemployee/kpiPerformanceModel";
+import { IKpiAssignment } from "../../domain/model/kpiemployee/kpiEmployeeModel";
 
 // Helper to remove restricted fields from an object
 const removeRestrictedFields = <T extends Record<string, any>>(
@@ -26,6 +29,126 @@ const removeRestrictedFields = <T extends Record<string, any>>(
     }
   }
   return cleanedData as Partial<T>;
+};
+
+export const calculateKpiScores = (
+  performances: IKpiPerformance[],
+  reviewerId: string | undefined,
+  assignedById: string,
+  targetValue: number,
+  userId: string
+): {
+  actual_value: string;
+  employee_score: string;
+} => {
+  let reviewerScoreSum = 0;
+  let employeeScoreSum = 0;
+
+  performances.forEach((entry) => {
+    const percentage = Number(entry.percentage) || 0;
+
+    if (reviewerId && entry.added_by === reviewerId) {
+      reviewerScoreSum += percentage;
+    } else if (!reviewerId && entry.added_by === assignedById) {
+      reviewerScoreSum += percentage;
+    }
+
+    if (entry.added_by === userId) {
+      employeeScoreSum += percentage;
+    }
+  });
+
+  const actual_value = targetValue > 0 ? (reviewerScoreSum / targetValue).toFixed(2) : "0";
+
+  const employee_score = targetValue > 0 ? (employeeScoreSum / targetValue).toFixed(2) : "0";
+
+  return {
+    actual_value,
+    employee_score
+  };
+};
+
+// Add performance to KPI assignment
+const addPerformanceToKpiAssignment = async (
+  assignment_id: string,
+  performanceData: IKpiPerformance[],
+  authUserId: string
+): Promise<{ success: boolean; data?: IKpiAssignment | null; message?: string }> => {
+  try {
+    const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+    if (!assignment) {
+      return { success: false, message: KpiAssignmentMessages.UPDATE.NOT_FOUND };
+    }
+
+    // Process new performance entries
+    const updatedPerformance = performanceData.map((entry) => ({
+      ...entry,
+      performance_id: entry.performance_id || uuidv4(),
+      updated_at: new Date(),
+      added_by: assignment.reviewer_id || assignment.assigned_by || assignment.user_id,
+      notes: entry.notes || []
+    }));
+
+    // Combine existing and new performance, avoid duplicates by performance_id
+    const combinedMap = new Map<string, any>();
+    [...(assignment.performance || []), ...updatedPerformance].forEach((perf) => {
+      combinedMap.set(perf.performance_id, perf);
+    });
+
+    const allPerformance = Array.from(combinedMap.values());
+
+    // Calculate scores
+    const targetVal = Number(assignment.target_value) || 0;
+    const { actual_value, employee_score } = calculateKpiScores(
+      allPerformance,
+      assignment.reviewer_id,
+      assignment.assigned_by,
+      targetVal,
+      assignment.user_id
+    );
+
+    const updatePayload: Partial<IKpiAssignment> = {
+      performance: allPerformance,
+      actual_value,
+      employee_score
+    };
+
+    // Update the assignment
+    const updatedAssignment = await addPerformanceToKpiAssignmentInDb(
+      assignment_id,
+      updatePayload,
+      authUserId
+    );
+
+    return { success: true, data: updatedAssignment };
+  } catch (error: any) {
+    return { success: false, message: error.message || KpiAssignmentMessages.UPDATE.FAILED };
+  }
+};
+
+// Get performance by performance_id within a specific assignment
+const getPerformanceById = async (
+  performance_id: string
+): Promise<{ success: boolean; data?: any; message?: string }> => {
+  try {
+    const result = await getPerformanceByIdFromDb(performance_id);
+    if (!result) {
+      return {
+        success: false,
+        message: `Performance ID ${performance_id} not found in any assignment`
+      };
+    }
+
+    return {
+      success: true,
+      data: result
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || KpiAssignmentMessages.FETCH.FETCH_FAILED
+    };
+  }
 };
 
 // Create a new KPI assignment
@@ -85,6 +208,7 @@ const createKpiAssignment = async (
         };
       }
       filteredData.kpi_Title = template.title;
+      filteredData.kpi_Description = template.description;
       filteredData.frequency = filteredData.frequency || template.frequency;
     }
 
@@ -112,6 +236,7 @@ const createKpiAssignment = async (
     };
   }
 };
+
 // Get all KPI assignments for a user
 const getAllKpiAssignments = async (): Promise<{
   success: boolean;
@@ -169,24 +294,18 @@ const updateKpiAssignment = async (
   try {
     const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
     if (!assignment) {
-      return {
-        success: false,
-        message: KpiAssignmentMessages.UPDATE.NOT_FOUND
-      };
+      return { success: false, message: KpiAssignmentMessages.UPDATE.NOT_FOUND };
     }
 
     const filteredUpdateData = removeRestrictedFields(updateData, restrictedFields);
 
-    // Validate user IDs if provided in update (referencing User.id)
-    if (
-      filteredUpdateData.user_id ||
-      filteredUpdateData.assigned_by ||
-      filteredUpdateData.reviewer_id
-    ) {
-      const userIdsToValidate = [];
-      if (filteredUpdateData.user_id) userIdsToValidate.push(filteredUpdateData.user_id);
-      if (filteredUpdateData.assigned_by) userIdsToValidate.push(filteredUpdateData.assigned_by);
-      if (filteredUpdateData.reviewer_id) userIdsToValidate.push(filteredUpdateData.reviewer_id);
+    // Validate user IDs if present
+    const userIdsToValidate = [];
+    if (filteredUpdateData.user_id) userIdsToValidate.push(filteredUpdateData.user_id);
+    if (filteredUpdateData.assigned_by) userIdsToValidate.push(filteredUpdateData.assigned_by);
+    if (filteredUpdateData.reviewer_id) userIdsToValidate.push(filteredUpdateData.reviewer_id);
+
+    if (userIdsToValidate.length > 0) {
       const users = await User.find({ id: { $in: userIdsToValidate } }).lean();
       const foundUserIds = users.map((u) => u.id);
       const invalidIds = userIdsToValidate.filter((id) => !foundUserIds.includes(id));
@@ -212,15 +331,9 @@ const updateKpiAssignment = async (
       authUserId
     );
 
-    return {
-      success: true,
-      data: updatedAssignment
-    };
+    return { success: true, data: updatedAssignment };
   } catch (error: any) {
-    return {
-      success: false,
-      message: error.message || KpiAssignmentMessages.UPDATE.FAILED
-    };
+    return { success: false, message: error.message || KpiAssignmentMessages.UPDATE.FAILED };
   }
 };
 
@@ -295,7 +408,8 @@ async function getTemplatesByUserId(user_id: string): Promise<{
             title: assignment.kpi_Title,
             description: assignment.kpi_Description,
             measurement_criteria: assignment.measurement_criteria,
-            frequency: assignment.frequency
+            frequency: assignment.frequency,
+            status: assignment.status
           });
         }
 
@@ -303,6 +417,7 @@ async function getTemplatesByUserId(user_id: string): Promise<{
           assignment_id: assignment.assignment_id,
           user_id: assignment.user_id,
           frequency: assignment.frequency,
+          target_value: assignment.target_value,
           weightage: assignment.weightage,
           assigned_by: assignment.assigned_by,
           reviewer_id: assignment.reviewer_id,
@@ -323,11 +438,44 @@ async function getTemplatesByUserId(user_id: string): Promise<{
   }
 }
 
+const getPerformancesByAssignmentId = async (
+  assignment_id: string
+): Promise<{
+  success: boolean;
+  data?: IKpiPerformance[];
+  message?: string;
+}> => {
+  try {
+    const assignment = await getKpiAssignmentByIdFromDb(assignment_id);
+    if (!assignment) {
+      return {
+        success: false,
+        message: `Assignment ID ${assignment_id} not found`
+      };
+    }
+
+    const performances = assignment.performance || [];
+
+    return {
+      success: true,
+      data: performances
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || KpiAssignmentMessages.FETCH.FETCH_FAILED
+    };
+  }
+};
+
 export {
   createKpiAssignment,
   getAllKpiAssignments,
   getKpiAssignmentById,
   updateKpiAssignment,
   deleteKpiAssignmentById,
-  getTemplatesByUserId
+  getTemplatesByUserId,
+  addPerformanceToKpiAssignment,
+  getPerformanceById,
+  getPerformancesByAssignmentId
 };

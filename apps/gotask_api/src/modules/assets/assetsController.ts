@@ -47,9 +47,32 @@ class AssetController extends BaseController {
   async getAllAssets(requestHelper: RequestHelper, handler: any) {
     try {
       const payload = requestHelper.getPayload();
-      const sortType = (payload?.sort_type as string) || DESC;
-      const sortVar = (payload?.sort_var as string) || CREATE_AT;
-      const users = await assetServices.getAllAssets(sortType, sortVar);
+      const {
+        sort_type,
+        sort_var,
+        page,
+        limit,
+        userId,
+        typeId,
+        systemType,
+        warrantyFrom,
+        warrantyTo,
+        searchText,
+        assetUsage
+      } = payload;
+      const users = await assetServices.getAllAssets({
+        sortType: sort_type || DESC,
+        sortVar: sort_var || CREATE_AT,
+        page,
+        limit,
+        userId,
+        typeId,
+        systemType,
+        warrantyFrom,
+        warrantyTo,
+        searchText,
+        assetUsage
+      });
       return this.sendResponse(handler, users);
     } catch (error) {
       return this.replyError(error);
@@ -69,11 +92,7 @@ class AssetController extends BaseController {
     try {
       const id = requestHelper.getParam("id");
       const result = await assetServices.deleteAsset(id);
-      if (!result.success) {
-        return this.replyError(new Error(result.message));
-      }
-
-      return this.sendResponse(handler, { message: AssetMessages.DELETE.SUCCESS });
+      return this.sendResponse(handler, result);
     } catch (error) {
       return this.replyError(error);
     }

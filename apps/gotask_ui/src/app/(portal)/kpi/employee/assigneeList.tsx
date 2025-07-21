@@ -65,32 +65,59 @@ const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" })
   }, [usersWithTemplates, searchTerm]);
 
   return (
-    <Box sx={{ p: 3, height: "calc(100vh - 100px)", overflowY: "auto" }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Box mb={3} maxWidth={400}>
-          <SearchBar
-            value={searchTerm}
-            onChange={setSearchTerm}
-            sx={{ width: "100%" }}
-            placeholder={transkpi("searchemployees")}
-          />
+    <Box sx={{ height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      {/* Sticky Header */}
+      <Box
+        sx={{
+          px: 3,
+          py: 2,
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          backgroundColor: "#fff"
+        }}
+      >
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap"
+          gap={2}
+          mb={3}
+        >
+          {/* Search Bar */}
+          <Box sx={{ flexGrow: 1, maxWidth: 400 }}>
+            <SearchBar
+              value={searchTerm}
+              onChange={setSearchTerm}
+              sx={{ width: "100%" }}
+              placeholder={transkpi("searchemployees")}
+            />
+          </Box>
+
+          {/* Toggle View */}
+          <Box sx={{ flexShrink: 0 }}>
+            <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
+          </Box>
         </Box>
-        <Toggle options={toggleOptions} selected={labels[view]} onChange={handleViewChange} />
       </Box>
 
-      <Grid container spacing={3}>
-        {isLoading ? (
-          <Box width="100%" textAlign="center" mt={4}>
-            <Typography variant="body1">{transkpi("loading")}</Typography>
-          </Box>
-        ) : (
-          filteredUsers.map((user: any) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} xl={3} key={user.id}>
-              <AssigneeCard user={user} assignedTemplates={user.assignedTemplates || []} />
-            </Grid>
-          ))
-        )}
-      </Grid>
+      {/* Scrollable Content */}
+      <Box sx={{ flex: 1, overflowY: "auto", px: 3, py: 2 }}>
+        <Grid container spacing={3}>
+          {isLoading ? (
+            <Box width="100%" textAlign="center" mt={4}>
+              <Typography variant="body1">{transkpi("loading")}</Typography>
+            </Box>
+          ) : (
+            filteredUsers.map((user: any) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} xl={3} key={user.id}>
+                <AssigneeCard user={user} assignedTemplates={user.assignedTemplates || []} />
+              </Grid>
+            ))
+          )}
+        </Grid>
+      </Box>
     </Box>
   );
 };

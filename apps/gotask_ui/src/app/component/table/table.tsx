@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
   tableCellClasses,
   TableContainer,
   TableHead,
-  TableRow,
-  Box,
   TablePagination,
-  useTheme,
+  TableRow,
   useMediaQuery,
-  TableSortLabel
+  TableSortLabel,
+  useTheme
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { PAGE_OPTIONS } from "./tableConstants";
 import { ASC, CREATED_AT, DESC } from "@/app/(portal)/asset/assetConstants";
+import TableSkeletonRows from "./row";
+import { LOCALIZATION } from "@/app/common/constants/localization";
+import { useTranslations } from "next-intl";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -49,27 +52,7 @@ const StyledTableRow = styled(TableRow)(({}) => ({
   }
 }));
 
-const FixedHeaderTableContainer = styled(TableContainer)(({ theme }) => ({
-  flex: 1,
-  overflow: "auto",
-  borderRadius: "4px 4px 0 0",
-  border: "1px solid rgba(224, 224, 224, 1)",
-  scrollBehavior: "smooth",
-  WebkitOverflowScrolling: "touch",
-  "& .MuiTableHead-root .MuiTableRow-root .MuiTableCell-root": {
-    position: "sticky",
-    top: 0,
-    zIndex: 10,
-    backgroundColor: "#D8C7DD",
-    borderBottom: "2px solid #B8A7BD"
-  },
-  [theme.breakpoints.down("sm")]: {
-    height: "100%",
-    maxHeight: "100%"
-  }
-}));
-
-const StyledTableSortLabel = styled(TableSortLabel)(({}) => ({
+const StyledTableSortLabel = styled(TableSortLabel)(() => ({
   color: "#000000",
   fontSize: "inherit",
   fontWeight: "inherit",
@@ -80,21 +63,18 @@ const StyledTableSortLabel = styled(TableSortLabel)(({}) => ({
       transition: "opacity 0.2s"
     }
   },
-
   "&:hover": {
     color: "#000000",
     "& .MuiTableSortLabel-icon": {
       opacity: 1
     }
   },
-
   "&.Mui-active": {
     color: "#000000",
     "& .MuiTableSortLabel-icon": {
       color: "#000000"
     }
   },
-
   "& .MuiTableSortLabel-icon": {
     fontSize: "1.2rem",
     color: "#666666"
@@ -110,6 +90,7 @@ export interface Column<T> {
   render?: (value: T[keyof T] | undefined, row: T) => ReactNode;
   minWidth?: number;
   sortable?: boolean;
+  isLoading?: boolean;
 }
 
 interface CustomTableProps<T> {
@@ -120,6 +101,9 @@ interface CustomTableProps<T> {
   defaultRowsPerPage?: number;
   maxHeight?: string;
   onSortChange?: (key: string, order: "asc" | "desc") => void;
+  isLoading?: boolean;
+  onPageChange?: (page: number, limit: number) => void;
+  totalCount?: number;
 }
 
 const CustomTable = <T extends object>({
@@ -127,19 +111,22 @@ const CustomTable = <T extends object>({
   rows,
   minWidth = 700,
   rowsPerPageOptions = [
-    PAGE_OPTIONS.DEFAULT_ROWS_5,
-    PAGE_OPTIONS.DEFAULT_ROWS_10,
-    PAGE_OPTIONS.DEFAULT_ROWS_25
+    PAGE_OPTIONS.DEFAULT_ROWS_25,
+    PAGE_OPTIONS.DEFAULT_ROWS_35,
+    PAGE_OPTIONS.DEFAULT_ROWS_45
   ],
-  defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_5,
+  defaultRowsPerPage = PAGE_OPTIONS.DEFAULT_ROWS_25,
   maxHeight = "60vh",
-  onSortChange
+  onSortChange,
+  isLoading,
+  onPageChange,
+  totalCount
 }: CustomTableProps<T>) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof T | string>("");
-
+  const transkey = useTranslations(LOCALIZATION.TRANSITION.COMMON);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -165,13 +152,6 @@ const CustomTable = <T extends object>({
     if (onSortChange) {
       onSortChange(String(property), newOrder);
     }
-  };
-
-  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   const sortedRows = React.useMemo(() => {
@@ -200,95 +180,133 @@ const CustomTable = <T extends object>({
     return [...rows].sort(comparator);
   }, [rows, order, orderBy, onSortChange]);
 
-  const paginatedRows = sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
   return (
-    <Box
-      sx={{
-        width: "100%",
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        height: isMobile ? "calc(100vh - 240px)" : "auto",
-        overflow: "hidden"
-      }}
-    >
-      <FixedHeaderTableContainer
-        sx={{
-          minWidth: isMobile ? "100%" : minWidth,
-          maxHeight: isMobile ? "100%" : maxHeight
-        }}
-      >
-        <Table stickyHeader sx={{ tableLayout: "fixed", width: "100%" }}>
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <StyledTableCell
-                  key={String(column.id)}
-                  align={column.align || "left"}
-                  sx={{ minWidth: column.minWidth }}
-                >
-                  {column.sortable !== false ? (
-                    <StyledTableSortLabel
-                      active={orderBy === column.id}
-                      direction={orderBy === column.id ? order : DESC}
-                      onClick={() => handleRequestSort(column.id)}
-                    >
-                      {column.label}
-                    </StyledTableSortLabel>
-                  ) : (
-                    column.label
-                  )}
-                </StyledTableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedRows.map((row, rowIndex) => (
-              <StyledTableRow key={rowIndex}>
-                {columns.map((column) => {
-                  const value = column.id in row ? row[column.id as keyof T] : undefined;
-                  return (
-                    <StyledTableCell
-                      key={String(column.id)}
-                      align={column.align || "left"}
-                      sx={{ minWidth: column.minWidth }}
-                    >
-                      {column.render
-                        ? column.render(value, row)
-                        : typeof value === "object" && value !== null
-                          ? JSON.stringify(value)
-                          : (value as ReactNode)}
-                    </StyledTableCell>
-                  );
-                })}
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </FixedHeaderTableContainer>
-
+    <>
       <Box
         sx={{
-          position: "sticky",
+          width: "100%",
+          height: maxHeight,
+          display: "flex",
+          flexDirection: "column",
+          border: "1px solid #e0e0e0",
+          borderRadius: "4px",
+          overflow: "hidden",
+          position: "relative"
+        }}
+      >
+        <TableContainer
+          sx={{
+            minWidth,
+            flex: 1,
+            overflow: "auto",
+            scrollBehavior: "smooth",
+            marginBottom: isMobile ? "40px" : "20px",
+            "&::-webkit-scrollbar": {
+              width: "8px"
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "#f1f1f1"
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#c1c1c1",
+              borderRadius: "4px"
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#a8a8a8"
+            }
+          }}
+        >
+          <Table stickyHeader sx={{ tableLayout: "fixed", minWidth }}>
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <StyledTableCell
+                    key={String(column.id)}
+                    align={column.align || "left"}
+                    sx={{ minWidth: column.minWidth }}
+                  >
+                    {column.sortable !== false ? (
+                      <StyledTableSortLabel
+                        active={orderBy === column.id}
+                        direction={orderBy === column.id ? order : DESC}
+                        onClick={() => handleRequestSort(column.id)}
+                      >
+                        {column.label}
+                      </StyledTableSortLabel>
+                    ) : (
+                      column.label
+                    )}
+                  </StyledTableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {isLoading ? (
+                <TableSkeletonRows columns={columns} rowsPerPage={rowsPerPage} />
+              ) : sortedRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} align="center" sx={{ py: 4, color: "#888" }}>
+                    {transkey("nodatafound")}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sortedRows.map((row, rowIndex) => (
+                  <StyledTableRow key={rowIndex}>
+                    {columns.map((column) => {
+                      const value = column.id in row ? row[column.id as keyof T] : undefined;
+                      return (
+                        <StyledTableCell
+                          key={String(column.id)}
+                          align={column.align || "left"}
+                          sx={{ minWidth: column.minWidth }}
+                        >
+                          {column.render
+                            ? column.render(value, row)
+                            : typeof value === "object" && value !== null
+                              ? JSON.stringify(value)
+                              : (value as ReactNode)}
+                        </StyledTableCell>
+                      );
+                    })}
+                  </StyledTableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+
+      {/* Sticky footer pagination */}
+      <Box
+        sx={{
+          position: "fixed",
           bottom: 0,
-          zIndex: 5,
+          left: 0,
+          width: "100%",
           backgroundColor: "#fff",
-          mt: "auto"
+          borderTop: "1px solid #ddd",
+          px: 2
         }}
       >
         <TablePagination
           rowsPerPageOptions={rowsPerPageOptions}
           component="div"
-          count={sortedRows.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          size={isMobile ? "small" : "medium"}
+          onPageChange={(event, newPage) => {
+            setPage(newPage);
+            onPageChange?.(newPage, rowsPerPage);
+          }}
+          onRowsPerPageChange={(event) => {
+            const newLimit = parseInt(event.target.value, 10);
+            setRowsPerPage(newLimit);
+            setPage(0);
+            onPageChange?.(0, newLimit);
+          }}
+          count={totalCount ?? sortedRows.length}
         />
       </Box>
-    </Box>
+    </>
   );
 };
 

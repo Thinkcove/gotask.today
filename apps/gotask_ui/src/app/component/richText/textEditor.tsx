@@ -1,24 +1,21 @@
 "use client";
 
-import {
-  RichTextEditor,
-  LinkBubbleMenu,
-  TableBubbleMenu,
-  MenuButton,
-  type RichTextEditorRef
-} from "mui-tiptap";
+import { useEffect, useState, useCallback } from "react";
+import { RichTextEditor, LinkBubbleMenu, TableBubbleMenu, MenuButton } from "mui-tiptap";
 import { Box, Button, Stack } from "@mui/material";
 import { Lock, LockOpen, TextFields } from "@mui/icons-material";
-import { useRef, useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import type { EditorOptions } from "@tiptap/core";
+import type { Editor } from "@tiptap/react";
 import useExtensions from "./useExtensions";
 import EditorMenuControls from "./editorMenuControls";
 import type { MentionSuggestion } from "./mentionSuggestionOptions";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import "./richTextStyle.css";
+
 interface ReusableEditorProps {
   onSave?: (html: string) => void;
+  onChange?: (html: string) => void;
   placeholder?: string;
   readOnly?: boolean;
   showSaveButton?: boolean;
@@ -26,41 +23,38 @@ interface ReusableEditorProps {
   userList?: MentionSuggestion[];
 }
 
-const ReusableEditor = forwardRef<RichTextEditorRef, ReusableEditorProps>(function ReusableEditor(
-  {
-    onSave,
-    placeholder = "Write your content here...",
-    readOnly = false,
-    showSaveButton = true,
-    content,
-    userList = []
-  },
-  ref
-) {
-  const editorRef = useRef<RichTextEditorRef>(null);
+const ReusableEditor = ({
+  onSave,
+  onChange,
+  placeholder = "Write your content here...",
+  readOnly = false,
+  showSaveButton = true,
+  content,
+  userList = []
+}: ReusableEditorProps) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const extensions = useExtensions({ placeholder, userList });
 
+  const [isMounted, setIsMounted] = useState(false);
   const [isEditable, setIsEditable] = useState(!readOnly);
   const [showMenuBar, setShowMenuBar] = useState(true);
+  const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
 
-  useImperativeHandle(ref, () => editorRef.current as RichTextEditorRef);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-  const handleSave = () => {
-    const html = editorRef.current?.editor?.getHTML() ?? "";
-    if (onSave) {
-      onSave(html.trim());
-    }
-  };
-
-  const insertImageAsBase64 = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      editorRef.current?.editor?.chain().focus().setImage({ src: base64, alt: file.name }).run();
-    };
-    reader.readAsDataURL(file);
-  };
+  const insertImageAsBase64 = useCallback(
+    (file: File) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result as string;
+        editorInstance?.chain().focus().setImage({ src: base64, alt: file.name }).run();
+      };
+      reader.readAsDataURL(file);
+    },
+    [editorInstance]
+  );
 
   const handleDrop: NonNullable<EditorOptions["editorProps"]["handleDrop"]> = useCallback(
     (view, event) => {
@@ -74,7 +68,7 @@ const ReusableEditor = forwardRef<RichTextEditorRef, ReusableEditorProps>(functi
       event.preventDefault();
       return true;
     },
-    []
+    [insertImageAsBase64]
   );
 
   const handlePaste: NonNullable<EditorOptions["editorProps"]["handlePaste"]> = useCallback(
@@ -92,18 +86,26 @@ const ReusableEditor = forwardRef<RichTextEditorRef, ReusableEditorProps>(functi
       event.preventDefault();
       return true;
     },
-    []
+    [insertImageAsBase64]
   );
+
+  const handleSave = () => {
+    if (editorInstance && onSave) {
+      onSave(editorInstance.getHTML().trim());
+    }
+  };
+
+  if (!isMounted) return null;
 
   return (
     <Box>
       <RichTextEditor
-        key={content}
-        ref={editorRef}
         content={content}
         extensions={extensions}
         editable={isEditable}
         editorProps={{ handleDrop, handlePaste }}
+        onCreate={({ editor }) => setEditorInstance(editor)}
+        onUpdate={({ editor }) => onChange?.(editor.getHTML())}
         renderControls={() => <EditorMenuControls />}
         RichTextFieldProps={{
           variant: "outlined",
@@ -145,6 +147,6 @@ const ReusableEditor = forwardRef<RichTextEditorRef, ReusableEditorProps>(functi
       </RichTextEditor>
     </Box>
   );
-});
+};
 
 export default ReusableEditor;

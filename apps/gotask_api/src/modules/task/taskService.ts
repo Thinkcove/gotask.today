@@ -73,7 +73,9 @@ const getAllTasks = async (): Promise<{
         remaining_time: 1,
         variation: 1,
         createdAt: 1,
-        updatedAt: 1
+        updatedAt: 1,
+        planned_start_date: 1,
+        planned_end_date: 1
       }
     ).lean();
 

@@ -486,12 +486,8 @@ const getTaskById = async (
         message: TaskMessages.FETCH.NOT_FOUND
       };
     }
-    // Fetch story name from ProjectStory
-    const projectStory = await ProjectStory.findOne({ id: task.story_id });
-    // Enrich task with story_name
     const enrichedTask = {
-      ...task,
-      story_name: projectStory?.title || null
+      ...task
     };
 
     return {

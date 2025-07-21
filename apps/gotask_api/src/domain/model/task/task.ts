@@ -17,7 +17,6 @@ export interface ITask extends Document {
   project_id: string;
   project_name: string;
   story_id?: string;
-  story_name?: string;
   due_date?: Date;
   created_on: Date;
   start_date?: Date;

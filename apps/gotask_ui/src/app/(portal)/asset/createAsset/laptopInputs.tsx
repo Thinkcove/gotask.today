@@ -5,7 +5,7 @@ import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
-import { ASSET_TYPE, calculateWarrantyDate } from "@/app/common/constants/asset";
+import { ASSET_TYPE } from "@/app/common/constants/asset";
 import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface LaptopInputsProps {

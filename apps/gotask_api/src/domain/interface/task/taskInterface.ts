@@ -11,6 +11,7 @@ import logger from "../../../common/logger";
 import { TimeUtil } from "../../../constants/utils/timeUtils";
 import { ITimeSpentEntry } from "../../model/task/timespent";
 import { TIME_FORMAT_PATTERNS } from "../../../constants/commonConstants/timeConstants";
+import { ProjectStory } from "../../model/projectStory/projectStory";
 
 // Create a new task
 const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
@@ -49,9 +50,12 @@ const findTaskById = async (id: string): Promise<any> => {
   const task = await Task.findOne({ id }).lean();
   if (!task) return null;
   const user = await User.findOne({ id: task.created_by }).lean();
+  const projectStory = await ProjectStory.findOne({ id: task.story_id });
+
   return {
     ...task,
-    created_by_name: user?.name || null
+    created_by_name: user?.name || null,
+    story_name: projectStory?.title || null
   };
 };
 

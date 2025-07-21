@@ -95,7 +95,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
       <ModuleHeader name={transrole("roledetail")} />
       <Box
         sx={{
-          minHeight: "100vh",
+          maxHeight: "100vh",
           p: 3,
           background: "linear-gradient(to bottom right, #f9f9fb, #ffffff)"
         }}
@@ -238,7 +238,8 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
           onClose={() => setOpenDeleteDialog(false)}
           onSubmit={handleDelete}
           title={transrole("delete")}
-          submitLabel="Delete"
+          submitLabel={transrole("deletebtn")}
+          submitColor="#b71c1c"
         >
           <Typography>
             {transrole("removeaccess")}

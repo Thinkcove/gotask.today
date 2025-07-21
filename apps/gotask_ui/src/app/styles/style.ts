@@ -1,6 +1,6 @@
 // styles/scrollStyles.js or similar
 export const scrollStyles = {
-  maxHeight: "70vh",
+  maxHeight: "calc(100vh - 300px)",
   overflowY: "auto",
   pr: 1,
   scrollbarWidth: "thin",

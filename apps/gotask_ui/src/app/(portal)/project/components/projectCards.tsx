@@ -78,7 +78,9 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                     {filteredProject.users?.length ? (
                       filteredProject.users
                         .slice(0, 3)
-                        .map((user, index) => <AlphabetAvatar userName={user.name} key={index} />)
+                        .map((user, index) => (
+                          <AlphabetAvatar userName={user.name} key={index} showTooltip={true} />
+                        ))
                     ) : (
                       <Typography variant="body2" color="text.secondary">
                         {transproject("nouser")}

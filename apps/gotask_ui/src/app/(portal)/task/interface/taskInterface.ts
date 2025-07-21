@@ -14,6 +14,8 @@ export interface IFormField {
   projects?: string;
   story_id?: string;
   users?: string;
+  planned_start_date?: string;
+  planned_end_date?: string;
 }
 
 export interface IGroup {
@@ -49,6 +51,8 @@ export interface ITask {
   time_spent_total?: string;
   remaining_time?: string;
   time_entries?: Array<{ date: string; hours: number }>;
+  planned_start_date?: Date;
+  planned_end_date?: Date;
 }
 
 export interface ITaskHistory {

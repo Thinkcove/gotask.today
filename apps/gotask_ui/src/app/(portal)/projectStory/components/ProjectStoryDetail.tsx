@@ -192,7 +192,9 @@ const ProjectStoryDetail = () => {
                 <Button
                   variant="contained"
                   sx={{ backgroundColor: "#741B92", textTransform: "none", borderRadius: 2 }}
-                  onClick={() => router.push(`/task/createTask?storyId=${storyId}`)}
+                  onClick={() =>
+                    router.push(`/task/createTask?storyId=${storyId}&projectId=${projectId}`)
+                  }
                 >
                   {t("Stories.createTask")}
                 </Button>

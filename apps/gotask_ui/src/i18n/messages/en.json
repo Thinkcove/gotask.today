@@ -434,6 +434,10 @@
     "saved": "Save",
     "noupdates": "No updates",
     "todo": "TO-DO",
+    "labelprojectstories": "Project Stories",
+    "placeholderprojectstories": "Select Project Stories",
+    "storiestitle": "Story Title",
+
     "Project": {
       "meta": {
         "title": "Task Projects",

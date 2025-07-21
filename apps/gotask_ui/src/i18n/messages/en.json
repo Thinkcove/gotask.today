@@ -298,6 +298,7 @@
     "role": "Role",
     "noaccess": "No access mapped to this role",
     "searchplaceholder": "Search Roles",
+    "deletebtn": "Delete",
     "meta": {
       "title": "Role Management | GoTaskToday",
       "description": "Define user roles and assign permissions within the system."
@@ -433,6 +434,10 @@
     "saved": "Save",
     "noupdates": "No updates",
     "todo": "TO-DO",
+    "labelprojectstories": "Project Stories",
+    "placeholderprojectstories": "Select Project Stories",
+    "storiestitle": "Story Title",
+
     "Project": {
       "meta": {
         "title": "Task Projects",

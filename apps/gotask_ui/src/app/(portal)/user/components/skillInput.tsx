@@ -156,25 +156,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
         </Button>
       </Box>
 
-      <Box
-        sx={{
-          maxHeight: 400,
-          overflow: "auto",
-          borderRadius: 2,
-          scrollBehavior: "smooth",
-          "&::-webkit-scrollbar": {
-            width: "6px",
-            height: "6px"
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "#f1f1f1"
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#bbb",
-            borderRadius: 8
-          }
-        }}
-      >
+      <Box>
         {skills.length === 0 ? (
           <Paper elevation={1} sx={{ color: "text.secondary" }}>
             {trans("noskills")}

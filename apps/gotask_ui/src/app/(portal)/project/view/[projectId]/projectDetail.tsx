@@ -338,6 +338,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           onSubmit={handleDelete}
           title={transproject("titledelete")}
           submitLabel={transproject("labeldelete")}
+          submitColor="#b71c1c"
         >
           <Typography>
             {transproject("removeuserconfirmation")}

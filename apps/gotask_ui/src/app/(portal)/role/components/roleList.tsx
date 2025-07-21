@@ -29,9 +29,9 @@ const RoleList = () => {
     <Box
       sx={{
         position: "relative",
-        height: "100vh",
+        height: "90vh",
         overflowY: "auto",
-        maxHeight: "calc(100vh - 100px)",
+        maxHeight: "calc(120vh - 100px)",
         p: 3
       }}
     >

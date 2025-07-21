@@ -463,6 +463,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
         onSubmit={confirmDelete}
         title={transasset("deleteAsset")}
         submitLabel={transasset("delete")}
+        submitColor="#b71c1c"
       >
         <Typography variant="body1" color="text.secondary">
           {transasset("deleteconfirm")}

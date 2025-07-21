@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, IconButton, Stack, Chip, Grid, Tooltip } from "@mui/material";
+import { Box, Typography, IconButton, Stack, Grid } from "@mui/material";
 import { ArrowBack, Delete, Edit } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import { User } from "../../interfaces/userInterface";
@@ -241,7 +241,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               {/* Organization */}
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={4}>
-                  
                   <Typography variant="subtitle2" color="text.secondary" mb={1}>
                     {transuser("organization")}
                   </Typography>
@@ -249,10 +248,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                     <ul style={{ paddingLeft: "1rem", margin: 0 }}>
                       {user.orgDetails.map((orgId) => (
                         <li key={orgId.id}>
-                          <Typography
-                            variant="body2"
-                            sx={{ textTransform: "capitalize"}}
-                          >
+                          <Typography variant="body2" sx={{ textTransform: "capitalize" }}>
                             {orgId.name}
                           </Typography>
                         </li>

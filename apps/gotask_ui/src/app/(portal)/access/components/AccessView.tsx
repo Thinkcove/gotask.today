@@ -287,6 +287,7 @@ const AccessView: React.FC = () => {
         onSubmit={confirmDelete}
         title={t("deleteaccess")}
         submitLabel={t("delete")}
+        submitColor="#b71c1c"
       >
         <Typography variant="body1" color="text.secondary">
           {t("deleteconfirm")}

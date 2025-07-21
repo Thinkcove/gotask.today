@@ -61,7 +61,6 @@ const TaskSchema = new Schema<ITask>(
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
     created_by: { type: String },
-
     user_estimated: { type: String, default: null },
     estimated_time: { type: String, default: null },
     time_spent: { type: [TimeSpentEntrySchema], default: [] },

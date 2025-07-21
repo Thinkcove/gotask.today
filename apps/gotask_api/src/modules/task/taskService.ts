@@ -479,20 +479,15 @@ const getTaskById = async (
 ): Promise<{ success: boolean; data?: ITask | null; message?: string }> => {
   try {
     const task = await findTaskById(id);
-
     if (!task) {
       return {
         success: false,
         message: TaskMessages.FETCH.NOT_FOUND
       };
     }
-    const enrichedTask = {
-      ...task
-    };
-
     return {
       success: true,
-      data: enrichedTask
+      data: task
     };
   } catch (error: any) {
     return {
@@ -501,7 +496,6 @@ const getTaskById = async (
     };
   }
 };
-
 // Update task details
 const updateTask = async (
   id: string,

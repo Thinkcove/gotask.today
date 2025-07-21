@@ -166,20 +166,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ userId }) => {
       {rows.length === 0 ? (
         <Typography color="text.secondary">{trans("noincrements")}</Typography>
       ) : (
-        <Box
-          sx={{
-            maxHeight: 400,
-            overflow: "auto",
-            scrollBehavior: "smooth",
-            pb: 2,
-            "&::-webkit-scrollbar": { width: "6px", height: "6px" },
-            "&::-webkit-scrollbar-track": { background: "#f1f1f1" },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#bbb",
-              borderRadius: 8
-            }
-          }}
-        >
+        <Box>
           {selectedView === "Chart" ? (
             <IncrementChart chartData={chartData} />
           ) : (

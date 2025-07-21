@@ -437,6 +437,12 @@
     "labelprojectstories": "Project Stories",
     "placeholderprojectstories": "Select Project Stories",
     "storiestitle": "Story Title",
+    "labelplannedstartdate": "Planned Start Date * :",
+    "placeholderplannedstartdate": "Select planned start date",
+    "labelplannedenddate": "Planned End Date * :",
+    "placeholderplannedenddate": "Select planned end date",
+    "plannedstart": "Planned Start Date",
+    "plannedend": "Planned End Date",
 
     "Project": {
       "meta": {

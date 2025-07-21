@@ -164,10 +164,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText
-                  label={transtask("storiestitle")}
-                  value={task.story_name || "-"}
-                />
+                <LabelValueText label={transtask("storiestitle")} value={task.story_name || "-"} />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
@@ -183,6 +180,27 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({
                   sx={{ color: getSeverityColor(task.severity), textTransform: "capitalize" }}
                 />
               </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("plannedstart")}
+                  value={
+                    task.planned_start_date ? (
+                      <FormattedDateTime date={task.planned_start_date} />
+                    ) : (
+                      "-"
+                    )
+                  }
+                />
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("plannedend")}
+                  value={
+                    task.planned_end_date ? <FormattedDateTime date={task.planned_end_date} /> : "-"
+                  }
+                />
+              </Grid>
+
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detailcreated")}

@@ -495,7 +495,6 @@ const getTaskById = async (
     };
   }
 };
-
 // Update task details
 const updateTask = async (
   id: string,

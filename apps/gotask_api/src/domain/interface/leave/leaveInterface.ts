@@ -76,7 +76,15 @@ const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> =>
     const skip = (filters.page - 1) * filters.page_size;
     queryBuilder = queryBuilder.skip(skip).limit(filters.page_size);
   }
-
+    const enrichedLeaves = await Promise.all(
+      filteredLeaves.map(async (leave: any) => {
+        const user = await User.findOne({ id: leave.user_id });
+        return {
+          ...leave.toObject(),
+          user_name: user?.name || null
+        };
+      })
+    );
   return await queryBuilder.exec();
 };
 

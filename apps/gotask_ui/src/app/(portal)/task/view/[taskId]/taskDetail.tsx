@@ -26,11 +26,7 @@ interface TaskDetailViewProps {
   mutate: () => Promise<void>;
 }
 
-const TaskDetailView: React.FC<TaskDetailViewProps> = ({
-  task,
-  loading = false,
-  mutate
-}) => {
+const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, mutate }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { user } = useUser();
   const router = useRouter();
@@ -164,18 +160,8 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText
-                  label={transtask("storiestitle")}
-                  value={task.story_name || "-"}
-                />
+                <LabelValueText label={transtask("storiestitle")} value={task.story_name || "-"} />
               </Grid>
-              <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText
-                  label={transtask("detailcreatedby")}
-                  value={task.created_by_name || "-"}
-                />
-              </Grid>
-
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detailseverity")}
@@ -185,20 +171,14 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
-                  label={transtask("detailcreated")}
-                  value={task.created_on ? <FormattedDateTime date={task.created_on} /> : "-"}
+                  label={transtask("startdate")}
+                  value={task.start_date ? <FormattedDateTime date={task.start_date} /> : "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transtask("detaildue")}
                   value={task.due_date ? <FormattedDateTime date={task.due_date} /> : "-"}
-                />
-              </Grid>
-              <Grid item xs={4} sm={6} md={4}>
-                <LabelValueText
-                  label={transtask("startdate")}
-                  value={task.start_date ? <FormattedDateTime date={task.start_date} /> : "-"}
                 />
               </Grid>
               <Grid item xs={4} sm={6} md={4}>
@@ -235,6 +215,12 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({
                     </Typography>
                   )
                 ) : null}
+              </Grid>
+              <Grid item xs={4} sm={6} md={4}>
+                <LabelValueText
+                  label={transtask("detailcreatedby")}
+                  value={task.created_by_name || "-"}
+                />
               </Grid>
             </Grid>
 

@@ -53,7 +53,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
   const [view, setView] = useState<"assets" | "issues">(initialView);
   const router = useRouter();
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>(savedFilters.statusFilter || []);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState({
@@ -340,7 +340,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               hideAssignedToFilter
               allStatuses={issueStatuses}
               statusFilter={statusFilter}
-              onStatusChange={setStatusFilter}
+              onStatusChange={(val) => updateFilter("statusFilter", val, setStatusFilter)}
               loading={showInitialSkeleton}
             />
           )}

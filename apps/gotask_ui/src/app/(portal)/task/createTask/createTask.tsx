@@ -59,6 +59,8 @@ const CreateTask: React.FC = () => {
     if (!formData.project_id) newErrors.project_id = transtask("projectname");
     if (!formData.status) newErrors.status = transtask("status");
     if (!formData.severity) newErrors.severity = transtask("severity");
+    if (!formData.start_date) newErrors.start_date = transtask("startdateisrequired");
+    if (!formData.due_date) newErrors.due_date = transtask("duedaterequired");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -164,7 +166,7 @@ const CreateTask: React.FC = () => {
           handleInputChange={handleInputChange}
           errors={errors}
           readOnlyFields={storyId ? ["status"] : ["status"]}
-          isProjectLocked={!!projectId} 
+          isProjectLocked={!!projectId}
           isStoryLocked={!!storyId}
         />
       </Box>

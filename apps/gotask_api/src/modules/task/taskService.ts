@@ -73,9 +73,7 @@ const getAllTasks = async (): Promise<{
         remaining_time: 1,
         variation: 1,
         createdAt: 1,
-        updatedAt: 1,
-        actual_start_date: 1,
-        actual_end_date: 1
+        updatedAt: 1
       }
     ).lean();
 
@@ -244,9 +242,7 @@ const getTasksByProject = async (
               variation: "$variation",
               updated_on: "$updated_on",
               createdAt: "$createdAt",
-              updatedAt: "$updatedAt",
-              actual_start_date: "$actual_start_date",
-              actual_end_date: "$actual_end_date"
+              updatedAt: "$updatedAt"
             }
           }
         }
@@ -416,9 +412,7 @@ const getTasksByUser = async (
               variation: "$variation",
               updated_on: "$updated_on",
               createdAt: "$createdAt",
-              updatedAt: "$updatedAt",
-              actual_start_date: "$actual_start_date",
-              actual_end_date: "$actual_end_date"
+              updatedAt: "$updatedAt"
             }
           }
         }

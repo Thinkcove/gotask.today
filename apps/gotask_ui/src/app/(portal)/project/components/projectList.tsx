@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState} from "react";
 import { Box, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProjectCards from "./projectCards";
@@ -29,24 +29,23 @@ const ProjectList = () => {
       : {};
   const [statusFilter, setStatusFilter] = useState<string[]>(storedFilters.statusFilter || []);
   const [userFilter, setUserFilter] = useState<string[]>(storedFilters.userFilter || []);
-  const allUsers: string[] = useMemo(() => {
-    const names =
+  const allUsers: string[] = Array.from(
+    new Set(
       projects?.flatMap((project: Project) =>
         project.users?.map((u: { id: string; name: string; user_id: string }) => u.name)
-      ) ?? [];
-    return Array.from(new Set(names)) as string[];
-  }, [projects]);
+      ) ?? []
+    )
+  ) as string[];
 
-  const allStatuses: string[] = useMemo(() => {
-    const statuses = projects?.map((project: Project) => project.status) ?? [];
-    return Array.from(new Set(statuses)) as string[];
-  }, [projects]);
+  const allStatuses = Array.from(
+    new Set(projects?.map((project: Project) => project.status) ?? [])
+  ) as string[];
 
-  const filteredProjects = useMemo(() => {
-    if (!projects) return [];
+  let filteredProjects: Project[] = [];
 
-    return projects.filter((project: Project) => {
-      const nameMatches = project.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
+  if (projects) {
+    filteredProjects = projects.filter((project: Project) => {
+      const nameMatches = project.name?.toLowerCase().includes(searchTerm.toLowerCase());
 
       const statusMatches = statusFilter.length === 0 || statusFilter.includes(project.status);
 
@@ -55,9 +54,10 @@ const ProjectList = () => {
         project.users?.some(
           (user: { name?: string }) => user.name && userFilter.includes(user.name)
         );
+
       return nameMatches && statusMatches && userMatches;
     });
-  }, [projects, searchTerm, statusFilter, userFilter]);
+  }
 
   const updateFilter = (
     key: "statusFilter" | "userFilter",

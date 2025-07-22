@@ -791,6 +791,7 @@
     "no": "No",
     "nodatafound": "No Data Found",
     "capacity": "Capacity",
+    "inmonths": "(In months)",
     "searchissues": "Search Issue Type",
     "meta": {
       "title": "Assets | GoTaskToday",

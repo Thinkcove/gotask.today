@@ -12,7 +12,7 @@ const getWorkPlannedService = async (
 
   // Initial match for tasks created within the date range
   const initialMatch: Record<string, any> = {
-    created_on: dateMatch
+    start_date: dateMatch
   };
 
   // Conditionally apply userId filter

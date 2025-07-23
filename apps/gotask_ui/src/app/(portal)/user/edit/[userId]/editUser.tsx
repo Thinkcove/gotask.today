@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Button, IconButton, Typography } from "@mui/material";
+import { Box} from "@mui/material";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -11,8 +11,8 @@ import { updateUser } from "../../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
-import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import FormHeader from "@/app/component/header/formHeader";
 
 interface EditUserProps {
   data: IUserField;
@@ -100,7 +100,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
       });
     }
   };
-
+  const handleBack = () => router.back();
   return (
     <Box
       sx={{
@@ -114,29 +114,14 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
       }}
     >
       {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton color="primary" onClick={() => router.back()}>
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {transuser("edituser")}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <Button variant="outlined" onClick={() => router.back()} sx={{ borderRadius: 30 }}>
-            {transuser("cancel")}
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            sx={{ borderRadius: 30, backgroundColor: "#741B92", fontWeight: "bold" }}
-          >
-            {transuser("save")}
-          </Button>
-        </Box>
-      </Box>
-
+      <FormHeader
+        isEdit={true}
+        onCancel={handleBack}
+        onSubmit={handleSubmit}
+        editheading={transuser("edituser")}
+        update={transuser("save")}
+        cancel={transuser("cancel")}
+      />
       {/* General Info Form */}
       <Box sx={{ overflowX: "auto", width: "100%" }}>
         <UserInput

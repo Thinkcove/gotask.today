@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Link, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProjectCards from "./projectCards";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -10,7 +10,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
-import SearchBar from "@/app/component/searchBar/searchBar";
 import { Project } from "../../project/interfaces/projectInterface";
 import Chat from "../../chatbot/components/chat";
 import { useRouter } from "next/navigation";
@@ -34,29 +33,23 @@ const ProjectList = () => {
       ) ?? []
     )
   ) as string[];
-
   const allStatuses = Array.from(
     new Set(projects?.map((project: Project) => project.status) ?? [])
   ) as string[];
 
   let filteredProjects: Project[] = [];
-
   if (projects) {
     filteredProjects = projects.filter((project: Project) => {
       const nameMatches = project.name?.toLowerCase().includes(searchTerm.toLowerCase());
-
       const statusMatches = statusFilter.length === 0 || statusFilter.includes(project.status);
-
       const userMatches =
         userFilter.length === 0 ||
         project.users?.some(
           (user: { name?: string }) => user.name && userFilter.includes(user.name)
         );
-
       return nameMatches && statusMatches && userMatches;
     });
   }
-
   const updateFilter = (
     key: "statusFilter" | "userFilter",
     value: string[],
@@ -101,11 +94,8 @@ const ProjectList = () => {
           />
         </Stack>
       </Box>
-
       <ProjectCards projects={filteredProjects} />
-
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
-
       {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (
         <ActionButton
           label={transproject("createnewproject")}

@@ -48,14 +48,14 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
       />
 
       <FilterDropdown
-        label="User"
+        label={t("Projects.Stories.filters.user")}
         options={allUsers}
         selected={userFilter}
         onChange={onUserChange}
       />
 
       <FilterDropdown
-        label="Status"
+        label={t("Projects.Stories.filters.status")}
         options={allStatuses}
         selected={statusFilter}
         onChange={onStatusChange}

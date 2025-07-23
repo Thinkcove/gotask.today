@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Stack } from "@mui/material";
+import { Box, Link, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProjectCards from "./projectCards";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -15,7 +15,7 @@ import { Project } from "../../project/interfaces/projectInterface";
 import Chat from "../../chatbot/components/chat";
 import { useRouter } from "next/navigation";
 import ProjectFilters from "@/app/component/filters/projectFilters";
-import { getStoredObj, setStorage } from "@/app/common/utils/storage";
+import { getStoredObj, setStorage, removeStorage } from "@/app/common/utils/storage";
 
 const ProjectList = () => {
   const { canAccess } = useUserPermission();
@@ -66,6 +66,14 @@ const ProjectList = () => {
     const existing = getStoredObj(FILTER_STORAGE_KEY) || {};
     setStorage(FILTER_STORAGE_KEY, { ...existing, [key]: value });
   };
+  const clearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter([]);
+    setUserFilter([]);
+    removeStorage(FILTER_STORAGE_KEY);
+  };
+  const filtersApplied =
+    searchTerm.trim().length > 0 || statusFilter.length > 0 || userFilter.length > 0;
 
   return (
     <Box
@@ -78,7 +86,7 @@ const ProjectList = () => {
       }}
     >
       <Box mb={3}>
-        <Stack direction="row" spacing={2} alignItems="flex-start" flexWrap="wrap">
+        <Stack direction="row" spacing={2} alignItems="flex-start" flexWrap="wrap" flexGrow={1}>
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
@@ -93,7 +101,56 @@ const ProjectList = () => {
             onStatusChange={(val) => updateFilter("statusFilter", val, setStatusFilter)}
             onUserChange={(val) => updateFilter("userFilter", val, setUserFilter)}
           />
+
+          {filtersApplied && (
+            <Box
+              sx={{
+                mt: 1,
+                display: "flex",
+                justifyContent: "flex-end",
+                width: "100%"
+              }}
+            >
+              <Link
+                component="button"
+                onClick={clearFilters}
+                underline="always"
+                sx={{
+                  fontSize: "1rem",
+                  color: "primary.main",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                {transproject("Stories.filters.clearAll")}
+              </Link>
+            </Box>
+          )}
         </Stack>
+
+        {filtersApplied && (
+          <Box
+            sx={{
+              mt: 1,
+              mb: 1,
+              display: { xs: "flex", md: "none" },
+              justifyContent: "flex-end",
+              width: "100%"
+            }}
+          >
+            <Link
+              component="button"
+              onClick={clearFilters}
+              underline="always"
+              sx={{
+                fontSize: "1rem",
+                color: "primary.main",
+                whiteSpace: "nowrap"
+              }}
+            >
+              {transproject("Stories.filters.clearAll")}
+            </Link>
+          </Box>
+        )}
       </Box>
 
       <ProjectCards projects={filteredProjects} />

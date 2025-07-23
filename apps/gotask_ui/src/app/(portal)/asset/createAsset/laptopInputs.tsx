@@ -25,6 +25,7 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
   systemTypeOptions
 }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
+
   return (
     <>
       <Box>
@@ -125,15 +126,21 @@ const LaptopInputs: React.FC<LaptopInputsProps> = ({
                   }
                 />
               </Grid>
+
               <Grid item xs={12} sm={4}>
                 <FormField
-                  label={transasset("warrantyPeriod")}
-                  type="text"
+                  label={`${transasset("warrantyPeriod")} ${transasset("inmonths")}`}
+                  type="number"
                   placeholder={transasset("warrantyPeriod")}
                   value={formData.warrantyPeriod}
-                  onChange={(val) => onChange("warrantyPeriod", String(val))}
+                  onChange={(val) => {
+                    const stringValue = String(val);
+                    onChange("warrantyPeriod", stringValue);
+                    formData.warrantyPeriod = String(val);
+                  }}
                 />
               </Grid>
+
               <Grid item xs={12} sm={4}>
                 <FormField
                   label={transasset("warrantyDate")}

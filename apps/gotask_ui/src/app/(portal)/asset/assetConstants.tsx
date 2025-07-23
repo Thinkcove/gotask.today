@@ -218,3 +218,15 @@ export const issueType = "issueType";
 export const assignedTo = "assignedTo";
 export const assetId = "assetId";
 export const reportedBy = "reportedBy";
+
+export const calculateWarrantyDate = (
+  purchaseDate: string,
+  warrantyPeriod: string
+): string | null => {
+  const warrantyMonths = parseInt(warrantyPeriod);
+  if (!purchaseDate || isNaN(warrantyMonths)) return null;
+
+  const date = new Date(purchaseDate);
+  date.setMonth(date.getMonth() + warrantyMonths);
+  return date.toISOString().split("T")[0];
+};

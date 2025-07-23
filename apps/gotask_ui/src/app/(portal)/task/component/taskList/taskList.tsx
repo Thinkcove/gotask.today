@@ -424,7 +424,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
       <Box
         ref={scrollRef}
         onScroll={handleScroll}
-        sx={{ overflowY: "auto", height: "calc(100vh - 150px)" }}
+        sx={{ overflowY: "auto", height: "calc(90vh - 150px)" }}
       >
         <Grid container spacing={3} sx={{ p: 2, mb: 8 }}>
           {allTasks.length === 0 && !isLoading && (

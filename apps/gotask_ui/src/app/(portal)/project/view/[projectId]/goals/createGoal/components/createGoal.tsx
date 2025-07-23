@@ -87,10 +87,12 @@ const CreateGoal = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: "100vh",
           m: 0,
           p: 0,
-          overflow: "hidden"
+          height: "100vh",
+          overflowY: "auto",
+          overflowX: "hidden",
+          maxHeight: "calc(120vh - 100px)"
         }}
       >
         <ModuleHeader name={currentProject?.name} />

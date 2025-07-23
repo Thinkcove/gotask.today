@@ -65,8 +65,6 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
   placeholder
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [tempFrom, setTempFrom] = useState(dateFrom);
-  const [tempTo, setTempTo] = useState(dateTo);
 
   const open = Boolean(anchorEl);
 
@@ -74,19 +72,24 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
     setAnchorEl(event.currentTarget);
   };
 
-  const handleApply = () => {
-    setAnchorEl(null);
+  const handleFromChange = (value: string) => {
     if (singleDateMode) {
-      onDateChange(tempFrom, tempFrom);
+      onDateChange(value, value);
     } else {
-      onDateChange(tempFrom, tempTo);
+      onDateChange(value, dateTo);
     }
   };
 
+  const handleToChange = (value: string) => {
+    onDateChange(dateFrom, value);
+  };
+
   const handleClear = () => {
-    setTempFrom("");
-    setTempTo("");
     onDateChange("", "");
+    setAnchorEl(null);
+  };
+
+  const handleClose = () => {
     setAnchorEl(null);
   };
 
@@ -123,7 +126,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
       <Popover
         open={open}
         anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
+        onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         PaperProps={{ sx: { p: 2, borderRadius: 2, minWidth: 360 } }}
       >
@@ -133,8 +136,8 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
               label={transtask("filtercreateddate")}
               type="date"
               InputLabelProps={{ shrink: true }}
-              value={tempFrom}
-              onChange={(e) => setTempFrom(e.target.value)}
+              value={dateFrom}
+              onChange={(e) => handleFromChange(e.target.value)}
             />
           ) : (
             <Stack direction="row" spacing={2}>
@@ -142,15 +145,15 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
                 label={transtask("filterfrom")}
                 type="date"
                 InputLabelProps={{ shrink: true }}
-                value={tempFrom}
-                onChange={(e) => setTempFrom(e.target.value)}
+                value={dateFrom}
+                onChange={(e) => handleFromChange(e.target.value)}
               />
               <StyledTextField
                 label={transtask("filterto")}
                 type="date"
                 InputLabelProps={{ shrink: true }}
-                value={tempTo}
-                onChange={(e) => setTempTo(e.target.value)}
+                value={dateTo}
+                onChange={(e) => handleToChange(e.target.value)}
               />
             </Stack>
           )}
@@ -173,7 +176,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
               {transtask("filterclear")}
             </Button>
             <Button
-              onClick={handleApply}
+              onClick={handleClose}
               variant="contained"
               size="small"
               sx={{ borderRadius: 2, textTransform: "none" }}

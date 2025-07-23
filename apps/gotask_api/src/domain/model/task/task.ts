@@ -17,9 +17,9 @@ export interface ITask extends Document {
   project_id: string;
   project_name: string;
   story_id?: string;
-  due_date?: Date;
+  due_date: Date;
   created_on: Date;
-  start_date?: Date;
+  start_date: Date;
   updated_on: Date;
   loginuser_id?: string;
   loginuser_name?: string;
@@ -32,6 +32,8 @@ export interface ITask extends Document {
   remaining_time: string;
   variation: string;
   created_by?: string;
+  actual_start_date?: Date;
+  actual_end_date?: Date;
 }
 
 const TaskSchema = new Schema<ITask>(
@@ -54,15 +56,12 @@ const TaskSchema = new Schema<ITask>(
     user_name: { type: String },
     project_id: { type: String, required: true },
     project_name: { type: String },
-
     story_id: { type: String },
-
-    start_date: { type: Date },
-    due_date: { type: Date },
+    start_date: { type: Date, required: true },
+    due_date: { type: Date, required: true },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now },
     created_by: { type: String },
-
     user_estimated: { type: String, default: null },
     estimated_time: { type: String, default: null },
     time_spent: { type: [TimeSpentEntrySchema], default: [] },
@@ -70,7 +69,9 @@ const TaskSchema = new Schema<ITask>(
     remaining_time: { type: String, default: null },
     variation: { type: String, default: "0d0h" },
     comment: { type: [TaskCommentSchema] },
-    history: { type: [TaskHistorySchema] }
+    history: { type: [TaskHistorySchema] },
+    actual_start_date: { type: Date },
+    actual_end_date: { type: Date }
   },
   { timestamps: true }
 );

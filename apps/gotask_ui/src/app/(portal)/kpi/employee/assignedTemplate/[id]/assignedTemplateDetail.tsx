@@ -110,52 +110,52 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
         {/* General Tab */}
         {selectedTab === transkpi("general") && (
           <Box sx={{ flex: 1, maxHeight: "calc(100vh - 260px)", overflowY: "auto" }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                  {transkpi("description")}
-                </Typography>
+            <Box mb={3}>
+              <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
+                {transkpi("description")}
+              </Typography>
 
-                <RichTextReadOnly
-                  content={assignment.kpi_Description || ""}
-                  extensions={getTipTapExtensions()}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <RichTextReadOnly
+                content={assignment.kpi_Description || ""}
+                extensions={getTipTapExtensions()}
+              />
+            </Box>
+            <Grid container spacing={2}>
+              <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText label={transkpi("frequency")} value={assignment.frequency} />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transkpi("weightage")}
                   value={assignment.weightage ?? "N/A"}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transkpi("targetvalue")}
                   value={assignment.target_value || "N/A"}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transkpi("assignedby")}
                   value={getUserNameById(assignment.assigned_by)}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transkpi("reviewerid")}
                   value={assignment.reviewer_id ? getUserNameById(assignment.reviewer_id) : "N/A"}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transkpi("status")}
                   value={assignment.status}
                   sx={{ color: getUserStatusColor(assignment.status), textTransform: "capitalize" }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={4} sm={6} md={4}>
                 <LabelValueText
                   label={transkpi("actualvalue")}
                   value={assignment.actual_value || "N/A"}

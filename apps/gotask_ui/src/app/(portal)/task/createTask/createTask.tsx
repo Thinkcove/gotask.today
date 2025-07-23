@@ -16,6 +16,7 @@ const CreateTask: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const storyId = searchParams.get("storyId");
+  const projectId = searchParams.get("projectId");
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -29,7 +30,7 @@ const CreateTask: React.FC = () => {
     status: TASK_STATUS.TO_DO,
     severity: TASK_SEVERITY.LOW,
     user_id: "",
-    project_id: "",
+    project_id: projectId || "",
     created_on: moment().format("YYYY-MM-DD"),
     due_date: "",
     start_date: "",
@@ -58,6 +59,8 @@ const CreateTask: React.FC = () => {
     if (!formData.project_id) newErrors.project_id = transtask("projectname");
     if (!formData.status) newErrors.status = transtask("status");
     if (!formData.severity) newErrors.severity = transtask("severity");
+    if (!formData.start_date) newErrors.start_date = transtask("startdateisrequired");
+    if (!formData.due_date) newErrors.due_date = transtask("duedaterequired");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -163,6 +166,8 @@ const CreateTask: React.FC = () => {
           handleInputChange={handleInputChange}
           errors={errors}
           readOnlyFields={storyId ? ["status"] : ["status"]}
+          isProjectLocked={!!projectId}
+          isStoryLocked={!!storyId}
         />
       </Box>
 

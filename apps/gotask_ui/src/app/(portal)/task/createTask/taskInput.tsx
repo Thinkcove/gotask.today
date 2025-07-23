@@ -10,13 +10,20 @@ import {
   getProjectIdsAndNames,
   getUsersByProjectId
 } from "../service/taskAction";
-import { IFormField, Project, User } from "../interface/taskInterface";
+import {
+  IFormField,
+  Project,
+  StoryOption,
+  StoryResponseWithData,
+  User
+} from "../interface/taskInterface";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import ReusableEditor from "@/app/component/richText/textEditor";
 import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
+import { getStoriesByProject } from "../../projectStory/services/projectStoryActions";
 
 interface TaskInputProps {
   formData: IFormField;
@@ -26,6 +33,8 @@ interface TaskInputProps {
   isUserEstimatedLocked?: boolean;
   isStartDateLocked?: boolean;
   initialStatus?: string;
+  isProjectLocked?: boolean;
+  isStoryLocked?: boolean;
 }
 
 const TaskInput: React.FC<TaskInputProps> = ({
@@ -35,7 +44,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
   readOnlyFields = [],
   isUserEstimatedLocked,
   isStartDateLocked,
-  initialStatus
+  initialStatus,
+  isProjectLocked = false,
+  isStoryLocked = false
 }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers();
@@ -43,6 +54,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
   const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
+  const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
@@ -95,6 +107,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
     try {
       const projects = await getProjectIdsAndNames(userId);
+
       setFilteredProjects(projects);
       handleInputChange("projects", projects);
 
@@ -116,9 +129,18 @@ const TaskInput: React.FC<TaskInputProps> = ({
       handleInputChange("users", getAllUsers || []);
       return;
     }
+    const result = await getStoriesByProject(projectId);
 
+    const storyOptions = ((result as StoryResponseWithData)?.data || []).map(
+      (story: { id: string; title: string }) => ({
+        id: story.id,
+        name: story.title
+      })
+    );
+    setProjectStories(storyOptions);
     try {
       const users = await getUsersByProjectId(projectId);
+
       setFilteredUsers(users);
       handleInputChange("users", users);
 
@@ -189,6 +211,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
     }
   };
 
+  const handleProjectStoriesChange = (storyId: string) => {
+    handleInputChange("story_id", storyId);
+  };
+
   const renderStatusField = () => (
     <Grid item xs={12} sm={6}>
       <FormField
@@ -197,7 +223,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
         options={
           !initialStatus
             ? [transtask("todo")]
-            : ["", ...uniqueStatuses.map((s: any) => s.toUpperCase())]
+            : [
+                "",
+                ...uniqueStatuses.filter((s): s is string => s != null).map((s) => s.toUpperCase())
+              ]
         }
         required
         placeholder={transtask("placeholderstatus")}
@@ -208,6 +237,33 @@ const TaskInput: React.FC<TaskInputProps> = ({
       />
     </Grid>
   );
+
+  const [lastLoadedProjectId, setLastLoadedProjectId] = useState("");
+
+  if (formData.project_id && formData.project_id !== lastLoadedProjectId) {
+    getStoriesByProject(formData.project_id).then((result) => {
+      const storyOptions = ((result as StoryResponseWithData)?.data || []).map(
+        (story: { id: string; title: string }) => ({
+          id: story.id,
+          name: story.title
+        })
+      );
+      setProjectStories(storyOptions);
+    });
+
+    getUsersByProjectId(formData.project_id)
+      .then((users) => {
+        setFilteredUsers(users);
+        handleInputChange("users", users);
+      })
+      .catch((error) => {
+        console.error("Error fetching users for project:", error);
+        setFilteredUsers(getAllUsers || []);
+        handleInputChange("users", getAllUsers || []);
+      });
+
+    setLastLoadedProjectId(formData.project_id);
+  }
 
   return (
     <>
@@ -224,7 +280,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
         />
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <FormField
             label={transtask("labelassignee")}
             type="select"
@@ -237,20 +293,31 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("user_id")}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <FormField
             label={transtask("labelproject")}
             type="select"
             options={projectOptions}
-            required
             placeholder={transtask("placeholderproject")}
             value={formData.project_id}
             onChange={(value) => handleProjectChange(String(value))}
             error={errors.project_id}
-            disabled={isReadOnly("project_id")}
+            disabled={isReadOnly("project_id") || isProjectLocked}
           />
         </Grid>
-
+        <Grid item xs={12} sm={4}>
+          <FormField
+            label={transtask("labelprojectstories")}
+            type="select"
+            options={projectStories}
+            required
+            placeholder={transtask("placeholderprojectstories")}
+            value={formData.story_id}
+            onChange={(value) => handleProjectStoriesChange(String(value))}
+            error={errors.story_id}
+            disabled={isReadOnly("story_id") || isStoryLocked}
+          />
+        </Grid>
         {renderStatusField()}
 
         <Grid item xs={12} sm={6}>
@@ -269,6 +336,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label={transtask("labelstartdate")}
             type="date"
+            required
             placeholder={transtask("placeholderstartdate")}
             value={formData.start_date || ""}
             onChange={(value) =>
@@ -277,6 +345,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 value instanceof Date ? value.toISOString().split("T")[0] : String(value)
               )
             }
+            error={errors?.start_date}
             disabled={isReadOnly("start_date") || isStartDateLocked}
           />
         </Grid>
@@ -324,6 +393,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label={transtask("labelduedate")}
             type="date"
+            required
             placeholder={transtask("placeholderduedate")}
             value={formData.due_date || ""}
             onChange={(value) =>
@@ -332,6 +402,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 value instanceof Date ? value.toISOString().split("T")[0] : String(value)
               )
             }
+            error={errors?.due_date}
             disabled={isReadOnly("due_date")}
           />
         </Grid>
@@ -353,5 +424,4 @@ const TaskInput: React.FC<TaskInputProps> = ({
     </>
   );
 };
-
 export default TaskInput;

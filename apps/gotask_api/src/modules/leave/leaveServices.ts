@@ -198,6 +198,16 @@ const getLeavesWithFiltersService = async (filters: {
       queryBuilder = queryBuilder.skip(skip).limit(page_size);
     }
 
+    const filteredLeaves = await queryBuilder.exec();
+
+    // Build query with pagination and sorting
+    let queryBuilder = Leave.find(query).sort(sort);
+
+    if (page && page_size) {
+      const skip = (page - 1) * page_size;
+      queryBuilder = queryBuilder.skip(skip).limit(page_size);
+    }
+
     if (page && page_size) {
       const skip = (page - 1) * page_size;
       queryBuilder = queryBuilder.skip(skip).limit(page_size);

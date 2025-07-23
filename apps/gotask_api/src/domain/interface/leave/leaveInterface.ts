@@ -39,23 +39,27 @@ const findLeavesWithFilters = async (filters: FilterQuery): Promise<ILeave[]> =>
       : filters.leave_type;
   }
 
-  if (filters.from_date || filters.to_date) {
+  // Handle date filters only if they are string values (raw dates)
+  if (
+    (filters.from_date && typeof filters.from_date === "string") ||
+    (filters.to_date && typeof filters.to_date === "string")
+  ) {
     const dateConditions: any[] = [];
 
-    if (filters.from_date) {
+    if (filters.from_date && typeof filters.from_date === "string") {
       const { start } = getStartAndEndOfDay(filters.from_date);
       dateConditions.push({
         from_date: { $gte: start }
       });
     }
 
-    if (filters.to_date) {
+    if (filters.to_date && typeof filters.to_date === "string") {
       const { end } = getStartAndEndOfDay(filters.to_date);
-
       dateConditions.push({
         to_date: { $lte: end }
       });
     }
+
     if (dateConditions.length === 1) {
       Object.assign(query, dateConditions[0]);
     } else if (dateConditions.length === 2) {

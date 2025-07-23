@@ -89,7 +89,7 @@ const GoalFilterBar: React.FC<GoalFiltersBar> = ({
             />
           </Box>
 
-          {showClear && !filtersApplied && (
+          {showClear && filtersApplied ? (
             <Box
               sx={{
                 flexShrink: 0,
@@ -111,7 +111,7 @@ const GoalFilterBar: React.FC<GoalFiltersBar> = ({
                 {clearText}
               </Link>
             </Box>
-          )}
+          ) : ""}
         </Box>
 
         {/* Clear All - visible separately on mobile */}

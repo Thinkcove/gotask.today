@@ -15,13 +15,13 @@ interface CreateTemplateProps {
   mutate?: () => void;
 }
 
-const CreateTemplate: React.FC<CreateTemplateProps> = ({ }) => {
+const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Partial<Template>>({
     title: "",
     description: "",
@@ -59,7 +59,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ }) => {
       ...formData
     };
     if (!validateForm()) return;
-
+    setIsSubmitting(true);
     try {
       const payload = updatedData;
       await createTemplate(payload);
@@ -105,6 +105,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ }) => {
         createHeading={transkpi("createnewtemplate")}
         create={transkpi("create")}
         cancel={transkpi("cancel")}
+        isSubmitting={isSubmitting}
       />
       <Box
         sx={{

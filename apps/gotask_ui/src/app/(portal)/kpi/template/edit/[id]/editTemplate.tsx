@@ -24,7 +24,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
     severity: SNACKBAR_SEVERITY.INFO
   });
   const router = useRouter();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Partial<Template>>({
     title: template.title,
     description: template.description,
@@ -59,7 +59,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
+    setIsSubmitting(true);
     const updatedFields: Partial<Template> = {
       title: formData.title,
       description: formData.description || undefined,
@@ -113,6 +113,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
           editheading={transkpi("edittemplate")}
           update={transkpi("save")}
           cancel={transkpi("cancel")}
+          isSubmitting={isSubmitting}
         />
         {/* Scrollable Form Section */}
         <Box

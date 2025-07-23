@@ -2,6 +2,7 @@ import env from "@/app/common/env";
 import { deleteData, getData, postData, putData } from "@/app/common/utils/apiData";
 import { withAuth } from "@/app/common/utils/authToken";
 import { GoalComment, GoalData } from "../interface/projectGoal";
+import { PAGE_SIZE_PROJECT_GOAL } from "@/app/common/constants/project";
 
 export const createWeeklyGoal = async (goalData: {
   projectId: string;
@@ -94,7 +95,7 @@ export const deleteComment = async (commentId: string | number) => {
 
 export const fetchWeeklyGoals = async ({
   page = 1,
-  pageSize = 30,
+  pageSize = PAGE_SIZE_PROJECT_GOAL,
   priority,
   status,
   startDate,

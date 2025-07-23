@@ -7,7 +7,7 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { formatStatus, priorityOptions, statusOptions } from "@/app/common/constants/project";
+import { formatStatus, PAGE_SIZE_PROJECT_GOAL, priorityOptions, statusOptions } from "@/app/common/constants/project";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
@@ -76,7 +76,7 @@ function ProjectGoalList() {
       fetchWeeklyGoals({
         projectId: projectID,
         page,
-        pageSize: 30,
+        pageSize: PAGE_SIZE_PROJECT_GOAL,
         status: statusFilter.length ? statusFilter[0] : undefined,
         priority: severityFilter.length ? severityFilter[0] : undefined,
         goalTitle: searchTerm || undefined
@@ -84,7 +84,7 @@ function ProjectGoalList() {
     {
       revalidateOnFocus: false,
       onSuccess: (res) => {
-        if (res?.goals?.length < 30) {
+        if (res?.goals?.length < PAGE_SIZE_PROJECT_GOAL) {
           setHasMore(false);
         }
 

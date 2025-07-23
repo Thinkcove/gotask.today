@@ -1,5 +1,5 @@
 import React, { useState, useCallback, startTransition } from "react";
-import { Button, Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { createTask } from "../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,6 +10,7 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import moment from "moment-timezone";
 import TaskInput from "./taskInput";
+import FormHeader from "@/app/component/header/formHeader";
 
 const CreateTask: React.FC = () => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
@@ -99,6 +100,8 @@ const CreateTask: React.FC = () => {
     }
   }, [formData, validateForm, getCleanedPayload, transtask, router]);
 
+  const handleBack = () => router.back();
+
   return (
     <Box
       sx={{
@@ -109,56 +112,14 @@ const CreateTask: React.FC = () => {
         flexDirection: "column"
       }}
     >
-      <Box sx={{ position: "sticky", top: 0, px: 2, py: 2, zIndex: 1000 }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%"
-          }}
-        >
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {transtask("create")}
-          </Typography>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Button
-              variant="outlined"
-              sx={{
-                borderRadius: "30px",
-                color: "black",
-                border: "2px solid #741B92",
-                px: 2,
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.2)"
-                }
-              }}
-              onClick={() => router.back()}
-            >
-              {transtask("cancelcreate")}
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                borderRadius: "30px",
-                backgroundColor: "#741B92",
-                color: "white",
-                px: 2,
-                textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgb(202, 187, 201)"
-                }
-              }}
-              onClick={handleSubmit}
-            >
-              {transtask("creates")}
-            </Button>
-          </Box>
-        </Box>
-      </Box>
+      <FormHeader
+        isEdit={false}
+        onCancel={handleBack}
+        onSubmit={handleSubmit}
+        createHeading={transtask("create")}
+        create={transtask("creates")}
+        cancel={transtask("cancelcreate")}
+      />
 
       <Box sx={{ px: 2, pb: 2, maxHeight: "calc(100vh - 150px)", overflowY: "auto" }}>
         <TaskInput

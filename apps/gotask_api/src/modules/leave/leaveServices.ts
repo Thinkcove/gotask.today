@@ -8,6 +8,7 @@ import {
   deleteByLeaveId
 } from "../../domain/interface/leave/leaveInterface";
 import { ILeave, Leave } from "../../domain/model/leave/leaveModel";
+import { User } from "../../domain/model/user/user";
 
 const createLeaveService = async (leaveData: Partial<ILeave>) => {
   try {
@@ -199,11 +200,20 @@ const getLeavesWithFiltersService = async (filters: {
 
     const filteredLeaves = await queryBuilder.exec();
 
+    const enrichedLeaves = await Promise.all(
+      filteredLeaves.map(async (leave: any) => {
+        const user = await User.findOne({ id: leave.user_id });
+        return {
+          ...leave.toObject(),
+          user_name: user?.name || null
+        };
+      })
+    );
     return {
       success: true,
       message: "Leave requests retrieved successfully",
       data: {
-        leaves: filteredLeaves,
+        leaves: enrichedLeaves,
         total_count,
         total_pages: Math.ceil(total_count / page_size),
         current_page: page

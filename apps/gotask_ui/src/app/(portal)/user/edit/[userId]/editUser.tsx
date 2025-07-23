@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Button, IconButton, Typography } from "@mui/material";
+import { Box} from "@mui/material";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -11,7 +11,6 @@ import { updateUser } from "../../services/userAction";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 import { validateEmail } from "@/app/common/utils/common";
-import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import FormHeader from "@/app/component/header/formHeader";
 

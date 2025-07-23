@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import UserInput from "../components/userInputs";
 import { createUser } from "../services/userAction";

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useRouter } from "next/navigation";
@@ -106,65 +106,6 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
         }}
       >
         {/* Sticky Top Bar */}
-        {/* <Box
-          sx={{
-            position: "sticky",
-            top: 0,
-            px: 2,
-            py: 2,
-            zIndex: 1000,
-            backgroundColor: "#fff"
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%"
-            }}
-          >
-            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            
-            </Typography>
-
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderRadius: "30px",
-                  color: "black",
-                  border: "2px solid #741B92",
-                  px: 2,
-                  textTransform: "none",
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.2)"
-                  }
-                }}
-                onClick={handleCancel}
-              >
-                {transkpi("cancel")}
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  borderRadius: "30px",
-                  backgroundColor: "#741B92",
-                  color: "white",
-                  px: 2,
-                  textTransform: "none",
-                  fontWeight: "bold",
-                  "&:hover": {
-                    backgroundColor: "rgb(202, 187, 201)"
-                  }
-                }}
-                onClick={handleUpdate}
-              >
-               
-              </Button>
-            </Box>
-          </Box>
-        </Box> */}
         <FormHeader
           isEdit={true}
           onCancel={handleBack}

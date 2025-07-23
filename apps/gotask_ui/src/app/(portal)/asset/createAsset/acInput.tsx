@@ -1,29 +1,25 @@
 import React from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import { Grid, Box } from "@mui/material";
 import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
-import { ASSET_TYPE } from "@/app/common/constants/asset";
-import { connectivityOptions, locationOptions } from "../assetConstants";
-import ReusableEditor from "@/app/component/richText/textEditor";
+import {
+  capacityOptions,
+  energyRatingOptions,
+  locationOptions,
+  typeOptions
+} from "../assetConstants";
 
-interface PrinterInputsProps {
+interface ACInputsProps {
   formData: IAssetAttributes;
   onChange: <K extends keyof IAssetAttributes>(field: K, value: IAssetAttributes[K]) => void;
   errors?: { [key: string]: string };
   selectedAssetType?: IAssetType;
 }
 
-const PrinterInputs: React.FC<PrinterInputsProps> = ({
-  formData,
-  onChange,
-  errors,
-  selectedAssetType
-}) => {
+const ACInputs: React.FC<ACInputsProps> = ({ formData, onChange, errors }) => {
   const transasset = useTranslations(LOCALIZATION.TRANSITION.ASSETS);
-
-  if (selectedAssetType?.name !== ASSET_TYPE.PRINTER) return null;
 
   return (
     <Box>
@@ -32,11 +28,11 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
           <FormField
             label={`${transasset("devicename")} ${transasset("required")}`}
             type="text"
-            value={formData.deviceName}
             placeholder={transasset("devicename")}
+            value={formData.deviceName}
             error={errors?.deviceName}
-            onChange={(val) => onChange("deviceName", String(val))}
             required
+            onChange={(val) => onChange("deviceName", String(val))}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -44,18 +40,18 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
             label={`${transasset("modelname")} ${transasset("required")}`}
             type="text"
             value={formData.modelName}
-            placeholder={transasset("modelname")}
             error={errors?.modelName}
-            onChange={(val) => onChange("modelName", String(val))}
+            placeholder={transasset("modelname")}
             required
+            onChange={(val) => onChange("modelName", String(val))}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormField
             label={transasset("seller")}
+            placeholder={transasset("seller")}
             type="text"
             value={formData.seller}
-            placeholder={transasset("seller")}
             onChange={(val) => onChange("seller", String(val))}
           />
         </Grid>
@@ -63,8 +59,8 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
           <FormField
             label={transasset("dateOfPurchase")}
             type="date"
-            value={formData.dateOfPurchase}
             placeholder={transasset("dateOfPurchase")}
+            value={formData.dateOfPurchase}
             onChange={(val) =>
               onChange(
                 "dateOfPurchase",
@@ -98,6 +94,20 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormField
+            label={transasset("lastServicedDate")}
+            type="date"
+            value={formData.lastServicedDate}
+            placeholder={transasset("lastServicedDate")}
+            onChange={(val) =>
+              onChange(
+                "lastServicedDate",
+                val instanceof Date ? val.toISOString().split("T")[0] : String(val)
+              )
+            }
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <FormField
             label={transasset("location")}
             type="select"
             placeholder={transasset("location")}
@@ -108,60 +118,59 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormField
-            label={transasset("connectivity")}
-            type="multiselect"
-            placeholder={transasset("connectivity")}
-            options={connectivityOptions}
-            value={formData.connectivity?.split(",").map((c) => c.trim()) || []}
-            onChange={(val) => onChange("connectivity", (val as string[]).join(", "))}
+            label={transasset("capacity")}
+            type="select"
+            placeholder={transasset("capacity")}
+            options={capacityOptions.map((accapacity) => ({ id: accapacity, name: accapacity }))}
+            value={formData.capacity}
+            onChange={(val) => onChange("capacity", String(val))}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormField
-            label={transasset("printertype")}
-            type="text"
-            value={formData.printerType}
-            placeholder={transasset("printertype")}
-            onChange={(val) => onChange("printerType", String(val))}
+            label={transasset("type")}
+            type="select"
+            placeholder={transasset("type")}
+            options={typeOptions.map((actype) => ({ id: actype, name: actype }))}
+            value={formData.acType}
+            onChange={(val) => onChange("acType", String(val))}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormField
-            label={transasset("specialfeatures")}
-            type="text"
-            value={formData.specialFeatures}
-            placeholder={transasset("specialfeatures")}
-            onChange={(val) => onChange("specialFeatures", String(val))}
+            label={transasset("energyrating")}
+            type="select"
+            placeholder={transasset("energyrating")}
+            options={energyRatingOptions.map((energy) => ({ id: energy, name: energy }))}
+            value={formData.energyRating}
+            onChange={(val) => onChange("energyRating", String(val))}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormField
-            label={transasset("printeroutputtype")}
+            label={transasset("powerconsumption")}
             type="text"
-            value={formData.printerOutputType}
-            placeholder={transasset("printeroutputtype")}
-            onChange={(val) => onChange("printerOutputType", String(val))}
+            placeholder={transasset("powerconsumption")}
+            value={formData.powerConsumption}
+            onChange={(val) => onChange("powerConsumption", String(val))}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormField
-            label={transasset("supportedpapersizes")}
+            label={transasset("coolingcoverage")}
             type="text"
-            value={formData.supportedPaperSizes}
-            placeholder={transasset("supportedpapersizes")}
-            onChange={(val) => onChange("supportedPaperSizes", String(val))}
+            placeholder={transasset("coolingcoverage")}
+            value={formData.coolingCoverage}
+            onChange={(val) => onChange("coolingCoverage", String(val))}
           />
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-            {transasset("description")}
-          </Typography>
-          <ReusableEditor
-            content={formData.commentService || ""}
-            onChange={(html) => onChange("commentService", html)}
-            placeholder={transasset("description")}
-            readOnly={false}
-            showSaveButton={false}
+        <Grid item xs={12} sm={4}>
+          <FormField
+            label={transasset("invertertype")}
+            type="text"
+            placeholder={transasset("invertertype")}
+            value={formData.inverterType}
+            onChange={(val) => onChange("inverterType", String(val))}
           />
         </Grid>
       </Grid>
@@ -169,4 +178,4 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
   );
 };
 
-export default PrinterInputs;
+export default ACInputs;

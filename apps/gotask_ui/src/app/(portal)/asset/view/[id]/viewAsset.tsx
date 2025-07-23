@@ -361,6 +361,9 @@ const ViewAssetDetail: React.FC<{ id: string }> = ({ id }) => {
                 {asset?.type === ASSET_TYPE.FINGERPRINT_SCANNER && (
                   <>
                     <Grid item xs={12} sm={6} md={4}>
+                      <LabelValueText label={trans("location")} value={asset?.Location || "-"} />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
                       <LabelValueText label={trans("capacity")} value={asset?.capacity || "-"} />
                     </Grid>
                     <Grid item xs={12} sm={6} md={4}>

@@ -32,49 +32,77 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
 }) => {
   const t = useTranslations();
   return (
-    <Box
-      display="flex"
-      flexDirection="row"
-      alignItems="center"
-      flexWrap="wrap"
-      gap={2}
-      justifyContent="flex-start"
-    >
-      <SearchBar
-        value={searchTerm}
-        onChange={onSearchChange}
-        sx={{ minWidth: 250, flex: 1 }}
-        placeholder={t("Projects.searchplaceholder")}
-      />
+    <Box sx={{ width: "100%" }}>
+      {/* Parent container for layout */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: {
+            xs: "column", 
+            sm: "row" 
+          },
+          alignItems: {
+            sm: "center" 
+          },
+          gap: 2,
+          flexWrap: "nowrap"
+        }}
+      >
+        {/* Search Bar */}
+        <Box sx={{ width: { xs: "100%", sm: "300px" } }}>
+          <SearchBar
+            value={searchTerm}
+            onChange={onSearchChange}
+            sx={{ width: "100%" }}
+            placeholder={t("Projects.searchplaceholder")}
+          />
+        </Box>
 
-      <FilterDropdown
-        label={t("Projects.Stories.filters.user")}
-        options={allUsers}
-        selected={userFilter}
-        onChange={onUserChange}
-      />
-
-      <FilterDropdown
-        label={t("Projects.Stories.filters.status")}
-        options={allStatuses}
-        selected={statusFilter}
-        onChange={onStatusChange}
-      />
-
-      {filtersApplied && onClearFilters && (
-        <Link
-          component="button"
-          onClick={onClearFilters}
-          underline="always"
+        {/* Filters */}
+        <Box
           sx={{
-            fontSize: "1rem",
-            color: "primary.main",
-            whiteSpace: "nowrap"
+            display: "flex",
+            flexDirection: "row",
+            overflowX: { xs: "auto", sm: "visible" },
+            gap: 2,
+            width: "100%",
+            pt: { xs: 1, sm: 0 },
+            pb: 1,
+            "&::-webkit-scrollbar": { display: "none" }, // hide scrollbar on WebKit
+            scrollbarWidth: "none" // hide scrollbar on Firefox
           }}
         >
-          {t("Projects.Stories.filters.clearAll")}
-        </Link>
-      )}
+          <FilterDropdown
+            label={t("Projects.Stories.filters.user")}
+            options={allUsers}
+            selected={userFilter}
+            onChange={onUserChange}
+          />
+
+          <FilterDropdown
+            label={t("Projects.Stories.filters.status")}
+            options={allStatuses}
+            selected={statusFilter}
+            onChange={onStatusChange}
+          />
+
+          {filtersApplied && onClearFilters && (
+            <Link
+              component="button"
+              onClick={onClearFilters}
+              underline="always"
+              sx={{
+                fontSize: "1rem",
+                color: "primary.main",
+                whiteSpace: "nowrap",
+                flexShrink: 0
+              }}
+            >
+              {t("Projects.Stories.filters.clearAll")}
+            </Link>
+          )}
+        </Box>
+      </Box>
     </Box>
   );
 };

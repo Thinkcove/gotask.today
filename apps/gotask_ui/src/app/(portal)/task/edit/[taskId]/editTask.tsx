@@ -152,7 +152,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           showhistory={transtask("showhistory")}
           hasHistory={data.history && data.history.length > 0}
           onShowHistory={() => setHistory(true)}
-
         />
 
 

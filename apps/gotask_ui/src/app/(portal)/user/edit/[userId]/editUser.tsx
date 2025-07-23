@@ -121,7 +121,6 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
         editheading={transuser("edituser")}
         update={transuser("save")}
         cancel={transuser("cancel")}
-
       />
       {/* General Info Form */}
       <Box sx={{ overflowX: "auto", width: "100%" }}>

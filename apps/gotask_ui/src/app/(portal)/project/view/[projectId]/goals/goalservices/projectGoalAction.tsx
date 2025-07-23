@@ -94,7 +94,7 @@ export const deleteComment = async (commentId: string | number) => {
 
 export const fetchWeeklyGoals = async ({
   page = 1,
-  pageSize = 10,
+  pageSize = 30,
   priority,
   status,
   startDate,

@@ -89,7 +89,7 @@ const GoalFilterBar: React.FC<GoalFiltersBar> = ({
             />
           </Box>
 
-          {showClear && filtersApplied && (
+          {showClear && !filtersApplied && (
             <Box
               sx={{
                 flexShrink: 0,

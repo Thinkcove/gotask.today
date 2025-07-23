@@ -76,7 +76,7 @@ function ProjectGoalList() {
       fetchWeeklyGoals({
         projectId: projectID,
         page,
-        pageSize: 10,
+        pageSize: 30,
         status: statusFilter.length ? statusFilter[0] : undefined,
         priority: severityFilter.length ? severityFilter[0] : undefined,
         goalTitle: searchTerm || undefined
@@ -84,7 +84,7 @@ function ProjectGoalList() {
     {
       revalidateOnFocus: false,
       onSuccess: (res) => {
-        if (res?.goals?.length < 10) {
+        if (res?.goals?.length < 30) {
           setHasMore(false);
         }
 
@@ -146,14 +146,7 @@ function ProjectGoalList() {
     removeStorage("projectGoalListFilter");
   };
 
-  const filteredGoals = allGoals?.filter((goal) => {
-    const matchesSearchTerm =
-      goal.goalTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      goal.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter.length ? statusFilter.includes(goal.status) : true;
-    const matchesSeverity = severityFilter.length ? severityFilter.includes(goal.priority) : true;
-    return matchesSearchTerm && matchesStatus && matchesSeverity;
-  });
+
 
   if (isLoading && allGoals.length === 0) {
     return (
@@ -171,14 +164,25 @@ function ProjectGoalList() {
     );
   }
 
-  const noGoalsAtAll = allGoals.filter((goal) => goal.projectId === projectID).length === 0;
+  const filteredGoals = allGoals?.filter((goal) => {
+    const matchesProject = goal.projectId === projectID;
+
+    const matchesSearchTerm = goal.goalTitle?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = statusFilter.length > 0 ? statusFilter.includes(goal.status) : true;
+
+    const matchesSeverity = severityFilter.length > 0 ? severityFilter.includes(goal.priority) : true;
+
+    return matchesProject && matchesSearchTerm && matchesStatus && matchesSeverity;
+  });
+
+  const noGoalsForProject = allGoals.filter((goal) => goal.projectId === projectID).length === 0;
   const noFilteredResults = filteredGoals?.length === 0;
-  const isFilterActive =
-    statusFilter.length > 0 || severityFilter.length > 0 || searchTerm.trim() !== "";
+  const isFilterActive = statusFilter.length > 0 || severityFilter.length > 0 || searchTerm.trim() !== "";
 
   return (
     <Box>
-      {noGoalsAtAll && !isFilterActive ? (
+      {noGoalsForProject && !isFilterActive ? (
         <>
           <Box sx={{ pl: 2, pt: 2 }}>
             <IconButton color="primary" onClick={handleGoBack}>

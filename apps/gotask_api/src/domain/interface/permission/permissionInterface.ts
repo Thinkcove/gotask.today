@@ -19,11 +19,7 @@ const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermis
   const query: any = {};
 
   if (filters.user_id) {
-    if (Array.isArray(filters.user_id)) {
-      query.user_id = { $in: filters.user_id };
-    } else {
-      query.user_id = filters.user_id;
-    }
+    query.user_id = Array.isArray(filters.user_id) ? { $in: filters.user_id } : filters.user_id;
   }
 
   if (filters.date) {
@@ -41,12 +37,9 @@ const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermis
     query.date = dateQuery;
   }
 
-  const sort: any = {};
-  if (filters.sort_field) {
-    sort[filters.sort_field] = filters.sort_order === SORT_ORDER.DESC ? -1 : 1;
-  } else {
-    sort.created_on = -1; // Default sort
-  }
+  const sort: any = filters.sort_field
+    ? { [filters.sort_field]: filters.sort_order === SORT_ORDER.DESC ? -1 : 1 }
+    : { created_on: -1 }; // Default sort
 
   let queryBuilder = Permission.find(query).sort(sort);
 
@@ -56,7 +49,20 @@ const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermis
     queryBuilder = queryBuilder.skip(skip).limit(filters.page_size);
   }
 
-  return await queryBuilder.exec();
+  const permissions = await queryBuilder.exec();
+
+  // Enrich with user_name
+  const enrichedPermissions = await Promise.all(
+    permissions.map(async (permission: any) => {
+      const user = await User.findOne({ id: permission.user_id });
+      return {
+        ...permission.toObject(),
+        user_name: user?.name || null
+      };
+    })
+  );
+
+  return enrichedPermissions;
 };
 
 const createNewPermission = async (permissionData: Partial<IPermission>): Promise<IPermission> => {
@@ -72,9 +78,20 @@ const createNewPermission = async (permissionData: Partial<IPermission>): Promis
 
   return await newPermission.save();
 };
-
 const findAllPermissions = async (): Promise<IPermission[]> => {
-  return await Permission.find().sort({ created_on: -1 });
+  const permissions = await Permission.find().sort({ created_on: -1 });
+
+  const enrichedPermissions = await Promise.all(
+    permissions.map(async (permission: any) => {
+      const user = await User.findOne({ id: permission.user_id });
+      return {
+        ...permission.toObject(),
+        user_name: user?.name || null
+      };
+    })
+  );
+
+  return enrichedPermissions;
 };
 
 const findPermissionById = async (id: string): Promise<IPermission | null> => {

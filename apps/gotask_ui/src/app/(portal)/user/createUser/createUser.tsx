@@ -116,6 +116,7 @@ const CreateUser = () => {
           create={transuser("createUser")}
           cancel={transuser("cancelUser")}
         />
+        
       </Box>
 
       {/* Input Form */}

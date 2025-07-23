@@ -65,66 +65,54 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   };
 
   const handleSubmit = async () => {
-    try {
-      const isUserEstimatedChanged = formData.user_estimated !== data.user_estimated;
-      const isUserEstimateProvided =
-        formData.user_estimated !== null &&
-        formData.user_estimated !== undefined &&
-        formData.user_estimated !== "";
+    const updatedFields: Record<string, string | number> = {};
+    const formatDate = (date?: string) => date?.split("T")[0] || "";
 
-      const updatedFields: Record<string, string | number> = {};
-      const formattedDueDate = data?.due_date?.split("T")[0] || "";
-      const formattedStartDate = data?.start_date?.split("T")[0] || "";
+    const fieldChanged = (field: keyof IFormField, current: string) =>
+      !isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, field) && formData[field] !== current;
 
-      const fieldCheck = (field: keyof IFormField, current: string) => {
-        return (
-          !isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, field) &&
-          formData[field] !== current
-        );
-      };
+    if (fieldChanged("title", data.title)) updatedFields.title = formData.title;
+    if (fieldChanged("user_id", data.user_id)) updatedFields.user_id = formData.user_id;
+    if (fieldChanged("project_id", data.project_id)) updatedFields.project_id = formData.project_id;
+    if (fieldChanged("status", data.status)) updatedFields.status = formData.status;
+    if (fieldChanged("severity", data.severity)) updatedFields.severity = formData.severity;
+    if (fieldChanged("due_date", formatDate(data.due_date)))
+      updatedFields.due_date = formData.due_date;
+    if (fieldChanged("start_date", formatDate(data.start_date)))
+      updatedFields.start_date = formData.start_date;
+    if (fieldChanged("description", data.description))
+      updatedFields.description = formData.description;
 
-      if (fieldCheck("title", data.title)) updatedFields.title = formData.title;
-      if (fieldCheck("user_id", data.user_id)) updatedFields.user_id = formData.user_id;
-      if (fieldCheck("project_id", data.project_id)) updatedFields.project_id = formData.project_id;
-      if (fieldCheck("status", data.status)) updatedFields.status = formData.status;
-      if (fieldCheck("severity", data.severity)) updatedFields.severity = formData.severity;
-      if (fieldCheck("due_date", formattedDueDate)) updatedFields.due_date = formData.due_date;
-      if (fieldCheck("start_date", formattedStartDate))
-        updatedFields.start_date = formData.start_date;
-      if (fieldCheck("description", data.description)) {
-        updatedFields.description = formData.description;
-      }
+    if (formData.user_estimated !== data.user_estimated && formData.user_estimated) {
+      updatedFields.user_estimated = formData.user_estimated;
+    }
 
-      if (isUserEstimatedChanged && isUserEstimateProvided) {
-        updatedFields.user_estimated = formData.user_estimated;
-      }
-
-      if (Object.keys(updatedFields).length > 0) {
-        if (user?.name) updatedFields.loginuser_name = user.name;
-        if (user?.id) updatedFields.loginuser_id = user.id;
-
-        await updateTask(data.id, updatedFields);
-        await mutate();
-
-        setSnackbar({
-          open: true,
-          message: transtask("updatesuccess"),
-          severity: SNACKBAR_SEVERITY.SUCCESS
-        });
-
-        setTimeout(() => router.back(), 2000);
-      } else {
-        setSnackbar({
-          open: true,
-          message: transtask("noupdates"),
-          severity: SNACKBAR_SEVERITY.INFO
-        });
-      }
-    } catch (error) {
-      console.error("Error updating task:", error);
+    if (Object.keys(updatedFields).length === 0) {
       setSnackbar({
         open: true,
-        message: transtask("upadteerror"),
+        message: transtask("noupdates"),
+        severity: SNACKBAR_SEVERITY.INFO
+      });
+      return;
+    }
+
+    if (user?.name) updatedFields.loginuser_name = user.name;
+    if (user?.id) updatedFields.loginuser_id = user.id;
+
+    const response = await updateTask(data.id, updatedFields);
+
+    if (response?.success) {
+      await mutate();
+      setSnackbar({
+        open: true,
+        message: response.message || transtask("updatesuccess"),
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
+      setTimeout(() => router.back(), 2000);
+    } else {
+      setSnackbar({
+        open: true,
+        message: response?.message || transtask("upadteerror"),
         severity: SNACKBAR_SEVERITY.ERROR
       });
     }

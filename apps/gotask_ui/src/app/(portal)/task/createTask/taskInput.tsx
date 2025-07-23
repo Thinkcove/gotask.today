@@ -24,6 +24,7 @@ import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
 import { getStoriesByProject } from "../../projectStory/services/projectStoryActions";
+import { calculateDueDate } from "@/app/common/utils/taskTime";
 
 interface TaskInputProps {
   formData: IFormField;
@@ -336,20 +337,23 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label={transtask("labelstartdate")}
             type="date"
-            required
             placeholder={transtask("placeholderstartdate")}
             value={formData.start_date || ""}
-            onChange={(value) =>
-              handleInputChange(
-                "start_date",
-                value instanceof Date ? value.toISOString().split("T")[0] : String(value)
-              )
-            }
-            error={errors?.start_date}
+            onChange={(value) => {
+              const dateStr =
+                value instanceof Date ? value.toISOString().split("T")[0] : String(value);
+              handleInputChange("start_date", dateStr);
+
+              if (formData.user_estimated) {
+                const newDueDate = calculateDueDate(dateStr, formData.user_estimated);
+                handleInputChange("due_date", newDueDate);
+              }
+            }}
             disabled={isReadOnly("start_date") || isStartDateLocked}
           />
         </Grid>
 
+        {/* Required Days */}
         <Grid item xs={12} sm={6} md={3}>
           <FormField
             label={transtask("labeluserestimateddays")}
@@ -360,19 +364,36 @@ const TaskInput: React.FC<TaskInputProps> = ({
               formData.user_estimated?.includes("d") ? formData.user_estimated.split("d")[0] : ""
             }
             onChange={(val) => {
-              const hours = formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "";
-              const days = val === "" ? "" : val;
-              handleInputChange("user_estimated", `${days || 0}d${hours || 0}h`);
+              const rawHours =
+                formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "0";
+              const hours = rawHours === "" ? "0" : rawHours;
+              const days = val === "" ? "0" : val;
+
+              const shouldClear = (!days || days === "0") && (!hours || hours === "0");
+              const newEstimate = shouldClear ? "" : `${days || 0}d${hours || 0}h`;
+
+              handleInputChange("user_estimated", newEstimate);
+
+              if (shouldClear) {
+                handleInputChange("due_date", "");
+                return;
+              }
+
+              if (formData.start_date) {
+                const newDueDate = calculateDueDate(formData.start_date, newEstimate);
+                handleInputChange("due_date", newDueDate);
+              }
             }}
             disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
         </Grid>
 
+        {/* Required Hours */}
         <Grid item xs={12} sm={6} md={3}>
           <FormField
             label={transtask("labeluserestimatedhours")}
             type="number"
-            min={1}
+            min={0}
             max={8}
             placeholder={transtask("placeholderhours")}
             value={
@@ -381,14 +402,30 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 : ""
             }
             onChange={(val) => {
-              const days = formData.user_estimated?.split("d")[0] || "";
-              const hours = val === "" ? "" : val;
-              handleInputChange("user_estimated", `${days || 0}d${hours || 0}h`);
+              const rawDays = formData.user_estimated?.split("d")[0] || "0";
+              const days = rawDays === "" ? "0" : rawDays;
+              const hours = val === "" ? "0" : val;
+
+              const shouldClear = (!days || days === "0") && (!hours || hours === "0");
+              const newEstimate = shouldClear ? "" : `${days || 0}d${hours || 0}h`;
+
+              handleInputChange("user_estimated", newEstimate);
+
+              if (shouldClear) {
+                handleInputChange("due_date", "");
+                return;
+              }
+
+              if (formData.start_date) {
+                const newDueDate = calculateDueDate(formData.start_date, newEstimate);
+                handleInputChange("due_date", newDueDate);
+              }
             }}
             disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
         </Grid>
 
+        {/* Due Date */}
         <Grid item xs={12} sm={6} md={3}>
           <FormField
             label={transtask("labelduedate")}
@@ -396,12 +433,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
             required
             placeholder={transtask("placeholderduedate")}
             value={formData.due_date || ""}
-            onChange={(value) =>
-              handleInputChange(
-                "due_date",
-                value instanceof Date ? value.toISOString().split("T")[0] : String(value)
-              )
-            }
+            onChange={(value) => {
+              const dateStr =
+                value instanceof Date ? value.toISOString().split("T")[0] : String(value);
+              handleInputChange("due_date", dateStr);
+            }}
             error={errors?.due_date}
             disabled={isReadOnly("due_date")}
           />

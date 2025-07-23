@@ -140,3 +140,25 @@ export const calculateTimeProgressData = (
     variationFillPercentage
   };
 };
+
+// -----------------------------
+// Calculation For Due Date
+// -----------------------------
+
+export const calculateDueDate = (startDate: string, userEstimated: string): string => {
+  const match = userEstimated.match(DAY_HOUR_COMBO_PATTERN);
+  if (!startDate || !match) return "";
+
+  const [_, d, h] = match;
+  const days = parseInt(d, 10);
+  const hours = parseInt(h, 10);
+
+  const totalDays = days + Math.floor(hours / TASK_HOURS);
+  const remainingHours = hours % TASK_HOURS;
+
+  const date = new Date(startDate);
+  date.setDate(date.getDate() + totalDays);
+  date.setHours(date.getHours() + remainingHours);
+
+  return date.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+};

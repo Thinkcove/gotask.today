@@ -30,7 +30,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const router = useRouter();
   const { user } = useUser();
   const { isFieldRestricted } = useUserPermission();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<IFormField>({
     title: data?.title || "",
     description: data?.description || "",
@@ -104,6 +104,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         if (user?.id) updatedFields.loginuser_id = user.id;
 
         await updateTask(data.id, updatedFields);
+        setIsSubmitting(true);
         await mutate();
 
         setSnackbar({
@@ -141,7 +142,6 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       <ModuleHeader name={transtask("tasks")} />
 
       <Box sx={{ maxWidth: "1400px", margin: "0 auto" }}>
-
         <FormHeader
           isEdit={true}
           onCancel={handleBack}
@@ -152,8 +152,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           showhistory={transtask("showhistory")}
           hasHistory={data.history && data.history.length > 0}
           onShowHistory={() => setHistory(true)}
+          isSubmitting={isSubmitting}
         />
-
 
         <Box sx={{ px: 2, pb: 2, maxHeight: "calc(100vh - 250px)", overflowY: "auto" }}>
           <TaskInput

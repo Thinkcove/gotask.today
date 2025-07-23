@@ -9,6 +9,7 @@ import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { Template } from "../../../service/templateInterface";
 import { updateTemplate } from "../../../service/templateAction";
+import FormHeader from "@/app/component/header/formHeader";
 
 interface EditTemplateProps {
   template: Template;
@@ -56,7 +57,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleUpdate = async () => {
+  const handleSubmit = async () => {
     if (!validateForm()) return;
 
     const updatedFields: Partial<Template> = {
@@ -87,7 +88,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
     }
   };
 
-  const handleCancel = () => {
+  const handleBack = () => {
     router.push("/kpi/template");
   };
 
@@ -105,7 +106,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
         }}
       >
         {/* Sticky Top Bar */}
-        <Box
+        {/* <Box
           sx={{
             position: "sticky",
             top: 0,
@@ -124,7 +125,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
             }}
           >
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-              {transkpi("edittemplate")}
+            
             </Typography>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -159,12 +160,19 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
                 }}
                 onClick={handleUpdate}
               >
-                {transkpi("update")}
+               
               </Button>
             </Box>
           </Box>
-        </Box>
-
+        </Box> */}
+        <FormHeader
+          isEdit={true}
+          onCancel={handleBack}
+          onSubmit={handleSubmit}
+          editheading={transkpi("edittemplate")}
+          update={transkpi("save")}
+          cancel={transkpi("cancel")}
+        />
         {/* Scrollable Form Section */}
         <Box
           sx={{

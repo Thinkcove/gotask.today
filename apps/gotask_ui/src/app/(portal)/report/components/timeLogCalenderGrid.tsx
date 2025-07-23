@@ -282,7 +282,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
   const singleProjectName =
     selectedProjects.length === 1
       ? data.find((d) => d.project_id === selectedProjects[0])?.project_name ||
-        transreport("noproject")
+      transreport("noproject")
       : null;
 
   const renderCellContent = (
@@ -405,7 +405,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
         </div>
       )}
 
-      <TableContainer component={Paper} sx={{ maxHeight: 640 }}>
+      <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}>
         <Table stickyHeader size="small" sx={{ minWidth: 1200 }}>
           <TableHead>
             <TableRow>
@@ -666,7 +666,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
             })}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer >
     </>
   );
 };

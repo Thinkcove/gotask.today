@@ -8,6 +8,7 @@ import {
   deleteByLeaveId
 } from "../../domain/interface/leave/leaveInterface";
 import { ILeave, Leave } from "../../domain/model/leave/leaveModel";
+import { User } from "../../domain/model/user/user";
 
 const createLeaveService = async (leaveData: Partial<ILeave>) => {
   try {
@@ -136,39 +137,31 @@ const getLeavesWithFiltersService = async (filters: {
   sort_order?: typeof SORT_ORDER.ASC | typeof SORT_ORDER.DESC;
 }) => {
   try {
-    // Validate dates when both are provided
     if (filters.from_date && filters.to_date) {
       if (new Date(filters.from_date) > new Date(filters.to_date)) {
         throw new Error("From date cannot be later than To date");
       }
     }
 
-    // Set default pagination values
     const page = filters.page || parseInt(PAGE.ONE);
     const page_size = filters.page_size || parseInt(PAGE.TEN);
 
-    // Build query for filtering
     const query: any = {};
 
     if (filters.user_id) query.user_id = filters.user_id;
     if (filters.leave_type) query.leave_type = filters.leave_type;
 
-    // Process date filtering logic here
     if (filters.from_date || filters.to_date) {
       const dateConditions: any[] = [];
 
       if (filters.from_date) {
         const { start } = getStartAndEndOfDay(filters.from_date);
-        dateConditions.push({
-          from_date: { $gte: start }
-        });
+        dateConditions.push({ from_date: { $gte: start } });
       }
 
       if (filters.to_date) {
         const { end } = getStartAndEndOfDay(filters.to_date);
-        dateConditions.push({
-          to_date: { $lte: end }
-        });
+        dateConditions.push({ to_date: { $lte: end } });
       }
 
       if (dateConditions.length === 1) {
@@ -178,10 +171,8 @@ const getLeavesWithFiltersService = async (filters: {
       }
     }
 
-    // Fetch total count for pagination
     const total_count = await Leave.countDocuments(query);
 
-    // Set up sorting
     const sort: any = {};
     if (filters.sort_field) {
       sort[filters.sort_field] = filters.sort_order === SORT_ORDER.DESC ? -1 : 1;
@@ -189,7 +180,6 @@ const getLeavesWithFiltersService = async (filters: {
       sort.updatedAt = -1;
     }
 
-    // Build query with pagination and sorting
     let queryBuilder = Leave.find(query).sort(sort);
 
     if (page && page_size) {
@@ -199,11 +189,21 @@ const getLeavesWithFiltersService = async (filters: {
 
     const filteredLeaves = await queryBuilder.exec();
 
+    const enrichedLeaves = await Promise.all(
+      filteredLeaves.map(async (leave: any) => {
+        const user = await User.findOne({ id: leave.user_id });
+        return {
+          ...leave.toObject(),
+          user_name: user?.name || null
+        };
+      })
+    );
+
     return {
       success: true,
       message: "Leave requests retrieved successfully",
       data: {
-        leaves: filteredLeaves,
+        leaves: enrichedLeaves,
         total_count,
         total_pages: Math.ceil(total_count / page_size),
         current_page: page

@@ -158,7 +158,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
       <Box>
         {skills.length === 0 ? (
-          <Paper elevation={1} sx={{ color: "text.secondary" }}>
+          <Paper elevation={1} sx={{ color: "text.secondary", p: 2 }}>
             {trans("noskills")}
           </Paper>
         ) : (

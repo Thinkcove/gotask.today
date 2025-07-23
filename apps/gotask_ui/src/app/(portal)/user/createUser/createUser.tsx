@@ -33,6 +33,7 @@ const CreateUser = () => {
     message: "",
     severity: SNACKBAR_SEVERITY.INFO
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<IUserField>(initialFormState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   // Validate required fields
@@ -69,7 +70,7 @@ const CreateUser = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
+    setIsSubmitting(true);
     try {
       const response = await createUser(formData);
 
@@ -107,7 +108,6 @@ const CreateUser = () => {
     <Box sx={{ maxWidth: "1400px", mx: "auto", display: "flex", flexDirection: "column" }}>
       {/* Sticky Header */}
       <Box sx={{ position: "sticky", top: 0, px: 2, py: 2, zIndex: 1000, backgroundColor: "#fff" }}>
-
         <FormHeader
           isEdit={false}
           onCancel={handleBack}
@@ -115,8 +115,8 @@ const CreateUser = () => {
           createHeading={transuser("createusernew")}
           create={transuser("createUser")}
           cancel={transuser("cancelUser")}
+          isSubmitting={isSubmitting}
         />
-        
       </Box>
 
       {/* Input Form */}

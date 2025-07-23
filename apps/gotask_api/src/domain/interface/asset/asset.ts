@@ -1,12 +1,13 @@
 import { NOT_UTILIZED, OVERUTILIZED } from "../../../constants/assetConstant";
 import { buildContainsRegex } from "../../../constants/utils/regex";
-import { Asset, IAsset } from "../../model/asset/asset";
+import { Asset } from "../../model/asset/asset";
+import { IAssetsSchema } from "../../model/asset/interface/assetsSchema";
 import { AssetTag } from "../../model/assetTag/assetTag";
 import { AssetType, IAssetType } from "../../model/assetType/assetType";
 import { User } from "../../model/user/user";
 import { getAssetByUserId } from "../assetTag/assetTag";
 
-const createAsset = async (assetData: IAsset): Promise<IAsset> => {
+const createAsset = async (assetData: IAssetsSchema): Promise<IAssetsSchema> => {
   const newAsset = new Asset(assetData);
   return await newAsset.save();
 };
@@ -16,15 +17,15 @@ const createAssetType = async (assetData: IAssetType): Promise<IAssetType> => {
   return await newAssetType.save();
 };
 
-const getAllAssetsTypes = async (): Promise<IAsset[]> => {
+const getAllAssetsTypes = async (): Promise<IAssetsSchema[]> => {
   return await AssetType.find();
 };
 
-const getAssetById = async (id: string): Promise<IAsset | null> => {
+const getAssetById = async (id: string): Promise<IAssetsSchema | null> => {
   return await Asset.findOne({ id, active: true });
 };
 
-const getAssetTypeById = async (id: string): Promise<IAsset | null> => {
+const getAssetTypeById = async (id: string): Promise<IAssetsSchema | null> => {
   return await AssetType.findOne({ id });
 };
 
@@ -42,7 +43,7 @@ const getAllAssets = async (
   warrantyTo?: Date,
   searchText?: string,
   assetUsage?: string | string[]
-): Promise<{ assets: IAsset[]; total: number }> => {
+): Promise<{ assets: IAssetsSchema[]; total: number }> => {
   const usageType = Array.isArray(assetUsage) ? assetUsage[0] : assetUsage;
 
   const query: any = { active: true };
@@ -147,7 +148,10 @@ const getAllAssets = async (
   return { assets, total };
 };
 
-export const updateAsset = async (id: string, payload: Partial<IAsset>): Promise<IAsset | null> => {
+export const updateAsset = async (
+  id: string,
+  payload: Partial<IAssetsSchema>
+): Promise<IAssetsSchema | null> => {
   return await Asset.findOneAndUpdate(
     { id },
     { $set: payload },
@@ -157,11 +161,11 @@ export const updateAsset = async (id: string, payload: Partial<IAsset>): Promise
     }
   ).lean();
 };
-const update = async (asset: IAsset): Promise<IAsset> => {
+const update = async (asset: IAssetsSchema): Promise<IAssetsSchema> => {
   return await asset.save();
 };
 
-const getById = async (id: string): Promise<IAsset[] | null> => {
+const getById = async (id: string): Promise<IAssetsSchema[] | null> => {
   return await Asset.findOne({ id, active: true });
 };
 

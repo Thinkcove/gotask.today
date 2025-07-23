@@ -1,11 +1,11 @@
 import { findUser } from "../../../domain/interface/user/userInterface";
-import { IAsset } from "../../../domain/model/asset/asset";
 import { formatDate } from "../../../constants/utils/common";
 import {
   capitalizeFirstLetter,
   dateRegex,
   insertSpaceBeforeCapital
 } from "../../../constants/utils/regex";
+import { IAsset } from "../../../domain/model/asset/interface/asset";
 
 export const generateAssetHistoryEntry = async (
   existingAsset: IAsset,

@@ -16,11 +16,11 @@ import { findRoleByIds } from "../../domain/interface/role/roleInterface";
 import { Organization } from "../../domain/model/organization/organization";
 import { getAssetByUserId, getIssuesByUserId } from "../../domain/interface/assetTag/assetTag";
 import { getById } from "../../domain/interface/asset/asset";
-import { IAsset } from "../../domain/model/asset/asset";
 import { ISkill } from "../../domain/model/user/skills";
 import { ICertificate } from "../../domain/model/user/certificate";
 import { IIncrementHistory } from "../../domain/model/user/increment";
 import { PROFICIENCY_MAXIMUM } from "../../constants/utils/userConstant";
+import { IAssetsSchema } from "../../domain/model/asset/interface/assetsSchema";
 
 class userService {
   // CREATE USER
@@ -172,7 +172,7 @@ class userService {
       }
 
       const userAsset = await getAssetByUserId(id);
-      let assetData: IAsset[] = [];
+      let assetData: IAssetsSchema[] = [];
 
       const allIssuesNested = await Promise.all(
         userAsset.map((tag) => getIssuesByUserId(tag.userId, tag.assetId))
@@ -185,7 +185,7 @@ class userService {
         const assetResults = await Promise.all(assetPromises);
         // Flatten the array and filter out null/undefined values
         assetData = assetResults
-          .filter((result): result is IAsset[] => result !== null && result !== undefined)
+          .filter((result): result is IAssetsSchema[] => result !== null && result !== undefined)
           .flat();
       }
 

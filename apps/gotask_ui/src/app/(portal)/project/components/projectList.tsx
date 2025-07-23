@@ -1,5 +1,5 @@
 "use client";
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { Box, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProjectCards from "./projectCards";
@@ -15,6 +15,7 @@ import { Project } from "../../project/interfaces/projectInterface";
 import Chat from "../../chatbot/components/chat";
 import { useRouter } from "next/navigation";
 import ProjectFilters from "@/app/component/filters/projectFilters";
+import { getStoredObj, setStorage } from "@/app/common/utils/storage";
 
 const ProjectList = () => {
   const { canAccess } = useUserPermission();
@@ -23,10 +24,7 @@ const ProjectList = () => {
   const { data: projects } = useSWR("fetch-projects", fetcher);
   const router = useRouter();
   const FILTER_STORAGE_KEY = "projectFilters";
-  const storedFilters =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem(FILTER_STORAGE_KEY) || "{}")
-      : {};
+  const storedFilters = getStoredObj(FILTER_STORAGE_KEY) || {};
   const [statusFilter, setStatusFilter] = useState<string[]>(storedFilters.statusFilter || []);
   const [userFilter, setUserFilter] = useState<string[]>(storedFilters.userFilter || []);
   const allUsers: string[] = Array.from(
@@ -65,8 +63,8 @@ const ProjectList = () => {
     setter: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
     setter(value);
-    const existing = JSON.parse(localStorage.getItem(FILTER_STORAGE_KEY) || "{}");
-    localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify({ ...existing, [key]: value }));
+    const existing = getStoredObj(FILTER_STORAGE_KEY) || {};
+    setStorage(FILTER_STORAGE_KEY, { ...existing, [key]: value });
   };
 
   return (

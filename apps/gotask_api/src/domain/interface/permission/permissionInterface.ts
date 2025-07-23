@@ -56,7 +56,19 @@ const findPermissionsWithFilters = async (filters: FilterQuery): Promise<IPermis
     queryBuilder = queryBuilder.skip(skip).limit(filters.page_size);
   }
 
-  return await queryBuilder.exec();
+  const permissions = await queryBuilder.exec();
+
+  const enrichedPermissions = await Promise.all(
+    permissions.map(async (permission: any) => {
+      const user = await User.findOne({ id: permission.user_id });
+      return {
+        ...permission.toObject(),
+        user_name: user?.name || null
+      };
+    })
+  );
+
+  return enrichedPermissions;
 };
 
 const createNewPermission = async (permissionData: Partial<IPermission>): Promise<IPermission> => {
@@ -74,7 +86,19 @@ const createNewPermission = async (permissionData: Partial<IPermission>): Promis
 };
 
 const findAllPermissions = async (): Promise<IPermission[]> => {
-  return await Permission.find().sort({ created_on: -1 });
+  const permissions = await Permission.find().sort({ created_on: -1 });
+
+  const enrichedPermissions = await Promise.all(
+    permissions.map(async (permission: any) => {
+      const user = await User.findOne({ id: permission.user_id });
+      return {
+        ...permission.toObject(),
+        user_name: user?.name || null
+      };
+    })
+  );
+
+  return enrichedPermissions;
 };
 
 const findPermissionById = async (id: string): Promise<IPermission | null> => {

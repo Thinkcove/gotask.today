@@ -22,7 +22,7 @@ import {
   updateTag
 } from "../../domain/interface/assetTag/assetTag";
 import { findUser, findUserByEmail } from "../../domain/interface/user/userInterface";
-import { IAsset } from "../../domain/model/asset/asset";
+import { IAssetsSchema } from "../../domain/model/asset/interface/assetsSchema";
 import { generateAssetHistoryEntry } from "./utils/assetHistory";
 
 class assetService {
@@ -189,7 +189,7 @@ class assetService {
     assetUsage?: string;
   }) => {
     try {
-      let assets: IAsset[] = [];
+      let assets: IAssetsSchema[] = [];
       let total = 0;
 
       if (typeof page === "number" && typeof limit === "number") {

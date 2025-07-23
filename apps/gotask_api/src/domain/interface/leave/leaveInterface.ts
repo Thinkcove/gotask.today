@@ -113,7 +113,19 @@ const createNewLeave = async (leaveData: Partial<ILeave>): Promise<ILeave> => {
 };
 
 const findAllLeaves = async (): Promise<ILeave[]> => {
-  return await Leave.find().sort({ updatedAt: -1 });
+  const leaves = await Leave.find().sort({ updatedAt: -1 });
+
+  const enrichedLeaves = await Promise.all(
+    leaves.map(async (leave: any) => {
+      const user = await User.findOne({ id: leave.user_id });
+      return {
+        ...leave.toObject(),
+        user_name: user?.name || null
+      };
+    })
+  );
+
+  return enrichedLeaves;
 };
 
 const findLeaveById = async (id: string): Promise<ILeave | null> => {

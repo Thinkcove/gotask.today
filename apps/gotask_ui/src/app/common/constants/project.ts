@@ -45,3 +45,5 @@ export const GOAL_STATUS = {
 } as const;
 
 export const DEFAULT_STORY_PAGE_SIZE = 12;
+
+export const PAGE_SIZE_PROJECT_GOAL = 60;

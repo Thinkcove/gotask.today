@@ -116,7 +116,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
         {isLoading ? (
           <Typography>{trans("loading")}</Typography>
         ) : certificates.length === 0 ? (
-          <Paper elevation={1} sx={{ color: "text.secondary" }}>
+          <Paper elevation={1} sx={{ color: "text.secondary", p: 2 }}>
             {transuser("nocertifications")}
           </Paper>
         ) : (

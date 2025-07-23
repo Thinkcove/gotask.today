@@ -69,6 +69,7 @@ const ApplyLeave: React.FC = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleSubmit = async () => {
     if (!validateForm()) {
       return;

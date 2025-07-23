@@ -286,7 +286,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
   return (
     <Box>
-      <TableContainer component={Paper} sx={{ maxHeight: 640 }}>
+      <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto'}}>
         <Table stickyHeader size="small" sx={{ minWidth: 750 }}>
           <TableHead>
             <TableRow>

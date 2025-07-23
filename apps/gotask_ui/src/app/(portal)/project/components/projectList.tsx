@@ -87,70 +87,19 @@ const ProjectList = () => {
     >
       <Box mb={3}>
         <Stack direction="row" spacing={2} alignItems="flex-start" flexWrap="wrap" flexGrow={1}>
-          <SearchBar
-            value={searchTerm}
-            onChange={setSearchTerm}
-            sx={{ width: 300 }}
-            placeholder={transproject("searchplaceholder")}
-          />
           <ProjectFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
             statusFilter={statusFilter}
             userFilter={userFilter}
             allStatuses={allStatuses}
             allUsers={allUsers}
             onStatusChange={(val) => updateFilter("statusFilter", val, setStatusFilter)}
             onUserChange={(val) => updateFilter("userFilter", val, setUserFilter)}
+            onClearFilters={clearFilters}
+            filtersApplied={filtersApplied}
           />
-
-          {filtersApplied && (
-            <Box
-              sx={{
-                mt: 1,
-                display: "flex",
-                justifyContent: "flex-end",
-                width: "100%"
-              }}
-            >
-              <Link
-                component="button"
-                onClick={clearFilters}
-                underline="always"
-                sx={{
-                  fontSize: "1rem",
-                  color: "primary.main",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                {transproject("Stories.filters.clearAll")}
-              </Link>
-            </Box>
-          )}
         </Stack>
-
-        {filtersApplied && (
-          <Box
-            sx={{
-              mt: 1,
-              mb: 1,
-              display: { xs: "flex", md: "none" },
-              justifyContent: "flex-end",
-              width: "100%"
-            }}
-          >
-            <Link
-              component="button"
-              onClick={clearFilters}
-              underline="always"
-              sx={{
-                fontSize: "1rem",
-                color: "primary.main",
-                whiteSpace: "nowrap"
-              }}
-            >
-              {transproject("Stories.filters.clearAll")}
-            </Link>
-          </Box>
-        )}
       </Box>
 
       <ProjectCards projects={filteredProjects} />

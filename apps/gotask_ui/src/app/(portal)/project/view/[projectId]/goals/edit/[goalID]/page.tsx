@@ -97,7 +97,6 @@ const EditGoalPage = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
     setIsSubmitting(true);
     try {
       const payload = {

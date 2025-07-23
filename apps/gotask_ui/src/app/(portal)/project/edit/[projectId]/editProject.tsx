@@ -54,7 +54,6 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
     setIsSubmitting(true);
     try {
       await updateProject(projectID, formData);

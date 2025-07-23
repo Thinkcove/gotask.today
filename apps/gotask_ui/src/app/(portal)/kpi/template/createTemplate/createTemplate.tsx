@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useRouter } from "next/navigation";
@@ -9,12 +9,13 @@ import { Template } from "../../service/templateInterface";
 import { createTemplate } from "../../service/templateAction";
 import { STATUS_OPTIONS } from "@/app/common/constants/kpi";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import FormHeader from "@/app/component/header/formHeader";
 
 interface CreateTemplateProps {
   mutate?: () => void;
 }
 
-const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
+const CreateTemplate: React.FC<CreateTemplateProps> = ({ }) => {
   const transkpi = useTranslations(LOCALIZATION.TRANSITION.KPI);
   const router = useRouter();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -53,7 +54,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleCreate = async () => {
+  const handleSubmit = async () => {
     const updatedData = {
       ...formData
     };
@@ -76,7 +77,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
     }
   };
 
-  const handleCancel = () => {
+  const handleBack = () => {
     router.back();
   };
 
@@ -97,62 +98,14 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
       }}
     >
       {/* Sticky Top Bar */}
-      <Box
-        sx={{
-          position: "sticky",
-          top: 0,
-          px: 2,
-          py: 2,
-          zIndex: 1000,
-          backgroundColor: "#fff"
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%"
-          }}
-        >
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-            {transkpi("createnewtemplate")}
-          </Typography>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Button
-              variant="outlined"
-              sx={{
-                borderRadius: "30px",
-                color: "black",
-                border: "2px solid #741B92",
-                px: 2,
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.2)"
-                }
-              }}
-              onClick={handleCancel}
-            >
-              {transkpi("cancel")}
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                borderRadius: "30px",
-                backgroundColor: "#741B92",
-                color: "white",
-                px: 2,
-                textTransform: "none",
-                fontWeight: "bold"
-              }}
-              onClick={handleCreate}
-            >
-              {transkpi("create")}
-            </Button>
-          </Box>
-        </Box>
-      </Box>
+      <FormHeader
+        isEdit={false}
+        onCancel={handleBack}
+        onSubmit={handleSubmit}
+        createHeading={transkpi("createnewtemplate")}
+        create={transkpi("create")}
+        cancel={transkpi("cancel")}
+      />
       <Box
         sx={{
           px: 2,

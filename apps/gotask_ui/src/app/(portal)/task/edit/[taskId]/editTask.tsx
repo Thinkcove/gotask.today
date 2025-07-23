@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Typography, Button, IconButton } from "@mui/material";
+import { Box } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { ArrowBack, History } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
 import TaskInput from "@/app/(portal)/task/createTask/taskInput";
 import HistoryDrawer from "../taskHistory";
@@ -19,6 +18,7 @@ import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
 import { IFormField, ITask, Project, User } from "../../interface/taskInterface";
 import { KeyedMutator } from "swr";
 import { TASK_FORM_FIELDS } from "@/app/common/constants/taskFields";
+import FormHeader from "@/app/component/header/formHeader";
 
 interface EditTaskProps {
   data: ITask;
@@ -51,7 +51,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     severity: SNACKBAR_SEVERITY.INFO
   });
 
-  const [openDrawer, setOpenDrawer] = useState(false);
+  const [history, setHistory] = useState(false);
 
   const handleInputChange = (name: string, value: string | Project[] | User[]) => {
     if (!isFieldRestricted(APPLICATIONS.TASK, ACTIONS.UPDATE, name)) {
@@ -141,65 +141,19 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
       <ModuleHeader name={transtask("tasks")} />
 
       <Box sx={{ maxWidth: "1400px", margin: "0 auto" }}>
-        <Box sx={{ position: "sticky", top: 0, px: 2, pt: 2, zIndex: 1000 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton color="primary" onClick={handleBack}>
-                <ArrowBack />
-              </IconButton>
-              <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
-                {transtask("edittask")}
-              </Typography>
-            </Box>
 
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderRadius: "30px",
-                  color: "black",
-                  border: "2px solid #741B92",
-                  px: 2,
-                  textTransform: "none"
-                }}
-                onClick={handleBack}
-              >
-                {transtask("canceledit")}
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  borderRadius: "30px",
-                  backgroundColor: "#741B92",
-                  color: "white",
-                  px: 2,
-                  textTransform: "none",
-                  fontWeight: "bold"
-                }}
-                onClick={handleSubmit}
-              >
-                {transtask("save")}
-              </Button>
-            </Box>
-          </Box>
-        </Box>
+        <FormHeader
+          isEdit={true}
+          onCancel={handleBack}
+          onSubmit={handleSubmit}
+          editheading={transtask("edittask")}
+          update={transtask("save")}
+          cancel={transtask("canceledit")}
+          showhistory={transtask("showhistory")}
+          hasHistory={data.history && data.history.length > 0}
+          onShowHistory={() => setHistory(true)}
+        />
 
-        {data.history && data.history.length > 0 && (
-          <Box
-            sx={{
-              textDecoration: "underline",
-              display: "flex",
-              gap: 1,
-              color: "#741B92",
-              px: 2
-            }}
-          >
-            <Typography onClick={() => setOpenDrawer(true)} sx={{ cursor: "pointer" }}>
-              {transtask("showhistory")}
-            </Typography>
-            <History />
-          </Box>
-        )}
 
         <Box sx={{ px: 2, pb: 2, maxHeight: "calc(100vh - 250px)", overflowY: "auto" }}>
           <TaskInput
@@ -221,8 +175,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         />
 
         <HistoryDrawer
-          open={openDrawer}
-          onClose={() => setOpenDrawer(false)}
+          open={history}
+          onClose={() => setHistory(false)}
           history={data.history || []}
         />
       </Box>

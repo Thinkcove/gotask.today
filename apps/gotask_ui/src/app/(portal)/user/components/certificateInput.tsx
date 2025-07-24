@@ -128,7 +128,7 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId, onChange })
 
       setSnackbar({
         open: true,
-        message: trans("successfullyAdded"),
+        message: transuser("savecertificate"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
     } catch (error) {

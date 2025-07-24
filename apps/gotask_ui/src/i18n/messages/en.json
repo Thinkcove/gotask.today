@@ -583,7 +583,7 @@
       "dateisrequired": "Obtained date is required",
       "charlimiterror": "Maximum 150 characters allowed",
       "savecertificate": "Certificate added successfully!",
-      "failsavecertificate": "Failed to save skill. Please try again."
+      "failsavecertificate": "Failed to save Certificate. Please try again."
     },
 
     "Increment": {

@@ -231,8 +231,6 @@ export const calculateWarrantyDate = (
   return date.toISOString().split("T")[0];
 };
 
-export const locationOptions = ["Main Office", "Branch Office", "Featherlite"];
-
 export const capacityOptions = ["1 Ton", "1.5 Ton", "2 Ton"];
 
 export const typeOptions = ["Split", "Window", "Central", "Cassette", "Portable"];

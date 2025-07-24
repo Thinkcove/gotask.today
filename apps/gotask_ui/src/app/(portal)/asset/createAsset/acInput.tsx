@@ -4,12 +4,7 @@ import FormField from "@/app/component/input/formField";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
-import {
-  capacityOptions,
-  energyRatingOptions,
-  locationOptions,
-  typeOptions
-} from "../assetConstants";
+import { capacityOptions, energyRatingOptions, typeOptions } from "../assetConstants";
 
 interface ACInputsProps {
   formData: IAssetAttributes;
@@ -109,9 +104,8 @@ const ACInputs: React.FC<ACInputsProps> = ({ formData, onChange, errors }) => {
         <Grid item xs={12} sm={4}>
           <FormField
             label={transasset("location")}
-            type="select"
+            type="text"
             placeholder={transasset("location")}
-            options={locationOptions.map((loc) => ({ id: loc, name: loc }))}
             value={formData.Location}
             onChange={(val) => onChange("Location", String(val))}
           />

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
 import { ASSET_TYPE } from "@/app/common/constants/asset";
-import { connectivityOptions, locationOptions } from "../assetConstants";
+import { connectivityOptions } from "../assetConstants";
 import ReusableEditor from "@/app/component/richText/textEditor";
 
 interface PrinterInputsProps {
@@ -99,9 +99,8 @@ const PrinterInputs: React.FC<PrinterInputsProps> = ({
         <Grid item xs={12} sm={4}>
           <FormField
             label={transasset("location")}
-            type="select"
+            type="text"
             placeholder={transasset("location")}
-            options={locationOptions.map((loc) => ({ id: loc, name: loc }))}
             value={formData.Location}
             onChange={(val) => onChange("Location", String(val))}
           />

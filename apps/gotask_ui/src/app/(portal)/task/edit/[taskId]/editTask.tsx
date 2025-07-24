@@ -30,6 +30,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
   const router = useRouter();
   const { user } = useUser();
   const { isFieldRestricted } = useUserPermission();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<IFormField>({
     title: data?.title || "",
     description: data?.description || "",
@@ -158,6 +159,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
           showhistory={transtask("showhistory")}
           hasHistory={data.history && data.history.length > 0}
           onShowHistory={() => setHistory(true)}
+          isSubmitting={isSubmitting}
         />
 
         <Box sx={{ px: 2, pb: 2, maxHeight: "calc(100vh - 250px)", overflowY: "auto" }}>

@@ -21,6 +21,7 @@ import { MAX_NOTES_LENGTH } from "@/app/common/constants/user";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
 import { VALIDATION_REQUIRED_FIELDS } from "@/app/common/constants/user";
+import { FIELD_PREFIX_REGEX } from "@/app/common/constants/regex";
 
 interface CertificateInputProps {
   userId: string;
@@ -103,7 +104,9 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId, onChange })
         ) {
           const match = response.message.match(/User validation failed: (.+)/);
           if (match && match[1]) {
-            const fields = match[1].split(", ").map((field) => field.replace(/^.+?: /, "").trim());
+            const fields = match[1]
+              .split(", ")
+              .map((field) => field.replace(FIELD_PREFIX_REGEX, "").trim());
             errorMessage = `${VALIDATION_REQUIRED_FIELDS}${fields.join(", ")}`;
           }
         }

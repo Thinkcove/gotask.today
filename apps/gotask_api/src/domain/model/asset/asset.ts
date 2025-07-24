@@ -1,57 +1,9 @@
-import { Document, Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { SYSTEM_TYPES } from "../../../constants/assetConstant";
+import { IAssetsSchema } from "./interface/assetsSchema";
 
-export interface IAsset extends Document {
-  // Common fields
-  id: string;
-  typeId: string;
-  deviceName?: string;
-  systemType?: string;
-  serialNumber?: string;
-  ram?: string;
-  modelName?: string;
-  os?: string;
-  storage?: string;
-  processor?: string;
-  seller?: string;
-  dateOfPurchase?: Date;
-  warrantyPeriod?: string;
-  warrantyDate?: Date;
-  active?: boolean;
-  createdBy?: string;
-  updatedBy?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-
-  // Mobile-specific fields
-  imeiNumber?: string;
-  screenSize?: string;
-  batteryCapacity?: string;
-  cameraSpecs?: string;
-  simType?: string;
-  is5GSupported?: boolean;
-  insuranceProvider?: string;
-  insurancePolicyNumber?: string;
-  insuranceExpiry?: Date;
-
-  //Access card fields
-  accessCardNo?: string;
-  personalId?: string;
-  issuedOn?: string;
-  accessCardNo2?: string;
-
-  // Laptop-specific fields
-  antivirus?: boolean;
-  recoveryKey?: string;
-  isEncrypted?: boolean;
-  lastServicedDate?: Date;
-  commentService?: string;
-  erk?: string;
-  [key: string]: any;
-}
-
-const AssetSchema = new Schema<IAsset>(
+const AssetSchema = new Schema<IAssetsSchema>(
   {
     // Common fields
     id: { type: String, default: uuidv4 },
@@ -121,4 +73,4 @@ const AssetSchema = new Schema<IAsset>(
   }
 );
 
-export const Asset = model<IAsset>("Asset", AssetSchema);
+export const Asset = model<IAssetsSchema>("Asset", AssetSchema);

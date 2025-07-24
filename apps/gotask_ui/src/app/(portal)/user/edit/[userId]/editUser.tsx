@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Box} from "@mui/material";
+import { Box } from "@mui/material";
 import { KeyedMutator } from "swr";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -23,7 +23,7 @@ interface EditUserProps {
 const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
   const router = useRouter();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -80,7 +80,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
+    setIsSubmitting(true);
     try {
       await updateUser(userID, formData);
       await mutate();
@@ -121,6 +121,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
         editheading={transuser("edituser")}
         update={transuser("save")}
         cancel={transuser("cancel")}
+        isSubmitting={isSubmitting}
       />
       {/* General Info Form */}
       <Box sx={{ overflowX: "auto", width: "100%" }}>

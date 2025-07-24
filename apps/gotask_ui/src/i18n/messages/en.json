@@ -227,6 +227,7 @@
 
       "filters": {
         "status": "Status",
+        "user": "User",
         "all": "All",
         "toDo": "To Do",
         "inProgress": "In Progress",

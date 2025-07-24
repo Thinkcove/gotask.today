@@ -18,7 +18,7 @@ const CreateTask: React.FC = () => {
   const searchParams = useSearchParams();
   const storyId = searchParams.get("storyId");
   const projectId = searchParams.get("projectId");
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -78,7 +78,7 @@ const CreateTask: React.FC = () => {
 
   const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
-
+    setIsSubmitting(true);
     try {
       const payload = getCleanedPayload(formData);
       await createTask(payload);
@@ -119,6 +119,7 @@ const CreateTask: React.FC = () => {
         createHeading={transtask("create")}
         create={transtask("creates")}
         cancel={transtask("cancelcreate")}
+        isSubmitting={isSubmitting}
       />
 
       <Box sx={{ px: 2, pb: 2, maxHeight: "calc(100vh - 150px)", overflowY: "auto" }}>

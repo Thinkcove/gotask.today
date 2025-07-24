@@ -787,6 +787,11 @@
     "capacity": "Capacity",
     "inmonths": "(In months)",
     "searchissues": "Search Issue Type",
+    "actype": "Type",
+    "energyrating": "Energy Rating",
+    "powerconsumption": "Power Consumption",
+    "coolingcoverage": "Cooling Coverage",
+    "invertertype": "Inverter Type",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."

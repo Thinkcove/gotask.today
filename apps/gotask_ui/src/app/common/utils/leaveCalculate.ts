@@ -51,3 +51,20 @@ export const formatPermissionDuration = (startTime: string, endTime: string): st
   const hours = calculatePermissionDuration(startTime, endTime);
   return `${hours} hour${hours === 1 ? "" : "s"}`;
 };
+
+export const getTimeSpentColor = (
+  spent: string | number | null | undefined,
+  estimated: string | number | null | undefined
+): string => {
+  const spentValue = spent !== null && spent !== undefined ? parseFloat(spent.toString()) : NaN;
+  const estimatedValue =
+    estimated !== null && estimated !== undefined ? parseFloat(estimated.toString()) : NaN;
+
+  if (isNaN(spentValue) || isNaN(estimatedValue)) return "black";
+
+  if (spentValue > estimatedValue) return "#dd1428ff";
+  if (spentValue < estimatedValue) return "#20bf25ff";
+  if (spentValue === estimatedValue) return "#ead30cff";
+
+  return "#8715deff";
+};

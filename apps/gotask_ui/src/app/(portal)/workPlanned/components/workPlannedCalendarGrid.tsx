@@ -34,6 +34,7 @@ import {
   formatLeaveDuration,
   formatPermissionDuration,
   formatText,
+  getTimeSpentColor,
   normalizeDate
 } from "@/app/common/utils/leaveCalculate";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
@@ -390,7 +391,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                 sx={{
                   padding: "12px",
                   textAlign: "center",
-                  background: "linear-gradient(#D6C4E4 100%)",
+                  // background: "linear-gradient(#D6C4E4 100%)",
                   color: "#333",
                   fontWeight: "bold",
                   minWidth: 120,
@@ -722,13 +723,15 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                         padding: "12px",
                         textAlign: "center",
                         border: "1px solid #eee",
-                        background: "linear-gradient(#D6C4E4 100%)",
                         fontWeight: "bold",
-                        color: "#000000"
+                        color: task
+                          ? getTimeSpentColor(task.time_spent_total, task.user_estimated)
+                          : "black"
                       }}
                     >
                       {task ? formatEstimation(task.time_spent_total) : "-"}
                     </TableCell>
+
                   </TableRow>
                 );
               });

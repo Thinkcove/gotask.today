@@ -1003,6 +1003,7 @@
     "idp": "project-ids",
     "leave": "LEAVE",
     "permission": "PERMISSION",
+    "actualtime": "Actual Time Spent",
     "meta": {
       "title": "Work Planned | GoTaskToday",
       "description": "Schedule and monitor planned work activities and milestones."

@@ -54,6 +54,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   // Use passed leave data
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
+  console.log("data", data);
 
   const leaves: LeaveEntry[] = leaveResponse || [];
 
@@ -385,6 +386,23 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
               >
                 {transworkplanned("estimation")}
               </TableCell>
+              <TableCell
+                rowSpan={2}
+                sx={{
+                  padding: "12px",
+                  textAlign: "center",
+                  background: "linear-gradient(#D6C4E4 100%)",
+                  color: "#333",
+                  fontWeight: "bold",
+                  minWidth: 120,
+                  position: "sticky",
+                  verticalAlign: "middle",
+                  top: 0,
+                  zIndex: 2
+                }}
+              >
+                {transworkplanned("actualtime ")}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -699,6 +717,18 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                       }}
                     >
                       {task ? formatEstimation(task.user_estimated) : "-"}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        padding: "12px",
+                        textAlign: "center",
+                        border: "1px solid #eee",
+                        background: "linear-gradient(#D6C4E4 100%)",
+                        fontWeight: "bold",
+                        color: "#000000"
+                      }}
+                    >
+                      {task ? formatEstimation(task.time_spent_total) : "-"}
                     </TableCell>
                   </TableRow>
                 );

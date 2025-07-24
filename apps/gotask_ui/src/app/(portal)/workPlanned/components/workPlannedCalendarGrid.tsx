@@ -54,7 +54,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   // Use passed leave data
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
-  console.log("data", data);
 
   const leaves: LeaveEntry[] = leaveResponse || [];
 
@@ -287,7 +286,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
   return (
     <Box>
-      <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto'}}>
+      <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}>
         <Table stickyHeader size="small" sx={{ minWidth: 750 }}>
           <TableHead>
             <TableRow>

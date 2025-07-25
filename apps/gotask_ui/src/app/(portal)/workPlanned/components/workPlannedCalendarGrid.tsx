@@ -10,7 +10,8 @@ import {
   Box,
   Typography,
   Link,
-  Grid
+  Grid,
+  Tooltip
 } from "@mui/material";
 import {
   EnhancedWorkPlannedGridProps,
@@ -42,6 +43,86 @@ import {
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
+
+// Color indicator component for actual time
+const TimeSpentIndicator: React.FC<{
+  spent: string | number | null | undefined;
+  estimated: string | number | null | undefined;
+}> = ({ spent, estimated }) => {
+  const color = getTimeSpentColor(spent, estimated);
+  const spentValue = spent !== null && spent !== undefined ? parseFloat(spent.toString()) : NaN;
+  const estimatedValue = estimated !== null && estimated !== undefined ? parseFloat(estimated.toString()) : NaN;
+
+  let tooltipText = "";
+  if (isNaN(spentValue) || isNaN(estimatedValue)) {
+    tooltipText = "No data available";
+  } else if (spentValue > estimatedValue) {
+    tooltipText = "Over estimated time";
+  } else if (spentValue < estimatedValue) {
+    tooltipText = "Under estimated time";
+  } else if (spentValue === estimatedValue) {
+    tooltipText = "Matches estimated time";
+  }
+
+  if (isNaN(spentValue) || isNaN(estimatedValue)) {
+    return <span>{formatEstimation(spent)}</span>;
+  }
+
+  return (
+    <Box display="flex" alignItems="center" gap={1} justifyContent="center">
+      <Tooltip title={tooltipText} arrow>
+        <Box
+          sx={{
+            width: 10,
+            height: 10,
+            borderRadius: "50%",
+            backgroundColor: color,
+            flexShrink: 0
+          }}
+        />
+      </Tooltip>
+      <span>{formatEstimation(spent)}</span>
+    </Box>
+  );
+};
+
+// Legend component for the color indicators
+const TimeSpentLegend: React.FC = () => {
+  const legendItems = [
+    { color: "#20bf25ff", label: "Under estimated" },
+    { color: "#ead30cff", label: "Matches estimated" },
+    { color: "#dd1428ff", label: "Over estimated" }
+  ];
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        gap: 3,
+        justifyContent: "center",
+        mb: 2,
+        flexWrap: "wrap"
+      }}
+    >
+      {legendItems.map((item, index) => (
+        <Box key={index} display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              backgroundColor: item.color,
+              flexShrink: 0
+            }}
+          />
+          <Typography variant="caption" sx={{ fontSize: "0.75rem", color: "#666" }}>
+            {item.label}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  );
+};
 
 const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   data,
@@ -276,6 +357,9 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
   return (
     <Box>
+      {/* Legend for time spent indicators */}
+      <TimeSpentLegend />
+
       <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}>
         <Table stickyHeader size="small" sx={{ minWidth: 750 }}>
           <TableHead>
@@ -706,18 +790,24 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                     >
                       {task ? formatEstimation(task.user_estimated) : "-"}
                     </TableCell>
+
+                    {/* Actual Time with Color Indicator */}
                     <TableCell
                       sx={{
                         padding: "12px",
                         textAlign: "center",
                         border: "1px solid #eee",
-                        fontWeight: "bold",
-                        color: task
-                          ? getTimeSpentColor(task.time_spent_total, task.user_estimated)
-                          : "black"
+                        fontWeight: "bold"
                       }}
                     >
-                      {task ? formatEstimation(task.time_spent_total) : "-"}
+                      {task ? (
+                        <TimeSpentIndicator
+                          spent={task.time_spent_total}
+                          estimated={task.user_estimated}
+                        />
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
 
                   </TableRow>

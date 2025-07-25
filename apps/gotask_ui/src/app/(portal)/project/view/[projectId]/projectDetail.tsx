@@ -168,6 +168,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Project Description & Dates */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
+              <Typography variant="subtitle2" color="text.secondary" mb={1}>
+                {transproject("detaildescription")}
+              </Typography>
               <RichTextReadOnly content={project.description} extensions={getTipTapExtensions()} />
             </Grid>
           </Grid>

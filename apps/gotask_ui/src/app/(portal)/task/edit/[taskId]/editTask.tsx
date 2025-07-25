@@ -103,17 +103,25 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         if (user?.name) updatedFields.loginuser_name = user.name;
         if (user?.id) updatedFields.loginuser_id = user.id;
 
-        await updateTask(data.id, updatedFields);
-        setIsSubmitting(true);
-        await mutate();
+        const response = await updateTask(data.id, updatedFields);
 
-        setSnackbar({
-          open: true,
-          message: transtask("updatesuccess"),
-          severity: SNACKBAR_SEVERITY.SUCCESS
-        });
+        if (response?.success) {
+          setIsSubmitting(true);
+          await mutate();
+          setSnackbar({
+            open: true,
+            message: transtask("updatesuccess"),
+            severity: SNACKBAR_SEVERITY.SUCCESS
+          });
 
-        setTimeout(() => router.back(), 2000);
+          setTimeout(() => router.back(), 2000);
+        } else {
+          setSnackbar({
+            open: true,
+            message: response?.message || transtask("upadteerror"),
+            severity: SNACKBAR_SEVERITY.ERROR
+          });
+        }
       } else {
         setSnackbar({
           open: true,

@@ -51,7 +51,8 @@ const getWorkPlannedService = async (
     user_estimated: 1,
     status: 1,
     task_id: "$id",
-    task_title: "$title"
+    task_title: "$title",
+    time_spent_total: 1
   };
 
   if (selectedProjects && selectedProjects.length > 0) {
@@ -80,7 +81,8 @@ const getWorkPlannedService = async (
   pipeline.push({
     $group: {
       _id: groupId,
-      user_estimated: { $first: "$user_estimated" } // Keep user_estimated for each task
+      user_estimated: { $first: "$user_estimated" }, // Keep user_estimated for each task
+      time_spent_total: { $first: "$time_spent_total" }
     }
   });
 
@@ -94,7 +96,8 @@ const getWorkPlannedService = async (
     user_estimated: 1,
     status: "$_id.status",
     task_id: "$_id.task_id",
-    task_title: "$_id.task_title"
+    task_title: "$_id.task_title",
+    time_spent_total: 1
   };
 
   if (selectedProjects && selectedProjects.length > 0) {

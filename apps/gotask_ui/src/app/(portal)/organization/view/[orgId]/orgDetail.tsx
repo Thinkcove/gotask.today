@@ -29,9 +29,7 @@ const OrgDetail: React.FC<OrgDetailProps> = ({ org, mutate }) => {
   const orgID = orgId as string;
   const [editOpen, setEditOpen] = useState(false);
 
-  const handleBack = () => {
-    setTimeout(() => router.back(), 2000);
-  };
+  const handleBack = () => router.back();
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {

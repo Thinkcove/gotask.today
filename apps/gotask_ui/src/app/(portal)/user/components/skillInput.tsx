@@ -18,6 +18,8 @@ import {
   MINIMUM_EXPERIENCE_REQUIRED,
   PROFICIENCY_MAXIMUM
 } from "@/app/common/constants/user";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
 
 interface SkillInputProps {
   userId: string;
@@ -27,7 +29,11 @@ interface SkillInputProps {
 const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => {
   const trans = useTranslations("User");
   const transInc = useTranslations("User.Increment");
-
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
@@ -78,10 +84,8 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
     setSkillErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSave = async () => {
-    const isValid = validateSkillForm();
-    if (!isValid) return;
+    if (!validateSkillForm()) return;
 
     const trimmed = tempSkill.name.trim();
     if (!trimmed || !tempSkill.proficiency) return;
@@ -95,7 +99,6 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
       return;
     }
 
-    const updated = [...skills];
     const skillData: ISkill = {
       name: trimmed,
       proficiency: tempSkill.proficiency,
@@ -104,7 +107,7 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
     try {
       const isNewToMaster = !options.some(
-        (option) => option.trim().toLowerCase() === trimmed.toLowerCase()
+        (opt) => opt.trim().toLowerCase() === trimmed.toLowerCase()
       );
 
       if (isNewToMaster) {
@@ -114,16 +117,32 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
 
       const added = await addUserSkills(userId, [skillData]);
 
-      if (added?.length) {
-        updated.unshift({ ...skillData, skill_id: added[0].skill_id });
-      }
+      if (added?.success) {
+        const skillId = added?.data?.[0]?.skill_id;
+        const updated = [{ ...skillData, skill_id: skillId }, ...skills];
 
-      onChange(updated);
-      setDialogOpen(false);
-      setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
-    } catch {
-      setErrorDialogMessage(trans("saveskill"));
-      setErrorDialogOpen(true);
+        onChange(updated);
+        setDialogOpen(false);
+        setTempSkill({ name: "", proficiency: DEFAULT_PROFICIENCY });
+
+        setSnackbar({
+          open: true,
+          message: trans("successfullyAdded"),
+          severity: SNACKBAR_SEVERITY.SUCCESS
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          message: added?.message || trans("saveskill"),
+          severity: SNACKBAR_SEVERITY.ERROR
+        });
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: (error as Error)?.message || trans("commonerror"),
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
     }
   };
 
@@ -475,6 +494,12 @@ const SkillInput: React.FC<SkillInputProps> = ({ userId, skills, onChange }) => 
       >
         <Typography>{errorDialogMessage}</Typography>
       </CommonDialog>
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </Box>
   );
 };

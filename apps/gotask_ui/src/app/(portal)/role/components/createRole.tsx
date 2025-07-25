@@ -80,6 +80,8 @@ const CreateRole = ({ open, onClose, mutate }: CreateRoleProps) => {
         onClose={handleClose}
         onSubmit={handleSubmit}
         title={transrole("createnewrole")}
+        submitLabel={transrole("create")}
+        cancelLabel={transrole("cancel")}
       >
         <RoleInput formData={formData} handleChange={handleChange} errors={errors} />
       </CommonDialog>

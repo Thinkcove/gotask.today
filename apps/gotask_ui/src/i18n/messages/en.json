@@ -471,29 +471,21 @@
     "nouser": "No Users available.",
     "noorganzationuser": " No Organization for this user",
     "viewdetails": "View Details",
-
     "labelfirst_name": "First Name *",
     "labelfirst_name_view": "First Name",
-
     "labellast_name": "Last Name *",
     "labellast_name_view": "Last Name",
-
     "labeluser": "Preferred Name *",
     "labeluser_view": "Preferred Name",
-
     "labelemp_id": "Emp Id",
     "labelemp_id_view": "Emp Id",
-
     "labelemail": "Email *",
     "labelmobile_no": "Mobile Number *",
     "labelmobile_no_view": "Mobile Number",
-
     "labeljoined_date": "Join Date *",
     "labeljoined_date_view": "Join Date",
-
     "labelrole": "Role *",
     "roleid_view": "Role",
-
     "placeholderfirst_name": "Enter First Name",
     "placeholderlast_name": "Enter Last Name",
     "placeholderuser": "Enter preferred name",
@@ -503,12 +495,10 @@
     "joineddate": "Joined Date is required",
     "placeholderjoined_date": "Enter Join Date",
     "placeholderrole": "Select Role",
-
     "labelorganization": "Organization",
     "placeholderorganization": "Select Organization",
     "labelpassword": "Password",
     "placeholderpassword": "Enter password",
-
     "createusernew": "Create New User",
     "cancelUser": "Cancel",
     "createUser": "Create",
@@ -571,7 +561,8 @@
     "pleasechooseproficiency": "Please choose a proficiency level.",
     "pleaseenterexperience": "Please enter experience in months.",
     "saveskill": "Failed to save skill. Please try again.",
-
+    "successfullyAdded": "Skill added successfully!",
+    "commonerror": "Something went wrong.",
     "meta": {
       "title": "User Management | GoTaskToday",
       "description": "Plan, assign, and track tasks across projects."
@@ -591,7 +582,9 @@
       "nocertifications": "No certifications added yet.",
       "nameisrequired": "Certificate name is required",
       "dateisrequired": "Obtained date is required",
-      "charlimiterror": "Maximum 150 characters allowed"
+      "charlimiterror": "Maximum 150 characters allowed",
+      "savecertificate": "Certificate added successfully!",
+      "failsavecertificate": "Failed to save Certificate. Please try again."
     },
 
     "Increment": {

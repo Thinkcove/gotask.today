@@ -18,3 +18,5 @@ export function calculateIncrementPercent(current: number, previous: number): nu
   const percent = ((current - previous) / previous) * 100;
   return +percent.toFixed(2);
 }
+
+export const VALIDATION_REQUIRED_FIELDS = "Please fill required fields: ";

@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Grid, CircularProgress, Box, Tooltip } from "@mui/material";
+import { Typography, Grid, Box, Tooltip, Skeleton } from "@mui/material";
 import { ArrowForward, Group } from "@mui/icons-material";
 import { getStatusColor } from "@/app/common/constants/task";
 import { useRouter } from "next/navigation";
@@ -16,29 +16,44 @@ import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
 interface ProjectCardProps {
   projects: Project[] | null;
+  loading?: boolean;
 }
 
-const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
+const ProjectCards: React.FC<ProjectCardProps> = ({ projects, loading }) => {
   const { canAccess, isFieldRestricted } = useUserPermission();
   const router = useRouter();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
+  const skeletonCount = projects?.length || 16;
 
-  if (!projects) {
+  // Render skeletons during loading
+  if (loading) {
     return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <CircularProgress />
-      </Box>
+      <Grid container spacing={3}>
+        {[...Array(skeletonCount)].map((_, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <CardComponent>
+              <Skeleton variant="text" width="80%" height={32} />
+              <Box display="flex" alignItems="center" gap={1} sx={{ mb: 2, mt: 1 }}>
+                <Skeleton variant="circular" width={24} height={24} />
+                <Skeleton variant="text" width="60%" />
+              </Box>
+              <Skeleton variant="text" width="40%" />
+            </CardComponent>
+          </Grid>
+        ))}
+      </Grid>
     );
   }
 
-  if (projects.length === 0) {
+  // No data after loading
+  if (!projects || projects.length === 0) {
     return <EmptyState imageSrc={NoSearchResultsImage} message={transproject("noprojects")} />;
   }
+
   return (
     <Box>
       <Grid container spacing={3}>
         {projects.map((project) => {
-          // Filter out restricted fields at the top
           const filteredProject = {} as Partial<Project>;
 
           for (const key of Object.keys(project) as (keyof Project)[]) {
@@ -105,7 +120,6 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                   </Box>
                 </Box>
 
-                {/* View Details */}
                 {canAccess(APPLICATIONS.PROJECT, ACTIONS.VIEW) && (
                   <Box display="flex" justifyContent="space-between">
                     <StatusIndicator status={project.status} getColor={getStatusColor} />

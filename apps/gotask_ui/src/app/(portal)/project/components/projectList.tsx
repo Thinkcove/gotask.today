@@ -15,12 +15,15 @@ import Chat from "../../chatbot/components/chat";
 import { useRouter } from "next/navigation";
 import ProjectFilters from "@/app/component/filters/projectFilters";
 import { getStoredObj, setStorage, removeStorage } from "@/app/common/utils/storage";
+import { Skeleton } from "@mui/material";
 
 const ProjectList = () => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: projects } = useSWR("fetch-projects", fetcher);
+  const { data: projects, isLoading: isLoadingProjects } = useSWR("fetch-projects", fetcher);
+  const isLoading = !projects;
+
   const router = useRouter();
   const FILTER_STORAGE_KEY = "projectFilters";
   const storedFilters = getStoredObj(FILTER_STORAGE_KEY) || {};
@@ -91,10 +94,12 @@ const ProjectList = () => {
             onUserChange={(val) => updateFilter("userFilter", val, setUserFilter)}
             onClearFilters={clearFilters}
             filtersApplied={filtersApplied}
+            loading={isLoadingProjects}
           />
         </Stack>
       </Box>
-      <ProjectCards projects={filteredProjects} />
+      <ProjectCards projects={filteredProjects} loading={isLoadingProjects} />
+
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
       {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (
         <ActionButton

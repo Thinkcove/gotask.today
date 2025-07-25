@@ -1,5 +1,5 @@
 import { formatEstimation, getTimeSpentColor } from "@/app/common/utils/leaveCalculate";
-import { Box, Tooltip } from "@mui/material";
+import { Box } from "@mui/material";
 
 export const TimeSpentIndicator: React.FC<{
     spent: string | number | null | undefined;

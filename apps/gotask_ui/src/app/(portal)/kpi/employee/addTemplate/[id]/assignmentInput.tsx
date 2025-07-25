@@ -220,20 +220,19 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
                 error={errors.percentage}
               />
             </Grid>
-
-            {/* Notes */}
             <Grid item xs={12}>
-              <FormField
-                label={transkpi("notes")}
-                type="text"
-                placeholder={transkpi("enternotes")}
-                value={entry.notes?.join("\n") || ""}
+              <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+                {transkpi("notes")}
+              </Typography>
+              <ReusableEditor
+                content={entry.notes ? entry.notes.join("\n") : ""}
                 onChange={(val) => {
                   const updated = [...form.performance!];
                   updated[index].notes = String(val).split("\n");
                   handleChange("performance", updated);
                 }}
-                multiline
+                placeholder={transkpi("enternotes")}
+                showSaveButton={false}
               />
             </Grid>
           </Grid>

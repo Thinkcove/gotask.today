@@ -66,7 +66,14 @@ const AssetSchema = new Schema<IAssetsSchema>(
     capacity: { type: String },
     authenticationModes: { type: String }, //Eg: Fingerprint, Card, Password
     display: { type: String },
-    cloudAndAppBased: { type: Boolean }
+    cloudAndAppBased: { type: Boolean },
+
+    //AC fields
+    acType: { type: String },
+    energyRating: { type: String },
+    powerConsumption: { type: String },
+    coolingCoverage: { type: String },
+    inverterType: { type: String }
   },
   {
     timestamps: true

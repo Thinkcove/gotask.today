@@ -222,7 +222,8 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
             </Grid>
             <Grid item xs={12}>
               <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-                {transkpi("notes")}              </Typography>
+                {transkpi("notes")}
+              </Typography>
               <ReusableEditor
                 content={entry.notes ? entry.notes.join("\n") : ""}
                 onChange={(val) => {
@@ -231,7 +232,6 @@ const KpiFormFields: React.FC<KpiFormFieldsProps> = ({
                   handleChange("performance", updated);
                 }}
                 placeholder={transkpi("enternotes")}
-
                 showSaveButton={false}
               />
             </Grid>

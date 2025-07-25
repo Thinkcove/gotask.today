@@ -391,7 +391,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                 sx={{
                   padding: "12px",
                   textAlign: "center",
-                  // background: "linear-gradient(#D6C4E4 100%)",
                   color: "#333",
                   fontWeight: "bold",
                   minWidth: 120,

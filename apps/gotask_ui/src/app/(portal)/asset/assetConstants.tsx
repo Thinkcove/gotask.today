@@ -230,3 +230,9 @@ export const calculateWarrantyDate = (
   date.setMonth(date.getMonth() + warrantyMonths);
   return date.toISOString().split("T")[0];
 };
+
+export const capacityOptions = ["1 Ton", "1.5 Ton", "2 Ton"];
+
+export const typeOptions = ["Split", "Window", "Central", "Cassette", "Portable"];
+
+export const energyRatingOptions = ["3 Star", "5 Star"];

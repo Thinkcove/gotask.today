@@ -795,6 +795,11 @@
     "capacity": "Capacity",
     "inmonths": "(In months)",
     "searchissues": "Search Issue Type",
+    "actype": "Type",
+    "energyrating": "Energy Rating",
+    "powerconsumption": "Power Consumption",
+    "coolingcoverage": "Cooling Coverage",
+    "invertertype": "Inverter Type",
     "meta": {
       "title": "Assets | GoTaskToday",
       "description": "Track and manage all company-owned assets and equipment efficiently."
@@ -1004,6 +1009,7 @@
     "idp": "project-ids",
     "leave": "LEAVE",
     "permission": "PERMISSION",
+    "actualtime": "Actual Time Spent",
     "meta": {
       "title": "Work Planned | GoTaskToday",
       "description": "Schedule and monitor planned work activities and milestones."

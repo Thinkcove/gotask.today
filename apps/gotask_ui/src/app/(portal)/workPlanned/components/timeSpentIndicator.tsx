@@ -26,7 +26,6 @@ export const TimeSpentIndicator: React.FC<{
                     flexShrink: 0
                 }}
             />
-
             <span>{formatEstimation(spent)}</span>
         </Box>
     );

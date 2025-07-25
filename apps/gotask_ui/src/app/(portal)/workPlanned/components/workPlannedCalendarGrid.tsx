@@ -11,7 +11,6 @@ import {
   Typography,
   Link,
   Grid,
-  Tooltip
 } from "@mui/material";
 import {
   EnhancedWorkPlannedGridProps,
@@ -36,7 +35,6 @@ import {
   formatPermissionDuration,
   formatText,
   getEstimationValue,
-  getTimeSpentColor,
   isSameDate,
   normalizeDate
 } from "@/app/common/utils/leaveCalculate";
@@ -45,11 +43,6 @@ import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
 import { TimeSpentLegend } from "./timeSpentLegend";
 import { TimeSpentIndicator } from "./timeSpentIndicator";
-
-// Color indicator component for actual time
-
-// Legend component for the color indicators
-
 
 const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   data,
@@ -286,7 +279,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     <Box>
       {/* Legend for time spent indicators */}
       <TimeSpentLegend />
-
       <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}>
         <Table stickyHeader size="small" sx={{ minWidth: 750 }}>
           <TableHead>

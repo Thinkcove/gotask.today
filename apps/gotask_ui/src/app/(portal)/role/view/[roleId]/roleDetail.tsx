@@ -50,7 +50,7 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
     severity: SNACKBAR_SEVERITY.INFO
   });
 
-  const handleBack = () => setTimeout(() => router.back(), 200);
+  const handleBack = () => router.back();
 
   const handleAddAccess = async () => {
     setOpenAddDialog(false);

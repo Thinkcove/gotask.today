@@ -10,6 +10,7 @@ export interface WorkPlannedEntry {
   start_date: string | null;
   end_date: string | null;
   user_estimated: string | number | null;
+  time_spent_total: string | number | null;
   task_id?: string;
   task_title?: string;
   status: string;

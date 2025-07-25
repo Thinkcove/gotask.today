@@ -16,6 +16,8 @@ export interface WorkPlannedEntry {
   status: string;
   project_id?: string;
   project_name?: string;
+  actual_start_date?: string | null;
+  actual_end_date?: string | null;
 }
 
 export interface WorkPlannedGridProps {

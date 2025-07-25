@@ -43,86 +43,13 @@ import {
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
+import { TimeSpentLegend } from "./timeSpentLegend";
+import { TimeSpentIndicator } from "./timeSpentIndicator";
 
 // Color indicator component for actual time
-const TimeSpentIndicator: React.FC<{
-  spent: string | number | null | undefined;
-  estimated: string | number | null | undefined;
-}> = ({ spent, estimated }) => {
-  const color = getTimeSpentColor(spent, estimated);
-  const spentValue = spent !== null && spent !== undefined ? parseFloat(spent.toString()) : NaN;
-  const estimatedValue = estimated !== null && estimated !== undefined ? parseFloat(estimated.toString()) : NaN;
-
-  let tooltipText = "";
-  if (isNaN(spentValue) || isNaN(estimatedValue)) {
-    tooltipText = "No data available";
-  } else if (spentValue > estimatedValue) {
-    tooltipText = "Over estimated time";
-  } else if (spentValue < estimatedValue) {
-    tooltipText = "Under estimated time";
-  } else if (spentValue === estimatedValue) {
-    tooltipText = "Matches estimated time";
-  }
-
-  if (isNaN(spentValue) || isNaN(estimatedValue)) {
-    return <span>{formatEstimation(spent)}</span>;
-  }
-
-  return (
-    <Box display="flex" alignItems="center" gap={1} justifyContent="center">
-      <Tooltip title={tooltipText} arrow>
-        <Box
-          sx={{
-            width: 10,
-            height: 10,
-            borderRadius: "50%",
-            backgroundColor: color,
-            flexShrink: 0
-          }}
-        />
-      </Tooltip>
-      <span>{formatEstimation(spent)}</span>
-    </Box>
-  );
-};
 
 // Legend component for the color indicators
-const TimeSpentLegend: React.FC = () => {
-  const legendItems = [
-    { color: "#20bf25ff", label: "Under estimated" },
-    { color: "#ead30cff", label: "Matches estimated" },
-    { color: "#dd1428ff", label: "Over estimated" }
-  ];
 
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        gap: 3,
-        justifyContent: "center",
-        mb: 2,
-        flexWrap: "wrap"
-      }}
-    >
-      {legendItems.map((item, index) => (
-        <Box key={index} display="flex" alignItems="center" gap={1}>
-          <Box
-            sx={{
-              width: 12,
-              height: 12,
-              borderRadius: "50%",
-              backgroundColor: item.color,
-              flexShrink: 0
-            }}
-          />
-          <Typography variant="caption" sx={{ fontSize: "0.75rem", color: "#666" }}>
-            {item.label}
-          </Typography>
-        </Box>
-      ))}
-    </Box>
-  );
-};
 
 const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   data,
@@ -440,7 +367,38 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
+                {transworkplanned("actualstartdate")}
+              </TableCell>
+              <TableCell
+                rowSpan={2}
+                sx={{
+                  padding: "12px",
+                  textAlign: "center",
+                  backgroundColor: "#f5f5f5",
+                  minWidth: 90,
+                  position: "sticky",
+                  verticalAlign: "middle",
+                  top: 0,
+                  zIndex: 2
+                }}
+              >
                 {transworkplanned("enddate")}
+              </TableCell>
+
+              <TableCell
+                rowSpan={2}
+                sx={{
+                  padding: "12px",
+                  textAlign: "center",
+                  backgroundColor: "#f5f5f5",
+                  minWidth: 90,
+                  position: "sticky",
+                  verticalAlign: "middle",
+                  top: 0,
+                  zIndex: 2
+                }}
+              >
+                {transworkplanned("actualenddate")}
               </TableCell>
               <TableCell
                 rowSpan={2}
@@ -530,7 +488,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
               const totalRows = Math.max(allItems.length, 1);
 
-              return Array.from({ length: totalRows }, (_, index) => {
+              return Array.from({ length: totalRows }, (_, index: number) => {
                 const item = allItems[index];
                 const isFirstRow = index === 0;
                 const isLeave = item && "isLeave" in item && item.isLeave;
@@ -755,6 +713,25 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                         "-"
                       )}
                     </TableCell>
+                    <TableCell
+                      sx={{
+                        padding: "12px",
+                        textAlign: "center",
+                        border: "1px solid #eee",
+                        fontFamily: "monospace",
+                        fontSize: "0.875rem"
+                      }}
+                    >
+                      {task && task.actual_start_date ? (
+                        <FormattedDateTime date={task.actual_start_date} format={DateFormats.DATE_ONLY} />
+                      ) : leave && leave.from_date ? (
+                        <FormattedDateTime date={leave.from_date} format={DateFormats.DATE_ONLY} />
+                      ) : permission && permission.date ? (
+                        <FormattedDateTime date={permission.date} format={DateFormats.DATE_ONLY} />
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
 
                     {/* End Date - Show task date, leave to_date, or permission date */}
                     <TableCell
@@ -768,6 +745,25 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                     >
                       {task && task.end_date ? (
                         <FormattedDateTime date={task.end_date} format={DateFormats.DATE_ONLY} />
+                      ) : leave && leave.to_date ? (
+                        <FormattedDateTime date={leave.to_date} format={DateFormats.DATE_ONLY} />
+                      ) : permission && permission.date ? (
+                        <FormattedDateTime date={permission.date} format={DateFormats.DATE_ONLY} />
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        padding: "12px",
+                        textAlign: "center",
+                        border: "1px solid #eee",
+                        fontFamily: "monospace",
+                        fontSize: "0.875rem"
+                      }}
+                    >
+                      {task && task.actual_end_date ? (
+                        <FormattedDateTime date={task.actual_end_date} format={DateFormats.DATE_ONLY} />
                       ) : leave && leave.to_date ? (
                         <FormattedDateTime date={leave.to_date} format={DateFormats.DATE_ONLY} />
                       ) : permission && permission.date ? (

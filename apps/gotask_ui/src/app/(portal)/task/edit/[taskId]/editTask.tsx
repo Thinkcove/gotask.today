@@ -106,6 +106,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
         const response = await updateTask(data.id, updatedFields);
 
         if (response?.success) {
+          setIsSubmitting(true);
           await mutate();
           setSnackbar({
             open: true,

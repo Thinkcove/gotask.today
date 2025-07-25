@@ -24,17 +24,19 @@ import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
-import { ESTIMATION_FORMAT } from "@/app/common/constants/regex";
-import { formatTimeValue } from "@/app/common/utils/taskTime";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { PermissionEntry } from "../../report/interface/timeLog";
 import { fetchAllPermissions } from "../../report/services/reportService";
 import {
+  datesOverlap,
+  formatEstimation,
   formatLeaveDuration,
   formatPermissionDuration,
   formatText,
+  getEstimationValue,
   getTimeSpentColor,
+  isSameDate,
   normalizeDate
 } from "@/app/common/utils/leaveCalculate";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
@@ -64,32 +66,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     permissions = permissionResponse.data || permissionResponse;
   }
 
-  const formatEstimation = (estimation: string | number | null | undefined) => {
-    if (!estimation || estimation === null || estimation === undefined || estimation === "") {
-      return "-";
-    }
-
-    // Use the formatTimeValue function from taskTime.ts
-    return formatTimeValue(estimation.toString());
-  };
-
-  // Helper function to extract numeric value from estimation
-  const getEstimationValue = (estimation: string | number | null | undefined): number => {
-    if (!estimation || estimation === null || estimation === undefined || estimation === "") {
-      return 0;
-    }
-    const numericValue = parseFloat(estimation.toString().replace(ESTIMATION_FORMAT, ""));
-    return isNaN(numericValue) ? 0 : numericValue;
-  };
-
-  // Helper function to check if two dates are the same day
-  const isSameDate = (date1: string, date2: string): boolean => {
-    const fromDate = normalizeDate(date1);
-    const toDate = normalizeDate(date2);
-    return fromDate.getTime() === toDate.getTime();
-  };
-
-  // Helper function to check if a date falls within a leave period
   const isDateInLeaveRange = (date: string, leave: LeaveEntry): boolean => {
     const checkDate = normalizeDate(date);
     const leaveStart = normalizeDate(leave.from_date);
@@ -98,32 +74,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     return checkDate >= leaveStart && checkDate <= leaveEnd;
   };
 
-  // Improved date overlap function with proper date normalization
-  const datesOverlap = (
-    firstLeaveStart: string,
-    firstLeaveEnd: string,
-    secondLeaveStart: string,
-    secondLeaveEnd: string
-  ): boolean => {
-    const firstLeaveStartDate = new Date(firstLeaveStart);
-    const firstLeaveEndDate = new Date(firstLeaveEnd);
-    const secondLeaveStartDate = new Date(secondLeaveStart);
-    const secondLeaveEndDate = new Date(secondLeaveEnd);
-
-    // Check if all dates are valid
-    if (
-      isNaN(firstLeaveStartDate.getTime()) ||
-      isNaN(firstLeaveEndDate.getTime()) ||
-      isNaN(secondLeaveStartDate.getTime()) ||
-      isNaN(secondLeaveEndDate.getTime())
-    ) {
-      return false;
-    }
-
-    return firstLeaveStartDate <= secondLeaveEndDate && secondLeaveStartDate <= firstLeaveEndDate;
-  };
-
-  // Helper function to check if permission date is within range
   const isPermissionInRange = (permissionDate: string): boolean => {
     const permDate = normalizeDate(permissionDate);
     const fromDateObj = normalizeDate(fromDate);
@@ -132,17 +82,14 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     return permDate >= fromDateObj && permDate <= toDateObj;
   };
 
-  // Helper function to check if a task falls within the date range
   const isTaskInDateRange = (task: WorkPlannedEntry): boolean => {
     if (!task.start_date || !task.end_date) {
-      // If task has no dates, include it (you might want to change this logic)
       return true;
     }
 
     return datesOverlap(task.start_date, task.end_date, fromDate, toDate);
   };
 
-  // Helper function to get leaves for a user within the date range
   const getUserLeavesInRange = (userId: string): LeaveEntry[] => {
     return leaves.filter(
       (leave) =>
@@ -153,7 +100,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     );
   };
 
-  // Helper function to get permissions for a user within the date range
   const getUserPermissionsInRange = (userId: string): PermissionEntry[] => {
     return permissions.filter(
       (permission) =>
@@ -161,7 +107,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     );
   };
 
-  // Helper function to check if a task has permission on the same date
   const getTaskPermissionsOnSameDate = (
     task: WorkPlannedEntry,
     userPermissions: PermissionEntry[]
@@ -174,7 +119,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
     );
   };
 
-  // Helper function to check if a task has leave on the same date
   const getTaskLeavesOnSameDate = (
     task: WorkPlannedEntry,
     userLeaves: LeaveEntry[]

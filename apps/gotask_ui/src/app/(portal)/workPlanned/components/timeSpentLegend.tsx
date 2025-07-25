@@ -2,9 +2,9 @@ import { Box, Typography } from "@mui/material";
 
 export const TimeSpentLegend: React.FC = () => {
   const legendItems = [
-    { color: "#20bf25ff", label: "Under estimated" },
-    { color: "#ead30cff", label: "Matches estimated" },
-    { color: "#dd1428ff", label: "Over estimated" }
+    { color: "#20bf25ff", label: "Completed Early" },
+    { color: "#ead30cff", label: "Estimated Time" },
+    { color: "#dd1428ff", label: "Overdue" }
   ];
 
   return (

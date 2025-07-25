@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Grid, Box } from "@mui/material";
+import { Grid, Box, Skeleton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {
   useAllProjects,
@@ -374,52 +374,83 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
           flexWrap: "nowrap"
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <SearchBar value={searchText} onChange={setSearchText} placeholder="Search Task" />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            width: "100%"
+          }}
+        >
+          <Box sx={{ flex: 1, maxWidth: 400 }}>
+            {isLoading && allTasks.length === 0 ? (
+              <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 1 }} />
+            ) : (
+              <SearchBar value={searchText} onChange={setSearchText} placeholder="Search Task" />
+            )}
+          </Box>
+          <Box sx={{}}>
+            <TaskToggle view={view} onViewChange={handleViewChange} />
+          </Box>
         </Box>
-        <TaskToggle view={view} onViewChange={handleViewChange} />
       </Box>
 
-      <TaskFilters
-        statusFilter={statusFilter}
-        severityFilter={severityFilter}
-        projectFilter={projectFilter}
-        userFilter={userFilter}
-        allProjects={allProjects.map((p: Project) => p.name)}
-        allUsers={allUsers.map((u: User) => u.name)}
-        variationType={variationType}
-        variationDays={variationDays}
-        dateFrom={dateFrom}
-        dateTo={dateTo}
-        onStatusChange={setStatusFilter}
-        onSeverityChange={setSeverityFilter}
-        onProjectChange={setProjectFilter}
-        onUserChange={setUserFilter}
-        onDateChange={(from, to) => {
-          setDateFrom(from);
-          setDateTo(to);
-          setMinDate(from || undefined);
-          setMaxDate(to || undefined);
-        }}
-        onVariationChange={handleVariationChange}
-        onClearFilters={() => {
-          setStatusFilter([]);
-          setSeverityFilter([]);
-          setProjectFilter([]);
-          setUserFilter([]);
-          setSearchText("");
-          setDateFrom("");
-          setDateTo("");
-          setMinDate(undefined);
-          setMaxDate(undefined);
-          setVariationType("");
-          setVariationDays(0);
-          setMoreDays(undefined);
-          setLessDays(undefined);
-          removeStorage("taskListFilter");
-        }}
-        transtask={transtask}
-      />
+      {isLoading && allTasks.length === 0 ? (
+        <Box sx={{ px: 3, py: 1 }}>
+          <Grid container spacing={2}>
+            {[...Array(3)].map((_, i) => (
+              <Grid item xs={12} sm={6} md={4} key={`filter-skeleton-${i}`}>
+                <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 1 }} />
+              </Grid>
+            ))}
+            <Grid item xs={12}>
+              <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 1 }} />
+            </Grid>
+          </Grid>
+        </Box>
+      ) : (
+        <TaskFilters
+          statusFilter={statusFilter}
+          severityFilter={severityFilter}
+          projectFilter={projectFilter}
+          userFilter={userFilter}
+          allProjects={allProjects.map((p: Project) => p.name)}
+          allUsers={allUsers.map((u: User) => u.name)}
+          variationType={variationType}
+          variationDays={variationDays}
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          onStatusChange={setStatusFilter}
+          onSeverityChange={setSeverityFilter}
+          onProjectChange={setProjectFilter}
+          onUserChange={setUserFilter}
+          onDateChange={(from, to) => {
+            setDateFrom(from);
+            setDateTo(to);
+            setMinDate(from || undefined);
+            setMaxDate(to || undefined);
+          }}
+          onVariationChange={handleVariationChange}
+          onClearFilters={() => {
+            setStatusFilter([]);
+            setSeverityFilter([]);
+            setProjectFilter([]);
+            setUserFilter([]);
+            setSearchText("");
+            setDateFrom("");
+            setDateTo("");
+            setMinDate(undefined);
+            setMaxDate(undefined);
+            setVariationType("");
+            setVariationDays(0);
+            setMoreDays(undefined);
+            setLessDays(undefined);
+            removeStorage("taskListFilter");
+          }}
+          transtask={transtask}
+        />
+      )}
 
       <Box
         ref={scrollRef}
@@ -436,16 +467,22 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
             </Grid>
           )}
 
-          {allTasks.map((group) => (
-            <Grid item xs={12} sm={6} md={4} key={group.id}>
-              <TaskCard
-                view={view}
-                group={group}
-                onTaskClick={(id) => router.push(`/task/view/${id}`)}
-                onViewMore={handleViewMore}
-              />
-            </Grid>
-          ))}
+          {isLoading && allTasks.length === 0
+            ? [...Array(6)].map((_, i) => (
+                <Grid item xs={12} sm={6} md={4} key={`skeleton-${i}`}>
+                  <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />
+                </Grid>
+              ))
+            : allTasks.map((group) => (
+                <Grid item xs={12} sm={6} md={4} key={group.id}>
+                  <TaskCard
+                    view={view}
+                    group={group}
+                    onTaskClick={(id) => router.push(`/task/view/${id}`)}
+                    onViewMore={handleViewMore}
+                  />
+                </Grid>
+              ))}
         </Grid>
       </Box>
 

@@ -9,8 +9,6 @@ export const TimeSpentIndicator: React.FC<{
     const spentValue = spent !== null && spent !== undefined ? parseFloat(spent.toString()) : NaN;
     const estimatedValue = estimated !== null && estimated !== undefined ? parseFloat(estimated.toString()) : NaN;
 
-
-
     if (isNaN(spentValue) || isNaN(estimatedValue)) {
         return <span>{formatEstimation(spent)}</span>;
     }

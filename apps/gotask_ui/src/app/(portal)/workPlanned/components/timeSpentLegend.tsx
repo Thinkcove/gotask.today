@@ -1,4 +1,4 @@
-import { legendItems } from "@/app/common/utils/actualTime";
+import { legendItems } from "@/app/common/constants/actualTime";
 import { Box, Typography } from "@mui/material";
 
 export const TimeSpentLegend: React.FC = () => {

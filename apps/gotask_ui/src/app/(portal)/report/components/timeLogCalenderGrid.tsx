@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -31,7 +31,7 @@ import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
-import { formatPermissionDuration } from "@/app/common/utils/leaveCalculate";
+import { datesOverlap, extractDateFromTimeLog, formatPermissionDuration, normalizeDate } from "@/app/common/utils/leaveCalculate";
 import { fetchAllPermissions } from "../services/reportService";
 import { getDailyLogCellStyle } from "./logStyle";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -61,86 +61,35 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
 }) => {
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
 
-  const getDateRange = (from: string, to: string) =>
-    eachDayOfInterval({ start: parseISO(from), end: parseISO(to) });
-
-  const normalizeDate = (date: string): string => {
-    if (!date) return date;
-
-    // If already in YYYY-MM-DD format, return as-is
-    if (ISO_DATE_REGEX.test(date)) {
-      return date;
-    }
-
-    // If contains 'T', it's likely an ISO string with time
-    if (date.includes("T")) {
-      const parsed = parseISO(date);
-      if (isValid(parsed)) {
-        return format(parsed, DateFormats.ISO_DATE);
-      }
-    }
-
-    // Fallback parse for any other format
-    const parsed = parseISO(date);
-    if (isValid(parsed)) {
-      return format(parsed, DateFormats.ISO_DATE);
-    }
-
-    // If parsing fails, return original input
-    return date;
-  };
-
-  const extractDateFromTimeLog = (entry: TimeLogEntry): string | null => {
-    if (!entry?.date || typeof entry.date !== "string") {
-      return null;
-    }
-
-    // Return directly if it's already in YYYY-MM-DD format
-    if (ISO_DATE_REGEX.test(entry.date)) {
-      return entry.date;
-    }
-
-    const parsedDate = parseISO(entry.date);
-    if (isValid(parsedDate)) {
-      return format(parsedDate, DateFormats.ISO_DATE);
-    }
-
-    return null;
-  };
-
-  const dateRange = getDateRange(fromDate, toDate);
+  // FIXED: Memoize date range calculation
+  const dateRange = useMemo(() =>
+    eachDayOfInterval({ start: parseISO(fromDate), end: parseISO(toDate) }),
+    [fromDate, toDate]
+  );
 
   const { data: leaveResponse } = useSWR("leave", fetchAllLeaves);
   const { data: permissionResponse } = useSWR("permission", fetchAllPermissions);
 
-  // Get leaves and permissions data
-  let leaves: LeaveEntry[] = [];
-  if (leaveData && leaveData.length > 0) {
-    leaves = leaveData;
-  } else if (leaveResponse) {
-    leaves = leaveResponse.data || leaveResponse;
-  }
+  // FIXED: Memoize leaves and permissions data processing
+  const leaves: LeaveEntry[] = useMemo(() => {
+    if (leaveData && leaveData.length > 0) {
+      return leaveData;
+    } else if (leaveResponse) {
+      return leaveResponse.data || leaveResponse;
+    }
+    return [];
+  }, [leaveData, leaveResponse]);
 
-  let permissions: PermissionEntry[] = [];
-  if (permissionData && permissionData.length > 0) {
-    permissions = permissionData;
-  } else if (permissionResponse) {
-    permissions = permissionResponse.data || permissionResponse;
-  }
+  const permissions: PermissionEntry[] = useMemo(() => {
+    if (permissionData && permissionData.length > 0) {
+      return permissionData;
+    } else if (permissionResponse) {
+      return permissionResponse.data || permissionResponse;
+    }
+    return [];
+  }, [permissionData, permissionResponse]);
 
-  const datesOverlap = (
-    firstLeaveStart: string,
-    firstLeaveEnd: string,
-    secondLeaveStart: string,
-    secondLeaveEnd: string
-  ): boolean => {
-    const firstStart = normalizeDate(firstLeaveStart);
-    const firstEnd = normalizeDate(firstLeaveEnd);
-    const secondStart = normalizeDate(secondLeaveStart);
-    const secondEnd = normalizeDate(secondLeaveEnd);
 
-    return firstStart <= secondEnd && secondStart <= firstEnd;
-  };
 
   const isDateInLeave = (date: string, leaveFromDate: string, leaveToDate: string): boolean => {
     const checkDate = normalizeDate(date);
@@ -188,102 +137,162 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     return fromTimeLogs || "";
   };
 
-  const filteredData = data.filter((entry) => {
-    const projectMatches =
-      selectedProjects.length === 0 ||
-      (entry.project_id && selectedProjects.includes(entry.project_id));
-    const userMatches =
-      selectedUsers.length === 0 || (entry.user_id && selectedUsers.includes(entry.user_id));
-    return projectMatches && userMatches;
-  });
-
-  const grouped = filteredData.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
-    const user = entry.user_name;
-    const project = entry.project_name || transreport("noproject");
-    const task = entry.task_title || transreport("notask");
-
-    const date = extractDateFromTimeLog(entry);
-    if (!date) {
-      return acc;
-    }
-
-    const timeLogged = extractHours(entry.total_time_logged || []);
-    const key = [user, project, task].join("|");
-
-    if (!acc[key]) acc[key] = {};
-
-    if (!acc[key][date]) {
-      acc[key][date] = 0;
-    }
-    acc[key][date] += timeLogged;
-
-    return acc;
-  }, {});
-
-  const groupedByUser: Record<string, Record<string, TaskLog[]>> = {};
-
-  Object.entries(grouped).forEach(([key, days]) => {
-    const [user, project, task] = key.split("|");
-
-    if (!groupedByUser[user]) groupedByUser[user] = {};
-    if (!groupedByUser[user][project]) groupedByUser[user][project] = [];
-
-    const matchedTask = filteredData.find(
-      (d) =>
-        d.user_name === user &&
-        (d.project_name || transreport("noproject")) === project &&
-        (d.task_title || transreport("notask")) === task
-    );
-
-    const taskId = matchedTask?.task_id || "";
-    const status = matchedTask?.status || "";
-
-    groupedByUser[user][project].push({
-      task,
-      taskId,
-      status,
-      dailyLogs: days
+  // FIXED: Memoize filtered data
+  const filteredData = useMemo(() => {
+    return data.filter((entry) => {
+      const projectMatches =
+        selectedProjects.length === 0 ||
+        (entry.project_id && selectedProjects.includes(entry.project_id));
+      const userMatches =
+        selectedUsers.length === 0 || (entry.user_id && selectedUsers.includes(entry.user_id));
+      return projectMatches && userMatches;
     });
-  });
+  }, [data, selectedProjects, selectedUsers]);
 
-  // FIXED: Filter leaves and permissions by selected users and date range
-  const filteredLeaves = leaves.filter((leave) => {
-    const userMatches = selectedUsers.length === 0 || selectedUsers.includes(leave.user_id);
-    const dateMatches = datesOverlap(leave.from_date, leave.to_date, fromDate, toDate);
-    return userMatches && dateMatches;
-  });
-
-  const filteredPermissions = permissions.filter((permission) => {
-    const userMatches = selectedUsers.length === 0 || selectedUsers.includes(permission.user_id);
-    const dateMatches = datesOverlap(permission.date, permission.date, fromDate, toDate);
-    return userMatches && dateMatches;
-  });
-
-  [...filteredLeaves, ...filteredPermissions].forEach((item) => {
-    const userName = item.user_name;
-
-    if (!groupedByUser[userName]) {
-      groupedByUser[userName] = {};
+  // FIXED: Memoize users with valid projects calculation
+  const usersWithValidProjects = useMemo(() => {
+    if (selectedProjects.length === 0) {
+      // If no projects selected, return all users from filtered data
+      const validUserIds = filteredData
+        .filter(task => task.user_id) // Filter out entries without user_id
+        .map(task => task.user_id!) // Use non-null assertion since we filtered above
+      return [...new Set(validUserIds)];
     }
-  });
+    // Get users who have tasks in the selected projects within date range
+    const usersWithProjects = filteredData
+      .filter(task => task.project_id && selectedProjects.includes(task.project_id) && task.user_id)
+      .map(task => task.user_id!); // Use non-null assertion
+    return [...new Set(usersWithProjects)];
+  }, [filteredData, selectedProjects]);
 
-  const totalTimePerUser: Record<string, number> = {};
-  Object.entries(groupedByUser).forEach(([user, projects]) => {
-    totalTimePerUser[user] = 0;
-    Object.values(projects).forEach((tasks) => {
-      tasks.forEach((task) => {
-        (Object.values(task.dailyLogs) as number[]).forEach((hours) => {
-          totalTimePerUser[user] += hours;
+  // FIXED: Memoize user selection check function
+  const checkIfUserIsSelected = useMemo(() => {
+    return (userId: string): boolean => {
+      // First check if user has tasks in selected projects (or no project filter)
+      const hasValidProjects = usersWithValidProjects.includes(userId);
+
+      // If no projects are selected, only apply user filter
+      if (selectedProjects.length === 0) {
+        return selectedUsers.length === 0 || selectedUsers.includes(userId);
+      }
+
+      // If projects are selected, user must have tasks in those projects
+      if (!hasValidProjects) {
+        return false;
+      }
+
+      // Then apply user filter if specified
+      if (selectedUsers.length === 0) {
+        return true;
+      }
+
+      return selectedUsers.includes(userId);
+    };
+  }, [usersWithValidProjects, selectedProjects, selectedUsers]);
+
+  // FIXED: Memoize filtered leaves and permissions
+  const filteredLeaves = useMemo(() => {
+    return leaves.filter((leave) => {
+      const userMatches = checkIfUserIsSelected(leave.user_id);
+      const dateMatches = datesOverlap(leave.from_date, leave.to_date, fromDate, toDate);
+      return userMatches && dateMatches;
+    });
+  }, [leaves, checkIfUserIsSelected, fromDate, toDate]);
+
+  const filteredPermissions = useMemo(() => {
+    return permissions.filter((permission) => {
+      const userMatches = checkIfUserIsSelected(permission.user_id);
+      const dateMatches = datesOverlap(permission.date, permission.date, fromDate, toDate);
+      return userMatches && dateMatches;
+    });
+  }, [permissions, checkIfUserIsSelected, fromDate, toDate]);
+
+  // FIXED: Memoize the main data processing
+  const { groupedByUser, totalTimePerUser } = useMemo(() => {
+    const grouped = filteredData.reduce((acc: GroupedLogs, entry: TimeLogEntry) => {
+      const user = entry.user_name;
+      const project = entry.project_name || transreport("noproject");
+      const task = entry.task_title || transreport("notask");
+
+      // Only entries that passed the filter get grouped
+      const date = extractDateFromTimeLog(entry);
+      if (!date) {
+        return acc;
+      }
+
+      const timeLogged = extractHours(entry.total_time_logged || []);
+      const key = [user, project, task].join("|");
+
+      if (!acc[key]) acc[key] = {};
+      if (!acc[key][date]) {
+        acc[key][date] = 0;
+      }
+      acc[key][date] += timeLogged;
+
+      return acc;
+    }, {});
+
+    const groupedByUser: Record<string, Record<string, TaskLog[]>> = {};
+
+    Object.entries(grouped).forEach(([key, days]) => {
+      const [user, project, task] = key.split("|");
+
+      if (!groupedByUser[user]) groupedByUser[user] = {};
+      if (!groupedByUser[user][project]) groupedByUser[user][project] = [];
+
+      // Find matching task from FILTERED data (not original data)
+      const matchedTask = filteredData.find(
+        (d) =>
+          d.user_name === user &&
+          (d.project_name || transreport("noproject")) === project &&
+          (d.task_title || transreport("notask")) === task
+      );
+
+      const taskId = matchedTask?.task_id || "";
+      const status = matchedTask?.status || "";
+
+      groupedByUser[user][project].push({
+        task,
+        taskId,
+        status,
+        dailyLogs: days
+      });
+    });
+
+    // FIXED: Add users with leaves/permissions only if they pass selection criteria
+    [...filteredLeaves, ...filteredPermissions].forEach((item) => {
+      const userName = item.user_name;
+      const userId = item.user_id;
+
+      // Only add the user if they pass the project selection criteria
+      if (checkIfUserIsSelected(userId) && !groupedByUser[userName]) {
+        groupedByUser[userName] = {};
+      }
+    });
+
+    // Calculate total time per user
+    const totalTimePerUser: Record<string, number> = {};
+    Object.entries(groupedByUser).forEach(([user, projects]) => {
+      totalTimePerUser[user] = 0;
+      Object.values(projects).forEach((tasks) => {
+        tasks.forEach((task) => {
+          (Object.values(task.dailyLogs) as number[]).forEach((hours) => {
+            totalTimePerUser[user] += hours;
+          });
         });
       });
     });
-  });
 
-  const singleProjectName =
-    selectedProjects.length === 1
+    return { grouped, groupedByUser, totalTimePerUser };
+  }, [filteredData, filteredLeaves, filteredPermissions, checkIfUserIsSelected, transreport]);
+
+  // FIXED: Memoize single project name
+  const singleProjectName = useMemo(() => {
+    return selectedProjects.length === 1
       ? data.find((d) => d.project_id === selectedProjects[0])?.project_name ||
       transreport("noproject")
       : null;
+  }, [selectedProjects, data, transreport]);
 
   const renderCellContent = (
     value: number | undefined,
@@ -385,6 +394,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
       return value ? `${value}h` : "";
     }
   };
+
   const hasData =
     filteredData.length > 0 || filteredLeaves.length > 0 || filteredPermissions.length > 0;
 
@@ -404,7 +414,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           {transreport("showproject")}: {singleProjectName}
         </div>
       )}
-
       <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}>
         <Table stickyHeader size="small" sx={{ minWidth: 1200 }}>
           <TableHead>
@@ -666,7 +675,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
             })}
           </TableBody>
         </Table>
-      </TableContainer >
+      </TableContainer>
     </>
   );
 };

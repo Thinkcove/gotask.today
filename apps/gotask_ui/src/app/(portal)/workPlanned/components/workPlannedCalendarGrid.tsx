@@ -389,7 +389,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
-                {transworkplanned("actualtime ")}
+                {transworkplanned("actualtime")}
               </TableCell>
             </TableRow>
           </TableHead>

@@ -45,3 +45,5 @@ export const stripHtmlAndTrim = (html: string = ""): string => {
 export const isHtmlContentEmpty = (html: string = ""): boolean => {
   return stripHtmlAndTrim(html) === "";
 };
+
+export const FIELD_PREFIX_REGEX = /^.+?: /;

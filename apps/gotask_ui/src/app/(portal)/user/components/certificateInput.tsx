@@ -18,6 +18,10 @@ import {
 } from "../services/userAction";
 import StarIcon from "@mui/icons-material/Star";
 import { MAX_NOTES_LENGTH } from "@/app/common/constants/user";
+import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import CustomSnackbar from "@/app/component/snackBar/snackbar";
+import { VALIDATION_REQUIRED_FIELDS } from "@/app/common/constants/user";
+import { FIELD_PREFIX_REGEX } from "@/app/common/constants/regex";
 
 interface CertificateInputProps {
   userId: string;
@@ -25,11 +29,15 @@ interface CertificateInputProps {
   onChange?: () => void;
 }
 
-const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
+const CertificateInput: React.FC<CertificateInputProps> = ({ userId, onChange }) => {
   const trans = useTranslations("User");
   const transuser = useTranslations("User.Certificate");
   const transInc = useTranslations("User.Increment");
-
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: SNACKBAR_SEVERITY.INFO
+  });
   const {
     data: certificates = [],
     isLoading,
@@ -76,18 +84,64 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
     setDateError(isDateEmpty);
 
     if (isNameEmpty || isDateEmpty) return;
-    if (editingId) {
-      await updateUserCertificate(userId, editingId, tempCert);
-    } else {
-      await addUserCertificates(userId, [tempCert]);
-    }
 
-    setDialogOpen(false);
-    setTempCert(emptyCert);
-    setEditingId(null);
-    setNameError(false);
-    setDateError(false);
-    await mutate();
+    const formattedCert = {
+      ...tempCert,
+      obtained_date: new Date(tempCert.obtained_date).toISOString()
+    };
+
+    try {
+      const response = editingId
+        ? await updateUserCertificate(userId, editingId, formattedCert)
+        : await addUserCertificates(userId, [formattedCert]);
+
+      if (!response?.success) {
+        let errorMessage = transuser("savecertificate");
+
+        if (
+          typeof response.message === "string" &&
+          response.message.includes("User validation failed:")
+        ) {
+          const match = response.message.match(/User validation failed: (.+)/);
+          if (match && match[1]) {
+            const fields = match[1]
+              .split(", ")
+              .map((field) => field.replace(FIELD_PREFIX_REGEX, "").trim());
+            errorMessage = `${VALIDATION_REQUIRED_FIELDS}${fields.join(", ")}`;
+          }
+        }
+
+        setSnackbar({
+          open: true,
+          message: errorMessage,
+          severity: SNACKBAR_SEVERITY.ERROR
+        });
+
+        return;
+      }
+
+      setDialogOpen(false);
+      setTempCert(emptyCert);
+      setEditingId(null);
+      setNameError(false);
+      setDateError(false);
+      await mutate();
+
+      if (onChange) onChange();
+
+      setSnackbar({
+        open: true,
+        message: transuser("savecertificate"),
+        severity: SNACKBAR_SEVERITY.SUCCESS
+      });
+    } catch (error) {
+      console.error(transuser("failsavecertificate"), error);
+      setSnackbar({
+        open: true,
+        message: (error as Error)?.message || trans("commonerror"),
+        severity: SNACKBAR_SEVERITY.ERROR
+      });
+    }
   };
 
   const confirmDelete = async () => {
@@ -303,6 +357,12 @@ const CertificateInput: React.FC<CertificateInputProps> = ({ userId }) => {
           })}
         </Typography>
       </CommonDialog>
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </Box>
   );
 };

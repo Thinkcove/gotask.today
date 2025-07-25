@@ -57,6 +57,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
   const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
+  const [startDateError, setStartDateError] = useState("");
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
@@ -369,7 +370,14 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 : ""
             }
             onChange={(val) => {
-              const cleanedVal = String(val).replace(/[^0-9]/g, ""); // allow multiple digits
+              if (!formData.start_date) {
+                setStartDateError("Please enter the start date.");
+                return;
+              }
+
+              setStartDateError(""); // Clear error if start_date exists
+
+              const cleanedVal = String(val).replace(/[^0-9]/g, "");
               const hours = formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "";
 
               let userEstimated = "";
@@ -385,6 +393,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 if (dueDate) handleInputChange("due_date", dueDate);
               }
             }}
+            error={startDateError}
             disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
         </Grid>
@@ -402,6 +411,13 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 : formData.user_estimated?.replace("h", "").trim() || ""
             }
             onChange={(val) => {
+              if (!formData.start_date) {
+                setStartDateError("Please enter the start date.");
+                return;
+              }
+
+              setStartDateError(""); // Clear error
+
               const hoursStr = String(val).replace(NON_DIGIT, "");
               const days = formData.user_estimated?.includes("d")
                 ? formData.user_estimated.split("d")[0] || ""
@@ -421,7 +437,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
               const hours = parseInt(hoursStr, 10);
 
               if (hours >= TASK_HOURS && !days) {
-                setHourError("8 hours equals 1 full day.Please use the Days field instead.");
+                setHourError("8 hours equals 1 full day. Please use the Days field instead.");
                 return;
               }
 
@@ -435,7 +451,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
               );
               setHourError("");
             }}
-            error={hourError}
+            error={hourError || startDateError}
             disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
         </Grid>

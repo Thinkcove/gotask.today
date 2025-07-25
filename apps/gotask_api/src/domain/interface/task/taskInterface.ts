@@ -241,6 +241,14 @@ const addTimeSpentToTask = async (
     });
   }
 
+  //  Set actual_start_date if this is the first time entry and it's not already set
+  if (!task.actual_start_date && task.time_spent.length > 0) {
+    const firstEntry = task.time_spent[task.time_spent.length - 1]; // oldest (last in array)
+    if (firstEntry.date) {
+      task.actual_start_date = new Date(firstEntry.date);
+    }
+  }
+
   const totalTimeInHours = TimeUtil.calculateTotalTime(task.time_spent);
   task.time_spent_total = TimeUtil.formatHoursToTimeString(totalTimeInHours);
 

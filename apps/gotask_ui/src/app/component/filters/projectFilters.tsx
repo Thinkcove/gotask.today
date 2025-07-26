@@ -1,5 +1,5 @@
 "use client";
-import { Box, Link } from "@mui/material";
+import { Box, Link, Skeleton } from "@mui/material";
 import React from "react";
 import FilterDropdown from "../input/filterDropDown";
 import { useTranslations } from "next-intl";
@@ -16,6 +16,7 @@ interface ProjectFiltersProps {
   onUserChange: (val: string[]) => void;
   onClearFilters?: () => void;
   filtersApplied?: boolean;
+  loading?: boolean;
 }
 
 const ProjectFilters: React.FC<ProjectFiltersProps> = ({
@@ -28,34 +29,34 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
   onStatusChange,
   onUserChange,
   onClearFilters,
-  filtersApplied
+  filtersApplied,
+  loading = false
 }) => {
   const t = useTranslations();
+
   return (
     <Box sx={{ width: "100%" }}>
-      {/* Parent container for layout */}
       <Box
         sx={{
           display: "flex",
-          flexDirection: {
-            xs: "column", 
-            sm: "row" 
-          },
-          alignItems: {
-            sm: "center" 
-          },
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: { sm: "center" },
           gap: 2,
           flexWrap: "nowrap"
         }}
       >
         {/* Search Bar */}
         <Box sx={{ width: { xs: "100%", sm: "300px" } }}>
-          <SearchBar
-            value={searchTerm}
-            onChange={onSearchChange}
-            sx={{ width: "100%" }}
-            placeholder={t("Projects.searchplaceholder")}
-          />
+          {loading ? (
+            <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 1 }} />
+          ) : (
+            <SearchBar
+              value={searchTerm}
+              onChange={onSearchChange}
+              sx={{ width: "100%" }}
+              placeholder={t("Projects.searchplaceholder")}
+            />
+          )}
         </Box>
 
         {/* Filters */}
@@ -68,25 +69,40 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
             width: "100%",
             pt: { xs: 1, sm: 0 },
             pb: 1,
-            "&::-webkit-scrollbar": { display: "none" }, // hide scrollbar on WebKit
-            scrollbarWidth: "none" // hide scrollbar on Firefox
+            "&::-webkit-scrollbar": { display: "none" },
+            scrollbarWidth: "none"
           }}
         >
-          <FilterDropdown
-            label={t("Projects.Stories.filters.user")}
-            options={allUsers}
-            selected={userFilter}
-            onChange={onUserChange}
-          />
+          {/* User Filter */}
+          <Box sx={{ minWidth: 150 }}>
+            {loading ? (
+              <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 1 }} />
+            ) : (
+              <FilterDropdown
+                label={t("Projects.Stories.filters.user")}
+                options={allUsers}
+                selected={userFilter}
+                onChange={onUserChange}
+              />
+            )}
+          </Box>
 
-          <FilterDropdown
-            label={t("Projects.Stories.filters.status")}
-            options={allStatuses}
-            selected={statusFilter}
-            onChange={onStatusChange}
-          />
+          {/* Status Filter */}
+          <Box sx={{ minWidth: 150 }}>
+            {loading ? (
+              <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 1 }} />
+            ) : (
+              <FilterDropdown
+                label={t("Projects.Stories.filters.status")}
+                options={allStatuses}
+                selected={statusFilter}
+                onChange={onStatusChange}
+              />
+            )}
+          </Box>
 
-          {filtersApplied && onClearFilters && (
+          {/* Clear All Link */}
+          {!loading && filtersApplied && onClearFilters && (
             <Link
               component="button"
               onClick={onClearFilters}
@@ -106,4 +122,5 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
     </Box>
   );
 };
+
 export default ProjectFilters;

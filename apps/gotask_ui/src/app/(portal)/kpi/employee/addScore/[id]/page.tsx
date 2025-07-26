@@ -9,6 +9,7 @@ import ModuleHeader from "@/app/component/header/moduleHeader";
 import { fetchKpiAssignmentById } from "../../../service/templateAction";
 import UpdateScorePage from "./updateScore";
 import { KpiAssignment } from "../../../service/templateInterface";
+import { Box, CircularProgress } from "@mui/material";
 
 type KpiAssignmentApiResponse = KpiAssignment | { error: string };
 
@@ -23,7 +24,20 @@ const Page = () => {
   );
 
   if (!assignment) {
-    return <div>{transkpi("loading")}</div>;
+    return (
+      <>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </>
+    );
   }
 
   if ("error" in assignment) {

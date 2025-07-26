@@ -1,4 +1,8 @@
-import { TIME_PERIOD } from "../constants/regex";
+import { TimeLogEntry } from "@/app/(portal)/report/interface/timeLog";
+import { ESTIMATION_FORMAT, ISO_DATE_REGEX, TIME_PERIOD } from "../constants/regex";
+import { formatTimeValue } from "./taskTime";
+import DateFormats from "@/app/component/dateTime/dateFormat";
+import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
 
 export const normalizeDate = (dateString: string): Date => {
   const date = new Date(dateString);
@@ -67,4 +71,66 @@ export const getTimeSpentColor = (
   if (spentValue === estimatedValue) return "#ead30cff";
 
   return "#8715deff";
+};
+
+export const datesOverlap = (
+  firstLeaveStart: string,
+  firstLeaveEnd: string,
+  secondLeaveStart: string,
+  secondLeaveEnd: string
+): boolean => {
+  const firstLeaveStartDate = new Date(firstLeaveStart);
+  const firstLeaveEndDate = new Date(firstLeaveEnd);
+  const secondLeaveStartDate = new Date(secondLeaveStart);
+  const secondLeaveEndDate = new Date(secondLeaveEnd);
+
+  // Check if all dates are valid
+  if (
+    isNaN(firstLeaveStartDate.getTime()) ||
+    isNaN(firstLeaveEndDate.getTime()) ||
+    isNaN(secondLeaveStartDate.getTime()) ||
+    isNaN(secondLeaveEndDate.getTime())
+  ) {
+    return false;
+  }
+
+  return firstLeaveStartDate <= secondLeaveEndDate && secondLeaveStartDate <= firstLeaveEndDate;
+};
+
+export const formatEstimation = (estimation: string | number | null | undefined) => {
+  if (!estimation || estimation === null || estimation === undefined || estimation === "") {
+    return "-";
+  }
+
+  // Use the formatTimeValue function from taskTime.ts
+  return formatTimeValue(estimation.toString());
+};
+export const getEstimationValue = (estimation: string | number | null | undefined): number => {
+  if (!estimation || estimation === null || estimation === undefined || estimation === "") {
+    return 0;
+  }
+  const numericValue = parseFloat(estimation.toString().replace(ESTIMATION_FORMAT, ""));
+  return isNaN(numericValue) ? 0 : numericValue;
+};
+export const isSameDate = (date1: string, date2: string): boolean => {
+  const fromDate = normalizeDate(date1);
+  const toDate = normalizeDate(date2);
+  return fromDate.getTime() === toDate.getTime();
+};
+export const extractDateFromTimeLog = (entry: TimeLogEntry): string | null => {
+  if (!entry?.date || typeof entry.date !== "string") {
+    return null;
+  }
+
+  // Return directly if it's already in YYYY-MM-DD format
+  if (ISO_DATE_REGEX.test(entry.date)) {
+    return entry.date;
+  }
+
+  const parsedDate = parseISO(entry.date);
+  if (isValid(parsedDate)) {
+    return format(parsedDate, DateFormats.ISO_DATE);
+  }
+
+  return null;
 };

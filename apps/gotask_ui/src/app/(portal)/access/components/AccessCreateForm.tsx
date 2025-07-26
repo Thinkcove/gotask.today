@@ -302,7 +302,7 @@ const AccessCreateForm: React.FC = () => {
               }
             }}
           >
-            {isSubmitting ? <CircularProgress size={20} /> : t("Access.createaccessnew")}
+            {isSubmitting ? <CircularProgress size={20} /> : t("Access.create")}
           </Button>
         )}
       </Box>

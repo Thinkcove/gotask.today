@@ -93,6 +93,8 @@ const CreateOrganization = ({ open, onClose, mutate }: CreateOrgProps) => {
         open={open}
         onClose={handleClose}
         onSubmit={handleSubmit}
+        submitLabel={transorganization("create")}
+        cancelLabel={transorganization("cancel")}
         title={transorganization("createtitle")}
       >
         <OrganizationInput formData={formData} handleChange={handleChange} errors={errors} />

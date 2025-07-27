@@ -195,23 +195,33 @@ const ViewMoreAction: React.FC = () => {
       </Box>
     );
   }
-
-  const name = transtask("listViewOf", {
-    name: groupName
-  });
+  const name = groupName;
   const hideProjectFilter = view === "projects";
   const hideUserFilter = view !== "projects";
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh" overflow="hidden">
       <ModuleHeader name={name} />
-      <Box mt={2} display="flex" flexDirection="row" alignItems="flex-start" gap={2}>
+
+      {/* Search + Filters Row (responsive) */}
+      <Box
+        mt={2}
+        display="flex"
+        flexDirection={{ xs: "column", md: "row" }}
+        alignItems={{ xs: "stretch", md: "flex-start" }}
+      >
         {/* Search and Header */}
-        <Box display="flex" alignItems="center" gap={2} minWidth={300}>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={2}
+          flexWrap="wrap"
+          minWidth={{ xs: "100%", md: 200 }}
+        >
           <Box sx={{ mr: 2, mt: 2 }}>
             <PageHeader onClose={() => window.history.back()} />
           </Box>
-          <Box maxWidth={400} flex={1} mt={2}>
+          <Box maxWidth={350} flex={1} mt={2}>
             <SearchBar
               value={searchText}
               onChange={updateSearchText}
@@ -221,14 +231,8 @@ const ViewMoreAction: React.FC = () => {
           </Box>
         </Box>
 
-        <Divider
-          orientation="vertical"
-          flexItem
-          sx={{
-            height: 60
-          }}
-        />
-        <Box flex={1} minWidth={280}>
+        {/* Filters: Full width on small screens */}
+        <Box flex={1} minWidth={280} width={{ xs: "100%", md: "auto" }}>
           <TaskFilters
             statusFilter={statusFilter}
             severityFilter={severityFilter}
@@ -262,7 +266,8 @@ const ViewMoreAction: React.FC = () => {
         </Box>
       </Box>
 
-      <Box flex={1} overflow="auto" mt={2} minHeight="100%" display="flex" flexDirection="column">
+      {/* Task List or Empty State */}
+      <Box flex={1} overflow="auto" minHeight="100%" display="flex" flexDirection="column">
         {!isLoading && drawerTasks.length === 0 ? (
           <Grid
             container
@@ -288,6 +293,7 @@ const ViewMoreAction: React.FC = () => {
         )}
       </Box>
 
+      {/* Floating Create Task Button */}
       {canAccess(APPLICATIONS.TASK, ACTIONS.CREATE) && (
         <ActionButton
           label={transtask("createtask")}

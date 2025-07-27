@@ -152,9 +152,7 @@ export default function AccessEditForm() {
       const res = await updateAccessRole(String(id), payload as Omit<AccessRole, "id">);
       if (res.success) {
         showSnackbar(t("updatesuccess"), "success");
-        setTimeout(() => {
-          router.push("/access");
-        }, 500);
+        router.push("/access");
       } else {
         showSnackbar(res.message || t("updateerror"), "error");
       }
@@ -220,11 +218,9 @@ export default function AccessEditForm() {
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Stack direction="row" spacing={1} alignItems="center">
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
-              <Tooltip title={t("cancel")}>
-                <IconButton onClick={() => router.back()} color="primary">
-                  <ArrowBack />
-                </IconButton>
-              </Tooltip>
+              <IconButton onClick={() => router.back()} color="primary">
+                <ArrowBack />
+              </IconButton>
             )}
             <Heading title={t("editaccess")} />
           </Stack>

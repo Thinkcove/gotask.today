@@ -7,7 +7,6 @@ import {
   useMediaQuery,
   useTheme,
   TextField,
-  Tooltip,
   IconButton
 } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
@@ -68,7 +67,7 @@ const AccessView: React.FC = () => {
       const res = await deleteAccessRole(accessRole.id);
       if (res.success) {
         showSnackbar(res.message || t("updatesuccess"), "success");
-        setTimeout(() => router.push("/access"), 500);
+        router.push("/access");
       } else {
         showSnackbar(res.message || t("updateerror"), "error");
       }
@@ -185,11 +184,9 @@ const AccessView: React.FC = () => {
             sx={{ flex: isMobile ? "1 1 50%" : "unset", textTransform: "capitalize" }}
           >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
-              <Tooltip title={t("cancel")}>
-                <IconButton onClick={() => router.back()} color="primary">
-                  <ArrowBack />
-                </IconButton>
-              </Tooltip>
+              <IconButton onClick={() => router.back()} color="primary">
+                <ArrowBack />
+              </IconButton>
             )}
             <Heading title={accessRole.name} />
           </Box>
@@ -202,25 +199,21 @@ const AccessView: React.FC = () => {
             sx={{ flex: isMobile ? "1 1 50%" : "unset" }}
           >
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.UPDATE) && (
-              <Tooltip title={t("editaccess")}>
-                <IconButton
-                  onClick={() => router.push(`/access/pages/edit/${accessRole.id}`)}
-                  color="primary"
-                >
-                  <Edit />
-                </IconButton>
-              </Tooltip>
+              <IconButton
+                onClick={() => router.push(`/access/pages/edit/${accessRole.id}`)}
+                color="primary"
+              >
+                <Edit />
+              </IconButton>
             )}
             {canAccess(APPLICATIONS.ACCESS, ACTIONS.DELETE) && (
-              <Tooltip title={t("deleteaccess")}>
-                <IconButton
-                  onClick={() => setOpenDeleteDialog(true)}
-                  color="error"
-                  disabled={isDeleting}
-                >
-                  <Delete />
-                </IconButton>
-              </Tooltip>
+              <IconButton
+                onClick={() => setOpenDeleteDialog(true)}
+                color="error"
+                disabled={isDeleting}
+              >
+                <Delete />
+              </IconButton>
             )}
           </Box>
         </Box>

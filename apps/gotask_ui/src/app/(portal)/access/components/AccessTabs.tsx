@@ -1,6 +1,6 @@
-'use client';
-import React from 'react';
-import { Tabs, Tab } from '@mui/material';
+"use client";
+import React from "react";
+import { Tabs, Tab } from "@mui/material";
 
 interface AccessTabsProps {
   modules: string[];
@@ -8,35 +8,39 @@ interface AccessTabsProps {
   onChange: (newModule: string) => void;
 }
 
-const AccessTabs: React.FC<AccessTabsProps> = ({
-  modules,
-  currentModule,
-  onChange,
-}) => {
-  // Ensure currentModule is valid, fallback to first module or empty string
-  const safeCurrentModule =
-    modules.includes(currentModule) ? currentModule : modules[0] || "";
+const AccessTabs: React.FC<AccessTabsProps> = ({ modules, currentModule, onChange }) => {
+  const safeCurrentModule = modules.includes(currentModule) ? currentModule : modules[0] || "";
 
   return (
     <Tabs
       value={safeCurrentModule}
       onChange={(e, newValue) => onChange(newValue)}
       variant="scrollable"
-      scrollButtons="auto"
       sx={{
-        width: '100%',
-        '& .MuiTab-root': {
-          minHeight: '30px',
-          padding: { xs: '6px 12px', sm: '8px 16px' },
-          fontSize: { xs: '0.7rem', sm: '0.85rem' },
-          textTransform: 'none',
-          whiteSpace: 'nowrap',
+        width: "100%",
+        "& .MuiTabs-scroller": {
+          overflowX: "auto",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none"
         },
-        '& .Mui-selected': {
+        "& .MuiTabs-scroller::-webkit-scrollbar": {
+          display: "none"
+        },
+        "& .MuiTabs-scrollButtons": {
+          display: "none !important"
+        },
+        "& .MuiTab-root": {
+          minHeight: "30px",
+          padding: { xs: "6px 12px", sm: "8px 16px" },
+          fontSize: { xs: "0.7rem", sm: "0.85rem" },
+          textTransform: "none",
+          whiteSpace: "nowrap"
+        },
+        "& .Mui-selected": {
           fontWeight: 600,
-          backgroundColor: '#f3f4f6',
-          borderRadius: '6px',
-        },
+          backgroundColor: "#f3f4f6",
+          borderRadius: "6px"
+        }
       }}
     >
       {modules.map((module) => (

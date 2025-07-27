@@ -60,9 +60,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
         message: transuser("deletesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setTimeout(() => {
-        router.push("/user");
-      }, 1500);
+      router.push("/user");
     } catch {
       setSnackbar({
         open: true,

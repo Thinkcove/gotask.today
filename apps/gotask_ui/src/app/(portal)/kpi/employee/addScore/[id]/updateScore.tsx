@@ -73,7 +73,7 @@ const UpdateScorePage: React.FC<UpdateProps> = ({ assignment, mutate, transkpi }
       setSnackbarMessage(transkpi("updatesuccessassignment"));
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
-      setTimeout(() => router.back(), 1000);
+      router.back();
     } catch (error) {
       console.error(error);
       setSnackbarMessage(transkpi("updateFailed"));

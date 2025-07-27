@@ -12,7 +12,7 @@ import {
   Typography,
   Grid
 } from "@mui/material";
-import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
+import { format, eachDayOfInterval, parseISO} from "date-fns";
 import {
   EnhancedTimeLogGridPropsWithPermissions,
   GroupedLogs,
@@ -30,7 +30,6 @@ import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import DateFormats from "@/app/component/dateTime/dateFormat";
-import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
 import { datesOverlap, extractDateFromTimeLog, formatPermissionDuration, normalizeDate } from "@/app/common/utils/leaveCalculate";
 import { fetchAllPermissions } from "../services/reportService";
 import { getDailyLogCellStyle } from "./logStyle";

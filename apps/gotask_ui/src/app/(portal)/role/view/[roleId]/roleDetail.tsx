@@ -11,7 +11,8 @@ import {
   Grid,
   Card,
   CardHeader,
-  CardContent
+  CardContent,
+  Fab
 } from "@mui/material";
 import { Add, ArrowBack, Delete } from "@mui/icons-material";
 import { useState } from "react";
@@ -110,14 +111,12 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
                 {role.name}
               </Typography>
               {canAccess(APPLICATIONS.ROLE, ACTIONS.ASSIGN_ACCESS) && (
-                <Tooltip title={transrole("addaccess")}>
-                  <IconButton
-                    onClick={() => setOpenAddDialog(true)}
-                    sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#741B92" } }}
-                  >
-                    <Add sx={{ color: "white" }} />
-                  </IconButton>
-                </Tooltip>
+                <Fab
+                  sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#5E1374" } }}
+                  onClick={() => setOpenAddDialog(true)}
+                >
+                  <Add sx={{ color: "white" }} />
+                </Fab>
               )}
             </Box>
           </Box>

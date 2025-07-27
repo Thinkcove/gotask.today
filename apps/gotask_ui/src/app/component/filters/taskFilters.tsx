@@ -1,6 +1,5 @@
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { Box, IconButton, Link, Popover, Slider, Typography } from "@mui/material";
+import { Box, Link, Popover, Slider, Typography } from "@mui/material";
 import React, { useRef, useState } from "react";
 import FilterDropdown from "../input/filterDropDown";
 import DateDropdown from "../input/dateDropdown";
@@ -88,23 +87,6 @@ const TaskFilters: React.FC<Props> = ({
   return (
     <Box>
       <Box sx={{ position: "relative" }}>
-        {canScrollLeft && (
-          <IconButton
-            onClick={() => scrollBy("left")}
-            sx={{
-              position: "absolute",
-              left: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 2,
-              backgroundColor: "white",
-              boxShadow: 1
-            }}
-          >
-            <ChevronLeft />
-          </IconButton>
-        )}
-
         <Box
           ref={scrollRef}
           onScroll={handleScroll}
@@ -168,6 +150,7 @@ const TaskFilters: React.FC<Props> = ({
               dateTo={dateTo}
               onDateChange={onDateChange}
               transtask={transtask}
+              placeholder={transtask("filterplannedenddate")}
             />
           </Box>
           <Box sx={{ minWidth: 150, flexShrink: 0 }} ref={variationRef}>
@@ -216,23 +199,6 @@ const TaskFilters: React.FC<Props> = ({
             </Box>
           </Popover>
         </Box>
-
-        {canScrollRight && (
-          <IconButton
-            onClick={() => scrollBy("right")}
-            sx={{
-              position: "absolute",
-              right: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 2,
-              backgroundColor: "white",
-              boxShadow: 1
-            }}
-          >
-            <ChevronRight />
-          </IconButton>
-        )}
       </Box>
 
       {/* Clear All Link - Always visible below filter bar */}

@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import FilterDropdown from "../input/filterDropDown";
 import DateDropdown from "../input/dateDropdown";
 
-interface Props {
+interface TaskFiltersProps {
   statusFilter: string[];
   severityFilter: string[];
   projectFilter: string[];
@@ -27,7 +27,7 @@ interface Props {
   hideUserFilter?: boolean;
 }
 
-const TaskFilters: React.FC<Props> = ({
+const TaskFilters: React.FC<TaskFiltersProps> = ({
   statusFilter,
   severityFilter,
   projectFilter,
@@ -52,8 +52,6 @@ const TaskFilters: React.FC<Props> = ({
   const variationRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [variationPopoverOpen, setVariationPopoverOpen] = useState(false);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
 
   let appliedFilterCount = 0;
 
@@ -65,33 +63,11 @@ const TaskFilters: React.FC<Props> = ({
   if (typeof dateFrom === "string" && dateFrom.trim() !== "") appliedFilterCount += 1;
   if (typeof dateTo === "string" && dateTo.trim() !== "") appliedFilterCount += 1;
 
-  const updateScrollButtons = () => {
-    const el = scrollRef.current;
-    if (el) {
-      setCanScrollLeft(el.scrollLeft > 0);
-      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth);
-    }
-  };
-
-  const handleScroll = () => updateScrollButtons();
-  const handleMouseEvents = () => updateScrollButtons();
-
-  const scrollBy = (direction: "left" | "right") => {
-    const el = scrollRef.current;
-    if (el) {
-      el.scrollBy({ left: direction === "left" ? -200 : 200, behavior: "smooth" });
-      setTimeout(updateScrollButtons, 300);
-    }
-  };
-
   return (
     <Box>
       <Box sx={{ position: "relative" }}>
         <Box
           ref={scrollRef}
-          onScroll={handleScroll}
-          onMouseEnter={handleMouseEvents}
-          onMouseMove={handleMouseEvents}
           sx={{
             py: 2,
             px: { xs: 2, md: 3 },

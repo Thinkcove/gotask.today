@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Box, Grid, Paper, Skeleton, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
@@ -18,12 +18,13 @@ import { useRouter } from "next/navigation";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
 import {
   assetListFilters,
+  ASSETS,
   getAssetColumns,
   IAssetDisplayRow,
+  issuesListFilters,
   issueStatuses
 } from "../assetConstants";
 import AssetIssueCards from "../createIssues/issuesCard";
-import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
 import { SortOrder } from "@/app/common/constants/task";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -42,7 +43,11 @@ interface AssetListProps {
 }
 
 export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) => {
-  const FILTERS_STORAGE_KEY = assetListFilters;
+  const FILTERS_STORAGE_KEY_ASSETS = assetListFilters;
+  const FILTERS_STORAGE_KEY_ISSUES = issuesListFilters;
+
+  const FILTERS_STORAGE_KEY =
+    initialView === ASSETS ? FILTERS_STORAGE_KEY_ASSETS : FILTERS_STORAGE_KEY_ISSUES;
 
   const updateFilter = <T,>(
     key: string,
@@ -134,9 +139,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     assets: transasset("assets"),
     issues: transasset("issues")
   };
-
-  // options for toggle
-  const toggleOptions = [labels.assets, labels.issues];
 
   const handleToggleChange = (selectedLabel: string) => {
     const nextView = labelToKey[selectedLabel];
@@ -351,7 +353,10 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               assignedToFilter={[]}
               allUsers={[]}
               onAssignedToChange={() => {}}
-              onClearFilters={() => setStatusFilter([])}
+              onClearFilters={() => {
+                setStatusFilter([]);
+                removeStorage(FILTERS_STORAGE_KEY_ISSUES);
+              }}
               trans={transasset}
               hideModelNameFilter
               hideAssignedToFilter

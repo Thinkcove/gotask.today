@@ -95,7 +95,7 @@ const AssetFilters: React.FC<Props> = ({
         {onSearchTextChange && (
           <Box sx={{ minWidth: 280 }}>
             {loading ? (
-              <Skeleton variant="rectangular" height={43} width="100%" sx={{ borderRadius: 8 }} />
+              <Skeleton variant="rectangular" height={43} width="100%" sx={{ borderRadius: 1 }} />
             ) : (
               <SearchBar
                 value={searchText || ""}

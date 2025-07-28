@@ -76,9 +76,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ template, mutate }) => {
         message: transkpi("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setTimeout(() => {
-        router.push(`/kpi/template/view/${template.id}`);
-      }, 1500);
+      router.push(`/kpi/template/view/${template.id}`);
     } catch {
       setSnackbar({
         open: true,

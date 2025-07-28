@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Button, CircularProgress, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { getProjectStoryById, updateProjectStory } from "../services/projectStoryActions";
 import CustomSnackbar from "@/app/component/snackBar/snackbar";
@@ -18,7 +18,6 @@ import {
 } from "@/app/common/constants/storyStatus";
 import ReusableEditor from "@/app/component/richText/textEditor";
 import { isHtmlContentEmpty } from "@/app/common/constants/regex";
-
 
 const EditStoryForm: React.FC = () => {
   const { storyId, projectId } = useParams();
@@ -75,8 +74,7 @@ const EditStoryForm: React.FC = () => {
     } else {
       setDescriptionError("");
     }
-    
-    
+
     // Validate status transition
     const originalStatus = story?.status as StoryStatus;
     const allowedNextStatuses = STORY_STATUS_TRANSITIONS[originalStatus] || [];
@@ -101,9 +99,7 @@ const EditStoryForm: React.FC = () => {
       setSnackMessage(t("Stories.success.updated"));
       setSnackSeverity("success");
       setSnackOpen(true);
-      setTimeout(() => {
-        router.push(`/project/view/${projectId}/stories/${storyId}`);
-      }, 800);
+      router.push(`/project/view/${projectId}/stories/${storyId}`);
     } catch (err) {
       console.error(err);
       setSnackMessage(t("Stories.errors.updateFailed"));
@@ -165,14 +161,12 @@ const EditStoryForm: React.FC = () => {
           }}
         >
           <Box display="flex" alignItems="center" gap={1}>
-            <Tooltip title={t("Stories.backToStoryDetails")}>
-              <IconButton
-                onClick={() => router.push(`/project/view/${projectId}/stories/${storyId}`)}
-                color="primary"
-              >
-                <ArrowBackIcon />
-              </IconButton>
-            </Tooltip>
+            <IconButton
+              onClick={() => router.push(`/project/view/${projectId}/stories/${storyId}`)}
+              color="primary"
+            >
+              <ArrowBackIcon />
+            </IconButton>
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#741B92" }}>
               {t("Stories.editStory")}
             </Typography>
@@ -242,7 +236,7 @@ const EditStoryForm: React.FC = () => {
           value={status ?? STORY_STATUS.TO_DO}
           onChange={(val) => setStatus(val as StoryStatus)}
           options={statusOptions}
-          disableClearable={true} 
+          disableClearable={true}
         />
 
         <Box>

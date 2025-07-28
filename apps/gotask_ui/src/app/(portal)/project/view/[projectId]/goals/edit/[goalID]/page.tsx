@@ -113,15 +113,10 @@ const EditGoalPage = () => {
         priority: goalData.priority,
         user_id: user?.id ?? ""
       };
-
       await updateWeeklyGoal(goalID, payload);
-
       showSnackbar(transGoal("goalupdate"), SNACKBAR_SEVERITY.SUCCESS);
       await mutate(`goal-${goalID}`);
-
-      setTimeout(() => {
-        router.back();
-      }, 1500);
+      router.back();
     } catch (err) {
       console.error("Error updating weekly goal:", err);
       showSnackbar(transGoal("saveError"), SNACKBAR_SEVERITY.ERROR);

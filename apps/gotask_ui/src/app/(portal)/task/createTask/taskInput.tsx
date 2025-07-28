@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "../../../component/input/formField";
-import { TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
+import { TASK_HOURS, TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
 import {
   useAllProjects,
   useAllUsers,
@@ -24,6 +24,8 @@ import { mapUsersToMentions } from "@/app/common/utils/textEditor";
 import useSWR from "swr";
 import { fetchUsers } from "../../user/services/userAction";
 import { getStoriesByProject } from "../../projectStory/services/projectStoryActions";
+import { calculateDueDate } from "@/app/common/utils/taskTime";
+import { NON_DIGIT } from "@/app/common/constants/regex";
 
 interface TaskInputProps {
   formData: IFormField;
@@ -51,10 +53,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllUsers } = useAllUsers();
   const { getAllProjects } = useAllProjects();
-
+  const [hourError, setHourError] = useState("");
   const [filteredUsers, setFilteredUsers] = useState<User[]>(getAllUsers || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(getAllProjects || []);
   const [projectStories, setProjectStories] = useState<StoryOption[]>([]);
+  const [startDateError, setStartDateError] = useState("");
 
   const isReadOnly = (field: string) => readOnlyFields.includes(field);
 
@@ -339,13 +342,20 @@ const TaskInput: React.FC<TaskInputProps> = ({
             required
             placeholder={transtask("placeholderstartdate")}
             value={formData.start_date || ""}
-            onChange={(value) =>
-              handleInputChange(
-                "start_date",
-                value instanceof Date ? value.toISOString().split("T")[0] : String(value)
-              )
-            }
-            error={errors?.start_date}
+            onChange={(value) => {
+              const startDate =
+                value instanceof Date ? value.toISOString().split("T")[0] : String(value);
+              handleInputChange("start_date", startDate);
+
+              if (!formData.user_estimated || formData.user_estimated === "0d0h") {
+                handleInputChange("due_date", "");
+              } else {
+                const dueDate = calculateDueDate(startDate, formData.user_estimated);
+                if (dueDate) handleInputChange("due_date", dueDate);
+              }
+              setStartDateError("");
+            }}
+            error={startDateError}
             disabled={isReadOnly("start_date") || isStartDateLocked}
           />
         </Grid>
@@ -357,12 +367,28 @@ const TaskInput: React.FC<TaskInputProps> = ({
             min={0}
             placeholder={transtask("placeholderdays")}
             value={
-              formData.user_estimated?.includes("d") ? formData.user_estimated.split("d")[0] : ""
+              formData.user_estimated?.includes("d")
+                ? formData.user_estimated.split("d")[0] || ""
+                : ""
             }
             onChange={(val) => {
+              if (!formData.start_date) {
+                setStartDateError("Please enter the Planned start date.");
+                return;
+              }
+              setStartDateError(""); // Clear error if start_date exists
+              const cleanedVal = String(val).replace(NON_DIGIT, "");
               const hours = formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "";
-              const days = val === "" ? "" : val;
-              handleInputChange("user_estimated", `${days || 0}d${hours || 0}h`);
+              let userEstimated = "";
+              if (cleanedVal) userEstimated += `${cleanedVal}d`;
+              if (hours) userEstimated += `${hours}h`;
+              handleInputChange("user_estimated", userEstimated);
+              if (!cleanedVal && !hours) {
+                handleInputChange("due_date", "");
+              } else {
+                const dueDate = calculateDueDate(formData.start_date || "", userEstimated);
+                if (dueDate) handleInputChange("due_date", dueDate);
+              }
             }}
             disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
@@ -372,19 +398,52 @@ const TaskInput: React.FC<TaskInputProps> = ({
           <FormField
             label={transtask("labeluserestimatedhours")}
             type="number"
-            min={1}
-            max={8}
+            min={0}
+            max={TASK_HOURS}
             placeholder={transtask("placeholderhours")}
             value={
               formData.user_estimated?.includes("d")
                 ? formData.user_estimated.split("d")[1]?.replace("h", "").trim() || ""
-                : ""
+                : formData.user_estimated?.replace("h", "").trim() || ""
             }
             onChange={(val) => {
-              const days = formData.user_estimated?.split("d")[0] || "";
-              const hours = val === "" ? "" : val;
-              handleInputChange("user_estimated", `${days || 0}d${hours || 0}h`);
+              if (!formData.start_date) {
+                setStartDateError("Please enter the Planned start date.");
+                return;
+              }
+              setStartDateError(""); // Clear error
+              const hoursStr = String(val).replace(NON_DIGIT, "");
+              const days = formData.user_estimated?.includes("d")
+                ? formData.user_estimated.split("d")[0] || ""
+                : "";
+              if (hoursStr === "") {
+                const userEstimated = days ? `${days}d` : "";
+                handleInputChange("user_estimated", userEstimated);
+                handleInputChange(
+                  "due_date",
+                  days ? calculateDueDate(formData.start_date || "", userEstimated) || "" : ""
+                );
+                setHourError("");
+                return;
+              }
+              const hours = parseInt(hoursStr, 10);
+              if (hours >= TASK_HOURS && !days) {
+                setHourError(
+                  `${TASK_HOURS} hours equals 1 full day. Please use the Days field instead.`
+                );
+                return;
+              }
+              const userEstimated = `${days ? days + "d" : ""}${hours ? hours + "h" : ""}`;
+              handleInputChange("user_estimated", userEstimated);
+              handleInputChange(
+                "due_date",
+                userEstimated
+                  ? calculateDueDate(formData.start_date || "", userEstimated) || ""
+                  : ""
+              );
+              setHourError("");
             }}
+            error={hourError}
             disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
         </Grid>
@@ -402,7 +461,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 value instanceof Date ? value.toISOString().split("T")[0] : String(value)
               )
             }
-            error={errors?.due_date}
             disabled={isReadOnly("due_date")}
           />
         </Grid>

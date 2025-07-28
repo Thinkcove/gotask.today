@@ -113,8 +113,7 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
             message: transtask("updatesuccess"),
             severity: SNACKBAR_SEVERITY.SUCCESS
           });
-
-          setTimeout(() => router.back(), 2000);
+          router.back();
         } else {
           setSnackbar({
             open: true,

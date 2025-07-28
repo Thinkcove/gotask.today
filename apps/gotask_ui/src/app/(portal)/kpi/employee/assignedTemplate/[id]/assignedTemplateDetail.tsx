@@ -51,9 +51,7 @@ const AssignedTemplateDetail: React.FC<Props> = ({ assignment, assignmentId }) =
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
       setOpenDialog(false);
-      setTimeout(() => {
-        router.back();
-      }, 1000);
+      router.back();
     } catch (error: any) {
       setSnackbarMessage(error.message || transkpi("deletefailed"));
       setSnackbarSeverity("error");

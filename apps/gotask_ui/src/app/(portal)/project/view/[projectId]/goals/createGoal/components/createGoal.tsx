@@ -63,15 +63,9 @@ const CreateGoal = () => {
         priority: goalData.priority,
         user_id: user?.id ?? ""
       };
-
       await createWeeklyGoal(payload);
-
       showSnackbar(transGoal("savegoal"), SNACKBAR_SEVERITY.SUCCESS);
-
-      // Navigate back to the goal list after successful creation
-      setTimeout(() => {
-        router.back();
-      }, 1500);
+      router.back();
     } catch (err) {
       console.error("Error creating weekly goal:", err);
       showSnackbar(transGoal("saveError"), SNACKBAR_SEVERITY.ERROR);

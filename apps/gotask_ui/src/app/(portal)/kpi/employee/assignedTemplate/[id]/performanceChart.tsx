@@ -5,7 +5,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   Legend,
   ResponsiveContainer
 } from "recharts";
@@ -46,7 +45,6 @@ const PerformanceChart: React.FC<PerformanceProps> = ({
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
-        <Tooltip />
         <Legend />
         <Line
           type="monotone"

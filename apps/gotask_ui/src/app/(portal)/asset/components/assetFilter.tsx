@@ -206,7 +206,6 @@ const AssetFilters: React.FC<Props> = ({
         )}
       </Box>
 
-      {/* Clear All */}
       {appliedFilterCount > 0 && (
         <Box sx={{ pl: 2, pb: 1 }}>
           <Link

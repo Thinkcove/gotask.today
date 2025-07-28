@@ -82,9 +82,7 @@ const ApplyLeave: React.FC = () => {
         message: transleave("leavesubmit"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setTimeout(() => {
-        router.push("/leave");
-      }, 1000);
+      router.push("/leave");
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error &&

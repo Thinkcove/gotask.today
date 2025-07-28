@@ -205,9 +205,7 @@ const EditAsset: React.FC<EditAssetProps> = ({ data, onClose, mutate }) => {
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
       onClose();
-      setTimeout(() => {
-        router.back();
-      }, 500);
+      router.back();
     } catch {
       setSnackbar({
         open: true,

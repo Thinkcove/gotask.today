@@ -90,8 +90,7 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
         message: transuser("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-
-      setTimeout(() => router.back(), 2000);
+      router.back();
     } catch {
       setSnackbar({
         open: true,
@@ -106,8 +105,8 @@ const EditUser: React.FC<EditUserProps> = ({ data, userID, mutate }) => {
       sx={{
         maxWidth: "1450px",
         mx: "auto",
-        px: { xs: 2, sm: 3, md: 4 },
-        py: { xs: 2, sm: 3 },
+        px: 2,
+        py: 2,
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh"

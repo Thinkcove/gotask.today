@@ -73,18 +73,13 @@ const CreateUser = () => {
     setIsSubmitting(true);
     try {
       const response = await createUser(formData);
-
       if (response.success) {
         setSnackbar({
           open: true,
           message: transuser("successmessage"),
           severity: SNACKBAR_SEVERITY.SUCCESS
         });
-
-        // Navigate to user list after showing success
-        setTimeout(() => {
-          router.push("/user");
-        }, 1500);
+        router.push("/user");
       } else {
         setSnackbar({
           open: true,

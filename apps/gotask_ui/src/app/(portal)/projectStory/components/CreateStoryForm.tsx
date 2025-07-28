@@ -84,10 +84,7 @@ const CreateStoryForm = () => {
       setSnackMessage(t("Stories.success.created"));
       setSnackSeverity("success");
       setSnackOpen(true);
-
-      setTimeout(() => {
-        router.push(`/project/view/${projectId}/stories`);
-      }, 800);
+      router.push(`/project/view/${projectId}/stories`);
     } catch (error) {
       console.error("Failed to create story:", error);
       setSnackMessage(t("Stories.errors.creationFailed"));
@@ -213,23 +210,23 @@ const CreateStoryForm = () => {
           <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
             {t("Stories.description")}
           </Typography>
-          
-            <ReusableEditor
-              content={description}
-              onChange={(html) => {
-                setDescription(html);
-                setDescriptionError("");
-              }}
-              placeholder={t("Stories.placeholders.description")}
-              readOnly={false}
-              showSaveButton={false}
-            />
-          </Box>
-          {descriptionError && (
-            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-              {descriptionError}
-            </Typography>
-          )}
+
+          <ReusableEditor
+            content={description}
+            onChange={(html) => {
+              setDescription(html);
+              setDescriptionError("");
+            }}
+            placeholder={t("Stories.placeholders.description")}
+            readOnly={false}
+            showSaveButton={false}
+          />
+        </Box>
+        {descriptionError && (
+          <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+            {descriptionError}
+          </Typography>
+        )}
       </Box>
 
       <CustomSnackbar

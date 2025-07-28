@@ -70,8 +70,8 @@ const TaskSchema = new Schema<ITask>(
     variation: { type: String, default: "0d0h" },
     comment: { type: [TaskCommentSchema] },
     history: { type: [TaskHistorySchema] },
-    actual_start_date: { type: Date },
-    actual_end_date: { type: Date }
+    actual_start_date: { type: Date, default: null },
+    actual_end_date: { type: Date, default: null }
   },
   { timestamps: true }
 );

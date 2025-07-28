@@ -7,7 +7,12 @@ import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { formatStatus, PAGE_SIZE_PROJECT_GOAL, priorityOptions, statusOptions } from "@/app/common/constants/project";
+import {
+  formatStatus,
+  PAGE_SIZE_PROJECT_GOAL,
+  priorityOptions,
+  statusOptions
+} from "@/app/common/constants/project";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoAssetsImage from "@assets/placeholderImages/notask.svg";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
@@ -104,7 +109,7 @@ function ProjectGoalList() {
   };
 
   const handleGoBack = () => {
-    setTimeout(() => router.back(), 200);
+    router.back();
   };
 
   const handleProjectGoalView = (goalId: string) => {
@@ -146,8 +151,6 @@ function ProjectGoalList() {
     removeStorage("projectGoalListFilter");
   };
 
-
-
   if (isLoading && allGoals.length === 0) {
     return (
       <Box
@@ -171,14 +174,16 @@ function ProjectGoalList() {
 
     const matchesStatus = statusFilter.length > 0 ? statusFilter.includes(goal.status) : true;
 
-    const matchesSeverity = severityFilter.length > 0 ? severityFilter.includes(goal.priority) : true;
+    const matchesSeverity =
+      severityFilter.length > 0 ? severityFilter.includes(goal.priority) : true;
 
     return matchesProject && matchesSearchTerm && matchesStatus && matchesSeverity;
   });
 
   const noGoalsForProject = allGoals.filter((goal) => goal.projectId === projectID).length === 0;
   const noFilteredResults = filteredGoals?.length === 0;
-  const isFilterActive = statusFilter.length > 0 || severityFilter.length > 0 || searchTerm.trim() !== "";
+  const isFilterActive =
+    statusFilter.length > 0 || severityFilter.length > 0 || searchTerm.trim() !== "";
 
   return (
     <Box>

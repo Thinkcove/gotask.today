@@ -25,6 +25,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import TaskFilters from "@/app/component/filters/taskFilters";
 import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
+import { FilterSkeletonLoader } from "@/app/component/loaders/genericSkeletonLoader";
 
 interface TaskListProps {
   initialView?: "projects" | "users";
@@ -253,6 +254,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
       dateFrom,
       dateTo
     };
+
     setStorage("taskListFilter", filters);
 
     const shouldRefresh = searchParams.get("refresh") === "true";
@@ -397,18 +399,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
       </Box>
 
       {isLoading && allTasks.length === 0 ? (
-        <Box sx={{ px: 3, py: 1 }}>
-          <Grid container spacing={2}>
-            {[...Array(3)].map((_, i) => (
-              <Grid item xs={12} sm={6} md={4} key={`filter-skeleton-${i}`}>
-                <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 1 }} />
-              </Grid>
-            ))}
-            <Grid item xs={12}>
-              <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 1 }} />
-            </Grid>
-          </Grid>
-        </Box>
+        <FilterSkeletonLoader count={6} />
       ) : (
         <TaskFilters
           statusFilter={statusFilter}

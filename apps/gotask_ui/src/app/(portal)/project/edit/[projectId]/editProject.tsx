@@ -100,7 +100,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
         isSubmitting={isSubmitting}
         editheading={transproject("edittitle")}
         cancel={transproject("cancelproject")}
-        update={transproject("submitproject")}
+        update={transproject("save")}
       />
 
       {/* Form Section */}

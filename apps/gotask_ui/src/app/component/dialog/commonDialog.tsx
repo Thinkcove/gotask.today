@@ -28,7 +28,7 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
   onSubmit,
   title,
   children,
-  submitLabel = "Submit",
+  submitLabel = "Save",
   cancelLabel = "Cancel",
   submitColor,
   hideCancelButton = false,

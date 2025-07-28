@@ -48,9 +48,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
     severity: SNACKBAR_SEVERITY.INFO
   });
 
-  const handleBack = () => {
-    setTimeout(() => router.back(), 2000);
-  };
+  const handleBack = () => router.back();
 
   const handleDelete = async () => {
     try {

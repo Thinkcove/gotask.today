@@ -49,9 +49,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
   const { projectId } = useParams();
   const projectID = projectId as string;
 
-  const handleBack = () => {
-    setTimeout(() => router.push("/project"), 2000);
-  };
+  const handleBack = () => router.back();
 
   const handleAddUser = async () => {
     setOpen(false);
@@ -168,6 +166,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Project Description & Dates */}
           <Grid container spacing={2} flexDirection="column" mb={2}>
             <Grid item xs={12} md={6}>
+              <Typography variant="subtitle2" color="text.secondary" mb={1}>
+                {transproject("detaildescription")}
+              </Typography>
               <RichTextReadOnly content={project.description} extensions={getTipTapExtensions()} />
             </Grid>
           </Grid>

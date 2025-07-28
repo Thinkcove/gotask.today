@@ -8,6 +8,8 @@ import useSWR from "swr";
 import { fetcherUserList } from "@/app/(portal)/user/services/userAction";
 import { User } from "@/app/userContext";
 import FormattedDateTime from "@/app/component/dateTime/formatDateTime";
+import { RichTextReadOnly } from "mui-tiptap";
+import { getTipTapExtensions } from "@/app/common/utils/textEditor";
 
 interface PerformanceEntry {
   performance_id: string;
@@ -82,10 +84,21 @@ const PerformanceDetail: React.FC<PerformanceDetailProps> = ({ performance, tran
             />
           </Grid>
           <Grid item xs={12}>
-            <LabelValueText
-              label={transkpi("comments")}
-              value={performance.notes || transkpi("nocomment")}
-            />
+            <Grid item xs={12}>
+              <LabelValueText
+                label={transkpi("comments")}
+                value={
+                  <RichTextReadOnly
+                    content={
+                      Array.isArray(performance.notes) && performance.notes.length > 0
+                        ? performance.notes[0]
+                        : transkpi("nocomment")
+                    }
+                    extensions={getTipTapExtensions()}
+                  />
+                }
+              />
+            </Grid>
           </Grid>
         </Grid>
       </Box>

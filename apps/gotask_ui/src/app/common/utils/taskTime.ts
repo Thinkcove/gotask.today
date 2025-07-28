@@ -140,3 +140,31 @@ export const calculateTimeProgressData = (
     variationFillPercentage
   };
 };
+
+// -----------------------------
+// Due Date Calculation
+// -----------------------------
+export const calculateDueDate = (startDateStr: string, estimation: string): string | null => {
+  if (!startDateStr || !estimation) return null;
+
+  let days = 0;
+  let hours = 0;
+
+  if (estimation.includes("d")) {
+    const [d, hRaw] = estimation.split("d");
+    days = parseInt(d, 10) || 0;
+    hours = hRaw?.replace("h", "").trim() ? parseInt(hRaw.replace("h", "").trim(), 10) || 0 : 0;
+  } else if (estimation.includes("h")) {
+    hours = parseInt(estimation.replace("h", "").trim(), 10) || 0;
+  }
+
+  if (isNaN(days) || isNaN(hours)) return null;
+
+  const totalDays = Math.ceil(days + hours / TASK_HOURS);
+  const addDays = totalDays > 1 ? totalDays - 1 : 0;
+
+  const startDate = new Date(startDateStr);
+  startDate.setDate(startDate.getDate() + addDays);
+
+  return startDate.toISOString().split("T")[0];
+};

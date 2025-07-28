@@ -36,6 +36,8 @@ export const DATE_ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 export const DATETIME_ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 
+export const NON_DIGIT = /[^0-9]/g;
+
 // Strip HTML tags and trim whitespace
 export const stripHtmlAndTrim = (html: string = ""): string => {
   return html.replace(/<[^>]*>/g, "").trim();
@@ -45,3 +47,5 @@ export const stripHtmlAndTrim = (html: string = ""): string => {
 export const isHtmlContentEmpty = (html: string = ""): boolean => {
   return stripHtmlAndTrim(html) === "";
 };
+
+export const FIELD_PREFIX_REGEX = /^.+?: /;

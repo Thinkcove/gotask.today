@@ -13,17 +13,25 @@ export const TimeSpentStatus: React.FC = () => {
       }}
     >
       {timeStatusItems.map((item, index) => (
-        <Box key={index} display="flex" alignItems="center" gap={1}>
+        <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 1, lineHeight: 1 }}>
           <Box
             sx={{
-              width: 12,
-              height: 12,
+              width: 10,
+              height: 10,
               borderRadius: "50%",
               backgroundColor: item.color,
-              flexShrink: 0
+              flexShrink: 0,
+              transform: "translateY(-1px)" // <-- Key fix here
             }}
           />
-          <Typography variant="caption" sx={{ fontSize: "0.75rem", color: "#666" }}>
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: "0.75rem",
+              color: "#666",
+              lineHeight: 1
+            }}
+          >
             {item.label}
           </Typography>
         </Box>

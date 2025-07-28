@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
@@ -32,7 +32,9 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
   const router = useRouter();
   const { canAccess } = useUserPermission();
 
-  const handleBack = () => router.back();
+  const handleBack = useCallback(() => {
+    router.push("/task/projects?refresh=true");
+  }, [router]);
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 

@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  TextField,
-  Typography,
-  Button,
-  CircularProgress,
-  Box
-} from "@mui/material";
+import { TextField, Typography, Button, CircularProgress, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useUserPermission } from "@/app/common/utils/userPermission";
 import { APPLICATIONS, ACTIONS } from "@/app/common/utils/permission";
@@ -23,7 +17,9 @@ const AccessCreateForm: React.FC = () => {
   const { canAccess } = useUserPermission();
   const [accessName, setAccessName] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
-  const [selectedFields, setSelectedFields] = useState<Record<string, Record<string, string[]>>>({});
+  const [selectedFields, setSelectedFields] = useState<Record<string, Record<string, string[]>>>(
+    {}
+  );
   const [currentModule, setCurrentModule] = useState("User Management");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState<{
@@ -158,9 +154,7 @@ const AccessCreateForm: React.FC = () => {
           message: t("Access.successmessage"),
           severity: "success"
         });
-        setTimeout(() => {
-          router.push("/access");
-        }, 500);
+        router.push("/access");
       } else {
         setSnackbar({
           open: true,
@@ -194,7 +188,9 @@ const AccessCreateForm: React.FC = () => {
         overflow: "hidden"
       }}
     >
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
+      <Box
+        sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}
+      >
         <Heading title={t("Access.createaccessnew")} />
 
         <Box sx={{ maxWidth: 400, width: "100%", mt: 1 }}>

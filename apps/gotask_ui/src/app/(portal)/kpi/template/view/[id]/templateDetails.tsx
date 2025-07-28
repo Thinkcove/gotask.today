@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Typography, Grid, IconButton, Divider } from "@mui/material";
+import { Box, Typography, Grid, IconButton } from "@mui/material";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -43,9 +43,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
       setOpenDialog(false);
       setSnackbarOpen(true);
       mutate();
-      setTimeout(() => {
-        handleBack();
-      }, 500);
+      handleBack();
     } catch (error: any) {
       const errorMessage = error.message || transkpi("deleteFailed");
       setSnackbarMessage(errorMessage);
@@ -143,8 +141,6 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
               />
             </Grid>
           </Grid>
-
-          <Divider sx={{ mb: 4 }} />
         </Box>
       </Box>
 

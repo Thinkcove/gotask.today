@@ -1,15 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Divider,
-  Button
-} from "@mui/material";
+import { Box, Typography, CircularProgress, IconButton, Divider, Button } from "@mui/material";
 import { ArrowBack, Edit, Delete } from "@mui/icons-material";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
@@ -71,8 +63,7 @@ const ProjectStoryDetail = () => {
       const response = await deleteProjectStory(storyId as string);
       const message = response?.message || t("Stories.success.deleted");
       setSnackbar({ open: true, message, severity: "success" });
-
-      setTimeout(() => router.push(`/project/view/${projectId}/stories`), 500);
+      router.push(`/project/view/${projectId}/stories`);
     } catch (error) {
       console.error("Failed to delete story:", error);
       setSnackbar({ open: true, message: t("Stories.errors.deleteFailed"), severity: "error" });
@@ -118,14 +109,12 @@ const ProjectStoryDetail = () => {
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
         <Box display="flex" alignItems="flex-start" gap={1}>
-          <Tooltip title={t("Stories.backToStories")}>
-            <IconButton
-              onClick={() => router.push(`/project/view/${projectId}/stories`)}
-              color="primary"
-            >
-              <ArrowBack />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            onClick={() => router.push(`/project/view/${projectId}/stories`)}
+            color="primary"
+          >
+            <ArrowBack />
+          </IconButton>
           <Box>
             <Typography
               variant="h5"
@@ -145,23 +134,15 @@ const ProjectStoryDetail = () => {
           </Box>
         </Box>
         <Box display="flex" gap={1}>
-          <Tooltip title={t("Stories.editStory")}>
-            <IconButton
-              onClick={() => router.push(`/project/view/${projectId}/stories/edit/${storyId}`)}
-              color="primary"
-            >
-              <Edit />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={t("Stories.deleteStory")}>
-            <IconButton
-              onClick={() => setOpenDeleteDialog(true)}
-              color="error"
-              disabled={isDeleting}
-            >
-              <Delete />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            onClick={() => router.push(`/project/view/${projectId}/stories/edit/${storyId}`)}
+            color="primary"
+          >
+            <Edit />
+          </IconButton>
+          <IconButton onClick={() => setOpenDeleteDialog(true)} color="error" disabled={isDeleting}>
+            <Delete />
+          </IconButton>
         </Box>
       </Box>
 

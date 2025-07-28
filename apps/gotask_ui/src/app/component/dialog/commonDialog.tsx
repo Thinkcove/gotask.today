@@ -106,7 +106,9 @@ const CommonDialog: React.FC<CommonDialogProps> = ({
               px: 3,
               py: 1.2,
               height: 40,
-              width: 90,
+              minWidth: 90,
+              width: "auto",
+              whiteSpace: "nowrap",
               backgroundColor: submitColor || "#741B92",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
               "&:hover": {

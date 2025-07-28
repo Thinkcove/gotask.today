@@ -1,6 +1,14 @@
 import React from "react";
-import { Box, Typography, Stack } from "@mui/material";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { Box, Typography } from "@mui/material";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  LabelList
+} from "recharts";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { useTranslations } from "next-intl";
 
@@ -41,9 +49,8 @@ const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitl
       <Typography
         variant="h5"
         sx={{
-          fontWeight: "bold",
-          color: "#311B47",
-          mb: 2
+          fontWeight: 200,
+          color: "#311B47"
         }}
       >
         {title}
@@ -52,45 +59,32 @@ const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitl
       <Typography
         variant="h6"
         sx={{
-          fontWeight: "bold",
           color: "#777",
           mb: 3
         }}
       >
         {transstatuschart("total")} {total} {chartTitle}
       </Typography>
-
-      <Box sx={{ height: 250 }}>
+      <Box sx={{ height: 200 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={barChartData}>
+          <BarChart data={barChartData} margin={{ top: 50, right: 20, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
             <XAxis dataKey="name" axisLine={false} />
             <YAxis axisLine={false} tickLine={false} />
-            <Bar dataKey="value" fill="#8849AE" radius={[10, 10, 0, 0]} />
+            <Bar dataKey="value" fill="#8849AE" radius={[10, 10, 0, 0]}>
+              <LabelList
+                dataKey="value"
+                position="top"
+                formatter={(value: number) => {
+                  const percent = total ? Math.round((value / total) * 100) : 0;
+                  return `${value} (${percent}%)`;
+                }}
+                style={{ fill: "black", fontWeight: "bold", fontSize: 12 }}
+              />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </Box>
-
-      <Stack spacing={2} mt={2}>
-        {statuses.map((status, index) => {
-          const value = statusCounts[status.label.toLowerCase().replace(/\s/g, "-")] || 0;
-          const percent = total ? Math.round((value / total) * 100) : 0;
-
-          return (
-            <Box
-              key={index}
-              sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-            >
-              <Typography variant="body1" sx={{ color: "#333", fontWeight: 600 }}>
-                {status.label}
-              </Typography>
-              <Typography variant="body1" sx={{ color: status.color, fontWeight: "bold" }}>
-                {value} ({percent}%)
-              </Typography>
-            </Box>
-          );
-        })}
-      </Stack>
     </Box>
   );
 };

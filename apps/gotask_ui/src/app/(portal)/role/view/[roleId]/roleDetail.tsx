@@ -7,11 +7,11 @@ import {
   Typography,
   Chip,
   Stack,
-  Tooltip,
   Grid,
   Card,
   CardHeader,
-  CardContent
+  CardContent,
+  Fab
 } from "@mui/material";
 import { Add, ArrowBack, Delete } from "@mui/icons-material";
 import { useState } from "react";
@@ -110,14 +110,12 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
                 {role.name}
               </Typography>
               {canAccess(APPLICATIONS.ROLE, ACTIONS.ASSIGN_ACCESS) && (
-                <Tooltip title={transrole("addaccess")}>
-                  <IconButton
-                    onClick={() => setOpenAddDialog(true)}
-                    sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#741B92" } }}
-                  >
-                    <Add sx={{ color: "white" }} />
-                  </IconButton>
-                </Tooltip>
+                <Fab
+                  sx={{ backgroundColor: "#741B92", "&:hover": { backgroundColor: "#5E1374" } }}
+                  onClick={() => setOpenAddDialog(true)}
+                >
+                  <Add sx={{ color: "white" }} />
+                </Fab>
               )}
             </Box>
           </Box>
@@ -146,19 +144,17 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
                     }
                     action={
                       canAccess(APPLICATIONS.ROLE, ACTIONS.REVOKE_ACCESS) && (
-                        <Tooltip title={transrole("deleteaccess")}>
-                          <IconButton
-                            onClick={() => {
-                              setSelectedAccessId(access.id);
-                              setOpenDeleteDialog(true);
-                            }}
-                            sx={{ transition: "0.2s ease", "&:hover": { transform: "scale(1.1)" } }}
-                            size="small"
-                            color="error"
-                          >
-                            <Delete />
-                          </IconButton>
-                        </Tooltip>
+                        <IconButton
+                          onClick={() => {
+                            setSelectedAccessId(access.id);
+                            setOpenDeleteDialog(true);
+                          }}
+                          sx={{ transition: "0.2s ease", "&:hover": { transform: "scale(1.1)" } }}
+                          size="small"
+                          color="error"
+                        >
+                          <Delete />
+                        </IconButton>
                       )
                     }
                     sx={{ pb: 0 }}

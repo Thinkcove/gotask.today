@@ -320,6 +320,7 @@
     "filterstatus": "Status",
     "filterseverity": "Severity",
     "filterduedate": "Due Date",
+    "filterplannedenddate": "Planned End Date",
     "filtervariation": "Variation",
     "filterclear": "Clear",
     "filterapply": "Apply",

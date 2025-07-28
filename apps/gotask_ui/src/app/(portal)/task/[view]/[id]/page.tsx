@@ -1,5 +1,5 @@
 "use client";
-import { Box, CircularProgress, Grid, Divider } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";

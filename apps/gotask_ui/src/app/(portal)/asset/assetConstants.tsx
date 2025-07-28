@@ -69,7 +69,7 @@ export const getAssetColumns = (
 
         return (
           <Box display="flex" alignItems="center" gap={1}>
-            <Typography whiteSpace="nowrap">
+            <Typography variant="body2" whiteSpace="nowrap">
               <FormattedDateTime date={value} />
             </Typography>
 

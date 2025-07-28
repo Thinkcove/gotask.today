@@ -4,7 +4,13 @@ import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { deleteAsset, fetchAllAssets, useAllAssets, useAllTypes } from "../services/assetActions";
+import {
+  deleteAsset,
+  fetchAllAssets,
+  useAllAssets,
+  useAllIssues,
+  useAllTypes
+} from "../services/assetActions";
 import Table from "../../../component/table/table";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -110,6 +116,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const showInitialSkeleton = isLoading && total === 0;
   const { getAllUsers: allUsers } = useAllUsers();
   const { getAll: allTypes } = useAllTypes();
+  const { getAll: allIssues, isLoading: isIssueLoading } = useAllIssues();
+  const showIssueSkeleton = isIssueLoading && allIssues.length === 0;
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -260,7 +268,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           flexWrap: "nowrap"
         }}
       >
-        <Box
+        {/* <Box
           sx={{
             flex: "1 1 auto",
             maxWidth: "300px"
@@ -279,7 +287,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               }
             />
           )}
-        </Box>
+        </Box> */}
 
         <Box sx={{ flexShrink: 0 }}>
           <Toggle options={toggleOptions} selected={labels[view]} onChange={handleToggleChange} />
@@ -327,6 +335,9 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                 updateFilter("warrantyDateFrom", from, setWarrantyDateFrom);
                 updateFilter("warrantyDateTo", to, setWarrantyDateTo);
               }}
+              searchText={searchText}
+              onSearchTextChange={(val) => updateFilter("searchText", val, setSearchText)}
+              searchPlaceholder={transasset("searchAsset")}
             />
           ) : (
             <AssetFilters
@@ -341,7 +352,10 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               allStatuses={issueStatuses}
               statusFilter={statusFilter}
               onStatusChange={(val) => updateFilter("statusFilter", val, setStatusFilter)}
-              loading={showInitialSkeleton}
+              loading={showIssueSkeleton}
+              searchText={searchText}
+              onSearchTextChange={(val) => updateFilter("searchText", val, setSearchText)}
+              searchPlaceholder={transasset("searchissues")}
             />
           )}
         </Box>

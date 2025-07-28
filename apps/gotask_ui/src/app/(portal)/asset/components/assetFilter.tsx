@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Link, Skeleton } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
+import SearchBar from "@/app/component/searchBar/searchBar";
 import { ALLOCATION, NOT_UTILIZED, OVERUTILIZED, systemTypeOptions } from "../assetConstants";
 
 interface Props {
@@ -29,6 +30,9 @@ interface Props {
   allAssetTypes?: string[];
   onAssetTypeChange?: (val: string[]) => void;
   loading?: boolean;
+  searchText?: string;
+  onSearchTextChange?: (val: string) => void;
+  searchPlaceholder?: string;
 }
 
 const AssetFilters: React.FC<Props> = ({
@@ -54,7 +58,10 @@ const AssetFilters: React.FC<Props> = ({
   assetTypeFilter,
   allAssetTypes,
   onAssetTypeChange,
-  loading = false
+  loading = false,
+  searchText,
+  onSearchTextChange,
+  searchPlaceholder
 }) => {
   const disableAssignedToFilter =
     assetAllocationFilter?.includes(NOT_UTILIZED) && !assetAllocationFilter?.includes(OVERUTILIZED);
@@ -66,7 +73,9 @@ const AssetFilters: React.FC<Props> = ({
     (dateFrom ? 1 : 0) +
     (dateTo ? 1 : 0) +
     (assetAllocationFilter && assetAllocationFilter.length > 0 ? 1 : 0) +
-    (assetTypeFilter && assetTypeFilter.length > 0 ? 1 : 0);
+    (assetTypeFilter && assetTypeFilter.length > 0 ? 1 : 0) +
+    (statusFilter && statusFilter.length > 0 ? 1 : 0) +
+    (searchText && searchText.trim().length > 0 ? 1 : 0);
 
   return (
     <Box>
@@ -78,10 +87,27 @@ const AssetFilters: React.FC<Props> = ({
           overflowX: "auto",
           px: 2,
           py: 1,
+          alignItems: "center",
           scrollbarWidth: "none",
           "&::-webkit-scrollbar": { display: "none" }
         }}
       >
+        {/* Search Bar */}
+        {onSearchTextChange && (
+          <Box sx={{ minWidth: "280px", flexShrink: 0 }}>
+            {loading ? (
+              <Skeleton variant="rectangular" height={43} width="100%" sx={{ borderRadius: 8 }} />
+            ) : (
+              <SearchBar
+                value={searchText || ""}
+                onChange={onSearchTextChange}
+                placeholder={searchPlaceholder || trans("searchAsset")}
+              />
+            )}
+          </Box>
+        )}
+
+        {/* Filters */}
         {loading ? (
           <>
             {Array.from({ length: 5 }).map((_, i) => (
@@ -113,7 +139,6 @@ const AssetFilters: React.FC<Props> = ({
                   selected={assignedToFilter}
                   onChange={onAssignedToChange}
                 />
-
                 {disableAssignedToFilter && (
                   <Box
                     sx={{
@@ -168,6 +193,7 @@ const AssetFilters: React.FC<Props> = ({
         )}
       </Box>
 
+      {/* Clear All */}
       {appliedFilterCount > 0 && (
         <Box sx={{ pl: 2, pb: 1 }}>
           <Link

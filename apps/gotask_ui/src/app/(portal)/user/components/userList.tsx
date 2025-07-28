@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Divider } from "@mui/material";
+import { Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import useSWR from "swr";
 import ActionButton from "@/app/component/floatingButton/actionButton";
@@ -84,14 +84,6 @@ const UserList = () => {
             placeholder={transuser("searchplaceholder")}
           />
         </Box>
-        <Divider
-          orientation="vertical"
-          flexItem
-          sx={{
-            display: { xs: "none", sm: "block" },
-            height: 50
-          }}
-        />
 
         {/* User Status Filter */}
         <UserStatusFilter

@@ -65,22 +65,21 @@ const StatusChart: React.FC<Props> = ({ title, statusCounts, statuses, chartTitl
       >
         {transstatuschart("total")} {total} {chartTitle}
       </Typography>
-
       <Box sx={{ height: 200 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={barChartData}>
+          <BarChart data={barChartData} margin={{ top: 50, right: 20, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
             <XAxis dataKey="name" axisLine={false} />
             <YAxis axisLine={false} tickLine={false} />
             <Bar dataKey="value" fill="#8849AE" radius={[10, 10, 0, 0]}>
               <LabelList
                 dataKey="value"
-                position="inside"
+                position="top"
                 formatter={(value: number) => {
                   const percent = total ? Math.round((value / total) * 100) : 0;
                   return `${value} (${percent}%)`;
                 }}
-                style={{ fill: "white", fontWeight: "bold", fontSize: 12 }}
+                style={{ fill: "black", fontWeight: "bold", fontSize: 12 }}
               />
             </Bar>
           </BarChart>

@@ -14,7 +14,6 @@ interface Props {
   trans: (key: string) => string;
   hideModelNameFilter?: boolean;
   hideAssignedToFilter?: boolean;
-
   statusFilter?: string[];
   allStatuses?: string[];
   onStatusChange?: (val: string[]) => void;
@@ -33,6 +32,7 @@ interface Props {
   searchText?: string;
   onSearchTextChange?: (val: string) => void;
   searchPlaceholder?: string;
+  renderHeaderRight?: React.ReactNode;
 }
 
 const AssetFilters: React.FC<Props> = ({
@@ -61,7 +61,8 @@ const AssetFilters: React.FC<Props> = ({
   loading = false,
   searchText,
   onSearchTextChange,
-  searchPlaceholder
+  searchPlaceholder,
+  renderHeaderRight
 }) => {
   const disableAssignedToFilter =
     assetAllocationFilter?.includes(NOT_UTILIZED) && !assetAllocationFilter?.includes(OVERUTILIZED);
@@ -82,45 +83,54 @@ const AssetFilters: React.FC<Props> = ({
       <Box
         sx={{
           display: "flex",
-          gap: 2,
-          flexWrap: "nowrap",
-          overflowX: "auto",
-          px: 2,
-          py: 1,
+          justifyContent: "space-between",
           alignItems: "center",
-          scrollbarWidth: "none",
-          "&::-webkit-scrollbar": { display: "none" }
+          flexWrap: "wrap",
+          gap: 2,
+          px: 2
+
+          // pt: 2,
+          // pb: 1
         }}
       >
-        {/* Search Bar */}
+        {/* Left: Search bar with fixed height and flexible width */}
         {onSearchTextChange && (
-          <Box sx={{ minWidth: "280px", flexShrink: 0 }}>
-            {loading ? (
-              <Skeleton variant="rectangular" height={43} width="100%" sx={{ borderRadius: 8 }} />
-            ) : (
-              <SearchBar
-                value={searchText || ""}
-                onChange={onSearchTextChange}
-                placeholder={searchPlaceholder || trans("searchAsset")}
-              />
-            )}
+          <Box sx={{ minWidth: 280 }}>
+            <SearchBar
+              value={searchText || ""}
+              onChange={onSearchTextChange}
+              placeholder={searchPlaceholder || trans("searchAsset")}
+            />
           </Box>
         )}
 
-        {/* Filters */}
+        {renderHeaderRight && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>{renderHeaderRight}</Box>
+        )}
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: 2,
+          px: 2,
+          pt: 2,
+          pb: 1
+        }}
+      >
         {loading ? (
-          <>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                variant="rectangular"
-                width={220}
-                height={42}
-                sx={{ borderRadius: 1 }}
-                animation="wave"
-              />
-            ))}
-          </>
+          Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              width={220}
+              height={42}
+              sx={{ borderRadius: 1 }}
+              animation="wave"
+            />
+          ))
         ) : (
           <>
             {allAssetTypes && onAssetTypeChange && (

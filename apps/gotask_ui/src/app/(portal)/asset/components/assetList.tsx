@@ -289,9 +289,9 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           )}
         </Box> */}
 
-        <Box sx={{ flexShrink: 0 }}>
+        {/* <Box sx={{ flexShrink: 0 }}>
           <Toggle options={toggleOptions} selected={labels[view]} onChange={handleToggleChange} />
-        </Box>
+        </Box> */}
       </Box>
       <Box
         sx={{
@@ -300,9 +300,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           justifyContent: "space-between",
           flexWrap: "nowrap",
           gap: 2,
-          pr: 2,
-          overflowX: "auto",
-          mt: 1
+
+          overflowX: "auto"
         }}
       >
         <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -337,7 +336,20 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               }}
               searchText={searchText}
               onSearchTextChange={(val) => updateFilter("searchText", val, setSearchText)}
-              searchPlaceholder={transasset("searchAsset")}
+              searchPlaceholder={
+                view === transasset("selectedIssues")
+                  ? transasset("searchissues")
+                  : transasset("searchAsset")
+              }
+              renderHeaderRight={
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Toggle
+                    options={[transasset("assets"), transasset("issues")]}
+                    selected={labels[view]}
+                    onChange={handleToggleChange}
+                  />
+                </Box>
+              }
             />
           ) : (
             <AssetFilters
@@ -355,11 +367,25 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               loading={showIssueSkeleton}
               searchText={searchText}
               onSearchTextChange={(val) => updateFilter("searchText", val, setSearchText)}
-              searchPlaceholder={transasset("searchissues")}
+              searchPlaceholder={
+                view === transasset("selectedIssues")
+                  ? transasset("searchissues")
+                  : transasset("searchAsset")
+              }
+              renderHeaderRight={
+                <>
+                  <Toggle
+                    options={[transasset("assets"), transasset("issues")]}
+                    selected={labels[view]}
+                    onChange={handleToggleChange}
+                  />
+                </>
+              }
             />
           )}
         </Box>
-        {initialView === transasset("selectedAsset") && !showInitialSkeleton && (
+
+        {/* {initialView === transasset("selectedAsset") && !showInitialSkeleton && (
           <Box
             sx={{
               flexShrink: 0,
@@ -390,7 +416,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               <span className="button-text">{transasset("download")}</span>
             </Button>
           </Box>
-        )}
+        )} */}
       </Box>
       <Box
         sx={{

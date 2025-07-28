@@ -32,8 +32,8 @@ interface Props {
   searchText?: string;
   onSearchTextChange?: (val: string) => void;
   searchPlaceholder?: string;
-  renderHeaderRight?: React.ReactNode;
-  downloadComponent?: React.ReactNode;
+  assetsToggle?: React.ReactNode;
+  downloadAssets?: React.ReactNode;
 }
 
 const AssetFilters: React.FC<Props> = ({
@@ -63,8 +63,8 @@ const AssetFilters: React.FC<Props> = ({
   searchText,
   onSearchTextChange,
   searchPlaceholder,
-  renderHeaderRight,
-  downloadComponent
+  assetsToggle,
+  downloadAssets
 }) => {
   const disableAssignedToFilter =
     assetAllocationFilter?.includes(NOT_UTILIZED) && !assetAllocationFilter?.includes(OVERUTILIZED);
@@ -106,8 +106,8 @@ const AssetFilters: React.FC<Props> = ({
           </Box>
         )}
 
-        {renderHeaderRight && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>{renderHeaderRight}</Box>
+        {assetsToggle && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>{assetsToggle}</Box>
         )}
       </Box>
 
@@ -201,7 +201,7 @@ const AssetFilters: React.FC<Props> = ({
                 onChange={onAssetAllocationChange}
               />
             )}
-            {downloadComponent && <Box>{downloadComponent}</Box>}
+            {downloadAssets && <Box>{downloadAssets}</Box>}
           </>
         )}
       </Box>

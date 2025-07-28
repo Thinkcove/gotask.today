@@ -306,7 +306,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                   ? transasset("searchissues")
                   : transasset("searchAsset")
               }
-              renderHeaderRight={
+              assetsToggle={
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <Toggle
                     options={[transasset("assets"), transasset("issues")]}
@@ -315,7 +315,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                   />
                 </Box>
               }
-              downloadComponent={
+              downloadAssets={
                 <Box
                   sx={{
                     flexShrink: 0,
@@ -371,7 +371,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                   ? transasset("searchissues")
                   : transasset("searchAsset")
               }
-              renderHeaderRight={
+              assetsToggle={
                 <>
                   <Toggle
                     options={[transasset("assets"), transasset("issues")]}

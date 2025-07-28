@@ -20,10 +20,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
   const t = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
   const status = (story.status as StoryStatus) || "to-do";
-  const color = STORY_STATUS_COLOR[status] || "#ccc";
-  const bg = `${color}22`;
-  const border = `${color}88`;
-
+  const statusColor = STORY_STATUS_COLOR[status];
   const handleClick = () => {
     router.push(`/project/view/${projectId}/stories/${story.id}`);
   };
@@ -31,15 +28,14 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
   return (
     <Card
       sx={{
-        backgroundColor: bg,
-        border: `1px solid ${border}`,
-        borderRadius: 3,
-        minHeight: 110,
-        width: "100%",
+        borderRadius: 2,
+        backgroundColor: `${statusColor}20`,
+        border: `1px solid ${statusColor}`,
+        transition: "background-color 0.3s, border-color 0.3s",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
-        transition: "background-color 0.3s, border-color 0.3s"
+        height: "100%",
+        justifyContent: "space-between"
       }}
     >
       <Box

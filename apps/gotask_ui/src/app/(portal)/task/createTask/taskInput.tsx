@@ -353,7 +353,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 const dueDate = calculateDueDate(startDate, formData.user_estimated);
                 if (dueDate) handleInputChange("due_date", dueDate);
               }
+              setStartDateError("");
             }}
+            error={startDateError}
             disabled={isReadOnly("start_date") || isStartDateLocked}
           />
         </Grid>
@@ -371,21 +373,16 @@ const TaskInput: React.FC<TaskInputProps> = ({
             }
             onChange={(val) => {
               if (!formData.start_date) {
-                setStartDateError("Please enter the start date.");
+                setStartDateError("Please enter the Planned start date.");
                 return;
               }
-
               setStartDateError(""); // Clear error if start_date exists
-
-              const cleanedVal = String(val).replace(/[^0-9]/g, "");
+              const cleanedVal = String(val).replace(NON_DIGIT, "");
               const hours = formData.user_estimated?.split("d")[1]?.replace("h", "").trim() || "";
-
               let userEstimated = "";
               if (cleanedVal) userEstimated += `${cleanedVal}d`;
               if (hours) userEstimated += `${hours}h`;
-
               handleInputChange("user_estimated", userEstimated);
-
               if (!cleanedVal && !hours) {
                 handleInputChange("due_date", "");
               } else {
@@ -393,7 +390,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 if (dueDate) handleInputChange("due_date", dueDate);
               }
             }}
-            error={startDateError}
             disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
         </Grid>
@@ -412,17 +408,14 @@ const TaskInput: React.FC<TaskInputProps> = ({
             }
             onChange={(val) => {
               if (!formData.start_date) {
-                setStartDateError("Please enter the start date.");
+                setStartDateError("Please enter the Planned start date.");
                 return;
               }
-
               setStartDateError(""); // Clear error
-
               const hoursStr = String(val).replace(NON_DIGIT, "");
               const days = formData.user_estimated?.includes("d")
                 ? formData.user_estimated.split("d")[0] || ""
                 : "";
-
               if (hoursStr === "") {
                 const userEstimated = days ? `${days}d` : "";
                 handleInputChange("user_estimated", userEstimated);
@@ -433,14 +426,13 @@ const TaskInput: React.FC<TaskInputProps> = ({
                 setHourError("");
                 return;
               }
-
               const hours = parseInt(hoursStr, 10);
-
               if (hours >= TASK_HOURS && !days) {
-                setHourError("8 hours equals 1 full day. Please use the Days field instead.");
+                setHourError(
+                  `${TASK_HOURS} hours equals 1 full day. Please use the Days field instead.`
+                );
                 return;
               }
-
               const userEstimated = `${days ? days + "d" : ""}${hours ? hours + "h" : ""}`;
               handleInputChange("user_estimated", userEstimated);
               handleInputChange(
@@ -451,7 +443,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
               );
               setHourError("");
             }}
-            error={hourError || startDateError}
+            error={hourError}
             disabled={isReadOnly("user_estimated") || isUserEstimatedLocked}
           />
         </Grid>

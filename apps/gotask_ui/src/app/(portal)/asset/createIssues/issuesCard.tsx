@@ -5,7 +5,6 @@ import { LOCALIZATION } from "@/app/common/constants/localization";
 import CardComponent from "@/app/component/card/cardComponent";
 import { IAssetIssues } from "../interface/asset";
 import { useAllIssues } from "../services/assetActions";
-import Tooltip from "@mui/material/Tooltip";
 import { getIssuesStatusColor } from "@/app/common/constants/asset";
 import EditIcon from "@mui/icons-material/Edit";
 import StatusIndicator from "@/app/component/status/statusIndicator";
@@ -120,15 +119,13 @@ const AssetIssueCards: React.FC<AssetIssueCardsProps> = ({ searchText, statusFil
 
                         <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
                           <StatusIndicator status={issue.status} getColor={getIssuesStatusColor} />
-                          <Tooltip title={trans("edit")}>
-                            <IconButton
-                              size="small"
-                              color="primary"
-                              onClick={() => handleEditClick(issue)}
-                            >
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => handleEditClick(issue)}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
                         </Stack>
                       </Box>
                     </Stack>

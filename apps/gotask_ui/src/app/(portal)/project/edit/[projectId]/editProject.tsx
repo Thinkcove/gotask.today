@@ -63,9 +63,7 @@ const EditProject: React.FC<EditProjectProps> = ({ data, projectID, mutate }) =>
         message: transproject("updatesuccess"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setTimeout(() => {
-        router.push("/project");
-      }, 1500);
+      router.push("/project");
     } catch {
       setSnackbar({
         open: true,

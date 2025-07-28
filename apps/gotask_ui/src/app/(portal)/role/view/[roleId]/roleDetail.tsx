@@ -7,7 +7,6 @@ import {
   Typography,
   Chip,
   Stack,
-  Tooltip,
   Grid,
   Card,
   CardHeader,
@@ -145,19 +144,17 @@ const RoleDetail: React.FC<RoleDetailProps> = ({ role, mutate }) => {
                     }
                     action={
                       canAccess(APPLICATIONS.ROLE, ACTIONS.REVOKE_ACCESS) && (
-                        <Tooltip title={transrole("deleteaccess")}>
-                          <IconButton
-                            onClick={() => {
-                              setSelectedAccessId(access.id);
-                              setOpenDeleteDialog(true);
-                            }}
-                            sx={{ transition: "0.2s ease", "&:hover": { transform: "scale(1.1)" } }}
-                            size="small"
-                            color="error"
-                          >
-                            <Delete />
-                          </IconButton>
-                        </Tooltip>
+                        <IconButton
+                          onClick={() => {
+                            setSelectedAccessId(access.id);
+                            setOpenDeleteDialog(true);
+                          }}
+                          sx={{ transition: "0.2s ease", "&:hover": { transform: "scale(1.1)" } }}
+                          size="small"
+                          color="error"
+                        >
+                          <Delete />
+                        </IconButton>
                       )
                     }
                     sx={{ pb: 0 }}

@@ -43,9 +43,7 @@ const TemplateDetail: React.FC<TemplateDetailProps> = ({ template, mutate }) => 
       setOpenDialog(false);
       setSnackbarOpen(true);
       mutate();
-      setTimeout(() => {
-        handleBack();
-      }, 500);
+      handleBack();
     } catch (error: any) {
       const errorMessage = error.message || transkpi("deleteFailed");
       setSnackbarMessage(errorMessage);

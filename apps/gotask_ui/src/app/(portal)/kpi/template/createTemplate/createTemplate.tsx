@@ -66,9 +66,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({}) => {
       setSnackbarMessage(transkpi("createsuccess"));
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
-      setTimeout(() => {
-        router.back();
-      }, 500);
+      router.back();
     } catch (err: any) {
       console.error("Error creating template:", err);
       setSnackbarMessage(transkpi("createfailed"));

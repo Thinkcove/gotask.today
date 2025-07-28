@@ -12,7 +12,7 @@ import {
   Typography,
   Grid
 } from "@mui/material";
-import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
+import { format, eachDayOfInterval, parseISO } from "date-fns";
 import {
   EnhancedTimeLogGridPropsWithPermissions,
   GroupedLogs,
@@ -30,8 +30,12 @@ import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
 import DateFormats from "@/app/component/dateTime/dateFormat";
-import { ISO_DATE_REGEX } from "@/app/common/constants/regex";
-import { datesOverlap, extractDateFromTimeLog, formatPermissionDuration, normalizeDate } from "@/app/common/utils/leaveCalculate";
+import {
+  datesOverlap,
+  extractDateFromTimeLog,
+  formatPermissionDuration,
+  normalizeDate
+} from "@/app/common/utils/leaveCalculate";
 import { fetchAllPermissions } from "../services/reportService";
 import { getDailyLogCellStyle } from "./logStyle";
 import EmptyState from "@/app/component/emptyState/emptyState";
@@ -62,8 +66,8 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
   const transreport = useTranslations(LOCALIZATION.TRANSITION.REPORT);
 
   // FIXED: Memoize date range calculation
-  const dateRange = useMemo(() =>
-    eachDayOfInterval({ start: parseISO(fromDate), end: parseISO(toDate) }),
+  const dateRange = useMemo(
+    () => eachDayOfInterval({ start: parseISO(fromDate), end: parseISO(toDate) }),
     [fromDate, toDate]
   );
 
@@ -88,8 +92,6 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     }
     return [];
   }, [permissionData, permissionResponse]);
-
-
 
   const isDateInLeave = (date: string, leaveFromDate: string, leaveToDate: string): boolean => {
     const checkDate = normalizeDate(date);
@@ -154,14 +156,16 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
     if (selectedProjects.length === 0) {
       // If no projects selected, return all users from filtered data
       const validUserIds = filteredData
-        .filter(task => task.user_id) // Filter out entries without user_id
-        .map(task => task.user_id!) // Use non-null assertion since we filtered above
+        .filter((task) => task.user_id) // Filter out entries without user_id
+        .map((task) => task.user_id!); // Use non-null assertion since we filtered above
       return [...new Set(validUserIds)];
     }
     // Get users who have tasks in the selected projects within date range
     const usersWithProjects = filteredData
-      .filter(task => task.project_id && selectedProjects.includes(task.project_id) && task.user_id)
-      .map(task => task.user_id!); // Use non-null assertion
+      .filter(
+        (task) => task.project_id && selectedProjects.includes(task.project_id) && task.user_id
+      )
+      .map((task) => task.user_id!); // Use non-null assertion
     return [...new Set(usersWithProjects)];
   }, [filteredData, selectedProjects]);
 
@@ -290,7 +294,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
   const singleProjectName = useMemo(() => {
     return selectedProjects.length === 1
       ? data.find((d) => d.project_id === selectedProjects[0])?.project_name ||
-      transreport("noproject")
+          transreport("noproject")
       : null;
   }, [selectedProjects, data, transreport]);
 
@@ -414,7 +418,10 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           {transreport("showproject")}: {singleProjectName}
         </div>
       )}
-      <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}>
+      <TableContainer
+        component={Paper}
+        sx={{ maxHeight: "calc(100vh - 100px)", overflowY: "auto" }}
+      >
         <Table stickyHeader size="small" sx={{ minWidth: 1200 }}>
           <TableHead>
             <TableRow>

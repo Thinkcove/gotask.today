@@ -103,7 +103,16 @@ const AssigneeList: React.FC<assigneeListProps> = ({ initialView = "assignee" })
       </Box>
 
       {/* Scrollable Content */}
-      <Box sx={{ flex: 1, overflowY: "auto", px: 3, py: 2 }}>
+      <Box
+        sx={{
+          flex: 1,
+          height: "100vh",
+          overflowY: "auto",
+          maxHeight: "calc(100vh - 200px)",
+          px: 3,
+          py: 2
+        }}
+      >
         <Grid container spacing={3}>
           {isLoading ? (
             <Box width="100%" textAlign="center" mt={4}>

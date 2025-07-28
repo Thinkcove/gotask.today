@@ -1,3 +1,4 @@
+import { theme } from "@/app/theme/theme";
 import { Autocomplete, TextField, Popper, Chip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React from "react";
@@ -91,6 +92,12 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
           InputProps={{
             ...params.InputProps,
             style: { alignItems: "center" }
+          }}
+          sx={{
+            "& input::placeholder": {
+              color: theme.palette.text.secondary,
+              opacity: 1
+            }
           }}
         />
       )}

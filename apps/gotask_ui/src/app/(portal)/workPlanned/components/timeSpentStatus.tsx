@@ -1,7 +1,7 @@
-import { legendItems } from "@/app/common/constants/actualTime";
+import { timeStatusItems } from "@/app/common/constants/actualTime";
 import { Box, Typography } from "@mui/material";
 
-export const TimeSpentLegend: React.FC = () => {
+export const TimeSpentStatus: React.FC = () => {
   return (
     <Box
       sx={{
@@ -12,7 +12,7 @@ export const TimeSpentLegend: React.FC = () => {
         flexWrap: "wrap"
       }}
     >
-      {legendItems.map((item, index) => (
+      {timeStatusItems.map((item, index) => (
         <Box key={index} display="flex" alignItems="center" gap={1}>
           <Box
             sx={{

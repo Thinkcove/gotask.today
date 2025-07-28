@@ -53,9 +53,7 @@ const CreateProject: React.FC = () => {
     setIsSubmitting(true);
     try {
       await createProject(formData);
-      setTimeout(() => {
-        router.push("/project");
-      }, 1500);
+      router.push("/project");
       setSnackbar({
         open: true,
         message: transproject("successmessage"),

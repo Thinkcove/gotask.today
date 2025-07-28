@@ -2,7 +2,7 @@ import { TimeLogEntry } from "@/app/(portal)/report/interface/timeLog";
 import { ESTIMATION_FORMAT, ISO_DATE_REGEX, TIME_PERIOD } from "../constants/regex";
 import { formatTimeValue } from "./taskTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
-import { format, eachDayOfInterval, parseISO, isValid } from "date-fns";
+import { format, parseISO, isValid } from "date-fns";
 
 export const normalizeDate = (dateString: string): Date => {
   const date = new Date(dateString);

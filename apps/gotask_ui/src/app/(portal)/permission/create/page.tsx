@@ -91,9 +91,7 @@ const Page = () => {
 
   const handleSubmit = async (): Promise<void> => {
     if (!validateForm()) return;
-
     setIsSubmitting(true);
-
     try {
       const payload: PermissionPayload = {
         date: formData.startDate,
@@ -101,11 +99,8 @@ const Page = () => {
         end_time: formData.endTime,
         comments: formData.comments
       };
-
       await createPermission(payload);
-
       showSnackbar(transpermission("successmessage"), SNACKBAR_SEVERITY.SUCCESS);
-
       setFormData({
         startDate: "",
         startTime: "",
@@ -113,9 +108,7 @@ const Page = () => {
         comments: ""
       });
       setErrors({});
-      setTimeout(() => {
-        router.back();
-      }, 1500);
+      router.back();
     } catch {
       showSnackbar(transpermission("failedmessage"), SNACKBAR_SEVERITY.ERROR);
     } finally {

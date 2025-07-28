@@ -69,7 +69,7 @@ export const getAssetColumns = (
 
         return (
           <Box display="flex" alignItems="center" gap={1}>
-            <Typography whiteSpace="nowrap">
+            <Typography variant="body2" whiteSpace="nowrap">
               <FormattedDateTime date={value} />
             </Typography>
 
@@ -125,7 +125,9 @@ export const getAssetColumns = (
 
       return (
         <Box display="flex" alignItems="center" gap={1}>
-          <Typography whiteSpace="nowrap">{userDisplay}</Typography>
+          <Typography variant="body2" whiteSpace="nowrap">
+            {userDisplay}
+          </Typography>
           <Box sx={{ visibility: showLayerIcon ? "visible" : "hidden" }}>
             <Tooltip
               placement="top"

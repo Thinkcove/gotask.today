@@ -82,10 +82,7 @@ const AssignedTemplateEdit: React.FC<Props> = ({ assignment, transkpi, mutate })
       setSnackbarMessage(transkpi("updatesuccessassignment"));
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
-
-      setTimeout(() => {
-        router.back();
-      }, 1000);
+      router.back();
     } catch (err) {
       console.error("Failed to update:", err);
       setSnackbarMessage(transkpi("updateFailed"));

@@ -36,10 +36,10 @@ const DashboardLayout = () => {
 
       {/* Main Heading */}
       <Typography
-        variant="h4"
+        variant="h6"
         sx={{
           mb: 3,
-          fontWeight: "bold",
+          fontWeight: 200,
           color: "#2A1237"
         }}
       >

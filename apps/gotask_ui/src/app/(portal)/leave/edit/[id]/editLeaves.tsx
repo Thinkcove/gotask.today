@@ -84,9 +84,7 @@ const EditLeave: React.FC = () => {
         message: transleave("leaveupdated"),
         severity: SNACKBAR_SEVERITY.SUCCESS
       });
-      setTimeout(() => {
-        router.push("/leave");
-      }, 1000);
+      router.push("/leave");
     } catch (error: unknown) {
       // Type narrowing to ensure error has a message property
       const errorMessage =
@@ -103,9 +101,7 @@ const EditLeave: React.FC = () => {
         error instanceof Error &&
         error.message === "A leave request already exists for the specified date range"
       ) {
-        setTimeout(() => {
-          router.push("/leave");
-        }, 1000);
+        router.push("/leave");
       }
     } finally {
       setIsSubmitting(false);

@@ -72,7 +72,7 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                   </Tooltip>
                 </Box>
 
-                <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
+                <Box display="flex" alignItems="center" sx={{ mb: 2, mt: 1 }}>
                   <Group sx={{ fontSize: 20, color: "#741B92", mr: 1 }} />
                   <Box display="flex" alignItems="center">
                     {filteredProject.users?.length ? (

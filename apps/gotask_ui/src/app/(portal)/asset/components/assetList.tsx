@@ -259,48 +259,11 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          gap: 1,
-          px: 2,
-          mt: 2,
-          flexWrap: "nowrap"
-        }}
-      >
-        {/* <Box
-          sx={{
-            flex: "1 1 auto",
-            maxWidth: "300px"
-          }}
-        >
-          {showInitialSkeleton ? (
-            <Skeleton variant="rectangular" sx={{ borderRadius: 1, width: "100%", height: 43 }} />
-          ) : (
-            <SearchBar
-              value={searchText}
-              onChange={(val) => updateFilter("searchText", val, setSearchText)}
-              placeholder={
-                view === transasset("selectedIssues")
-                  ? transasset("searchissues")
-                  : transasset("searchAsset")
-              }
-            />
-          )}
-        </Box> */}
-
-        {/* <Box sx={{ flexShrink: 0 }}>
-          <Toggle options={toggleOptions} selected={labels[view]} onChange={handleToggleChange} />
-        </Box> */}
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
           alignItems: "flex-start",
           justifyContent: "space-between",
           flexWrap: "nowrap",
           gap: 2,
-
+          mt: 2,
           overflowX: "auto"
         }}
       >
@@ -350,6 +313,37 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                   />
                 </Box>
               }
+              downloadComponent={
+                <Box
+                  sx={{
+                    flexShrink: 0,
+                    alignSelf: "flex-start"
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    startIcon={<DownloadIcon />}
+                    onClick={handleDownload}
+                    sx={{
+                      whiteSpace: "nowrap",
+                      textTransform: "none",
+                      "& .MuiButton-startIcon": {
+                        margin: { xs: 0, lg: "0 8px 0 -4px" }
+                      },
+                      minWidth: { xs: "40px", lg: "auto" },
+                      width: { xs: "40px", lg: "auto" },
+                      height: "40px",
+                      padding: { xs: "8px", lg: "6px 16px" },
+                      borderRadius: "8px",
+                      "& .button-text": {
+                        display: { xs: "none", lg: "inline" }
+                      }
+                    }}
+                  >
+                    <span className="button-text">{transasset("download")}</span>
+                  </Button>
+                </Box>
+              }
             />
           ) : (
             <AssetFilters
@@ -384,39 +378,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
             />
           )}
         </Box>
-
-        {/* {initialView === transasset("selectedAsset") && !showInitialSkeleton && (
-          <Box
-            sx={{
-              flexShrink: 0,
-              alignSelf: "flex-start",
-              mt: 1
-            }}
-          >
-            <Button
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              onClick={handleDownload}
-              sx={{
-                whiteSpace: "nowrap",
-                textTransform: "none",
-                "& .MuiButton-startIcon": {
-                  margin: { xs: 0, lg: "0 8px 0 -4px" }
-                },
-                minWidth: { xs: "40px", lg: "auto" },
-                width: { xs: "40px", lg: "auto" },
-                height: "40px",
-                padding: { xs: "8px", lg: "6px 16px" },
-                borderRadius: "8px",
-                "& .button-text": {
-                  display: { xs: "none", lg: "inline" }
-                }
-              }}
-            >
-              <span className="button-text">{transasset("download")}</span>
-            </Button>
-          </Box>
-        )} */}
       </Box>
       <Box
         sx={{

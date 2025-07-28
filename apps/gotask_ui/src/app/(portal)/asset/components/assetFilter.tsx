@@ -33,6 +33,7 @@ interface Props {
   onSearchTextChange?: (val: string) => void;
   searchPlaceholder?: string;
   renderHeaderRight?: React.ReactNode;
+  downloadComponent?: React.ReactNode;
 }
 
 const AssetFilters: React.FC<Props> = ({
@@ -62,7 +63,8 @@ const AssetFilters: React.FC<Props> = ({
   searchText,
   onSearchTextChange,
   searchPlaceholder,
-  renderHeaderRight
+  renderHeaderRight,
+  downloadComponent
 }) => {
   const disableAssignedToFilter =
     assetAllocationFilter?.includes(NOT_UTILIZED) && !assetAllocationFilter?.includes(OVERUTILIZED);
@@ -88,19 +90,19 @@ const AssetFilters: React.FC<Props> = ({
           flexWrap: "wrap",
           gap: 2,
           px: 2
-
-          // pt: 2,
-          // pb: 1
         }}
       >
-        {/* Left: Search bar with fixed height and flexible width */}
         {onSearchTextChange && (
           <Box sx={{ minWidth: 280 }}>
-            <SearchBar
-              value={searchText || ""}
-              onChange={onSearchTextChange}
-              placeholder={searchPlaceholder || trans("searchAsset")}
-            />
+            {loading ? (
+              <Skeleton variant="rectangular" height={43} width="100%" sx={{ borderRadius: 8 }} />
+            ) : (
+              <SearchBar
+                value={searchText || ""}
+                onChange={onSearchTextChange}
+                placeholder={searchPlaceholder || trans("searchAsset")}
+              />
+            )}
           </Box>
         )}
 
@@ -199,6 +201,7 @@ const AssetFilters: React.FC<Props> = ({
                 onChange={onAssetAllocationChange}
               />
             )}
+            {downloadComponent && <Box>{downloadComponent}</Box>}
           </>
         )}
       </Box>

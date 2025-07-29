@@ -85,15 +85,22 @@ const AssetFilters: React.FC<Props> = ({
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
-          flexWrap: "wrap",
-          gap: 2,
-          px: 2
+          justifyContent: "space-between",
+          width: "100%",
+          gap: 1,
+          px: 2,
+          pl: 2,
+          flexWrap: "nowrap"
         }}
       >
         {onSearchTextChange && (
-          <Box sx={{ minWidth: 280 }}>
+          <Box
+            sx={{
+              flex: "1 1 auto",
+              maxWidth: "300px"
+            }}
+          >
             {loading ? (
               <Skeleton variant="rectangular" height={43} width="100%" sx={{ borderRadius: 1 }} />
             ) : (
@@ -106,104 +113,116 @@ const AssetFilters: React.FC<Props> = ({
           </Box>
         )}
 
-        {assetsToggle && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>{assetsToggle}</Box>
-        )}
+        {assetsToggle && <Box sx={{ flexShrink: 0 }}>{assetsToggle}</Box>}
       </Box>
 
       <Box
         sx={{
           display: "flex",
-          flexWrap: "wrap",
           alignItems: "center",
-          gap: 2,
           px: 2,
           pt: 2,
           pb: 1
         }}
       >
-        {loading ? (
-          Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton
-              key={i}
-              variant="rectangular"
-              width={220}
-              height={42}
-              sx={{ borderRadius: 1 }}
-              animation="wave"
-            />
-          ))
-        ) : (
-          <>
-            {allAssetTypes && onAssetTypeChange && (
-              <FilterDropdown
-                label={trans("assettype")}
-                options={allAssetTypes}
-                selected={assetTypeFilter || []}
-                onChange={onAssetTypeChange}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            overflowX: "auto",
+            flexWrap: "nowrap",
+            flex: 1,
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            "&::-webkit-scrollbar": {
+              display: "none"
+            }
+          }}
+        >
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                variant="rectangular"
+                width={220}
+                height={42}
+                sx={{ borderRadius: 1 }}
+                animation="wave"
               />
-            )}
-            {!hideAssignedToFilter && (
-              <Box sx={{ position: "relative", width: "220px" }}>
+            ))
+          ) : (
+            <>
+              {allAssetTypes && onAssetTypeChange && (
                 <FilterDropdown
-                  label={trans("assignedTo")}
-                  options={allUsers}
-                  selected={assignedToFilter}
-                  onChange={onAssignedToChange}
+                  label={trans("assettype")}
+                  options={allAssetTypes}
+                  selected={assetTypeFilter || []}
+                  onChange={onAssetTypeChange}
                 />
-                {disableAssignedToFilter && (
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: 1,
-                      backgroundColor: "rgba(255, 255, 255, 0.6)",
-                      zIndex: 2,
-                      cursor: "not-allowed"
-                    }}
+              )}
+              {!hideAssignedToFilter && (
+                <Box sx={{ position: "relative", width: "220px" }}>
+                  <FilterDropdown
+                    label={trans("assignedTo")}
+                    options={allUsers}
+                    selected={assignedToFilter}
+                    onChange={onAssignedToChange}
                   />
-                )}
-              </Box>
-            )}
-            {onDateChange && (
-              <DateDropdown
-                dateFrom={dateFrom || ""}
-                dateTo={dateTo || ""}
-                onDateChange={onDateChange}
-                transtask={trans}
-                placeholder={trans("warranty")}
-              />
-            )}
-            {allSystemTypes && onSystemTypeChange && (
-              <FilterDropdown
-                label={trans("systemtype")}
-                options={systemTypeOptions}
-                selected={systemTypeFilter || []}
-                onChange={onSystemTypeChange}
-              />
-            )}
-            {allStatuses && onStatusChange && (
-              <FilterDropdown
-                label={trans("status")}
-                options={allStatuses}
-                selected={statusFilter || []}
-                onChange={onStatusChange}
-              />
-            )}
-            {onAssetAllocationChange && (
-              <FilterDropdown
-                label={trans("assetallocation")}
-                options={ALLOCATION}
-                selected={assetAllocationFilter || []}
-                onChange={onAssetAllocationChange}
-              />
-            )}
-            {downloadAssets && <Box>{downloadAssets}</Box>}
-          </>
-        )}
+                  {disableAssignedToFilter && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 1,
+                        backgroundColor: "rgba(255, 255, 255, 0.6)",
+                        zIndex: 2,
+                        cursor: "not-allowed"
+                      }}
+                    />
+                  )}
+                </Box>
+              )}
+              {onDateChange && (
+                <DateDropdown
+                  dateFrom={dateFrom || ""}
+                  dateTo={dateTo || ""}
+                  onDateChange={onDateChange}
+                  transtask={trans}
+                  placeholder={trans("warranty")}
+                />
+              )}
+              {allSystemTypes && onSystemTypeChange && (
+                <FilterDropdown
+                  label={trans("systemtype")}
+                  options={systemTypeOptions}
+                  selected={systemTypeFilter || []}
+                  onChange={onSystemTypeChange}
+                />
+              )}
+              {allStatuses && onStatusChange && (
+                <FilterDropdown
+                  label={trans("status")}
+                  options={allStatuses}
+                  selected={statusFilter || []}
+                  onChange={onStatusChange}
+                />
+              )}
+              {onAssetAllocationChange && (
+                <FilterDropdown
+                  label={trans("assetallocation")}
+                  options={ALLOCATION}
+                  selected={assetAllocationFilter || []}
+                  onChange={onAssetAllocationChange}
+                />
+              )}
+            </>
+          )}
+        </Box>
+        {downloadAssets && !loading && <Box sx={{ flexShrink: 0, ml: 2 }}>{downloadAssets}</Box>}
       </Box>
 
       {appliedFilterCount > 0 && (

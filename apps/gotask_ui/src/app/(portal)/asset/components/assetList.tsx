@@ -255,6 +255,48 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     downloadAssetCSV(dataToDownload, transasset);
   };
 
+  const renderAssetsToggle = () => (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Toggle
+        options={[transasset("assets"), transasset("issues")]}
+        selected={labels[view]}
+        onChange={handleToggleChange}
+      />
+    </Box>
+  );
+
+  const renderDownloadAssets = () => (
+    <Box
+      sx={{
+        flexShrink: 0,
+        alignSelf: "flex-start"
+      }}
+    >
+      <Button
+        variant="outlined"
+        startIcon={<DownloadIcon />}
+        onClick={handleDownload}
+        sx={{
+          whiteSpace: "nowrap",
+          textTransform: "none",
+          "& .MuiButton-startIcon": {
+            margin: { xs: 0, lg: "0 8px 0 -4px" }
+          },
+          minWidth: { xs: "40px", lg: "auto" },
+          width: { xs: "40px", lg: "auto" },
+          height: "40px",
+          padding: { xs: "8px", lg: "6px 16px" },
+          borderRadius: "8px",
+          "& .button-text": {
+            display: { xs: "none", lg: "inline" }
+          }
+        }}
+      >
+        <span className="button-text">{transasset("download")}</span>
+      </Button>
+    </Box>
+  );
+
   return (
     <>
       <ModuleHeader name={transasset("assets")} />
@@ -306,46 +348,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                   ? transasset("searchissues")
                   : transasset("searchAsset")
               }
-              assetsToggle={
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Toggle
-                    options={[transasset("assets"), transasset("issues")]}
-                    selected={labels[view]}
-                    onChange={handleToggleChange}
-                  />
-                </Box>
-              }
-              downloadAssets={
-                <Box
-                  sx={{
-                    flexShrink: 0,
-                    alignSelf: "flex-start"
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    startIcon={<DownloadIcon />}
-                    onClick={handleDownload}
-                    sx={{
-                      whiteSpace: "nowrap",
-                      textTransform: "none",
-                      "& .MuiButton-startIcon": {
-                        margin: { xs: 0, lg: "0 8px 0 -4px" }
-                      },
-                      minWidth: { xs: "40px", lg: "auto" },
-                      width: { xs: "40px", lg: "auto" },
-                      height: "40px",
-                      padding: { xs: "8px", lg: "6px 16px" },
-                      borderRadius: "8px",
-                      "& .button-text": {
-                        display: { xs: "none", lg: "inline" }
-                      }
-                    }}
-                  >
-                    <span className="button-text">{transasset("download")}</span>
-                  </Button>
-                </Box>
-              }
+              assetsToggle={renderAssetsToggle()}
+              downloadAssets={renderDownloadAssets()}
             />
           ) : (
             <AssetFilters

@@ -798,13 +798,16 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                       }}
                     >
                       {task ? (
-                        <TimeSpentIndicator
-                          spent={task.time_spent_total}
-                          estimated={task.user_estimated}
-                        />
+                        <>
+                          <TimeSpentIndicator
+                            spent={task.time_spent_total}
+                            estimated={task.user_estimated}
+                          />
+                        </>
                       ) : (
                         "-"
                       )}
+
                     </TableCell>
                   </TableRow>
                 );

@@ -55,22 +55,40 @@ export const formatPermissionDuration = (startTime: string, endTime: string): st
   const hours = calculatePermissionDuration(startTime, endTime);
   return `${hours} hour${hours === 1 ? "" : "s"}`;
 };
+const parseTimeStringToMinutes = (timeStr: string): number => {
+  const days = /(\d+)d/.exec(timeStr)?.[1] ?? "0";
+  const hours = /(\d+)h/.exec(timeStr)?.[1] ?? "0";
+  const minutes = /(\d+)m/.exec(timeStr)?.[1] ?? "0";
+
+  return parseInt(days, 10) * 24 * 60 + parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+};
 
 export const getTimeSpentColor = (
   spent: string | number | null | undefined,
   estimated: string | number | null | undefined
 ): string => {
-  const spentValue = spent !== null && spent !== undefined ? parseFloat(spent.toString()) : NaN;
-  const estimatedValue =
-    estimated !== null && estimated !== undefined ? parseFloat(estimated.toString()) : NaN;
+  const parse = (val: string | number | null | undefined): number => {
+    if (val === null || val === undefined) return NaN;
+    if (typeof val === "number") return val;
+    const str = val.toString();
+    // If string contains time format (like "1d6h0m"), parse it
+    if (/[dhm]/.test(str)) {
+      return parseTimeStringToMinutes(str);
+    }
+    // Otherwise try float
+    return parseFloat(str);
+  };
+
+  const spentValue = parse(spent);
+  const estimatedValue = parse(estimated);
 
   if (isNaN(spentValue) || isNaN(estimatedValue)) return "black";
 
-  if (spentValue > estimatedValue) return "#dd1428ff";
-  if (spentValue < estimatedValue) return "#20bf25ff";
-  if (spentValue === estimatedValue) return "#ead30cff";
+  if (spentValue > estimatedValue) return "#dd1428ff"; // Red
+  if (spentValue === estimatedValue) return "#ead30cff"; // Orange
+  if (spentValue < estimatedValue) return "#20bf25ff"; // Green
 
-  return "#8715deff";
+  return "#8715deff"; // Fallback
 };
 
 export const datesOverlap = (

@@ -128,12 +128,22 @@ class assetService {
 
   sortData = (data: any[], sortVar: string, sortOrder: string = "asc") => {
     return [...data].sort((a, b) => {
-      const getSortValue = (item: any): string => {
+      const getSortValue = (item: any): string | number => {
         let val = item[sortVar];
 
         if (typeof val === "object" && val?.name) val = val.name;
         if ((!val || val === "") && sortVar === "deviceName") {
           val = item["accessCardNo"];
+          if (typeof val === "object" && val?.name) val = val.name;
+        }
+
+        if ((!val || val === "") && sortVar === "modelName") {
+          val = item["accessCardNo2"];
+          if (typeof val === "object" && val?.name) val = val.name;
+        }
+
+        if ((!val || val === "") && sortVar === "dateOfPurchase") {
+          val = item["issuedOn"];
           if (typeof val === "object" && val?.name) val = val.name;
         }
 
@@ -148,6 +158,9 @@ class assetService {
           if (typeof val === "object" && val?.name) val = val.name;
         }
 
+        if (sortVar.toLowerCase().includes("date") && val) {
+          return new Date(val).getTime();
+        }
         return String(val || "").trim();
       };
 
@@ -158,7 +171,7 @@ class assetService {
       const bVal = getSortValue(b);
 
       // Step 1: Compare alphabetically A–Z
-      const mainCompare = aVal.localeCompare(bVal, undefined, {
+      const mainCompare = String(aVal).localeCompare(String(bVal), undefined, {
         numeric: true,
         sensitivity: "base"
       });
@@ -166,10 +179,10 @@ class assetService {
       if (mainCompare !== 0) return sortOrder === "asc" ? mainCompare : -mainCompare;
 
       // Step 2: If alphabetically equal, put alphanumeric before pure text
-      const aIsAlphaNum = isAlphanumeric(aVal);
-      const bIsAlphaNum = isAlphanumeric(bVal);
-      const aIsText = isTextOnly(aVal);
-      const bIsText = isTextOnly(bVal);
+      const aIsAlphaNum = isAlphanumeric(String(aVal));
+      const bIsAlphaNum = isAlphanumeric(String(bVal));
+      const aIsText = isTextOnly(String(aVal));
+      const bIsText = isTextOnly(String(bVal));
 
       if (aIsAlphaNum && bIsText) return -1;
       if (aIsText && bIsAlphaNum) return 1;

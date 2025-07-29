@@ -67,6 +67,15 @@ export const getTimeSpentColor = (
   spent: string | number | null | undefined,
   estimated: string | number | null | undefined
 ): string => {
+  const isZeroTimeString = (val: string | number | null | undefined): boolean => {
+    if (typeof val !== "string") return false;
+    return /^0d0h(?:0m)?$/.test(val); // matches "0d0h" or "0d0h0m"
+  };
+
+  if (spent === null || spent === undefined || isZeroTimeString(spent)) {
+    return ""; // Don't show color
+  }
+
   const parse = (val: string | number | null | undefined): number => {
     if (val === null || val === undefined) return NaN;
     if (typeof val === "number") return val;

@@ -38,7 +38,7 @@ import {
   isSameDate,
   normalizeDate
 } from "@/app/common/utils/leaveCalculate";
-import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
+import { getLeaveColor } from "@/app/common/constants/leave";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
 import { TimeSpentStatus } from "./timeSpentStatus";
@@ -618,7 +618,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               <Typography
                                 sx={{
                                   fontWeight: 400,
-                                  color: getPermissionColor(),
+                                  color: getLeaveColor(),
                                   textTransform: "none"
                                 }}
                               >
@@ -631,7 +631,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                   variant="subtitle1"
                                   sx={{
                                     fontWeight: 500,
-                                    color: getPermissionColor()
+                                    color: getLeaveColor()
                                   }}
                                 >
                                   {`${formatPermissionDuration(perm.start_time, perm.end_time)}`}
@@ -666,7 +666,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           <Typography
                             sx={{
                               fontWeight: 400,
-                              color: getPermissionColor(),
+                              color: getLeaveColor(),
                               textTransform: "none"
                             }}
                           >
@@ -677,7 +677,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             variant="subtitle1"
                             sx={{
                               fontWeight: 500,
-                              color: getPermissionColor()
+                              color: getLeaveColor()
                             }}
                           >
                             {`${formatPermissionDuration(permission.start_time, permission.end_time)}`}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Grid, Box, Skeleton } from "@mui/material";
+import { Grid, Box, Skeleton, CircularProgress } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {
   useAllProjects,
@@ -458,22 +458,22 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
             </Grid>
           )}
 
-          {isLoading && allTasks.length === 0
-            ? [...Array(6)].map((_, i) => (
-                <Grid item xs={12} sm={6} md={4} key={`skeleton-${i}`}>
-                  <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />
-                </Grid>
-              ))
-            : allTasks.map((group) => (
-                <Grid item xs={12} sm={6} md={4} key={group.id}>
-                  <TaskCard
-                    view={view}
-                    group={group}
-                    onTaskClick={(id) => router.push(`/task/view/${id}`)}
-                    onViewMore={handleViewMore}
-                  />
-                </Grid>
-              ))}
+          {isLoading && allTasks.length === 0 ? (
+            <Grid item xs={12} display="flex" justifyContent="center" mt={5}>
+              <CircularProgress />
+            </Grid>
+          ) : (
+            allTasks.map((group) => (
+              <Grid item xs={12} sm={6} md={4} key={group.id}>
+                <TaskCard
+                  view={view}
+                  group={group}
+                  onTaskClick={(id) => router.push(`/task/view/${id}`)}
+                  onViewMore={handleViewMore}
+                />
+              </Grid>
+            ))
+          )}
         </Grid>
       </Box>
 

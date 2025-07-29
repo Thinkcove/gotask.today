@@ -126,40 +126,55 @@ class assetService {
     }
   };
 
-  sortData = (data: any[], sortVar: string, sortOrder: string = ASC) => {
+  sortData = (data: any[], sortVar: string, sortOrder: string = "asc") => {
     return [...data].sort((a, b) => {
-      const getSortValue = (item: any) => {
-        if (typeof item[sortVar] === "object" && item[sortVar]?.name) {
-          return item[sortVar].name;
+      const getSortValue = (item: any): string => {
+        let val = item[sortVar];
+
+        if (typeof val === "object" && val?.name) val = val.name;
+        if ((!val || val === "") && sortVar === "deviceName") {
+          val = item["accessCardNo"];
+          if (typeof val === "object" && val?.name) val = val.name;
         }
 
-        if (item[sortVar] !== undefined) {
-          return item[sortVar];
+        const tagMatch = item.tagData?.find(
+          (tag: any) =>
+            tag[sortVar] !== undefined ||
+            (sortVar === "deviceName" && tag["accessCardNo"] !== undefined)
+        );
+
+        if ((!val || val === "") && tagMatch) {
+          val = sortVar === "deviceName" ? tagMatch["accessCardNo"] : tagMatch[sortVar];
+          if (typeof val === "object" && val?.name) val = val.name;
         }
 
-        const match = item.tagData?.find((tag: any) => {
-          if (typeof tag[sortVar] === "object" && tag[sortVar]?.name) {
-            return true;
-          }
-          return tag[sortVar] !== undefined;
-        });
-
-        if (match) {
-          const value = match[sortVar];
-          return typeof value === "object" && value?.name ? value.name : value;
-        }
-
-        return "";
+        return String(val || "").trim();
       };
+
+      const isAlphanumeric = (val: string) => /[a-zA-Z]/.test(val) && /\d/.test(val);
+      const isTextOnly = (val: string) => /^[a-zA-Z\s]+$/.test(val);
 
       const aVal = getSortValue(a);
       const bVal = getSortValue(b);
 
-      if (typeof aVal === "string" && typeof bVal === "string") {
-        return sortOrder === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-      }
+      // Step 1: Compare alphabetically A–Z
+      const mainCompare = aVal.localeCompare(bVal, undefined, {
+        numeric: true,
+        sensitivity: "base"
+      });
 
-      return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
+      if (mainCompare !== 0) return sortOrder === "asc" ? mainCompare : -mainCompare;
+
+      // Step 2: If alphabetically equal, put alphanumeric before pure text
+      const aIsAlphaNum = isAlphanumeric(aVal);
+      const bIsAlphaNum = isAlphanumeric(bVal);
+      const aIsText = isTextOnly(aVal);
+      const bIsText = isTextOnly(bVal);
+
+      if (aIsAlphaNum && bIsText) return -1;
+      if (aIsText && bIsAlphaNum) return 1;
+
+      return 0;
     });
   };
 

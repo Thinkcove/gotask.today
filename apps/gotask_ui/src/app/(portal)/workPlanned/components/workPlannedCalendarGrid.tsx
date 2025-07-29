@@ -722,15 +722,10 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           date={task.actual_start_date}
                           format={DateFormats.DATE_ONLY}
                         />
-                      ) : leave && leave.from_date ? (
-                        <FormattedDateTime date={leave.from_date} format={DateFormats.DATE_ONLY} />
-                      ) : permission && permission.date ? (
-                        <FormattedDateTime date={permission.date} format={DateFormats.DATE_ONLY} />
                       ) : (
                         "-"
                       )}
                     </TableCell>
-
                     {/* End Date - Show task date, leave to_date, or permission date */}
                     <TableCell
                       sx={{
@@ -765,15 +760,10 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           date={task.actual_end_date}
                           format={DateFormats.DATE_ONLY}
                         />
-                      ) : leave && leave.to_date ? (
-                        <FormattedDateTime date={leave.to_date} format={DateFormats.DATE_ONLY} />
-                      ) : permission && permission.date ? (
-                        <FormattedDateTime date={permission.date} format={DateFormats.DATE_ONLY} />
                       ) : (
                         "-"
                       )}
                     </TableCell>
-
                     {/* Task Estimation - Only show for tasks, not leaves or permissions */}
                     <TableCell
                       sx={{

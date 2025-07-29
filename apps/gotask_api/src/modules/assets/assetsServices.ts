@@ -1,6 +1,6 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
-import { ASC, CREATE_AT, DESC } from "../../constants/assetConstant";
+import { CREATE_AT, DESC } from "../../constants/assetConstant";
 import {
   createAsset,
   getAssetById,

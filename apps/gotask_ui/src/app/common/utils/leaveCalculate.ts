@@ -136,9 +136,21 @@ export const getEstimationValue = (estimation: string | number | null | undefine
   if (!estimation || estimation === null || estimation === undefined || estimation === "") {
     return 0;
   }
-  const numericValue = parseFloat(estimation.toString().replace(ESTIMATION_FORMAT, ""));
-  return isNaN(numericValue) ? 0 : numericValue;
+
+  if (typeof estimation === "number") {
+    return estimation;
+  }
+
+  const dayMatch = estimation.match(/(\d+)d/);
+  const hourMatch = estimation.match(/(\d+)h/);
+
+  const days = dayMatch ? parseInt(dayMatch[1]) : 0;
+  const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+
+  // Assuming 1 day = 8 working hours
+  return days * 8 + hours;
 };
+
 export const isSameDate = (date1: string, date2: string): boolean => {
   const fromDate = normalizeDate(date1);
   const toDate = normalizeDate(date2);

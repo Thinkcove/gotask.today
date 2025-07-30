@@ -1,7 +1,7 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
 import { ASC, CREATE_AT, DESC } from "../../constants/assetConstant";
-import { ALPHANUMERIC_REGEX } from "../../constants/utils/regex";
+import { ALPHANUMERIC_REGEX, TEXT_ONLY_REGEX } from "../../constants/utils/regex";
 import {
   createAsset,
   getAssetById,
@@ -187,8 +187,8 @@ class assetService {
         const aIsAlphaNum = ALPHANUMERIC_REGEX.test(strA);
         const bIsAlphaNum = ALPHANUMERIC_REGEX.test(strB);
 
-        const aIsTextOnly = /^[a-zA-Z\s]+$/.test(strA);
-        const bIsTextOnly = /^[a-zA-Z\s]+$/.test(strB);
+        const aIsTextOnly = TEXT_ONLY_REGEX.test(strA);
+        const bIsTextOnly = TEXT_ONLY_REGEX.test(strB);
 
         // If equal alphabetically, put alphanumeric before pure text
         if (aIsAlphaNum && bIsTextOnly) return -1;

@@ -43,12 +43,10 @@ const CreateTask: React.FC = () => {
 
   const handleInputChange = useCallback(
     (name: string, value: string | Date | Project[] | User[]) => {
-      startTransition(() => {
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: value instanceof Date ? value.toISOString().split("T")[0] : value
-        }));
-      });
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value instanceof Date ? value.toISOString().split("T")[0] : value
+      }));
     },
     []
   );

@@ -677,16 +677,29 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
                               display="flex"
                               alignItems="center"
                               justifyContent="center"
-                              gap={0.5}
+                              sx={{ height: "100%" }}
                             >
                               <Box
                                 sx={{
-                                  width: 10,
-                                  height: 10,
+                                  width: 8,
+                                  height: 8,
                                   borderRadius: "50%",
-                                  backgroundColor: getLogIndicatorColor(value)
+                                  backgroundColor: getLogIndicatorColor(value),
+                                  marginRight: "4px"
                                 }}
                               />
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontSize: "0.75rem",
+                                  color: "#000000",
+                                  lineHeight: 1,
+                                  minWidth: "24px",
+                                  textAlign: "left"
+                                }}
+                              >
+                                {value}h
+                              </Typography>
                             </Box>
                           ) : (
                             ""

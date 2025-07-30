@@ -1,6 +1,7 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
-import { CREATE_AT, DESC } from "../../constants/assetConstant";
+import { ASC, CREATE_AT, DESC } from "../../constants/assetConstant";
+import { ALPHANUMERIC_REGEX } from "../../constants/utils/regex";
 import {
   createAsset,
   getAssetById,
@@ -126,7 +127,7 @@ class assetService {
     }
   };
 
-  sortData = (data: any[], sortVar: string, sortOrder: string = "asc") => {
+  sortData = (data: any[], sortVar: string, sortOrder: string = ASC) => {
     return [...data].sort((a, b) => {
       const getSortValue = (item: any): string | number => {
         let val = item[sortVar];
@@ -159,35 +160,44 @@ class assetService {
         }
 
         if (sortVar.toLowerCase().includes("date") && val) {
-          return new Date(val).getTime();
+          const date = new Date(val);
+          if (!isNaN(date.getTime())) return date.getTime();
         }
         return String(val || "").trim();
       };
 
-      const isAlphanumeric = (val: string) => /[a-zA-Z]/.test(val) && /\d/.test(val);
-      const isTextOnly = (val: string) => /^[a-zA-Z\s]+$/.test(val);
-
       const aVal = getSortValue(a);
       const bVal = getSortValue(b);
+      //Compare alphabetically A–Z
+      const compare = (val1: string | number, val2: string | number) => {
+        if (typeof val1 === "number" && typeof val2 === "number") {
+          return sortOrder === ASC ? val1 - val2 : val2 - val1;
+        }
 
-      // Step 1: Compare alphabetically A–Z
-      const mainCompare = String(aVal).localeCompare(String(bVal), undefined, {
-        numeric: true,
-        sensitivity: "base"
-      });
+        const strA = String(val1);
+        const strB = String(val2);
 
-      if (mainCompare !== 0) return sortOrder === "asc" ? mainCompare : -mainCompare;
+        const mainCompare = strA.localeCompare(strB, undefined, {
+          numeric: true,
+          sensitivity: "base"
+        });
 
-      // Step 2: If alphabetically equal, put alphanumeric before pure text
-      const aIsAlphaNum = isAlphanumeric(String(aVal));
-      const bIsAlphaNum = isAlphanumeric(String(bVal));
-      const aIsText = isTextOnly(String(aVal));
-      const bIsText = isTextOnly(String(bVal));
+        if (mainCompare !== 0) return sortOrder === ASC ? mainCompare : -mainCompare;
 
-      if (aIsAlphaNum && bIsText) return -1;
-      if (aIsText && bIsAlphaNum) return 1;
+        const aIsAlphaNum = ALPHANUMERIC_REGEX.test(strA);
+        const bIsAlphaNum = ALPHANUMERIC_REGEX.test(strB);
 
-      return 0;
+        const aIsTextOnly = /^[a-zA-Z\s]+$/.test(strA);
+        const bIsTextOnly = /^[a-zA-Z\s]+$/.test(strB);
+
+        // If equal alphabetically, put alphanumeric before pure text
+        if (aIsAlphaNum && bIsTextOnly) return -1;
+        if (aIsTextOnly && bIsAlphaNum) return 1;
+
+        return 0;
+      };
+
+      return compare(aVal, bVal);
     });
   };
 

@@ -141,13 +141,12 @@ const getAllAssets = async (
   let findQuery = Asset.find(query);
 
   if (!skip && !limit) {
-    // if pagination is not applied, still sort by createdAt by default
     findQuery = findQuery.sort({ createdAt: -1 });
   }
 
   if (typeof skip === "number" && typeof limit === "number") {
     findQuery = findQuery.skip(skip).limit(limit);
-    findQuery = findQuery.sort({ createdAt: -1 }); // default sort
+    findQuery = findQuery.sort({ createdAt: -1 });
   }
 
   const assets = await findQuery;

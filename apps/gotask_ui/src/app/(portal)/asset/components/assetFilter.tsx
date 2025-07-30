@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Link, Skeleton } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { ALLOCATION, NOT_UTILIZED, OVERUTILIZED, systemTypeOptions } from "../assetConstants";

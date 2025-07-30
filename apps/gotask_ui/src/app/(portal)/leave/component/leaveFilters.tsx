@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Link, Skeleton } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FilterDropdown from "@/app/component/input/filterDropDown";

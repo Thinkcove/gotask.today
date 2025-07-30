@@ -73,6 +73,7 @@ const UserList = () => {
         position: "relative",
         height: "100vh",
         overflowY: "auto",
+        overflowX: "hidden",
         maxHeight: "calc(100vh - 100px)",
         p: 3
       }}

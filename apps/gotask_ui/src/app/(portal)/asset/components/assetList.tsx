@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Box, Grid, Paper, Skeleton, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
@@ -30,6 +30,7 @@ import { useAllUsers } from "../../task/service/taskAction";
 import { User } from "../../task/interface/taskInterface";
 import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
 import { SNACKBAR_SEVERITY } from "@/app/common/constants/snackbar";
+import SkeletonLoader from "@/app/component/loader/skeletonLoader";
 
 interface AssetListProps {
   initialView?: "assets" | "issues";
@@ -267,7 +268,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           }}
         >
           {showInitialSkeleton ? (
-            <Skeleton variant="rectangular" sx={{ borderRadius: 1, width: "100%", height: 43 }} />
+            <SkeletonLoader count={1} width="100%" height={43} />
           ) : (
             <SearchBar
               value={searchText}

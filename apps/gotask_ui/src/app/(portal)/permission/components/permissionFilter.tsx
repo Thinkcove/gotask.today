@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Link, Skeleton } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
@@ -39,7 +39,7 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
         <Box display="flex" justifyContent={{ xs: "center", sm: "flex-start" }} flexGrow={1}>
           <Box sx={{ width: { sm: "auto", xs: "100%" } }}>
             {loading ? (
-              <SkeletonLoader count={2} />
+              <SkeletonLoader count={1} />
             ) : (
               <FilterDropdown
                 label={transpermission("filteruser")}
@@ -64,13 +64,7 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
           }}
         >
           {loading ? (
-            <Skeleton
-              variant="rectangular"
-              width={220}
-              height={42}
-              sx={{ borderRadius: 1 }}
-              animation="wave"
-            />
+            <SkeletonLoader count={1} />
           ) : (
             <DateDropdown
               dateFrom={dateFrom}

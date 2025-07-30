@@ -141,7 +141,7 @@ const AssetFilters: React.FC<Props> = ({
           }}
         >
           {loading ? (
-            Array.from({ length: 5 }).map((_, i) => <SkeletonLoader count={6} />)
+            <SkeletonLoader count={5} />
           ) : (
             <>
               {allAssetTypes && onAssetTypeChange && (

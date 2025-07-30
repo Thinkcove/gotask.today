@@ -77,8 +77,7 @@ const AssetFilters: React.FC<Props> = ({
     (dateTo ? 1 : 0) +
     (assetAllocationFilter && assetAllocationFilter.length > 0 ? 1 : 0) +
     (assetTypeFilter && assetTypeFilter.length > 0 ? 1 : 0) +
-    (statusFilter && statusFilter.length > 0 ? 1 : 0) +
-    (searchText && searchText.trim().length > 0 ? 1 : 0);
+    (statusFilter && statusFilter.length > 0 ? 1 : 0);
 
   return (
     <Box>

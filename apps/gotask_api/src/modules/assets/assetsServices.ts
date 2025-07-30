@@ -1,6 +1,7 @@
 import AssetMessages from "../../constants/apiMessages/assetMessage";
 import UserMessages from "../../constants/apiMessages/userMessage";
 import { ASC, CREATE_AT, DESC } from "../../constants/assetConstant";
+import { ALPHANUMERIC_REGEX, TEXT_ONLY_REGEX } from "../../constants/utils/regex";
 import {
   createAsset,
   getAssetById,
@@ -128,38 +129,75 @@ class assetService {
 
   sortData = (data: any[], sortVar: string, sortOrder: string = ASC) => {
     return [...data].sort((a, b) => {
-      const getSortValue = (item: any) => {
-        if (typeof item[sortVar] === "object" && item[sortVar]?.name) {
-          return item[sortVar].name;
+      const getSortValue = (item: any): string | number => {
+        let val = item[sortVar];
+
+        if (typeof val === "object" && val?.name) val = val.name;
+        if ((!val || val === "") && sortVar === "deviceName") {
+          val = item["accessCardNo"];
+          if (typeof val === "object" && val?.name) val = val.name;
         }
 
-        if (item[sortVar] !== undefined) {
-          return item[sortVar];
+        if ((!val || val === "") && sortVar === "modelName") {
+          val = item["accessCardNo2"];
+          if (typeof val === "object" && val?.name) val = val.name;
         }
 
-        const match = item.tagData?.find((tag: any) => {
-          if (typeof tag[sortVar] === "object" && tag[sortVar]?.name) {
-            return true;
-          }
-          return tag[sortVar] !== undefined;
-        });
-
-        if (match) {
-          const value = match[sortVar];
-          return typeof value === "object" && value?.name ? value.name : value;
+        if ((!val || val === "") && sortVar === "dateOfPurchase") {
+          val = item["issuedOn"];
+          if (typeof val === "object" && val?.name) val = val.name;
         }
 
-        return "";
+        const tagMatch = item.tagData?.find(
+          (tag: any) =>
+            tag[sortVar] !== undefined ||
+            (sortVar === "deviceName" && tag["accessCardNo"] !== undefined)
+        );
+
+        if ((!val || val === "") && tagMatch) {
+          val = sortVar === "deviceName" ? tagMatch["accessCardNo"] : tagMatch[sortVar];
+          if (typeof val === "object" && val?.name) val = val.name;
+        }
+
+        if (sortVar.toLowerCase().includes("date") && val) {
+          const date = new Date(val);
+          if (!isNaN(date.getTime())) return date.getTime();
+        }
+        return String(val || "").trim();
       };
 
       const aVal = getSortValue(a);
       const bVal = getSortValue(b);
+      //Compare alphabetically A–Z
+      const compare = (val1: string | number, val2: string | number) => {
+        if (typeof val1 === "number" && typeof val2 === "number") {
+          return sortOrder === ASC ? val1 - val2 : val2 - val1;
+        }
 
-      if (typeof aVal === "string" && typeof bVal === "string") {
-        return sortOrder === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-      }
+        const strA = String(val1);
+        const strB = String(val2);
 
-      return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
+        const mainCompare = strA.localeCompare(strB, undefined, {
+          numeric: true,
+          sensitivity: "base"
+        });
+
+        if (mainCompare !== 0) return sortOrder === ASC ? mainCompare : -mainCompare;
+
+        const aIsAlphaNum = ALPHANUMERIC_REGEX.test(strA);
+        const bIsAlphaNum = ALPHANUMERIC_REGEX.test(strB);
+
+        const aIsTextOnly = TEXT_ONLY_REGEX.test(strA);
+        const bIsTextOnly = TEXT_ONLY_REGEX.test(strB);
+
+        // If equal alphabetically, put alphanumeric before pure text
+        if (aIsAlphaNum && bIsTextOnly) return -1;
+        if (aIsTextOnly && bIsAlphaNum) return 1;
+
+        return 0;
+      };
+
+      return compare(aVal, bVal);
     });
   };
 

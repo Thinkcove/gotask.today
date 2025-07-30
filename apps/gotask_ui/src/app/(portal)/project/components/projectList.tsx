@@ -102,7 +102,8 @@ const ProjectList = () => {
           />
         </Stack>
       </Box>
-      <ProjectCards projects={filteredProjects} />
+      <ProjectCards projects={filteredProjects} loading={isLoading} />
+
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
       {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (
         <ActionButton

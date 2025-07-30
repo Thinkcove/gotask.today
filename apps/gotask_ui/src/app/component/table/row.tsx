@@ -1,7 +1,8 @@
 import React from "react";
-import { TableRow, TableCell, Skeleton } from "@mui/material";
+import { TableRow, TableCell } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Column } from "./table";
+import SkeletonLoader from "../loader/skeletonLoader";
 
 const StyledTableRow = styled(TableRow)(() => ({
   "&:last-child td, &:last-child th": {
@@ -36,7 +37,7 @@ const TableSkeletonRows = <T extends object>({
               align={column.align || "left"}
               sx={{ minWidth: column.minWidth }}
             >
-              <Skeleton variant="rectangular" height={20} sx={{ borderRadius: 4 }} />
+              <SkeletonLoader count={1} height={20} width="100%"  />
             </StyledTableCell>
           ))}
         </StyledTableRow>

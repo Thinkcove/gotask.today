@@ -4,6 +4,7 @@ import React from "react";
 import FilterDropdown from "../input/filterDropDown";
 import { useTranslations } from "next-intl";
 import SearchBar from "@/app/component/searchBar/searchBar";
+import SkeletonLoader from "../loader/skeletonLoader";
 
 interface ProjectFiltersProps {
   searchTerm: string;
@@ -16,6 +17,7 @@ interface ProjectFiltersProps {
   onUserChange: (val: string[]) => void;
   onClearFilters?: () => void;
   filtersApplied?: boolean;
+  isLoading?: boolean;
 }
 
 const ProjectFilters: React.FC<ProjectFiltersProps> = ({
@@ -28,7 +30,8 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
   onStatusChange,
   onUserChange,
   onClearFilters,
-  filtersApplied
+  filtersApplied,
+  isLoading = false
 }) => {
   const t = useTranslations();
   return (
@@ -37,71 +40,72 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
       <Box
         sx={{
           display: "flex",
-          flexDirection: {
-            xs: "column", 
-            sm: "row" 
-          },
+          flexDirection: { xs: "column", sm: "row" },
           alignItems: {
-            sm: "center" 
+            sm: "center"
           },
           gap: 2,
           flexWrap: "nowrap"
         }}
       >
-        {/* Search Bar */}
-        <Box sx={{ width: { xs: "100%", sm: "300px" } }}>
-          <SearchBar
-            value={searchTerm}
-            onChange={onSearchChange}
-            sx={{ width: "100%" }}
-            placeholder={t("Projects.searchplaceholder")}
-          />
-        </Box>
+        {isLoading ? (
+          <SkeletonLoader count={3} />
+        ) : (
+          <>
+            {/* Search Bar */}
+            <Box sx={{ width: { xs: "100%", sm: "300px" } }}>
+              <SearchBar
+                value={searchTerm}
+                onChange={onSearchChange}
+                sx={{ width: "100%" }}
+                placeholder={t("Projects.searchplaceholder")}
+              />
+            </Box>
 
-        {/* Filters */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            overflowX: { xs: "auto", sm: "visible" },
-            gap: 2,
-            width: "100%",
-            pt: { xs: 1, sm: 0 },
-            pb: 1,
-            "&::-webkit-scrollbar": { display: "none" }, // hide scrollbar on WebKit
-            scrollbarWidth: "none" // hide scrollbar on Firefox
-          }}
-        >
-          <FilterDropdown
-            label={t("Projects.Stories.filters.user")}
-            options={allUsers}
-            selected={userFilter}
-            onChange={onUserChange}
-          />
-
-          <FilterDropdown
-            label={t("Projects.Stories.filters.status")}
-            options={allStatuses}
-            selected={statusFilter}
-            onChange={onStatusChange}
-          />
-
-          {filtersApplied && onClearFilters && (
-            <Link
-              component="button"
-              onClick={onClearFilters}
-              underline="always"
+            {/* Filters */}
+            <Box
               sx={{
-                fontSize: "1rem",
-                color: "primary.main",
-                whiteSpace: "nowrap",
-                flexShrink: 0
+                display: "flex",
+                flexDirection: "row",
+                overflowX: { xs: "auto", sm: "visible" },
+                gap: 2,
+                width: "100%",
+                "&::-webkit-scrollbar": { display: "none" }, // hide scrollbar on WebKit
+                scrollbarWidth: "none" // hide scrollbar on Firefox
               }}
             >
-              {t("Projects.Stories.filters.clearAll")}
-            </Link>
-          )}
-        </Box>
+              <FilterDropdown
+                label={t("Projects.Stories.filters.user")}
+                options={allUsers}
+                selected={userFilter}
+                onChange={onUserChange}
+              />
+
+              <FilterDropdown
+                label={t("Projects.Stories.filters.status")}
+                options={allStatuses}
+                selected={statusFilter}
+                onChange={onStatusChange}
+              />
+
+              {filtersApplied && onClearFilters && (
+                <Link
+                  component="button"
+                  onClick={onClearFilters}
+                  underline="always"
+                  sx={{
+                    fontSize: "1rem",
+                    color: "primary.main",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0
+                  }}
+                >
+                  {t("Projects.Stories.filters.clearAll")}
+                </Link>
+              )}
+            </Box>
+          </>
+        )}
       </Box>
     </Box>
   );

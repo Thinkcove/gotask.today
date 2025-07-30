@@ -1,10 +1,11 @@
 import React from "react";
-import { Box, Link, Skeleton } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import { leaveFilterProps } from "../interface/leaveInterface";
+import SkeletonLoader from "@/app/component/loader/skeletonLoader";
 
 const LeaveFilters: React.FC<leaveFilterProps> = ({
   userIdFilter,
@@ -66,16 +67,7 @@ const LeaveFilters: React.FC<leaveFilterProps> = ({
       >
         {loading ? (
           <>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                variant="rectangular"
-                width={220}
-                height={42}
-                sx={{ borderRadius: 1 }}
-                animation="wave"
-              />
-            ))}
+            <SkeletonLoader count={3} />
           </>
         ) : (
           <>

@@ -16,14 +16,15 @@ import NoSearchResultsImage from "@assets/placeholderImages/nofilterdata.svg";
 
 interface ProjectCardProps {
   projects: Project[] | null;
+  loading?: boolean;
 }
 
-const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
+const ProjectCards: React.FC<ProjectCardProps> = ({ projects, loading = false }) => {
   const { canAccess, isFieldRestricted } = useUserPermission();
   const router = useRouter();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
 
-  if (!projects) {
+  if (loading) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <CircularProgress />
@@ -31,14 +32,14 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
     );
   }
 
-  if (projects.length === 0) {
+  if (!projects || projects.length === 0) {
     return <EmptyState imageSrc={NoSearchResultsImage} message={transproject("noprojects")} />;
   }
+
   return (
     <Box>
       <Grid container spacing={3}>
         {projects.map((project) => {
-          // Filter out restricted fields at the top
           const filteredProject = {} as Partial<Project>;
 
           for (const key of Object.keys(project) as (keyof Project)[]) {
@@ -105,7 +106,6 @@ const ProjectCards: React.FC<ProjectCardProps> = ({ projects }) => {
                   </Box>
                 </Box>
 
-                {/* View Details */}
                 {canAccess(APPLICATIONS.PROJECT, ACTIONS.VIEW) && (
                   <Box display="flex" justifyContent="space-between">
                     <StatusIndicator status={project.status} getColor={getStatusColor} />

@@ -3,6 +3,7 @@ import { Box, Link, Popover, Slider, Typography } from "@mui/material";
 import React, { useRef, useState } from "react";
 import FilterDropdown from "../input/filterDropDown";
 import DateDropdown from "../input/dateDropdown";
+import SkeletonLoader from "../loader/skeletonLoader";
 
 interface TaskFiltersProps {
   statusFilter: string[];
@@ -25,6 +26,7 @@ interface TaskFiltersProps {
   transtask: (key: string) => string;
   hideProjectFilter?: boolean;
   hideUserFilter?: boolean;
+  isLoading?: boolean;
 }
 
 const TaskFilters: React.FC<TaskFiltersProps> = ({
@@ -47,7 +49,8 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({
   onClearFilters,
   transtask,
   hideProjectFilter,
-  hideUserFilter
+  hideUserFilter,
+  isLoading = false
 }) => {
   const variationRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -84,96 +87,102 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({
             }
           }}
         >
-          <Box sx={{ minWidth: 150, flexShrink: 0 }}>
-            <FilterDropdown
-              label={transtask("filterstatus")}
-              options={Object.values(TASK_STATUS)}
-              selected={statusFilter}
-              onChange={onStatusChange}
-            />
-          </Box>
-          <Box sx={{ minWidth: 150, flexShrink: 0 }}>
-            <FilterDropdown
-              label={transtask("filterseverity")}
-              options={Object.values(TASK_SEVERITY)}
-              selected={severityFilter}
-              onChange={onSeverityChange}
-            />
-          </Box>
-          {!hideProjectFilter && (
-            <Box sx={{ minWidth: 150, flexShrink: 0 }}>
-              <FilterDropdown
-                label={transtask("filterproject")}
-                options={allProjects}
-                selected={projectFilter}
-                onChange={onProjectChange}
-              />
-            </Box>
+          {isLoading ? (
+            <SkeletonLoader count={6} />
+          ) : (
+            <>
+              <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+                <FilterDropdown
+                  label={transtask("filterstatus")}
+                  options={Object.values(TASK_STATUS)}
+                  selected={statusFilter}
+                  onChange={onStatusChange}
+                />
+              </Box>
+              <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+                <FilterDropdown
+                  label={transtask("filterseverity")}
+                  options={Object.values(TASK_SEVERITY)}
+                  selected={severityFilter}
+                  onChange={onSeverityChange}
+                />
+              </Box>
+              {!hideProjectFilter && (
+                <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+                  <FilterDropdown
+                    label={transtask("filterproject")}
+                    options={allProjects}
+                    selected={projectFilter}
+                    onChange={onProjectChange}
+                  />
+                </Box>
+              )}
+              {!hideUserFilter && (
+                <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+                  <FilterDropdown
+                    label={transtask("filteruser")}
+                    options={allUsers}
+                    selected={userFilter}
+                    onChange={onUserChange}
+                  />
+                </Box>
+              )}
+              <Box sx={{ minWidth: 150, flexShrink: 0 }}>
+                <DateDropdown
+                  dateFrom={dateFrom}
+                  dateTo={dateTo}
+                  onDateChange={onDateChange}
+                  transtask={transtask}
+                  placeholder={transtask("filterplannedenddate")}
+                />
+              </Box>
+              <Box sx={{ minWidth: 150, flexShrink: 0 }} ref={variationRef}>
+                <FilterDropdown
+                  label={transtask("filtervariation")}
+                  options={["more", "less"]}
+                  selected={variationType ? [variationType] : []}
+                  onChange={(val) => {
+                    if (val.length === 0) {
+                      onVariationChange("", 0);
+                      setVariationPopoverOpen(false);
+                    } else {
+                      const type = val[0] as "more" | "less";
+                      onVariationChange(type, variationDays);
+                      setVariationPopoverOpen(true);
+                    }
+                  }}
+                  singleSelect
+                />
+              </Box>
+              <Popover
+                open={variationPopoverOpen}
+                anchorEl={variationRef.current}
+                onClose={() => setVariationPopoverOpen(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+              >
+                <Box sx={{ p: 2, width: 200 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    {transtask("daysvariation")}
+                  </Typography>
+                  <Slider
+                    value={variationDays}
+                    onChange={(_, value) => {
+                      if (variationType === "more" || variationType === "less") {
+                        onVariationChange(variationType, value as number);
+                      }
+                    }}
+                    step={1}
+                    marks
+                    min={1}
+                    max={30}
+                    valueLabelDisplay="auto"
+                    size="small"
+                  />
+                </Box>
+              </Popover>
+            </>
           )}
-          {!hideUserFilter && (
-            <Box sx={{ minWidth: 150, flexShrink: 0 }}>
-              <FilterDropdown
-                label={transtask("filteruser")}
-                options={allUsers}
-                selected={userFilter}
-                onChange={onUserChange}
-              />
-            </Box>
-          )}
-          <Box sx={{ minWidth: 150, flexShrink: 0 }}>
-            <DateDropdown
-              dateFrom={dateFrom}
-              dateTo={dateTo}
-              onDateChange={onDateChange}
-              transtask={transtask}
-              placeholder={transtask("filterplannedenddate")}
-            />
-          </Box>
-          <Box sx={{ minWidth: 150, flexShrink: 0 }} ref={variationRef}>
-            <FilterDropdown
-              label={transtask("filtervariation")}
-              options={["more", "less"]}
-              selected={variationType ? [variationType] : []}
-              onChange={(val) => {
-                if (val.length === 0) {
-                  onVariationChange("", 0);
-                  setVariationPopoverOpen(false);
-                } else {
-                  const type = val[0] as "more" | "less";
-                  onVariationChange(type, variationDays);
-                  setVariationPopoverOpen(true);
-                }
-              }}
-              singleSelect
-            />
-          </Box>
-          <Popover
-            open={variationPopoverOpen}
-            anchorEl={variationRef.current}
-            onClose={() => setVariationPopoverOpen(false)}
-            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-            transformOrigin={{ vertical: "top", horizontal: "left" }}
-          >
-            <Box sx={{ p: 2, width: 200 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {transtask("daysvariation")}
-              </Typography>
-              <Slider
-                value={variationDays}
-                onChange={(_, value) => {
-                  if (variationType === "more" || variationType === "less") {
-                    onVariationChange(variationType, value as number);
-                  }
-                }}
-                step={1}
-                marks
-                min={1}
-                max={30}
-                valueLabelDisplay="auto"
-                size="small"
-              />
-            </Box>
-          </Popover>
         </Box>
       </Box>
 

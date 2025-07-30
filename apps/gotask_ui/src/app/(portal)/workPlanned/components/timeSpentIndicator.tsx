@@ -10,21 +10,22 @@ export const TimeSpentIndicator: React.FC<{
     const estimatedValue = estimated !== null && estimated !== undefined ? parseFloat(estimated.toString()) : NaN;
 
     if (isNaN(spentValue) || isNaN(estimatedValue)) {
-        return <span>{formatEstimation(spent)}</span>;
+        return <span style={{ textAlign: "left" }}>{formatEstimation(spent)}</span>;
     }
 
     return (
-        <Box display="flex" alignItems="center" gap={1} justifyContent="center">
+        <Box display="flex" alignItems="center" gap={1} sx={{ textAlign: 'left', }}>
             <Box
                 sx={{
                     width: 10,
                     height: 10,
-                    borderRadius: "50%",
+                    borderRadius: '50%',
                     backgroundColor: color,
-                    flexShrink: 0
+                    flexShrink: 0,
                 }}
             />
-            <span>{formatEstimation(spent)}</span>
+            <Box component="span">{formatEstimation(spent)}</Box>
         </Box>
+
     );
 };

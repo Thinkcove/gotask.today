@@ -95,7 +95,7 @@ export const getTimeSpentColor = (
 
   if (spentValue > estimatedValue) return "#dd1428ff"; // Red
   if (spentValue === estimatedValue) return "#20bf25ff"; // Orange
-  if (spentValue < estimatedValue) return "#ead30cff"; // Green
+  if (spentValue < estimatedValue) return "#8d6eb6ff"; // Green
 
   return "#8715deff"; // Fallback
 };

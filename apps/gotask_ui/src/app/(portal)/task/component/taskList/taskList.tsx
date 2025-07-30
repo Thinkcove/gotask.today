@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Grid, Box } from "@mui/material";
+import { Grid, Box, CircularProgress } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {
   useAllProjects,
@@ -458,6 +458,11 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
             </Grid>
           ))}
         </Grid>
+        {isLoading && !hasLoadedOnce && (
+          <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <CircularProgress />
+          </Grid>
+        )}
       </Box>
 
       {canAccess(APPLICATIONS.TASK, ACTIONS.CREATE) && (

@@ -121,7 +121,9 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
           : dateTo
             ? formatDate(dateTo)
             : placeholder || transtask("filterduedate");
-
+  const isApplyEnabled = singleDateMode
+    ? Boolean(tempDateFrom)
+    : Boolean(tempDateFrom && tempDateTo);
   return (
     <>
       <StyledTrigger
@@ -198,6 +200,7 @@ const DateDropdown: React.FC<DateDropdownProps> = ({
               variant="contained"
               size="small"
               sx={{ borderRadius: 2, textTransform: "none" }}
+              disabled={!isApplyEnabled}
             >
               {transtask("filterapply")}
             </Button>

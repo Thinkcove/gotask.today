@@ -93,9 +93,9 @@ export const getTimeSpentColor = (
 
   if (isNaN(spentValue) || isNaN(estimatedValue)) return "black";
 
-  if (spentValue > estimatedValue) return "#dd1428ff"; // Red
-  if (spentValue === estimatedValue) return "#20bf25ff"; // Orange
-  if (spentValue < estimatedValue) return "#8d6eb6ff"; // Green
+  if (spentValue > estimatedValue) return "#dd1428ff"; 
+  if (spentValue === estimatedValue) return "#20bf25ff"; 
+  if (spentValue < estimatedValue) return "#8d6eb6ff"; 
 
   return "#8715deff"; // Fallback
 };

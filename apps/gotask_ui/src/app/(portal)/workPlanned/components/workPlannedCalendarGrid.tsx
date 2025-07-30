@@ -433,8 +433,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
           <TableBody>
             {Object.entries(groupedData).map(([userKey, userGroup]) => {
               const { userName, tasks, totalEstimation } = userGroup;
-              console.log("totalEstimation", totalEstimation);
-              
               const userLeaves = getUserLeavesInRange(userKey);
               const userPermissions = getUserPermissionsInRange(userKey);
 

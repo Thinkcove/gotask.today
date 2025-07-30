@@ -25,7 +25,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { extractHours } from "@/app/common/utils/taskTime";
 import StatusIndicator from "@/app/component/status/statusIndicator";
-import { getStatusColor } from "@/app/common/constants/task";
+import { getLogIndicatorColor, getStatusColor } from "@/app/common/constants/task";
 import useSWR from "swr";
 import { fetchAllLeaves } from "../../project/services/projectAction";
 import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
@@ -670,7 +670,27 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
                             ...getDailyLogCellStyle(value)
                           }}
                         >
-                          {renderCellContent(value, leaveForDate, permissionForDate)}
+                          {leaveForDate || permissionForDate ? (
+                            renderCellContent(value, leaveForDate, permissionForDate)
+                          ) : value ? (
+                            <Box
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              gap={0.5}
+                            >
+                              <Box
+                                sx={{
+                                  width: 10,
+                                  height: 10,
+                                  borderRadius: "50%",
+                                  backgroundColor: getLogIndicatorColor(value)
+                                }}
+                              />
+                            </Box>
+                          ) : (
+                            ""
+                          )}
                         </TableCell>
                       );
                     })}

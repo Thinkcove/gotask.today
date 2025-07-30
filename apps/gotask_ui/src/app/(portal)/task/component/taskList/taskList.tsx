@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Grid, Box } from "@mui/material";
+import { Grid, Box, CircularProgress } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {
   useAllProjects,
@@ -25,6 +25,7 @@ import { useUserPermission } from "@/app/common/utils/userPermission";
 import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import TaskFilters from "@/app/component/filters/taskFilters";
 import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
+import SkeletonLoader from "@/app/component/loader/skeletonLoader";
 
 interface TaskListProps {
   initialView?: "projects" | "users";
@@ -37,7 +38,7 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   const transtask = useTranslations(LOCALIZATION.TRANSITION.TASK);
   const { getAllProjects: allProjects } = useAllProjects();
   const { getAllUsers: allUsers } = useAllUsers();
-
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const isFetchingRef = useRef(false);
   const appendedPages = useRef<Set<string>>(new Set());
@@ -166,6 +167,11 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
   if (previousView.current !== view) {
     previousView.current = view;
     resetTaskState();
+  }
+  const showInitialFilterLoader = isLoading && !hasLoadedOnce;
+
+  if (!isLoading && !hasLoadedOnce) {
+    setHasLoadedOnce(true);
   }
 
   const updateURLParams = useCallback(() => {
@@ -375,12 +381,17 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <SearchBar value={searchText} onChange={setSearchText} placeholder="Search Task" />
+          {showInitialFilterLoader ? (
+            <SkeletonLoader count={1} />
+          ) : (
+            <SearchBar value={searchText} onChange={setSearchText} placeholder="Search Task" />
+          )}
         </Box>
         <TaskToggle view={view} onViewChange={handleViewChange} />
       </Box>
 
       <TaskFilters
+        isLoading={showInitialFilterLoader}
         statusFilter={statusFilter}
         severityFilter={severityFilter}
         projectFilter={projectFilter}
@@ -447,6 +458,11 @@ const TaskList: React.FC<TaskListProps> = ({ initialView = "projects" }) => {
             </Grid>
           ))}
         </Grid>
+        {isLoading && !hasLoadedOnce && (
+          <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <CircularProgress />
+          </Grid>
+        )}
       </Box>
 
       {canAccess(APPLICATIONS.TASK, ACTIONS.CREATE) && (

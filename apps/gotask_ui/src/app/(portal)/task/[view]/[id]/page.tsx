@@ -22,6 +22,7 @@ import { ACTIONS, APPLICATIONS } from "@/app/common/utils/permission";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import { Add } from "@mui/icons-material";
 import SearchBar from "@/app/component/searchBar/searchBar";
+import SkeletonLoader from "@/app/component/loader/skeletonLoader";
 
 const ViewMoreAction: React.FC = () => {
   const router = useRouter();
@@ -41,7 +42,7 @@ const ViewMoreAction: React.FC = () => {
   const lessDays = searchParams.get("lessDays") || "";
   const dateVar = searchParams.get("dateVar") || "due_date";
   const title = searchParams.get("title") || "";
-
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [searchText, setSearchText] = useState<string>(title);
   const getArrayParam = (name: string): string[] => {
     return searchParams.getAll(name).filter(Boolean);
@@ -198,6 +199,10 @@ const ViewMoreAction: React.FC = () => {
   const name = groupName;
   const hideProjectFilter = view === "projects";
   const hideUserFilter = view !== "projects";
+  const showInitialFilterLoader = isLoading && !hasLoadedOnce;
+  if (!isLoading && !hasLoadedOnce) {
+    setHasLoadedOnce(true);
+  }
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh" overflow="hidden">
@@ -222,18 +227,23 @@ const ViewMoreAction: React.FC = () => {
             <PageHeader onClose={() => window.history.back()} />
           </Box>
           <Box maxWidth={350} flex={1} mt={2}>
-            <SearchBar
-              value={searchText}
-              onChange={updateSearchText}
-              sx={{ width: "100%" }}
-              placeholder="Search Task"
-            />
+            {showInitialFilterLoader ? (
+              <SkeletonLoader count={1} />
+            ) : (
+              <SearchBar
+                value={searchText}
+                onChange={updateSearchText}
+                placeholder="Search Task"
+                sx={{ width: "100%" }}
+              />
+            )}
           </Box>
         </Box>
 
         {/* Filters: Full width on small screens */}
         <Box flex={1} minWidth={280} width={{ xs: "100%", md: "auto" }}>
           <TaskFilters
+            isLoading={showInitialFilterLoader}
             statusFilter={statusFilter}
             severityFilter={severityFilter}
             projectFilter={projectFilter}

@@ -17,16 +17,15 @@ import UserStatusFilter from "@/app/component/filters/userFilter";
 import { STATUS_CONFIG, getUserStatusColor } from "@/app/common/constants/status";
 import { useRouter } from "next/navigation";
 import { getStoredObj, removeStorage, setStorage } from "@/app/common/utils/storage";
+import SkeletonLoader from "@/app/component/loader/skeletonLoader";
 
 const UserList = () => {
   const { canAccess } = useUserPermission();
   const transuser = useTranslations(LOCALIZATION.TRANSITION.USER);
   const router = useRouter();
-
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const savedFilters = getStoredObj("userListFilter") || {};
-
   const [searchTerm, setSearchTerm] = useState<string>(savedFilters.searchTerm || "");
-
   const [userStatusFilter, setUserStatusFilterRaw] = useState<string[]>(
     savedFilters.userStatusFilter || ["All"]
   );
@@ -49,8 +48,12 @@ const UserList = () => {
     saveFilters({ userStatusFilter: val });
   };
 
-  const { data: users } = useSWR("fetch-user", fetcherUserList);
+  const { data: users, isLoading } = useSWR("fetch-user", fetcherUserList);
 
+  const showInitialFilterLoader = isLoading && !hasLoadedOnce;
+  if (!isLoading && !hasLoadedOnce) {
+    setHasLoadedOnce(true);
+  }
   const filteredUsers =
     users
       ?.filter((user: User) => user.name?.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -70,6 +73,7 @@ const UserList = () => {
         position: "relative",
         height: "100vh",
         overflowY: "auto",
+        overflowX: "hidden",
         maxHeight: "calc(100vh - 100px)",
         p: 3
       }}
@@ -77,16 +81,21 @@ const UserList = () => {
       <Box mb={2} display="flex" flexDirection="row" gap={2}>
         {/* Search Bar */}
         <Box mb={2} maxWidth={400}>
-          <SearchBar
-            value={searchTerm}
-            onChange={handleSearchTermChange}
-            sx={{ width: "100%" }}
-            placeholder={transuser("searchplaceholder")}
-          />
+          {showInitialFilterLoader ? (
+            <SkeletonLoader count={1} />
+          ) : (
+            <SearchBar
+              value={searchTerm}
+              onChange={handleSearchTermChange}
+              sx={{ width: "100%" }}
+              placeholder={transuser("searchplaceholder")}
+            />
+          )}
         </Box>
 
         {/* User Status Filter */}
         <UserStatusFilter
+          isLoading={showInitialFilterLoader}
           userStatus={userStatusFilter}
           onStatusChange={(newValue) => {
             if (newValue.includes("All")) {

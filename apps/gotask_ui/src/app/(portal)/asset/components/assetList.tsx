@@ -1,10 +1,16 @@
 import React, { useMemo, useState } from "react";
-import { Box, Grid, Paper, Skeleton, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import Toggle from "../../../component/toggle/toggle";
 import ModuleHeader from "@/app/component/header/moduleHeader";
 import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
-import { deleteAsset, fetchAllAssets, useAllAssets, useAllTypes } from "../services/assetActions";
+import {
+  deleteAsset,
+  fetchAllAssets,
+  useAllAssets,
+  useAllIssues,
+  useAllTypes
+} from "../services/assetActions";
 import Table from "../../../component/table/table";
 import ActionButton from "@/app/component/floatingButton/actionButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -12,12 +18,13 @@ import { useRouter } from "next/navigation";
 import { IAssetAttributes, IAssetType } from "../interface/asset";
 import {
   assetListFilters,
+  ASSETS,
   getAssetColumns,
   IAssetDisplayRow,
+  issuesListFilters,
   issueStatuses
 } from "../assetConstants";
 import AssetIssueCards from "../createIssues/issuesCard";
-import SearchBar from "@/app/component/searchBar/searchBar";
 import AssetFilters from "./assetFilter";
 import { SortOrder } from "@/app/common/constants/task";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -36,7 +43,11 @@ interface AssetListProps {
 }
 
 export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) => {
-  const FILTERS_STORAGE_KEY = assetListFilters;
+  const FILTERS_STORAGE_KEY_ASSETS = assetListFilters;
+  const FILTERS_STORAGE_KEY_ISSUES = issuesListFilters;
+
+  const FILTERS_STORAGE_KEY =
+    initialView === ASSETS ? FILTERS_STORAGE_KEY_ASSETS : FILTERS_STORAGE_KEY_ISSUES;
 
   const updateFilter = <T,>(
     key: string,
@@ -110,6 +121,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
   const showInitialSkeleton = isLoading && total === 0;
   const { getAllUsers: allUsers } = useAllUsers();
   const { getAll: allTypes } = useAllTypes();
+  const { getAll: allIssues, isLoading: isIssueLoading } = useAllIssues();
+  const showIssueSkeleton = isIssueLoading && allIssues.length === 0;
 
   const handleEdit = (row: IAssetDisplayRow) => {
     const originalAsset = allAssets.find((a: IAssetAttributes) => a.id === row.id);
@@ -126,9 +139,6 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     assets: transasset("assets"),
     issues: transasset("issues")
   };
-
-  // options for toggle
-  const toggleOptions = [labels.assets, labels.issues];
 
   const handleToggleChange = (selectedLabel: string) => {
     const nextView = labelToKey[selectedLabel];
@@ -245,46 +255,51 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     downloadAssetCSV(dataToDownload, transasset);
   };
 
+  const renderAssetsToggle = () => (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Toggle
+        options={[transasset("assets"), transasset("issues")]}
+        selected={labels[view]}
+        onChange={handleToggleChange}
+      />
+    </Box>
+  );
+
+  const renderDownloadAssets = () => (
+    <Box
+      sx={{
+        flexShrink: 0,
+        alignSelf: "flex-start"
+      }}
+    >
+      <Button
+        variant="outlined"
+        startIcon={<DownloadIcon />}
+        onClick={handleDownload}
+        sx={{
+          whiteSpace: "nowrap",
+          textTransform: "none",
+          "& .MuiButton-startIcon": {
+            margin: { xs: 0, lg: "0 8px 0 -4px" }
+          },
+          minWidth: { xs: "40px", lg: "auto" },
+          width: { xs: "40px", lg: "auto" },
+          height: "40px",
+          padding: { xs: "8px", lg: "6px 16px" },
+          borderRadius: "8px",
+          "& .button-text": {
+            display: { xs: "none", lg: "inline" }
+          }
+        }}
+      >
+        <span className="button-text">{transasset("download")}</span>
+      </Button>
+    </Box>
+  );
+
   return (
     <>
       <ModuleHeader name={transasset("assets")} />
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          gap: 1,
-          px: 2,
-          mt: 2,
-          flexWrap: "nowrap"
-        }}
-      >
-        <Box
-          sx={{
-            flex: "1 1 auto",
-            maxWidth: "300px"
-          }}
-        >
-          {showInitialSkeleton ? (
-            <Skeleton variant="rectangular" sx={{ borderRadius: 1, width: "100%", height: 43 }} />
-          ) : (
-            <SearchBar
-              value={searchText}
-              onChange={(val) => updateFilter("searchText", val, setSearchText)}
-              placeholder={
-                view === transasset("selectedIssues")
-                  ? transasset("searchissues")
-                  : transasset("searchAsset")
-              }
-            />
-          )}
-        </Box>
-
-        <Box sx={{ flexShrink: 0 }}>
-          <Toggle options={toggleOptions} selected={labels[view]} onChange={handleToggleChange} />
-        </Box>
-      </Box>
       <Box
         sx={{
           display: "flex",
@@ -292,9 +307,8 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
           justifyContent: "space-between",
           flexWrap: "nowrap",
           gap: 2,
-          pr: 2,
-          overflowX: "auto",
-          mt: 1
+          mt: 2,
+          overflowX: "auto"
         }}
       >
         <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -327,6 +341,15 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
                 updateFilter("warrantyDateFrom", from, setWarrantyDateFrom);
                 updateFilter("warrantyDateTo", to, setWarrantyDateTo);
               }}
+              searchText={searchText}
+              onSearchTextChange={(val) => updateFilter("searchText", val, setSearchText)}
+              searchPlaceholder={
+                view === transasset("selectedIssues")
+                  ? transasset("searchissues")
+                  : transasset("searchAsset")
+              }
+              assetsToggle={renderAssetsToggle()}
+              downloadAssets={renderDownloadAssets()}
             />
           ) : (
             <AssetFilters
@@ -334,49 +357,36 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
               assignedToFilter={[]}
               allUsers={[]}
               onAssignedToChange={() => {}}
-              onClearFilters={() => setStatusFilter([])}
+              onClearFilters={() => {
+                setStatusFilter([]);
+                removeStorage(FILTERS_STORAGE_KEY_ISSUES);
+              }}
               trans={transasset}
               hideModelNameFilter
               hideAssignedToFilter
               allStatuses={issueStatuses}
               statusFilter={statusFilter}
               onStatusChange={(val) => updateFilter("statusFilter", val, setStatusFilter)}
-              loading={showInitialSkeleton}
+              loading={showIssueSkeleton}
+              searchText={searchText}
+              onSearchTextChange={(val) => updateFilter("searchText", val, setSearchText)}
+              searchPlaceholder={
+                view === transasset("selectedIssues")
+                  ? transasset("searchissues")
+                  : transasset("searchAsset")
+              }
+              assetsToggle={
+                <>
+                  <Toggle
+                    options={[transasset("assets"), transasset("issues")]}
+                    selected={labels[view]}
+                    onChange={handleToggleChange}
+                  />
+                </>
+              }
             />
           )}
         </Box>
-        {initialView === transasset("selectedAsset") && !showInitialSkeleton && (
-          <Box
-            sx={{
-              flexShrink: 0,
-              alignSelf: "flex-start",
-              mt: 1
-            }}
-          >
-            <Button
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              onClick={handleDownload}
-              sx={{
-                whiteSpace: "nowrap",
-                textTransform: "none",
-                "& .MuiButton-startIcon": {
-                  margin: { xs: 0, lg: "0 8px 0 -4px" }
-                },
-                minWidth: { xs: "40px", lg: "auto" },
-                width: { xs: "40px", lg: "auto" },
-                height: "40px",
-                padding: { xs: "8px", lg: "6px 16px" },
-                borderRadius: "8px",
-                "& .button-text": {
-                  display: { xs: "none", lg: "inline" }
-                }
-              }}
-            >
-              <span className="button-text">{transasset("download")}</span>
-            </Button>
-          </Box>
-        )}
       </Box>
       <Box
         sx={{

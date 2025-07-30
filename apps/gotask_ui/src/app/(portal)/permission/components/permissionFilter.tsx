@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { LOCALIZATION } from "@/app/common/constants/localization";
 import { PermissionFilterProps } from "../interface/interface";
 import FilterDropdown from "@/app/component/input/filterDropDown";
+import SkeletonLoader from "@/app/component/loader/skeletonLoader";
 
 const PermissionFilter: React.FC<PermissionFilterProps> = ({
   onUserChange,
@@ -24,22 +25,21 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
     <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={2}>
       <Box
         display="flex"
-        gap={{ xs: 0.5, sm: 1 }}
-        flexDirection={{ xs: "column", sm: "row" }}
-        alignItems={{ xs: "stretch", sm: "center" }}
-        sx={{ width: "100%" }}
+        flexGrow={1}
+        gap={1}
+        flexDirection="row"
+        sx={{
+          width: "100%",
+          maxWidth: "100%",
+          overflowX: "auto",
+          "&::-webkit-scrollbar": { display: "none" }
+        }}
       >
-        {/* Back + Search */}
+        {/* User Dropdown */}
         <Box display="flex" justifyContent={{ xs: "center", sm: "flex-start" }} flexGrow={1}>
-          <Box sx={{ width: { sm: "auto" } }}>
+          <Box sx={{ width: { sm: "auto", xs: "100%" } }}>
             {loading ? (
-              <Skeleton
-                variant="rectangular"
-                width={220}
-                height={42}
-                sx={{ borderRadius: 1 }}
-                animation="wave"
-              />
+              <SkeletonLoader count={2} />
             ) : (
               <FilterDropdown
                 label={transpermission("filteruser")}
@@ -55,18 +55,12 @@ const PermissionFilter: React.FC<PermissionFilterProps> = ({
         <Box
           display="flex"
           alignItems="center"
-          gap={{ xs: 1, sm: 2 }}
-          px={{ xs: 0, sm: 2 }}
-          py={{ xs: 1, sm: 1 }}
+          gap={2}
+          px={2}
           justifyContent={{ xs: "center", sm: "flex-start" }}
           flexWrap="wrap"
-          mt={{ xs: 1, sm: 0 }}
           sx={{
-            width: "100%",
-            "& .MuiFormControl-root": {
-              minWidth: { xs: "auto", sm: "120px" },
-              maxWidth: { xs: "100%", sm: "none" }
-            }
+            width: "100%"
           }}
         >
           {loading ? (

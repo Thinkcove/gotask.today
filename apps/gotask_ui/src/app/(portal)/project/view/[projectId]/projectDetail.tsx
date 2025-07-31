@@ -228,7 +228,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, mutate }) => {
           {/* Assignee List */}
           <Box
             sx={{
-              height: "calc(100vh - 360px)",
+              height: "calc(100vh - 380px)",
               overflowY: "auto",
               pr: 1,
               scrollBehavior: "smooth",

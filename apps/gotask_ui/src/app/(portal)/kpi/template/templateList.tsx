@@ -154,7 +154,9 @@ const TemplateList: React.FC<TemplateListProps> = ({ initialView = "template" })
       <Box
         sx={{
           flexGrow: 1,
+          height: "100vh",
           overflowY: "auto",
+          maxHeight: "calc(100vh - 200px)",
           p: 3,
           pt: 2,
           pb: 8

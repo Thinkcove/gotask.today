@@ -119,7 +119,8 @@ const CreateUser = () => {
         sx={{
           px: 2,
           pb: 2,
-          maxHeight: "calc(100vh - 150px)",
+          height: "100vh",
+          maxHeight: "calc(100vh - 200px)",
           overflowY: "auto"
         }}
       >

@@ -28,7 +28,7 @@ const StoriesPage = () => {
       <ModuleHeader name={cleanedName ? `${cleanedName} ${t("stories")}` : t("projectStories")} />
 
       {/* Story List */}
-      <Box sx={{ flex: 1, overflowY: "auto" }}>
+      <Box sx={{ flex: 1, overflowY: "auto", maxHeight: "calc(100vh - 100px)" }}>
         <StoryList onProjectNameLoad={setProjectName} />
       </Box>
     </Box>

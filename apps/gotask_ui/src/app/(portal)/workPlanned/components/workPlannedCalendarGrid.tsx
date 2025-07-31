@@ -782,7 +782,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                     <TableCell
                       sx={{
                         padding: "12px",
-                        textAlign: "left",
+                        textAlign: "center",
                         border: "1px solid #eee",
                         fontWeight: "bold"
                       }}

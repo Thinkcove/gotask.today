@@ -42,8 +42,6 @@ export const MATCHES_HOURS_MINUTES = /^0d0h(?:0m)?$/;
 
 export const DAY = /[dhm]/;
 
-
-
 // Strip HTML tags and trim whitespace
 export const stripHtmlAndTrim = (html: string = ""): string => {
   return html.replace(/<[^>]*>/g, "").trim();

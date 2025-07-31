@@ -341,7 +341,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             type="select"
             options={Object.values(TASK_MODE).map((s) => s.toUpperCase())}
             placeholder={transtask("placeholdertaskmode")}
-            value={formData.task_mode.toUpperCase()}
+            value={formData.task_mode?.toUpperCase()}
             onChange={(value) => handleInputChange("task_mode", String(value).toLowerCase())}
             disabled={isReadOnly("task_mode")}
           />

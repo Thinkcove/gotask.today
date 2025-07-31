@@ -73,6 +73,7 @@ export const TASK_STATUS = {
   IN_PROGRESS: "in-progress",
   NEED_INFO: "need-info",
   HOLD: "hold",
+  READY_FOR_TESTING: "ready for testing",
   COMPLETED: "completed"
 };
 

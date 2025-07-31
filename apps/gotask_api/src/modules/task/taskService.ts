@@ -30,8 +30,6 @@ const createTask = async (
 
     // story_id is optional — no need to validate here
     const newTask = await createNewTask(taskData);
-    console.log("New Task Created:", newTask);
-
     return {
       success: true,
       data: newTask

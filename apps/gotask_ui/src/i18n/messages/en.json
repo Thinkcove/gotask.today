@@ -449,7 +449,7 @@
     "storiestitle": "Story Title",
     "placeholdertaskmode": "Select Task Mode",
     "taskmode": "Task Mode",
-    "taskmoderequired": "Severity is required",
+    "taskmoderequired": "TaskMode is required",
 
     "Project": {
       "meta": {

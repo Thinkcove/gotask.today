@@ -1009,6 +1009,8 @@
     "leave": "LEAVE",
     "permission": "PERMISSION",
     "actualtime": "Actual Time Spent",
+    "actualstartdate": "Actual Start Date",
+    "actualenddate": "Actual End Date",
     "meta": {
       "title": "Work Planned | GoTaskToday",
       "description": "Schedule and monitor planned work activities and milestones."

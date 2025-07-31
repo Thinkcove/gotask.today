@@ -135,7 +135,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   };
 
   // Filter data by date range AND project filter BEFORE grouping
-  const filteredData = data.filter(task => {
+  const filteredData = data.filter((task) => {
     const isInDateRange = isTaskInDateRange(task);
 
     // If no projects selected, only filter by date
@@ -151,13 +151,13 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   const getUsersWithSelectedProjects = (): string[] => {
     if (selectedProjects.length === 0) {
       // If no projects selected, return all users from filtered data
-      return [...new Set(filteredData.map(task => task.user_id))];
+      return [...new Set(filteredData.map((task) => task.user_id))];
     }
 
     // Get users who have tasks in the selected projects within date range
     const usersWithProjects = filteredData
-      .filter(task => task.project_id && selectedProjects.includes(task.project_id))
-      .map(task => task.user_id);
+      .filter((task) => task.project_id && selectedProjects.includes(task.project_id))
+      .map((task) => task.user_id);
 
     return [...new Set(usersWithProjects)];
   };
@@ -276,7 +276,14 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
   return (
     <Box>
-      <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          maxHeight: { xs: "calc(68vh - 220px)", md: "calc(100vh - 100px)" },
+          overflowY: "auto",
+          overflowX: "auto"
+        }}
+      >
         <Table stickyHeader size="small" sx={{ minWidth: 750 }}>
           <TableHead>
             <TableRow>
@@ -719,7 +726,6 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                     >
                       {task ? formatEstimation(task.time_spent_total) : "-"}
                     </TableCell>
-
                   </TableRow>
                 );
               });

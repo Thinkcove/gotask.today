@@ -420,7 +420,11 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
       )}
       <TableContainer
         component={Paper}
-        sx={{ maxHeight: "calc(100vh - 100px)", overflowY: "auto" }}
+        sx={{
+          maxHeight: { xs: "calc(68vh - 300px)", md: "calc(100vh - 150px)" },
+          overflowY: "auto",
+          overflowX: "auto"
+        }}
       >
         <Table stickyHeader size="small" sx={{ minWidth: 1200 }}>
           <TableHead>

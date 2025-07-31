@@ -13,3 +13,5 @@ export const buildContainsRegex = (text: string): RegExp => {
   const escaped = text.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
   return new RegExp(escaped, "i");
 };
+
+export const TEXT_ONLY_REGEX = /^[a-zA-Z\s]+$/;

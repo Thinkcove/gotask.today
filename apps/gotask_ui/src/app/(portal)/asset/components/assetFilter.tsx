@@ -1,9 +1,10 @@
 import React from "react";
-import { Box, Link, Skeleton } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import FilterDropdown from "@/app/component/input/filterDropDown";
 import DateDropdown from "@/app/component/input/dateDropdown";
 import SearchBar from "@/app/component/searchBar/searchBar";
 import { ALLOCATION, NOT_UTILIZED, OVERUTILIZED, systemTypeOptions } from "../assetConstants";
+import SkeletonLoader from "@/app/component/loader/skeletonLoader";
 
 interface Props {
   modelNameFilter: string[];
@@ -101,7 +102,7 @@ const AssetFilters: React.FC<Props> = ({
             }}
           >
             {loading ? (
-              <Skeleton variant="rectangular" height={43} width="100%" sx={{ borderRadius: 1 }} />
+              <SkeletonLoader count={1} />
             ) : (
               <SearchBar
                 value={searchText || ""}
@@ -140,16 +141,7 @@ const AssetFilters: React.FC<Props> = ({
           }}
         >
           {loading ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                variant="rectangular"
-                width={220}
-                height={42}
-                sx={{ borderRadius: 1 }}
-                animation="wave"
-              />
-            ))
+            <SkeletonLoader count={5} />
           ) : (
             <>
               {allAssetTypes && onAssetTypeChange && (

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { Box, Typography, Grid, IconButton, Divider, CircularProgress } from "@mui/material";
 import { ArrowBack, Edit } from "@mui/icons-material";
 import { useTranslations } from "next-intl";
@@ -32,9 +32,9 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
   const router = useRouter();
   const { canAccess } = useUserPermission();
 
-  const handleBack = useCallback(() => {
-    router.push("/task/projects?refresh=true");
-  }, [router]);
+  const handleBack = () => {
+    router.back();
+  };
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -119,22 +119,24 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, loading = false, 
           </Grid>
 
           {/* Progress Bar Centered between Title and Description */}
-          {task.status !== "to-do" && (
-            <Box mb={3} display="flex" justifyContent="center" width="100%">
-              <Box maxWidth={600} width="100%">
-                <TimeProgressBar
-                  estimatedTime={task.estimated_time || "0h0m"}
-                  timeSpentTotal={task.time_spent_total || "0h0m"}
-                  dueDate={task.user_estimated || "0d0h0m"}
-                  startDate={task.start_date || ""}
-                  timeEntries={task.time_spent || []}
-                  canLogTime={!alreadyExists}
-                  variation={task.variation ? String(task.variation) : "0d0h0m"}
-                  onClick={handleProgressClick}
-                />
+          {task.status !== "to-do" &&
+            task.estimated_time !== "0d0h0m" &&
+            task.estimated_time !== "0h0m" && (
+              <Box mb={3} display="flex" justifyContent="center" width="100%">
+                <Box maxWidth={600} width="100%">
+                  <TimeProgressBar
+                    estimatedTime={task.estimated_time || "0h0m"}
+                    timeSpentTotal={task.time_spent_total || "0h0m"}
+                    dueDate={task.user_estimated || "0d0h0m"}
+                    startDate={task.start_date || ""}
+                    timeEntries={task.time_spent || []}
+                    canLogTime={!alreadyExists}
+                    variation={task.variation ? String(task.variation) : "0d0h0m"}
+                    onClick={handleProgressClick}
+                  />
+                </Box>
               </Box>
-            </Box>
-          )}
+            )}
 
           {/* Content */}
           <Box sx={{ flex: 1, overflowY: "auto" }}>

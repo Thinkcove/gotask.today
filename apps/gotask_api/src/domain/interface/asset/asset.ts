@@ -138,10 +138,15 @@ const getAllAssets = async (
   }
 
   const total = await Asset.countDocuments(query);
-  let findQuery = Asset.find(query).sort({ createdAt: -1 });
+  let findQuery = Asset.find(query);
+
+  if (!skip && !limit) {
+    findQuery = findQuery.sort({ createdAt: -1 });
+  }
 
   if (typeof skip === "number" && typeof limit === "number") {
     findQuery = findQuery.skip(skip).limit(limit);
+    findQuery = findQuery.sort({ createdAt: -1 });
   }
 
   const assets = await findQuery;

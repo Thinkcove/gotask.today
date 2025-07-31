@@ -797,7 +797,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           </Box>
                         </>
                       ) : (
-                        ""
+                        "-"
                       )}
                     </TableCell>
                   </TableRow>

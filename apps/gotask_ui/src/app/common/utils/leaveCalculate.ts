@@ -1,20 +1,18 @@
 import { TimeLogEntry } from "@/app/(portal)/report/interface/timeLog";
 import {
   DAY,
-  DAY_MATCHES,
-  DAYS,
-  ESTIMATION_FORMAT,
-  HOURS,
-  HOURS_MATCHES,
+  DAY_PATTERN,
+  HOUR_PATTERN,
   ISO_DATE_REGEX,
   MATCHES_HOURS_MINUTES,
-  MINUTES,
+  MINUTE_PATTERN,
   TIME_PERIOD
 } from "../constants/regex";
 import { formatTimeValue } from "./taskTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { format, parseISO, isValid } from "date-fns";
-import { green, purple, red } from "../constants/leave";
+import { completed, completedequaly, overdue } from "../constants/leave";
+import { TASK_HOURS } from "../constants/task";
 
 export const normalizeDate = (dateString: string): Date => {
   const date = new Date(dateString);
@@ -68,9 +66,9 @@ export const formatPermissionDuration = (startTime: string, endTime: string): st
   return `${hours} hour${hours === 1 ? "" : "s"}`;
 };
 const parseTimeStringToMinutes = (timeStr: string): number => {
-  const days = DAYS.exec(timeStr)?.[1] ?? "0";
-  const hours = HOURS.exec(timeStr)?.[1] ?? "0";
-  const minutes = MINUTES.exec(timeStr)?.[1] ?? "0";
+  const days = DAY_PATTERN.exec(timeStr)?.[1] ?? "0";
+  const hours = HOUR_PATTERN.exec(timeStr)?.[1] ?? "0";
+  const minutes = MINUTE_PATTERN.exec(timeStr)?.[1] ?? "0";
 
   return parseInt(days, 10) * 24 * 60 + parseInt(hours, 10) * 60 + parseInt(minutes, 10);
 };
@@ -105,9 +103,9 @@ export const getTimeSpentColor = (
 
   if (isNaN(spentValue) || isNaN(estimatedValue)) return "black";
 
-  if (spentValue > estimatedValue) return red;
-  if (spentValue === estimatedValue) return green;
-  if (spentValue < estimatedValue) return purple;
+  if (spentValue > estimatedValue) return overdue;
+  if (spentValue === estimatedValue) return completed;
+  if (spentValue < estimatedValue) return completedequaly;
 
   return "#8715deff"; // Fallback
 };
@@ -153,14 +151,14 @@ export const getEstimationValue = (estimation: string | number | null | undefine
     return estimation;
   }
 
-  const dayMatch = estimation.match(DAY_MATCHES);
-  const hourMatch = estimation.match(HOURS_MATCHES);
+  const dayMatch = estimation.match(DAY_PATTERN);
+  const hourMatch = estimation.match(HOUR_PATTERN);
 
   const days = dayMatch ? parseInt(dayMatch[1]) : 0;
   const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
 
   // Assuming 1 day = 8 working hours
-  return days * 8 + hours;
+  return days * TASK_HOURS + hours;
 };
 
 export const isSameDate = (date1: string, date2: string): boolean => {

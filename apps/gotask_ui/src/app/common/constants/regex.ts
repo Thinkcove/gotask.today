@@ -38,19 +38,11 @@ export const DATETIME_ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 
 export const NON_DIGIT = /[^0-9]/g;
 
-export const DAYS = /(\d+)d/;
-
-export const HOURS = /(\d+)h/;
-
-export const MINUTES = /(\d+)m/;
-
 export const MATCHES_HOURS_MINUTES = /^0d0h(?:0m)?$/;
 
 export const DAY = /[dhm]/;
 
-export const DAY_MATCHES = /(\d+)d/;
 
-export const HOURS_MATCHES = /(\d+)h/;
 
 // Strip HTML tags and trim whitespace
 export const stripHtmlAndTrim = (html: string = ""): string => {

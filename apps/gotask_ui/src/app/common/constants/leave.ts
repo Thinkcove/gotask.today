@@ -11,6 +11,6 @@ export enum LEAVE_TYPE {
   PERSONAL = "Personal"
 }
 
-export const red = "#dd1428ff";
-export const green = "#20bf25ff";
-export const purple = "#8d6eb6ff";
+export const overdue = "#dd1428ff";
+export const completed = "#20bf25ff";
+export const completedequaly = "#8d6eb6ff";

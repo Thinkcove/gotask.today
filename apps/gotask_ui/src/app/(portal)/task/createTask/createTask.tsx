@@ -1,4 +1,4 @@
-import React, { useState, useCallback, startTransition } from "react";
+import React, { useState, useCallback } from "react";
 import { Box } from "@mui/material";
 import { createTask } from "../service/taskAction";
 import { TASK_SEVERITY, TASK_STATUS } from "@/app/common/constants/task";
@@ -30,6 +30,7 @@ const CreateTask: React.FC = () => {
     description: "",
     status: TASK_STATUS.TO_DO,
     severity: TASK_SEVERITY.LOW,
+    task_mode: "",
     user_id: "",
     project_id: projectId || "",
     created_on: moment().format("YYYY-MM-DD"),

@@ -447,6 +447,9 @@
     "labelprojectstories": "Project Stories",
     "placeholderprojectstories": "Select Project Stories",
     "storiestitle": "Story Title",
+    "placeholdertaskmode": "Select Task Mode",
+    "taskmode": "Task Mode",
+    "taskmoderequired": "TaskMode is required",
 
     "Project": {
       "meta": {

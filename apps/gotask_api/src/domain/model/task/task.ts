@@ -55,8 +55,7 @@ const TaskSchema = new Schema<ITask>(
     },
     task_mode: {
       type: String,
-      enum: Object.values(TASK_MODE),
-      required: true
+      enum: Object.values(TASK_MODE)
     },
     user_id: { type: String, required: true },
     user_name: { type: String },

@@ -219,7 +219,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
   };
 
   const renderStatusField = () => (
-    <Grid item xs={12} sm={6}>
+    <Grid item xs={12} sm={4}>
       <FormField
         label={transtask("labelstatus")}
         type="select"
@@ -323,7 +323,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
         </Grid>
         {renderStatusField()}
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <FormField
             label={transtask("labelseverity")}
             type="select"
@@ -335,12 +335,12 @@ const TaskInput: React.FC<TaskInputProps> = ({
             disabled={isReadOnly("severity")}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <FormField
-            label={transtask("labelseverity")}
+            label={transtask("taskmode")}
             type="select"
             options={Object.values(TASK_MODE).map((s) => s.toUpperCase())}
-            placeholder={transtask("placeholderseverity")}
+            placeholder={transtask("placeholdertaskmode")}
             value={formData.task_mode.toUpperCase()}
             onChange={(value) => handleInputChange("task_mode", String(value).toLowerCase())}
             error={errors.task_mode}

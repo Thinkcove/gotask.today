@@ -1,8 +1,20 @@
 import { TimeLogEntry } from "@/app/(portal)/report/interface/timeLog";
-import { ESTIMATION_FORMAT, ISO_DATE_REGEX, TIME_PERIOD } from "../constants/regex";
+import {
+  DAY,
+  DAY_MATCHES,
+  DAYS,
+  ESTIMATION_FORMAT,
+  HOURS,
+  HOURS_MATCHES,
+  ISO_DATE_REGEX,
+  MATCHES_HOURS_MINUTES,
+  MINUTES,
+  TIME_PERIOD
+} from "../constants/regex";
 import { formatTimeValue } from "./taskTime";
 import DateFormats from "@/app/component/dateTime/dateFormat";
 import { format, parseISO, isValid } from "date-fns";
+import { green, purple, red } from "../constants/leave";
 
 export const normalizeDate = (dateString: string): Date => {
   const date = new Date(dateString);
@@ -56,9 +68,9 @@ export const formatPermissionDuration = (startTime: string, endTime: string): st
   return `${hours} hour${hours === 1 ? "" : "s"}`;
 };
 const parseTimeStringToMinutes = (timeStr: string): number => {
-  const days = /(\d+)d/.exec(timeStr)?.[1] ?? "0";
-  const hours = /(\d+)h/.exec(timeStr)?.[1] ?? "0";
-  const minutes = /(\d+)m/.exec(timeStr)?.[1] ?? "0";
+  const days = DAYS.exec(timeStr)?.[1] ?? "0";
+  const hours = HOURS.exec(timeStr)?.[1] ?? "0";
+  const minutes = MINUTES.exec(timeStr)?.[1] ?? "0";
 
   return parseInt(days, 10) * 24 * 60 + parseInt(hours, 10) * 60 + parseInt(minutes, 10);
 };
@@ -69,7 +81,7 @@ export const getTimeSpentColor = (
 ): string => {
   const isZeroTimeString = (val: string | number | null | undefined): boolean => {
     if (typeof val !== "string") return false;
-    return /^0d0h(?:0m)?$/.test(val); // matches "0d0h" or "0d0h0m"
+    return MATCHES_HOURS_MINUTES.test(val); // matches "0d0h" or "0d0h0m"
   };
 
   if (spent === null || spent === undefined || isZeroTimeString(spent)) {
@@ -81,7 +93,7 @@ export const getTimeSpentColor = (
     if (typeof val === "number") return val;
     const str = val.toString();
     // If string contains time format (like "1d6h0m"), parse it
-    if (/[dhm]/.test(str)) {
+    if (DAY.test(str)) {
       return parseTimeStringToMinutes(str);
     }
     // Otherwise try float
@@ -93,9 +105,9 @@ export const getTimeSpentColor = (
 
   if (isNaN(spentValue) || isNaN(estimatedValue)) return "black";
 
-  if (spentValue > estimatedValue) return "#dd1428ff"; 
-  if (spentValue === estimatedValue) return "#20bf25ff"; 
-  if (spentValue < estimatedValue) return "#8d6eb6ff"; 
+  if (spentValue > estimatedValue) return red;
+  if (spentValue === estimatedValue) return green;
+  if (spentValue < estimatedValue) return purple;
 
   return "#8715deff"; // Fallback
 };
@@ -141,8 +153,8 @@ export const getEstimationValue = (estimation: string | number | null | undefine
     return estimation;
   }
 
-  const dayMatch = estimation.match(/(\d+)d/);
-  const hourMatch = estimation.match(/(\d+)h/);
+  const dayMatch = estimation.match(DAY_MATCHES);
+  const hourMatch = estimation.match(HOURS_MATCHES);
 
   const days = dayMatch ? parseInt(dayMatch[1]) : 0;
   const hours = hourMatch ? parseInt(hourMatch[1]) : 0;

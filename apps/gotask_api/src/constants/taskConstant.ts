@@ -13,6 +13,14 @@ export const TASK_SEVERITY = {
   CRITICAL: "critical"
 };
 
+export const TASK_MODE = {
+  DEV: "dev",
+  QA: "qa",
+  UTC: "utc",
+  ISSUE: "issue",
+  DESIGN: "design"
+};
+
 export enum SortField {
   DUE_DATE = "due_date",
   USER_NAME = "user_name",

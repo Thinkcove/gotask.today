@@ -30,6 +30,7 @@ const createTask = async (
 
     // story_id is optional — no need to validate here
     const newTask = await createNewTask(taskData);
+    console.log("New Task Created:", newTask);
 
     return {
       success: true,
@@ -59,6 +60,7 @@ const getAllTasks = async (): Promise<{
         description: 1,
         status: 1,
         severity: 1,
+        task_mode: 1,
         user_id: 1,
         user_name: 1,
         project_id: 1,

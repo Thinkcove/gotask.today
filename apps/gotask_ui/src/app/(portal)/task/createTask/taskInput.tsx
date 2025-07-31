@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Grid, Typography } from "@mui/material";
 import FormField from "../../../component/input/formField";
-import { TASK_HOURS, TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
+import { TASK_HOURS, TASK_MODE, TASK_SEVERITY, TASK_WORKFLOW } from "../../../common/constants/task";
 import {
   useAllProjects,
   useAllUsers,
@@ -333,6 +333,18 @@ const TaskInput: React.FC<TaskInputProps> = ({
             onChange={(value) => handleInputChange("severity", String(value).toLowerCase())}
             error={errors.severity}
             disabled={isReadOnly("severity")}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormField
+            label={transtask("labelseverity")}
+            type="select"
+            options={Object.values(TASK_MODE).map((s) => s.toUpperCase())}
+            placeholder={transtask("placeholderseverity")}
+            value={formData.task_mode.toUpperCase()}
+            onChange={(value) => handleInputChange("task_mode", String(value).toLowerCase())}
+            error={errors.task_mode}
+            disabled={isReadOnly("task_mode")}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>

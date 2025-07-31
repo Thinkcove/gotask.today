@@ -33,6 +33,7 @@ const createNewTask = async (taskData: Partial<ITask>): Promise<ITask> => {
     project_name: project.name,
     estimated_time: taskData.estimated_time || "0d0h0m"
   });
+
   return await newTask.save();
 };
 

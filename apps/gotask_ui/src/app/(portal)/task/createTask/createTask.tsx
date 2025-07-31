@@ -30,6 +30,7 @@ const CreateTask: React.FC = () => {
     description: "",
     status: TASK_STATUS.TO_DO,
     severity: TASK_SEVERITY.LOW,
+    task_mode: "",
     user_id: "",
     project_id: projectId || "",
     created_on: moment().format("YYYY-MM-DD"),
@@ -58,6 +59,7 @@ const CreateTask: React.FC = () => {
     if (!formData.project_id) newErrors.project_id = transtask("projectname");
     if (!formData.status) newErrors.status = transtask("status");
     if (!formData.severity) newErrors.severity = transtask("severity");
+    if (!formData.task_mode) newErrors.severity = transtask("severity");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

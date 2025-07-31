@@ -90,6 +90,13 @@ export const TASK_SEVERITY = {
   HIGH: "high",
   CRITICAL: "critical"
 };
+export const TASK_MODE = {
+  DEV: "dev",
+  QA: "qa",
+  UTC: "utc",
+  ISSUE: "issue",
+  DESIGN: "design"
+};
 
 export const getVariationColor = (variation: string) => {
   if (!variation) return "#grey"; // default to zero

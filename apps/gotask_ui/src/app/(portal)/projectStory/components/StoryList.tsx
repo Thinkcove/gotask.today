@@ -173,7 +173,7 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
       ) : (
         <>
           {/* Fixed Filters */}
-          <Box sx={{ flexShrink: 0, py: 2 }}>
+          <Box sx={{ flexShrink: 0, py: 2, mb: 1 }}>
             <StoryFilters
               status={status}
               startDate={startDate}

@@ -1,7 +1,19 @@
-import { timeStatusItems } from "@/app/common/constants/actualTime";
 import { Box, Typography } from "@mui/material";
+import React from "react";
+import { timeStatusItems as defaultTimeStatusItems } from "@/app/common/constants/actualTime";
 
-export const TimeSpentStatus: React.FC = () => {
+interface TimeStatusItem {
+  color: string;
+  label: string;
+}
+
+interface TimeSpentStatusProps {
+  items?: TimeStatusItem[];
+}
+
+export const TimeSpentStatus: React.FC<TimeSpentStatusProps> = ({
+  items = defaultTimeStatusItems
+}) => {
   return (
     <Box
       sx={{
@@ -12,7 +24,7 @@ export const TimeSpentStatus: React.FC = () => {
         flexWrap: "wrap"
       }}
     >
-      {timeStatusItems.map((item, index) => (
+      {items.map((item, index) => (
         <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 1, lineHeight: 1 }}>
           <Box
             sx={{
@@ -21,7 +33,7 @@ export const TimeSpentStatus: React.FC = () => {
               borderRadius: "50%",
               backgroundColor: item.color,
               flexShrink: 0,
-              transform: "translateY(-1px)" // <-- Key fix here
+              transform: "translateY(-1px)"
             }}
           />
           <Typography

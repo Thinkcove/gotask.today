@@ -40,6 +40,8 @@ import { fetchAllPermissions } from "../services/reportService";
 import { getDailyLogCellStyle } from "./logStyle";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
+import { TimeSpentStatus } from "../../workPlanned/components/timeSpentStatus";
+import { hourStatusItems } from "@/app/common/constants/actualTime";
 
 const headerCellStyle = {
   position: "sticky" as const,
@@ -418,6 +420,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           {transreport("showproject")}: {singleProjectName}
         </div>
       )}
+      <TimeSpentStatus items={hourStatusItems} />
       <TableContainer
         component={Paper}
         sx={{

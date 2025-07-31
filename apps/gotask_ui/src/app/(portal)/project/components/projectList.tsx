@@ -20,7 +20,8 @@ const ProjectList = () => {
   const { canAccess } = useUserPermission();
   const transproject = useTranslations(LOCALIZATION.TRANSITION.PROJECTS);
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: projects } = useSWR("fetch-projects", fetcher);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const { data: projects, isLoading } = useSWR("fetch-projects", fetcher);
   const router = useRouter();
   const FILTER_STORAGE_KEY = "projectFilters";
   const storedFilters = getStoredObj(FILTER_STORAGE_KEY) || {};
@@ -50,6 +51,12 @@ const ProjectList = () => {
       return nameMatches && statusMatches && userMatches;
     });
   }
+
+  const showInitialFilterLoader = isLoading && !hasLoadedOnce;
+  if (!isLoading && !hasLoadedOnce) {
+    setHasLoadedOnce(true);
+  }
+
   const updateFilter = (
     key: "statusFilter" | "userFilter",
     value: string[],
@@ -81,6 +88,7 @@ const ProjectList = () => {
       <Box mb={3}>
         <Stack direction="row" spacing={2} alignItems="flex-start" flexWrap="wrap" flexGrow={1}>
           <ProjectFilters
+            isLoading={showInitialFilterLoader}
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             statusFilter={statusFilter}
@@ -94,7 +102,8 @@ const ProjectList = () => {
           />
         </Stack>
       </Box>
-      <ProjectCards projects={filteredProjects} />
+      <ProjectCards projects={filteredProjects} loading={isLoading} />
+
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
       {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (
         <ActionButton

@@ -198,7 +198,7 @@ export const AssetList: React.FC<AssetListProps> = ({ initialView = "assets" }) 
     deviceName: asset.deviceName || asset.accessCardNo || "-",
     modelName: asset.modelName || asset.accessCardNo2 || "-",
     warrantyDate: asset.warrantyDate ? new Date(asset.warrantyDate).toLocaleDateString() : "-",
-    purchaseDate: asset.dateOfPurchase
+    dateOfPurchase: asset.dateOfPurchase
       ? new Date(asset.dateOfPurchase).toLocaleDateString()
       : asset.issuedOn
         ? new Date(asset.issuedOn).toLocaleDateString()

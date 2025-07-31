@@ -15,7 +15,7 @@ export interface IAssetDisplayRow {
   assetType: string;
   deviceName: string;
   modelName: string;
-  purchaseDate: string;
+  dateOfPurchase: string;
   user: string;
   encrypted?: boolean;
   warrantyDate?: string;
@@ -101,7 +101,7 @@ export const getAssetColumns = (
     }
   },
   {
-    id: "purchaseDate",
+    id: "dateOfPurchase",
     label: transasset("acquisitiondate"),
     render: (value: string | boolean | undefined) =>
       typeof value === "string" && !isNaN(Date.parse(value)) ? (

@@ -57,11 +57,11 @@ export const getSeverityColor = (severity: string) => {
 
 export const getLogIndicatorColor = (hours: number): string => {
   switch (true) {
-    case hours > 8:
+    case hours > TASK_HOURS:
       return "#FF4C4C";
-    case hours < 8:
+    case hours < TASK_HOURS:
       return "#8d6eb6ff";
-    case hours === 8:
+    case hours === TASK_HOURS:
       return "#4CAF50";
     default:
       return "#000000";

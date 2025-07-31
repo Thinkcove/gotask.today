@@ -52,7 +52,9 @@ const getWorkPlannedService = async (
     status: 1,
     task_id: "$id",
     task_title: "$title",
-    time_spent_total: 1
+    time_spent_total: 1,
+    actual_start_date: 1, 
+    actual_end_date: 1
   };
 
   if (selectedProjects && selectedProjects.length > 0) {
@@ -82,7 +84,9 @@ const getWorkPlannedService = async (
     $group: {
       _id: groupId,
       user_estimated: { $first: "$user_estimated" }, // Keep user_estimated for each task
-      time_spent_total: { $first: "$time_spent_total" }
+      time_spent_total: { $first: "$time_spent_total" },
+      actual_start_date: { $first: "$actual_start_date" }, 
+      actual_end_date: { $first: "$actual_end_date" }
     }
   });
 
@@ -97,7 +101,9 @@ const getWorkPlannedService = async (
     status: "$_id.status",
     task_id: "$_id.task_id",
     task_title: "$_id.task_title",
-    time_spent_total: 1
+    time_spent_total: 1,
+    actual_start_date: 1, 
+    actual_end_date: 1
   };
 
   if (selectedProjects && selectedProjects.length > 0) {

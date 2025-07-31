@@ -35,13 +35,14 @@ import {
   formatPermissionDuration,
   formatText,
   getEstimationValue,
-  getTimeSpentColor,
   isSameDate,
   normalizeDate
 } from "@/app/common/utils/leaveCalculate";
-import { getLeaveColor, getPermissionColor } from "@/app/common/constants/leave";
+import { getLeaveColor } from "@/app/common/constants/leave";
 import EmptyState from "@/app/component/emptyState/emptyState";
 import NoSearchResultsImage from "../../../../../public/assets/placeholderImages/nofilterdata.svg";
+import { TimeSpentStatus } from "./timeSpentStatus";
+import { TimeSpentIndicator } from "./timeSpentIndicator";
 
 const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
   data,
@@ -276,6 +277,8 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
   return (
     <Box>
+      {/* Legend for time spent indicators */}
+      <TimeSpentStatus />
       <TableContainer
         component={Paper}
         sx={{
@@ -363,7 +366,38 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                   zIndex: 2
                 }}
               >
+                {transworkplanned("actualstartdate")}
+              </TableCell>
+              <TableCell
+                rowSpan={2}
+                sx={{
+                  padding: "12px",
+                  textAlign: "center",
+                  backgroundColor: "#f5f5f5",
+                  minWidth: 90,
+                  position: "sticky",
+                  verticalAlign: "middle",
+                  top: 0,
+                  zIndex: 2
+                }}
+              >
                 {transworkplanned("enddate")}
+              </TableCell>
+
+              <TableCell
+                rowSpan={2}
+                sx={{
+                  padding: "12px",
+                  textAlign: "center",
+                  backgroundColor: "#f5f5f5",
+                  minWidth: 90,
+                  position: "sticky",
+                  verticalAlign: "middle",
+                  top: 0,
+                  zIndex: 2
+                }}
+              >
+                {transworkplanned("actualenddate")}
               </TableCell>
               <TableCell
                 rowSpan={2}
@@ -453,7 +487,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
 
               const totalRows = Math.max(allItems.length, 1);
 
-              return Array.from({ length: totalRows }, (_, index) => {
+              return Array.from({ length: totalRows }, (_, index: number) => {
                 const item = allItems[index];
                 const isFirstRow = index === 0;
                 const isLeave = item && "isLeave" in item && item.isLeave;
@@ -588,7 +622,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                               <Typography
                                 sx={{
                                   fontWeight: 400,
-                                  color: getPermissionColor(),
+                                  color: getLeaveColor(),
                                   textTransform: "none"
                                 }}
                               >
@@ -601,7 +635,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                                   variant="subtitle1"
                                   sx={{
                                     fontWeight: 500,
-                                    color: getPermissionColor()
+                                    color: getLeaveColor()
                                   }}
                                 >
                                   {`${formatPermissionDuration(perm.start_time, perm.end_time)}`}
@@ -636,7 +670,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                           <Typography
                             sx={{
                               fontWeight: 400,
-                              color: getPermissionColor(),
+                              color: getLeaveColor(),
                               textTransform: "none"
                             }}
                           >
@@ -647,7 +681,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                             variant="subtitle1"
                             sx={{
                               fontWeight: 500,
-                              color: getPermissionColor()
+                              color: getLeaveColor()
                             }}
                           >
                             {`${formatPermissionDuration(permission.start_time, permission.end_time)}`}
@@ -678,7 +712,24 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                         "-"
                       )}
                     </TableCell>
-
+                    <TableCell
+                      sx={{
+                        padding: "12px",
+                        textAlign: "center",
+                        border: "1px solid #eee",
+                        fontFamily: "monospace",
+                        fontSize: "0.875rem"
+                      }}
+                    >
+                      {task && task.actual_start_date ? (
+                        <FormattedDateTime
+                          date={task.actual_start_date}
+                          format={DateFormats.DATE_ONLY}
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
                     {/* End Date - Show task date, leave to_date, or permission date */}
                     <TableCell
                       sx={{
@@ -699,7 +750,24 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                         "-"
                       )}
                     </TableCell>
-
+                    <TableCell
+                      sx={{
+                        padding: "12px",
+                        textAlign: "center",
+                        border: "1px solid #eee",
+                        fontFamily: "monospace",
+                        fontSize: "0.875rem"
+                      }}
+                    >
+                      {task && task.actual_end_date ? (
+                        <FormattedDateTime
+                          date={task.actual_end_date}
+                          format={DateFormats.DATE_ONLY}
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
                     {/* Task Estimation - Only show for tasks, not leaves or permissions */}
                     <TableCell
                       sx={{
@@ -713,18 +781,28 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
                     >
                       {task ? formatEstimation(task.user_estimated) : "-"}
                     </TableCell>
+
+                    {/* Actual Time with Color Indicator */}
                     <TableCell
                       sx={{
                         padding: "12px",
-                        textAlign: "center",
+                        textAlign: "left",
                         border: "1px solid #eee",
-                        fontWeight: "bold",
-                        color: task
-                          ? getTimeSpentColor(task.time_spent_total, task.user_estimated)
-                          : "black"
+                        fontWeight: "bold"
                       }}
                     >
-                      {task ? formatEstimation(task.time_spent_total) : "-"}
+                      {task ? (
+                        <>
+                          <Box sx={{ textAlign: "left", p: 2 }}>
+                            <TimeSpentIndicator
+                              spent={task.time_spent_total}
+                              estimated={task.user_estimated}
+                            />
+                          </Box>
+                        </>
+                      ) : (
+                        ""
+                      )}
                     </TableCell>
                   </TableRow>
                 );

@@ -34,11 +34,18 @@ const createTask = async (
     const qaTaskId = uuidv4();
     const utcTaskId = uuidv4();
 
+    // Helper: prefix title with mode
+    const getPrefixedTitle = (mode?: string) => {
+      if (!mode) return taskData.title!;
+      return `[${mode}] - ${taskData.title}`;
+    };
+
     // Task 1: Main task with linked_ids pointing to QA and UTC tasks
     const mainTask = {
       ...taskData,
       id: mainTaskId,
-      linked_ids: [qaTaskId, utcTaskId] // Link to QA and UTC tasks
+      title: getPrefixedTitle(TASK_MODE.DEV),
+      linked_ids: [qaTaskId, utcTaskId]
     };
 
     // Task 2: QA task with linked_ids pointing to main task
@@ -46,7 +53,8 @@ const createTask = async (
       ...taskData,
       id: qaTaskId,
       task_mode: TASK_MODE.QA,
-      linked_ids: [mainTaskId] // Link back to main task
+      title: getPrefixedTitle(TASK_MODE.QA),
+      linked_ids: [mainTaskId]
     };
 
     // Task 3: UTC task with linked_ids pointing to main task
@@ -54,7 +62,8 @@ const createTask = async (
       ...taskData,
       id: utcTaskId,
       task_mode: TASK_MODE.UTC,
-      linked_ids: [mainTaskId] // Link back to main task
+      title: getPrefixedTitle(TASK_MODE.UTC),
+      linked_ids: [mainTaskId]
     };
 
     // Create all tasks

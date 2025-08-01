@@ -235,7 +235,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               </Grid>
 
               {/* Organization */}
-              <Grid container spacing={2}>
+              <Grid container spacing={2} mt={1}>
                 <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle2" color="text.secondary" mb={1}>
                     {transuser("organization")}

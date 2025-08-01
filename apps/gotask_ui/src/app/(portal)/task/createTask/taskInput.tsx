@@ -348,6 +348,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
             placeholder={transtask("placeholdertaskmode")}
             value={formData.task_mode}
             onChange={(value) => handleInputChange("task_mode", String(value))}
+            error={errors.task_mode}
             disabled={isReadOnly("task_mode")}
           />
         </Grid>

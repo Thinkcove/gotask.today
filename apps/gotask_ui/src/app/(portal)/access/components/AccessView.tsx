@@ -246,7 +246,6 @@ const AccessView: React.FC = () => {
         <Box
           sx={{
             flex: 1,
-            overflowY: "auto",
             minHeight: 0,
             mt: 1,
             pr: 1

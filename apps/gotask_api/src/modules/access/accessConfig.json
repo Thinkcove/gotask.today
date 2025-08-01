@@ -1,6 +1,15 @@
 {
   "accesses": [
     {
+      "access": "Project Management",
+      "actions": ["READ", "CREATE", "EDIT", "VIEW", "ASSIGN", "UNASSIGN", "UPDATE"],
+      "restrictedFields": {
+        "VIEW": ["organization_id"],
+        "EDIT": ["name", "description", "status", "organization_id"],
+        "READ": ["description"]
+      }
+    },
+    {
       "access": "User Management",
       "actions": ["READ", "CREATE", "EDIT", "VIEW", "DELETE"],
       "restrictedFields": {
@@ -12,15 +21,6 @@
       "actions": ["READ", "CREATE", "EDIT", "VIEW", "DELETE"],
       "restrictedFields": {
         "EDIT": ["title", "description", "status", "severity", "user_id", "project_id", "due_date"]
-      }
-    },
-    {
-      "access": "Project Management",
-      "actions": ["READ", "CREATE", "EDIT", "VIEW", "ASSIGN", "UNASSIGN", "UPDATE"],
-      "restrictedFields": {
-        "VIEW": ["organization_id"],
-        "EDIT": ["name", "description", "status", "organization_id"],
-        "READ": ["description"]
       }
     },
     {

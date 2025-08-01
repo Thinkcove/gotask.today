@@ -35,6 +35,7 @@ export interface ITask extends Document {
   created_by?: string;
   actual_start_date?: Date;
   actual_end_date?: Date;
+  linked_ids?: string[];
 }
 
 const TaskSchema = new Schema<ITask>(
@@ -53,6 +54,7 @@ const TaskSchema = new Schema<ITask>(
       enum: Object.values(TASK_SEVERITY),
       required: true
     },
+    linked_ids: { type: [String], default: [] },
     task_mode: {
       type: String,
       enum: Object.values(TASK_MODE)

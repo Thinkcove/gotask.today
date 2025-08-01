@@ -225,7 +225,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                 </Grid>
 
                 {/* Role */}
-                <Grid item xs={6} sm={6} md={4}>
+                <Grid item xs={6} sm={6} md={4} mb={1}>
                   <LabelValueText
                     label={transuser("roleid_view")}
                     value={user?.roleId.name}
@@ -235,7 +235,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
               </Grid>
 
               {/* Organization */}
-              <Grid container spacing={2} mt={1}>
+              <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle2" color="text.secondary" mb={1}>
                     {transuser("organization")}
@@ -244,7 +244,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, mutate }) => {
                     <ul style={{ paddingLeft: "1rem", margin: 0 }}>
                       {user.orgDetails.map((orgId) => (
                         <li key={orgId.id}>
-                          <Typography variant="body2" sx={{ textTransform: "capitalize" ,mb: 1}}>
+                          <Typography variant="body2" sx={{ textTransform: "capitalize", mb: 1 }}>
                             {orgId.name}
                           </Typography>
                         </li>

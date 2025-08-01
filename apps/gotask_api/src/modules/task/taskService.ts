@@ -289,7 +289,9 @@ const getTasksByProject = async (
               createdAt: "$createdAt",
               updatedAt: "$updatedAt",
               actual_start_date: "$actual_start_date",
-              actual_end_date: "$actual_end_date"
+              actual_end_date: "$actual_end_date",
+              task_mode: "$task_mode",
+              linked_ids: { $ifNull: ["$linked_ids", []] }
             }
           }
         }
@@ -461,7 +463,9 @@ const getTasksByUser = async (
               createdAt: "$createdAt",
               updatedAt: "$updatedAt",
               actual_start_date: "$actual_start_date",
-              actual_end_date: "$actual_end_date"
+              actual_end_date: "$actual_end_date",
+              task_mode: "$task_mode",
+              linked_ids: { $ifNull: ["$linked_ids", []] }
             }
           }
         }

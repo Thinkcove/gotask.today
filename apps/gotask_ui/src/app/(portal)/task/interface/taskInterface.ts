@@ -26,6 +26,7 @@ export interface IGroup {
 }
 export interface ITask {
   story_id: string;
+  task_mode: string;
   variation?: string;
   id: string;
   title: string;

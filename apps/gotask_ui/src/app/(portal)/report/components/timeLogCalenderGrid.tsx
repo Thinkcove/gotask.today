@@ -420,7 +420,7 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
           {transreport("showproject")}: {singleProjectName}
         </div>
       )}
-      <TimeSpentStatus items={hourStatusItems} />
+      {!showTasks && <TimeSpentStatus items={hourStatusItems} />}
       <TableContainer
         component={Paper}
         sx={{
@@ -686,15 +686,17 @@ const TimeLogCalendarGrid: React.FC<EnhancedTimeLogGridPropsWithPermissions> = (
                               justifyContent="center"
                               sx={{ height: "100%" }}
                             >
-                              <Box
-                                sx={{
-                                  width: 8,
-                                  height: 8,
-                                  borderRadius: "50%",
-                                  backgroundColor: getLogIndicatorColor(value),
-                                  marginRight: "4px"
-                                }}
-                              />
+                              {!showTasks && (
+                                <Box
+                                  sx={{
+                                    width: 8,
+                                    height: 8,
+                                    borderRadius: "50%",
+                                    backgroundColor: getLogIndicatorColor(value),
+                                    marginRight: "4px"
+                                  }}
+                                />
+                              )}
                               <Typography
                                 variant="caption"
                                 sx={{

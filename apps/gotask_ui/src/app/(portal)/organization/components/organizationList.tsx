@@ -50,7 +50,7 @@ const OrganizationList = () => {
           height: "100vh",
           overflowY: "auto",
           maxHeight: "calc(100vh - 150px)",
-          p: 3
+          pb:2
         }}
       >
         <OrganizationCards organizations={filteredOrganizations} />

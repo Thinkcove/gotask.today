@@ -76,16 +76,16 @@ const ProjectList = () => {
     searchTerm.trim().length > 0 || statusFilter.length > 0 || userFilter.length > 0;
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        height: "100vh",
-        overflowY: "auto",
-        maxHeight: "calc(100vh - 100px)",
-        p: 3
-      }}
-    >
-      <Box mb={3}>
+    <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Fixed Filters and SearchBar */}
+      <Box
+        sx={{
+          px: 3,
+          pt: 3,
+          pb: 2,
+          backgroundColor: "#fff"
+        }}
+      >
         <Stack direction="row" spacing={2} alignItems="flex-start" flexWrap="wrap" flexGrow={1}>
           <ProjectFilters
             isLoading={showInitialFilterLoader}
@@ -102,8 +102,21 @@ const ProjectList = () => {
           />
         </Stack>
       </Box>
-      <ProjectCards projects={filteredProjects} loading={isLoading} />
 
+      {/* Scrollable Project List */}
+      <Box
+        sx={{
+          position: "relative",
+          height: "100vh",
+          overflowY: "auto",
+          maxHeight: { xs: "calc(100vh - 200px)", md: "calc(100vh - 150px)" },
+          p: 3
+        }}
+      >
+        <ProjectCards projects={filteredProjects} loading={isLoading} />
+      </Box>
+
+      {/* Floating Actions */}
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
       {canAccess(APPLICATIONS.PROJECT, ACTIONS.CREATE) && (
         <ActionButton

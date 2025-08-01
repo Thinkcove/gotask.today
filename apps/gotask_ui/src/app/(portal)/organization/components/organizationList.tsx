@@ -27,15 +27,7 @@ const OrganizationList = () => {
     ) || null;
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        height: "100vh",
-        overflowY: "auto",
-        maxHeight: "calc(100vh - 100px)",
-        p: 3
-      }}
-    >
+    <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", p: 3 }}>
       <CreateOrganization
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -51,7 +43,18 @@ const OrganizationList = () => {
         />
       </Box>
 
-      <OrganizationCards organizations={filteredOrganizations} />
+      {/* Scrollable content */}
+      <Box
+        sx={{
+          position: "relative",
+          height: "100vh",
+          overflowY: "auto",
+          maxHeight: "calc(100vh - 150px)",
+          p: 3
+        }}
+      >
+        <OrganizationCards organizations={filteredOrganizations} />
+      </Box>
 
       {canAccess(APPLICATIONS.ORGANIZATION, ACTIONS.CREATE) && (
         <ActionButton

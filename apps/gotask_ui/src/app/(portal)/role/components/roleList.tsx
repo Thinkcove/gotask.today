@@ -29,10 +29,11 @@ const RoleList = () => {
     <Box
       sx={{
         position: "relative",
-        height: "90vh",
-        overflowY: "auto",
-        maxHeight: "calc(120vh - 100px)",
-        p: 3
+        height: "100vh",
+        p: 3,
+        pb: 2,
+        display: "flex",
+        flexDirection: "column"
       }}
     >
       <CreateRole open={isModalOpen} onClose={() => setIsModalOpen(false)} mutate={mutate} />
@@ -45,9 +46,19 @@ const RoleList = () => {
           placeholder={transrole("searchplaceholder")}
         />
       </Box>
-      <RoleCards roles={filteredRoles} />
 
-      {/* Add Role Button */}
+      <Box
+        sx={{
+          position: "relative",
+          height: "90vh",
+          overflowY: "auto",
+          maxHeight: "calc(100vh - 150px)",
+          pb: 2
+        }}
+      >
+        <RoleCards roles={filteredRoles} />
+      </Box>
+
       {canAccess(APPLICATIONS.ROLE, ACTIONS.CREATE) && (
         <ActionButton
           label={transrole("createrole")}

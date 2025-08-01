@@ -68,53 +68,67 @@ const UserList = () => {
       }) || null;
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        height: "100vh",
-        overflowY: "auto",
-        overflowX: "hidden",
-        maxHeight: "calc(100vh - 100px)",
-        p: 3
-      }}
-    >
-      <Box mb={2} display="flex" flexDirection="row" gap={2}>
-        {/* Search Bar */}
-        <Box mb={2} maxWidth={400}>
-          {showInitialFilterLoader ? (
-            <SkeletonLoader count={1} />
-          ) : (
-            <SearchBar
-              value={searchTerm}
-              onChange={handleSearchTermChange}
-              sx={{ width: "100%" }}
-              placeholder={transuser("searchplaceholder")}
-            />
-          )}
-        </Box>
+    <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Fixed Header Section: Search + Filters */}
+      <Box
+        sx={{
+          px: 3,
+          pt: 3,
+          pb: 1,
+          backgroundColor: "#fff"
+        }}
+      >
+        <Box mb={2} display="flex" flexDirection="row" gap={2}>
+          {/* Search Bar */}
+          <Box maxWidth={400}>
+            {showInitialFilterLoader ? (
+              <SkeletonLoader count={1} />
+            ) : (
+              <SearchBar
+                value={searchTerm}
+                onChange={handleSearchTermChange}
+                sx={{ width: "100%" }}
+                placeholder={transuser("searchplaceholder")}
+              />
+            )}
+          </Box>
 
-        {/* User Status Filter */}
-        <UserStatusFilter
-          isLoading={showInitialFilterLoader}
-          userStatus={userStatusFilter}
-          onStatusChange={(newValue) => {
-            if (newValue.includes("All")) {
+          {/* User Status Filter */}
+          <UserStatusFilter
+            isLoading={showInitialFilterLoader}
+            userStatus={userStatusFilter}
+            onStatusChange={(newValue) => {
+              if (newValue.includes("All")) {
+                setUserStatusFilter(["All"]);
+              } else {
+                setUserStatusFilter(newValue.filter((val) => val !== "All"));
+              }
+            }}
+            onClearStatus={() => {
               setUserStatusFilter(["All"]);
-            } else {
-              setUserStatusFilter(newValue.filter((val) => val !== "All"));
-            }
-          }}
-          onClearStatus={() => {
-            setUserStatusFilter(["All"]);
-            setSearchTerm("");
-            removeStorage("userListFilter");
-          }}
-          transuser={transuser}
-        />
+              setSearchTerm("");
+              removeStorage("userListFilter");
+            }}
+            transuser={transuser}
+          />
+        </Box>
       </Box>
 
-      <UserCards users={filteredUsers} getUserStatusColor={getUserStatusColor} />
+      {/* Scrollable User List */}
+      <Box
+        sx={{
+          position: "relative",
+          height: "100vh",
+          overflowY: "auto",
+          overflowX: "hidden",
+          maxHeight: "calc(100vh - 150px)",
+          p: 3
+        }}
+      >
+        <UserCards users={filteredUsers} getUserStatusColor={getUserStatusColor} />
+      </Box>
 
+      {/* Floating Buttons */}
       {canAccess(APPLICATIONS.CHATBOT, ACTIONS.CREATE) && <Chat />}
 
       {canAccess(APPLICATIONS.USER, ACTIONS.CREATE) && (

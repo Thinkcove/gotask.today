@@ -56,9 +56,6 @@ const ApplyLeave: React.FC = () => {
       const toDate = new Date(formData.to_date);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      if (fromDate < today) {
-        newErrors.from_date = transleave("frompast");
-      }
       if (fromDate > toDate) {
         newErrors.to_date = transleave("toearlier");
       }

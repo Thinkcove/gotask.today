@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Typography, Grid, CircularProgress, Box, Stack, Divider } from "@mui/material";
+import { Typography, Grid, CircularProgress, Box, Stack } from "@mui/material";
 import { ArrowForward } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -71,7 +71,6 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                     </Typography>
                   </Box>
                 )}
-                <Divider />
                 {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
                   <Box display="flex" justifyContent="flex-end">
                     <Box

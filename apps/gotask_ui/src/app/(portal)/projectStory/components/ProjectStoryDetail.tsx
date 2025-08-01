@@ -199,7 +199,7 @@ const ProjectStoryDetail = () => {
                         key={task.id}
                         task={task}
                         onTaskClick={handleTaskClick}
-                        view="stories"
+                        view="projects"
                         getStatusColor={getStatusColor}
                       />
                     ))}

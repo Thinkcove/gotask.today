@@ -33,14 +33,7 @@ const AccessContainer: React.FC = () => {
   );
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        height: "100vh",
-        overflowY: "auto",
-        maxHeight: "calc(100vh - 100px)"
-      }}
-    >
+    <Box sx={{ position: "relative", height: "100vh", display: "flex", flexDirection: "column" }}>
       <Box sx={{ p: 3 }}>
         <Box maxWidth={400}>
           <SearchBar
@@ -52,7 +45,16 @@ const AccessContainer: React.FC = () => {
         </Box>
       </Box>
 
-      <AccessCards data={filteredData} loading={isLoading} error={error} />
+      <Box
+        sx={{
+          position: "relative",
+          height: "100vh",
+          overflowY: "auto",
+          maxHeight: "calc(100vh - 150px)"
+        }}
+      >
+        <AccessCards data={filteredData} loading={isLoading} error={error} />
+      </Box>
 
       {canAccess(APPLICATIONS.ACCESS, ACTIONS.CREATE) && (
         <Tooltip title="Create Access">

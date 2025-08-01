@@ -29,38 +29,44 @@ const createTask = async (
       };
     }
 
-    const tasks = [];
+    // Generate IDs for all tasks first
+    const mainTaskId = uuidv4();
+    const qaTaskId = uuidv4();
+    const utcTaskId = uuidv4();
 
-    // Task 1: Normal task (original data)
-    const firstTask = {
+    // Task 1: Main task with linked_ids pointing to QA and UTC tasks
+    const mainTask = {
       ...taskData,
-      id: uuidv4()
-      // task_mode remains as provided in taskData or schema default
+      id: mainTaskId,
+      linked_ids: [qaTaskId, utcTaskId] // Link to QA and UTC tasks
     };
-    const newFirstTask = await createNewTask(firstTask);
-    tasks.push(newFirstTask);
 
-    // Task 2: Always QA mode
+    // Task 2: QA task with linked_ids pointing to main task
     const qaTask = {
       ...taskData,
-      id: uuidv4(),
-      task_mode: TASK_MODE.QA // Always "qa"
+      id: qaTaskId,
+      task_mode: TASK_MODE.QA,
+      linked_ids: [mainTaskId] // Link back to main task
     };
-    const newQaTask = await createNewTask(qaTask);
-    tasks.push(newQaTask);
 
-    // Task 3: Always UTC mode
+    // Task 3: UTC task with linked_ids pointing to main task
     const utcTask = {
       ...taskData,
-      id: uuidv4(),
-      task_mode: TASK_MODE.UTC // Always "utc"
+      id: utcTaskId,
+      task_mode: TASK_MODE.UTC,
+      linked_ids: [mainTaskId] // Link back to main task
     };
+
+    // Create all tasks
+    const newMainTask = await createNewTask(mainTask);
+    const newQaTask = await createNewTask(qaTask);
     const newUtcTask = await createNewTask(utcTask);
-    tasks.push(newUtcTask);
+
+    const tasks = [newMainTask, newQaTask, newUtcTask];
 
     return {
       success: true,
-      data: tasks // Returns [normalTask, qaTask, utcTask]
+      data: tasks
     };
   } catch (error: any) {
     return {

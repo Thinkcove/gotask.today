@@ -52,7 +52,8 @@ const RoleList = () => {
           position: "relative",
           height: "90vh",
           overflowY: "auto",
-          maxHeight: "calc(100vh - 150px)"
+          maxHeight: "calc(100vh - 150px)",
+          pb: 2
         }}
       >
         <RoleCards roles={filteredRoles} />

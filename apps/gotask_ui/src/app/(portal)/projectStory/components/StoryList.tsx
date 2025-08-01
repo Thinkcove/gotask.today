@@ -191,10 +191,11 @@ const StoryList: React.FC<StoryListProps> = ({ onProjectNameLoad }) => {
             sx={{
               flex: 1,
               overflowY: "auto",
-              maxHeight: { xs: "calc(95vh - 250px)", md: "calc(95vh - 150px)" }
+              maxHeight: { xs: "calc(95vh - 250px)", md: "calc(95vh - 150px)" },
+              pb: 2
             }}
           >
-            <Box sx={{ px: 2, pt: 3 }}>
+            <Box sx={{ px: 2, pt: 2 }}>
               {isLoading && size === 1 ? (
                 <Box display="flex" justifyContent="center" mt={5}>
                   <CircularProgress />

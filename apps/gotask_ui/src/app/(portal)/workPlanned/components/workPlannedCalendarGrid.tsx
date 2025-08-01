@@ -282,7 +282,7 @@ const WorkPlannedCalendarGrid: React.FC<EnhancedWorkPlannedGridProps> = ({
       <TableContainer
         component={Paper}
         sx={{
-          maxHeight: { xs: "calc(68vh - 220px)", md: "calc(100vh - 100px)" },
+          maxHeight: { xs: "calc(68vh - 300px)", md: "calc(100vh - 150px)" },
           overflowY: "auto",
           overflowX: "auto"
         }}

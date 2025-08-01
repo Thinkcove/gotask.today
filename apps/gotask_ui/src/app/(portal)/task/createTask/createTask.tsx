@@ -30,6 +30,7 @@ const CreateTask: React.FC = () => {
     description: "",
     status: TASK_STATUS.TO_DO,
     severity: TASK_SEVERITY.LOW,
+    task_mode: "",
     user_id: "",
     project_id: projectId || "",
     created_on: moment().format("YYYY-MM-DD"),

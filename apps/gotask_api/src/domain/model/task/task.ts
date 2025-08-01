@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { ITaskComment, TaskCommentSchema } from "./taskComment";
 import { ITaskHistory, TaskHistorySchema } from "./taskHistory";
-import { TASK_SEVERITY, TASK_STATUS } from "../../../constants/taskConstant";
+import { TASK_MODE, TASK_SEVERITY, TASK_STATUS } from "../../../constants/taskConstant";
 import { ITimeSpentEntry, TimeSpentEntrySchema } from "./timespent";
 
 export interface ITask extends Document {
@@ -12,6 +12,7 @@ export interface ITask extends Document {
   description: string;
   status: string;
   severity: string;
+  task_mode: string;
   user_id: string;
   user_name: string;
   project_id: string;
@@ -51,6 +52,10 @@ const TaskSchema = new Schema<ITask>(
       type: String,
       enum: Object.values(TASK_SEVERITY),
       required: true
+    },
+    task_mode: {
+      type: String,
+      enum: Object.values(TASK_MODE)
     },
     user_id: { type: String, required: true },
     user_name: { type: String },

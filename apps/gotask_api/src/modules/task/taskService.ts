@@ -1,5 +1,5 @@
 import TaskMessages from "../../constants/apiMessages/taskMessage";
-import { SortField, SortOrder } from "../../constants/taskConstant";
+import { SortField, SortOrder, TASK_MODE } from "../../constants/taskConstant";
 import { TimeUtil } from "../../constants/utils/timeUtils";
 import {
   addTimeSpentToTask,
@@ -15,11 +15,12 @@ import {
 import { ITask, Task } from "../../domain/model/task/task";
 import { ITaskComment } from "../../domain/model/task/taskComment";
 import { ITimeSpentEntry } from "../../domain/model/task/timespent";
+import { v4 as uuidv4 } from "uuid";
 
 // Create a new task
 const createTask = async (
   taskData: Partial<ITask>
-): Promise<{ success: boolean; data?: ITask; message?: string }> => {
+): Promise<{ success: boolean; data?: ITask[]; message?: string }> => {
   try {
     if (!taskData || !taskData.title || !taskData.project_id) {
       return {
@@ -28,12 +29,38 @@ const createTask = async (
       };
     }
 
-    // story_id is optional — no need to validate here
-    const newTask = await createNewTask(taskData);
+    const tasks = [];
+
+    // Task 1: Normal task (original data)
+    const firstTask = {
+      ...taskData,
+      id: uuidv4()
+      // task_mode remains as provided in taskData or schema default
+    };
+    const newFirstTask = await createNewTask(firstTask);
+    tasks.push(newFirstTask);
+
+    // Task 2: Always QA mode
+    const qaTask = {
+      ...taskData,
+      id: uuidv4(),
+      task_mode: TASK_MODE.QA // Always "qa"
+    };
+    const newQaTask = await createNewTask(qaTask);
+    tasks.push(newQaTask);
+
+    // Task 3: Always UTC mode
+    const utcTask = {
+      ...taskData,
+      id: uuidv4(),
+      task_mode: TASK_MODE.UTC // Always "utc"
+    };
+    const newUtcTask = await createNewTask(utcTask);
+    tasks.push(newUtcTask);
 
     return {
       success: true,
-      data: newTask
+      data: tasks // Returns [normalTask, qaTask, utcTask]
     };
   } catch (error: any) {
     return {
@@ -59,6 +86,7 @@ const getAllTasks = async (): Promise<{
         description: 1,
         status: 1,
         severity: 1,
+        task_mode: 1,
         user_id: 1,
         user_name: 1,
         project_id: 1,

@@ -42,7 +42,8 @@ const EditTask: React.FC<EditTaskProps> = ({ data, mutate }) => {
     due_date: data?.due_date?.split("T")[0] || "",
     start_date: data?.start_date?.split("T")[0] || "",
     user_estimated: data?.user_estimated || "",
-    story_id: data?.story_id || ""
+    story_id: data?.story_id || "",
+    task_mode: data?.task_mode || ""
   });
 
   const [snackbar, setSnackbar] = useState({

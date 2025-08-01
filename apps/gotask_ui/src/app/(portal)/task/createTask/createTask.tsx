@@ -59,6 +59,7 @@ const CreateTask: React.FC = () => {
     if (!formData.project_id) newErrors.project_id = transtask("projectname");
     if (!formData.status) newErrors.status = transtask("status");
     if (!formData.severity) newErrors.severity = transtask("severity");
+    if (!formData.task_mode) newErrors.task_mode = transtask("taskmodereq");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

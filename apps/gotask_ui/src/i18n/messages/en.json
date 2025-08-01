@@ -345,6 +345,7 @@
     "projectname": "Project Name is required",
     "status": "Status is required",
     "severity": "Severity is required",
+    "taskmodereq": "Task Mode is required",
     "startdateisrequired": "Planned Start Date is required.",
     "duedaterequired": "Planned End Date is required.",
     "successmessage": "Task created successfully!",
@@ -448,7 +449,7 @@
     "placeholderprojectstories": "Select Project Stories",
     "storiestitle": "Story Title",
     "placeholdertaskmode": "Select Task Mode",
-    "taskmode": "Task Mode",
+    "taskmode": "Task Mode * :",
     "taskmoderequired": "TaskMode is required",
 
     "Project": {

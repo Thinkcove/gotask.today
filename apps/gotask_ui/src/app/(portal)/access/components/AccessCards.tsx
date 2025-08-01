@@ -71,7 +71,6 @@ const AccessCards: React.FC<Props> = ({ data, loading = false, error }) => {
                     </Typography>
                   </Box>
                 )}
-                <Divider />
                 {canAccess(APPLICATIONS.ACCESS, ACTIONS.VIEW) && (
                   <Box display="flex" justifyContent="flex-end">
                     <Box

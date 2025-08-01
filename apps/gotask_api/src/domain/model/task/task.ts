@@ -12,7 +12,7 @@ export interface ITask extends Document {
   description: string;
   status: string;
   severity: string;
-  task_mode: string;
+  task_mode?: string;
   user_id: string;
   user_name: string;
   project_id: string;

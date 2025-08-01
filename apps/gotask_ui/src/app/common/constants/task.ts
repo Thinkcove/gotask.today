@@ -92,11 +92,11 @@ export const TASK_SEVERITY = {
   CRITICAL: "critical"
 };
 export const TASK_MODE = {
-  DEV: "dev",
-  QA: "qa",
-  UTC: "utc",
-  ISSUE: "issue",
-  DESIGN: "design"
+  DEV: "DEV",
+  QA: "QA",
+  UTC: "UTC",
+  ISSUE: "ISSUE",
+  DESIGN: "DESIGN"
 };
 
 export const getVariationColor = (variation: string) => {

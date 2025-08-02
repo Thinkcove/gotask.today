@@ -13,6 +13,7 @@ import { Payload, User } from "../interface/workPlanned";
 import { Project } from "../../task/interface/taskInterface";
 import WorkPlannedFiltersPanel from "./workPlannedFilterPanel";
 import { Filters } from "../interface/workPlanned";
+import DownloadIcon from "@mui/icons-material/Download";
 
 const getStoredFilters = (): Filters | null => {
   if (typeof window === "undefined") return null;
@@ -123,6 +124,35 @@ const WorkPlannedReport = () => {
       </Box>
     );
   }
+  const handleDownload = () => {
+    if (!reportData?.length) return;
+
+    const fileName = "work_planned_report.csv";
+    const headers = Object.keys(reportData[0]);
+
+    const csvRows = [
+      headers.join(","), // header row
+      ...reportData.map((row: Record<string, any>) =>
+        headers
+          .map((key) => {
+            const value = row[key];
+            return typeof value === "string" ? `"${value.replace(/"/g, '""')}"` : (value ?? "");
+          })
+          .join(",")
+      )
+    ];
+
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <Box sx={{ p: 3 }}>
@@ -151,6 +181,31 @@ const WorkPlannedReport = () => {
           >
             {transreport("reset")}
           </Button>
+          <Box display="flex" justifyContent="center" mt={2}>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={handleDownload}
+              sx={{
+                alignItems: "center",
+                whiteSpace: "nowrap",
+                textTransform: "none",
+                "& .MuiButton-startIcon": {
+                  margin: { xs: 0, lg: "0 8px 0 -4px" }
+                },
+                minWidth: { xs: "40px", lg: "auto" },
+                width: { xs: "40px", lg: "auto" },
+                height: "40px",
+                padding: { xs: "8px", lg: "6px 16px" },
+                borderRadius: "8px",
+                "& .button-text": {
+                  display: { xs: "none", lg: "inline" }
+                }
+              }}
+            >
+              <span className="button-text">{transreport("downloadworkplanned")}</span>
+            </Button>
+          </Box>
         </Grid>
 
         <Grid item xs={12} md={9}>

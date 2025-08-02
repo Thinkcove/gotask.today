@@ -662,6 +662,7 @@
     "permission": "Permission",
     "nodata": "No data found",
     "download": "Download Worklog",
+    "downloadworkplanned": "Download Work Planned",
     "meta": {
       "title": "Work Log | GoTaskToday",
       "description": "Generate and analyze reports across modules for insights and audits."
